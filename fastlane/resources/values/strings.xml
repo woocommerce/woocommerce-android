@@ -214,6 +214,76 @@
 
     <string name="login_prologue_start_new_store">Starting a new store?</string>
 
+    <!-- QR login prologue -->
+    <string name="login_qr_prologue_title">Scan to log in</string>
+    <string name="login_qr_prologue_subtitle">On your computer, visit:</string>
+    <string name="login_qr_prologue_url" translatable="false">woo.com/mobilelogin</string>
+    <string name="login_qr_prologue_url_clipboard_label">WooCommerce login URL</string>
+    <string name="login_qr_prologue_url_copied">Link copied to clipboard</string>
+    <string name="login_qr_prologue_step_hint">Then scan the QR code that appears.</string>
+    <string name="login_qr_prologue_scan_button">Scan QR code</string>
+    <string name="login_qr_prologue_fallback_link">No computer? Log in with site address</string>
+    <string name="login_qr_prologue_camera_denied_title">Camera access needed</string>
+    <string name="login_qr_prologue_camera_denied_body">Without camera access, you can still log in by entering your store address.</string>
+    <string name="login_qr_prologue_camera_denied_allow_button">Allow camera access</string>
+    <string name="login_qr_prologue_camera_blocked_title">Camera access is turned off</string>
+    <string name="login_qr_prologue_camera_blocked_body">Enable camera access in Settings or cancel to sign in with your store address instead.</string>
+    <string name="login_qr_prologue_camera_blocked_settings_button">Open Permissions Settings</string>
+    <string name="login_qr_scanner_hint">Center the QR code in the frame</string>
+    <string name="login_qr_scanner_visit_url">Visit %1$s</string>
+    <string name="login_qr_scanner_authenticating">Signing you in…</string>
+    <string name="login_qr_endpoint_missing_title">This store can\'t complete QR login</string>
+    <string name="login_qr_endpoint_missing_body">Your WooCommerce plugin doesn\'t support QR login. Please update WooCommerce on your store and try again, or sign in by entering your site URL.</string>
+    <string name="login_qr_endpoint_missing_enter_url">Enter site URL instead</string>
+    <string name="login_qr_endpoint_missing_retry">Try scanning again</string>
+    <!-- Number-matching approval step -->
+    <string name="login_qr_match_title">Confirm sign-in</string>
+    <string name="login_qr_match_host_label">You\'re signing in to</string>
+    <string name="login_qr_match_account_label">You\'re signing in as</string>
+    <string name="login_qr_match_subtitle">Tap this number on your computer to finish.</string>
+    <string name="login_qr_match_countdown">Expires in %1$ds</string>
+    <string name="login_qr_match_cancel">Cancel</string>
+    <string name="login_qr_match_security_note">Both screens must show the same number for sign-in to complete.</string>
+
+    <!-- Fullscreen error titles + bodies (split from snackbar copy) -->
+    <string name="login_qr_scanner_error_generic_title">Couldn\'t read that code</string>
+    <string name="login_qr_scanner_error_generic_body">We couldn\'t read that QR code. Please try again.</string>
+    <string name="login_qr_scanner_error_payload_title">Not a WooCommerce code</string>
+    <string name="login_qr_scanner_error_payload_body">This QR isn\'t a WooCommerce login code. Generate a new one from your store and try again.</string>
+    <string name="login_qr_scanner_error_install_qr_title">That\'s the install QR</string>
+    <string name="login_qr_scanner_error_install_qr_body"><![CDATA[The app\'s already installed — this QR installs it. In wp-admin, tap the <b>%1$s</b> button to reveal the sign-in QR. Or visit <b>%2$s</b> on your computer.]]></string>
+    <string name="login_qr_scanner_error_install_qr_body_button">App is installed</string>
+    <string name="login_qr_scanner_error_token_title">Code expired</string>
+    <string name="login_qr_scanner_error_token_body">That code expired or has already been used. Generate a new one in your store.</string>
+    <string name="login_qr_scanner_error_rate_limited_title">Too many attempts</string>
+    <string name="login_qr_scanner_error_rate_limited_body">Please wait a few minutes and try again.</string>
+    <string name="login_qr_scanner_error_network_title">Couldn\'t reach your store</string>
+    <string name="login_qr_scanner_error_network_body">Check your connection and try again.</string>
+    <string name="login_qr_scanner_error_server_title">Something went wrong</string>
+    <string name="login_qr_scanner_error_server_body">Your store returned an unexpected error. Please try again in a moment.</string>
+    <string name="login_qr_scanner_error_site_auth_title">Sign-in failed</string>
+    <string name="login_qr_scanner_error_site_auth_body">We couldn\'t authenticate with your store. Please try again.</string>
+    <string name="login_qr_scanner_error_not_woo_title">Not a WooCommerce store</string>
+    <string name="login_qr_scanner_error_not_woo_body">This site doesn\'t have WooCommerce installed.</string>
+    <string name="login_qr_scanner_error_user_role_title">Permission needed</string>
+    <string name="login_qr_scanner_error_user_role_body">Your account doesn\'t have permission to use the app for this store.</string>
+    <string name="login_qr_scanner_error_match_rejected_title">Sign-in denied</string>
+    <string name="login_qr_scanner_error_match_rejected_body">For your security, this sign-in attempt was cancelled. Generate a new code in your store to try again.</string>
+    <string name="login_qr_scanner_error_match_timed_out_title">Sign-in timed out</string>
+    <string name="login_qr_scanner_error_match_timed_out_body">You didn\'t confirm in time. Generate a new code in your store and try again.</string>
+    <string name="login_qr_scanner_error_match_already_scanned_title">Code already used</string>
+    <string name="login_qr_scanner_error_match_already_scanned_body">That code has already been scanned. Generate a new one in your store.</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_title">Sign-in interrupted</string>
+    <string name="login_qr_scanner_error_match_invalid_grant_body">Your sign-in was interrupted. Generate a new code in your store and try again.</string>
+    <string name="login_qr_scanner_error_match_already_completed_title">Already signed in elsewhere</string>
+    <string name="login_qr_scanner_error_match_already_completed_body">This sign-in was already completed on another device. Generate a new code if you need to try again.</string>
+    <string name="login_qr_error_primary_retry">Try again</string>
+    <string name="login_qr_error_primary_scan">Scan a new code</string>
+    <string name="login_qr_session_replace_title">You\'re already signed in</string>
+    <string name="login_qr_session_replace_body">Continuing will sign you out of your current session and start a new sign-in.</string>
+    <string name="login_qr_session_replace_continue">Continue and sign out</string>
+    <string name="login_qr_session_replace_cancel">Cancel</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_verifying_site">Verifying site…</string>
@@ -372,6 +442,19 @@
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
+
+    <!-- Analytics scheduled-import delay -->
+    <string name="dashboard_stats_delayed_footer">Stats may be up to 12 hours delayed</string>
+    <string name="dashboard_stats_info_content_description">Analytics update settings</string>
+    <string name="dashboard_scheduled_import_sheet_title">Analytics updates</string>
+    <string name="dashboard_scheduled_import_sheet_description"><![CDATA[Choose how WooCommerce processes analytics data updates. <a href="learn_more"><u>Learn more</u></a>]]></string>
+    <string name="dashboard_scheduled_import_option_scheduled_title">Scheduled</string>
+    <string name="dashboard_scheduled_import_option_scheduled_description">Automatically updates analytics data every 12 hours. Recommended for high order volume stores.</string>
+    <string name="dashboard_scheduled_import_option_immediately_title">Immediately</string>
+    <string name="dashboard_scheduled_import_option_immediately_description">Updates analytics data as soon as new data becomes available.</string>
+    <string name="dashboard_scheduled_import_store_wide_note">This is a store-wide setting, which also controls the \"Updates\" option in WooCommerce admin analytics settings.</string>
+    <string name="dashboard_scheduled_import_option_selected">Selected</string>
+    <string name="dashboard_scheduled_import_update_error">Couldn\'t update the setting. Please try again.</string>
 
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
@@ -1389,6 +1472,7 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_device">This device doesn\'t meet the security requirements for Tap to Pay on Android. To accept in-person payments, you can purchase a Bluetooth card reader.</string>
     <string name="card_reader_hub_payout_summary_available_funds">Available funds</string>
     <string name="card_reader_hub_payout_summary_pending_funds">Pending funds</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
@@ -2315,6 +2399,8 @@
     <string name="settings_notifs_new_orders_threshold">Minimum value (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">No alerts</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s and %2$s</string>
     <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
@@ -2399,8 +2485,8 @@
     <string name="support_subtitle">How can we help?</string>
     <string name="support_help_center">Help Center</string>
     <string name="support_faq_detail">Get answers to questions you have</string>
-    <string name="support_contact">Contact support</string>
-    <string name="support_contact_detail">Reach our happiness engineers who can help answer tough questions</string>
+    <string name="support_contact">Contact Support</string>
+    <string name="support_contact_detail">Get help with app or store issues</string>
     <string name="support_application_log">Application log</string>
     <string name="support_application_log_detail">Advanced tool to review the app status</string>
     <string name="support_system_status_report">System status report</string>
@@ -2413,7 +2499,7 @@
 
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
-    <string name="ai_support_chat_screen_title">Chat with support</string>
+    <string name="ai_support_chat_screen_title">Contact Support</string>
     <string name="ai_support_chat_history_row_title">Chat history</string>
     <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
     <string name="ai_support_chat_history_title">Chat history</string>
@@ -2432,10 +2518,10 @@
     <string name="ai_support_chat_suggested_fix_error">Unable to apply this fix. Check your connection and try again.</string>
     <string name="ai_support_chat_typing">Thinking…</string>
     <string name="ai_support_chat_human_support_message">It looks like you might need additional help. Would you like to contact our support team?</string>
-    <string name="ai_support_chat_contact_support">Contact Support</string>
+    <string name="ai_support_chat_contact_support">Ask a Happiness Engineer</string>
     <string name="ai_support_chat_ticket_created_message">A support ticket has been created for this chat. We\'ll respond via email.</string>
     <string name="ai_support_chat_resolved_message">This chat has been marked as resolved.</string>
-    <string name="ai_support_chat_toolbar_contact_support">Contact Support</string>
+    <string name="ai_support_chat_toolbar_contact_support">Ask a Happiness Engineer</string>
     <string name="ai_support_chat_mark_resolved">Mark Resolved</string>
     <string name="ai_support_chat_mark_resolved_cancel">Cancel</string>
     <string name="ai_support_chat_mark_resolved_confirmation_title">Mark chat as resolved?</string>
@@ -2486,7 +2572,7 @@
     <string name="ai_support_chat_diagnostics_push_registration_failure">This device is not registered to receive push notifications for your store.</string>
     <string name="ai_support_chat_diagnostics_push_check_failure">We couldn\'t check your push notification registration.</string>
     <string name="ai_support_chat_connectivity_initial_message">Help me troubleshoot my store connection.</string>
-    <string name="ai_support_chat_connectivity_action">Chat with support</string>
+    <string name="ai_support_chat_connectivity_action">Contact Support</string>
     <string name="ai_support_chat_feedback_helpful">Helpful</string>
     <string name="ai_support_chat_feedback_not_helpful">Not helpful</string>
 
@@ -3754,8 +3840,11 @@
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_blocked_title">Action needed on your store</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
+    <string name="woopos_home_sync_failed_blocked_continue_button">Got it</string>
     <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
@@ -3846,7 +3935,9 @@
     <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_title">Action needed on your store</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
@@ -4063,9 +4154,25 @@
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
+    <string name="woopos_refund_discard_changes_title">Discard refund changes?</string>
+    <string name="woopos_refund_discard_changes_message">Changing orders will discard the refund changes you made.</string>
+    <string name="woopos_refund_discard_changes_discard">Discard changes</string>
+    <string name="woopos_refund_discard_changes_dialog_background_content_description">Discard refund changes dialog background</string>
     <string name="woopos_refund_loading_error_title">Failed to load refund items</string>
     <string name="woopos_refund_creating_error_title">Failed to create refund</string>
     <string name="woopos_refund_error_subtitle">Please try again</string>
+    <string name="woopos_refund_reader_title">Refund card payment</string>
+    <string name="woopos_refund_reader_preparing_title">Preparing reader for refund</string>
+    <string name="woopos_refund_reader_preparing_subtitle">Getting reader ready</string>
+    <string name="woopos_refund_reader_not_connected_title">Reader not connected</string>
+    <string name="woopos_refund_reader_not_connected_subtitle">To process this refund, please connect your reader.</string>
+    <string name="woopos_refund_reader_not_connected_cta_button_label">Connect to reader</string>
+    <string name="woopos_refund_reader_ready_title">Ready for refund</string>
+    <string name="woopos_refund_reader_ready_subtitle">Tap, insert, or swipe card to refund</string>
+    <string name="woopos_refund_reader_processing_title">Processing refund</string>
+    <string name="woopos_refund_notifying_store_title">Notifying store</string>
+    <string name="woopos_refund_notifying_store_subtitle">Applying refund to order</string>
+    <string name="woopos_refund_back_to_order_button">Back to order</string>
     <string name="woopos_orders_refund_complete">Refund complete</string>
     <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
@@ -4106,67 +4213,6 @@
     <string name="woopos_orders_status_cancelled">Canceled</string>
     <string name="woopos_orders_status_completed">Completed</string>
     <string name="woopos_orders_status_refunded">Refunded</string>
-
-    <string name="woopos_bookings_title">Bookings</string>
-    <string name="woopos_bookings_details_attendance_attended">Attended</string>
-    <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
-    <string name="woopos_bookings_details_title">Booking #%s</string>
-    <string name="woopos_bookings_details_service_name_label">Service name</string>
-    <string name="woopos_bookings_details_date_label">Date</string>
-    <string name="woopos_bookings_details_time_label">Time</string>
-    <string name="woopos_bookings_details_team_member_label">Team member</string>
-    <string name="woopos_bookings_details_location_label">Location</string>
-    <string name="woopos_bookings_details_duration_label">Duration</string>
-    <string name="woopos_bookings_details_customer_title">Customer</string>
-    <string name="woopos_bookings_details_customer_guest_badge">Guest</string>
-    <string name="woopos_bookings_details_billing_address_label">Billing address</string>
-    <string name="woopos_bookings_details_customer_note_label">Note</string>
-    <string name="woopos_bookings_payment_status_paid">Paid</string>
-    <string name="woopos_bookings_payment_status_unpaid">Unpaid</string>
-    <string name="woopos_bookings_payment_status_failed">Failed</string>
-    <string name="woopos_bookings_payment_status_refunded">Refunded</string>
-    <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
-    <string name="woopos_bookings_payment_status_authorized">Authorized</string>
-    <string name="woopos_bookings_payment_status_authorization_voided">Authorization Voided</string>
-    <string name="woopos_bookings_status_cancelled">Canceled</string>
-    <string name="woopos_bookings_details_attendance_title">Attendance status</string>
-    <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
-    <string name="woopos_bookings_details_payment_title">Payment</string>
-    <string name="woopos_bookings_details_service_label">Service</string>
-    <string name="woopos_bookings_details_tax_label">Taxes</string>
-    <string name="woopos_bookings_details_discount_label">Discount</string>
-    <string name="woopos_bookings_details_total_label">Total</string>
-    <string name="woopos_bookings_details_collect_payment">Collect payment · %s</string>
-    <string name="woopos_bookings_details_booking_note_title">Booking note</string>
-    <string name="woopos_bookings_details_add_note">Add note</string>
-    <string name="woopos_bookings_details_edit_note">Edit note</string>
-    <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
-    <string name="woopos_bookings_details_copy_email">Copy email</string>
-    <string name="woopos_bookings_details_copy_phone">Copy phone</string>
-    <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
-    <string name="woopos_bookings_cancel_dialog_title">Cancel this booking?</string>
-    <string name="woopos_bookings_cancel_dialog_message">Booking #%1$s for %2$s on %3$s at %4$s for %5$s will be canceled.</string>
-    <string name="woopos_bookings_cancel_dialog_email_notice">The customer will be notified via email.</string>
-    <string name="woopos_bookings_cancel_dialog_confirm">Yes, cancel booking</string>
-    <string name="woopos_bookings_cancel_dialog_keep">No, keep it</string>
-    <string name="woopos_bookings_cancel_dialog_background">Cancel booking dialog background</string>
-    <string name="woopos_bookings_cancel_dialog_unknown_customer">unknown customer</string>
-    <string name="woopos_bookings_cancel_error">Failed to cancel booking. Please try again.</string>
-    <string name="woopos_bookings_note_screen_title_add">Add note</string>
-    <string name="woopos_bookings_note_screen_title_edit">Edit note</string>
-    <string name="woopos_bookings_note_screen_hint">Type booking note</string>
-    <string name="woopos_bookings_note_screen_button_save">Save</string>
-    <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
-    <string name="woopos_bookings_no_bookings_for_date">No bookings for this day</string>
-    <string name="woopos_bookings_no_bookings_for_date_message">Any bookings scheduled for this date will appear here.</string>
-    <string name="woopos_bookings_no_booking_selected">No booking selected</string>
-    <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
-    <string name="woopos_bookings_date_selector_next_day">Next day</string>
-    <string name="woopos_bookings_loading_error_title">Unable to load bookings</string>
-    <string name="woopos_bookings_loading_error_message">Please check your connection and try again.</string>
-    <string name="woopos_bookings_empty_image_description">No bookings</string>
-    <string name="woopos_bookings_pagination_error_title">Unable to load more bookings</string>
-    <string name="woopos_bookings_pagination_error_description">Please try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

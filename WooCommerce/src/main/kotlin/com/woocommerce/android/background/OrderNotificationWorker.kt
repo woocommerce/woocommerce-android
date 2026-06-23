@@ -2,8 +2,10 @@ package com.woocommerce.android.background
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.Data
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -29,8 +31,13 @@ class OrderNotificationWorker @AssistedInject constructor(
             dataBuilder.putLong(ORDER_ID, remoteOrderId)
             val data = dataBuilder.build()
 
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
             val workRequest = OneTimeWorkRequest.Builder(OrderNotificationWorker::class.java)
                 .setInputData(data)
+                .setConstraints(constraints)
                 .build()
 
             WorkManager.getInstance(context).enqueue(workRequest)

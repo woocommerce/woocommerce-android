@@ -92,11 +92,17 @@ class WooPosBuiltInReaderConnector @Inject constructor(
                 isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                 cardReaderTypesToDiscover = BuiltInReaders(listOf(TapToPayDevice)),
             )
-            .first { it is CardReaderDiscoveryEvents.ReadersFound || it is CardReaderDiscoveryEvents.Failed }
+            .first {
+                it is CardReaderDiscoveryEvents.ReadersFound ||
+                    it is CardReaderDiscoveryEvents.Failed ||
+                    it is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported
+            }
         return when (event) {
             is CardReaderDiscoveryEvents.ReadersFound ->
                 event.list.firstOrNull()?.let(BuiltInDiscoveryResult::Found) ?: BuiltInDiscoveryResult.NoReaders
             is CardReaderDiscoveryEvents.Failed -> BuiltInDiscoveryResult.Failed(event.msg)
+            is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                BuiltInDiscoveryResult.Failed(event.msg)
             else -> BuiltInDiscoveryResult.Failed(message = null)
         }
     }

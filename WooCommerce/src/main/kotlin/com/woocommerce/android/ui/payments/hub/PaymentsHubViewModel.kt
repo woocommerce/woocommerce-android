@@ -214,32 +214,61 @@ class PaymentsHubViewModel @Inject constructor(
         get() = tapToPayAvailabilityStatus().isAvailable
 
     private fun MutableList<ListItem>.addTapToPay() {
-        if (tapToPayAvailabilityStatus().isAvailable) {
-            add(
-                HeaderItem(
-                    label = UiStringRes(R.string.card_reader_tap_to_pay_header),
-                    index = 4
+        val status = tapToPayAvailabilityStatus()
+        when {
+            status.isAvailable -> {
+                add(
+                    HeaderItem(
+                        label = UiStringRes(R.string.card_reader_tap_to_pay_header),
+                        index = 4
+                    )
                 )
-            )
-            add(
-                NonToggleableListItem(
-                    icon = R.drawable.ic_baseline_contactless,
-                    label = UiStringRes(R.string.card_reader_test_tap_to_pay),
-                    description = UiStringRes(R.string.card_reader_tap_to_pay_description),
-                    index = 5,
-                    onClick = ::onTapToPayClicked,
-                    iconBadge = R.drawable.ic_badge_new,
+                add(
+                    NonToggleableListItem(
+                        icon = R.drawable.ic_baseline_contactless,
+                        label = UiStringRes(R.string.card_reader_test_tap_to_pay),
+                        description = UiStringRes(R.string.card_reader_tap_to_pay_description),
+                        index = 5,
+                        onClick = ::onTapToPayClicked,
+                        iconBadge = R.drawable.ic_badge_new,
+                    )
                 )
-            )
-            add(
-                NonToggleableListItem(
-                    icon = R.drawable.ic_tintable_info_outline_24dp,
-                    label = UiStringRes(R.string.card_reader_about_tap_to_pay),
-                    index = 6,
-                    onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
+                add(
+                    NonToggleableListItem(
+                        icon = R.drawable.ic_tintable_info_outline_24dp,
+                        label = UiStringRes(R.string.card_reader_about_tap_to_pay),
+                        index = 6,
+                        onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
+                    )
                 )
-            )
+            }
+
+            status is TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported -> {
+                add(
+                    HeaderItem(
+                        label = UiStringRes(R.string.card_reader_tap_to_pay_header),
+                        index = 4
+                    )
+                )
+                add(
+                    NonToggleableListItem(
+                        icon = R.drawable.ic_tintable_info_outline_24dp,
+                        label = UiStringRes(R.string.card_reader_about_tap_to_pay),
+                        index = 6,
+                        onClick = { onTapToPayUnavailableClicked(status) },
+                    )
+                )
+            }
         }
+    }
+
+    private fun onTapToPayUnavailableClicked(status: TapToPayAvailabilityStatus.Result.NotAvailable) {
+        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_ABOUT_TAPPED)
+        paymentsFlowTracker.trackTapToPayNotAvailableReason(status, SOURCE)
+        tapToPayUnavailableHandler.handleTTPUnavailable(
+            status,
+            ::triggerEvent,
+        ) { actionType -> handlePositiveButtonClickTTPUnavailable(actionType) }
     }
 
     private fun MutableList<ListItem>.addCardReaderMode() {
@@ -505,6 +534,14 @@ class PaymentsHubViewModel @Inject constructor(
             triggerEvent(
                 MultiLiveEvent.Event.LaunchUrlInChromeTab(
                     STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
+                )
+            )
+        }
+
+        PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_LEARN_MORE -> {
+            triggerEvent(
+                MultiLiveEvent.Event.LaunchUrlInChromeTab(
+                    AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY
                 )
             )
         }

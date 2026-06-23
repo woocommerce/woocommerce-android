@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 09:55:14+0000
+Translation-Revision-Date: 2026-06-12 08:04:51+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">无警报</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s 和 %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d 星及以下</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">更新产品 #%3$s 的变体 %1$s (#%2$s)</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">客户 #%1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">访客</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">更新订单 #%1$s (%2$s)：向客户发送电子邮件</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">更新订单 #%1$s (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">描述长度不得超过 %1$s 个字符。</string>
+    <string name="woopos_totals_success_payment_external">%1$s 的订单已标记为完成。</string>
+    <string name="woopos_totals_success_payment_qr">已成功收到 %1$s 的付款。</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">添加优惠券</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">背景变暗。 轻点以关闭付款方式选择器。</string>
+    <string name="woopos_scan_to_pay_order_note">客户已通过“扫码支付”功能付款</string>
+    <string name="woopos_scan_to_pay_cancel">取消</string>
+    <string name="woopos_scan_to_pay_retry">请重试</string>
+    <string name="woopos_scan_to_pay_error_message">我们无法准备付款。 请重试。</string>
+    <string name="woopos_scan_to_pay_total">订单总计：%1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">向客户出示此代码，以便他们通过手机付款。</string>
+    <string name="woopos_scan_to_pay_title">扫码支付</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">无法加载订单。 请返回并重试。</string>
+    <string name="woopos_mark_order_as_paid_error_message">无法更新该订单。 请重试。</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">标记为已付款</string>
+    <string name="woopos_mark_order_as_paid_note_hint">例如，Maria 的银行转账，参考号 4827</string>
+    <string name="woopos_mark_order_as_paid_message">这会将 %1$s 订单标记为已完成。 仅当您已通过其他方式收款时才使用此功能。</string>
+    <string name="woopos_mark_order_as_paid_title">将订单标记为已付款？</string>
+    <string name="woopos_custom_amount_dialog_cancel">取消</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">更新自定义金额</string>
+    <string name="woopos_custom_amount_dialog_submit_add">添加自定义金额</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">收取税费</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">自定义金额</string>
+    <string name="woopos_custom_amount_dialog_name_label">姓名</string>
+    <string name="woopos_custom_amount_dialog_amount_label">金额</string>
+    <string name="woopos_custom_amount_form_title">自定义金额</string>
+    <string name="woopos_custom_amount_dialog_title_edit">编辑自定义金额</string>
+    <string name="woopos_custom_amount_dialog_title_add">添加自定义金额</string>
+    <string name="woopos_custom_amount_entry_subtitle">添加一笔一次性费用</string>
+    <string name="woopos_custom_amount_entry_title">自定义金额</string>
+    <string name="woopos_cart_custom_amount_menu_remove">移除</string>
+    <string name="woopos_cart_custom_amount_menu_edit">编辑</string>
+    <string name="woopos_cart_custom_amount_includes_tax">含税</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">编辑 %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">自定义金额 %1$s，%2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">无帮助</string>
+    <string name="ai_support_chat_feedback_helpful">有帮助</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">我们无法检查您的推送通知注册情况。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">此设备未注册接收您商店的推送通知。</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">我们无法找到该设备的推送通知令牌。</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">通知在 Android 设置中被阻止。\n\n请为 WooCommerce 启用通知，然后返回此处继续。</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">我们无法检查您的分析设置。</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">您的商店未启用 WooCommerce Analytics。\n\n在启用之前，收入和订单统计信息等分析数据将不可用。</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">您的 Jetpack 连接存在问题。</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">我们无法正常处理您站点的响应。</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">我们目前无法连接至 WordPress.com。\n\n请在几分钟后重试。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">检查推送注册情况</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">检查推送通知令牌</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">检查通知渠道</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">检查应用程序通知设置</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">检查通知权限</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">检查分析设置</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">重新运行检查</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">正在注册通知…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">正在启用分析…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">注册通知</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">打开通知设置</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">启用分析</string>
+    <string name="ai_support_chat_diagnostics_success">所有检查均已完成，未发现任何问题</string>
+    <string name="ai_support_chat_resolved_prompt">如果您的问题已解决，请将该聊天标记为已解决；如果您有其他疑问，请留言。</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">插件支持请求</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce 插件支持请求</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments 支持请求</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">读卡器支持请求</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">移动应用程序支持请求</string>
+    <string name="ai_support_chat_escalation_transcript_header">以下是应用程序内 AI 支持聊天会话的文字转录稿：</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">联系表单</string>
+    <string name="ai_support_chat_escalation_consent_send_request">发送请求</string>
+    <string name="ai_support_chat_escalation_consent_message">我们可以使用此聊天记录创建支持请求，或者您可以打开联系表单，自行填写详细信息。</string>
+    <string name="ai_support_chat_escalation_consent_title">将此聊天发送给支持人员？</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">这将关闭此对话的聊天操作。</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">将聊天标记为已解决？</string>
+    <string name="ai_support_chat_mark_resolved_cancel">取消</string>
+    <string name="ai_support_chat_mark_resolved">标记为已解决</string>
+    <string name="ai_support_chat_toolbar_contact_support">联系支持人员</string>
+    <string name="ai_support_chat_resolved_message">此聊天已标记为已解决。</string>
+    <string name="ai_support_chat_ticket_created_message">已为此聊天创建支持工单。 我们将通过电子邮件回复。</string>
+    <string name="ai_support_chat_contact_support">联系支持人员</string>
+    <string name="ai_support_chat_human_support_message">看起来您可能需要额外的帮助。 是否要联系我们的支持团队？</string>
+    <string name="ai_support_chat_suggested_fix_error">无法应用此修复方案。 请检查您的连接，然后重试。</string>
+    <string name="ai_support_chat_load_history_error">无法加载此聊天。 请检查您的连接，然后重试。</string>
+    <string name="ai_support_chat_error_dismiss">忽略</string>
+    <string name="ai_support_chat_error_title">错误</string>
+    <string name="ai_support_chat_input_hint">输入消息…</string>
+    <string name="ai_support_chat_greeting">您好！ 我是您的 Woo 移动支持机器人。 现在有什么能帮到您的吗？</string>
+    <string name="ai_support_chat_history_default_title">支持人员对话</string>
+    <string name="ai_support_chat_history_delete_error">无法删除聊天记录。</string>
+    <string name="ai_support_chat_history_load_error">无法加载聊天记录。</string>
+    <string name="ai_support_chat_history_empty">您尚未与支持人员联系。</string>
+    <string name="ai_support_chat_history_title">聊天记录</string>
+    <string name="ai_support_chat_history_row_subtitle">查看以往的支持人员对话</string>
+    <string name="ai_support_chat_history_row_title">聊天记录</string>
+    <string name="ai_support_chat_screen_title">联系支持人员</string>
+    <string name="ai_support_chat_help_row_title">联系支持人员</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">筛选出评分等于或低于您所选值的评价。</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">仅限评分较低的评价</string>
+    <string name="settings_notifs_new_reviews_all_description">针对每条评价发送通知。</string>
+    <string name="settings_notifs_new_reviews_enable_description">在您的商店有评价时收到通知。</string>
+    <string name="settings_notifs_new_orders_threshold">最小值 (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">超过 %1$s 的订单</string>
+    <string name="settings_notifs_channel_disabled_subtitle">在设备设置中打开</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">该助手工作期间出现错误。</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">经过几个步骤后，该助手无法完成任务。</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d 星及以下</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">确认信息目前还无法提供。 请从聊天界面重新尝试。</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">请求已停止。</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">我不确定该更改是否已生效。 请先在您的商店中进行验证，然后再尝试其他任何操作。</string>
@@ -121,7 +231,6 @@ Language: zh_CN
     <string name="woopos_tap_to_pay_promoted_cta_button_label">使用“点按付款”功能支付</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">使用此设备接受非接触式银行卡付款。</string>
     <string name="woopos_tap_to_pay_promoted_title">点按付款</string>
-    <string name="woopos_payment_method_picker_dialog_title">选择付款方式</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">将订单标记为已付款</string>
     <string name="woopos_payment_method_scan_to_pay_label">扫码支付</string>
     <string name="woopos_payment_method_other_methods_label">其他付款方式</string>
@@ -138,13 +247,10 @@ Language: zh_CN
     <string name="ai_support_chat_connectivity_initial_message">请帮我排查商店连接问题。</string>
     <string name="ai_support_chat_diagnostics_status_failed">失败</string>
     <string name="ai_support_chat_diagnostics_status_passed">通过</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">选择付款方式</string>
     <string name="ai_support_chat_diagnostics_status_running">正在运行</string>
     <string name="ai_support_chat_diagnostics_status_pending">待处理</string>
     <string name="ai_support_chat_diagnostics_continue">继续聊天</string>
-    <string name="ai_support_chat_diagnostics_retry">重试</string>
-    <string name="ai_support_chat_diagnostics_failure">某些检查失败。 您可以重试，或基于这些结果继续聊天。</string>
-    <string name="ai_support_chat_diagnostics_success">诊断已完成</string>
-    <string name="ai_support_chat_diagnostics_title">正在查看您的商店…</string>
     <string name="ai_support_chat_issue_other">其他</string>
     <string name="ai_support_chat_issue_receiving_notifications">我没有收到通知</string>
     <string name="ai_support_chat_issue_loading_analytics">我的分析数据无法加载</string>
@@ -155,17 +261,9 @@ Language: zh_CN
     <string name="ai_support_chat_typing">正在思考…</string>
     <string name="ai_support_chat_send_error">无法发送您的消息。 请检查您的连接，然后重试。</string>
     <string name="ai_support_chat_send">发送</string>
-    <string name="ai_support_chat_input_hint">Message AI 问题排查</string>
-    <string name="ai_support_chat_greeting">您好！ 请告诉我您的商店遇到了什么情况，我将帮助您排查问题。</string>
     <string name="ai_support_chat_placeholder">即将推出</string>
-    <string name="ai_support_chat_screen_title">AI 问题排查</string>
     <string name="ai_support_chat_help_row_subtitle">与我们的 AI 助手聊天，诊断商店问题</string>
-    <string name="ai_support_chat_help_row_title">AI 问题排查</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">选择触发通知的最高评级。</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">最高达某个评级的评价</string>
-    <string name="settings_notifs_new_reviews_all_description">针对每条评价发送通知，无论评级高低。</string>
     <string name="settings_notifs_new_reviews_all_title">所有新评价</string>
-    <string name="settings_notifs_new_reviews_enable_description">当有人对您的产品发表评价时，您将收到通知。</string>
     <string name="settings_notifs_stock_backorder_description">当客户订购的商品当前缺货时。</string>
     <string name="settings_notifs_stock_backorder_title">缺货超售</string>
     <string name="settings_notifs_stock_out_of_stock_description">当某个产品变体的库存降至零时。</string>
@@ -177,10 +275,9 @@ Language: zh_CN
     <string name="settings_notifs_stock_low_stock_title">库存不足</string>
     <string name="settings_notifs_stock_enable_description">当产品库存发生变化而需要您关注时，您将收到通知。</string>
     <string name="settings_notifs_stock_enable_title">启用库存通知</string>
-    <string name="settings_notifs_new_orders_threshold">阈值 (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">筛选出金额高于您所设阈值的订单。</string>
     <string name="settings_notifs_new_orders_high_value_title">仅限高价值订单</string>
     <string name="settings_notifs_new_orders_all_description">针对每个订单发送通知，无论价值高低。</string>
+    <string name="settings_notifs_new_orders_high_value_description">筛选出金额高于您所设最低值的订单。</string>
     <string name="settings_notifs_new_orders_all_title">所有新订单</string>
     <string name="settings_notifs_notify_me_for">请据此通知我</string>
     <string name="settings_notifs_new_orders_enable_description">当您的商店接到订单时，您将收到通知。</string>
@@ -808,8 +905,6 @@ Language: zh_CN
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">英国</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">美国</string>
     <string name="woopos_eligibility_screen_unable_to_load">无法加载</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系统暂不支持您的商店所使用的货币。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系统暂不支持您的商店所使用的货币。 在 %1$s，它目前仅支持 %2$s。 请检查您的商店货币设置或联系支持人员寻求帮助。</string>
     <string name="woopos_eligibility_reason_check_connection">请检查您的互联网连接并尝试重新启动应用程序。如果问题仍然存在，请联系支持人员。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">您的 WooCommerce 版本不受支持。 POS 系统需要 WooCommerce %1$s 或更高版本。 请将 WooCommerce 更新到最新版本。</string>
     <string name="orderfilters_sales_channel_filter">销售渠道</string>
@@ -4097,8 +4192,6 @@ Language: zh_CN
         <item>定制包</item>
         <item>服务包</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d 星或以下</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d 星或以下</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">商品小计（共 %d 件商品）</item>
     </plurals>

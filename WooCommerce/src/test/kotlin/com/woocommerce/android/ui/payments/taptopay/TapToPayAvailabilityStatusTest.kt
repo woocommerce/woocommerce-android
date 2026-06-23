@@ -36,6 +36,9 @@ class TapToPayAvailabilityStatusTest {
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isFeatureUnsupported(CIABAffectedFeature.InPersonPayments) }.thenReturn(false)
     }
+    private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker = mock {
+        on { isSupported() }.thenReturn(true)
+    }
 
     private val availabilityStatus = TapToPayAvailabilityStatus(
         selectedSite = selectedSite,
@@ -43,7 +46,8 @@ class TapToPayAvailabilityStatusTest {
         systemVersionUtilsWrapper = systemVersionUtilsWrapper,
         cardReaderCountryConfigProvider = cardReaderCountryConfigProvider,
         wooStore = wooStore,
-        ciabSiteGateKeeper = ciabSiteGateKeeper
+        ciabSiteGateKeeper = ciabSiteGateKeeper,
+        tapToPayDeviceSupportChecker = tapToPayDeviceSupportChecker,
     )
 
     @Test
@@ -96,6 +100,30 @@ class TapToPayAvailabilityStatusTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
+
+        val result = availabilityStatus.invoke()
+
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
+    }
+
+    @Test
+    fun `given Stripe reports device unsupported, when invoking, then device not supported returned`() {
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
+        whenever(tapToPayDeviceSupportChecker.isSupported()).thenReturn(false)
+
+        val result = availabilityStatus.invoke()
+
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported)
+    }
+
+    @Test
+    fun `given Stripe support check unknown, when invoking, then tpp available returned`() {
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
+        whenever(tapToPayDeviceSupportChecker.isSupported()).thenReturn(null)
 
         val result = availabilityStatus.invoke()
 

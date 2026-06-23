@@ -100,6 +100,8 @@
     <string name="error_generic">An error occurred</string>
     <string name="no_site_error">The site at this address is not a WordPress site. For us to connect to it, the site must use WordPress.</string>
     <string name="invalid_site_url_message">Check that the site URL entered is valid</string>
+    <string name="error_site_url_certificate_validity">We couldn\'t establish a secure connection. Check that your device date and time are correct, then try again.</string>
+    <string name="error_site_url_remote_certificate">We couldn\'t verify this site\'s security certificate. Contact your hosting provider or site administrator, then try again.</string>
     <string name="error_wordpress_com_connectivity">We\'re having trouble reaching WordPress.com. Please check your internet connection settings or try switching networks.</string>
     <string name="xmlrpc_missing_method_error">Couldn\'t connect. Required XML-RPC methods are missing on the server.</string>
     <string name="xmlrpc_post_blocked_error">Couldn\'t connect. Your host is blocking POST requests, and the app needs

@@ -18,13 +18,17 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsVi
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundRowData
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -44,6 +48,7 @@ class WooPosOrderDetailsViewModel @Inject constructor(
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val formatPrice: WooPosFormatPrice,
     private val coordinator: WooPosOrdersCoordinator,
+    private val networkStatus: WooPosNetworkStatus,
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
@@ -54,6 +59,9 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         if (singleOrderId != null) WooPosOrderDetailsState.Loading else WooPosOrderDetailsState.Idle
     )
     val state: StateFlow<WooPosOrderDetailsState> = _state.asStateFlow()
+
+    private val _refreshFailedEvent = MutableSharedFlow<Unit>()
+    val refreshFailedEvent: SharedFlow<Unit> = _refreshFailedEvent.asSharedFlow()
 
     private var loadOrderJob: Job? = null
     private var sideLoadJob: Job? = null
@@ -243,14 +251,22 @@ class WooPosOrderDetailsViewModel @Inject constructor(
         }
         refreshOrderJob?.cancel()
         refreshOrderJob = viewModelScope.launch {
+            if (!networkStatus.isConnected()) {
+                _refreshFailedEvent.emit(Unit)
+                return@launch
+            }
             // Fetch + notify run atomically so the list row is always refreshed when the cache
             // is updated, even if the user has already selected a different order. Only the
             // detail-pane work below is cancellable and skipped on selection change.
-            val updated = withContext(NonCancellable) {
-                ordersDataSource.refreshOrderById(selectedOrderId).getOrNull()?.also {
+            val refreshResult = withContext(NonCancellable) {
+                ordersDataSource.refreshOrderById(selectedOrderId).onSuccess {
                     coordinator.notifyOrderRefreshed(it.id)
                 }
-            } ?: return@launch
+            }
+            val updated = refreshResult.getOrElse {
+                _refreshFailedEvent.emit(Unit)
+                return@launch
+            }
             if ((_state.value as? WooPosOrderDetailsState.Loaded)?.details?.id == updated.id) {
                 applyOrderUpdate(updated)
             }

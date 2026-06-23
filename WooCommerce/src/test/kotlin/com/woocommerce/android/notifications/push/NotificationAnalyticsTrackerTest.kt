@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationSource
+import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import org.assertj.core.api.Assertions.assertThat
@@ -15,16 +16,14 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.SiteStore
 
 class NotificationAnalyticsTrackerTest {
     private val siteId = 12345L
     private val site: SiteModel = mock()
-    private val siteStore: SiteStore = mock {
-        on { getSiteBySiteId(siteId) } doReturn site
+    private val resolveSiteBySiteId: ResolveSiteBySiteId = mock {
+        on { invoke(siteId) } doReturn site
     }
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
@@ -33,7 +32,7 @@ class NotificationAnalyticsTrackerTest {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val tracker = NotificationAnalyticsTracker(
-        siteStore = siteStore,
+        resolveSiteBySiteId = resolveSiteBySiteId,
         selectedSite = selectedSite,
         appPrefsWrapper = appPrefsWrapper,
         analyticsTrackerWrapper = analyticsTrackerWrapper
@@ -105,7 +104,7 @@ class NotificationAnalyticsTrackerTest {
     fun `given app-password site, when tracking, then resolve via selected site and flag as selected`() {
         val appPasswordSite: SiteModel = mock()
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
-        whenever(selectedSite.getOrNull()).thenReturn(appPasswordSite)
+        whenever(resolveSiteBySiteId(7777L)).thenReturn(appPasswordSite)
 
         // App-password notifications carry a non-zero payload siteId that doesn't match any
         // wpcom site in the store — resolution must fall back to the selected site.
@@ -117,7 +116,6 @@ class NotificationAnalyticsTrackerTest {
             source = NotificationSource.WOO_DRIVEN
         )
 
-        verifyNoInteractions(siteStore)
         val captor = argumentCaptor<Map<String, Any>>()
         verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
         assertThat(captor.firstValue).containsEntry("is_from_selected_site", true)

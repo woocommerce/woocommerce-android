@@ -49,7 +49,12 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
+                    syncTimestampManager.setCatalogFileBlocked(false)
                     trackSyncCompleted(site, SyncType.FULL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> {
+                    syncTimestampManager.setCatalogFileBlocked(true)
+                    trackSyncFailed(SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
                     trackSyncFailed(SyncType.FULL, result)
@@ -133,6 +138,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
             is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
+            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> SyncErrorType.CATALOG_FILE_BLOCKED
         }
 
         analyticsTracker.track(

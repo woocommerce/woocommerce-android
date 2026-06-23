@@ -21,16 +21,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -53,7 +59,7 @@ fun CreateTestOrderDialog(
         ) {
             Text(
                 modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)),
-                text = stringResource(id = R.string.try_test_order_heading),
+                text = stringResource(id = R.string.place_first_order_heading),
                 style = MaterialTheme.typography.h5,
                 textAlign = TextAlign.Center
             )
@@ -72,10 +78,20 @@ fun CreateTestOrderDialog(
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
 
-            TestOrderStep(1, R.string.try_test_order_step_1)
-            TestOrderStep(2, R.string.try_test_order_step_2)
-            TestOrderStep(3, R.string.try_test_order_step_3)
-            TestOrderStep(4, R.string.try_test_order_step_4)
+            val context = LocalContext.current
+
+            TestOrderStep(1, annotatedStringRes(R.string.try_test_order_step_1))
+            TestOrderStep(2, annotatedStringRes(R.string.place_first_order_step_2))
+            TestOrderStep(3, annotatedStringRes(R.string.try_test_order_step_3))
+            TestOrderStep(
+                4,
+                clickableAnnotatedStringRes(
+                    stringResId = R.string.place_first_order_step_4,
+                    onUrlClick = {
+                        ChromeCustomTabUtils.launchUrl(context, AppUrls.WOOPAYMENTS_FEES_NOT_REFUNDABLE)
+                    }
+                )
+            )
 
             WCColoredButton(
                 modifier = Modifier
@@ -83,14 +99,14 @@ fun CreateTestOrderDialog(
                     .fillMaxWidth(),
                 onClick = onStartTestOrderButtonClick
             ) {
-                Text(stringResource(id = R.string.try_test_order_button))
+                Text(stringResource(id = R.string.place_first_order_button))
             }
         }
     }
 }
 
 @Composable
-fun TestOrderStep(stepNumber: Int, stepTextId: Int) {
+fun TestOrderStep(stepNumber: Int, stepText: AnnotatedString) {
     val format = NumberFormat.getInstance(Locale.getDefault())
     val formattedNumber = format.format(stepNumber)
     Column {
@@ -112,7 +128,7 @@ fun TestOrderStep(stepNumber: Int, stepTextId: Int) {
 
             Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
 
-            Text(text = stringResource(id = stepTextId))
+            Text(text = stepText)
         }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))

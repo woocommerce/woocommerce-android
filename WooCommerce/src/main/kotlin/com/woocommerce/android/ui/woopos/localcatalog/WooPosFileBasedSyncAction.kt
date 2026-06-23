@@ -219,10 +219,14 @@ class WooPosFileBasedSyncAction @Inject constructor(
             .onFailureLog("Failed to download catalog file")
             .getOrElse {
                 return WooPosFileBasedSyncResult.Failure(
-                    PosLocalCatalogSyncResult.Failure.NetworkError(
-                        error = it.message?.takeIf { msg -> msg.isNotBlank() }
-                            ?: "Failed to download catalog file (${it::class.simpleName})"
-                    )
+                    if (it is WooPosCatalogFileBlockedException) {
+                        PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(error = it.message.orEmpty())
+                    } else {
+                        PosLocalCatalogSyncResult.Failure.NetworkError(
+                            error = it.message?.takeIf { msg -> msg.isNotBlank() }
+                                ?: "Failed to download catalog file (${it::class.simpleName})"
+                        )
+                    }
                 )
             }
 

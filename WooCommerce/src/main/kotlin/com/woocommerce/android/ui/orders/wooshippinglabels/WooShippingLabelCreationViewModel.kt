@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CARRIER
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
@@ -941,7 +942,19 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
-    fun onCarrierTermsAccepted() {
+    fun onCarrierTermsAccepted(carrier: Carrier) {
+        val carrierTrackingValue = when (carrier) {
+            Carrier.UPS -> CARRIER_UPSDAP
+            Carrier.FEDEX -> CARRIER_FEDEX
+            else -> null
+        }
+        carrierTrackingValue?.let { trackingValue ->
+            analyticsTracker.track(
+                AnalyticsEvent.WCS_CARRIER_TOS,
+                mapOf(KEY_STATE to TOS_STATE_ACCEPTED, KEY_CARRIER to trackingValue)
+            )
+        }
+
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
@@ -1080,12 +1093,20 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         )
         when (exception) {
             is WooException if exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_CARRIER_TOS,
+                    mapOf(KEY_STATE to TOS_STATE_SHOWN, KEY_CARRIER to CARRIER_UPSDAP)
+                )
                 triggerEvent(
                     NavigateToUPSDAPTermsOfService(originAddress = selectedAddress.shipFrom)
                 )
             }
 
             is WooException if exception.error.apiErrorCode == FEDEX_MISSING_TOS_ERROR_CODE -> {
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_CARRIER_TOS,
+                    mapOf(KEY_STATE to TOS_STATE_SHOWN, KEY_CARRIER to CARRIER_FEDEX)
+                )
                 triggerEvent(NavigateToFedExTermsOfService)
             }
 
@@ -1507,6 +1528,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         @VisibleForTesting
         const val FEDEX_MISSING_TOS_ERROR_CODE = "missing_fedex_terms_of_service_acceptance"
+
+        private const val CARRIER_UPSDAP = "upsdap"
+        private const val CARRIER_FEDEX = "fedex"
+        private const val TOS_STATE_SHOWN = "shown"
+        private const val TOS_STATE_ACCEPTED = "accepted"
     }
 }
 

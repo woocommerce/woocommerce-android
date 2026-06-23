@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-25 10:58:34+0000
+Translation-Revision-Date: 2026-06-12 08:00:00+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Keine Benachrichtigungen</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s und %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d Sterne und darunter</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Variante %1$s (#%2$s) für Produkt #%3$s aktualisieren</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Kunde #%1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Gast</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Bestellung #%1$s aktualisieren (%2$s): E-Mail an den Kunden</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Bestellung #%1$s (%2$s) aktualisieren</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Beschreibung darf höchstens %1$s Zeichen enthalten.</string>
+    <string name="woopos_totals_success_payment_external">Bestellung in Höhe von %1$s als abgeschlossen markiert.</string>
+    <string name="woopos_totals_success_payment_qr">Eine Zahlung (%1$s) wurde erfolgreich empfangen.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Gutschein hinzufügen</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Abgedunkelter Hintergrund. Tippen, um die Auswahl der Zahlungsmethode zu schließen.</string>
+    <string name="woopos_scan_to_pay_order_note">Kunde hat per „Zum Bezahlen scannen“ bezahlt</string>
+    <string name="woopos_scan_to_pay_cancel">Abbrechen</string>
+    <string name="woopos_scan_to_pay_retry">Erneut versuchen</string>
+    <string name="woopos_scan_to_pay_error_message">Wir konnten die Zahlung nicht vorbereiten. Bitte versuche es erneut.</string>
+    <string name="woopos_scan_to_pay_total">Gesamtbestellsumme: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">Zeige diesen Code dem Kunden, damit er über sein Mobiltelefon bezahlen kann.</string>
+    <string name="woopos_scan_to_pay_title">Zum Bezahlen scannen</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Fehler beim Laden der Bestellung. Gehe zurück und versuche es erneut.</string>
+    <string name="woopos_mark_order_as_paid_error_message">Fehler beim Aktualisieren der Bestellung. Versuche es erneut.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Als bezahlt markieren</string>
+    <string name="woopos_mark_order_as_paid_note_hint">z. B. Banküberweisung von Maria, Ref. 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Dadurch wird die Bestellung im Wert von %1$s als abgeschlossen markiert. Verwende diese Option nur, wenn du die Zahlung bereits auf andere Weise erhalten hast.</string>
+    <string name="woopos_mark_order_as_paid_title">Bestellung als bezahlt markieren?</string>
+    <string name="woopos_custom_amount_dialog_cancel">Abbrechen</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Individuellen Betrag aktualisieren</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Individuellen Betrag hinzufügen</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Steuern erheben</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Individueller Betrag</string>
+    <string name="woopos_custom_amount_dialog_name_label">Name</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Betrag</string>
+    <string name="woopos_custom_amount_form_title">Individueller Betrag</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Individuellen Betrag bearbeiten</string>
+    <string name="woopos_custom_amount_dialog_title_add">Individuellen Betrag hinzufügen</string>
+    <string name="woopos_custom_amount_entry_subtitle">Einmalige Gebühr hinzufügen</string>
+    <string name="woopos_custom_amount_entry_title">Individueller Betrag</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Entfernen</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Bearbeiten</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Steuer inbegriffen</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">%s bearbeiten</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Individueller Betrag %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">Nicht hilfreich</string>
+    <string name="ai_support_chat_feedback_helpful">Hilfreich</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">Die Registrierung deiner Push-Benachrichtigung konnte nicht überprüft werden.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Dieses Gerät ist für Push-Benachrichtigungen für deinen Shop nicht registriert.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">Wir konnten kein Token für Push-Benachrichtigungen für dieses Gerät finden.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Benachrichtigungen sind in den Android-Einstellungen blockiert.\n\nAktiviere Benachrichtigungen für WooCommerce und kehre dann hierher zurück, um fortzufahren.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">Deine Analyseeinstellungen konnten nicht überprüft werden.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce-Analysen sind in deinem Shop nicht aktiviert.\n\nAnalysedaten wie Umsatz- und Bestellstatistiken sind erst verfügbar, nachdem sie aktiviert wurden.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Es gibt ein Problem mit deiner Jetpack-Verbindung.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">Wir können mit der Antwort deiner Website nicht richtig arbeiten.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">Es kann derzeit keine Verbindung zu WordPress.com hergestellt werden.\n\nVersuche es in wenigen Minuten erneut.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Registrierung für Push-Benachrichtigungen wird überprüft</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Token für Push-Benachrichtigungen wird überprüft</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Benachrichtigungskanäle werden überprüft</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Einstellungen für App-Benachrichtigungen werden überprüft</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Benachrichtigungsberechtigung wird überprüft</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Analyseeinstellungen werden überprüft</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Überprüfungen erneut ausführen</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Benachrichtigungen werden registriert …</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Analysen werden aktiviert …</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Benachrichtigungen registrieren</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Benachrichtigungseinstellungen öffnen</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Analysen aktivieren</string>
+    <string name="ai_support_chat_diagnostics_success">Alle Überprüfungen ohne Probleme abgeschlossen</string>
+    <string name="ai_support_chat_resolved_prompt">Bitte markiere den Chat als gelöst, wenn dein Problem behoben ist, oder hinterlasse eine Nachricht, wenn du weitere Fragen hast.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Supportanfrage zu Plugin</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">Supportanfrage zu WooCommerce-Plugin</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">Supportanfrage zu WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Supportanfrage zu Kartenlesegerät</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Supportanfrage zu mobiler App</string>
+    <string name="ai_support_chat_escalation_transcript_header">Im Folgenden findest du das Transkript eines In-App-Chats mit einem KI-Support:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Kontaktformular</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Anfrage senden</string>
+    <string name="ai_support_chat_escalation_consent_message">Mit diesem Chat-Transkript können wir eine Supportanfrage erstellen. Alternativ kannst du das Kontaktformular öffnen und die Details selbst eingeben.</string>
+    <string name="ai_support_chat_escalation_consent_title">Diesen Chat an den Support senden?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">Dadurch werden die Chat-Aktionen für diese Unterhaltung geschlossen.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Chat als gelöst markieren?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Abbrechen</string>
+    <string name="ai_support_chat_mark_resolved">Als gelöst markieren</string>
+    <string name="ai_support_chat_toolbar_contact_support">Support kontaktieren</string>
+    <string name="ai_support_chat_resolved_message">Dieser Chat wurde als gelöst markiert.</string>
+    <string name="ai_support_chat_ticket_created_message">Für diesen Chat wurde ein Support-Ticket erstellt. Wir antworten per E-Mail.</string>
+    <string name="ai_support_chat_contact_support">Support kontaktieren</string>
+    <string name="ai_support_chat_human_support_message">Es sieht so aus, als würdest du zusätzliche Hilfe benötigen. Möchtest du unser Support-Team kontaktieren?</string>
+    <string name="ai_support_chat_suggested_fix_error">Diese Behebung kann nicht angewendet werden. Überprüfe deine Verbindung und versuche es noch einmal.</string>
+    <string name="ai_support_chat_load_history_error">Dieser Chat kann nicht geladen werden. Überprüfe deine Verbindung und versuche es noch einmal.</string>
+    <string name="ai_support_chat_error_dismiss">Schließen</string>
+    <string name="ai_support_chat_error_title">Fehler</string>
+    <string name="ai_support_chat_input_hint">Gib eine Nachricht ein …</string>
+    <string name="ai_support_chat_greeting">Hallo! Ich bin dein Support-Bot für die mobile Woo-App. Gibt es etwas, bei dem ich dir heute helfen kann?</string>
+    <string name="ai_support_chat_history_default_title">Support-Unterhaltung</string>
+    <string name="ai_support_chat_history_delete_error">Der Chatverlauf konnte nicht gelöscht werden.</string>
+    <string name="ai_support_chat_history_load_error">Der Chatverlauf konnte nicht geladen werden.</string>
+    <string name="ai_support_chat_history_empty">Du hast noch nicht mit dem Support gechattet.</string>
+    <string name="ai_support_chat_history_title">Chat-Verlauf</string>
+    <string name="ai_support_chat_history_row_subtitle">Vergangene Support-Unterhaltungen erneut aufrufen</string>
+    <string name="ai_support_chat_history_row_title">Chat-Verlauf</string>
+    <string name="ai_support_chat_screen_title">Mit dem Support chatten</string>
+    <string name="ai_support_chat_help_row_title">Mit dem Support chatten</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Filtere nach Rezensionen mit oder unter der von dir gewählten Bewertung.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Nur Rezensionen mit schlechter Bewertung</string>
+    <string name="settings_notifs_new_reviews_all_description">Über jede Rezension benachrichtigen lassen.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Erhalte eine Benachrichtigung, wenn eine Rezension für deinen Shop hinterlassen wird.</string>
+    <string name="settings_notifs_new_orders_threshold">Mindestwert (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Bestellungen über %1$s</string>
+    <string name="settings_notifs_channel_disabled_subtitle">In den Geräteeinstellungen aktivieren</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Der Assistent konnte den Chat nach mehreren Schritten nicht abschließen.</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Beim Chat mit dem Assistenten ist etwas schiefgelaufen.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d Stern und darunter</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Es ist noch keine Bestätigung verfügbar. Bitte versuche es im Chat erneut.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Anfrage angehalten.</string>
     <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">Der Assistent konnte diese Anfrage nicht abschließen.</string>
@@ -121,7 +231,6 @@ Language: de
     <string name="woopos_tap_to_pay_promoted_image_description">Illustration von Tap to Pay auf dem Mobiltelefon</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Verwende dieses Gerät, um kontaktlose Kartenzahlungen zu akzeptieren.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to Pay</string>
-    <string name="woopos_payment_method_picker_dialog_title">Zahlungsmethode auswählen</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Bestellung als bezahlt markieren</string>
     <string name="woopos_payment_method_scan_to_pay_label">Zum Bezahlen scannen</string>
     <string name="woopos_payment_method_other_methods_label">Weitere Zahlungsmethoden</string>
@@ -138,13 +247,10 @@ Language: de
     <string name="ai_support_chat_connectivity_initial_message">Hilf mir, Probleme mit meiner Shop-Verbindung zu beheben.</string>
     <string name="ai_support_chat_diagnostics_status_failed">Fehlgeschlagen</string>
     <string name="ai_support_chat_diagnostics_status_passed">Bestanden</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Zahlungsmethode auswählen</string>
     <string name="ai_support_chat_diagnostics_status_running">Läuft</string>
     <string name="ai_support_chat_diagnostics_status_pending">Ausstehend</string>
     <string name="ai_support_chat_diagnostics_continue">Weiter zum Chat</string>
-    <string name="ai_support_chat_diagnostics_retry">Erneut versuchen</string>
-    <string name="ai_support_chat_diagnostics_failure">Einige Prüfungen sind fehlgeschlagen. Du kannst es erneut versuchen oder mit diesen Ergebnissen chatten.</string>
-    <string name="ai_support_chat_diagnostics_success">Diagnose abgeschlossen</string>
-    <string name="ai_support_chat_diagnostics_title">Dein Shop wird überprüft …</string>
     <string name="ai_support_chat_issue_other">Etwas anderes</string>
     <string name="ai_support_chat_issue_receiving_notifications">Ich erhalte keine Benachrichtigungen</string>
     <string name="ai_support_chat_issue_loading_analytics">Meine Analysen werden nicht geladen</string>
@@ -155,15 +261,8 @@ Language: de
     <string name="ai_support_chat_typing">Lass mich nachdenken …</string>
     <string name="ai_support_chat_send_error">Deine Nachricht kann nicht gesendet werden. Überprüfe deine Verbindung und versuche es noch einmal.</string>
     <string name="ai_support_chat_send">Senden</string>
-    <string name="ai_support_chat_input_hint">Nachricht zur KI-Problembehandlung</string>
-    <string name="ai_support_chat_greeting">Hallo! Sag mir, was mit deinem Shop passiert, und ich helfe dir bei der Fehlerbehebung.</string>
     <string name="ai_support_chat_placeholder">Demnächst verfügbar</string>
-    <string name="ai_support_chat_screen_title">KI-Problembehandlung</string>
     <string name="ai_support_chat_help_row_subtitle">Chatte mit unserem AI Assistant, um Shop-Probleme zu diagnostizieren</string>
-    <string name="ai_support_chat_help_row_title">KI-Problembehandlung</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Wähle die höchste Bewertung aus, bei der eine Benachrichtigung gesendet werden soll.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Kommentare bis zu einer Bewertung</string>
-    <string name="settings_notifs_new_reviews_all_description">Ping für jeden Kommentar, unabhängig von der Bewertung.</string>
     <string name="settings_notifs_stock_backorder_description">Wenn ein Kunde einen Artikel bestellt, der derzeit ausverkauft ist.</string>
     <string name="settings_notifs_stock_backorder_title">Lieferrückstand</string>
     <string name="settings_notifs_stock_out_of_stock_description">Wenn der Lagerbestand einer Produktvariante Null ist.</string>
@@ -171,16 +270,14 @@ Language: de
     <string name="settings_notifs_stock_low_stock_threshold_error">Der Schwellenwert für den gesamten Shop kann nicht geladen werden</string>
     <string name="settings_notifs_stock_low_stock_threshold_unavailable">Produkte können ihren eigenen Schwellenwert oder den Schwellenwert für den gesamten Shop verwenden. &lt;a href=\'\'&gt;Zeige den Schwellenwert für den gesamten Shop an&lt;/a&gt;, um den aktuellen Wert zu erhalten.</string>
     <string name="settings_notifs_new_reviews_all_title">Alle neuen Kommentare</string>
-    <string name="settings_notifs_new_reviews_enable_description">Erhalte eine Benachrichtigung, wenn jemand einen Kommentar zu einem deiner Produkte abgibt.</string>
     <string name="settings_notifs_stock_low_stock_threshold">Produkte können ihren eigenen Schwellenwert oder den Schwellenwert für den gesamten Shop &lt;b&gt;%1$s&lt;/b&gt; verwenden. &lt;a href=\'\'&gt;Schwellenwert für den gesamten Shop bearbeiten&lt;/a&gt;</string>
     <string name="settings_notifs_stock_low_stock_description">Wenn eine Produktvariante einen niedrigen Lagerbestand erreicht.</string>
     <string name="settings_notifs_stock_low_stock_title">Niedriger Lagerbestand</string>
     <string name="settings_notifs_stock_enable_title">Bestandsbenachrichtigungen aktivieren</string>
-    <string name="settings_notifs_new_orders_threshold">Schwellenwert (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">Filtere nach Bestellungen über deinem Schwellenwert.</string>
     <string name="settings_notifs_new_orders_high_value_title">Nur Bestellungen mit hohem Wert</string>
     <string name="settings_notifs_new_orders_all_description">Ping für jede Bestellung, unabhängig vom Wert.</string>
     <string name="settings_notifs_stock_enable_description">Erhalte eine Benachrichtigung, wenn Änderungen am Produktbestand deine Aufmerksamkeit erfordern.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filtere nach Bestellungen, die über deinem Mindestwert liegen.</string>
     <string name="settings_notifs_new_orders_all_title">Alle neuen Bestellungen</string>
     <string name="settings_notifs_notify_me_for">In diesen Fällen eine Benachrichtigung erhalten</string>
     <string name="settings_notifs_new_orders_enable_description">Erhalte eine Benachrichtigung, wenn eine Bestellung in deinem Shop aufgegeben wird.</string>
@@ -806,11 +903,9 @@ Language: de
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>
     <string name="woopos_scanning_setup_dialog_content_description">Einrichtungsdialog für Scanner</string>
     <string name="woopos_eligibility_screen_unable_to_load">Konnte nicht geladen werden</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">Das POS-System ist für die Währung deines Shops nicht verfügbar. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Im Vereinigten Königreich</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">In den Vereinigten Staaten von Amerika</string>
     <string name="woopos_eligibility_reason_check_connection">Überprüfe deine Internetverbindung und starte die App neu. Wenn das Problem weiterhin besteht, wende dich bitte an den Support.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Das POS-System ist für die Währung deines Shops nicht verfügbar. %1$s wird derzeit nur folgende Währung unterstützt: %2$s. Bitte überprüfe die Währungseinstellungen deines Shops oder kontaktiere den Support, um Hilfe zu erhalten.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Deine WooCommerce-Version wird nicht unterstützt. Das POS-System erfordert WooCommerce Version %1$s oder höher. Aktualisiere bitte auf die neueste Version von WooCommerce.</string>
     <string name="orderfilters_sales_channel_filter">Vertriebskanal</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
@@ -4097,8 +4192,6 @@ Language: de
         <item>Individuelles Paket</item>
         <item>Service-Paket</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d Sterne oder weniger</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d Stern oder weniger</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Teilsumme Artikel (%d Artikel)</item>
         <item quantity="other">Teilsumme Artikel (%d Artikel)</item>

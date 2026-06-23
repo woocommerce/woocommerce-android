@@ -247,6 +247,34 @@ class WooPosFileBasedSyncActionTest {
     }
 
     @Test
+    fun `given download is blocked by host, when syncCatalog, then returns catalog file blocked failure`() =
+        runTest {
+            // GIVEN
+            whenever(catalogFileDownloader.downloadCatalogFile(any(), any()))
+                .thenReturn(Result.failure(WooPosCatalogFileBlockedException()))
+
+            // WHEN
+            val result = sut.syncCatalog(site)
+
+            // THEN
+            val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+            assertThat(failure).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogFileBlocked::class.java)
+        }
+
+    @Test
+    fun `given download fails with transport error, when syncCatalog, then returns network error`() = runTest {
+        // GIVEN
+        givenFileDownloadFails("Download error")
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure).isInstanceOf(PosLocalCatalogSyncResult.Failure.NetworkError::class.java)
+    }
+
+    @Test
     fun `given file parsing fails, when syncCatalog, then returns failure`() = runTest {
         // GIVEN
         givenFileParseFails("Parse error")

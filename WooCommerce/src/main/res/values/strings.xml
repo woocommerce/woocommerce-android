@@ -304,6 +304,9 @@
     <string name="login_open_installation_page">Open installation page</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
+    <string name="login_site_info_fallback_dialog_title">Connection Issue</string>
+    <string name="login_site_info_fallback_dialog_message">We couldn\'t verify your site details. You can try logging in with your site credentials instead.</string>
+    <string name="login_site_info_fallback_dialog_cta">Log In with Site Credentials</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -1472,6 +1475,7 @@
     <string name="card_reader_tap_to_pay_not_available_error_android_version">To use Tap To Pay on Android, you need Android 10 or newer. To accept in-person payments, please update Android or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_gms">To use Tap To Pay on Android, your device needs Google Play Services. To accept in-person payments, please install Google Play Services or purchase a Bluetooth card reader.</string>
     <string name="card_reader_tap_to_pay_not_available_error_country">Unfortunately, Tap To Pay on Android is not available in your country yet. Stay tuned!</string>
+    <string name="card_reader_tap_to_pay_not_available_error_device">This device doesn\'t meet the security requirements for Tap to Pay on Android. To accept in-person payments, you can purchase a Bluetooth card reader.</string>
     <string name="card_reader_hub_payout_summary_available_funds">Available funds</string>
     <string name="card_reader_hub_payout_summary_pending_funds">Pending funds</string>
     <string name="card_reader_hub_payout_summary_funds_available_after_plural">Funds become available after pending for %d days.</string>
@@ -2302,16 +2306,17 @@
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
-    <!-- Empty order: try a test order -->
-    <string name="empty_order_test_order_message">Run a test order to ensure your WooCommerce process delivers a seamless customer experience</string>
-    <string name="empty_order_test_order_button">Try a test order</string>
+    <!-- Empty order: place your first order -->
+    <string name="empty_order_place_order_message">Run an order to ensure your WooCommerce process delivers a seamless customer experience</string>
+    <string name="empty_order_place_order_button">Place your first order</string>
 
-    <string name="try_test_order_heading">Try a test order</string>
+    <string name="place_first_order_heading">Place your first order</string>
+    <!-- Steps 1 and 3 keep their original keys: their copy is unchanged, so renaming would discard existing translations -->
     <string name="try_test_order_step_1">Tap the button below to be redirected to your online store via a web browser.</string>
-    <string name="try_test_order_step_2">Select your test product, add to cart, and complete checkout on that web store as a real customer.</string>
+    <string name="place_first_order_step_2">Select your product, add to cart, and complete checkout on that web store as a real customer.</string>
     <string name="try_test_order_step_3">Complete the payment and await a push notification about the order on your WooCommerce app.</string>
-    <string name="try_test_order_step_4">Use the app to process the refund for the test order</string>
-    <string name="try_test_order_button">Start test order</string>
+    <string name="place_first_order_step_4">Use the app to process the refund for the order. &lt;a href=\'processingFees\'&gt;&lt;u&gt;Processing fees aren\'t refundable&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="place_first_order_button">Place order</string>
     <!--
         Settings
     -->
@@ -2398,6 +2403,8 @@
     <string name="settings_notifs_new_orders_threshold">Minimum value (%1$s)</string>
     <string name="settings_notifs_stock">Stock</string>
     <string name="settings_notifs_stock_subtitle">All stock alerts</string>
+    <string name="settings_notifs_stock_no_alerts_subtitle">No alerts</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s and %2$s</string>
     <string name="settings_notifs_stock_enable_title">Enable stock notifications</string>
     <string name="settings_notifs_stock_enable_description">Get notified when product stock changes need your attention.</string>
     <string name="settings_notifs_stock_low_stock_title">Low stock</string>
@@ -3837,8 +3844,11 @@
     <string name="woopos_home_syncing_catalog_subtitle">You can leave and syncing will continue in the background.</string>
     <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_blocked_title">Action needed on your store</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_server_permissions_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
+    <string name="woopos_home_sync_failed_blocked_continue_button">Got it</string>
     <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
@@ -3929,7 +3939,9 @@
     <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_title">Action needed on your store</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_blocked_message">Point of Sale can\'t access a file with your product information because your hosting provider is blocking it. Please ask them to allow access to it so Point of Sale keeps working properly.</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
@@ -4167,6 +4179,7 @@
     <string name="woopos_refund_back_to_order_button">Back to order</string>
     <string name="woopos_orders_refund_complete">Refund complete</string>
     <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
+    <string name="woopos_orders_details_refresh_error">Couldn\'t refresh the order. Please check your connection and try again.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>

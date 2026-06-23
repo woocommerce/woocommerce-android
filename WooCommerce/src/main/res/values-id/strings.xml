@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 09:58:25+0000
+Translation-Revision-Date: 2026-06-12 08:06:16+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Tidak ada pemberitahuan</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s dan %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">Bintang %1$d atau kurang</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Perbarui variasi %1$s (#%2$s) untuk produk #%3$s</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Pelanggan #%1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Tamu</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan #%1$s (%2$s): mengirim email ke pelanggan</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Perbarui pesanan #%1$s (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">Deskripsi maksimal %1$s karakter.</string>
+    <string name="woopos_totals_success_payment_external">Pesanan %1$s ditandai selesai.</string>
+    <string name="woopos_totals_success_payment_qr">Pembayaran %1$s berhasil diterima.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Tambah kupon</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Latar belakang diredupkan. Ketuk untuk menutup pemilih metode pembayaran.</string>
+    <string name="woopos_scan_to_pay_order_note">Pelanggan membayar melalui Pindai untuk Membayar</string>
+    <string name="woopos_scan_to_pay_cancel">Batalkan</string>
+    <string name="woopos_scan_to_pay_retry">Coba lagi</string>
+    <string name="woopos_scan_to_pay_error_message">Kami tidak dapat menyiapkan pembayaran. Coba lagi.</string>
+    <string name="woopos_scan_to_pay_total">Total pesanan: %1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">Tampilkan kode ini kepada pelanggan agar dapat membayar dari ponsel.</string>
+    <string name="woopos_scan_to_pay_title">Pindai untuk membayar</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Pesanan tidak dapat dimuat. Silakan kembali dan coba lagi.</string>
+    <string name="woopos_mark_order_as_paid_error_message">Tidak dapat memperbarui pesanan. Coba lagi.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Tandai sebagai dibayar</string>
+    <string name="woopos_mark_order_as_paid_note_hint">mis. Transfer bank dari Maria, ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Ini akan menandai pesanan %1$s selesai. Hanya gunakan ini jika Anda telah menerima pembayaran dengan cara lain.</string>
+    <string name="woopos_mark_order_as_paid_title">Tandai pesanan sebagai dibayar?</string>
+    <string name="woopos_custom_amount_dialog_cancel">Batalkan</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Perbarui jumlah kustom</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Tambahkan jumlah kustom</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Kenakan pajak</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Jumlah kustom</string>
+    <string name="woopos_custom_amount_dialog_name_label">Nama</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Jumlah</string>
+    <string name="woopos_custom_amount_form_title">Jumlah kustom</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Sunting jumlah kustom</string>
+    <string name="woopos_custom_amount_dialog_title_add">Tambahkan jumlah kustom</string>
+    <string name="woopos_custom_amount_entry_subtitle">Tambahkan biaya satu kali</string>
+    <string name="woopos_custom_amount_entry_title">Jumlah kustom</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Hapus</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Sunting</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Termasuk pajak</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Sunting %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Jumlah kustom %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">Tidak membantu</string>
+    <string name="ai_support_chat_feedback_helpful">Membantu</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">Kami tidak dapat memeriksa pendaftaran pemberitahuan push Anda.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Perangkat ini tidak terdaftar untuk menerima pemberitahuan push di toko Anda.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">Kami tidak dapat menemukan token pemberitahuan push untuk perangkat ini.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Pemberitahuan diblokir di pengaturan Android.\n\nAktifkan pemberitahuan untuk WooCommerce, lalu kembali ke sini untuk melanjutkan.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">Kami tidak dapat memeriksa pengaturan analitik.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics tidak diaktifkan di toko Anda.\n\nData analitik seperti statistik pendapatan dan pesanan tidak akan tersedia sebelum diaktifkan.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Terjadi masalah dengan koneksi Jetpack Anda.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">Kami tidak dapat menangani respons situs Anda.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">Kami tidak dapat menyambungkan ke WordPress.com saat ini.\n\nCoba lagi dalam beberapa menit.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Memeriksa pendaftaran push</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Memeriksa token pemberitahuan push</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Memeriksa saluran pemberitahuan</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Memeriksa pengaturan pemberitahuan aplikasi</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Memeriksa izin pemberitahuan</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Memeriksa pengaturan analitik</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Jalankan Pemeriksaan Lagi</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Mendaftarkan pemberitahuan…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Mengaktifkan Analytics…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Daftarkan Pemberitahuan</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Buka Pengaturan Pemberitahuan</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Aktifkan Analytics</string>
+    <string name="ai_support_chat_diagnostics_success">Semua pemeriksaan selesai tanpa kendala</string>
+    <string name="ai_support_chat_resolved_prompt">Harap tandai obrolan selesai jika masalah Anda teratasi, atau tinggalkan pesan jika ada pertanyaan lain.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Permintaan Bantuan Plugin</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">Permintaan Bantuan Plugin WooCommerce</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">Permintaan Bantuan WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Permintaan Bantuan Pembaca Kartu</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Permintaan Bantuan Aplikasi Seluler</string>
+    <string name="ai_support_chat_escalation_transcript_header">Berikut adalah transkrip sesi obrolan dukungan AI dalam aplikasi:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Formulir Kontak</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Kirim Permintaan</string>
+    <string name="ai_support_chat_escalation_consent_message">Kami bisa membuatkan permintaan bantuan berdasarkan transkrip obrolan ini, atau Anda bisa membuka formulir kontak dan memasukkan detailnya sendiri.</string>
+    <string name="ai_support_chat_escalation_consent_title">Kirim obrolan ini ke dukungan?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">Tindakan ini akan menutup tindakan obrolan untuk percakapan ini.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Tandai obrolan selesai?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Batalkan</string>
+    <string name="ai_support_chat_mark_resolved">Tandai Selesai</string>
+    <string name="ai_support_chat_toolbar_contact_support">Hubungi Dukungan</string>
+    <string name="ai_support_chat_resolved_message">Obrolan ini telah ditandai selesai.</string>
+    <string name="ai_support_chat_ticket_created_message">Tiket dukungan telah dibuat untuk obrolan ini. Kami akan menanggapinya melalui email.</string>
+    <string name="ai_support_chat_contact_support">Hubungi Dukungan</string>
+    <string name="ai_support_chat_human_support_message">Sepertinya Anda perlu bantuan tambahan. Ingin menghubungi tim dukungan?</string>
+    <string name="ai_support_chat_suggested_fix_error">Tidak dapat menerapkan perbaikan ini. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="ai_support_chat_load_history_error">Tidak dapat memuat obrolan ini. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="ai_support_chat_error_dismiss">Tutup</string>
+    <string name="ai_support_chat_error_title">Error</string>
+    <string name="ai_support_chat_input_hint">Ketik pesan…</string>
+    <string name="ai_support_chat_greeting">Halo! Saya adalah Bot Dukungan Seluler Woo Anda. Ada yang bisa saya bantu hari ini?</string>
+    <string name="ai_support_chat_history_default_title">Percakapan dukungan</string>
+    <string name="ai_support_chat_history_delete_error">Tidak dapat menghapus riwayat obrolan.</string>
+    <string name="ai_support_chat_history_load_error">Tidak dapat memuat riwayat obrolan.</string>
+    <string name="ai_support_chat_history_empty">Anda belum mengobrol dengan dukungan.</string>
+    <string name="ai_support_chat_history_title">Riwayat obrolan</string>
+    <string name="ai_support_chat_history_row_subtitle">Buka percakapan dukungan lama</string>
+    <string name="ai_support_chat_history_row_title">Riwayat obrolan</string>
+    <string name="ai_support_chat_screen_title">Mengobrol dengan dukungan</string>
+    <string name="ai_support_chat_help_row_title">Mengobrol dengan dukungan</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Saring ulasan dengan rating di atas atau di bawah rating terpilih.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Hanya ulasan dengan rating rendah</string>
+    <string name="settings_notifs_new_reviews_all_description">Ping untuk tiap ulasan.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Dapatkan pemberitahuan saat ada ulasan baru untuk toko Anda.</string>
+    <string name="settings_notifs_new_orders_threshold">Nilai minimal (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Pesanan di atas %1$s</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Aktifkan di pengaturan perangkat</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Ada yang tidak beres saat asisten bekerja.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">Asisten tidak dapat menyelesaikan setelah beberapa langkah.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">Bintang %1$d atau kurang</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">Konfirmasi belum tersedia. Silakan coba lagi dari obrolan.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Permintaan dihentikan.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Saya tidak yakin apakah perubahan itu diterapkan. Lakukan verifikasi di toko Anda sebelum mencoba yang lainnya.</string>
@@ -121,7 +231,6 @@ Language: id
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Bayar dengan Ketuk untuk Bayar</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Gunakan perangkat ini untuk menerima pembayaran menggunakan kartu nirsentuh.</string>
     <string name="woopos_tap_to_pay_promoted_title">Ketuk untuk bayar</string>
-    <string name="woopos_payment_method_picker_dialog_title">Pilih cara pembayaran</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Tandai sebagai dibayar</string>
     <string name="woopos_payment_method_scan_to_pay_label">Pindai untuk membayar</string>
     <string name="woopos_payment_method_other_methods_label">Metode pembayaran lain</string>
@@ -138,13 +247,10 @@ Language: id
     <string name="ai_support_chat_connectivity_initial_message">Bantu saya memecahkan masalah sambungan toko.</string>
     <string name="ai_support_chat_diagnostics_status_failed">Gagal</string>
     <string name="ai_support_chat_diagnostics_status_passed">Lolos</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Pilih metode pembayaran</string>
     <string name="ai_support_chat_diagnostics_status_running">Menjalankan</string>
     <string name="ai_support_chat_diagnostics_status_pending">Tertunda</string>
     <string name="ai_support_chat_diagnostics_continue">Lanjutkan ke Obrolan</string>
-    <string name="ai_support_chat_diagnostics_retry">Coba lagi</string>
-    <string name="ai_support_chat_diagnostics_failure">Beberapa pemeriksaan gagal. Anda dapat mencoba lagi atau terus mengobrol dengan hasil ini.</string>
-    <string name="ai_support_chat_diagnostics_success">Diagnostik selesai</string>
-    <string name="ai_support_chat_diagnostics_title">Memeriksa toko Anda…</string>
     <string name="ai_support_chat_issue_other">Hal Lainnya</string>
     <string name="ai_support_chat_issue_receiving_notifications">Saya tidak menerima pemberitahuan</string>
     <string name="ai_support_chat_issue_loading_analytics">Analitik saya tidak dimuat</string>
@@ -155,17 +261,9 @@ Language: id
     <string name="ai_support_chat_typing">Berpikir…</string>
     <string name="ai_support_chat_send_error">Tidak dapat mengirim pesan. Periksa koneksi Anda dan coba lagi.</string>
     <string name="ai_support_chat_send">Kirim</string>
-    <string name="ai_support_chat_input_hint">Pesan Pemecahan Masalah AI</string>
-    <string name="ai_support_chat_greeting">Hai! Ceritakan apa yang terjadi pada toko Anda, dan saya akan membantu memecahkan masalahnya.</string>
     <string name="ai_support_chat_placeholder">Segera hadir</string>
-    <string name="ai_support_chat_screen_title">Pemecahan masalah AI</string>
     <string name="ai_support_chat_help_row_subtitle">Hubungi asisten AI kami untuk mendiagnosis masalah toko</string>
-    <string name="ai_support_chat_help_row_title">Pemecahan masalah AI</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Pilih peringkat tertinggi yang akan dikirimi pemberitahuan.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Ulasan hingga rating</string>
-    <string name="settings_notifs_new_reviews_all_description">Ping untuk setiap ulasan, apa pun rating-nya.</string>
     <string name="settings_notifs_new_reviews_all_title">Semua ulasan baru</string>
-    <string name="settings_notifs_new_reviews_enable_description">Dapatkan pemberitahuan saat ada yang meninggalkan ulasan untuk salah satu produk Anda.</string>
     <string name="settings_notifs_stock_backorder_description">Saat pelanggan memesan item yang saat ini tidak tersedia.</string>
     <string name="settings_notifs_stock_backorder_title">Dalam order tunda</string>
     <string name="settings_notifs_stock_out_of_stock_description">Jika varian produk mencapai nol.</string>
@@ -177,10 +275,9 @@ Language: id
     <string name="settings_notifs_stock_low_stock_title">Stok menipis</string>
     <string name="settings_notifs_stock_enable_description">Dapatkan pemberitahuan saat ada perubahan stok produk yang perlu Anda perhatikan.</string>
     <string name="settings_notifs_stock_enable_title">Aktifkan notifikasi stok rendah</string>
-    <string name="settings_notifs_new_orders_threshold">Ambang batas (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">Saring ke pesanan di atas ambang batas Anda.</string>
     <string name="settings_notifs_new_orders_high_value_title">Hanya pesanan bernilai tinggi</string>
     <string name="settings_notifs_new_orders_all_description">Ping untuk semua pesanan, berapa pun nilainya.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Saring pesanan di atas nilai minimum.</string>
     <string name="settings_notifs_new_orders_all_title">Semua pesanan baru</string>
     <string name="settings_notifs_notify_me_for">Beri tahu saya untuk</string>
     <string name="settings_notifs_new_orders_enable_description">Dapatkan pemberitahuan saat ada pesanan di toko Anda.</string>
@@ -807,8 +904,6 @@ Language: id
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Britania Raya</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Amerika Serikat</string>
     <string name="woopos_eligibility_screen_unable_to_load">Tidak dapat memuat</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">Sistem POS tidak tersedia untuk mata uang toko Anda. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Sistem POS tidak tersedia untuk mata uang toko Anda. Di %1$s, saat ini hanya mendukung %2$s. Harap periksa pengaturan mata uang toko Anda atau hubungi bagian dukungan untuk mendapatkan bantuan.</string>
     <string name="woopos_eligibility_reason_check_connection">Periksa sambungan internet, lalu coba luncurkan ulang aplikasi. Jika kendala ini terus berlanjut, hubungi bagian dukungan.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Versi WooCommerce Anda tidak didukung. Sistem POS memerlukan WooCommerce versi %1$s atau yang lebih tinggi. Harap perbarui WooCommerce dengan versi terbaru.</string>
     <string name="orderfilters_sales_channel_filter">Kanal Penjualan</string>
@@ -4096,8 +4191,6 @@ Language: id
         <item>Paket khusus</item>
         <item>Paket layanan</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d bintang atau di bawahnya</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d bintang atau di bawahnya</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="other">Subtotal item (%d item)</item>
     </plurals>

@@ -121,6 +121,7 @@ class LoginActivity :
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
         private const val JETPACK_CONNECTED_REDIRECT_URL = "woocommerce://jetpack-connected"
         private const val APPLICATION_PASSWORD_LOGIN_ZENDESK_TAG = "application_password_login_error"
+        private val PROTOCOL_REGEX = Regex("^(http[s]?://)", IGNORE_CASE)
 
         private const val KEY_UNIFIED_TRACKER_SOURCE = "KEY_UNIFIED_TRACKER_SOURCE"
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
@@ -415,11 +416,16 @@ class LoginActivity :
     }
 
     override fun onPrimaryButtonClicked() {
-        disableDynamicEdgeToEdge()
         if (qrLoginAvailability.isAvailable()) {
+            // The QR login prologue is itself an edge-to-edge screen, so keep edge-to-edge enabled
+            // through the transition. Disabling it here would re-apply the system bar insets to the
+            // shared root while the prologue is still visible, briefly shifting the content and
+            // flashing the white window background before the QR prologue re-enables edge-to-edge.
             unifiedLoginTracker.trackClick(Click.LOGIN_WITH_QR)
             showQrLoginPrologueFragment()
         } else {
+            // The site address login screen is not edge-to-edge, so restore the default window insets.
+            disableDynamicEdgeToEdge()
             unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
             loginViaSiteAddress()
         }
@@ -696,8 +702,7 @@ class LoginActivity :
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
         // not needed and may cause issues when attempting to match the url to the authenticated account later
         // in the login process.
-        val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
-        val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
+        val siteAddressClean = inputSiteAddress.replaceFirst(PROTOCOL_REGEX, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
         if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
             showEmailLoginScreen(null)
@@ -723,6 +728,8 @@ class LoginActivity :
     override fun loginViaSiteCredentials(inputSiteAddress: String?) {
         // hide the keyboard
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+
+        inputSiteAddress?.let { appPrefsWrapper.setLoginSiteAddress(it.replaceFirst(PROTOCOL_REGEX, "")) }
 
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
 
@@ -1039,10 +1046,11 @@ class LoginActivity :
      * Allows for special handling of errors that come up during the login by address: check site address.
      */
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
-        if (!siteInfo.isWordPress) {
-            // hide the keyboard
-            org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
-
+        org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
+        if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
+            LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)
+                .show(LoginSiteInfoFallbackDialogFragment.TAG)
+        } else if (!siteInfo.isWordPress) {
             // show the "not WordPress error" screen
             LoginNotWPDialogFragment().show(LoginNotWPDialogFragment.TAG)
         } else {

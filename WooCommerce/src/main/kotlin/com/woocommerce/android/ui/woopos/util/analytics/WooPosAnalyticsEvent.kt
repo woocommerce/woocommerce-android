@@ -924,6 +924,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "woocommerce_version_sunset_warning_dismissed"
         }
 
+        data class LocalCatalogBlockedFellBackToRemote(val wooCommerceVersion: String?) : Event() {
+            override val name: String = "local_catalog_blocked_fell_back_to_remote"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "woocommerce_version" to wooCommerceVersion.orEmpty()
+                    )
+                )
+            }
+        }
+
+        data object CatalogBlockedContinueWithBasicSyncTapped : Event() {
+            override val name: String = "catalog_blocked_continue_with_basic_sync_tapped"
+        }
+
         data object SplashScreenErrorShown : Event() {
             override val name: String = "splash_screen_error_shown"
         }

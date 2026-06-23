@@ -1,13 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-19 11:54:18+0000
+Translation-Revision-Date: 2026-06-12 08:07:38+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">Nessun avviso</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s e %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d stelle o meno</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Aggiorna variante %1$s (#%2$s) per il prodotto #%3$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Ospite</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">Aggiorna ordine #%1$s (%2$s): invia e-mail al cliente</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Cliente n. %1$s</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Aggiorna ordine #%1$s (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">La descrizione deve contenere al massimo %1$s caratteri.</string>
+    <string name="woopos_totals_success_payment_qr">Un pagamento di %1$s è stato ricevuto correttamente.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">Aggiungi codice promozionale</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Sfondo oscurato. Tocca per ignorare la selezione del metodo di pagamento.</string>
+    <string name="woopos_totals_success_payment_external">L\'ordine di %1$s è stato contrassegnato come completo.</string>
+    <string name="woopos_scan_to_pay_order_note">Il cliente ha pagato tramite Scan to Pay</string>
+    <string name="woopos_scan_to_pay_cancel">Annulla</string>
+    <string name="woopos_scan_to_pay_retry">Riprova</string>
+    <string name="woopos_scan_to_pay_error_message">Impossibile preparare il pagamento. Riprova.</string>
+    <string name="woopos_scan_to_pay_subtitle">Mostra questo codice al cliente per permettergli di pagare dal telefono.</string>
+    <string name="woopos_scan_to_pay_title">Scansiona per pagare</string>
+    <string name="woopos_scan_to_pay_total">Totale ordine: %1$s</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">Impossibile caricare l\'ordine. Torna indietro e riprova.</string>
+    <string name="woopos_mark_order_as_paid_error_message">Impossibile aggiornare l\'ordine. Riprova.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">Contrassegna come Pagato</string>
+    <string name="woopos_custom_amount_dialog_cancel">Annulla</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">Aggiorna importo personalizzato</string>
+    <string name="woopos_custom_amount_dialog_submit_add">Aggiungi importo personalizzato</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">Modifica le imposte</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">Importo personalizzato</string>
+    <string name="woopos_custom_amount_dialog_name_label">Nome</string>
+    <string name="woopos_custom_amount_dialog_amount_label">Importo</string>
+    <string name="woopos_custom_amount_form_title">Importo personalizzato</string>
+    <string name="woopos_custom_amount_dialog_title_edit">Modifica importo personalizzato</string>
+    <string name="woopos_custom_amount_dialog_title_add">Aggiungi importo personalizzato</string>
+    <string name="woopos_custom_amount_entry_subtitle">Aggiungi un addebito una tantum</string>
+    <string name="woopos_custom_amount_entry_title">Importo personalizzato</string>
+    <string name="woopos_cart_custom_amount_menu_remove">Rimuovi</string>
+    <string name="woopos_cart_custom_amount_menu_edit">Modifica</string>
+    <string name="woopos_mark_order_as_paid_note_hint">ad es., bonifico bancario da Maria, rif. 4827</string>
+    <string name="woopos_mark_order_as_paid_message">Questo contrassegnerà l\'ordine %1$s come completato. Usa questa opzione solo se hai già ricevuto il pagamento in un altro modo.</string>
+    <string name="woopos_mark_order_as_paid_title">Contrassegnare l\'ordine come Pagato?</string>
+    <string name="woopos_cart_custom_amount_includes_tax">Tasse incluse</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">Modifica %s</string>
+    <string name="ai_support_chat_feedback_helpful">Utile</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">Impossibile controllare la registrazione della notifica push.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">Questo dispositivo non è registrato per ricevere notifiche push per il tuo negozio.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">Impossibile trovare un token di notifica push per questo dispositivo.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">Le notifiche sono bloccate nelle impostazioni di Android.\n\nAttiva le notifiche per WooCommerce, quindi torna qui per continuare.</string>
+    <string name="woopos_cart_item_custom_amount_content_description">Importo personalizzato %1$s, %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">Non utile</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">Impossibile controllare le impostazioni di analisi.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">Si è verificato un problema con la connessione Jetpack.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">Non è possibile lavorare correttamente con la risposta del sito.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">Non è possibile connettersi a WordPress.com al momento.\n\nRiprova tra alcuni minuti.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">WooCommerce Analytics non è abilitato nel tuo negozio.\n\nI dati analitici come le statistiche sui ricavi e sugli ordini non saranno disponibili finché non saranno attivati.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">Verifica della registrazione push</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">Verifica del token di notifica push</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">Verifica dei canali di notifica</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">Verifica dell\'autorizzazione per le notifiche</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">Impostazioni di notifica dell\'app</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">Verifica dell\'impostazione delle analisi</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">Registrazione delle notifiche in corso…</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">Esegui di nuovo le verifiche</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">Attivazione di Analytics…</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">Apri impostazioni di notifica</string>
+    <string name="ai_support_chat_diagnostics_success">Tutte le verifiche sono state completate senza problemi</string>
+    <string name="ai_support_chat_resolved_prompt">Contrassegna la chat come risolta se il problema è risolto o lascia un messaggio se hai altre domande.</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">Richiesta di supporto per il plugin WooCommerce</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">Registra notifiche</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">Attiva Analytics</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">Richiesta di supporto per plugin</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">Richiesta di supporto WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">Richiesta di supporto per il lettore di carte</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">Richiesta di supporto per app mobili</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">Modulo di contatto</string>
+    <string name="ai_support_chat_escalation_consent_send_request">Invia la richiesta</string>
+    <string name="ai_support_chat_escalation_consent_message">Possiamo creare una richiesta di supporto usando questa trascrizione della chat, oppure puoi aprire il modulo di contatto e inserire tu stesso i dettagli.</string>
+    <string name="ai_support_chat_escalation_transcript_header">Di seguito è riportata la trascrizione di una sessione di chat di supporto AI in-app:</string>
+    <string name="ai_support_chat_escalation_consent_title">Inviare questa chat al supporto?</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">In questo modo verranno chiuse le azioni della chat per questa conversazione.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">Contrassegnare la chat come risolta?</string>
+    <string name="ai_support_chat_mark_resolved_cancel">Annulla</string>
+    <string name="ai_support_chat_toolbar_contact_support">Contatta il supporto</string>
+    <string name="ai_support_chat_resolved_message">Questa chat è stata contrassegnata come risolta.</string>
+    <string name="ai_support_chat_ticket_created_message">È stato creato un ticket di supporto per questa chat. Risponderemo via e-mail.</string>
+    <string name="ai_support_chat_contact_support">Contatta il supporto</string>
+    <string name="ai_support_chat_human_support_message">Sembra che tu abbia bisogno di ulteriore aiuto. Vuoi contattare il nostro team di supporto?</string>
+    <string name="ai_support_chat_suggested_fix_error">Impossibile applicare questa correzione. Controlla la connessione e riprova.</string>
+    <string name="ai_support_chat_mark_resolved">Contrassegna come risolta</string>
+    <string name="ai_support_chat_load_history_error">Impossibile caricare questa chat. Controlla la connessione e riprova.</string>
+    <string name="ai_support_chat_error_dismiss">Ignora</string>
+    <string name="ai_support_chat_error_title">Errore</string>
+    <string name="ai_support_chat_input_hint">Invia un messaggio …</string>
+    <string name="ai_support_chat_greeting">Ciao! Sono il tuo bot di supporto Woo Mobile. C\'è qualcosa con cui posso aiutarti oggi?</string>
+    <string name="ai_support_chat_history_default_title">Conversazione di supporto</string>
+    <string name="ai_support_chat_history_delete_error">Impossibile eliminare la cronologia della chat.</string>
+    <string name="ai_support_chat_history_load_error">Impossibile caricare la cronologia della chat.</string>
+    <string name="ai_support_chat_history_empty">Non hai ancora parlato con il supporto.</string>
+    <string name="ai_support_chat_history_title">Cronologia della chat</string>
+    <string name="ai_support_chat_history_row_subtitle">Rivedi le conversazioni di supporto passate</string>
+    <string name="ai_support_chat_history_row_title">Cronologia della chat</string>
+    <string name="ai_support_chat_screen_title">Chat con il supporto</string>
+    <string name="ai_support_chat_help_row_title">Chat con il supporto</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">Solo recensioni con valutazioni basse</string>
+    <string name="settings_notifs_new_reviews_all_description">Ping per ogni recensione.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">Filtra per mostrare le recensioni con valutazione pari o inferiore a quella scelta.</string>
+    <string name="settings_notifs_new_reviews_enable_description">Ricevi una notifica ogni volta che viene lasciata una recensione per il tuo negozio.</string>
+    <string name="settings_notifs_new_orders_threshold">Valore minimo (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">Ordini superiori a %1$s</string>
+    <string name="settings_notifs_channel_disabled_subtitle">Attiva nelle impostazioni del dispositivo</string>
     <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">Si è verificato un errore durante l\'attività dell\'assistente.</string>
     <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">L\'assistente non è riuscito a completare l\'operazione dopo diversi passaggi.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d stella o meno</string>
     <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">La conferma non è ancora disponibile. Riprova dalla chat.</string>
     <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">Richiesta interrotta.</string>
     <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">Non sono sicuro che la modifica sia stata applicata. Verifica nel tuo negozio prima di procedere con altre operazioni.</string>
@@ -120,7 +230,6 @@ Language: it
     <string name="woopos_tap_to_pay_promoted_cta_button_label">Paga con Tocca per pagare</string>
     <string name="woopos_tap_to_pay_promoted_subtitle">Usa questo dispositivo per accettare pagamenti con carta contactless.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tocca per pagare</string>
-    <string name="woopos_payment_method_picker_dialog_title">Scegli metodo di pagamento</string>
     <string name="woopos_payment_method_mark_order_as_paid_label">Contrassegna ordine come pagato</string>
     <string name="woopos_payment_method_scan_to_pay_label">Scansiona per pagare</string>
     <string name="woopos_payment_method_other_methods_label">Altri metodi di pagamento</string>
@@ -137,13 +246,10 @@ Language: it
     <string name="ai_support_chat_connectivity_initial_message">Aiutami a risolvere i problemi di connessione del negozio.</string>
     <string name="ai_support_chat_diagnostics_status_failed">Non riuscito</string>
     <string name="ai_support_chat_diagnostics_status_passed">Passato</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">Scegli il metodo di pagamento</string>
     <string name="ai_support_chat_diagnostics_status_running">Corsa</string>
     <string name="ai_support_chat_diagnostics_status_pending">In sospeso</string>
     <string name="ai_support_chat_diagnostics_continue">Continua alla chat</string>
-    <string name="ai_support_chat_diagnostics_retry">Riprova</string>
-    <string name="ai_support_chat_diagnostics_failure">Alcuni controlli non sono andati a buon fine. Puoi riprovare o continuare la chat con questi risultati.</string>
-    <string name="ai_support_chat_diagnostics_success">Diagnostica completata</string>
-    <string name="ai_support_chat_diagnostics_title">Controllo del negozio…</string>
     <string name="ai_support_chat_issue_other">Altro</string>
     <string name="ai_support_chat_issue_receiving_notifications">Non ricevo notifiche</string>
     <string name="ai_support_chat_issue_loading_analytics">Le statistiche non si caricano</string>
@@ -154,17 +260,9 @@ Language: it
     <string name="ai_support_chat_typing">Sto pensando…</string>
     <string name="ai_support_chat_send_error">Impossibile inviare il tuo messaggio. Controlla la connessione e riprova.</string>
     <string name="ai_support_chat_send">Invia</string>
-    <string name="ai_support_chat_input_hint">Invia un messaggio per la risoluzione dei problemi con IA</string>
-    <string name="ai_support_chat_greeting">Ciao! Spiegami cosa succede al tuo negozio e ti aiuterò a risolvere il problema.</string>
     <string name="ai_support_chat_placeholder">Presto disponibile</string>
-    <string name="ai_support_chat_screen_title">Risoluzione dei problemi IA</string>
     <string name="ai_support_chat_help_row_subtitle">Chatta con l\'assistente IA per diagnosticare i problemi del negozio</string>
-    <string name="ai_support_chat_help_row_title">Risoluzione dei problemi IA</string>
-    <string name="settings_notifs_new_reviews_rating_filter_description">Scegli la valutazione massima per la quale desideri ricevere una notifica.</string>
-    <string name="settings_notifs_new_reviews_rating_filter_title">Recensioni fino a una determinata valutazione</string>
-    <string name="settings_notifs_new_reviews_all_description">Ricevi una notifica per ogni recensione, indipendentemente dal punteggio.</string>
     <string name="settings_notifs_new_reviews_all_title">Tutte le nuove recensioni</string>
-    <string name="settings_notifs_new_reviews_enable_description">Ricevi una notifica quando qualcuno lascia una recensione su uno dei tuoi prodotti.</string>
     <string name="settings_notifs_stock_backorder_description">Quando un cliente ordina un articolo attualmente esaurito.</string>
     <string name="settings_notifs_stock_backorder_title">Ordine arretrato</string>
     <string name="settings_notifs_stock_out_of_stock_description">Quando una variante di prodotto arriva a zero.</string>
@@ -176,10 +274,9 @@ Language: it
     <string name="settings_notifs_stock_low_stock_title">In esaurimento</string>
     <string name="settings_notifs_stock_enable_description">Ricevi una notifica quando le variazioni dell\'inventario richiedono attenzione.</string>
     <string name="settings_notifs_stock_enable_title">Abilita le notifiche di disponibilità</string>
-    <string name="settings_notifs_new_orders_threshold">Soglia (%1$s)</string>
-    <string name="settings_notifs_new_orders_high_value_description">Filtra per ordini superiori alla soglia impostata.</string>
     <string name="settings_notifs_new_orders_high_value_title">Solo ordini di valore elevato</string>
     <string name="settings_notifs_new_orders_all_description">Ricevi una notifica per ogni ordine, indipendentemente dal valore.</string>
+    <string name="settings_notifs_new_orders_high_value_description">Filtra gli ordini al di sopra del valore minimo impostato.</string>
     <string name="settings_notifs_new_orders_all_title">Tutti i nuovi ordini</string>
     <string name="settings_notifs_notify_me_for">Inviami notifiche per</string>
     <string name="settings_notifs_new_orders_enable_description">Ricevi una notifica quando viene effettuato un ordine nel tuo negozio.</string>
@@ -807,8 +904,6 @@ Language: it
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">Nel Regno Unito</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">Negli Stati Uniti</string>
     <string name="woopos_eligibility_screen_unable_to_load">Impossibile caricare</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">Il sistema POS non è disponibile per la valuta del tuo negozio. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">Il sistema POS non è disponibile per la valuta del tuo negozio. %1$s, l\'unica valuta al momento supportata è %2$s. Controlla le impostazioni della valuta del negozio o contatta il supporto per ricevere assistenza.</string>
     <string name="woopos_eligibility_reason_check_connection">Controlla la connessione a Internet e prova a riavviare l\'app. Se il problema persiste, contatta il supporto.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">La tua versione di WooCommerce non è supportata. Il sistema POS richiede la versione %1$s di WooCommerce o successiva. Effettua l\'aggiornamento alla versione più recente di WooCommerce.</string>
     <string name="orderfilters_sales_channel_filter">Canale di vendita</string>
@@ -4096,8 +4191,6 @@ Language: it
         <item>Pacchetto personalizzato</item>
         <item>Pacchetto del servizio</item>
     </string-array>
-    <string name="settings_notifs_new_reviews_selected_rating">%1$d stelle o meno</string>
-    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d stella o meno</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Subtotale elementi (%d elemento)</item>
         <item quantity="other">Subtotale elementi: (%d elementi)</item>
