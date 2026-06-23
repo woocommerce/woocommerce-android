@@ -53,7 +53,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
         ) : WooPosFileBasedSyncResult()
     }
 
-    suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
+    suspend fun syncCatalog(site: SiteModel, force: Boolean = false): WooPosFileBasedSyncResult {
         _syncState.value = null
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
@@ -64,12 +64,13 @@ class WooPosFileBasedSyncAction @Inject constructor(
         var failedConsecutiveAttempts = 0
         var pollsSinceLastStateChange = 0
         var totalAttempts = 0
+        var forceGeneration = force
 
         while (pollsSinceLastStateChange < MAX_POLL_ATTEMPTS) {
             delayBeforeNextPoll(totalAttempts, pollsSinceLastStateChange)
             totalAttempts++
 
-            val response = posLocalCatalogStore.generateCatalogOrGetStatus(site)
+            val response = posLocalCatalogStore.generateCatalogOrGetStatus(site, force = forceGeneration)
 
             if (response.isFailure) {
                 if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
@@ -87,6 +88,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 }
             }
             failedConsecutiveAttempts = 0
+            forceGeneration = false
 
             val result = response.getOrThrow()
             pollsSinceLastStateChange = if (result.state != lastGenerationState) 0 else pollsSinceLastStateChange + 1

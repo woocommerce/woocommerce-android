@@ -171,6 +171,36 @@ class WooPosFileBasedSyncActionTest {
     }
 
     @Test
+    fun `given force is true, when syncCatalog, then forces only the first generation request`() = runTest {
+        // GIVEN - the forced first request is scheduled, then a follow-up poll completes
+        val scheduled = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.SCHEDULED)
+        )
+        val completed = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.COMPLETED, url = defaultUrl)
+        )
+        whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site, force = true)).thenReturn(scheduled)
+        whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site, force = false)).thenReturn(completed)
+
+        // WHEN
+        sut.syncCatalog(site, force = true)
+
+        // THEN
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = true)
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = false)
+    }
+
+    @Test
+    fun `given force is false, when syncCatalog, then never forces generation`() = runTest {
+        // WHEN
+        sut.syncCatalog(site, force = false)
+
+        // THEN
+        verify(posLocalCatalogStore, never()).generateCatalogOrGetStatus(site, force = true)
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = false)
+    }
+
+    @Test
     fun `given single API failure, when syncCatalog, then continues polling`() = runTest {
         // GIVEN
         givenCatalogGenerationFailsOnceThenCompleted()
