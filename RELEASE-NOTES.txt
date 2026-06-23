@@ -10,6 +10,7 @@
 - [Internal] Fixed a screen flash when navigating from the login prologue to the (feature-flagged) QR login screen [https://github.com/woocommerce/woocommerce-android/pull/16095]
 - [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
 - [*] Fixed newest orders sometimes missing from the order list until a filter was applied or the list was refreshed [https://github.com/woocommerce/woocommerce-android/pull/16088]
+- [*] Fixed Analytics Hub Customize screen showing a discard-changes dialog on back when no changes were made [https://github.com/woocommerce/woocommerce-android/pull/16092]
 
 25.0
 -----
