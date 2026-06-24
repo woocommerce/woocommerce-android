@@ -5,6 +5,7 @@
 25.1
 -----
 - [*] You're now returned to the store picker with an explanation when the app can no longer access the selected store, instead of being stuck with repeated errors [https://github.com/woocommerce/woocommerce-android/pull/16117]
+- [*] Show a clear alert guiding the merchant to support when their store can't be reached due to a server-side connection error, instead of failing silently [https://github.com/woocommerce/woocommerce-android/pull/16132]
 - [*] Fixed QR login retrying an expired number challenge re-showing the old number with "Expires in 0s"; it now returns you to the QR scanner to scan a fresh code [https://github.com/woocommerce/woocommerce-android/pull/16094]
 - [*] Show the orders troubleshooting banner (instead of a generic error) when your store returns an unexpected non-JSON response, and open the in-app Troubleshoot Connection screen from it [https://github.com/woocommerce/woocommerce-android/pull/16108]
 - [*] Renamed the empty Orders "test order" prompt to "Place your first order" and clarified that processing fees aren't refundable [https://github.com/woocommerce/woocommerce-android/pull/16086]
