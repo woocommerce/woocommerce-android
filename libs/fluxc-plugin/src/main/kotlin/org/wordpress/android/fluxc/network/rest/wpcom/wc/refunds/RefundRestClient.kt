@@ -59,27 +59,34 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
      * lines) — the server computes all monetary values. No client-side amount calculation is sent.
      *
+     * [restockItems] maps to the `api_restock` flag. v4 defaults restocking to `false` when the flag
+     * is omitted, so it must be sent explicitly to preserve the v3 behaviour of restocking refunded
+     * items.
+     *
      * When the v4 route is not registered (feature flag off) the request fails with HTTP 404
      * `rest_no_route`, surfaced as [WooErrorType.API_NOT_FOUND] so callers can fall back to v3.
      */
+    @Suppress("LongParameterList")
     suspend fun createSimplifiedRefund(
         site: SiteModel,
         orderId: Long,
         reason: String,
         automaticRefund: Boolean,
+        restockItems: Boolean,
         items: List<RefundV4LineItem>,
-    ): WooPayload<RefundResponse> {
+    ): WooPayload<SimplifiedRefundResponse> {
         val body = mapOf(
             "order_id" to orderId,
             "reason" to reason,
             "api_refund" to automaticRefund.toString(),
+            "api_restock" to restockItems.toString(),
             "line_items" to items,
         )
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = WOOCOMMERCE.refunds.pathV4,
             body = body,
-            clazz = RefundResponse::class.java,
+            clazz = SimplifiedRefundResponse::class.java,
         )
         return response.toWooPayload()
     }
@@ -144,4 +151,31 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         @SerializedName("shipping_lines") val shippingLineItems: List<WCRefundShippingLine>?,
         @SerializedName("fee_lines") val feeLineItems: List<WCRefundFeeLine>?
     )
+
+    /**
+     * Response shape of the v4 refund endpoint (`POST /wc/v4/refunds`). Unlike v3, products, fees and
+     * shipping are returned combined in a single [lineItems] array, each entry keyed by
+     * `line_item_id` with its own `refund_total` (net subtotal) and `refund_tax` breakdown.
+     */
+    data class SimplifiedRefundResponse(
+        @SerializedName("id") val refundId: Long,
+        @SerializedName("date_created") val dateCreated: String?,
+        @SerializedName("amount") val amount: String?,
+        @SerializedName("reason") val reason: String?,
+        @SerializedName("refunded_payment") val refundedPayment: Boolean?,
+        @SerializedName("line_items") val lineItems: List<SimplifiedLineItem>?,
+    ) {
+        data class SimplifiedLineItem(
+            @SerializedName("id") val id: Long?,
+            @SerializedName("line_item_id") val lineItemId: Long?,
+            @SerializedName("quantity") val quantity: Int?,
+            @SerializedName("refund_total") val refundTotal: String?,
+            @SerializedName("refund_tax") val refundTax: List<SimplifiedLineItemTax>?,
+        )
+
+        data class SimplifiedLineItemTax(
+            @SerializedName("id") val taxId: Long?,
+            @SerializedName("refund_total") val refundTotal: String?,
+        )
+    }
 }

@@ -118,6 +118,7 @@ class WCRefundStore @Inject internal constructor(
         orderId: Long,
         reason: String = "",
         autoRefund: Boolean = false,
+        restockItems: Boolean = true,
         items: List<RefundV4LineItem>,
     ): WooResult<WCRefundModel> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createSimplifiedItemsRefund") {
@@ -126,6 +127,7 @@ class WCRefundStore @Inject internal constructor(
                 orderId = orderId,
                 reason = reason,
                 automaticRefund = autoRefund,
+                restockItems = restockItems,
                 items = items,
             )
             return@withDefaultContext when {

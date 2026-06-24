@@ -19,7 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.SimplifiedRefundResponse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RefundRestClientTest {
@@ -36,21 +36,19 @@ class RefundRestClientTest {
     @Test
     fun `when createSimplifiedRefund, then v4 refunds endpoint is called with simplified body`() = runTest {
         // GIVEN
-        val response = RefundResponse(
+        val response = SimplifiedRefundResponse(
             refundId = 55L,
             dateCreated = null,
             amount = "110.00",
             reason = "reason",
             refundedPayment = true,
-            items = null,
-            shippingLineItems = null,
-            feeLineItems = null,
+            lineItems = null,
         )
         whenever(
             wooNetwork.executePostGsonRequest(
                 site = any(),
                 path = any(),
-                clazz = eq(RefundResponse::class.java),
+                clazz = eq(SimplifiedRefundResponse::class.java),
                 body = any(),
             )
         ).thenReturn(WPAPIResponse.Success(response, emptyList()))
@@ -61,6 +59,7 @@ class RefundRestClientTest {
             orderId = orderId,
             reason = "reason",
             automaticRefund = true,
+            restockItems = true,
             items = lineItems,
         )
 
@@ -69,13 +68,14 @@ class RefundRestClientTest {
         verify(wooNetwork).executePostGsonRequest(
             site = eq(site),
             path = eq(WOOCOMMERCE.refunds.pathV4),
-            clazz = eq(RefundResponse::class.java),
+            clazz = eq(SimplifiedRefundResponse::class.java),
             body = bodyCaptor.capture(),
         )
         val body = bodyCaptor.firstValue
         assertThat(body["order_id"]).isEqualTo(orderId)
         assertThat(body["reason"]).isEqualTo("reason")
         assertThat(body["api_refund"]).isEqualTo("true")
+        assertThat(body["api_restock"]).isEqualTo("true")
         assertThat(body["line_items"]).isEqualTo(lineItems)
         assertThat(body).doesNotContainKey("amount")
         assertThat(result.result).isEqualTo(response)
@@ -92,7 +92,7 @@ class RefundRestClientTest {
             wooNetwork.executePostGsonRequest(
                 site = any(),
                 path = any(),
-                clazz = eq(RefundResponse::class.java),
+                clazz = eq(SimplifiedRefundResponse::class.java),
                 body = any(),
             )
         ).thenReturn(WPAPIResponse.Error(networkError))
@@ -103,6 +103,7 @@ class RefundRestClientTest {
             orderId = orderId,
             reason = "",
             automaticRefund = false,
+            restockItems = true,
             items = lineItems,
         )
 

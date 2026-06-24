@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient.RefundPreviewResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.SimplifiedRefundResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -143,15 +144,24 @@ class RefundStoreTest {
     @Test
     fun `when createSimplifiedItemsRefund succeeds, then response is mapped to model`() = test {
         val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 2))
+        val response = SimplifiedRefundResponse(
+            refundId = 55L,
+            dateCreated = null,
+            amount = "110.00",
+            reason = "reason",
+            refundedPayment = true,
+            lineItems = null,
+        )
         whenever(
             restClient.createSimplifiedRefund(
                 site = site,
                 orderId = orderId,
                 reason = "reason",
                 automaticRefund = false,
+                restockItems = true,
                 items = lineItems,
             )
-        ).thenReturn(WooPayload(REFUND_RESPONSE))
+        ).thenReturn(WooPayload(response))
 
         val result = store.createSimplifiedItemsRefund(
             site = site,
@@ -161,7 +171,7 @@ class RefundStoreTest {
             items = lineItems,
         )
 
-        assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
+        assertThat(result.model).isEqualTo(mapper.toModel(response))
     }
 
     @Test
@@ -174,6 +184,7 @@ class RefundStoreTest {
                 orderId = orderId,
                 reason = "",
                 automaticRefund = false,
+                restockItems = true,
                 items = lineItems,
             )
         ).thenReturn(WooPayload(notFound))

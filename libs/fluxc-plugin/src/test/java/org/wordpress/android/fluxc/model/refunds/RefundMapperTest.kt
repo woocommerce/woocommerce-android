@@ -4,10 +4,50 @@ import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient.RefundPreviewResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.SimplifiedRefundResponse
 import java.math.BigDecimal
 
 class RefundMapperTest {
     private val mapper = RefundMapper(Gson())
+
+    @Test
+    fun `given a v4 create response, when mapped, then line items keep totals and taxes`() {
+        // GIVEN a combined line_items array as returned by POST /wc/v4/refunds.
+        val response = SimplifiedRefundResponse(
+            refundId = 55L,
+            dateCreated = null,
+            amount = "22.00",
+            reason = "reason",
+            refundedPayment = true,
+            lineItems = listOf(
+                SimplifiedRefundResponse.SimplifiedLineItem(
+                    id = 900L,
+                    lineItemId = 12L,
+                    quantity = 2,
+                    refundTotal = "20.00",
+                    refundTax = listOf(
+                        SimplifiedRefundResponse.SimplifiedLineItemTax(taxId = 1L, refundTotal = "2.00")
+                    ),
+                )
+            ),
+        )
+
+        // WHEN
+        val model = mapper.toModel(response)
+
+        // THEN — top-level fields plus per-line net subtotal, tax total and gross total are preserved.
+        assertThat(model.id).isEqualTo(55L)
+        assertThat(model.amount).isEqualByComparingTo(BigDecimal("22.00"))
+        assertThat(model.automaticGatewayRefund).isTrue()
+        val item = model.items.single()
+        assertThat(item.itemId).isEqualTo(12L)
+        assertThat(item.quantity).isEqualTo(2)
+        assertThat(item.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
+        assertThat(item.totalTax).isEqualByComparingTo(BigDecimal("2.00"))
+        assertThat(item.total).isEqualByComparingTo(BigDecimal("22.00"))
+        assertThat(model.shippingLineItems).isEmpty()
+        assertThat(model.feeLineItems).isEmpty()
+    }
 
     @Test
     fun `given a full preview response, when mapped, then totals and breakdown are converted`() {
