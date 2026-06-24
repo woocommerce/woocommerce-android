@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -51,6 +52,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val diagnosticsService: SupportDiagnosticsService = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AiSupportChatAnalyticsTracker = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.ai_support_chat_store_connection_error_message) }
+            .thenReturn(STORE_CONNECTION_ERROR_MESSAGE)
+    }
 
     private lateinit var viewModel: AiSupportChatViewModel
 
@@ -67,7 +72,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             contextProvider = contextProvider,
             diagnosticsService = diagnosticsService,
             accountRepository = accountRepository,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -1408,26 +1414,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given store connection error launch mode, when loaded, then chat is seeded with failed store connection`() =
-        testBlocking {
-            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
-
-            val state = viewModel.viewState.value
-            assertThat(state.hasProceededToChat).isTrue()
-            assertThat(state.hasStartedChat).isFalse()
-            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.OTHER)
-            assertThat(state.messages.map { it.content }).containsExactly(
-                AiSupportChatMessageContent.Greeting
-            )
-            assertThat(state.diagnosticResult?.statuses).hasSize(1)
-            val status = state.diagnosticResult?.statuses?.first()
-            assertThat(status?.test).isEqualTo(DiagnosticTest.STORE_CONNECTION)
-            assertThat(status?.status).isEqualTo(TestStatus.Failed(technicalDetails = "rest_invalid_signature"))
-            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
-        }
-
-    @Test
-    fun `given store connection error launch mode, when message sent, then store connection context is sent`() =
+    fun `given store connection error launch mode, when loaded, then bot is messaged automatically with context`() =
         testBlocking {
             whenever(
                 contextProvider.buildInitialContext(
@@ -1435,12 +1422,19 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                     siteAddress = anyOrNull()
                 )
             ).thenReturn(CONTEXT)
-            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
                 .thenReturn(Result.success(createResponse()))
 
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
-            viewModel.onInputChanged(ISSUE_DETAILS)
-            viewModel.onSendClicked()
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.OTHER)
+            assertThat(state.diagnosticResult?.statuses).hasSize(1)
+            val status = state.diagnosticResult?.statuses?.first()
+            assertThat(status?.test).isEqualTo(DiagnosticTest.STORE_CONNECTION)
+            assertThat(status?.status).isEqualTo(TestStatus.Failed(technicalDetails = "rest_invalid_signature"))
 
             val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
             verify(contextProvider).buildInitialContext(
@@ -1450,12 +1444,42 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
                 TestStatus.Failed(technicalDetails = "rest_invalid_signature")
             )
-            verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given store connection error launch mode, when auto-send fails, then send error is shown`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception("Network error")))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            val state = viewModel.viewState.value
+            assertThat(state.showSendError).isTrue()
+            assertThat(state.isSending).isFalse()
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.input).isEqualTo(STORE_CONNECTION_ERROR_MESSAGE)
         }
 
     @Test
     fun `given store connection error launch mode, when loaded, then entry point analytics are tracked`() =
         testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
             viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
 
             verify(analyticsTracker).trackEntryPointTapped(
@@ -2271,6 +2295,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val OTHER_ISSUE_LABEL = "Something else"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
+        const val STORE_CONNECTION_ERROR_MESSAGE = "My store can't be reached."
         const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."

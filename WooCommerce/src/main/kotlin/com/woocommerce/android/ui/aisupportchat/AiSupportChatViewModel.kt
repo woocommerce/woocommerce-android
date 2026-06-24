@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -41,7 +42,8 @@ class AiSupportChatViewModel @Inject constructor(
     private val contextProvider: SupportChatContextProvider,
     private val diagnosticsService: SupportDiagnosticsService,
     private val accountRepository: AccountRepository,
-    private val analyticsTracker: AiSupportChatAnalyticsTracker
+    private val analyticsTracker: AiSupportChatAnalyticsTracker,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(
         AiSupportChatViewState(
@@ -433,9 +435,13 @@ class AiSupportChatViewModel @Inject constructor(
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
                 hasProceededToChat = true,
+                hasStartedChat = true,
                 canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
             )
+        }
+        launch {
+            sendMessage(resourceProvider.getString(R.string.ai_support_chat_store_connection_error_message))
         }
     }
 
