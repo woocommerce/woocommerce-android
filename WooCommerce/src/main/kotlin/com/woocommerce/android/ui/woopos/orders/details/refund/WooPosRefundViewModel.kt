@@ -390,11 +390,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private fun recalculateRefundState(currentState: WooPosRefundState.Content, newSelectedIds: Set<String>) {
         // Toggling selection only updates which items are selected — totals are not shown on the
         // selection step and are resolved on "Continue", so no calculation happens here.
+        // A preview in flight for the previous selection is now stale: cancel it and clear the
+        // loading/failed flags, otherwise its result is dropped by the stale-selection guard and
+        // the Continue button would stay stuck in the loading state.
+        cancelPreview()
         val allItemIds = currentState.refundableItems.map { it.uniqueId }.toSet()
         _state.value = currentState.copy(
             selectedItemIds = newSelectedIds,
             allItemsSelected = newSelectedIds.containsAll(allItemIds),
             itemsCount = currentState.refundableItems.count { it.uniqueId in newSelectedIds },
+            isPreviewLoading = false,
+            previewFailed = false,
         )
     }
 

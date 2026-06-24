@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -426,6 +428,79 @@ class WooPosRefundViewModelTest {
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.previewFailed).isTrue()
             assertThat(content.isPreviewLoading).isFalse()
+        }
+
+    @Test
+    fun `given v4 available and preview succeeded, when refund confirmed, then processor receives v4 line items`() =
+        runTest {
+            // GIVEN — v4 is available, so the preview returns server-calculated totals.
+            v4RefundAvailabilityCache.markV4Available(testSite.siteId)
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN — Continue fetches the server preview, then the refund is confirmed.
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN — the submission carries the simplified v4 line items and no v3 grouped items.
+            verify(refundSubmissionProcessor).submit(
+                argThat {
+                    val lineItem = v4LineItems?.singleOrNull()
+                    orderId == testOrderId &&
+                        refundItems.isEmpty() &&
+                        lineItem?.lineItemId == 1L &&
+                        lineItem.quantity == 1 &&
+                        refundAmount.compareTo(BigDecimal("22.00")) == 0
+                }
+            )
+            // v3 grouping must not run on the v4 path.
+            verify(groupRefundItems, never()).invoke(any(), any(), any())
+        }
+
+    @Test
+    fun `given preview loading, when selection toggled, then loading is cleared and stale preview dropped`() =
+        runTest {
+            // GIVEN — v4 is available; the preview is held open to simulate a request still in flight.
+            v4RefundAvailabilityCache.markV4Available(testSite.siteId)
+            val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            val previewGate = CompletableDeferred<WooPosRefundPreview.Result>()
+            whenever(refundPreview.invoke(any(), any())).doSuspendableAnswer { previewGate.await() }
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN — Continue starts the preview (now suspended), then the selection changes.
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            assertThat((viewModel.state.value as WooPosRefundState.Content).isPreviewLoading).isTrue()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(refundableItems.first().uniqueId))
+            // Releasing the gate now would feed a stale result; the cancelled preview must ignore it.
+            previewGate.complete(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN — the loading flag is cleared and the stale preview did not advance the flow.
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.isPreviewLoading).isFalse()
+            assertThat(content.previewFailed).isFalse()
+            assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
         }
 
     @Test
