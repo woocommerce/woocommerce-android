@@ -441,8 +441,13 @@ private fun RefundModalLayer(
                 .then(contentInsetsModifier)
         ) {
             val navigationIcon = state.modalNavigationIcon()
+            // Only the review step shows its title in the toolbar (to mirror the selection step);
+            // the other modal steps render their own heading inside the content.
+            val modalTitle = (state as? WooPosRefundState.Content)
+                ?.takeIf { it.step == WooPosRefundState.Content.RefundStep.ReviewRefund }
+                ?.let { resolveToolbarTitle(it) }
             RefundScreenHeader(
-                title = null,
+                title = modalTitle,
                 onNavigationIconClicked = when (navigationIcon) {
                     RefundHeaderNavigationIcon.Back -> onModalBack
                     RefundHeaderNavigationIcon.Close -> onCancelRefundFlow
@@ -1276,15 +1281,6 @@ private fun ReviewRefundContent(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
     ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_orders_review_refund),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
