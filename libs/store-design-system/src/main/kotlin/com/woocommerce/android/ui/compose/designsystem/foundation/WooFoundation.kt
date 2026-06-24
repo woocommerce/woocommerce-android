@@ -32,5 +32,6 @@ object WooFoundationDefaults {
         iconSize = iconSize,
     )
 
+    @Composable
     fun colors(useDarkTheme: Boolean): WooColors = wooColors(useDarkTheme = useDarkTheme)
 }
