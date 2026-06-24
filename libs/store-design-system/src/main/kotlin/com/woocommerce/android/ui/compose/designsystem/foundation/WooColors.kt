@@ -57,8 +57,8 @@ data class WooStatusColors(
     val onInfoContainer: Color,
     val neutralContainer: Color,
     val onNeutralContainer: Color,
-    val neutralOutlinedContainer: Color,
-    val onNeutralOutlinedContainer: Color,
+    val neutralOutlined: Color,
+    val onNeutralOutlined: Color,
 )
 
 @Immutable

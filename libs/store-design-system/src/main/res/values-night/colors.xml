@@ -34,8 +34,8 @@
     <color name="woo_ds_color_status_on_info_container">#001B4F</color>
     <color name="woo_ds_color_status_neutral_container">#E6F4F4F4</color>
     <color name="woo_ds_color_status_on_neutral_container">#1E1E1E</color>
-    <color name="woo_ds_color_status_neutral_outlined_container">#E6DBDBDB</color>
-    <color name="woo_ds_color_status_on_neutral_outlined_container">#DBDBDB</color>
+    <color name="woo_ds_color_status_neutral_outlined">#E6DBDBDB</color>
+    <color name="woo_ds_color_status_on_neutral_outlined">#DBDBDB</color>
 
     <color name="woo_ds_color_overlay_overlay20">#33000000</color>
     <color name="woo_ds_color_overlay_overlay50">#BF000000</color>

@@ -103,8 +103,8 @@ private fun Context.loadWooColors(): WooColors {
             onInfoContainer = color(R.color.woo_ds_color_status_on_info_container),
             neutralContainer = color(R.color.woo_ds_color_status_neutral_container),
             onNeutralContainer = color(R.color.woo_ds_color_status_on_neutral_container),
-            neutralOutlinedContainer = color(R.color.woo_ds_color_status_neutral_outlined_container),
-            onNeutralOutlinedContainer = color(R.color.woo_ds_color_status_on_neutral_outlined_container),
+            neutralOutlined = color(R.color.woo_ds_color_status_neutral_outlined),
+            onNeutralOutlined = color(R.color.woo_ds_color_status_on_neutral_outlined),
         ),
         overlay = WooOverlayColors(
             overlay20 = color(R.color.woo_ds_color_overlay_overlay20),
