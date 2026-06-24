@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,7 +51,13 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private fun fetchStatus() {
         launch {
-            val viewState = checkIfJetpackIsConnected()
+            val site = selectedSite.get()
+            if (site.connectionType == SiteConnectionType.Jetpack) {
+                triggerEvent(Exit)
+                return@launch
+            }
+
+            val viewState = checkIfJetpackIsConnected(site)
                 .map { isConnected ->
                     if (!isConnected) {
                         return@map ViewState.NotConnected
@@ -83,8 +90,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkIfJetpackIsConnected(): Result<Boolean> {
-        val site = selectedSite.get()
+    private suspend fun checkIfJetpackIsConnected(site: SiteModel): Result<Boolean> {
         return when (site.connectionType) {
             SiteConnectionType.ApplicationPasswords -> fetchJetpackStatus(
                 site = site,
@@ -101,10 +107,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                 Result.success(true)
             }
 
-            SiteConnectionType.Jetpack -> error(
-                "Invalid state: WooPushNotificationsIntroductionViewModel should not be instantiated for sites " +
-                    "with SiteConnectionType.Jetpack"
-            )
+            SiteConnectionType.Jetpack -> Result.success(false)
         }
     }
 
