@@ -317,7 +317,7 @@ class HelpActivity : AppCompatActivity() {
             val intent = Intent(context, HelpActivity::class.java)
             intent.putExtra(ORIGIN_KEY, origin)
             if (!extraSupportTags.isNullOrEmpty()) {
-                intent.putStringArrayListExtra(EXTRA_TAGS_KEY, extraSupportTags as ArrayList<String>?)
+                intent.putStringArrayListExtra(EXTRA_TAGS_KEY, ArrayList(extraSupportTags))
             }
 
             if (loginFlow != null) intent.putExtra(LOGIN_FLOW_KEY, loginFlow)
