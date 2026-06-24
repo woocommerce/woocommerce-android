@@ -18,6 +18,10 @@ sealed interface AiSupportChatLaunchMode {
         override val siteAddress: String? = null
     ) : AiSupportChatLaunchMode
 
+    data class StoreConnectionError(
+        override val siteAddress: String? = null
+    ) : AiSupportChatLaunchMode
+
     data class Resume(
         val chatId: Long,
         val botSlug: String,

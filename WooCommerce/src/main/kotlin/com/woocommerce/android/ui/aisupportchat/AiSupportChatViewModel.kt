@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import javax.inject.Inject
 
 @Suppress("LargeClass")
@@ -76,6 +77,7 @@ class AiSupportChatViewModel @Inject constructor(
             is AiSupportChatLaunchMode.Help -> Unit
             is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
+            is AiSupportChatLaunchMode.StoreConnectionError -> startFromStoreConnectionError()
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
@@ -401,6 +403,29 @@ class AiSupportChatViewModel @Inject constructor(
 
     private fun startFromConnectivityTool(checks: List<ConnectivityCheckCardData>) {
         val result = checks.toDiagnosticResult()
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = listOf(greetingMessage()),
+                selectedIssueType = SupportIssueType.OTHER,
+                diagnosticResult = result,
+                hasProceededToChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
+                showSendError = false
+            )
+        }
+    }
+
+    private fun startFromStoreConnectionError() {
+        val result = DiagnosticResult(
+            issueType = SupportIssueType.OTHER,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.STORE_CONNECTION,
+                    status = TestStatus.Failed(technicalDetails = STORE_CONNECTION_ERROR_DETAIL)
+                )
+            )
+        )
         _viewState.update {
             it.copy(
                 input = "",
@@ -999,6 +1024,7 @@ class AiSupportChatViewModel @Inject constructor(
         private const val MAX_TRANSCRIPT_MESSAGES = 20
         private const val SOURCE_TAG = "in_app_support_escalate"
         private const val AI_SKIP_TAG = "ai_skip"
+        private const val STORE_CONNECTION_ERROR_DETAIL = WooError.REST_INVALID_SIGNATURE_CODE
     }
 }
 
@@ -1174,6 +1200,7 @@ private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
         is AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
         is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
+        is AiSupportChatLaunchMode.StoreConnectionError -> AiSupportChatEntryPoint.STORE_CONNECTION_ERROR
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }
 

@@ -1408,6 +1408,64 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given store connection error launch mode, when loaded, then chat is seeded with failed store connection`() =
+        testBlocking {
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.hasStartedChat).isFalse()
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.OTHER)
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting
+            )
+            assertThat(state.diagnosticResult?.statuses).hasSize(1)
+            val status = state.diagnosticResult?.statuses?.first()
+            assertThat(status?.test).isEqualTo(DiagnosticTest.STORE_CONNECTION)
+            assertThat(status?.status).isEqualTo(TestStatus.Failed(technicalDetails = "rest_invalid_signature"))
+            verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given store connection error launch mode, when message sent, then store connection context is sent`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+            viewModel.onInputChanged(ISSUE_DETAILS)
+            viewModel.onSendClicked()
+
+            val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = diagnosticResultCaptor.capture(),
+                siteAddress = anyOrNull()
+            )
+            assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
+                TestStatus.Failed(technicalDetails = "rest_invalid_signature")
+            )
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given store connection error launch mode, when loaded, then entry point analytics are tracked`() =
+        testBlocking {
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            verify(analyticsTracker).trackEntryPointTapped(
+                entryPoint = AiSupportChatEntryPoint.STORE_CONNECTION_ERROR,
+                isAuthenticated = true,
+                isResumedChat = false
+            )
+        }
+
+    @Test
     fun `given resume launch mode, when loaded, then saved chat is fetched with session id`() = testBlocking {
         val response = createResponse(
             messages = listOf(

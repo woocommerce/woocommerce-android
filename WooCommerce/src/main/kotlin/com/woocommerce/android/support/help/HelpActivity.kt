@@ -262,13 +262,19 @@ class HelpActivity : AppCompatActivity() {
         val preLogin = shouldUsePreLoginAiSupportChat()
         val siteAddress = selectedSite.getIfExists()?.url
             ?: appPrefsWrapper.getLoginSiteAddress().takeIf { preLogin }
-        startActivity(
+        val intent = if (originFromExtras == HelpOrigin.CONNECTION_ERROR) {
+            AiSupportChatActivity.createStoreConnectionErrorIntent(
+                context = this,
+                siteAddress = siteAddress
+            )
+        } else {
             AiSupportChatActivity.createIntent(
                 context = this,
                 preLogin = preLogin,
                 siteAddress = siteAddress
             )
-        )
+        }
+        startActivity(intent)
     }
 
     private fun showAiSupportChatHistory() {
