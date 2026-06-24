@@ -394,7 +394,6 @@ private fun RefundSelectionLayer(
                 onEvent = onEvent,
                 onConnectReaderClicked = {},
                 onNavigationEvent = onNavigationEvent,
-                disablePartialRefund = disablePartialRefund,
             )
         }
     }
@@ -491,7 +490,6 @@ private fun RefundModalLayer(
                     onEvent = onEvent,
                     onConnectReaderClicked = handleConnectReaderClicked,
                     onNavigationEvent = onNavigationEvent,
-                    disablePartialRefund = disablePartialRefund,
                 )
             }
         }
@@ -552,6 +550,7 @@ private fun resolveToolbarTitle(state: WooPosRefundState): String? {
 private fun WooPosRefundState.modalNavigationIcon(): RefundHeaderNavigationIcon {
     return when (this) {
         is WooPosRefundState.Content -> when (step) {
+            WooPosRefundState.Content.RefundStep.ReviewRefund,
             WooPosRefundState.Content.RefundStep.ConfirmRefund,
             WooPosRefundState.Content.RefundStep.PreparingReader,
             WooPosRefundState.Content.RefundStep.ReaderDisconnected,
@@ -562,7 +561,6 @@ private fun WooPosRefundState.modalNavigationIcon(): RefundHeaderNavigationIcon 
                     RefundHeaderNavigationIcon.Back
                 }
             WooPosRefundState.Content.RefundStep.SelectItems,
-            WooPosRefundState.Content.RefundStep.ReviewRefund,
             WooPosRefundState.Content.RefundStep.Processing,
             WooPosRefundState.Content.RefundStep.ProcessingRefund,
             WooPosRefundState.Content.RefundStep.NotifyingStore -> RefundHeaderNavigationIcon.None
@@ -644,7 +642,6 @@ private fun RefundScreenButtons(
     onConnectReaderClicked: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     modifier: Modifier = Modifier,
-    disablePartialRefund: Boolean = false,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -660,7 +657,6 @@ private fun RefundScreenButtons(
                 onCancelRefundFlow = onCancelRefundFlow,
                 onEvent = onEvent,
                 onConnectReaderClicked = onConnectReaderClicked,
-                disablePartialRefund = disablePartialRefund,
             )
             is WooPosRefundState.Error -> RefundErrorButtons(
                 state = state,
@@ -690,7 +686,6 @@ private fun RefundContentStepButtons(
     onCancelRefundFlow: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onConnectReaderClicked: () -> Unit,
-    disablePartialRefund: Boolean,
 ) {
     when (state.step) {
         WooPosRefundState.Content.RefundStep.SelectItems -> ContinueToReviewButton(
@@ -698,6 +693,7 @@ private fun RefundContentStepButtons(
             onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
         )
         WooPosRefundState.Content.RefundStep.ReviewRefund -> {
+            // Back navigation is provided by the toolbar up button (see modalNavigationIcon).
             WooPosButton(
                 text = stringResource(R.string.continue_button),
                 onClick = {
@@ -705,15 +701,6 @@ private fun RefundContentStepButtons(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
-            if (!disablePartialRefund) {
-                WooPosOutlinedButton(
-                    text = stringResource(R.string.back),
-                    onClick = {
-                        onEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
         }
         WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
             WooPosButton(
@@ -1091,9 +1078,8 @@ private fun SelectItemsContent(
                 onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) },
                 enabled = !disableItemSelection,
             )
+            Divider()
         }
-
-        Divider()
 
         if (isLoading) {
             Column(
