@@ -164,6 +164,30 @@ class RefundStoreTest {
         assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
+    @Test
+    fun `when createSimplifiedItemsRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
+        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
+        whenever(
+            restClient.createSimplifiedRefund(
+                site = site,
+                orderId = orderId,
+                reason = "",
+                automaticRefund = false,
+                items = lineItems,
+            )
+        ).thenReturn(WooPayload(notFound))
+
+        val result = store.createSimplifiedItemsRefund(
+            site = site,
+            orderId = orderId,
+            items = lineItems,
+        )
+
+        assertThat(result.model).isNull()
+        assertThat(result.error.type).isEqualTo(WooErrorType.API_NOT_FOUND)
+    }
+
     private suspend fun fetchSpecificTestRefund(): WooResult<WCRefundModel> {
         val fetchRefundsPayload = WooPayload(
             REFUND_RESPONSE
