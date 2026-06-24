@@ -659,4 +659,64 @@ class WooPosOrdersListViewModelTest {
     }
 
     // endregion
+
+    // region Toolbar visibility
+
+    @Test
+    fun `given orders loaded and no refund, when search is closed, then showToolbar is true`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.showToolbar).isTrue()
+    }
+
+    @Test
+    fun `given orders loaded, when refund started, then showToolbar is false`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onRefundStarted()
+
+        assertThat(viewModel.state.value.showToolbar).isFalse()
+    }
+
+    @Test
+    fun `given a refund is in progress, when refund dismissed, then showToolbar is true again`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.onRefundStarted()
+
+        viewModel.onRefundDismissed()
+
+        assertThat(viewModel.state.value.showToolbar).isTrue()
+    }
+
+    @Test
+    fun `given no refund, when search is opened, then showToolbar is false`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+
+        assertThat(viewModel.state.value.showToolbar).isFalse()
+    }
+
+    @Test
+    fun `given a refund was active, when process death recreates the view model, then showToolbar stays false`() =
+        runTest {
+            // GIVEN a refund is active; its flag is persisted into the SavedStateHandle.
+            val savedStateHandle = SavedStateHandle()
+            viewModel = createViewModel(savedStateHandle)
+            advanceUntilIdle()
+            viewModel.onRefundStarted()
+
+            // WHEN the view model is recreated from the same (restored) handle, as after process death.
+            val recreatedViewModel = createViewModel(savedStateHandle)
+            advanceUntilIdle()
+
+            // THEN the toolbar is hidden from the first emission — no flash.
+            assertThat(recreatedViewModel.state.value.showToolbar).isFalse()
+        }
+
+    // endregion
 }

@@ -97,16 +97,6 @@ import kotlinx.coroutines.flow.filter
 
 val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
-/**
- * The orders toolbar is shown only when no search is active and no refund is in progress. While a
- * refund is being issued the flow is presented full screen with its own header, so the orders
- * toolbar must stay hidden regardless of single- vs dual-pane mode.
- */
-internal fun shouldShowOrdersToolbar(
-    searchInputState: WooPosSearchInputState,
-    isIssuingRefund: Boolean,
-): Boolean = searchInputState is WooPosSearchInputState.Closed && !isIssuingRefund
-
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -159,6 +149,7 @@ fun WooPosOrdersScreen(
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
         if (issueRefundAction != null) {
+            listViewModel.onRefundStarted()
             detailPaneIssueRefundInstanceId += 1
             detailPaneIssueRefundOrderId = issueRefundAction.orderId
             detailPaneIssueRefundDismissRequestToken = 0
@@ -171,6 +162,7 @@ fun WooPosOrdersScreen(
     }
 
     val handleIssueRefundDismissed = {
+        listViewModel.onRefundDismissed()
         val action = detailPaneIssueRefundHandler.handleIssueRefundDismissed(
             refundedOrderId = detailPaneIssueRefundOrderId,
             pendingOrderSelectionAfterRefundDismiss = pendingOrderSelectionAfterRefundDismiss,
@@ -331,11 +323,7 @@ private fun WooPosOrdersScreen(
             )
         }
 
-        if (shouldShowOrdersToolbar(
-                searchInputState = listState.searchInputState,
-                isIssuingRefund = detailPaneIssueRefundOrderId != null,
-            )
-        ) {
+        if (listState.showToolbar) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
                     ?.details?.number.orEmpty()
@@ -1074,7 +1062,8 @@ fun WooPosOrdersScreenPreview() {
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = true,
             ),
             detailState = WooPosOrderDetailsState.Loaded(
                 details = details1,
@@ -1112,7 +1101,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = false,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
@@ -1147,7 +1137,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = false,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
@@ -1175,6 +1166,7 @@ fun WooPosOrdersEmptyStatePreview() {
             listState = WooPosOrdersListState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
+                showToolbar = true,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
