@@ -2103,12 +2103,6 @@ Language: he_IL
     <string name="coupon_type_picker_percentage_content_description">סוג הקופון – הנחה לפי אחוזים</string>
     <string name="coupon_type_picker_title">ליצור קופון</string>
     <string name="coupon_list_add_coupon_content_description">להוסיף קופון</string>
-    <string name="try_test_order_button">להתחיל הזמנה לבדיקה</string>
-    <string name="try_test_order_step_4">ניתן להשתמש באפליקציה כדי לעבד את ההחזר הכספי של ההזמנה לבדיקה</string>
-    <string name="try_test_order_step_3">יש להשלים את התשלום ולהמתין להודעה בדחיפה לגבי ההזמנה שלך באפליקציה של WooCommerce.</string>
-    <string name="try_test_order_step_2">יש לבחור את המוצר לבדיקה, להוסיף אותו לעגלה ולהשלים את תהליך התשלום בקופה בחנות המקוונת, בדיוק כמו לקוח אמיתי.</string>
-    <string name="try_test_order_step_1">יש להקיש על הכפתור שלמטה כדי לעבור אל החנות המקוונת שלך דרך הדפדפן.</string>
-    <string name="try_test_order_heading">לנסות הזמנה לבדיקה</string>
     <string name="empty_order_test_order_button">לנסות הזמנה לבדיקה</string>
     <string name="empty_order_test_order_message">יש לבצע הזמנה לבדיקה כדי לוודא שתהליך של WooCommerce שהגדרת מאפשר חוויית שימוש חלקה ללקוחות</string>
     <string name="order_creation_customer_search_empty_add_details_manually">להוסיף פרטים ידנית</string>

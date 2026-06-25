@@ -2104,12 +2104,6 @@ Language: tr
     <string name="coupon_type_picker_percentage_content_description">Kupon türü - yüzde indirimi</string>
     <string name="coupon_type_picker_title">Kupon Oluştur</string>
     <string name="coupon_list_add_coupon_content_description">Kupon ekle</string>
-    <string name="try_test_order_button">Test siparişini başlatın</string>
-    <string name="try_test_order_step_4">Test siparişinin geri ödemesini işlemek için uygulamayı kullanın</string>
-    <string name="try_test_order_step_3">Ödemeyi tamamlayın ve WooCommerce uygulamanızda siparişle ilgili bir anlık bildirim almayı bekleyin.</string>
-    <string name="try_test_order_step_2">Test ürününüzü seçin, sepete ekleyin ve ilgili web mağazasından gerçek bir müşteri olarak ödemeyi tamamlayın.</string>
-    <string name="try_test_order_step_1">Web tarayıcısı yoluyla çevrimiçi mağazanıza yeniden yönlendirilmek için aşağıdaki düğmeye dokunun.</string>
-    <string name="try_test_order_heading">Bir test siparişi deneyin</string>
     <string name="empty_order_test_order_button">Bir test siparişi deneyin</string>
     <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>

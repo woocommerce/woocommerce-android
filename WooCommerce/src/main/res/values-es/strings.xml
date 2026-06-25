@@ -2105,12 +2105,6 @@ Language: es
     <string name="coupon_type_picker_percentage_content_description">Tipo de cupón: descuento porcentual</string>
     <string name="coupon_type_picker_title">Crear cupón</string>
     <string name="coupon_list_add_coupon_content_description">Añadir cupón</string>
-    <string name="try_test_order_button">Empezar pedido de prueba</string>
-    <string name="try_test_order_step_4">Usa la aplicación para procesar el reembolso del pedido de prueba.</string>
-    <string name="try_test_order_step_3">Completa el pago y espera una notificación push sobre el pedido en tu aplicación de WooCommerce.</string>
-    <string name="try_test_order_step_2">Elige el producto de prueba, añádelo al carrito y realiza el pago en esa tienda web como si fueras un cliente real.</string>
-    <string name="try_test_order_step_1">Toca el botón de abajo para que se te redireccione a la tienda en línea a través de un navegador web.</string>
-    <string name="try_test_order_heading">Haz un pedido de prueba</string>
     <string name="empty_order_test_order_button">Haz un pedido de prueba</string>
     <string name="empty_order_test_order_message">Ejecuta un pedido de prueba para garantizar que el proceso de WooCommerce ofrece una experiencia perfecta a los clientes.</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Añadir detalles de forma manual</string>
