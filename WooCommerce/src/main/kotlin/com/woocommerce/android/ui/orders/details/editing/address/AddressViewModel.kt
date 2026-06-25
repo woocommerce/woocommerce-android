@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details.editing.address
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
 import com.woocommerce.android.R
@@ -71,8 +70,8 @@ class AddressViewModel @Inject constructor(
             viewState.addressSelectionStates.mapValues { it.value.address } != initialState
     }
 
-    private val _isDifferentShippingAddressChecked = MutableLiveData<Boolean>()
-    val isDifferentShippingAddressChecked: LiveData<Boolean> = _isDifferentShippingAddressChecked
+    val isDifferentShippingAddressChecked: LiveData<Boolean> =
+        viewStateData.liveData.map { it.isDifferentShippingAddressChecked ?: false }
 
     val shouldEnableDoneButton = isAnyAddressEdited.combineWith(
         isDifferentShippingAddressChecked,
@@ -99,8 +98,14 @@ class AddressViewModel @Inject constructor(
     }
 
     private fun initialize(initialState: Map<AddressType, Address>) {
-        _isDifferentShippingAddressChecked.value =
-            initialState[AddressType.SHIPPING]?.let { it != Address.EMPTY } ?: false
+        // Seed the switch only on a fresh start. When the value is already present (e.g. restored from
+        // SavedState after process death) we keep the user's choice instead of re-deriving it.
+        if (viewState.isDifferentShippingAddressChecked == null) {
+            viewState = viewState.copy(
+                isDifferentShippingAddressChecked = initialState[AddressType.SHIPPING]?.let { it != Address.EMPTY }
+                    ?: false
+            )
+        }
         launch {
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
@@ -121,7 +126,7 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onDifferentShippingAddressChecked(checked: Boolean) {
-        _isDifferentShippingAddressChecked.value = checked
+        viewState = viewState.copy(isDifferentShippingAddressChecked = checked)
     }
 
     /**
@@ -298,6 +303,7 @@ class AddressViewModel @Inject constructor(
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
         val isBetterCustomerSearchEnabled: Boolean = FeatureFlag.BETTER_CUSTOMER_SEARCH_M2.localValue,
+        val isDifferentShippingAddressChecked: Boolean? = null,
     ) : Parcelable
 
     enum class AddressType {
