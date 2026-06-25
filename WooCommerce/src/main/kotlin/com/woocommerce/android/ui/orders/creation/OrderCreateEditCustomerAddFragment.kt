@@ -105,15 +105,14 @@ class OrderCreateEditCustomerAddFragment :
             newShipping?.let {
                 shippingBinding.update(it)
             }
-
-            if (newShipping?.address != Address.EMPTY) {
-                showShippingAddressFormSwitch?.addressSwitch?.isChecked = true
-            }
         }
         addressViewModel.shouldEnableDoneButton.observe(viewLifecycleOwner) { shouldShowDoneButton: Boolean ->
             doneMenuItem?.isEnabled = shouldShowDoneButton
         }
         addressViewModel.isDifferentShippingAddressChecked.observe(viewLifecycleOwner) { checked ->
+            if (showShippingAddressFormSwitch?.addressSwitch?.isChecked != checked) {
+                showShippingAddressFormSwitch?.addressSwitch?.isChecked = checked
+            }
             updateShippingBindingVisibility(checked)
         }
     }

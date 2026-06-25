@@ -284,6 +284,45 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given shipping differs from billing, when started, then different shipping address is checked`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress,
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isTrue
+    }
+
+    @Test
+    fun `given no separate shipping address, when started, then different shipping address is unchecked`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to Address.EMPTY,
+                BILLING to shippingAddress
+            )
+        )
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isFalse
+    }
+
+    @Test
+    fun `given different shipping address disabled, when a field is edited, then it stays disabled`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress.copy(firstName = "Different shipping"),
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+        addressViewModel.onDifferentShippingAddressChecked(false)
+
+        addressViewModel.onFieldEdited(BILLING, Field.City, "New city")
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isFalse
+    }
+
+    @Test
     fun `when clearSelectedAddress, then initialise with empty address`() = testBlocking {
         addressViewModel.clearSelectedAddress()
 

@@ -99,6 +99,8 @@ class AddressViewModel @Inject constructor(
     }
 
     private fun initialize(initialState: Map<AddressType, Address>) {
+        _isDifferentShippingAddressChecked.value =
+            initialState[AddressType.SHIPPING]?.let { it != Address.EMPTY } ?: false
         launch {
             if (countries.isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
