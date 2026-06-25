@@ -1,4 +1,4 @@
-package com.woocommerce.android.wear.di
+package com.woocommerce.android.di
 
 import dagger.BindsOptionalOf
 import dagger.Module
@@ -7,12 +7,13 @@ import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.UnknownBlogListener
 
 /**
- * `WooNetwork` injects an `Optional<UnknownBlogListener>`. The Wear app doesn't recover from
- * `unknown_blog` errors, so it provides only the optional binding (left empty) to satisfy the graph.
+ * Lives in `commons` so the optional binding is installed in every Hilt graph that injects
+ * `Optional<UnknownBlogListener>`. The concrete implementation is bound by the main app only;
+ * other consumers (e.g. the Wear app) get an empty Optional.
  */
 @Module
 @InstallIn(SingletonComponent::class)
-interface UnknownBlogModule {
+interface UnknownBlogListenerModule {
     @BindsOptionalOf
     fun bindOptionalUnknownBlogListener(): UnknownBlogListener
 }
