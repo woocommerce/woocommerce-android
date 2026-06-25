@@ -25,7 +25,16 @@ data class WooError(
     val message: String? = null,
     val apiErrorCode: String? = null,
     val errorData: JSONObject? = null
-) : OnChangedError
+) : OnChangedError {
+    companion object {
+        /**
+         * Returned by Jetpack (HTTP 400) when signature verification fails on the merchant's site.
+         * This is a server-side problem the app cannot fix (broken Jetpack connection, security plugin
+         * conflict, outdated Jetpack, etc.).
+         */
+        const val REST_INVALID_SIGNATURE_CODE = "rest_invalid_signature"
+    }
+}
 
 enum class WooErrorType {
     TIMEOUT,
@@ -40,7 +49,8 @@ enum class WooErrorType {
     EMPTY_RESPONSE,
     INVALID_COUPON,
     INVALID_VARIATION_ID,
-    RESOURCE_ALREADY_EXISTS
+    RESOURCE_ALREADY_EXISTS,
+    REST_INVALID_SIGNATURE
 }
 
 fun WPComGsonNetworkError.toWooError() = WooError(
@@ -88,6 +98,7 @@ private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
             "rest_no_route" -> WooErrorType.API_NOT_FOUND
             "woocommerce_rest_invalid_coupon" -> WooErrorType.INVALID_COUPON
             "order_item_product_invalid_variation_id" -> WooErrorType.INVALID_VARIATION_ID
+            WooError.REST_INVALID_SIGNATURE_CODE -> WooErrorType.REST_INVALID_SIGNATURE
             else -> WooErrorType.GENERIC_ERROR
         }
     }
