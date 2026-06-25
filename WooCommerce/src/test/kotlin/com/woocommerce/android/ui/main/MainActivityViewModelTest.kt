@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -551,6 +552,34 @@ class MainActivityViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(viewModel.event.value).isNull()
         }
+    }
+
+    @Test
+    fun `given selected site reset due to error, when view model created, then it recovers into the site picker`() {
+        whenever(selectedSite.exists()).thenReturn(false)
+        whenever(prefs.sitePickerErrorMessage).thenReturn(R.string.site_picker_unknown_blog_error)
+        createViewModel()
+
+        assertThat(viewModel.startDestination).isEqualTo(R.id.nav_graph_site_picker)
+        assertThat(viewModel.isRecoveringSelectedSite).isTrue()
+    }
+
+    @Test
+    fun `given no pending error and no selected site, when view model created, then it is not recovering`() {
+        whenever(selectedSite.exists()).thenReturn(false)
+        whenever(prefs.sitePickerErrorMessage).thenReturn(0)
+        createViewModel()
+
+        assertThat(viewModel.isRecoveringSelectedSite).isFalse()
+    }
+
+    @Test
+    fun `given a selected site, when view model created, then it is not recovering`() {
+        whenever(selectedSite.exists()).thenReturn(true)
+        createViewModel()
+
+        assertThat(viewModel.startDestination).isEqualTo(R.id.dashboard)
+        assertThat(viewModel.isRecoveringSelectedSite).isFalse()
     }
 
     @Test

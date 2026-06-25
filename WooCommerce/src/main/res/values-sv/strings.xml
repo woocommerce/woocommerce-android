@@ -2105,12 +2105,6 @@ Language: sv_SE
     <string name="coupon_type_picker_percentage_content_description">Kupongtyp – procentuell rabatt</string>
     <string name="coupon_type_picker_title">Skapa rabattkod</string>
     <string name="coupon_list_add_coupon_content_description">Lägg till rabattkod</string>
-    <string name="try_test_order_button">Starta testbeställning</string>
-    <string name="try_test_order_step_4">Använd appen för att behandla återbetalningen för testbeställningen</string>
-    <string name="try_test_order_step_3">Slutför betalningen och vänta på en push-avisering om beställningen i din WooCommerce-app.</string>
-    <string name="try_test_order_step_2">Välj din testprodukt, lägg till i kundvagn och slutför i kassan på den webbutiken som en riktig kund.</string>
-    <string name="try_test_order_step_1">Tryck på knappen nedan för att bli vidarebefordrad till din onlinebutik via en webbläsare.</string>
-    <string name="try_test_order_heading">Prova en testbeställning</string>
     <string name="empty_order_test_order_button">Prova en testbeställning</string>
     <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Lägg till detaljer manuellt</string>

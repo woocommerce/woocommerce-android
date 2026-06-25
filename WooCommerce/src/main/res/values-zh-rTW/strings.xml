@@ -2103,12 +2103,6 @@ Language: zh_TW
     <string name="coupon_type_picker_percentage_content_description">優惠券折扣：百分比折扣</string>
     <string name="coupon_type_picker_title">建立優惠券</string>
     <string name="coupon_list_add_coupon_content_description">新增優惠券</string>
-    <string name="try_test_order_button">開始使用測試訂單</string>
-    <string name="try_test_order_step_4">使用應用程式處理測試訂單的退款流程</string>
-    <string name="try_test_order_step_3">完成付款流程，並等候 WooCommerce 應用程式的訂單推播通知。</string>
-    <string name="try_test_order_step_2">選取測試商品並新增至購物車，然後像真的顧客一樣在網路商店完成結帳。</string>
-    <string name="try_test_order_step_1">點選下方按鈕，系統會透過網頁瀏覽器重新導向至你的網路商店。</string>
-    <string name="try_test_order_heading">試用測試訂單</string>
     <string name="empty_order_test_order_button">試用測試訂單</string>
     <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>

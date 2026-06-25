@@ -52,6 +52,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.TIMEOUT_ERR
 import org.wordpress.android.fluxc.store.WCOrderStore.RemoteOrderPayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.fluxc.utils.putIfNotEmpty
 import org.wordpress.android.fluxc.utils.toWooPayload
 import org.wordpress.android.util.AppLog
@@ -1174,11 +1175,39 @@ class OrderRestClient @Inject constructor(
             wpAPINetworkError.errorCode == "rest_invalid_param" -> OrderErrorType.INVALID_PARAM
             wpAPINetworkError.errorCode == "woocommerce_rest_shop_order_invalid_id" -> OrderErrorType.INVALID_ID
             wpAPINetworkError.errorCode == "rest_no_route" -> OrderErrorType.PLUGIN_NOT_ACTIVE
+            isSiteReturnedNonJsonResponse(wpAPINetworkError) -> {
+                reportNonJsonResponse(wpAPINetworkError)
+                OrderErrorType.PARSE_ERROR
+            }
             wpAPINetworkError.type == BaseRequest.GenericErrorType.PARSE_ERROR -> OrderErrorType.PARSE_ERROR
             wpAPINetworkError.type == BaseRequest.GenericErrorType.TIMEOUT -> TIMEOUT_ERROR
             else -> OrderErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
         }
         return OrderError(orderErrorType, wpAPINetworkError.combinedErrorMessage, wpAPINetworkError)
+    }
+
+    /**
+     * Detects when the merchant's site returned a non-JSON body through the Jetpack proxy: the proxy
+     * (see CONNECT-38) wraps the upstream bytes as `no_response_body` with the raw payload carried in
+     * `data.raw_body`. This usually means a plugin error or a maintenance page on the merchant's site.
+     */
+    private fun isSiteReturnedNonJsonResponse(wpAPINetworkError: WPAPINetworkError): Boolean {
+        return wpAPINetworkError.errorCode == "no_response_body" &&
+            wpAPINetworkError.errorData?.has("raw_body") == true
+    }
+
+    /**
+     * Reports the non-JSON proxy response through the existing FluxC parse-error reporting path so the
+     * occurrence is visible in crash/error reporting (and its impact measurable). The raw body itself
+     * is intentionally not attached as it may contain the merchant's page content.
+     */
+    private fun reportNonJsonResponse(wpAPINetworkError: WPAPINetworkError) {
+        val report = OnUnexpectedError(
+            Exception("Order API returned a non-JSON response through the Jetpack proxy"),
+            ORDER_RESPONSE_PARSE_ERROR_DESCRIPTION
+        )
+        wpAPINetworkError.errorCode?.let { report.addExtra("error_code", it) }
+        dispatcher.emitChange(report)
     }
 
     private fun orderShipmentTrackingResponseToModel(
@@ -1249,6 +1278,8 @@ class OrderRestClient @Inject constructor(
     }
 
     companion object {
+        private const val ORDER_RESPONSE_PARSE_ERROR_DESCRIPTION = "Order API response parse error"
+
         private val ORDER_FIELDS = arrayOf(
             "billing",
             "coupon_lines",

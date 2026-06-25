@@ -11,6 +11,7 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
@@ -53,16 +54,28 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: WooPushNotificationsIntroductionViewModel
 
-    private fun setup(isJetpackCPSite: Boolean = false) {
+    private fun setup(connectionType: SiteConnectionType = SiteConnectionType.ApplicationPasswords) {
         val site = SiteModel().apply {
             url = "https://example.com"
-            origin = if (isJetpackCPSite) {
-                SiteModel.ORIGIN_WPCOM_REST
-            } else {
-                SiteModel.ORIGIN_WPAPI
+            when (connectionType) {
+                SiteConnectionType.ApplicationPasswords -> {
+                    origin = SiteModel.ORIGIN_WPAPI
+                    setIsJetpackCPConnected(false)
+                    setIsJetpackConnected(false)
+                }
+
+                SiteConnectionType.JetpackConnectionPackage -> {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackCPConnected(true)
+                    setIsJetpackConnected(false)
+                }
+
+                SiteConnectionType.Jetpack -> {
+                    origin = SiteModel.ORIGIN_WPCOM_REST
+                    setIsJetpackConnected(true)
+                    setIsJetpackCPConnected(false)
+                }
             }
-            setIsJetpackCPConnected(isJetpackCPSite)
-            setIsJetpackConnected(false)
         }
         whenever(selectedSite.get()).thenReturn(site)
 
@@ -74,6 +87,25 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
+
+    @Test
+    fun `given a full Jetpack site, when screen opens, then Exit is triggered without checking setup status`() =
+        testBlocking {
+            setup(connectionType = SiteConnectionType.Jetpack)
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(Exit)
+            verify(fetchJetpackStatus, never()).invoke(any(), any(), anyOrNull())
+            verify(checkWCPluginSupport, never()).invoke(any())
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                any()
+            )
+            verify(analyticsTrackerWrapper, never()).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                any()
+            )
+        }
 
     @Test
     fun `given site is not registered, when screen opens, then NotConnected state is shown`() =
@@ -403,7 +435,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
-            setup(isJetpackCPSite = true)
+            setup(connectionType = SiteConnectionType.JetpackConnectionPackage)
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.UpdateRequired)
@@ -419,7 +451,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
-            setup(isJetpackCPSite = true)
+            setup(connectionType = SiteConnectionType.JetpackConnectionPackage)
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.Connected)
@@ -435,7 +467,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
-            setup(isJetpackCPSite = true)
+            setup(connectionType = SiteConnectionType.JetpackConnectionPackage)
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.GenericError)
@@ -451,7 +483,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
-            setup(isJetpackCPSite = true)
+            setup(connectionType = SiteConnectionType.JetpackConnectionPackage)
 
             verify(fetchJetpackStatus, never()).invoke(any(), any(), anyOrNull())
         }
@@ -462,7 +494,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
-            setup(isJetpackCPSite = true)
+            setup(connectionType = SiteConnectionType.JetpackConnectionPackage)
             viewModel.onContinueClick()
 
             val event = viewModel.event.value
