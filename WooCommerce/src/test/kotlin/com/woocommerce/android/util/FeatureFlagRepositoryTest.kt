@@ -151,12 +151,46 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given local is false and remote is true, when effectiveValue accessed, then local keeps feature disabled`() {
+    fun `given local is false and remote is true, when effectiveValue accessed, then remote enables feature`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
             flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = false,
             remoteValue = true,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isTrue()
+    }
+
+    @Test
+    fun `given local is false and remote is null, when effectiveValue accessed, then feature stays disabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
+            localValue = false,
+            remoteValue = null,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isFalse()
+    }
+
+    @Test
+    fun `given local is false and remote is false, when effectiveValue accessed, then feature stays disabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
+            localValue = false,
+            remoteValue = false,
             overrideValue = null
         )
 
