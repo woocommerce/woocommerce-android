@@ -2306,13 +2306,6 @@
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
-    <!-- Empty order: place your first order -->
-
-    <string name="place_first_order_heading">Place your first order</string>
-    <!-- Steps 1 and 3 keep their original keys: their copy is unchanged, so renaming would discard existing translations -->
-    <string name="place_first_order_step_2">Select your product, add to cart, and complete checkout on that web store as a real customer.</string>
-    <string name="place_first_order_step_4">Use the app to process the refund for the order. &lt;a href=\'processingFees\'&gt;&lt;u&gt;Processing fees aren\'t refundable&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="place_first_order_button">Place order</string>
     <!--
         Settings
     -->
