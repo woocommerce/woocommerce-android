@@ -33,13 +33,16 @@ enum class FeatureFlag(
     POS_PRODUCTS_FTS("pos_products_fts", localValue = PackageUtils.isDebugBuild()),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks"),
     BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
-    WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1("woo_self_driven_push_notifications_m1"),
+    WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1(
+        "woo_self_driven_push_notifications_m1",
+        localValue = PackageUtils.isDebugBuild()
+    ),
     LOGGED_OUT_FF_PANEL("logged_out_ff_panel", localValue = PackageUtils.isDebugBuild()),
     AI_ASSISTANT("woo_mobile_ai_assistant"),
     AI_SUPPORT_CHAT("ai_support_chat"),
-    SMARTER_NOTIFICATIONS("smarter_notifications"),
+    SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
     IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
     IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
     IPP_AUSTRALIA_WOOPAYMENTS("woo_ipp_australia_woopayments"),
-    QR_LOGIN("woo_qr_code_login", localValue = true),
+    QR_LOGIN("woo_qr_code_login", localValue = PackageUtils.isDebugBuild()),
 }

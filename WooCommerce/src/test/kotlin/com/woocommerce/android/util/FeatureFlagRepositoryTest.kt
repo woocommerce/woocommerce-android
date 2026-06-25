@@ -125,12 +125,12 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given self driven push notifications feature flag, when inspected, then local value is enabled`() {
+    fun `given self driven push notifications feature flag, when inspected, then local value follows debug build`() {
         // WHEN
         val localValue = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1.localValue
 
         // THEN
-        assertThat(localValue).isTrue()
+        assertThat(localValue).isEqualTo(PackageUtils.isDebugBuild())
     }
 
     @Test
