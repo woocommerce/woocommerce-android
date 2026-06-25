@@ -1179,7 +1179,7 @@ class OrderListFragment :
             show = show,
             title = getString(R.string.orderlist_parsing_error_title),
             message = getString(R.string.orderlist_parsing_error_message),
-            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            troubleshootingClick = { openTroubleshootConnection() },
             supportContactClick = { openSupportRequestScreen() }
         )
     }
