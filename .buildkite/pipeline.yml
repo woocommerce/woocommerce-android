@@ -40,6 +40,9 @@ steps:
             exit 0
           fi
           ./gradlew detektAll
+        # TEMP(AINFRA): route to `android-staging` to exercise the new AMI (ami-0be819222d2d17a46). DO NOT MERGE.
+        agents:
+          queue: android-staging
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
@@ -103,6 +106,9 @@ steps:
       - label: "Unit tests"
         key: unit-tests
         command: .buildkite/commands/run-unit-tests.sh
+        # TEMP(AINFRA): route to `android-staging` to exercise the new AMI (ami-0be819222d2d17a46). DO NOT MERGE.
+        agents:
+          queue: android-staging
         plugins:
           - $CI_TOOLKIT
           - $TEST_COLLECTOR :
@@ -124,6 +130,9 @@ steps:
 
   - label: "🐘 Populate Gradle build cache"
     command: .buildkite/commands/gradle-cache-build.sh
+    # TEMP(AINFRA): route to `android-staging` to exercise the new AMI (ami-0be819222d2d17a46). DO NOT MERGE.
+    agents:
+      queue: android-staging
     plugins: [$CI_TOOLKIT]
 
   ########################################
