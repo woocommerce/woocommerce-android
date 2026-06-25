@@ -44,6 +44,31 @@ class WooPosSyncTimestampManagerTest {
     }
 
     @Test
+    fun `given blocked flag value, when setting catalog file blocked, then delegates to repository`() {
+        runTest {
+            // WHEN
+            manager.setCatalogFileBlocked(true)
+
+            // THEN
+            verify(repository).setCatalogFileBlocked(true)
+        }
+    }
+
+    @Test
+    fun `given repository reports blocked, when checking catalog file blocked, then returns true`() {
+        runTest {
+            // GIVEN
+            whenever(repository.isCatalogFileBlocked()).thenReturn(true)
+
+            // WHEN
+            val result = manager.isCatalogFileBlocked()
+
+            // THEN
+            assertThat(result).isTrue()
+        }
+    }
+
+    @Test
     fun `given valid timestamp in repository, when getting products timestamp, then timestamp is returned`() {
         runTest {
             // GIVEN

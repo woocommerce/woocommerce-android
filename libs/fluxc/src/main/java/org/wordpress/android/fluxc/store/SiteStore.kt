@@ -1,65 +1,29 @@
 package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
-import androidx.annotation.VisibleForTesting
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.wellsql.generated.SiteModelTable
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.SiteAction
-import org.wordpress.android.fluxc.action.SiteAction.CHECKED_AUTOMATED_TRANSFER_ELIGIBILITY
-import org.wordpress.android.fluxc.action.SiteAction.CHECKED_AUTOMATED_TRANSFER_STATUS
-import org.wordpress.android.fluxc.action.SiteAction.CHECKED_DOMAIN_AVAILABILITY
-import org.wordpress.android.fluxc.action.SiteAction.CHECKED_IS_WPCOM_URL
-import org.wordpress.android.fluxc.action.SiteAction.CHECK_AUTOMATED_TRANSFER_ELIGIBILITY
-import org.wordpress.android.fluxc.action.SiteAction.CHECK_AUTOMATED_TRANSFER_STATUS
-import org.wordpress.android.fluxc.action.SiteAction.CHECK_DOMAIN_AVAILABILITY
-import org.wordpress.android.fluxc.action.SiteAction.COMPLETED_QUICK_START
-import org.wordpress.android.fluxc.action.SiteAction.COMPLETE_QUICK_START
-import org.wordpress.android.fluxc.action.SiteAction.CREATE_NEW_SITE
-import org.wordpress.android.fluxc.action.SiteAction.DELETED_SITE
-import org.wordpress.android.fluxc.action.SiteAction.DELETE_SITE
 import org.wordpress.android.fluxc.action.SiteAction.DESIGNATED_PRIMARY_DOMAIN
 import org.wordpress.android.fluxc.action.SiteAction.DESIGNATE_PRIMARY_DOMAIN
-import org.wordpress.android.fluxc.action.SiteAction.EXPORTED_SITE
-import org.wordpress.android.fluxc.action.SiteAction.EXPORT_SITE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_CONNECT_SITE_INFO
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_DOMAIN_SUPPORTED_COUNTRIES
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_DOMAIN_SUPPORTED_STATES
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_JETPACK_CAPABILITIES
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PLANS
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PRIVATE_ATOMIC_COOKIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PROFILE_XML_RPC
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_WPCOM_SITE_BY_URL
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_CONNECT_SITE_INFO
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_COUNTRIES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_STATES
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_JETPACK_CAPABILITIES
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_PLANS
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_PRIVATE_ATOMIC_COOKIE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_PROFILE_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES_XML_RPC
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE_WP_API
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_WPCOM_SITE_BY_URL
-import org.wordpress.android.fluxc.action.SiteAction.HIDE_SITES
-import org.wordpress.android.fluxc.action.SiteAction.INITIATED_AUTOMATED_TRANSFER
-import org.wordpress.android.fluxc.action.SiteAction.INITIATE_AUTOMATED_TRANSFER
-import org.wordpress.android.fluxc.action.SiteAction.IS_WPCOM_URL
 import org.wordpress.android.fluxc.action.SiteAction.REMOVE_ALL_SITES
 import org.wordpress.android.fluxc.action.SiteAction.REMOVE_SITE
-import org.wordpress.android.fluxc.action.SiteAction.REMOVE_WPCOM_AND_JETPACK_SITES
-import org.wordpress.android.fluxc.action.SiteAction.SHOW_SITES
 import org.wordpress.android.fluxc.action.SiteAction.SUGGESTED_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.SUGGEST_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.UPDATE_SITE
-import org.wordpress.android.fluxc.action.SiteAction.UPDATE_SITES
 import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.model.DomainModel
-import org.wordpress.android.fluxc.model.JetpackCapability
 import org.wordpress.android.fluxc.model.PlanModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -73,31 +37,16 @@ import org.wordpress.android.fluxc.network.rest.wpapi.site.SiteWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
-import org.wordpress.android.fluxc.network.rest.wpcom.site.AllDomainsDomain
 import org.wordpress.android.fluxc.network.rest.wpcom.site.Domain
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainPriceResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainSuggestionResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookie
-import org.wordpress.android.fluxc.network.rest.wpcom.site.PrivateAtomicCookieResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.DeleteSiteResponsePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.ExportSiteResponsePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.FetchWPComSiteResponsePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.IsWPComResponsePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient.NewSiteResponsePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedCountryResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedStateResponse
 import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
-import org.wordpress.android.fluxc.persistence.SiteSqlUtils.DuplicateSiteException
+import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
-import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.INVALID_RESPONSE
-import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.NON_PRIVATE_AT_SITE
-import org.wordpress.android.fluxc.store.SiteStore.AccessCookieErrorType.SITE_MISSING_FROM_STORE
-import org.wordpress.android.fluxc.store.SiteStore.DeleteSiteErrorType.INVALID_SITE
-import org.wordpress.android.fluxc.store.SiteStore.DomainAvailabilityErrorType.INVALID_DOMAIN_NAME
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesErrorType.INVALID_COUNTRY_CODE
-import org.wordpress.android.fluxc.store.SiteStore.ExportSiteErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.SiteStore.LaunchSiteErrorType.ALREADY_LAUNCHED
 import org.wordpress.android.fluxc.store.SiteStore.PlansErrorType.NOT_AVAILABLE
 import org.wordpress.android.fluxc.store.SiteStore.SelfHostedErrorType.NOT_SET
@@ -119,26 +68,21 @@ import javax.inject.Singleton
  * NOTE: This class needs to be open because it's mocked in android tests in the WPAndroid project.
  *       TODO: consider adding https://kotlinlang.org/docs/all-open-plugin.html
  */
-@Suppress("LargeClass", "ForbiddenComment")
+@Suppress("LargeClass", "TooManyFunctions", "LongParameterList", "ForbiddenComment")
 @Singleton
 open class SiteStore @Inject constructor(
     dispatcher: Dispatcher?,
     private val siteRestClient: SiteRestClient,
     private val siteXMLRPCClient: SiteXMLRPCClient,
     private val siteWPAPIRestClient: SiteWPAPIRestClient,
-    private val privateAtomicCookie: PrivateAtomicCookie,
     private val siteSqlUtils: SiteSqlUtils,
+    private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
     private val coroutineEngine: CoroutineEngine
 ) : Store(dispatcher) {
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
 
     // Payloads
-    data class CompleteQuickStartPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val variant: String
-    ) : Payload<BaseNetworkError>()
-
     data class RefreshSitesXMLRPCPayload(
         @JvmField val username: String = "",
         @JvmField val password: String = "",
@@ -156,64 +100,6 @@ open class SiteStore @Inject constructor(
         @JvmField val filterJetpackConnectedPackageSite: Boolean = false
     ) : Payload<BaseNetworkError>()
 
-    /**
-     * Holds the new site parameters for site creation
-     *
-     * @param siteName The domain of the site
-     * @param siteTitle The title of the site
-     * @param language The language of the site
-     * @param timeZoneId The timezone of the site
-     * @param visibility The visibility of the site (public or private)
-     * @param segmentId The segment that the site belongs to
-     * @param siteDesign The design template of the site
-     * @param dryRun If set to true the call only validates the parameters passed
-     */
-    data class NewSitePayload(
-        @JvmField val siteName: String?,
-        @JvmField val siteTitle: String?,
-        @JvmField val language: String,
-        @JvmField val timeZoneId: String?,
-        @JvmField val visibility: SiteVisibility,
-        @JvmField val segmentId: Long? = null,
-        @JvmField val siteDesign: String? = null,
-        @JvmField val dryRun: Boolean,
-        @JvmField val findAvailableUrl: Boolean? = null,
-        @JvmField val siteCreationFlow: String? = null
-    ) : Payload<BaseNetworkError>() {
-        constructor(
-            siteName: String?,
-            language: String,
-            visibility: SiteVisibility,
-            dryRun: Boolean
-        ) : this(siteName, null, language, null, visibility, null, null, dryRun)
-
-        constructor(
-            siteName: String?,
-            language: String,
-            visibility: SiteVisibility,
-            segmentId: Long?,
-            dryRun: Boolean
-        ) : this(siteName, null, language, null, visibility, segmentId, null, dryRun)
-
-        constructor(
-            siteName: String?,
-            language: String,
-            timeZoneId: String,
-            visibility: SiteVisibility,
-            dryRun: Boolean
-        ) : this(siteName, null, language, timeZoneId, visibility, null, null, dryRun)
-
-        constructor(
-            siteName: String?,
-            siteTitle: String?,
-            language: String,
-            timeZoneId: String,
-            visibility: SiteVisibility,
-            findAvailableUrl: Boolean?,
-            dryRun: Boolean
-        ) : this(siteName, siteTitle, language, timeZoneId, visibility, null, null, dryRun, findAvailableUrl)
-    }
-
     data class FetchedPlansPayload(
         @JvmField val site: SiteModel,
         @JvmField val plans: List<PlanModel>? = null
@@ -222,28 +108,6 @@ open class SiteStore @Inject constructor(
             this.error = error
         }
     }
-
-    data class FetchedPrivateAtomicCookiePayload(
-        @JvmField val site: SiteModel,
-        @JvmField val cookie: PrivateAtomicCookieResponse?
-    ) : Payload<PrivateAtomicCookieError>()
-
-    data class FetchPrivateAtomicCookiePayload(@JvmField val siteId: Long)
-    data class FetchJetpackCapabilitiesPayload(@JvmField val remoteSiteId: Long)
-    data class FetchedJetpackCapabilitiesPayload(
-        @JvmField val remoteSiteId: Long,
-        @JvmField val capabilities: List<JetpackCapability> = listOf()
-    ) : Payload<JetpackCapabilitiesError>() {
-        constructor(remoteSiteId: Long, error: JetpackCapabilitiesError) : this(remoteSiteId) {
-            this.error = error
-        }
-    }
-
-    data class OnJetpackCapabilitiesFetched(
-        @JvmField val remoteSiteId: Long,
-        @JvmField val capabilities: List<JetpackCapability> = listOf(),
-        @JvmField val error: JetpackCapabilitiesError? = null
-    ) : OnChanged<JetpackCapabilitiesError>()
 
     data class SuggestDomainsPayload(
         @JvmField val query: String,
@@ -254,60 +118,7 @@ open class SiteStore @Inject constructor(
         @JvmField val includeDotBlogSubdomain: Boolean? = null,
         @JvmField val tlds: String? = null,
         @JvmField val segmentId: Long? = null
-    ) : Payload<BaseNetworkError>() {
-        @Deprecated(
-            "Replace with primary constructor " +
-                "which accepts 'vendor = \"dot\"' instead of 'includeVendorDot = true' " +
-                "or 'vendor = null' instead of 'includeVendorDot = false'.",
-            replaceWith = ReplaceWith(
-                expression = "SiteStore.SuggestDomainsPayload(" +
-                    "query = query, " +
-                    "onlyWordpressCom = onlyWordpressCom, " +
-                    "includeWordpressCom = includeWordpressCom, " +
-                    "includeDotBlogSubdomain = includeDotBlogSubdomain, " +
-                    "quantity = quantity, " +
-                    "vendor = null)"
-            )
-        )
-        constructor(
-            query: String,
-            onlyWordpressCom: Boolean,
-            includeWordpressCom: Boolean,
-            includeDotBlogSubdomain: Boolean,
-            quantity: Int,
-            includeVendorDot: Boolean
-        ) : this(
-            query = query,
-            quantity = quantity,
-            vendor = if (includeVendorDot) "dot" else null,
-            onlyWordpressCom = onlyWordpressCom,
-            includeWordpressCom = includeWordpressCom,
-            includeDotBlogSubdomain = includeDotBlogSubdomain
-        )
-
-        constructor(
-            query: String,
-            onlyWordpressCom: Boolean,
-            includeWordpressCom: Boolean,
-            includeDotBlogSubdomain: Boolean,
-            quantity: Int,
-            vendor: String? = null,
-        ) : this(
-            query,
-            quantity,
-            vendor,
-            onlyWordpressCom,
-            includeWordpressCom,
-            includeDotBlogSubdomain
-        )
-
-        constructor(query: String, quantity: Int, tlds: String?) : this(
-            query,
-            quantity,
-            vendor = null, // Avoids error: "There's a cycle in the delegation calls chain"
-            tlds = tlds
-        )
-    }
+    ) : Payload<BaseNetworkError>()
 
     data class SuggestDomainsResponsePayload(
         @JvmField val query: String,
@@ -317,6 +128,11 @@ open class SiteStore @Inject constructor(
             this.error = error
         }
     }
+
+    data class FetchConnectSiteInfoPayload @JvmOverloads constructor(
+        @JvmField val siteUrl: String,
+        @JvmField val discoverWPAPIOnFailure: Boolean = false
+    ) : Payload<BaseNetworkError>()
 
     data class ConnectSiteInfoPayload @JvmOverloads constructor(
         @JvmField val url: String,
@@ -342,54 +158,15 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    data class WPAPIDiscoveryResult @JvmOverloads constructor(
+        @JvmField val connectSiteInfoApiError: String? = null,
+        @JvmField val wpApiBaseUrl: String? = null
+    )
+
     data class DesignatePrimaryDomainPayload(
         @JvmField val site: SiteModel,
         @JvmField val domain: String
     ) : Payload<DesignatePrimaryDomainError>()
-
-    data class InitiateAutomatedTransferPayload(
-        @JvmField val site: SiteModel,
-        @JvmField val pluginSlugToInstall: String
-    ) : Payload<AutomatedTransferError>()
-
-    data class AutomatedTransferEligibilityResponsePayload
-    @JvmOverloads constructor(
-        @JvmField val site: SiteModel,
-        @JvmField val isEligible: Boolean = false,
-        @JvmField val errorCodes: List<String> = listOf()
-    ) : Payload<AutomatedTransferError>() {
-        constructor(site: SiteModel, error: AutomatedTransferError) : this(site) {
-            this.error = error
-        }
-    }
-
-    data class InitiateAutomatedTransferResponsePayload
-    @JvmOverloads constructor(
-        @JvmField val site: SiteModel,
-        @JvmField val pluginSlugToInstall: String,
-        @JvmField val success: Boolean = false
-    ) : Payload<AutomatedTransferError>()
-
-    data class AutomatedTransferStatusResponsePayload(
-        @JvmField val site: SiteModel,
-        @JvmField val status: String? = null,
-        @JvmField val currentStep: Int = 0,
-        @JvmField val totalSteps: Int = 0
-    ) : Payload<AutomatedTransferError>() {
-        constructor(site: SiteModel, error: AutomatedTransferError?) : this(site) {
-            this.error = error
-        }
-    }
-
-    data class DomainAvailabilityResponsePayload(
-        @JvmField val status: DomainAvailabilityStatus? = null,
-        @JvmField val mappable: DomainMappabilityStatus? = null,
-        @JvmField val supportsPrivacy: Boolean = false
-    ) : Payload<DomainAvailabilityError>() {
-        constructor(error: DomainAvailabilityError) : this() {
-            this.error = error
-        }
-    }
 
     data class DomainSupportedStatesResponsePayload(
         @JvmField val supportedStates: List<SupportedStateResponse>? = null
@@ -399,44 +176,11 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    data class DomainSupportedCountriesResponsePayload(
-        @JvmField val supportedCountries: List<SupportedCountryResponse>? = null
-    ) : Payload<DomainSupportedCountriesError>() {
-        constructor(error: DomainSupportedCountriesError) : this() {
-            this.error = error
-        }
-    }
-
-    data class AllDomainsError @JvmOverloads constructor(
-        @JvmField val type: AllDomainsErrorType,
-        @JvmField val message: String? = null,
-    ) : OnChangedError
-
     data class SiteError @JvmOverloads constructor(
         @JvmField val type: SiteErrorType,
         @JvmField val message: String? = null,
-        @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET
-    ) : OnChangedError
-
-    data class NewSiteError(@JvmField val type: NewSiteErrorType, @JvmField val message: String) : OnChangedError
-    data class DeleteSiteError(
-        @JvmField val type: DeleteSiteErrorType,
-        @JvmField val message: String = ""
-    ) : OnChangedError {
-        constructor(errorType: String, message: String) : this(DeleteSiteErrorType.fromString(errorType), message)
-    }
-
-    data class ExportSiteError(@JvmField val type: ExportSiteErrorType) : OnChangedError
-    data class AutomatedTransferError(@JvmField val type: AutomatedTransferErrorType?, @JvmField val message: String?) :
-            OnChangedError {
-        constructor(type: String, message: String) : this(AutomatedTransferErrorType.fromString(type), message)
-    }
-
-    data class DomainAvailabilityError
-    @JvmOverloads
-    constructor(
-        @JvmField val type: DomainAvailabilityErrorType,
-        @JvmField val message: String? = null
+        @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET,
+        @JvmField val wpApiDiscovery: WPAPIDiscoveryResult? = null
     ) : OnChangedError
 
     data class DomainSupportedStatesError
@@ -446,12 +190,6 @@ open class SiteStore @Inject constructor(
         @JvmField val message: String? = null
     ) : OnChangedError
 
-    data class DomainSupportedCountriesError(
-        @JvmField val type: DomainSupportedCountriesErrorType,
-        @JvmField val message: String?
-    ) : OnChangedError
-
-    data class QuickStartError(@JvmField val type: QuickStartErrorType, @JvmField val message: String?) : OnChangedError
     data class DesignatePrimaryDomainError(
         @JvmField val type: DesignatePrimaryDomainErrorType,
         @JvmField val message: String?
@@ -473,70 +211,7 @@ open class SiteStore @Inject constructor(
     data class OnSiteRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
     data class OnAllSitesRemoved(@JvmField val mRowsAffected: Int) : OnChanged<SiteError>()
 
-    data class OnNewSiteCreated(
-        @JvmField val dryRun: Boolean = false,
-        @JvmField val url: String? = null,
-        @JvmField val newSiteRemoteId: Long = 0
-    ) : OnChanged<NewSiteError>() {
-        constructor(dryRun: Boolean, url: String?, newSiteRemoteId: Long, error: NewSiteError?) : this(
-                dryRun,
-                url,
-                newSiteRemoteId
-        ) {
-            this.error = error
-        }
-    }
-
-    data class OnSiteDeleted(@JvmField val deleteSiteError: DeleteSiteError?) : OnChanged<DeleteSiteError>() {
-        init {
-            this.error = deleteSiteError
-        }
-    }
-
-    class OnSiteExported() : OnChanged<ExportSiteError>() {
-        constructor(error: ExportSiteError?) : this() {
-            this.error = error
-        }
-    }
-
-    data class OnPlansFetched(
-        @JvmField val site: SiteModel,
-        @JvmField val plans: List<PlanModel>?
-    ) : OnChanged<PlansError>() {
-        constructor(
-            site: SiteModel,
-            plans: List<PlanModel>?,
-            error: PlansError?
-        ) : this(site, plans) {
-            this.error = error
-        }
-    }
-
-    data class OnPrivateAtomicCookieFetched(
-        @JvmField val site: SiteModel?,
-        @JvmField val success: Boolean,
-        @JvmField val privateAtomicCookieError: PrivateAtomicCookieError? = null
-    ) : OnChanged<PrivateAtomicCookieError>() {
-        init {
-            this.error = privateAtomicCookieError
-        }
-    }
-
-    data class OnURLChecked(
-        @JvmField val url: String,
-        @JvmField val isWPCom: Boolean = false,
-        val siteError: SiteError? = null
-    ) : OnChanged<SiteError>() {
-        init {
-            this.error = siteError
-        }
-    }
-
     data class OnConnectSiteInfoChecked(@JvmField val info: ConnectSiteInfoPayload) : OnChanged<SiteError>()
-    data class OnWPComSiteFetched(
-        @JvmField val checkedUrl: String? = null,
-        @JvmField val site: SiteModel? = null
-    ) : OnChanged<SiteError>()
 
     data class SuggestDomainError(@JvmField val type: SuggestDomainErrorType, @JvmField val message: String) :
             OnChangedError {
@@ -551,61 +226,6 @@ open class SiteStore @Inject constructor(
         @JvmField val suggestions: List<DomainSuggestionResponse>
     ) : OnChanged<SuggestDomainError>()
 
-    data class OnDomainAvailabilityChecked(
-        @JvmField val status: DomainAvailabilityStatus?,
-        @JvmField val mappable: DomainMappabilityStatus?,
-        @JvmField val supportsPrivacy: Boolean
-    ) : OnChanged<DomainAvailabilityError>() {
-        constructor(
-            status: DomainAvailabilityStatus?,
-            mappable: DomainMappabilityStatus?,
-            supportsPrivacy: Boolean,
-            error: DomainAvailabilityError?
-        ) : this(status, mappable, supportsPrivacy) {
-            this.error = error
-        }
-    }
-
-    enum class DomainAvailabilityStatus {
-        BLACKLISTED_DOMAIN,
-        INVALID_TLD,
-        INVALID_DOMAIN,
-        TLD_NOT_SUPPORTED,
-        TRANSFERRABLE_DOMAIN,
-        AVAILABLE,
-        UNKNOWN_STATUS;
-
-        companion object {
-            @JvmStatic fun fromString(string: String): DomainAvailabilityStatus {
-                if (!TextUtils.isEmpty(string)) {
-                    for (v in values()) {
-                        if (string.equals(v.name, ignoreCase = true)) {
-                            return v
-                        }
-                    }
-                }
-                return UNKNOWN_STATUS
-            }
-        }
-    }
-
-    enum class DomainMappabilityStatus {
-        BLACKLISTED_DOMAIN, INVALID_TLD, INVALID_DOMAIN, MAPPABLE_DOMAIN, UNKNOWN_STATUS;
-
-        companion object {
-            @JvmStatic fun fromString(string: String): DomainMappabilityStatus {
-                if (!TextUtils.isEmpty(string)) {
-                    for (v in values()) {
-                        if (string.equals(v.name, ignoreCase = true)) {
-                            return v
-                        }
-                    }
-                }
-                return UNKNOWN_STATUS
-            }
-        }
-    }
-
     data class OnDomainSupportedStatesFetched(
         @JvmField val supportedStates: List<SupportedStateResponse>?
     ) : OnChanged<DomainSupportedStatesError>() {
@@ -613,23 +233,6 @@ open class SiteStore @Inject constructor(
             supportedStates: List<SupportedStateResponse>?,
             error: DomainSupportedStatesError?
         ) : this(supportedStates) {
-            this.error = error
-        }
-    }
-
-    class OnDomainSupportedCountriesFetched(
-        @JvmField val supportedCountries: List<SupportedCountryResponse>?,
-        error: DomainSupportedCountriesError?
-    ) : OnChanged<DomainSupportedCountriesError>() {
-        init {
-            this.error = error
-        }
-    }
-
-    data class FetchedAllDomainsPayload(
-        @JvmField val domains: List<AllDomainsDomain>? = null
-    ) : Payload<AllDomainsError>() {
-        constructor(error: AllDomainsError) : this() {
             this.error = error
         }
     }
@@ -684,64 +287,7 @@ open class SiteStore @Inject constructor(
     @JvmOverloads constructor(
         @JvmField val type: PlansErrorType,
         @JvmField val message: String? = null
-    ) : OnChangedError {
-        constructor(type: String?, message: String?) : this(PlansErrorType.fromString(type), message)
-    }
-
-    class PrivateAtomicCookieError(@JvmField val type: AccessCookieErrorType, @JvmField val message: String) :
-            OnChangedError
-
-    class JetpackCapabilitiesError(@JvmField val type: JetpackCapabilitiesErrorType, @JvmField val message: String?) :
-            OnChangedError
-
-    class OnAutomatedTransferEligibilityChecked(
-        @JvmField val site: SiteModel,
-        @JvmField val isEligible: Boolean,
-        @JvmField val eligibilityErrorCodes: List<String>
-    ) : OnChanged<AutomatedTransferError>() {
-        constructor(
-            site: SiteModel,
-            isEligible: Boolean,
-            eligibilityErrorCodes: List<String>,
-            error: AutomatedTransferError?
-        ) : this(site, isEligible, eligibilityErrorCodes) {
-            this.error = error
-        }
-    }
-
-    class OnAutomatedTransferInitiated(
-        @JvmField val site: SiteModel,
-        @JvmField val pluginSlugToInstall: String
-    ) : OnChanged<AutomatedTransferError>() {
-        constructor(
-            site: SiteModel,
-            pluginSlugToInstall: String,
-            error: AutomatedTransferError?
-        ) : this(site, pluginSlugToInstall) {
-            this.error = error
-        }
-    }
-
-    class OnAutomatedTransferStatusChecked(
-        @JvmField val site: SiteModel,
-        @JvmField val isCompleted: Boolean = false,
-        @JvmField val currentStep: Int = 0,
-        @JvmField val totalSteps: Int = 0
-    ) : OnChanged<AutomatedTransferError>() {
-        constructor(site: SiteModel, error: AutomatedTransferError?) : this(site) {
-            this.error = error
-        }
-    }
-
-    class QuickStartCompletedResponsePayload(
-        @JvmField val site: SiteModel,
-        @JvmField val success: Boolean
-    ) : OnChanged<QuickStartError>()
-
-    class OnQuickStartCompleted internal constructor(
-        @JvmField val site: SiteModel,
-        @JvmField val success: Boolean
-    ) : OnChanged<QuickStartError>()
+    ) : OnChangedError
 
     class DesignatedPrimaryDomainPayload(
         @JvmField val site: SiteModel,
@@ -768,11 +314,9 @@ open class SiteStore @Inject constructor(
         NOT_AUTHENTICATED,
         GENERIC_ERROR,
         WPCOM_SITE_SUSPENDED,
+        TLS_CERTIFICATE_VALIDITY_ERROR,
+        REMOTE_SITE_CERTIFICATE_ERROR,
         WORDPRESS_COM_CONNECTIVITY_ERROR
-    }
-
-    enum class AllDomainsErrorType {
-        UNAUTHORIZED, GENERIC_ERROR
     }
 
     enum class SuggestDomainErrorType {
@@ -793,28 +337,7 @@ open class SiteStore @Inject constructor(
     }
 
     enum class PlansErrorType {
-        NOT_AVAILABLE, AUTHORIZATION_REQUIRED, UNAUTHORIZED, UNKNOWN_BLOG, GENERIC_ERROR;
-
-        companion object {
-            fun fromString(type: String?): PlansErrorType {
-                if (!TextUtils.isEmpty(type)) {
-                    for (v in values()) {
-                        if (type.equals(v.name, ignoreCase = true)) {
-                            return v
-                        }
-                    }
-                }
-                return GENERIC_ERROR
-            }
-        }
-    }
-
-    enum class AccessCookieErrorType {
-        GENERIC_ERROR, INVALID_RESPONSE, SITE_MISSING_FROM_STORE, NON_PRIVATE_AT_SITE
-    }
-
-    enum class JetpackCapabilitiesErrorType {
-        GENERIC_ERROR
+        NOT_AVAILABLE, AUTHORIZATION_REQUIRED, UNAUTHORIZED, UNKNOWN_BLOG, GENERIC_ERROR
     }
 
     enum class SelfHostedErrorType {
@@ -823,88 +346,7 @@ open class SiteStore @Inject constructor(
         UNABLE_TO_READ_SITE
     }
 
-    enum class DeleteSiteErrorType {
-        INVALID_SITE, UNAUTHORIZED, // user don't have permission to delete
-        AUTHORIZATION_REQUIRED, // missing access token
-        GENERIC_ERROR;
-
-        companion object {
-            fun fromString(string: String): DeleteSiteErrorType {
-                if (!TextUtils.isEmpty(string)) {
-                    if (string == "unauthorized") {
-                        return UNAUTHORIZED
-                    } else if (string == "authorization_required") {
-                        return AUTHORIZATION_REQUIRED
-                    }
-                }
-                return GENERIC_ERROR
-            }
-        }
-    }
-
-    enum class ExportSiteErrorType {
-        INVALID_SITE, GENERIC_ERROR
-    }
-
     // Enums
-    enum class NewSiteErrorType {
-        SITE_NAME_REQUIRED,
-        SITE_NAME_NOT_ALLOWED,
-        SITE_NAME_MUST_BE_AT_LEAST_FOUR_CHARACTERS,
-        SITE_NAME_MUST_BE_LESS_THAN_SIXTY_FOUR_CHARACTERS,
-        SITE_NAME_CONTAINS_INVALID_CHARACTERS,
-        SITE_NAME_CANT_BE_USED,
-        SITE_NAME_ONLY_LOWERCASE_LETTERS_AND_NUMBERS,
-        SITE_NAME_MUST_INCLUDE_LETTERS,
-        SITE_NAME_EXISTS,
-        SITE_NAME_RESERVED,
-        SITE_NAME_RESERVED_BUT_MAY_BE_AVAILABLE,
-        SITE_NAME_INVALID,
-        SITE_TITLE_INVALID,
-        GENERIC_ERROR;
-
-        companion object {
-            // SiteStore semantics prefers SITE over BLOG but errors reported from the API use BLOG
-            // these are used to convert API errors to the appropriate enum value in fromString
-            private const val BLOG = "BLOG"
-            private const val SITE = "SITE"
-            @JvmStatic fun fromString(string: String): NewSiteErrorType {
-                if (!TextUtils.isEmpty(string)) {
-                    val siteString = string.lowercase(Locale.US).replace(BLOG, SITE)
-                    for (v in values()) {
-                        if (siteString.equals(v.name, ignoreCase = true)) {
-                            return v
-                        }
-                    }
-                }
-                return GENERIC_ERROR
-            }
-        }
-    }
-
-    enum class AutomatedTransferErrorType {
-        AT_NOT_ELIGIBLE, // occurs if AT is initiated when the site is not eligible
-        NOT_FOUND, // occurs if transfer status of a site with no active transfer is checked
-        GENERIC_ERROR;
-
-        companion object {
-            fun fromString(type: String?): AutomatedTransferErrorType {
-                if (!TextUtils.isEmpty(type)) {
-                    for (v in values()) {
-                        if (type.equals(v.name, ignoreCase = true)) {
-                            return v
-                        }
-                    }
-                }
-                return GENERIC_ERROR
-            }
-        }
-    }
-
-    enum class DomainAvailabilityErrorType {
-        INVALID_DOMAIN_NAME, GENERIC_ERROR
-    }
-
     enum class DomainSupportedStatesErrorType {
         INVALID_COUNTRY_CODE, INVALID_QUERY, GENERIC_ERROR;
 
@@ -922,14 +364,6 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    enum class DomainSupportedCountriesErrorType {
-        GENERIC_ERROR
-    }
-
-    enum class QuickStartErrorType {
-        GENERIC_ERROR
-    }
-
     enum class DesignatePrimaryDomainErrorType {
         GENERIC_ERROR
     }
@@ -942,14 +376,6 @@ open class SiteStore @Inject constructor(
 
         fun value(): Int {
             return mValue
-        }
-    }
-
-    enum class CompleteQuickStartVariant(private val mString: String) {
-        NEXT_STEPS("next-steps");
-
-        override fun toString(): String {
-            return mString
         }
     }
 
@@ -972,77 +398,15 @@ open class SiteStore @Inject constructor(
         get() = siteSqlUtils.getSites()
 
     /**
-     * Returns the number of sites of any kind in the store.
-     */
-    val sitesCount: Int
-        get() = siteSqlUtils.getSites().count()
-
-    /**
-     * Checks whether the store contains any sites of any kind.
-     */
-    fun hasSite(): Boolean {
-        return sitesCount != 0
-    }
-
-    /**
      * Obtains the site with the given (local) id and returns it as a [SiteModel].
-     *
-     * NOTE: This method needs to be open because it's mocked in android tests in the WPAndroid project.
-     *       TODO: consider adding https://kotlinlang.org/docs/all-open-plugin.html
      */
-    @Suppress("ForbiddenComment")
-    open fun getSiteByLocalId(id: Int): SiteModel? {
-        val result = siteSqlUtils.getSitesWithLocalId(id)
-        return if (result.isNotEmpty()) {
-            result[0]
-        } else null
-    }
-
-    /**
-     * Checks whether the store contains a site matching the given (local) id.
-     */
-    fun hasSiteWithLocalId(id: Int): Boolean {
-        return siteSqlUtils.getSitesWithLocalId(id).isNotEmpty()
-    }
-
-    /**
-     * Returns all .COM sites in the store.
-     */
-    val wPComSites: List<SiteModel>
-        get() = siteSqlUtils.getWpComSites()
+    fun getSiteByLocalId(id: Int) = siteSqlUtils.getSitesWithLocalId(id).firstOrNull()
 
     /**
      * Returns sites accessed via WPCom REST API (WPCom sites or Jetpack sites connected via WPCom REST API).
      */
     val sitesAccessedViaWPComRest: List<SiteModel>
         get() = siteSqlUtils.sitesAccessedViaWPComRest.asModel
-
-    /**
-     * Returns the number of sites accessed via WPCom REST API (WPCom sites or Jetpack sites connected
-     * via WPCom REST API).
-     */
-    val sitesAccessedViaWPComRestCount: Int
-        get() = siteSqlUtils.sitesAccessedViaWPComRest.count().toInt()
-
-    /**
-     * Checks whether the store contains at least one site accessed via WPCom REST API (WPCom sites or Jetpack
-     * sites connected via WPCom REST API).
-     */
-    fun hasSitesAccessedViaWPComRest(): Boolean {
-        return sitesAccessedViaWPComRestCount != 0
-    }
-
-    /**
-     * Returns the number of .COM sites in the store.
-     */
-    val wPComSitesCount: Int
-        get() = siteSqlUtils.getWpComSites().size
-
-    /**
-     * Returns the number of .COM Atomic sites in the store.
-     */
-    val wPComAtomicSitesCount: Int
-        get() = siteSqlUtils.getWpComAtomicSites().size
 
     /**
      * Returns sites with a name or url matching the search string.
@@ -1060,91 +424,10 @@ open class SiteStore @Inject constructor(
     }
 
     /**
-     * Checks whether the store contains at least one .COM site.
-     */
-    fun hasWPComSite(): Boolean {
-        return wPComSitesCount != 0
-    }
-
-    /**
-     * Checks whether the store contains at least one .COM Atomic site.
-     */
-    fun hasWPComAtomicSite(): Boolean {
-        return wPComAtomicSitesCount != 0
-    }
-
-    /**
      * Returns sites accessed via XMLRPC (self-hosted sites or Jetpack sites accessed via XMLRPC).
      */
     val sitesAccessedViaXMLRPC: List<SiteModel>
         get() = siteSqlUtils.sitesAccessedViaXMLRPC.asModel
-
-    /**
-     * Returns the number of sites accessed via XMLRPC (self-hosted sites or Jetpack sites accessed via XMLRPC).
-     */
-    val sitesAccessedViaXMLRPCCount: Int
-        get() = siteSqlUtils.sitesAccessedViaXMLRPC.count().toInt()
-
-    /**
-     * Checks whether the store contains at least one site accessed via XMLRPC (self-hosted sites or
-     * Jetpack sites accessed via XMLRPC).
-     */
-    fun hasSiteAccessedViaXMLRPC(): Boolean {
-        return sitesAccessedViaXMLRPCCount != 0
-    }
-
-    /**
-     * Returns all visible sites as [SiteModel]s. All self-hosted sites over XML-RPC are visible by default.
-     */
-    val visibleSites: List<SiteModel>
-        get() = siteSqlUtils.getVisibleSites()
-
-    /**
-     * Returns the number of visible sites. All self-hosted sites over XML-RPC are visible by default.
-     */
-    val visibleSitesCount: Int
-        get() = siteSqlUtils.getVisibleSites().size
-
-    /**
-     * Returns all visible .COM sites as [SiteModel]s.
-     */
-    val visibleSitesAccessedViaWPCom: List<SiteModel>
-        get() = siteSqlUtils.visibleSitesAccessedViaWPCom.asModel
-
-    /**
-     * Returns the number of visible .COM sites.
-     */
-    val visibleSitesAccessedViaWPComCount: Int
-        get() = siteSqlUtils.visibleSitesAccessedViaWPCom.count().toInt()
-
-    /**
-     * Checks whether the .COM site with the given (local) id is visible.
-     */
-    fun isWPComSiteVisibleByLocalId(id: Int): Boolean {
-        return siteSqlUtils.isWPComSiteVisibleByLocalId(id)
-    }
-
-    /**
-     * Given a (remote) site id, returns the corresponding (local) id.
-     */
-    fun getLocalIdForRemoteSiteId(siteId: Long): Int {
-        return siteSqlUtils.getLocalIdForRemoteSiteId(siteId)
-    }
-
-    /**
-     * Given a (remote) self-hosted site id and XML-RPC url, returns the corresponding (local) id.
-     */
-    fun getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(selfHostedSiteId: Long, xmlRpcUrl: String?): Int {
-        return siteSqlUtils.getLocalIdForSelfHostedSiteIdAndXmlRpcUrl(selfHostedSiteId, xmlRpcUrl)
-    }
-
-    /**
-     * Given a (local) id, returns the (remote) site id. Searches first for .COM and Jetpack, then looks for self-hosted
-     * sites.
-     */
-    fun getSiteIdForLocalId(id: Int): Long {
-        return siteSqlUtils.getSiteIdForLocalId(id)
-    }
 
     /**
      * Given a .COM site ID (either a .COM site id, or the .COM id of a Jetpack site), returns the site as a
@@ -1162,6 +445,12 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    @Throws(SiteStorePersistence.DuplicateSiteException::class)
+    fun insertOrUpdateSite(site: SiteModel): Int = siteStorePersistence.insertOrUpdateSite(site)
+
+    fun getWooCommerceSites(): List<SiteModel> =
+        siteSqlUtils.getSitesWith(SiteModelTable.HAS_WOO_COMMERCE, true).asModel
+
     @Subscribe(threadMode = ASYNC)
     @Suppress("LongMethod", "ComplexMethod")
     override fun onAction(action: Action<*>) {
@@ -1178,71 +467,21 @@ open class SiteStore @Inject constructor(
             FETCH_SITES_XML_RPC -> coroutineEngine.launch(T.MAIN, this, "Fetch XMLRPC sites") {
                 emitChange(fetchSitesXmlRpc(action.payload as RefreshSitesXMLRPCPayload))
             }
-            FETCH_SITE_WP_API -> coroutineEngine.launch(T.MAIN, this, "Fetch WPAPI Site") {
-                emitChange(fetchWPAPISite(action.payload as FetchWPAPISitePayload))
-            }
             UPDATE_SITE -> {
                 emitChange(updateSite(action.payload as SiteModel))
             }
-            UPDATE_SITES -> updateSites(action.payload as SitesModel)
-            DELETE_SITE -> deleteSite(action.payload as SiteModel)
-            DELETED_SITE -> handleDeletedSite(action.payload as DeleteSiteResponsePayload)
-            EXPORT_SITE -> exportSite(action.payload as SiteModel)
-            EXPORTED_SITE -> handleExportedSite(action.payload as ExportSiteResponsePayload)
             REMOVE_SITE -> removeSite(action.payload as SiteModel)
             REMOVE_ALL_SITES -> removeAllSites()
-            REMOVE_WPCOM_AND_JETPACK_SITES -> removeWPComAndJetpackSites()
-            SHOW_SITES -> toggleSitesVisibility(action.payload as SitesModel, true)
-            HIDE_SITES -> toggleSitesVisibility(action.payload as SitesModel, false)
-            CREATE_NEW_SITE -> coroutineEngine.launch(T.MAIN, this, "Create a new site") {
-                emitChange(createNewSite(action.payload as NewSitePayload))
-            }
-            FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as String)
+            FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as FetchConnectSiteInfoPayload)
             FETCHED_CONNECT_SITE_INFO -> handleFetchedConnectSiteInfo(action.payload as ConnectSiteInfoPayload)
-            FETCH_WPCOM_SITE_BY_URL -> fetchWPComSiteByUrl(action.payload as String)
-            FETCHED_WPCOM_SITE_BY_URL -> handleFetchedWPComSiteByUrl(action.payload as FetchWPComSiteResponsePayload)
-            IS_WPCOM_URL -> checkUrlIsWPCom(action.payload as String)
-            CHECKED_IS_WPCOM_URL -> handleCheckedIsWPComUrl(action.payload as IsWPComResponsePayload)
             SUGGEST_DOMAINS -> suggestDomains(action.payload as SuggestDomainsPayload)
             SUGGESTED_DOMAINS -> handleSuggestedDomains(action.payload as SuggestDomainsResponsePayload)
-            FETCH_PLANS -> fetchPlans(action.payload as SiteModel)
-            FETCHED_PLANS -> handleFetchedPlans(action.payload as FetchedPlansPayload)
-            CHECK_DOMAIN_AVAILABILITY -> checkDomainAvailability(action.payload as String)
-            CHECKED_DOMAIN_AVAILABILITY -> handleCheckedDomainAvailability(
-                    action.payload as DomainAvailabilityResponsePayload
-            )
             FETCH_DOMAIN_SUPPORTED_STATES -> fetchSupportedStates(action.payload as String)
             FETCHED_DOMAIN_SUPPORTED_STATES -> handleFetchedSupportedStates(
                     action.payload as DomainSupportedStatesResponsePayload
             )
-            FETCH_DOMAIN_SUPPORTED_COUNTRIES -> siteRestClient.fetchSupportedCountries()
-            FETCHED_DOMAIN_SUPPORTED_COUNTRIES -> handleFetchedSupportedCountries(
-                    action.payload as DomainSupportedCountriesResponsePayload
-            )
-            CHECK_AUTOMATED_TRANSFER_ELIGIBILITY -> checkAutomatedTransferEligibility(action.payload as SiteModel)
-            INITIATE_AUTOMATED_TRANSFER -> initiateAutomatedTransfer(action.payload as InitiateAutomatedTransferPayload)
-            CHECK_AUTOMATED_TRANSFER_STATUS -> checkAutomatedTransferStatus(action.payload as SiteModel)
-            CHECKED_AUTOMATED_TRANSFER_ELIGIBILITY -> handleCheckedAutomatedTransferEligibility(
-                    action.payload as AutomatedTransferEligibilityResponsePayload
-            )
-            INITIATED_AUTOMATED_TRANSFER -> handleInitiatedAutomatedTransfer(
-                    action.payload as InitiateAutomatedTransferResponsePayload
-            )
-            CHECKED_AUTOMATED_TRANSFER_STATUS -> handleCheckedAutomatedTransferStatus(
-                    action.payload as AutomatedTransferStatusResponsePayload
-            )
-            COMPLETE_QUICK_START -> completeQuickStart(action.payload as CompleteQuickStartPayload)
-            COMPLETED_QUICK_START -> handleQuickStartCompleted(action.payload as QuickStartCompletedResponsePayload)
             DESIGNATE_PRIMARY_DOMAIN -> designatePrimaryDomain(action.payload as DesignatePrimaryDomainPayload)
             DESIGNATED_PRIMARY_DOMAIN -> handleDesignatedPrimaryDomain(action.payload as DesignatedPrimaryDomainPayload)
-            FETCH_PRIVATE_ATOMIC_COOKIE -> fetchPrivateAtomicCookie(action.payload as FetchPrivateAtomicCookiePayload)
-            FETCHED_PRIVATE_ATOMIC_COOKIE -> handleFetchedPrivateAtomicCookie(
-                    action.payload as FetchedPrivateAtomicCookiePayload
-            )
-            FETCH_JETPACK_CAPABILITIES -> fetchJetpackCapabilities(action.payload as FetchJetpackCapabilitiesPayload)
-            FETCHED_JETPACK_CAPABILITIES -> handleFetchedJetpackCapabilities(
-                    action.payload as FetchedJetpackCapabilitiesPayload
-            )
         }
     }
 
@@ -1289,8 +528,8 @@ open class SiteStore @Inject constructor(
             event.error = SiteErrorUtils.genericToSiteError(siteModel.error)
         } else {
             try {
-                siteSqlUtils.insertOrUpdateSite(siteModel)
-            } catch (e: DuplicateSiteException) {
+                insertOrUpdateSite(siteModel)
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 event.error = SiteError(DUPLICATE_SITE)
             }
         }
@@ -1305,7 +544,7 @@ open class SiteStore @Inject constructor(
         } else {
             try {
                 OnSiteChanged(createOrUpdateSite(siteModel, includesAppPasswordsUrl = true))
-            } catch (e: DuplicateSiteException) {
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 OnSiteChanged(SiteError(DUPLICATE_SITE))
             }
         }
@@ -1357,7 +596,7 @@ open class SiteStore @Inject constructor(
                     rowsAffected++
                     updatedSites.add(site)
                 }
-            } catch (caughtException: DuplicateSiteException) {
+            } catch (e: SiteStorePersistence.DuplicateSiteException) {
                 duplicateSiteFound = true
             }
         }
@@ -1368,55 +607,13 @@ open class SiteStore @Inject constructor(
         val freshSiteFromDB = getSiteBySiteId(site.siteId)
         // Update the site with existing values from the DB that are not returned by the REST API
         if (freshSiteFromDB != null) {
-            // The REST API doesn't return info about the editor(s).
-            site.mobileEditor = freshSiteFromDB.mobileEditor
-            site.webEditor = freshSiteFromDB.webEditor
-
             // The WPCom REST API doesn't return info about the application passwords authorize URL.
             if (site.origin == SiteModel.ORIGIN_WPCOM_REST && !includesAppPasswordsUrl) {
                 site.applicationPasswordsAuthorizeUrl = freshSiteFromDB.applicationPasswordsAuthorizeUrl
             }
         }
 
-        return siteSqlUtils.insertOrUpdateSite(site)
-    }
-
-    private fun deleteSite(site: SiteModel) {
-        // Not available for Jetpack sites
-        if (!site.isWPCom) {
-            val event = OnSiteDeleted(DeleteSiteError(INVALID_SITE))
-            emitChange(event)
-            return
-        }
-        siteRestClient.deleteSite(site)
-    }
-
-    private fun handleDeletedSite(payload: DeleteSiteResponsePayload) {
-        val event = OnSiteDeleted(payload.error)
-        if (!payload.isError) {
-            siteSqlUtils.deleteSite(payload.site)
-        }
-        emitChange(event)
-    }
-
-    private fun exportSite(site: SiteModel) {
-        // Not available for Jetpack sites
-        if (!site.isWPCom) {
-            emitChange(OnSiteExported(ExportSiteError(ExportSiteErrorType.INVALID_SITE)))
-            return
-        }
-        siteRestClient.exportSite(site)
-    }
-
-    @Suppress("ForbiddenComment")
-    private fun handleExportedSite(payload: ExportSiteResponsePayload) {
-        val event = if (payload.isError) {
-            // TODO: what kind of error could we get here?
-            OnSiteExported(ExportSiteError(GENERIC_ERROR))
-        } else {
-            OnSiteExported()
-        }
-        emitChange(event)
+        return insertOrUpdateSite(site)
     }
 
     private fun removeSite(site: SiteModel) {
@@ -1431,61 +628,16 @@ open class SiteStore @Inject constructor(
         emitChange(event)
     }
 
-    private fun removeWPComAndJetpackSites() {
-        // Logging out of WP.com. Drop all WP.com sites, and all Jetpack sites that were fetched over the WP.com
-        // REST API only (they don't have a .org site id)
-        val wpcomAndJetpackSites = siteSqlUtils.sitesAccessedViaWPComRest.asModel
-        val rowsAffected = removeSites(wpcomAndJetpackSites)
-
-        emitChange(OnSiteRemoved(rowsAffected))
+    private fun fetchConnectSiteInfo(payload: FetchConnectSiteInfoPayload) {
+        siteRestClient.fetchConnectSiteInfo(payload.siteUrl, payload.discoverWPAPIOnFailure)
     }
 
-    private fun toggleSitesVisibility(sites: SitesModel, visible: Boolean): Int {
-        var rowsAffected = 0
-        for (site in sites.sites) {
-            rowsAffected += siteSqlUtils.setSiteVisibility(site, visible)
-        }
-        return rowsAffected
-    }
-
-    @VisibleForTesting
-    suspend fun createNewSite(payload: NewSitePayload): OnNewSiteCreated {
-        val result = siteRestClient.newSite(
-                payload.siteName,
-                payload.siteTitle,
-                payload.language,
-                payload.timeZoneId,
-                payload.visibility,
-                payload.segmentId,
-                payload.siteDesign,
-                payload.findAvailableUrl,
-                payload.dryRun,
-                payload.siteCreationFlow
-        )
-        return handleCreateNewSiteCompleted(
-                payload = result
-        )
-    }
-
-    private fun handleCreateNewSiteCompleted(payload: NewSiteResponsePayload): OnNewSiteCreated {
-        return OnNewSiteCreated(payload.dryRun, payload.siteUrl, payload.newSiteRemoteId, payload.error)
-    }
-
-    private fun removeSites(sites: List<SiteModel>): Int {
-        var rowsAffected = 0
-        for (site in sites) {
-            rowsAffected += siteSqlUtils.deleteSite(site)
-        }
-        return rowsAffected
-    }
-
-    private fun fetchConnectSiteInfo(payload: String) {
-        siteRestClient.fetchConnectSiteInfo(payload)
-    }
-
-    suspend fun fetchConnectSiteInfoSync(siteUrl: String): ConnectSiteInfoPayload {
+    suspend fun fetchConnectSiteInfoSync(
+        siteUrl: String,
+        discoverWPAPIOnFailure: Boolean = false
+    ): ConnectSiteInfoPayload {
         return coroutineEngine.withDefaultContext(T.API, this, "Fetch Connect Site Info") {
-            siteRestClient.fetchConnectSiteInfoSync(siteUrl)
+            siteRestClient.fetchConnectSiteInfoSync(siteUrl, discoverWPAPIOnFailure)
         }
     }
 
@@ -1493,31 +645,6 @@ open class SiteStore @Inject constructor(
         val event = OnConnectSiteInfoChecked(payload)
         event.error = payload.error
         emitChange(event)
-    }
-
-    private fun fetchWPComSiteByUrl(payload: String) {
-        siteRestClient.fetchWPComSiteByUrl(payload)
-    }
-
-    private fun handleFetchedWPComSiteByUrl(payload: FetchWPComSiteResponsePayload) {
-        val event = OnWPComSiteFetched(payload.checkedUrl, payload.site)
-        event.error = payload.error
-        emitChange(event)
-    }
-
-    private fun checkUrlIsWPCom(payload: String) {
-        siteRestClient.checkUrlIsWPCom(payload)
-    }
-
-    private fun handleCheckedIsWPComUrl(payload: IsWPComResponsePayload) {
-        val error = if (payload.isError) {
-            // Return invalid site for all errors (this endpoint seems a bit drunk).
-            // Client likely needs to know if there was an error or not.
-            SiteError(SiteErrorType.INVALID_SITE)
-        } else {
-            null
-        }
-        emitChange(OnURLChecked(payload.url ?: "", payload.isWPCom, error))
     }
 
     private fun suggestDomains(payload: SuggestDomainsPayload) {
@@ -1541,86 +668,6 @@ open class SiteStore @Inject constructor(
         emitChange(event)
     }
 
-    private fun fetchPrivateAtomicCookie(payload: FetchPrivateAtomicCookiePayload) {
-        val site = getSiteBySiteId(payload.siteId)
-        if (site == null) {
-            val cookieError = PrivateAtomicCookieError(
-                    SITE_MISSING_FROM_STORE,
-                    "Requested site is missing from the store."
-            )
-            emitChange(OnPrivateAtomicCookieFetched(null, false, cookieError))
-            return
-        }
-        if (!site.isPrivateWPComAtomic) {
-            val cookieError = PrivateAtomicCookieError(
-                    NON_PRIVATE_AT_SITE,
-                    "Cookie can only be requested for private atomic site."
-            )
-            emitChange(OnPrivateAtomicCookieFetched(site, false, cookieError))
-            return
-        }
-        siteRestClient.fetchAccessCookie(site)
-    }
-
-    private fun handleFetchedPrivateAtomicCookie(payload: FetchedPrivateAtomicCookiePayload) {
-        if (payload.cookie == null || payload.cookie.cookies.isEmpty()) {
-            emitChange(
-                    OnPrivateAtomicCookieFetched(
-                            payload.site, false,
-                            PrivateAtomicCookieError(
-                                    INVALID_RESPONSE,
-                                    "Cookie is missing from response."
-                            )
-                    )
-            )
-            privateAtomicCookie.set(null)
-            return
-        }
-        privateAtomicCookie.set(payload.cookie.cookies[0])
-        emitChange(OnPrivateAtomicCookieFetched(payload.site, true, payload.error))
-    }
-
-    private fun fetchJetpackCapabilities(payload: FetchJetpackCapabilitiesPayload) {
-        siteRestClient.fetchJetpackCapabilities(payload.remoteSiteId)
-    }
-
-    private fun handleFetchedJetpackCapabilities(payload: FetchedJetpackCapabilitiesPayload) {
-        emitChange(OnJetpackCapabilitiesFetched(payload.remoteSiteId, payload.capabilities, payload.error))
-    }
-
-    private fun fetchPlans(siteModel: SiteModel) {
-        if (siteModel.isUsingWpComRestApi) {
-            siteRestClient.fetchPlans(siteModel)
-        } else {
-            val plansError = PlansError(NOT_AVAILABLE)
-            handleFetchedPlans(FetchedPlansPayload(siteModel, plansError))
-        }
-    }
-
-    private fun handleFetchedPlans(payload: FetchedPlansPayload) {
-        emitChange(OnPlansFetched(payload.site, payload.plans, payload.error))
-    }
-
-    private fun checkDomainAvailability(domainName: String) {
-        if (TextUtils.isEmpty(domainName)) {
-            val error = DomainAvailabilityError(INVALID_DOMAIN_NAME)
-            handleCheckedDomainAvailability(DomainAvailabilityResponsePayload(error))
-        } else {
-            siteRestClient.checkDomainAvailability(domainName)
-        }
-    }
-
-    private fun handleCheckedDomainAvailability(payload: DomainAvailabilityResponsePayload) {
-        emitChange(
-                OnDomainAvailabilityChecked(
-                        payload.status,
-                        payload.mappable,
-                        payload.supportsPrivacy,
-                        payload.error
-                )
-        )
-    }
-
     private fun fetchSupportedStates(countryCode: String) {
         if (TextUtils.isEmpty(countryCode)) {
             val error = DomainSupportedStatesError(INVALID_COUNTRY_CODE)
@@ -1634,60 +681,6 @@ open class SiteStore @Inject constructor(
         emitChange(OnDomainSupportedStatesFetched(payload.supportedStates, payload.error))
     }
 
-    private fun handleFetchedSupportedCountries(payload: DomainSupportedCountriesResponsePayload) {
-        emitChange(OnDomainSupportedCountriesFetched(payload.supportedCountries, payload.error))
-    }
-
-    // Automated Transfers
-    private fun checkAutomatedTransferEligibility(site: SiteModel) {
-        siteRestClient.checkAutomatedTransferEligibility(site)
-    }
-
-    private fun handleCheckedAutomatedTransferEligibility(payload: AutomatedTransferEligibilityResponsePayload) {
-        emitChange(
-                OnAutomatedTransferEligibilityChecked(
-                        payload.site, payload.isEligible, payload.errorCodes,
-                        payload.error
-                )
-        )
-    }
-
-    private fun initiateAutomatedTransfer(payload: InitiateAutomatedTransferPayload) {
-        siteRestClient.initiateAutomatedTransfer(payload.site, payload.pluginSlugToInstall)
-    }
-
-    private fun handleInitiatedAutomatedTransfer(payload: InitiateAutomatedTransferResponsePayload) {
-        emitChange(OnAutomatedTransferInitiated(payload.site, payload.pluginSlugToInstall, payload.error))
-    }
-
-    private fun checkAutomatedTransferStatus(site: SiteModel) {
-        siteRestClient.checkAutomatedTransferStatus(site)
-    }
-
-    private fun handleCheckedAutomatedTransferStatus(payload: AutomatedTransferStatusResponsePayload) {
-        val event: OnAutomatedTransferStatusChecked = if (!payload.isError) {
-            // We can't rely on the currentStep and totalSteps as it may not be equal when the transfer is complete
-            val isTransferCompleted = payload.status.equals("complete", ignoreCase = true)
-            OnAutomatedTransferStatusChecked(
-                    payload.site, isTransferCompleted, payload.currentStep,
-                    payload.totalSteps
-            )
-        } else {
-            OnAutomatedTransferStatusChecked(payload.site, payload.error)
-        }
-        emitChange(event)
-    }
-
-    private fun completeQuickStart(payload: CompleteQuickStartPayload) {
-        siteRestClient.completeQuickStart(payload.site, payload.variant)
-    }
-
-    private fun handleQuickStartCompleted(payload: QuickStartCompletedResponsePayload) {
-        val event = OnQuickStartCompleted(payload.site, payload.success)
-        event.error = payload.error
-        emitChange(event)
-    }
-
     private fun designatePrimaryDomain(payload: DesignatePrimaryDomainPayload) {
         siteRestClient.designatePrimaryDomain(payload.site, payload.domain)
     }
@@ -1698,27 +691,6 @@ open class SiteStore @Inject constructor(
         emitChange(event)
     }
 
-    suspend fun fetchAllDomains(
-        noWpCom: Boolean = true,
-        resolveStatus: Boolean = true
-    ): FetchedAllDomainsPayload =
-        coroutineEngine.withDefaultContext(T.API, this, "Fetch all domains") {
-            return@withDefaultContext when (val response =
-                siteRestClient.fetchAllDomains(noWpCom, resolveStatus)) {
-                is Success -> {
-                    val domains = response.data.domains
-                    FetchedAllDomainsPayload(domains)
-                }
-                is Error -> {
-                    val errorType = when (response.error.apiError) {
-                        "authorization_required" -> AllDomainsErrorType.UNAUTHORIZED
-                        else -> AllDomainsErrorType.GENERIC_ERROR
-                    }
-                    val domainsError = AllDomainsError(errorType, response.error.message)
-                    FetchedAllDomainsPayload(domainsError)
-                }
-            }
-        }
     suspend fun fetchSiteDomains(siteModel: SiteModel): FetchedDomainsPayload =
             coroutineEngine.withDefaultContext(T.API, this, "Fetch site domains") {
                 return@withDefaultContext when (val response =
@@ -1743,12 +715,6 @@ open class SiteStore @Inject constructor(
     private suspend fun insertDomainModels(siteModel: SiteModel, domains: List<Domain>) {
         val domainModels = domains.map { it.asDomainModel() }
         domainDao.insert(siteModel.id, domainModels)
-    }
-
-    fun getSiteDomains(siteLocalId: Int): Flow<List<DomainModel>> {
-        return domainDao.getDomains(siteLocalId).map { result ->
-            result.map { it.toDomainModel() }
-        }
     }
 
     suspend fun deleteApplicationPassword(site: SiteModel): OnApplicationPasswordDeleted =

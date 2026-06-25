@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -72,23 +71,6 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `given cash source and order exists, when init, then state has cash payment text`() = runTest {
-        // GIVEN
-        val order = Order.getEmptyOrder(Date(), Date()).copy(total = BigDecimal("50.00"))
-        whenever(totalsRepository.getOrderById(123L)).thenReturn(order)
-        whenever(priceFormat(BigDecimal("50.00"))).thenReturn("$50.00")
-        whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_cash, "$50.00"))
-            .thenReturn("A cash payment of $50.00 was successfully made.")
-
-        // WHEN
-        val viewModel = createViewModel(source = PaymentSuccessSource.CASH_BOOKINGS)
-
-        // THEN
-        assertThat(viewModel.state.value.orderTotalText)
-            .isEqualTo("A cash payment of $50.00 was successfully made.")
-    }
-
-    @Test
     fun `given null order, when init, then state has fallback text`() = runTest {
         // GIVEN
         whenever(totalsRepository.getOrderById(123L)).thenReturn(null)
@@ -127,27 +109,6 @@ class WooPosPaymentSuccessViewModelTest {
     }
 
     @Test
-    fun `given cash source and order with billing email, when init, then receipt message is null`() = runTest {
-        // GIVEN
-        val order = Order.getEmptyOrder(Date(), Date()).copy(
-            total = BigDecimal("50.00"),
-            customer = Order.Customer(
-                billingAddress = Address.EMPTY.copy(email = "customer@example.com"),
-                shippingAddress = Address.EMPTY
-            )
-        )
-        whenever(totalsRepository.getOrderById(123L)).thenReturn(order)
-        whenever(priceFormat(any<BigDecimal>())).thenReturn("$50.00")
-        whenever(resourceProvider.getString(any(), any())).thenReturn("test")
-
-        // WHEN
-        val viewModel = createViewModel(source = PaymentSuccessSource.CASH_BOOKINGS)
-
-        // THEN
-        assertThat(viewModel.state.value.receiptSentMessage).isNull()
-    }
-
-    @Test
     fun `given order without billing email, when init, then receipt message is null`() = runTest {
         // GIVEN
         val order = Order.getEmptyOrder(Date(), Date()).copy(total = BigDecimal("50.00"))
@@ -173,54 +134,6 @@ class WooPosPaymentSuccessViewModelTest {
         viewModel.navigationEvent.test {
             viewModel.onDoneClicked()
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-        }
-    }
-
-    @Test
-    fun `given CARD_BOOKINGS source, when onDoneClicked, then NavigateBackToBookingsAfterPayment emitted`() = runTest {
-        // GIVEN
-        whenever(totalsRepository.getOrderById(any())).thenReturn(null)
-        whenever(resourceProvider.getString(any())).thenReturn("test")
-        val viewModel = createViewModel(source = PaymentSuccessSource.CARD_BOOKINGS)
-
-        // WHEN & THEN
-        viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
-            val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
-            assertThat(event.value).isEqualTo(true)
-        }
-    }
-
-    @Test
-    fun `given CASH_BOOKINGS source, when onDoneClicked, then NavigateBackToBookingsAfterPayment emitted`() = runTest {
-        // GIVEN
-        whenever(totalsRepository.getOrderById(any())).thenReturn(null)
-        whenever(resourceProvider.getString(any())).thenReturn("test")
-        val viewModel = createViewModel(source = PaymentSuccessSource.CASH_BOOKINGS)
-
-        // WHEN & THEN
-        viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
-            val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
-            assertThat(event.value).isEqualTo(true)
-        }
-    }
-
-    @Test
-    fun `given CARD_BOOKINGS source, when onBackPressed, then NavigateBackToBookingsAfterPayment emitted`() = runTest {
-        // GIVEN
-        whenever(totalsRepository.getOrderById(any())).thenReturn(null)
-        whenever(resourceProvider.getString(any())).thenReturn("test")
-        val viewModel = createViewModel(source = PaymentSuccessSource.CARD_BOOKINGS)
-
-        // WHEN & THEN
-        viewModel.navigationEvent.test {
-            viewModel.onBackPressed()
-            val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
-            assertThat(event.value).isEqualTo(true)
         }
     }
 

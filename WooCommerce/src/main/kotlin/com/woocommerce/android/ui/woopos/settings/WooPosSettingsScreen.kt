@@ -233,6 +233,8 @@ private fun SettingsDialogs(
 
     WooPosSyncErrorDialog(
         isVisible = dialogState is WooPosSettingsDialogState.SyncErrorDialog,
+        isServerPermissionsError =
+        (dialogState as? WooPosSettingsDialogState.SyncErrorDialog)?.isServerPermissionsError == true,
         onRetry = onRetrySync,
         onDismissRequest = onDismissDialog
     )

@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 open class AppPrefsWrapper @Inject constructor() {
+    var sitePickerErrorMessage by AppPrefs::sitePickerErrorMessage
+
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
@@ -45,6 +47,10 @@ open class AppPrefsWrapper @Inject constructor() {
     var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
 
     var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
+
+    var hasSeenAnalyticsScheduledImportInfo by AppPrefs::hasSeenAnalyticsScheduledImportInfo
+
+    var qrLoginRolloutBucket by AppPrefs::qrLoginRolloutBucket
 
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated

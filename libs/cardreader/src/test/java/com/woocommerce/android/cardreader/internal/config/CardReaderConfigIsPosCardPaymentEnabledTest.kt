@@ -1,0 +1,55 @@
+package com.woocommerce.android.cardreader.internal.config
+
+import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
+import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+
+class CardReaderConfigIsPosCardPaymentEnabledTest {
+
+    @RunWith(Parameterized::class)
+    class PosEnabledCountriesTest(private val countryCode: String) {
+
+        @Test
+        fun `given a POS card-payment country, when isPosCardPaymentEnabled is read, then it returns true`() {
+            val config = CardReaderConfigFactory().getCardReaderConfigFor(countryCode)
+
+            assertThat(config.isPosCardPaymentEnabled).isTrue
+        }
+
+        companion object {
+            @JvmStatic
+            @Parameterized.Parameters(name = "country: {0}")
+            fun data(): List<String> = listOf(
+                "US", "PR", "GB", "CA",
+                "IE", "NL", "FI", "LU",
+                "SG", "NZ",
+                "AU",
+            )
+        }
+    }
+
+    @RunWith(Parameterized::class)
+    class PosDisabledUnsupportedCountriesTest(private val countryCode: String) {
+
+        @Test
+        fun `given an unsupported country, when isPosCardPaymentEnabled is read, then it returns false`() {
+            val config = CardReaderConfigFactory().getCardReaderConfigFor(countryCode)
+
+            assertThat(config).isInstanceOf(CardReaderConfigForUnsupportedCountry::class.java)
+            assertThat(config.isPosCardPaymentEnabled).isFalse
+        }
+
+        companion object {
+            @JvmStatic
+            @Parameterized.Parameters(name = "country: {0}")
+            fun data(): List<String> = listOf(
+                "JP", "MX", "IN", "BR",
+                "FR", "DE", "AT", "BE", "IT", "PT", "ES",
+                "invalid",
+            )
+        }
+    }
+}

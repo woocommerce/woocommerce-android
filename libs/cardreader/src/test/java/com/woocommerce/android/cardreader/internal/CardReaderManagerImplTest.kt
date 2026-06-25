@@ -1,12 +1,16 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import com.stripe.stripeterminal.external.models.DeviceType
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -24,6 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -74,6 +79,56 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
             softwareUpdateManager,
             terminalListener,
         )
+    }
+
+    @Test
+    fun `given terminal not initialized, when isTapToPaySupportedOnDevice, then TerminalNotInitialized returned`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(false)
+
+        val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
+
+        assertThat(result).isEqualTo(TapToPaySupportResult.TerminalNotInitialized)
+        verify(terminalWrapper, never()).supportsReadersOfType(any(), any())
+    }
+
+    @Test
+    fun `given Stripe reports supported, when isTapToPaySupportedOnDevice, then Supported returned`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(true)
+        whenever(terminalWrapper.supportsReadersOfType(any(), any()))
+            .thenReturn(ReaderSupportResult.Supported)
+
+        val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
+
+        assertThat(result).isEqualTo(TapToPaySupportResult.Supported)
+    }
+
+    @Test
+    fun `given Stripe reports not supported, when isTapToPaySupportedOnDevice, then NotSupported returned`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(true)
+        whenever(terminalWrapper.supportsReadersOfType(any(), any()))
+            .thenReturn(ReaderSupportResult.NotSupported(RuntimeException("no TEE")))
+
+        val result = cardReaderManager.isTapToPaySupportedOnDevice(false)
+
+        assertThat(result).isInstanceOf(TapToPaySupportResult.NotSupported::class.java)
+        assertThat((result as TapToPaySupportResult.NotSupported).reason).isEqualTo("no TEE")
+    }
+
+    @Test
+    fun `given simulated mode, when isTapToPaySupportedOnDevice, then ttp discovery config requests simulated`() {
+        whenever(terminalWrapper.isInitialized()).thenReturn(true)
+        whenever(terminalWrapper.supportsReadersOfType(any(), any()))
+            .thenReturn(ReaderSupportResult.Supported)
+
+        cardReaderManager.isTapToPaySupportedOnDevice(true)
+
+        val configCaptor = argumentCaptor<DiscoveryConfiguration>()
+        verify(terminalWrapper).supportsReadersOfType(eq(DeviceType.TAP_TO_PAY_DEVICE), configCaptor.capture())
+        assertThat(configCaptor.firstValue).isInstanceOf(
+            DiscoveryConfiguration.TapToPayDiscoveryConfiguration::class.java
+        )
+        assertThat((configCaptor.firstValue as DiscoveryConfiguration.TapToPayDiscoveryConfiguration).isSimulated)
+            .isTrue
     }
 
     @Test

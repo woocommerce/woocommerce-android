@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +34,9 @@ import javax.inject.Inject
 class AiAssistantHostFragment : BaseFragment() {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     @Inject
     internal lateinit var cardActionNavigator: WooAssistantCardActionNavigator
@@ -60,7 +64,7 @@ class AiAssistantHostFragment : BaseFragment() {
                     showEarlyAccessNotice = false
                 },
                 onEarlyAccessFeedbackClick = ::openAiAssistantFeedbackSurvey,
-                assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter),
+                assistantCardRenderer = WooAssistantCardRenderer(currencyFormatter, dateUtils),
                 onCardAction = ::onCardAction,
             )
         }

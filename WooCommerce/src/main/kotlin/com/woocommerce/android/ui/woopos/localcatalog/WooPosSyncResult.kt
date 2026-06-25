@@ -47,6 +47,12 @@ sealed class PosLocalCatalogSyncResult {
             lastGenerationState: String? = null
         ) : Failure(error, pollAttempts, lastGenerationState)
 
+        class CatalogFileBlocked(
+            error: String,
+            pollAttempts: Int? = null,
+            lastGenerationState: String? = null
+        ) : Failure(error, pollAttempts, lastGenerationState)
+
         fun withTrackingData(
             pollAttempts: Int,
             lastGenerationState: String?
@@ -55,6 +61,7 @@ sealed class PosLocalCatalogSyncResult {
             is DatabaseError -> DatabaseError(error, pollAttempts, lastGenerationState)
             is InvalidResponse -> InvalidResponse(error, pollAttempts, lastGenerationState)
             is CatalogGenerationTimeout -> CatalogGenerationTimeout(error, pollAttempts, lastGenerationState)
+            is CatalogFileBlocked -> CatalogFileBlocked(error, pollAttempts, lastGenerationState)
             is UnexpectedError -> UnexpectedError(error, pollAttempts, lastGenerationState)
         }
     }

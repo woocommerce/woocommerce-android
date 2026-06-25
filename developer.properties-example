@@ -1,6 +1,11 @@
 # Build settings
 use_remote_build_cache_locally=true
 
+# When false, local builds are read-only consumers of the build cache, which speeds up incremental
+# builds. Clean builds still restore CI-built states via the remote build cache. Set to true if you
+# rely on cache entries from your own local builds.
+store_local_build_cache=false
+
 # Changing values below  will affect performance of remote build cache on local builds.
 # Consider using the default values for local builds, if it's not necessary to change them.
 # See details on internal P2: https://wp.me/paaHJt-82c

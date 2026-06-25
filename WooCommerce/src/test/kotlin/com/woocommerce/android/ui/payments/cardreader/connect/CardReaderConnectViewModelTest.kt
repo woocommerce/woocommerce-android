@@ -5,6 +5,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
+import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.Failed
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -479,6 +480,28 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             init(scanState = FAILED)
 
             assertThat(viewModel.viewStateData.value).isInstanceOf(ScanningFailedState::class.java)
+        }
+
+    @Test
+    fun `given ttp device unsupported, when scan fails, then ttp unsupported state shown`() =
+        testBlocking {
+            init(scanState = ScanResult.TTP_UNSUPPORTED)
+
+            assertThat(viewModel.viewStateData.value)
+                .isInstanceOf(CardReaderConnectViewState.TapToPayDeviceUnsupportedState::class.java)
+        }
+
+    @Test
+    fun `given ttp unsupported state, when learn more clicked, then launches doc url`() =
+        testBlocking {
+            init(scanState = ScanResult.TTP_UNSUPPORTED)
+
+            (viewModel.viewStateData.value as CardReaderConnectViewState.TapToPayDeviceUnsupportedState)
+                .onPrimaryActionClicked.invoke()
+
+            val event = viewModel.event.value as com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+                .LaunchUrlInChromeTab
+            assertThat(event.url).isEqualTo(com.woocommerce.android.AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY)
         }
 
     @Test
@@ -1610,6 +1633,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                     READER_FOUND -> emit(ReadersFound(listOf(reader)))
                     MULTIPLE_READERS_FOUND -> emit(ReadersFound(listOf(reader, reader2)))
                     FAILED -> emit(Failed("dummy msg"))
+                    ScanResult.TTP_UNSUPPORTED -> emit(
+                        CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported("device unsupported")
+                    )
                 }
             }
         }
@@ -1626,6 +1652,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
 
     private enum class ScanResult {
-        SCANNING, READER_FOUND, MULTIPLE_READERS_FOUND, FAILED
+        SCANNING, READER_FOUND, MULTIPLE_READERS_FOUND, FAILED, TTP_UNSUPPORTED
     }
 }

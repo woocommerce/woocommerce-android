@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
+import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
@@ -91,6 +92,9 @@ class MockCardReaderManagerModule {
         }
 
         override fun setupTapToPayUx(config: TapToPayUxConfig) {}
+
+        override fun isTapToPaySupportedOnDevice(isSimulated: Boolean): TapToPaySupportResult =
+            TapToPaySupportResult.Supported
 
         override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 

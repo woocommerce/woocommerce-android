@@ -37,7 +37,7 @@ internal class ConfirmationPreviewRenderer @Inject constructor(
     }
 }
 
-data class RenderedConfirmationPreview(
+internal data class RenderedConfirmationPreview(
     val message: String,
     val fields: List<RenderedConfirmationDiffRow>,
     val isBulk: Boolean,
@@ -56,7 +56,7 @@ data class RenderedConfirmationPreview(
         get() = fields
 }
 
-data class RenderedConfirmationDiffRow(
+internal data class RenderedConfirmationDiffRow(
     val name: String,
     val label: String,
     val value: String,
@@ -66,4 +66,4 @@ data class RenderedConfirmationDiffRow(
         get() = value
 }
 
-typealias RenderedConfirmationPreviewField = RenderedConfirmationDiffRow
+internal typealias RenderedConfirmationPreviewField = RenderedConfirmationDiffRow

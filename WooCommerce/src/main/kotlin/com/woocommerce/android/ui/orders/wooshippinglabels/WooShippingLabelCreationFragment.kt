@@ -102,6 +102,7 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                 is NavigateToCustomsFormEdit -> {
                     WooShippingLabelCreationFragmentDirections
                         .actionWooShippingLabelCreationFragmentToWooShippingLabelCustomsFormFragment(
+                            originCountryCode = event.originCountryCode,
                             destinationCountryCode = event.destinationCountryCode,
                             customsData = event.customData,
                             storeOptions = event.storeOptions
@@ -186,13 +187,13 @@ class WooShippingLabelCreationFragment : BaseFragment() {
             FedExTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
-            viewModel.onCarrierTermsAccepted()
+            viewModel.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.FEDEX)
         }
         handleDialogNotice(
             UPSDAPTermsOfServiceBottomSheetFragment.TOS_ACCEPTED_NOTICE_KEY,
             entryId = R.id.wooShippingLabelCreationFragment
         ) {
-            viewModel.onCarrierTermsAccepted()
+            viewModel.onCarrierTermsAccepted(WooShippingLabelCreationViewModel.Carrier.UPS)
         }
     }
 

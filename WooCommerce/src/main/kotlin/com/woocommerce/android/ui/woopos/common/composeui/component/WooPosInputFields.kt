@@ -96,6 +96,10 @@ fun WooPosMoneyInputField(
 
     var labelWidth by remember { mutableIntStateOf(0) }
 
+    val placeholderText = remember(decimalSeparator, numberOfDecimals) {
+        if (numberOfDecimals > 0) "0$decimalSeparator${"0".repeat(numberOfDecimals)}" else "0"
+    }
+
     Box(
         modifier = modifier.background(WooPosTheme.colors.transparent),
         contentAlignment = contentAlignment,
@@ -103,7 +107,7 @@ fun WooPosMoneyInputField(
         val showLabel = textFieldValue.text.isEmpty()
         if (showLabel) {
             WooPosText(
-                text = visualTransformation.filter(AnnotatedString("0.00")).text.toString(),
+                text = visualTransformation.filter(AnnotatedString(placeholderText)).text.toString(),
                 style = textStyle,
                 color = WooPosTheme.colors.onDisabledContainer,
                 maxLines = 1,

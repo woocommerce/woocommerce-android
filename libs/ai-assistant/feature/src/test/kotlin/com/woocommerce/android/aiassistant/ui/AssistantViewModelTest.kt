@@ -180,7 +180,7 @@ class AssistantViewModelTest {
             val started = assistantTelemetryTracker.singleEvent<AiAssistantTurnStartedEvent>()
 
             assertThat(started.isRetry).isFalse()
-            assertThat(started.completionStack).isEqualTo("jetpack_ai_query")
+            assertThat(started.completionStack).isEqualTo("woo_mobile_ai")
             assertThat(started.promptVersion).isEqualTo(AssistantConfig.PROMPT_VERSION)
             assertThat(started.toolCatalogVersion).isEqualTo(AssistantConfig.TOOL_CATALOG_VERSION)
         }
@@ -1194,8 +1194,8 @@ class AssistantViewModelTest {
     fun `given grouped variation cards have distinct parent product ids, when cards arrive, then both remain visible`() =
         runTest {
             viewModel.onSendMessage("Show matching variations")
-            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
-            val secondVariation = givenVariationCard(parentProductId = 101L, variationId = 10L, name = "Green socks")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L)
+            val secondVariation = givenVariationCard(parentProductId = 101L, variationId = 10L)
 
             runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation, secondVariation)))
             advanceUntilIdle()
@@ -1212,9 +1212,9 @@ class AssistantViewModelTest {
     fun `given grouped variation cards have same composite id, when cards arrive, then duplicate is filtered`() =
         runTest {
             viewModel.onSendMessage("Show matching variations")
-            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Blue socks")
-            val duplicateVariation = givenVariationCard(parentProductId = 100L, variationId = 10L, name = "Red socks")
-            val secondVariation = givenVariationCard(parentProductId = 100L, variationId = 11L, name = "Green socks")
+            val firstVariation = givenVariationCard(parentProductId = 100L, variationId = 10L)
+            val duplicateVariation = givenVariationCard(parentProductId = 100L, variationId = 10L)
+            val secondVariation = givenVariationCard(parentProductId = 100L, variationId = 11L)
 
             runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(firstVariation)))
             runtime.emit(AssistantRuntimeEvent.CardsResolved(listOf(duplicateVariation, secondVariation)))
@@ -1822,11 +1822,10 @@ class AssistantViewModelTest {
     private fun givenVariationCard(
         parentProductId: Long,
         variationId: Long,
-        name: String = "Blue socks",
     ) = AssistantCard.Variation(
         parentProductId = parentProductId,
         variationId = variationId,
-        name = name,
+        parentProductName = "Woo socks",
         sku = "woo-socks-blue",
         price = "12.99",
         stockStatus = "instock",

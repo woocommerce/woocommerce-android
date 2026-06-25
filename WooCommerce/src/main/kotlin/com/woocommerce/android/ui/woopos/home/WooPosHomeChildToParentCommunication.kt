@@ -77,7 +77,6 @@ sealed class ChildToParentEvent {
         data object ExitPos : NavigationEvent()
         data object ToSettings : NavigationEvent()
         data object ToOrders : NavigationEvent()
-        data object ToBookings : NavigationEvent()
     }
 
     sealed class SearchEvent : ChildToParentEvent() {
@@ -90,7 +89,10 @@ sealed class ChildToParentEvent {
     data class OrderCreated(val data: WooPosOrderCreatedData) : ChildToParentEvent()
 
     sealed class SettingsEvent : ChildToParentEvent() {
-        data class ShowSyncErrorDialog(val errorMessage: String) : SettingsEvent()
+        data class ShowSyncErrorDialog(
+            val errorMessage: String,
+            val isServerPermissionsError: Boolean = false
+        ) : SettingsEvent()
         data object ShowCardReaderConnectionDialog : SettingsEvent()
         data object ShowCardReaderUpdateDialog : SettingsEvent()
     }

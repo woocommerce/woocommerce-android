@@ -69,7 +69,9 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         }
         is WooPosSplashState.SyncFailed -> {
             SyncFailed(
+                isServerPermissionsError = currentState.isServerPermissionsError,
                 onRetryClicked = { viewModel.onRetrySync() },
+                onContinueWithBasicSyncClicked = { viewModel.onContinueWithBasicSyncClicked() },
                 onExitPosClicked = {
                     onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
                 }
@@ -169,20 +171,43 @@ private fun SyncingCatalog(
 
 @Composable
 private fun SyncFailed(
+    isServerPermissionsError: Boolean,
     onRetryClicked: () -> Unit,
+    onContinueWithBasicSyncClicked: () -> Unit,
     onExitPosClicked: () -> Unit
 ) {
-    WooPosErrorScreen(
-        message = stringResource(R.string.woopos_home_sync_failed_title),
-        reason = stringResource(R.string.woopos_home_sync_failed_message),
-        primaryButton = WooPosErrorScreenButtonState(
+    val title = if (isServerPermissionsError) {
+        R.string.woopos_home_sync_failed_blocked_title
+    } else {
+        R.string.woopos_home_sync_failed_title
+    }
+    val reason = if (isServerPermissionsError) {
+        R.string.woopos_home_sync_failed_server_permissions_message
+    } else {
+        R.string.woopos_home_sync_failed_message
+    }
+    val exitButton = WooPosErrorScreenButtonState(
+        text = stringResource(R.string.woopos_home_syncing_catalog_exit_button),
+        click = onExitPosClicked
+    )
+    // A blocked catalog file is a permanent host issue, so retrying is pointless — offer to proceed
+    // with basic sync instead. Every other failure can be transient, so it keeps the Retry action.
+    val primaryButton = if (isServerPermissionsError) {
+        WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_home_sync_failed_blocked_continue_button),
+            click = onContinueWithBasicSyncClicked
+        )
+    } else {
+        WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_home_sync_failed_retry_button),
             click = onRetryClicked
-        ),
-        secondaryButton = WooPosErrorScreenButtonState(
-            text = stringResource(R.string.woopos_home_syncing_catalog_exit_button),
-            click = onExitPosClicked
         )
+    }
+    WooPosErrorScreen(
+        message = stringResource(title),
+        reason = stringResource(reason),
+        primaryButton = primaryButton,
+        secondaryButton = exitButton
     )
 }
 

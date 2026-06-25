@@ -75,9 +75,11 @@ object AppPrefs {
         SUPPORT_NAME,
         IS_USING_V4_API,
         HAS_UNSEEN_REVIEWS,
+        HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
+        SITE_PICKER_ERROR_MESSAGE,
         DATABASE_DOWNGRADED,
         ORDER_SUMMARY_MIGRATED,
         GATEWAY_MIGRATED,
@@ -232,7 +234,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
 
-        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
+
+        QR_LOGIN_ROLLOUT_BUCKET
     }
 
     fun init(context: Context) {
@@ -276,6 +280,22 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    // String resource of a message to surface on the site picker after the app restarts into it
+    // (e.g. when the selected site was reset due to an error). 0 means no pending message.
+    var sitePickerErrorMessage: Int
+        get() = getInt(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE, 0)
+        set(value) {
+            val key = DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE.toString()
+            if (value == 0) {
+                // Cleared on the main thread (site picker init), so apply() to avoid blocking disk I/O.
+                getPreferences().edit { remove(key) }
+            } else {
+                // Written right before a recovery restart that may kill the process, so commit()
+                // synchronously to make it durable before an async apply() could be lost.
+                getPreferences().edit(commit = true) { putString(key, value.toString()) }
+            }
+        }
 
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)
@@ -360,6 +380,21 @@ object AppPrefs {
                 .putBoolean(DeletableSitePrefKey.AI_ASSISTANT_EARLY_ACCESS_NOTICE_DISMISSED.toString(), value)
                 .commit()
             check(committed) { "Failed to persist AI Assistant early access notice dismissal" }
+        }
+
+    var hasSeenAnalyticsScheduledImportInfo: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO,
+            default = false,
+        )
+        set(value) = setBoolean(key = DeletablePrefKey.HAS_SEEN_ANALYTICS_SCHEDULED_IMPORT_INFO, value = value)
+
+    var qrLoginRolloutBucket: Int?
+        get() = UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET
+            .takeIf { exists(it) }
+            ?.let { getInt(it) }
+        set(value) {
+            value?.let { setInt(UndeletablePrefKey.QR_LOGIN_ROLLOUT_BUCKET, it) }
         }
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"

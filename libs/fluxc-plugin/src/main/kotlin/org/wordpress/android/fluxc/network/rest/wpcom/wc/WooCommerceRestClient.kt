@@ -13,8 +13,6 @@ import javax.inject.Singleton
 @Singleton
 class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     companion object {
-        const val COUPONS_SETTING_GROUP = "general"
-        const val COUPONS_SETTING_ID = "woocommerce_enable_coupons"
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
         const val ROUND_TAX_AT_SUBTOTAL_SETTING_ID = "woocommerce_tax_round_at_subtotal"
@@ -22,6 +20,7 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val ANALYTICS_ENABLED_SETTING_ID = "woocommerce_analytics_enabled"
         const val ANALYTICS_SETTING_GROUP = "wc_admin"
         const val ANALYTICS_DATE_TYPE_SETTING_ID = "woocommerce_date_type"
+        const val ANALYTICS_SCHEDULED_IMPORT_SETTING_ID = "woocommerce_analytics_scheduled_import"
 
         private const val ROOT_ENDPOINT_TIMEOUT_MS = 15000
     }
@@ -83,20 +82,6 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
             clazz = Array<SiteSettingsResponse>::class.java
         )
         return response.toWooPayload { it.toList() }
-    }
-
-    suspend fun enableCoupons(site: SiteModel): WooPayload<Boolean> {
-        val url = WOOCOMMERCE.settings.group(COUPONS_SETTING_GROUP).id(COUPONS_SETTING_ID).pathV3
-        val param = mapOf("value" to "yes")
-
-        val response = wooNetwork.executePutGsonRequest(
-            site = site,
-            path = url,
-            clazz = SiteSettingOptionResponse::class.java,
-            body = param
-        )
-
-        return response.toWooPayload { it.let { it.value == "yes" } }
     }
 
     suspend fun enableAnalytics(site: SiteModel): WooPayload<Boolean> {
@@ -168,5 +153,29 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         )
 
         return response.toWooPayload { WCAnalyticsOrderDateType.fromValue(it.value) }
+    }
+
+    suspend fun fetchAnalyticsScheduledImportEnabled(site: SiteModel): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ANALYTICS_SETTING_GROUP).id(ANALYTICS_SCHEDULED_IMPORT_SETTING_ID).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+        )
+        return response.toWooPayload { it.value == "yes" }
+    }
+
+    suspend fun updateAnalyticsScheduledImportEnabled(site: SiteModel, enabled: Boolean): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(ANALYTICS_SETTING_GROUP).id(ANALYTICS_SCHEDULED_IMPORT_SETTING_ID).pathV3
+        val param = mapOf("value" to if (enabled) "yes" else "no")
+
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+            body = param
+        )
+
+        return response.toWooPayload { it.value == "yes" }
     }
 }

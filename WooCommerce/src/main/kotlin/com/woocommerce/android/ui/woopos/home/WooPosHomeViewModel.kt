@@ -234,7 +234,7 @@ class WooPosHomeViewModel @Inject constructor(
                         }
                     }
 
-                    is NavigationEvent -> viewModelScope.launch { _navigationEvent.emit(event) }
+                    is NavigationEvent -> viewModelScope.launch { handleNavigationEvent(event) }
                     is ChildToParentEvent.SearchEvent.QueryChanged -> {
                         sendEventToChildren(ChangedQuery(event.query))
                     }
@@ -315,6 +315,22 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventSender.sendToChildren(event)
         }
+    }
+
+    private suspend fun handleNavigationEvent(event: NavigationEvent) {
+        if (event == NavigationEvent.ToOrders) {
+            cancelCheckoutBeforeOpeningOrders()
+        }
+        _navigationEvent.emit(event)
+    }
+
+    private suspend fun cancelCheckoutBeforeOpeningOrders() {
+        if (_state.value.screenPositionState !is ScreenPositionState.Checkout) return
+
+        _state.value = _state.value.copy(
+            screenPositionState = ScreenPositionState.Cart
+        )
+        parentToChildrenEventSender.sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
     }
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {

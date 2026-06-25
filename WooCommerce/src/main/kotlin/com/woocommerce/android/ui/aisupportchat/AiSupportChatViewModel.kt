@@ -237,7 +237,7 @@ class AiSupportChatViewModel @Inject constructor(
         shouldTrackIssueSelection: Boolean
     ) {
         val state = _viewState.value
-        if (state.hasProceededToChat || state.isSending || state.isRunningDiagnostics) return
+        if (!state.canHandleDiagnosticAction) return
         if (shouldTrackIssueSelection) {
             analyticsTracker.trackIssueSelected(issueType = issueType, entryPoint = state.entryPoint)
         }
@@ -461,6 +461,7 @@ class AiSupportChatViewModel @Inject constructor(
                 sessionId = response.sessionId,
                 botSlug = response.botSlug,
                 hasSentChatMessage = response.messages.any { message -> message.role == SupportChatRole.USER },
+                hasReceivedBotResponse = response.messages.hasBotResponse(),
                 userMessageCount = response.messages.count { message -> message.role == SupportChatRole.USER },
                 completedUserMessageResponseCount = response.messages.count { message ->
                     message.role == SupportChatRole.BOT && !message.isBotEscalationPrompt()
@@ -573,8 +574,9 @@ class AiSupportChatViewModel @Inject constructor(
         _viewState.update {
             val remoteMessages = response.messages.toUiMessages(isNewInSession = true)
             val latestSupportArea = response.messages.latestSupportArea() ?: it.latestSupportArea
+            val hasBotResponse = response.messages.hasBotResponse()
             val completedUserMessageResponseCount = it.completedUserMessageResponseCount +
-                if (response.messages.hasBotResponse()) 1 else 0
+                if (hasBotResponse) 1 else 0
             val messages = if (remoteMessages.isEmpty()) {
                 it.messages
             } else {
@@ -595,6 +597,7 @@ class AiSupportChatViewModel @Inject constructor(
                 botSlug = response.botSlug,
                 hasStartedChat = true,
                 hasSentChatMessage = true,
+                hasReceivedBotResponse = it.hasReceivedBotResponse || hasBotResponse,
                 completedUserMessageResponseCount = completedUserMessageResponseCount,
                 latestSupportArea = latestSupportArea,
                 showHumanSupportPrompt = shouldPromptHumanSupport && !it.hasCreatedTicket,
@@ -906,8 +909,9 @@ class AiSupportChatViewModel @Inject constructor(
             mode = mode,
             ticketType = supportArea?.ticketType,
             subjectResId = supportArea?.subjectResId,
-            extraTags = supportArea.extraTags(),
+            extraTags = supportArea.extraTags(_viewState.value.hasReceivedBotResponse),
             siteAddress = siteAddress,
+            hasReceivedBotResponse = _viewState.value.hasReceivedBotResponse,
             ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint)
         )
     }
@@ -959,10 +963,12 @@ class AiSupportChatViewModel @Inject constructor(
         )
     }
 
-    private fun SupportChatSupportArea?.extraTags(): List<String> =
+    private fun SupportChatSupportArea?.extraTags(hasReceivedBotResponse: Boolean): List<String> =
         buildList {
             add(SOURCE_TAG)
-            add(AI_SKIP_TAG)
+            if (hasReceivedBotResponse) {
+                add(AI_SKIP_TAG)
+            }
             this@extraTags?.topic?.takeIf { it.isNotBlank() }?.let { add(it) }
         }
 
@@ -1023,13 +1029,18 @@ data class AiSupportChatViewState(
     val isChatResolved: Boolean = false,
     val showMarkResolvedConfirmation: Boolean = false,
     val hasSentChatMessage: Boolean = false,
+    val hasReceivedBotResponse: Boolean = false,
     val userMessageCount: Int = 0,
     val completedUserMessageResponseCount: Int = 0,
     val latestSupportArea: SupportChatSupportArea? = null,
     val messageRatings: Map<Long, AiSupportChatFeedbackRating> = emptyMap()
 ) {
     val canUseDiagnosticActions: Boolean
-        get() = !hasProceededToChat && !isSending && !isExecutingFixAction
+        get() = !hasProceededToChat &&
+            !isSending &&
+            !isExecutingFixAction &&
+            !hasCreatedTicket &&
+            !isChatResolved
 
     val canHandleDiagnosticAction: Boolean
         get() = canUseDiagnosticActions && !isRunningDiagnostics
@@ -1055,7 +1066,11 @@ data class AiSupportChatViewState(
         get() = diagnosticSuggestedActionOverride ?: diagnosticResult?.suggestedAction
 
     val canContactHumanSupportFromToolbar: Boolean
-        get() = canSendMessages && completedUserMessageResponseCount >= MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR
+        get() = !hasCreatedTicket &&
+            !isChatResolved &&
+            !isSending &&
+            !isLoadingHistory &&
+            !showLoadHistoryError
 
     val shouldShowResolvedButton: Boolean
         get() {
@@ -1071,7 +1086,6 @@ data class AiSupportChatViewState(
         }
 
     private companion object {
-        const val MIN_USER_MESSAGE_RESPONSES_FOR_TOOLBAR = 1
         const val MIN_BOT_RESPONSES_FOR_RESOLUTION_ACTION = 2
     }
 }
@@ -1101,6 +1115,7 @@ data class ContactHumanSupport(
     val subjectResId: Int?,
     val extraTags: List<String>,
     val siteAddress: String,
+    val hasReceivedBotResponse: Boolean,
     val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
 ) : Event()
 

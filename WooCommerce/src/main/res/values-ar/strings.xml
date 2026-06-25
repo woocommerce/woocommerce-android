@@ -1,11 +1,310 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-06 08:55:14+0000
+Translation-Revision-Date: 2026-06-12 08:13:49+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">لا توجد تنبيهات</string>
+    <string name="settings_notifs_stock_two_subtitle">⁦%1$s⁩ و⁦%2$s⁩</string>
+    <string name="settings_notifs_new_reviews_selected_rating">⁦%1$d⁩ من النجوم فأقل</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">تحديث التباين ⁦%1$s⁩ (رقم⁦%2$s⁩) للمنتج رقم⁦%3$s⁩</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">العميل رقم⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">ضيف</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم⁦%1$s⁩ (⁦%2$s⁩): إرسال رسائل إلى العميل عبر البريد الإلكتروني</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم⁦%1$s⁩ (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">يجب أن يتكون الوصف ⁦%1$s⁩ من الرموز أو أقل.</string>
+    <string name="woopos_totals_success_payment_external">تم وضع علامة على الطلب ⁦%1$s⁩ كمكتمل.</string>
+    <string name="woopos_totals_success_payment_qr">تم استلام ⁦%1$s⁩ من المدفوعات بنجاح.</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">إضافة قسيمة</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">خلفية خافتة. انقر لتجاهل مُحدّد طريقة الدفع.</string>
+    <string name="woopos_scan_to_pay_order_note">دفع العميل عبر ميزة Scan to Pay</string>
+    <string name="woopos_scan_to_pay_cancel">إلغاء</string>
+    <string name="woopos_scan_to_pay_retry">حاول مرة أخرى</string>
+    <string name="woopos_scan_to_pay_error_message">تعذّر علينا إعداد المدفوعات. يُرجى إعادة المحاولة.</string>
+    <string name="woopos_scan_to_pay_total">إجمالي الطلبات: ⁦%1$s⁩</string>
+    <string name="woopos_scan_to_pay_subtitle">اعرض هذا الكود للعميل للسماح له بالدفع من هاتفه.</string>
+    <string name="woopos_scan_to_pay_title">ميزة Scan to Pay</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">تعذّر تحميل الطلب. يُرجى الرجوع والمحاولة مجددًا.</string>
+    <string name="woopos_mark_order_as_paid_error_message">تعذّر تحديث الطلب. حاول مرة أخرى.</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">وسم كمدفوع</string>
+    <string name="woopos_mark_order_as_paid_note_hint">على سبيل المثال، التحويل البنكي من Maria، ‎ref 4827</string>
+    <string name="woopos_mark_order_as_paid_message">سيؤدي هذا إلى وضع علامة على الطلب ⁦%1$s⁩ على أنه مكتمل. لا تستخدم هذا إلا إذا كنت قد حصلت على المدفوعات بالفعل بطريقة أخرى.</string>
+    <string name="woopos_mark_order_as_paid_title">هل تريد وسم الطلب كمدفوع؟</string>
+    <string name="woopos_custom_amount_dialog_cancel">إلغاء</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">تحديث مبلغ مخصص</string>
+    <string name="woopos_custom_amount_dialog_submit_add">إضافة مبلغ مخصص</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">فرض الضرائب</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">مبلغ مخصص</string>
+    <string name="woopos_custom_amount_dialog_name_label">الاسم</string>
+    <string name="woopos_custom_amount_dialog_amount_label">المبلغ</string>
+    <string name="woopos_custom_amount_form_title">مبلغ مخصص</string>
+    <string name="woopos_custom_amount_dialog_title_edit">تحرير مبلغ مخصص</string>
+    <string name="woopos_custom_amount_dialog_title_add">إضافة مبلغ مخصص</string>
+    <string name="woopos_custom_amount_entry_subtitle">إضافة رسوم لمرة واحدة</string>
+    <string name="woopos_custom_amount_entry_title">مبلغ مخصص</string>
+    <string name="woopos_cart_custom_amount_menu_remove">إزالة</string>
+    <string name="woopos_cart_custom_amount_menu_edit">تحرير</string>
+    <string name="woopos_cart_custom_amount_includes_tax">الضريبة متضمنة</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">تحرير %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">مبلغ مخصص ⁦%1$s⁩، %2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">غير مفيد</string>
+    <string name="ai_support_chat_feedback_helpful">مفيد</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">تعذّر علينا التحقق من تسجيل التنبيهات الفورية الخاصة بك.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">هذا الجهاز غير مسجل لتلقي التنبيهات الفورية لمتجرك.</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">تعذّر علينا العثور على رمز تنبيه فوري لهذا الجهاز.</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">تم حظر التنبيهات في إعدادات Android.\n\nقم بتمكين التنبيهات لـ WooCommerce، ثم ارجع إلى هنا للمتابعة.</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">تعذّر علينا التحقق من إعداد التحليلات لديك.</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">لم يتم تمكين WooCommerce Analytics على متجرك.\n\nلن تتوفر بيانات التحليلات مثل إحصاءات الإيرادات والطلبات حتى يتم تمكينها.</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">هناك مشكلة في محاولة اتصالك بـ Jetpack.</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">تعذّر علينا العمل بشكل صحيح بسبب استجابة موقعك.</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">تعذّر علينا الاتصال بـ WordPress.com الآن.\n\nيُرجى المحاولة مرة أخرى بعد بضع دقائق.</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">جارٍ التحقق من التسجيل لتلقي التنبيهات الفورية</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">جارٍ التحقق من رمز التنبيهات الفورية</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">جارٍ التحقق من قنوات التنبيهات</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">جارٍ التحقق من إعدادات تنبيهات التطبيق</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">جارٍ التحقق من صلاحية التنبيهات</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">جارٍ التحقق من إعداد التحليلات</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">إعادة تشغيل الفحص</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">جارٍ تسجيل التنبيهات…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">جارٍ تمكين التحليلات…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">تسجيل التنبيهات</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">فتح إعدادات التنبيهات</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">تمكين التحليلات</string>
+    <string name="ai_support_chat_diagnostics_success">اكتملت جميع عمليات الفحص دون اكتشاف أي مشاكل</string>
+    <string name="ai_support_chat_resolved_prompt">يُرجى وضع علامة على الدردشة على أنها \"تم حلها\" في حال حل المشكلة، أو أترك رسالة إذا كانت لديك أسئلة أخرى.</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">طلب دعم الإضافات</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">طلب دعم إضافة WooCommerce</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">طلب دعم WooPayments</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">طلب دعم قارئ البطاقات</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">طلب دعم تطبيق الهاتف المحمول</string>
+    <string name="ai_support_chat_escalation_transcript_header">فيما يلي نص جلسة دردشة فريق دعم الذكاء الاصطناعي داخل التطبيق:</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">نموذج المراسلة</string>
+    <string name="ai_support_chat_escalation_consent_send_request">إرسال الطلب</string>
+    <string name="ai_support_chat_escalation_consent_message">يمكننا إنشاء طلب دعم باستخدام نص الدردشة هذا، أو يمكنك فتح نموذج المراسلة وإدخال التفاصيل بنفسك.</string>
+    <string name="ai_support_chat_escalation_consent_title">هل تريد إرسال هذه الدردشة إلى الدعم؟</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">سيؤدي هذا إلى إغلاق إجراءات الدردشة لهذه المحادثة.</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">هل تريد وضع علامة على أنها \"تم حلها\"؟</string>
+    <string name="ai_support_chat_mark_resolved_cancel">إلغاء</string>
+    <string name="ai_support_chat_mark_resolved">وضع علامة على أنها \"تم حلها\"</string>
+    <string name="ai_support_chat_toolbar_contact_support">التواصل مع فريق الدعم</string>
+    <string name="ai_support_chat_resolved_message">تم وضع علامة على هذه الدردشة على أنها \"تم حلها\".</string>
+    <string name="ai_support_chat_ticket_created_message">تم إنشاء طلب دعم لهذه الدردشة. سنرد عبر البريد الإلكتروني.</string>
+    <string name="ai_support_chat_contact_support">التواصل مع فريق الدعم</string>
+    <string name="ai_support_chat_human_support_message">يبدو أنك قد تحتاج إلى مزيد من المساعدة. هل ترغب في التواصل مع فريق الدعم لدينا؟</string>
+    <string name="ai_support_chat_suggested_fix_error">تعذّر تطبيق هذا الإصلاح. تحقق من اتصالك وحاول مرة أخرى.</string>
+    <string name="ai_support_chat_load_history_error">تعذّر تحميل هذه الدردشة. تحقق من اتصالك وحاول مرة أخرى.</string>
+    <string name="ai_support_chat_error_dismiss">تجاهل</string>
+    <string name="ai_support_chat_error_title">خطأ</string>
+    <string name="ai_support_chat_input_hint">جارٍ كتابة رسالة…</string>
+    <string name="ai_support_chat_greeting">مرحبًا! أنا روبوت دعم Woo Mobile الخاص بك. هل هناك أي شيء يمكنني مساعدتك به اليوم؟</string>
+    <string name="ai_support_chat_history_default_title">محادثة فريق الدعم</string>
+    <string name="ai_support_chat_history_delete_error">تعذّر حذف سجل الدردشة.</string>
+    <string name="ai_support_chat_history_load_error">تعذّر تحميل سجل الدردشة.</string>
+    <string name="ai_support_chat_history_empty">لم تبدأ أي دردشة مع فريق الدعم حتى الآن.</string>
+    <string name="ai_support_chat_history_title">سجل الدردشة</string>
+    <string name="ai_support_chat_history_row_subtitle">راجع المحادثات السابقة مع فريق الدعم</string>
+    <string name="ai_support_chat_history_row_title">سجل الدردشة</string>
+    <string name="ai_support_chat_screen_title">الدردشة مع فريق الدعم</string>
+    <string name="ai_support_chat_help_row_title">الدردشة مع فريق الدعم</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">تصفية المراجعات لتشمل التقييمات عند أو أقل من التقييم الذي اخترته.</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">المراجعات ذات التقييم المنخفض فقط</string>
+    <string name="settings_notifs_new_reviews_all_description">إرسال تنبيه لكل مراجعة.</string>
+    <string name="settings_notifs_new_reviews_enable_description">احصل على تنبيهات عند ترك مراجعة لمتجرك.</string>
+    <string name="settings_notifs_new_orders_threshold">الحد الأدنى للقيمة (⁦%1$s⁩)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">الطلبات التي تزيد عن ⁦%1$s⁩</string>
+    <string name="settings_notifs_channel_disabled_subtitle">تشغيل إعدادات الجهاز</string>
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">حدث خطأ ما في أثناء عمل المساعد.</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">لم يتمكن المساعد من الانتهاء بعد عدة خطوات.</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">⁦%1$d⁩ من النجوم فأقل</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">التأكيد غير متوفر حتى الآن. يُرجى المحاولة مرة أخرى من الدردشة.</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">تم إيقاف الطلب.</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">لست متأكدًا ما إذا كان هذا التغيير قد تم تطبيقه أم لا. يُرجى التحقق في متجرك قبل القيام بأي شيء آخر.</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">تعذر على المساعد إكمال هذا الطلب.</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">تعذر على المساعد إتمام هذه العملية في المتجر.</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">تعذّر على خدمة المساعد إكمال هذه الاستجابة. يُرجى إعادة المحاولة لاحقًا.</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">انتهت مهلة الطلب. حاول مرة أخرى.</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">المساعد مشغول الآن. يُرجى المحاولة مرة أخرى خلال لحظات.</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">لم يتمكن المساعد من الوصول إلى متجرك. يُرجى تسجيل الدخول مرة أخرى، ثم إعادة فتح المساعد.</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">تعذر الاتصال. تحقق من اتصالك وحاول مجددًا.</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">إلغاء</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">تأكيد</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">تأكيد ⁦%1$s⁩؟</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">إعادة المحاولة</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">أكمِل التغيير المعلّق أعلاه.</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">إيقاف الاستجابة</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">إرسال رسالة</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">اسأل عن متجرك</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">فتح التحليلات لـ ⁦%1$s⁩</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">غير متاح</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">متوسط قيمة الطلب</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">إجمالي الطلبات</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">صافي المبيعات</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">إجمالي المبيعات</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">تجاهل إشعار الوصول المبكر</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">تقديم ملاحظات</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">مرحبًا! هذه مجرد البداية، والمزيد في الطريق. أخبرنا عما ينقصك وما تود الحصول على مساعدة بشأنه!</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">الوصول المبكر</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">إرسال اقتراح: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">اعرض أحدث عملائي. اعرض قائمة تضم ما يصل إلى 10 عملاء مرتبة حسب تاريخ التسجيل، مع عرض الأحدث أولاً.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">هل هناك أي طلبات تحتاج إلى اهتمامي؟ اعرض لي الطلبات الأخيرة المعلقة، أو قيد الانتظار، أو قيد المعالجة.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">ما الذي يوشك على النفاد؟ اعرض قائمة بالمنتجات غير المتوافرة في المخزون أو المنخفضة في المخزون لأعرف ما يجب إعادة تخزينه.</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">كيف حال إيراداتي هذا الأسبوع؟ أظهِر لي إجمالي المبيعات لهذا الأسبوع وقارنها بإجمالي المبيعات في الأسبوع الماضي.</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">من هم أحدث عملائي؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">هل تحتاج أي طلبات إلى اهتمامي؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">ما الذي يوشك على النفاد؟</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">كيف حال الإيرادات هذا الأسبوع؟</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">ما الذي يمكنني المساعدة به؟</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">البطاقات</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">العملاء</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">التحليلات</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">التباينات</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">المنتجات</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">الطلبات</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد يعمل: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">التحقق من متجرك</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">التحقق من العملاء</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">التحقق من التحليلات</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">تحديث المنتجات</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">التحقق من المنتجات</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">تحديث الطلبات</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">التحقق من الطلبات</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد يفكر</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">المساعد: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">أنت: ⁦%1$s⁩</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">الانتقال إلى الأحدث</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">بدء محادثة جديدة</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">الرجوع</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">المساعد</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">+⁦%1$d⁩ إضافي</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">تم الإلغاء</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">تم التأكيد</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">تغيير معلَّق</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">إيقاف التشغيل</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">تم التحديث</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">وحدة SKU</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">حالة المخزون</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">المخزون</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">تخفيض</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">السعر</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">الاسم</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">البريد الإلكتروني للفوترة</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">ملاحظة العميل</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">الحالة</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">مراجعة ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث التباين رقم ⁦%1$s⁩ للمنتج رقم ⁦%2$s⁩</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث تباين المنتج</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من المنتجات</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من المنتجات</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث العديد من المنتجات</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">تحديث المنتج ⁦%1$s⁩ (رقم ⁦%2$s⁩)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث المنتج رقم ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث منتج</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات: إرسال رسائل بريد إلكتروني إلى العملاء</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات: إرسال رسائل بريد إلكتروني إلى العميل</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">تحديث ⁦%1$d⁩ من الطلبات</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث العديد من الطلبات</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم ⁦%1$s⁩: إرسال رسائل بريد إلكتروني إلى العميل</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">تحديث الطلب رقم ⁦%1$s⁩</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">تحديث طلب</string>
+    <string name="woopos_remote_ttp_explainer_got_it">فهمت</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">استخدم نفس شبكة Wi-Fi وسجّل الدخول إلى نفس المتجر على كلا الجهازين. يجب أن يعمل هاتفك بنظام Android 13 أو أحدث، وأن يدعم تقنية NFC وميزة Tap-to-Pay.</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">التحقق من التوافق</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">افتح Woo على هاتفك، ثم انتقل إلى الإعدادات ← المدفوعات ← وضع قارئ البطاقات.</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">إعداد هاتفك</string>
+    <string name="woopos_remote_ttp_explainer_intro">استخدم تطبيق Woo على هاتفك لتلقي المدفوعات بالبطاقات.</string>
+    <string name="woopos_remote_ttp_explainer_title">لا يوجد قارئ بطاقات؟ لا توجد مشكلة</string>
+    <string name="woopos_remote_ttp_hint_strip_text">استخدم هاتف Android كقارئ بطاقات</string>
+    <string name="woopos_card_reader_unknown_reader_name">قارئ غير معروف</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">قارئ البلوتوث</string>
+    <string name="woopos_card_reader_phone_icon_content_description">قارئ الهاتف</string>
+    <string name="woopos_remote_payment_failed_generic">حدث خطأ ما. يُرجى المحاولة مرة أخرى.</string>
+    <string name="woopos_remote_payment_failed_connection_lost">انقطع الاتصال بقارئ الهاتف. يُرجى إعادة الاتصال والمحاولة مرة أخرى.</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">امنح إذن الوصول إلى الموقع لاستخدام ميزة Tap to Pay.</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">تعذر بدء ميزة Tap to Pay: ⁦%1$s⁩</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">تعذر بدء ميزة Tap to Pay. يُرجى المحاولة مرة أخرى.</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">جارٍ إعداد ميزة Tap to Pay</string>
+    <string name="woopos_tap_to_pay_preparing_title">الاستعداد</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">رسم توضيحي لميزة Tap to Pay على الهاتف</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">الدفع باستخدام ميزة Tap to Pay</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">استخدم هذا الجهاز لقبول المدفوعات بالبطاقات غير التلامسية.</string>
+    <string name="woopos_tap_to_pay_promoted_title">ميزة Tap to Pay</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">وسم الطلب كمدفوع</string>
+    <string name="woopos_payment_method_scan_to_pay_label">ميزة Scan To Pay</string>
+    <string name="woopos_payment_method_other_methods_label">طرق الدفع الأخرى</string>
+    <string name="woopos_payment_method_all_methods_label">كل طرق الدفع</string>
+    <string name="woopos_payment_method_tap_to_pay_label">ميزة Tap to Pay</string>
+    <string name="woopos_payment_method_card_reader_label">قارئ البطاقة</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">بصمة الإصبع</string>
+    <string name="woopos_settings_card_reader_transport_wifi">شبكة Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">النقل</string>
+    <string name="woopos_settings_card_reader_disconnect_button">فصل</string>
+    <string name="woopos_remote_reader_connect_failed_generic">فشل الاتصال</string>
+    <string name="ai_assistant_variation_card_id_title">تباين ⁦%1$d⁩</string>
+    <string name="ai_support_chat_connectivity_action">الدردشة مع الدعم</string>
+    <string name="ai_support_chat_connectivity_initial_message">ساعدني على حل مشكلة اتصال متجري.</string>
+    <string name="ai_support_chat_diagnostics_status_failed">فشل</string>
+    <string name="ai_support_chat_diagnostics_status_passed">نجح</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">اختر طريقة دفع</string>
+    <string name="ai_support_chat_diagnostics_status_running">قيد التشغيل</string>
+    <string name="ai_support_chat_diagnostics_status_pending">معلق</string>
+    <string name="ai_support_chat_diagnostics_continue">متابعة إلى الدردشة</string>
+    <string name="ai_support_chat_issue_other">شيء آخر</string>
+    <string name="ai_support_chat_issue_receiving_notifications">لا أتلقى تنبيهات</string>
+    <string name="ai_support_chat_issue_loading_analytics">لا يتم تحميل التحليلات الخاصة بي</string>
+    <string name="ai_support_chat_issue_loading_products">لا يمكنني رؤية منتجاتي</string>
+    <string name="ai_support_chat_issue_loading_orders">لا يمكنني رؤية طلباتي</string>
+    <string name="ai_support_chat_issue_picker_title">ما الذي ترغب في حل مشكلاته؟</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">يُرجى وصف مشكلتك بمزيد من التفاصيل حتى أتمكن من المساعدة.</string>
+    <string name="ai_support_chat_typing">جارٍ التفكير…</string>
+    <string name="ai_support_chat_send_error">يتعذر إرسال رسالتك. تحقق من اتصالك وحاول مجددًا.</string>
+    <string name="ai_support_chat_send">إرسال</string>
+    <string name="ai_support_chat_placeholder">قريبًا</string>
+    <string name="ai_support_chat_help_row_subtitle">الدردشة مع مساعد الذكاء الاصطناعي لدينا لتشخيص مشكلات المتجر</string>
+    <string name="settings_notifs_new_reviews_all_title">جميع المراجعات الجديدة</string>
+    <string name="settings_notifs_stock_backorder_description">عندما يطلب أحد العملاء منتجًا غير متوفر في المخزون حاليًا.</string>
+    <string name="settings_notifs_stock_backorder_title">قيد الطلب المسبق</string>
+    <string name="settings_notifs_stock_out_of_stock_description">عندما يصل متغير المنتج إلى صفر.</string>
+    <string name="settings_notifs_stock_out_of_stock_title">غير متوفر في المخزون</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">تعذّر تحميل الحدّ المعيّن على مستوى المتجر</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">يمكن للمنتجات استخدام الحدّ الخاص بها أو الحدّ المعيّن على مستوى المتجر. &lt;a href=\'\'&gt;اعرض الحدّ المعيّن على مستوى المتجر&lt;/a&gt; لرؤية القيمة الحالية.</string>
+    <string name="settings_notifs_stock_low_stock_threshold">يمكن للمنتجات استخدام الحدّ الخاص بها أو الحدّ المعيّن على مستوى المتجر &lt;b&gt;%1$s&lt;/b&gt;. &lt;a href=\'\'&gt;تحرير الحدّ المعيّن على مستوى المتجر&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">عندما يصل متغير المنتج إلى حدّ المخزون المنخفض الخاص به.</string>
+    <string name="settings_notifs_stock_low_stock_title">مخزون منخفض</string>
+    <string name="settings_notifs_stock_enable_description">تلَقَّ تنبيهات عند حدوث تغييرات في مخزون المنتجات وتحتاج إلى انتباهك.</string>
+    <string name="settings_notifs_stock_enable_title">تفعيل تنبيهات المخزون</string>
+    <string name="settings_notifs_new_orders_high_value_title">الطلبات عالية القيمة فقط</string>
+    <string name="settings_notifs_new_orders_all_description">تحقق من كل طلب، بغض النظر عن القيمة.</string>
+    <string name="settings_notifs_new_orders_high_value_description">قم بالتصفية إلى الطلبات الأعلى من الحد الأدنى للقيمة.</string>
+    <string name="settings_notifs_new_orders_all_title">جميع الطلبات</string>
+    <string name="settings_notifs_notify_me_for">أخطرني بشأن</string>
+    <string name="settings_notifs_new_orders_enable_description">احصل على تنبيهات عند تقديم طلب في متجرك.</string>
+    <string name="settings_notifs_error_update">حدث خطأ عند تحديث إعدادات التنبيهات الخاصة بك.</string>
+    <string name="settings_notifs_error_fetch">حدث خطأ أثناء جلب إعدادات التنبيهات الخاصة بك.</string>
+    <string name="settings_notifs_enable_title">تمكين التنبيهات</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">&lt;a href=\'\'&gt;فعّل التنبيهات&lt;/a&gt; من إعدادات جهازك لتلقي تنبيهات المتجر.</string>
+    <string name="card_reader_mode_location_permission_open_settings">افتح الإعدادات</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">تم حظر صلاحية الوصول إلى الموقع. افتح الإعدادات وامنح إذن الموقع لاستخدام ميزة tap-to-pay على هذا الهاتف.</string>
+    <string name="card_reader_mode_location_permission_continue">متابعة</string>
+    <string name="card_reader_mode_location_permission_subtitle">يتطلب نظام التشغيل Android الوصول إلى الموقع لاستخدام ميزة tap-to-pay على هذا الهاتف. يبقى موقعك على هذا الجهاز.</string>
+    <string name="card_reader_mode_location_permission_header">صلاحية الوصول إلى الموقع مطلوبة</string>
+    <string name="card_reader_mode_error_close">إغلاق</string>
+    <string name="card_reader_mode_error_subtitle">تحقق من اتصال شبكة Wi-Fi ثم حاول مرة أخرى.</string>
+    <string name="card_reader_mode_error_header">فشل بدء وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_starting_subtitle">جارٍ إعداد الاكتشاف على الشبكة المحلية…</string>
+    <string name="card_reader_mode_starting_header">جارٍ بدء وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_settings_row_label">وضع قارئ البطاقة</string>
+    <string name="card_reader_mode_cancel">إلغاء</string>
+    <string name="card_reader_mode_waiting_subtitle">في انتظار الدفع…</string>
+    <string name="card_reader_mode_waiting_header">مقترن بجهاز لوحي</string>
+    <string name="card_reader_mode_ready_to_pair_store">المتجر: ⁦%1$s⁩</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">افتح Woo POS على جهازك اللوحي واختر هذا الهاتف.</string>
+    <string name="card_reader_mode_ready_to_pair_header">جاهز للاقتران</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">فتح AI Assistant</string>
+    <string name="dashboard_ai_assistant_entry_point_label">اطرح أسئلة حول متجرك…</string>
+    <string name="notification_channel_stock_title">إشعارات المخزون</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">مستوى بطارية القارئ هو %d%%، وهو منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50%% على الأقل ثم المحاولة مجددًا.</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">مستوى بطارية القارئ منخفض جدًا لتثبيت هذا التحديث. يُرجى شحن القارئ إلى 50% على الأقل ثم المحاولة مجددًا.</string>
     <string name="woopos_card_reader_update_failed_title">فشل التحديث</string>
@@ -606,12 +905,8 @@ Language: ar
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">المملكة المتحدة</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">الولايات المتحدة</string>
     <string name="woopos_eligibility_screen_unable_to_load">يتعذر التحميل</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">لا يتوافر نظام نقطة البيع لعملة متجرك. ُيرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">لا يتوافر نظام نقطة البيع لعملة متجرك. في ⁦%1$s⁩، لا يدعم حاليًا سوى ⁦%2$s⁩. يُرجى التحقق من إعدادات عملة متجرك أو التواصل مع الدعم للحصول على المساعدة.</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">يجب تمكين نقطة البيع للمتابعة. يُرجى تمكين ميزة نقطة البيع من مشرفك في WordPress ضمن إعدادات WooCommerce &gt; الإعدادات المتقدمة &gt; الميزات.</string>
     <string name="woopos_eligibility_reason_check_connection">تحقق من اتصالك بالإنترنت وحاول إعادة تشغيل التطبيق. إذا استمرت المشكلة، فيرجى التواصل مع الدعم.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">إصدارك من WooCommerce غير مدعوم. يتطلب نظام نقطة البيع الإصدار ⁦%1$s⁩ من WooCommerce أو إصدار أحدث. يُرجى التحديث إلى آخر إصدار من WooCommerce.</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">يُرجى التأكد من تثبيت إضافة WooCommerce وتفعيلها من مشرفك في WordPress. يرجى التواصل مع الدعم للحصول على المساعدة.</string>
     <string name="orderfilters_sales_channel_filter">قناة المبيعات</string>
     <string name="barcode_ean13_content_description">الرمز الشريطي EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">معالجة إضافية</string>
@@ -1807,16 +2102,10 @@ Language: ar
     <string name="coupon_type_picker_percentage_discount_title">الخصم بالنسبة المئوية</string>
     <string name="coupon_type_picker_title">إنشاء قسيمة</string>
     <string name="coupon_list_add_coupon_content_description">إضافة قسيمة</string>
-    <string name="try_test_order_button">بدء طلب الاختبار</string>
-    <string name="try_test_order_step_3">أكمل السداد وانتظر تلقي تنبيه حول الطلب على تطبيق WooCommerce الخاص بك.</string>
-    <string name="try_test_order_step_2">حدد منتج الاختبار الخاص بك وأضفه إلى عربة التسوق وأكمل السداد على متجر الويب ذلك كعميل حقيقي.</string>
-    <string name="try_test_order_step_1">انقر على الزر أدناه المراد إعادة توجيهه إلى متجرك على الإنترنت عبر متصفح الويب.</string>
-    <string name="try_test_order_heading">تجربة طلب الاختبار</string>
     <string name="empty_order_test_order_button">تجربة طلب الاختبار</string>
     <string name="coupon_type_picker_fixed_product_content_description">نوع القسيمة - منتج ثابت</string>
     <string name="coupon_type_picker_fixed_cart_content_description">نوع القسيمة - عربة تسوق ثابتة</string>
     <string name="coupon_type_picker_percentage_content_description">نوع القسيمة - النسبة المئوية للخصم</string>
-    <string name="try_test_order_step_4">استخدم التطبيق لمعالجة رد الأموال الخاص بطلب الاختبار</string>
     <string name="empty_order_test_order_message">تشغيل طلب الاختبار لضمان تقديم معالجة WooCommerce التي تقوم بها تجربة عملاء سلسة</string>
     <string name="order_creation_customer_search_empty_add_details_manually">إضافة التفاصيل يدويًا</string>
     <string name="order_creation_customer_search_old_wc_hint">البحث عن العملاء حسب</string>

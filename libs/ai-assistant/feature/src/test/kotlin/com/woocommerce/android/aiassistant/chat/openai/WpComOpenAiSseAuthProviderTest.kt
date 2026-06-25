@@ -17,16 +17,6 @@ class WpComOpenAiSseAuthProviderTest {
         assertThat(tokenProvider.provideCalls).isEqualTo(1)
     }
 
-    @Test
-    fun `given wpcom token provider, when invalidated, then token provider is not called`() = runTest {
-        val tokenProvider = RecordingWpComOAuthTokenProvider()
-        val authProvider = WpComOpenAiSseAuthProvider(tokenProvider)
-
-        authProvider.invalidate()
-
-        assertThat(tokenProvider.provideCalls).isZero()
-    }
-
     private class RecordingWpComOAuthTokenProvider : WpComOAuthTokenProvider {
         var provideCalls = 0
             private set

@@ -10,6 +10,7 @@ sealed class WooPosTotalsViewState : Parcelable {
     data class Checkout(
         val totals: Totals,
         val readerStatus: ReaderStatus,
+        val isCardPaymentEnabledForCountry: Boolean = true,
         val isTapToPayAvailable: Boolean = false,
         val isScanToPayEnabled: Boolean = false,
         val isMarkOrderAsPaidEnabled: Boolean = false,

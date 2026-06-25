@@ -85,7 +85,13 @@ class SitePickerFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
-            navigationIcon = if (!navArgs.openedFromLogin) R.drawable.ic_back_24dp else null,
+            // Hide the back arrow when there's no back stack (e.g. the picker is the start destination
+            // after a recovery reset), otherwise tapping it just closes the app.
+            navigationIcon = if (!navArgs.openedFromLogin && findNavController().previousBackStackEntry != null) {
+                R.drawable.ic_back_24dp
+            } else {
+                null
+            },
             hasShadow = false,
             hasDivider = false,
         )

@@ -54,7 +54,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
 
     @Test
     fun `given valid customs data, when validating form, then should return Valid`() = testBlocking {
-        val result = validator.validate(defaultCustomsData, "CA")
+        val result = validator.validate(defaultCustomsData, "US", "CA")
 
         assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.Valid)
     }
@@ -65,7 +65,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
             ValidateITN.ITNValidationResult.Missing(ValidateITN.ITNMissingCause.TotalValue)
         )
 
-        val result = validator.validate(defaultCustomsData, "CA")
+        val result = validator.validate(defaultCustomsData, "US", "CA")
 
         assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.ItnMissing)
     }
@@ -76,7 +76,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
             ValidateITN.ITNValidationResult.InvalidFormat
         )
 
-        val result = validator.validate(defaultCustomsData, "CA")
+        val result = validator.validate(defaultCustomsData, "US", "CA")
 
         assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.Invalid)
     }
@@ -89,7 +89,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
             )
         )
 
-        val result = validator.validate(customsDataWithBlankDescription, "CA")
+        val result = validator.validate(customsDataWithBlankDescription, "US", "CA")
 
         assertThat(result).isEqualTo(WooShippingCustomsValidator.FormValidationResult.Invalid)
     }
@@ -234,7 +234,7 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
     @Test
     fun `given valid product description, when validating product description, then should return Valid`() =
         testBlocking {
-            val result = validator.validateProductDescription("Test product")
+            val result = validator.validateProductDescription("Test product", "US", "CA")
 
             assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
         }
@@ -242,13 +242,70 @@ class WooShippingCustomsValidatorTest : BaseUnitTest() {
     @Test
     fun `given blank product description, when validating product description, then should return Invalid`() =
         testBlocking {
-            val result = validator.validateProductDescription("")
+            val result = validator.validateProductDescription("", "US", "CA")
 
             assertThat(result).isInstanceOf(WooShippingCustomsValidator.FieldValidationResult.Invalid::class.java)
             val invalid = result as WooShippingCustomsValidator.FieldValidationResult.Invalid
             assertThat(invalid.errorMessage).isEqualTo(
                 UiString.UiStringRes(R.string.woo_shipping_labels_customs_product_details_description_missing)
             )
+        }
+
+    @Test
+    fun `given description over 30 chars on USPS domestic mail shipment, when validating description, then should return Invalid`() =
+        testBlocking {
+            val longDescription = "a".repeat(31)
+
+            val result = validator.validateProductDescription(longDescription, "US", "PR")
+
+            assertThat(result).isInstanceOf(WooShippingCustomsValidator.FieldValidationResult.Invalid::class.java)
+            val invalid = result as WooShippingCustomsValidator.FieldValidationResult.Invalid
+            assertThat(invalid.errorMessage).isEqualTo(
+                UiString.UiStringRes(
+                    stringRes = R.string.woo_shipping_labels_customs_product_details_description_too_long,
+                    params = listOf(UiString.UiStringText("30"))
+                )
+            )
+        }
+
+    @Test
+    fun `given description exactly 30 chars on USPS domestic mail shipment, when validating description, then should return Valid`() =
+        testBlocking {
+            val description = "a".repeat(30)
+
+            val result = validator.validateProductDescription(description, "US", "PR")
+
+            assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
+        }
+
+    @Test
+    fun `given description over 30 chars on international shipment, when validating description, then should return Valid`() =
+        testBlocking {
+            val longDescription = "a".repeat(50)
+
+            val result = validator.validateProductDescription(longDescription, "US", "CA")
+
+            assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
+        }
+
+    @Test
+    fun `given description over 30 chars but origin is not USPS, when validating description, then should return Valid`() =
+        testBlocking {
+            val longDescription = "a".repeat(50)
+
+            val result = validator.validateProductDescription(longDescription, "CA", "US")
+
+            assertThat(result).isEqualTo(WooShippingCustomsValidator.FieldValidationResult.Valid)
+        }
+
+    @Test
+    fun `given description over 30 chars on territory to territory shipment, when validating description, then should return Invalid`() =
+        testBlocking {
+            val longDescription = "a".repeat(31)
+
+            val result = validator.validateProductDescription(longDescription, "PR", "GU")
+
+            assertThat(result).isInstanceOf(WooShippingCustomsValidator.FieldValidationResult.Invalid::class.java)
         }
 
     @Test

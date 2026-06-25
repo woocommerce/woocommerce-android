@@ -104,7 +104,9 @@ object WooPosAnalyticsEventConstant {
         DATABASE_ERROR("database_error"),
         INVALID_RESPONSE("invalid_response"),
         UNEXPECTED_ERROR("unexpected_error"),
-        CATALOG_GENERATION_TIMEOUT("catalog_generation_timeout");
+        CATALOG_GENERATION_TIMEOUT("catalog_generation_timeout"),
+        CATALOG_FILE_DOWNLOAD_FAILED("catalog_file_download_failed"),
+        CATALOG_FILE_BLOCKED("catalog_file_blocked");
 
         override fun toString(): String {
             return value

@@ -1,11 +1,310 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-05-06 08:58:04+0000
+Translation-Revision-Date: 2026-06-12 08:04:44+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="settings_notifs_stock_no_alerts_subtitle">沒有提醒</string>
+    <string name="settings_notifs_stock_two_subtitle">%1$s 和 %2$s</string>
+    <string name="settings_notifs_new_reviews_selected_rating">%1$d 顆星以下</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">更新商品編號 %3$s 的款式 %1$s (編號 %2$s)</string>
+    <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">顧客編號 %1$s</string>
+    <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">訪客</string>
+    <string name="ai_assistant_confirmation_order_update_summary_with_name" a8c-src-lib="module:ai-assistant-feature">更新訂單編號 %1$s (%2$s)：傳送電子郵件給顧客</string>
+    <string name="ai_assistant_confirmation_order_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">更新訂單編號 %1$s (%2$s)</string>
+    <string name="woo_shipping_labels_customs_product_details_description_too_long">描述不得超過 %1$s 個字元。</string>
+    <string name="woopos_totals_success_payment_external">%1$s 的訂單已標示為完成。</string>
+    <string name="woopos_totals_success_payment_qr">已成功收到 %1$s 的款項。</string>
+    <string name="woopos_phone_items_add_coupon_fab_accessibility_label">新增優惠券</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">背景已調暗。 點選即可關閉付款方式選擇器。</string>
+    <string name="woopos_scan_to_pay_order_note">顧客已透過「掃描付款」支付費用</string>
+    <string name="woopos_scan_to_pay_cancel">取消</string>
+    <string name="woopos_scan_to_pay_retry">再試一次</string>
+    <string name="woopos_scan_to_pay_error_message">我們無法準備付款。 請再試一次。</string>
+    <string name="woopos_scan_to_pay_total">訂單總額：%1$s</string>
+    <string name="woopos_scan_to_pay_subtitle">向顧客顯示此代碼，讓他們透過手機付款。</string>
+    <string name="woopos_scan_to_pay_title">掃描付款</string>
+    <string name="woopos_mark_order_as_paid_order_not_found">無法載入訂單。 請返回並再試一次。</string>
+    <string name="woopos_mark_order_as_paid_error_message">無法更新訂單。 請再試一次。</string>
+    <string name="woopos_mark_order_as_paid_confirm_button">標示為已付款</string>
+    <string name="woopos_mark_order_as_paid_note_hint">例如：來自 Maria 的轉帳，末四碼 4827</string>
+    <string name="woopos_mark_order_as_paid_message">這會將 %1$s 的訂單標示為完成。 請只在你已透過其他方式收款時使用此選項。</string>
+    <string name="woopos_mark_order_as_paid_title">要將訂單標示為已付款嗎？</string>
+    <string name="woopos_custom_amount_dialog_cancel">取消</string>
+    <string name="woopos_custom_amount_dialog_submit_edit">更新自訂金額</string>
+    <string name="woopos_custom_amount_dialog_submit_add">新增自訂金額</string>
+    <string name="woopos_custom_amount_dialog_charge_taxes">收取稅金</string>
+    <string name="woopos_custom_amount_dialog_name_placeholder">自訂金額</string>
+    <string name="woopos_custom_amount_dialog_name_label">名稱</string>
+    <string name="woopos_custom_amount_dialog_amount_label">金額</string>
+    <string name="woopos_custom_amount_form_title">自訂金額</string>
+    <string name="woopos_custom_amount_dialog_title_edit">編輯自訂金額</string>
+    <string name="woopos_custom_amount_dialog_title_add">新增自訂金額</string>
+    <string name="woopos_custom_amount_entry_subtitle">新增單次收費</string>
+    <string name="woopos_custom_amount_entry_title">自訂金額</string>
+    <string name="woopos_cart_custom_amount_menu_remove">移除</string>
+    <string name="woopos_cart_custom_amount_menu_edit">編輯</string>
+    <string name="woopos_cart_custom_amount_includes_tax">含稅</string>
+    <string name="woopos_cart_custom_amount_edit_content_description">編輯 %s</string>
+    <string name="woopos_cart_item_custom_amount_content_description">自訂金額 %1$s、%2$s</string>
+    <string name="ai_support_chat_feedback_not_helpful">沒有幫助</string>
+    <string name="ai_support_chat_feedback_helpful">有幫助</string>
+    <string name="ai_support_chat_diagnostics_push_check_failure">我們無法檢查你的推播通知註冊狀況。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_failure">此裝置未註冊接收商店的推播通知。</string>
+    <string name="ai_support_chat_diagnostics_push_token_failure">我們找不到此裝置的推播通知權杖。</string>
+    <string name="ai_support_chat_diagnostics_notification_settings_failure">通知已在 Android 設定中封鎖。\n\n啟用 WooCommerce 的通知，然後返回此處以繼續。</string>
+    <string name="ai_support_chat_diagnostics_analytics_check_failure">我們無法檢查你的分析設定。</string>
+    <string name="ai_support_chat_diagnostics_analytics_disabled_failure">你的商店未啟用 WooCommerce Analytics。\n\n除非啟用，否則將無法取得收益和訂單統計等分析資料。</string>
+    <string name="ai_support_chat_diagnostics_jetpack_failure">你的 Jetpack 連結發生問題。</string>
+    <string name="ai_support_chat_diagnostics_parse_failure">你的網站回應無法正常運作。</string>
+    <string name="ai_support_chat_diagnostics_wpcom_connection_failure">我們目前無法連結至 WordPress.com。\n\n請稍待幾分鐘後再試一次。</string>
+    <string name="ai_support_chat_diagnostics_push_registration_title">正在檢查推播註冊</string>
+    <string name="ai_support_chat_diagnostics_push_token_title">正在檢查推播通知權杖</string>
+    <string name="ai_support_chat_diagnostics_notification_channels_enabled_title">正在檢查通知管道</string>
+    <string name="ai_support_chat_diagnostics_app_notifications_enabled_title">正在檢查應用程式通知設定</string>
+    <string name="ai_support_chat_diagnostics_notification_permission_title">正在檢查通知權限</string>
+    <string name="ai_support_chat_diagnostics_analytics_setting_title">正在檢查分析設定</string>
+    <string name="ai_support_chat_diagnostics_rerun_checks">再次執行檢查</string>
+    <string name="ai_support_chat_diagnostics_registering_push_notifications">正在註冊通知…</string>
+    <string name="ai_support_chat_diagnostics_enabling_analytics">正在啟用分析…</string>
+    <string name="ai_support_chat_diagnostics_register_push_notifications">註冊通知</string>
+    <string name="ai_support_chat_diagnostics_open_notification_settings">開啟通知設定</string>
+    <string name="ai_support_chat_diagnostics_enable_analytics">啟用分析</string>
+    <string name="ai_support_chat_diagnostics_success">已完成所有檢查，沒有發現問題</string>
+    <string name="ai_support_chat_resolved_prompt">如果問題已解決，請將聊天標示為已解決；如果還有其他問題，請留言告知。</string>
+    <string name="ai_support_chat_support_request_subject_other_plugin">外掛程式支援要求</string>
+    <string name="ai_support_chat_support_request_subject_woo_plugin">WooCommerce 外掛程式支援要求</string>
+    <string name="ai_support_chat_support_request_subject_woo_payments">WooPayments 支援要求</string>
+    <string name="ai_support_chat_support_request_subject_card_reader">讀卡機支援要求</string>
+    <string name="ai_support_chat_support_request_subject_mobile_app">行動應用程式支援要求</string>
+    <string name="ai_support_chat_escalation_transcript_header">以下是應用程式內 AI 線上對談支援的記錄：</string>
+    <string name="ai_support_chat_escalation_consent_contact_form">聯絡表單</string>
+    <string name="ai_support_chat_escalation_consent_send_request">傳送要求</string>
+    <string name="ai_support_chat_escalation_consent_message">我們可以使用此聊天記錄建立支援要求；或者，你也可以開啟聯絡表單，自行輸入詳細資料。</string>
+    <string name="ai_support_chat_escalation_consent_title">要將此聊天傳送給支援團隊嗎？</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_message">這會關閉此對話的聊天動作。</string>
+    <string name="ai_support_chat_mark_resolved_confirmation_title">要將聊天標示為已解決嗎？</string>
+    <string name="ai_support_chat_mark_resolved_cancel">取消</string>
+    <string name="ai_support_chat_mark_resolved">標示為已解決</string>
+    <string name="ai_support_chat_toolbar_contact_support">聯絡支援團隊</string>
+    <string name="ai_support_chat_resolved_message">你已將此聊天標示為已解決。</string>
+    <string name="ai_support_chat_ticket_created_message">系統已為此聊天建立支援單。 我們會透過電子郵件回覆。</string>
+    <string name="ai_support_chat_contact_support">聯絡支援團隊</string>
+    <string name="ai_support_chat_human_support_message">你似乎需要其他協助。 是否要聯絡我們的支援團隊？</string>
+    <string name="ai_support_chat_suggested_fix_error">無法套用此修正。 請檢查你的連線並再試一次。</string>
+    <string name="ai_support_chat_load_history_error">無法載入此聊天。 請檢查你的連線並再試一次。</string>
+    <string name="ai_support_chat_error_dismiss">關閉</string>
+    <string name="ai_support_chat_error_title">錯誤</string>
+    <string name="ai_support_chat_input_hint">輸入訊息…</string>
+    <string name="ai_support_chat_greeting">嗨！ 我是你的 Woo 行動支援機器人。 今天有什麼需要我幫忙的嗎？</string>
+    <string name="ai_support_chat_history_default_title">支援對話</string>
+    <string name="ai_support_chat_history_delete_error">無法刪除聊天記錄。</string>
+    <string name="ai_support_chat_history_load_error">無法載入聊天記錄。</string>
+    <string name="ai_support_chat_history_empty">你尚未與支援團隊交談。</string>
+    <string name="ai_support_chat_history_title">聊天記錄</string>
+    <string name="ai_support_chat_history_row_subtitle">重新檢視過去的支援對話</string>
+    <string name="ai_support_chat_history_row_title">聊天記錄</string>
+    <string name="ai_support_chat_screen_title">與支援團隊交談</string>
+    <string name="ai_support_chat_help_row_title">與支援團隊交談</string>
+    <string name="settings_notifs_new_reviews_rating_filter_description">篩選符合或低於所選分數的評論。</string>
+    <string name="settings_notifs_new_reviews_rating_filter_title">僅顯示低分評論</string>
+    <string name="settings_notifs_new_reviews_all_description">為每篇評論傳送 ping。</string>
+    <string name="settings_notifs_new_reviews_enable_description">在商店獲得評論時通知我。</string>
+    <string name="settings_notifs_new_orders_threshold">最小值 (%1$s)</string>
+    <string name="settings_notifs_new_orders_high_value_subtitle">超過 %1$s 的訂單</string>
+    <string name="settings_notifs_channel_disabled_subtitle">在裝置設定中開啟</string>
+    <string name="ai_assistant_chat_error_unknown" a8c-src-lib="module:ai-assistant-feature">助理在執行作業時發生錯誤。</string>
+    <string name="ai_assistant_chat_error_max_iterations" a8c-src-lib="module:ai-assistant-feature">助理在經過數個步驟後仍無法完成作業。</string>
+    <string name="settings_notifs_new_reviews_selected_rating_one">%1$d 顆星以下</string>
+    <string name="ai_assistant_chat_error_confirmation_deferred" a8c-src-lib="module:ai-assistant-feature">目前尚無法確認。 請在對談中再試一次。</string>
+    <string name="ai_assistant_chat_error_cancelled" a8c-src-lib="module:ai-assistant-feature">要求已停止。</string>
+    <string name="ai_assistant_chat_error_outcome_unknown" a8c-src-lib="module:ai-assistant-feature">我不確定系統是否已套用變更。 請在你的商店中驗證後，再嘗試執行其他任何操作。</string>
+    <string name="ai_assistant_chat_error_invalid_tool_call" a8c-src-lib="module:ai-assistant-feature">助理無法完成該要求。</string>
+    <string name="ai_assistant_chat_error_tool_failed" a8c-src-lib="module:ai-assistant-feature">助理無法完成該商店動作。</string>
+    <string name="ai_assistant_chat_error_upstream_failure" a8c-src-lib="module:ai-assistant-feature">助理服務無法完成此回應。 請稍後再試。</string>
+    <string name="ai_assistant_chat_error_timeout" a8c-src-lib="module:ai-assistant-feature">要求逾時。 再試一次。</string>
+    <string name="ai_assistant_chat_error_rate_limit" a8c-src-lib="module:ai-assistant-feature">目前助理繁忙， 請稍後再試。</string>
+    <string name="ai_assistant_chat_error_auth" a8c-src-lib="module:ai-assistant-feature">助理無法存取你的商店。 請重新登入，然後重新開啟助理。</string>
+    <string name="ai_assistant_chat_error_network" a8c-src-lib="module:ai-assistant-feature">無法連結。 請檢查你的連線，然後再試一次。</string>
+    <string name="ai_assistant_chat_cancel" a8c-src-lib="module:ai-assistant-feature">取消</string>
+    <string name="ai_assistant_chat_confirm" a8c-src-lib="module:ai-assistant-feature">確認</string>
+    <string name="ai_assistant_chat_confirm_tool" a8c-src-lib="module:ai-assistant-feature">要確認 %1$s 嗎？</string>
+    <string name="ai_assistant_chat_retry" a8c-src-lib="module:ai-assistant-feature">重試</string>
+    <string name="ai_assistant_chat_pending_confirmation_hint" a8c-src-lib="module:ai-assistant-feature">解決上方待確認的變更。</string>
+    <string name="ai_assistant_chat_stop_content_description" a8c-src-lib="module:ai-assistant-feature">停止回應</string>
+    <string name="ai_assistant_chat_send_content_description" a8c-src-lib="module:ai-assistant-feature">傳送訊息</string>
+    <string name="ai_assistant_chat_placeholder" a8c-src-lib="module:ai-assistant-feature">詢問你的商店資訊</string>
+    <string name="ai_assistant_stats_card_open_content_description" a8c-src-lib="module:ai-assistant-feature">開啟 %1$s 的分析</string>
+    <string name="ai_assistant_stats_card_metric_unavailable" a8c-src-lib="module:ai-assistant-feature">無法取得</string>
+    <string name="ai_assistant_stats_card_average_order_value_label" a8c-src-lib="module:ai-assistant-feature">平均訂單金額</string>
+    <string name="ai_assistant_stats_card_total_orders_label" a8c-src-lib="module:ai-assistant-feature">訂單總數</string>
+    <string name="ai_assistant_stats_card_net_sales_label" a8c-src-lib="module:ai-assistant-feature">淨銷售額</string>
+    <string name="ai_assistant_stats_card_total_sales_label" a8c-src-lib="module:ai-assistant-feature">銷售總計</string>
+    <string name="ai_assistant_early_access_notice_dismiss_content_description" a8c-src-lib="module:ai-assistant-feature">關閉搶先使用通知</string>
+    <string name="ai_assistant_early_access_notice_feedback" a8c-src-lib="module:ai-assistant-feature">提供意見回饋</string>
+    <string name="ai_assistant_early_access_notice_body" a8c-src-lib="module:ai-assistant-feature">你好！ 我們才剛開始推出此工具，未來將會提供更多功能。 請告訴我們缺少哪些功能，以及需要哪些方面的協助！</string>
+    <string name="ai_assistant_early_access_notice_badge" a8c-src-lib="module:ai-assistant-feature">搶先使用</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_content_description" a8c-src-lib="module:ai-assistant-feature">傳送建議：%1$s</string>
+    <string name="ai_assistant_chat_empty_state_prompt_customers" a8c-src-lib="module:ai-assistant-feature">顯示我的最新顧客。 列出最多 10 位顧客 (依註冊日期排序，最新的在最上方)。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_orders" a8c-src-lib="module:ai-assistant-feature">有任何需要注意的訂單嗎？ 顯示待確認、保留或處理中的近期訂單。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_stock" a8c-src-lib="module:ai-assistant-feature">什麼商品即將賣完？ 列出無庫存或庫存不足的商品，讓我知道需要補貨的品項。</string>
+    <string name="ai_assistant_chat_empty_state_prompt_revenue" a8c-src-lib="module:ai-assistant-feature">我本週的收益如何？ 顯示本週的銷售總額，以及此金額與上週相比的狀況。</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_customers" a8c-src-lib="module:ai-assistant-feature">誰是我的最新顧客？</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_orders" a8c-src-lib="module:ai-assistant-feature">有任何需要注意的訂單嗎？</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_stock" a8c-src-lib="module:ai-assistant-feature">什麼商品即將賣完？</string>
+    <string name="ai_assistant_chat_empty_state_suggestion_revenue" a8c-src-lib="module:ai-assistant-feature">本週收益如何？</string>
+    <string name="ai_assistant_chat_empty_state_title" a8c-src-lib="module:ai-assistant-feature">我可以提供什麼協助嗎？</string>
+    <string name="ai_assistant_chat_card_group_generic" a8c-src-lib="module:ai-assistant-feature">卡片</string>
+    <string name="ai_assistant_chat_card_group_customers" a8c-src-lib="module:ai-assistant-feature">顧客</string>
+    <string name="ai_assistant_chat_card_group_stats" a8c-src-lib="module:ai-assistant-feature">分析</string>
+    <string name="ai_assistant_chat_card_group_variations" a8c-src-lib="module:ai-assistant-feature">款式</string>
+    <string name="ai_assistant_chat_card_group_products" a8c-src-lib="module:ai-assistant-feature">商品</string>
+    <string name="ai_assistant_chat_card_group_orders" a8c-src-lib="module:ai-assistant-feature">訂單</string>
+    <string name="ai_assistant_chat_tool_activity_content_description" a8c-src-lib="module:ai-assistant-feature">助理正在執行以下作業：%1$s</string>
+    <string name="ai_assistant_chat_tool_activity_generic" a8c-src-lib="module:ai-assistant-feature">檢查你的商店</string>
+    <string name="ai_assistant_chat_tool_activity_customers" a8c-src-lib="module:ai-assistant-feature">檢查顧客</string>
+    <string name="ai_assistant_chat_tool_activity_analytics" a8c-src-lib="module:ai-assistant-feature">檢查分析</string>
+    <string name="ai_assistant_chat_tool_activity_products_write" a8c-src-lib="module:ai-assistant-feature">更新商品</string>
+    <string name="ai_assistant_chat_tool_activity_products_read" a8c-src-lib="module:ai-assistant-feature">檢查商品</string>
+    <string name="ai_assistant_chat_tool_activity_orders_write" a8c-src-lib="module:ai-assistant-feature">更新訂單</string>
+    <string name="ai_assistant_chat_tool_activity_orders_read" a8c-src-lib="module:ai-assistant-feature">檢查訂單</string>
+    <string name="ai_assistant_chat_typing_content_description" a8c-src-lib="module:ai-assistant-feature">助理正在思考</string>
+    <string name="ai_assistant_chat_message_assistant_content_description" a8c-src-lib="module:ai-assistant-feature">助理：%1$s</string>
+    <string name="ai_assistant_chat_message_user_content_description" a8c-src-lib="module:ai-assistant-feature">你：%1$s</string>
+    <string name="ai_assistant_chat_jump_to_latest_content_description" a8c-src-lib="module:ai-assistant-feature">跳至最新內容</string>
+    <string name="ai_assistant_chat_restart_content_description" a8c-src-lib="module:ai-assistant-feature">開始新的對話</string>
+    <string name="ai_assistant_chat_back_content_description" a8c-src-lib="module:ai-assistant-feature">返回</string>
+    <string name="ai_assistant_chat_title" a8c-src-lib="module:ai-assistant-feature">助理</string>
+    <string name="ai_assistant_confirmation_bulk_entries_overflow" a8c-src-lib="module:ai-assistant-feature">超過 %1$d 個</string>
+    <string name="ai_assistant_confirmation_eyebrow_cancelled" a8c-src-lib="module:ai-assistant-feature">已取消</string>
+    <string name="ai_assistant_confirmation_eyebrow_confirmed" a8c-src-lib="module:ai-assistant-feature">已確認</string>
+    <string name="ai_assistant_confirmation_eyebrow_pending" a8c-src-lib="module:ai-assistant-feature">待確認的變更</string>
+    <string name="ai_assistant_confirmation_field_value_off" a8c-src-lib="module:ai-assistant-feature">關閉</string>
+    <string name="ai_assistant_confirmation_field_value_updated" a8c-src-lib="module:ai-assistant-feature">已更新</string>
+    <string name="ai_assistant_confirmation_field_sku" a8c-src-lib="module:ai-assistant-feature">貨號</string>
+    <string name="ai_assistant_confirmation_field_stock_status" a8c-src-lib="module:ai-assistant-feature">庫存狀態</string>
+    <string name="ai_assistant_confirmation_field_stock_quantity" a8c-src-lib="module:ai-assistant-feature">庫存</string>
+    <string name="ai_assistant_confirmation_field_sale_price" a8c-src-lib="module:ai-assistant-feature">特價</string>
+    <string name="ai_assistant_confirmation_field_regular_price" a8c-src-lib="module:ai-assistant-feature">價格</string>
+    <string name="ai_assistant_confirmation_field_name" a8c-src-lib="module:ai-assistant-feature">姓名</string>
+    <string name="ai_assistant_confirmation_field_billing_email" a8c-src-lib="module:ai-assistant-feature">帳單寄送電子郵件地址</string>
+    <string name="ai_assistant_confirmation_field_customer_note" a8c-src-lib="module:ai-assistant-feature">顧客備註</string>
+    <string name="ai_assistant_confirmation_field_status" a8c-src-lib="module:ai-assistant-feature">狀態</string>
+    <string name="ai_assistant_confirmation_generic_tool_call" a8c-src-lib="module:ai-assistant-feature">評論 %1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_title" a8c-src-lib="module:ai-assistant-feature">更新商品 #%2$s 的款式 #%1$s</string>
+    <string name="ai_assistant_confirmation_product_variation_update_generic" a8c-src-lib="module:ai-assistant-feature">更新商品款式</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 個商品</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 個商品</string>
+    <string name="ai_assistant_confirmation_products_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">更新多個商品</string>
+    <string name="ai_assistant_confirmation_product_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">更新商品 %1$s (#%2$s)</string>
+    <string name="ai_assistant_confirmation_product_update_title" a8c-src-lib="module:ai-assistant-feature">更新商品 #%1$s</string>
+    <string name="ai_assistant_confirmation_product_update_generic" a8c-src-lib="module:ai-assistant-feature">更新商品</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_multiple" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 筆訂單：傳送電子郵件給顧客</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_summary_single" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 筆訂單：傳送電子郵件給顧客</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_multiple" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 筆訂單</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_title_single" a8c-src-lib="module:ai-assistant-feature">更新 %1$d 筆訂單</string>
+    <string name="ai_assistant_confirmation_orders_bulk_update_generic" a8c-src-lib="module:ai-assistant-feature">更新多筆訂單</string>
+    <string name="ai_assistant_confirmation_order_update_summary" a8c-src-lib="module:ai-assistant-feature">更新訂單 #%1$s：傳送電子郵件給顧客</string>
+    <string name="ai_assistant_confirmation_order_update_title" a8c-src-lib="module:ai-assistant-feature">更新訂單 #%1$s</string>
+    <string name="ai_assistant_confirmation_order_update_generic" a8c-src-lib="module:ai-assistant-feature">更新訂單</string>
+    <string name="woopos_remote_ttp_explainer_got_it">收到</string>
+    <string name="woopos_remote_ttp_explainer_requirements_body">使用相同的 Wi-Fi，然後在兩個裝置上登入相同的商店。 你的手機需要支援 Android 13 或更新版本、NFC 及「感應支付」。</string>
+    <string name="woopos_remote_ttp_explainer_requirements_heading">檢查相容性</string>
+    <string name="woopos_remote_ttp_explainer_setup_body">在手機上開啟 Woo，然後前往「設定」→「付款」→「讀卡機模式」。</string>
+    <string name="woopos_remote_ttp_explainer_setup_heading">設定你的手機</string>
+    <string name="woopos_remote_ttp_explainer_intro">在手機上使用 Woo 應用程式，以收取卡片付款。</string>
+    <string name="woopos_remote_ttp_explainer_title">沒有讀卡機？ 沒問題</string>
+    <string name="woopos_remote_ttp_hint_strip_text">使用 Android 手機作為讀卡機</string>
+    <string name="woopos_card_reader_unknown_reader_name">不明的讀卡機</string>
+    <string name="woopos_card_reader_bluetooth_icon_content_description">藍牙讀卡機</string>
+    <string name="woopos_card_reader_phone_icon_content_description">手機讀卡機</string>
+    <string name="woopos_remote_payment_failed_generic">發生錯誤。 請再試一次。</string>
+    <string name="woopos_remote_payment_failed_connection_lost">與手機讀卡機的連結已中斷。 請重新連結，然後再試一次。</string>
+    <string name="woopos_tap_to_pay_missing_location_permission_message">授予使用「感應支付」的位置存取權。</string>
+    <string name="woopos_tap_to_pay_payment_failed_with_reason_message">「感應支付」無法啟動：%1$s</string>
+    <string name="woopos_tap_to_pay_payment_failed_message">「感應支付」無法啟動。 請再試一次。</string>
+    <string name="woopos_tap_to_pay_preparing_subtitle">正在準備「感應支付」功能</string>
+    <string name="woopos_tap_to_pay_preparing_title">正在準備</string>
+    <string name="woopos_tap_to_pay_promoted_image_description">手機上的「感應支付」插圖</string>
+    <string name="woopos_tap_to_pay_promoted_cta_button_label">使用「感應支付」付款</string>
+    <string name="woopos_tap_to_pay_promoted_subtitle">使用此裝置接受感應式卡片付款。</string>
+    <string name="woopos_tap_to_pay_promoted_title">感應支付</string>
+    <string name="woopos_payment_method_mark_order_as_paid_label">將訂單標示為已付款</string>
+    <string name="woopos_payment_method_scan_to_pay_label">掃描付款</string>
+    <string name="woopos_payment_method_other_methods_label">其他付款方式</string>
+    <string name="woopos_payment_method_all_methods_label">所有付款方式</string>
+    <string name="woopos_payment_method_tap_to_pay_label">感應支付</string>
+    <string name="woopos_payment_method_card_reader_label">讀卡機</string>
+    <string name="woopos_settings_card_reader_fingerprint_title">指紋</string>
+    <string name="woopos_settings_card_reader_transport_wifi">Wi-Fi</string>
+    <string name="woopos_settings_card_reader_transport_title">傳輸</string>
+    <string name="woopos_settings_card_reader_disconnect_button">中斷連結</string>
+    <string name="woopos_remote_reader_connect_failed_generic">連結失敗</string>
+    <string name="ai_assistant_variation_card_id_title">款式 %1$d</string>
+    <string name="ai_support_chat_connectivity_action">與支援團隊對談</string>
+    <string name="ai_support_chat_connectivity_initial_message">協助我針對商店連結問題進行疑難排解。</string>
+    <string name="ai_support_chat_diagnostics_status_failed">失敗</string>
+    <string name="ai_support_chat_diagnostics_status_passed">已通過</string>
+    <string name="woopos_payment_method_picker_bottom_sheet_title">選擇付款方式</string>
+    <string name="ai_support_chat_diagnostics_status_running">正在執行</string>
+    <string name="ai_support_chat_diagnostics_status_pending">待確認</string>
+    <string name="ai_support_chat_diagnostics_continue">繼續對談</string>
+    <string name="ai_support_chat_issue_other">其他問題</string>
+    <string name="ai_support_chat_issue_receiving_notifications">我沒有收到通知</string>
+    <string name="ai_support_chat_issue_loading_analytics">系統未載入我的分析</string>
+    <string name="ai_support_chat_issue_loading_products">商店沒有顯示我的商品</string>
+    <string name="ai_support_chat_issue_loading_orders">系統沒有顯示我的訂單</string>
+    <string name="ai_support_chat_issue_picker_title">你想針對什麼問題進行疑難排解？</string>
+    <string name="ai_support_chat_post_diagnostics_greeting">請更詳細地描述你的問題，以便我提供協助。</string>
+    <string name="ai_support_chat_typing">正在思考…</string>
+    <string name="ai_support_chat_send_error">無法傳送訊息。 請檢查你的連線，然後再試一次。</string>
+    <string name="ai_support_chat_send">傳送</string>
+    <string name="ai_support_chat_placeholder">即將推出</string>
+    <string name="ai_support_chat_help_row_subtitle">與 AI 助理對談以診斷商店問題</string>
+    <string name="settings_notifs_new_reviews_all_title">所有新評論</string>
+    <string name="settings_notifs_stock_backorder_description">當顧客訂購目前沒有庫存的品項時。</string>
+    <string name="settings_notifs_stock_backorder_title">延期交貨</string>
+    <string name="settings_notifs_stock_out_of_stock_description">當商品款式數量達到零時。</string>
+    <string name="settings_notifs_stock_out_of_stock_title">沒有庫存</string>
+    <string name="settings_notifs_stock_low_stock_threshold_error">無法載入全店臨界值</string>
+    <string name="settings_notifs_stock_low_stock_threshold_unavailable">商品可以使用自己的臨界值或全店臨界值。 &lt;a href=\'\'&gt;檢視全店臨界值&lt;/a&gt;以查看目前的值。</string>
+    <string name="settings_notifs_stock_low_stock_threshold">商品可以使用自己的臨界值或全店臨界值 &lt;b&gt;%1$s&lt;/b&gt;。 &lt;a href=\'\'&gt;編輯全店臨界值&lt;/a&gt;</string>
+    <string name="settings_notifs_stock_low_stock_description">當商品款式達到庫存不足的臨界值時。</string>
+    <string name="settings_notifs_stock_low_stock_title">庫存不足</string>
+    <string name="settings_notifs_stock_enable_description">當商品庫存變更需要注意時接收通知。</string>
+    <string name="settings_notifs_stock_enable_title">啟用庫存通知</string>
+    <string name="settings_notifs_new_orders_high_value_title">僅限最高值的訂單</string>
+    <string name="settings_notifs_new_orders_all_description">無論值為何，每筆訂單都會傳送 ping 通知。</string>
+    <string name="settings_notifs_new_orders_high_value_description">篩選超過最小值的訂單。</string>
+    <string name="settings_notifs_new_orders_all_title">所有新訂單</string>
+    <string name="settings_notifs_notify_me_for">發生以下情況時通知我</string>
+    <string name="settings_notifs_new_orders_enable_description">當顧客在商店下單時接收通知。</string>
+    <string name="settings_notifs_error_update">更新通知設定時發生錯誤。</string>
+    <string name="settings_notifs_error_fetch">擷取通知設定時發生錯誤。</string>
+    <string name="settings_notifs_enable_title">啟用通知</string>
+    <string name="settings_notifs_app_notifications_disabled_warning">若要接收商店通知，請在裝置設定中&lt;a href=\'\'&gt;開啟通知&lt;/a&gt;。</string>
+    <string name="card_reader_mode_location_permission_open_settings">開啟設定</string>
+    <string name="card_reader_mode_location_permission_denied_subtitle">已封鎖位置存取權。 開啟「設定」並授予「位置」，以在此手機上使用感應支付功能。</string>
+    <string name="card_reader_mode_location_permission_continue">繼續</string>
+    <string name="card_reader_mode_location_permission_subtitle">Android 需要位置存取權，才能在此手機上使用感應支付功能。 你的位置會保留在此裝置上。</string>
+    <string name="card_reader_mode_location_permission_header">需要位置存取權</string>
+    <string name="card_reader_mode_error_close">關閉</string>
+    <string name="card_reader_mode_error_subtitle">請檢查你的 Wi-Fi 連線，然後再試一次。</string>
+    <string name="card_reader_mode_error_header">「讀卡機模式」無法啟動</string>
+    <string name="card_reader_mode_starting_subtitle">正在設定本機網路的探索…</string>
+    <string name="card_reader_mode_starting_header">正在啟動「讀卡機模式」</string>
+    <string name="card_reader_mode_settings_row_label">讀卡機模式</string>
+    <string name="card_reader_mode_cancel">取消</string>
+    <string name="card_reader_mode_waiting_subtitle">正在等待付款…</string>
+    <string name="card_reader_mode_waiting_header">與平板電腦配對</string>
+    <string name="card_reader_mode_ready_to_pair_store">商店：%1$s</string>
+    <string name="card_reader_mode_ready_to_pair_subtitle">在平板電腦上開啟 Woo POS，然後選擇此手機。</string>
+    <string name="card_reader_mode_ready_to_pair_header">準備配對</string>
+    <string name="dashboard_ai_assistant_entry_point_content_description">開啟 AI 助理</string>
+    <string name="dashboard_ai_assistant_entry_point_label">詢問你的商店資訊…</string>
+    <string name="notification_channel_stock_title">庫存提醒</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">讀卡機電量過低 (%d%%)，無法安裝此更新。 請至少將讀卡機充電至 50%%，然後再試一次。</string>
     <string name="woopos_card_reader_update_battery_low_message" formatted="false">讀卡機電量過低，無法安裝此更新。 請至少將讀卡機充電至 50%，然後再試一次。</string>
     <string name="woopos_card_reader_update_failed_title">更新失敗</string>
@@ -606,12 +905,8 @@ Language: zh_TW
     <string name="woopos_eligibility_screen_UK_country_name" a8c-src-lib="module:pos">英國</string>
     <string name="woopos_eligibility_screen_US_country_name" a8c-src-lib="module:pos">美國</string>
     <string name="woopos_eligibility_screen_unable_to_load">無法載入</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_generic">POS 系統不支援商店的幣別。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
-    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">POS 系統不支援商店的幣別。 「%1$s」地區目前僅支援：%2$s。 請檢查商店的幣別設定，或聯絡支援團隊尋求協助。</string>
-    <string name="woopos_eligibility_reason_feature_switch_disabled">必須啟用「銷售時點情報系統」才能繼續。 請依序前往「WooCommerce 設定」&gt;「進階」&gt;「功能」，然後從下方的 WordPress 管理員啟用 POS 功能。</string>
     <string name="woopos_eligibility_reason_check_connection">請檢查網際網路連線，並嘗試重新啟動應用程式。萬一問題持續發生，請聯絡支援團隊。</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">系統不支援你的 WooCommerce 版本。 POS 系統僅適用於 WooCommerce %1$s 以上版本。 請更新至最新版本的 WooCommerce。</string>
-    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">請確認是否安裝 WooCommerce 外掛程式，然後從 WordPress 管理員啟用程式。 萬一還是遇到問題，請聯絡支援團隊尋求協助。</string>
     <string name="orderfilters_sales_channel_filter">銷售通路</string>
     <string name="barcode_ean13_content_description">條碼 EAN13</string>
     <string name="woo_shipping_rate_option_additional_handling">額外處理</string>
@@ -1808,12 +2103,6 @@ Language: zh_TW
     <string name="coupon_type_picker_percentage_content_description">優惠券折扣：百分比折扣</string>
     <string name="coupon_type_picker_title">建立優惠券</string>
     <string name="coupon_list_add_coupon_content_description">新增優惠券</string>
-    <string name="try_test_order_button">開始使用測試訂單</string>
-    <string name="try_test_order_step_4">使用應用程式處理測試訂單的退款流程</string>
-    <string name="try_test_order_step_3">完成付款流程，並等候 WooCommerce 應用程式的訂單推播通知。</string>
-    <string name="try_test_order_step_2">選取測試商品並新增至購物車，然後像真的顧客一樣在網路商店完成結帳。</string>
-    <string name="try_test_order_step_1">點選下方按鈕，系統會透過網頁瀏覽器重新導向至你的網路商店。</string>
-    <string name="try_test_order_heading">試用測試訂單</string>
     <string name="empty_order_test_order_button">試用測試訂單</string>
     <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>

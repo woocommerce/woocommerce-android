@@ -43,7 +43,6 @@ class WooPosOrderDetailsMapperTest {
     private val orderStatusMapper: WooPosOrderStatusMapper = mock()
     private val refundInfoBuilder: WooPosRefundInfoBuilder = mock()
     private val orderActionsProvider: WooPosOrderActionsProvider = mock()
-    private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
     private val getNonRefundedItems = WooPosGetNonRefundedItems()
     private val groupRefundedItems = WooPosGroupRefundedItems()
 
@@ -54,7 +53,6 @@ class WooPosOrderDetailsMapperTest {
         orderStatusMapper = orderStatusMapper,
         refundInfoBuilder = refundInfoBuilder,
         orderActionsProvider = orderActionsProvider,
-        bookingInfoMapper = bookingInfoMapper,
         getNonRefundedItems = getNonRefundedItems,
         groupRefundedItems = groupRefundedItems,
     )

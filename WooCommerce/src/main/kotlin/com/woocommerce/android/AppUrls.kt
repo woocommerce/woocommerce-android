@@ -14,6 +14,8 @@ object AppUrls {
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
     const val AUTOMATTIC_AI_GUIDELINES = "https://automattic.com/ai-guidelines/"
 
+    const val ANALYTICS_SCHEDULED_IMPORT_DOCS = "https://woocommerce.com/document/woocommerce-analytics/#section-24"
+
     const val WOOCOMMERCE_UPGRADE = "https://woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
     const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
@@ -30,9 +32,6 @@ object AppUrls {
         "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
     const val PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING =
         "https://woocommerce.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
-    const val ORDERS_TROUBLESHOOTING =
-        "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
-
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
 
@@ -77,6 +76,8 @@ object AppUrls {
         "https://stripe.com/docs/terminal/payments/setup-reader/tap-to-pay?platform=android#supported-devices"
     const val LEARN_MORE_ABOUT_TAP_TO_PAY =
         "https://woocommerce.com/document/woopayments/in-person-payments/tap-to-pay-android/"
+    const val WOOPAYMENTS_FEES_NOT_REFUNDABLE =
+        "https://woocommerce.com/document/woopayments/fees/why-arent-fees-refunded/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
         "https://woocommerce.com/document/cash-on-delivery/"

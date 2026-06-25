@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
-import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
@@ -52,7 +51,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -114,7 +112,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
     private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
@@ -171,7 +168,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
         getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
         orderListTransactionLauncher = mock(),
-        shouldShowCreateTestOrderScreen = shouldShowCreateTestOrderScreen,
         analyticsTracker = analyticsTracker,
         barcodeScanningTracker = barcodeScanningTracker,
         notificationChannelsHandler = notificationChannelsHandler,
@@ -298,8 +294,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-        whenever(shouldShowCreateTestOrderScreen()).doReturn(false)
-
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
 
@@ -308,25 +302,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
             assertEquals(emptyView, ORDER_LIST)
-        }
-    }
-
-    @Test
-    fun `Display 'Try test order' empty view when shouldShowCreateTestOrderScreen is true`() = testBlocking {
-        viewModel.isSearching = false
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-        whenever(shouldShowCreateTestOrderScreen()).doReturn(true)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
-        advanceUntilIdle()
-
-        viewModel.emptyViewType.observeForTesting {
-            // Verify
-            val emptyView = viewModel.emptyViewType.value
-            assertNotNull(emptyView)
-            assertEquals(emptyView, ORDER_LIST_CREATE_TEST_ORDER)
         }
     }
 

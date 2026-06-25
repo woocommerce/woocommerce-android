@@ -10,10 +10,12 @@ import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfigurati
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
 import com.stripe.stripeterminal.external.models.ConfirmPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.stripe.stripeterminal.external.models.Refund
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
@@ -161,6 +163,11 @@ internal class TerminalWrapper {
                 SimulateReaderUpdate.UPDATE_AVAILABLE
         }
     }
+
+    fun supportsReadersOfType(
+        deviceType: DeviceType,
+        discoveryConfiguration: DiscoveryConfiguration,
+    ): ReaderSupportResult = Terminal.getInstance().supportsReadersOfType(deviceType, discoveryConfiguration)
 
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()

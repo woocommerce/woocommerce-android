@@ -9,16 +9,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
-import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
-import java.time.Instant
-import java.time.format.DateTimeParseException
-import java.util.Date
+import com.woocommerce.android.util.DateUtils
+import org.wordpress.android.util.DateTimeUtils
 
 internal class AiAssistantOrderCardRenderer(
     private val currencyFormatter: AiAssistantCurrencyFormatter,
+    private val dateUtils: DateUtils,
 ) {
     @Composable
     fun Card(
@@ -28,7 +27,7 @@ internal class AiAssistantOrderCardRenderer(
     ) {
         val context = LocalContext.current
         OrderSummaryRow(
-            order = card.toOrderSummaryRowModel(context, currencyFormatter),
+            order = card.toOrderSummaryRowModel(context, currencyFormatter, dateUtils),
             onClick = { onAction(AssistantCardAction.OpenOrder(card.remoteOrderId)) },
             modifier = modifier,
         )
@@ -38,6 +37,7 @@ internal class AiAssistantOrderCardRenderer(
 internal fun AssistantCard.Order.toOrderSummaryRowModel(
     context: Context,
     currencyFormatter: AiAssistantCurrencyFormatter,
+    dateUtils: DateUtils,
 ): OrderSummaryRowModel {
     fun formatTotalPrice(): String =
         when {
@@ -47,11 +47,7 @@ internal fun AssistantCard.Order.toOrderSummaryRowModel(
         }
 
     fun formatDate(): String =
-        try {
-            Date.from(Instant.parse(date)).formatToMMMdd()
-        } catch (_: DateTimeParseException) {
-            date
-        }
+        formatDateWithSiteTimeZone(date, dateUtils) ?: date
 
     fun resolveCustomerName(): String =
         customerName.ifBlank { context.getString(R.string.orderdetail_customer_name_default) }
@@ -65,6 +61,21 @@ internal fun AssistantCard.Order.toOrderSummaryRowModel(
         totalPrice = formatTotalPrice(),
         isPosOrder = false,
     )
+}
+
+private fun formatDateWithSiteTimeZone(
+    dateCreated: String,
+    dateUtils: DateUtils,
+): String? {
+    val currentSiteDate = dateUtils.getCurrentDateInSiteTimeZone() ?: return null
+    val siteDate = dateUtils.getDateUsingSiteTimeZone(dateCreated) ?: return null
+    val iso8601DateString = dateUtils.getYearMonthDayStringFromDate(siteDate)
+
+    return if (DateTimeUtils.isSameYear(currentSiteDate, siteDate)) {
+        dateUtils.getShortMonthDayString(iso8601DateString)
+    } else {
+        dateUtils.getShortMonthDayAndYearString(iso8601DateString)
+    }
 }
 
 @ColorRes

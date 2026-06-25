@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import app.cash.turbine.test
 import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
@@ -12,13 +14,16 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Rule
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -37,6 +42,13 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
+
+    private var viewModel: WooPosHomeViewModel? = null
+
+    @After
+    fun tearDown() {
+        viewModel?.viewModelScope?.cancel()
+    }
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -330,6 +342,47 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
+    fun `given home at Checkout, when opening orders, then checkout is cancelled`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+        events.emit(ChildToParentEvent.CheckoutClicked(listOf(ItemClickedData.Product.Simple(1))))
+
+        // WHEN
+        viewModel.navigationEvent.test {
+            events.emit(ChildToParentEvent.NavigationEvent.ToOrders)
+
+            // THEN
+            assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ToOrders)
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            )
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart)
+        }
+    }
+
+    @Test
+    fun `given home outside Checkout, when opening orders, then checkout is not cancelled`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.navigationEvent.test {
+            events.emit(ChildToParentEvent.NavigationEvent.ToOrders)
+
+            // THEN
+            assertThat(awaitItem()).isEqualTo(ChildToParentEvent.NavigationEvent.ToOrders)
+            verify(parentToChildrenEventSender, never()).sendToChildren(
+                ParentToChildrenEvent.BackFromCheckoutToCartClicked
+            )
+        }
+    }
+
+    @Test
     fun `given Cart state with ScanningSetupDialog visible, when SystemBackClicked, then dialog should be dismissed`() = runTest {
         // GIVEN
         val events = MutableSharedFlow<ChildToParentEvent>()
@@ -368,6 +421,6 @@ class WooPosHomeViewModelTest {
             analyticsTracker,
             soundHelper,
             SavedStateHandle()
-        )
+        ).also { viewModel = it }
     }
 }

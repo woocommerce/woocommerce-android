@@ -1,6 +1,9 @@
 package com.woocommerce.android.cardreader.internal
 
 import android.app.Application
+import com.stripe.stripeterminal.external.models.DeviceType
+import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.ReaderSupportResult
 import com.stripe.stripeterminal.log.LogLevel
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.LogWrapper
@@ -9,6 +12,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.CompositeConnectionTokenProvider
+import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
 import com.woocommerce.android.cardreader.internal.connection.ConnectionManager
 import com.woocommerce.android.cardreader.internal.connection.TerminalListenerImpl
 import com.woocommerce.android.cardreader.internal.firmware.SoftwareUpdateManager
@@ -98,6 +102,19 @@ internal class CardReaderManagerImpl(
 
     override fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         connectionManager.setupTapToPayUx(config)
+    }
+
+    override fun isTapToPaySupportedOnDevice(isSimulated: Boolean): TapToPaySupportResult {
+        if (!terminal.isInitialized()) return TapToPaySupportResult.TerminalNotInitialized
+        val result = terminal.supportsReadersOfType(
+            DeviceType.TAP_TO_PAY_DEVICE,
+            DiscoveryConfiguration.TapToPayDiscoveryConfiguration(isSimulated),
+        )
+        return when (result) {
+            is ReaderSupportResult.Supported -> TapToPaySupportResult.Supported
+            is ReaderSupportResult.NotSupported ->
+                TapToPaySupportResult.NotSupported(result.error.message.orEmpty())
+        }
     }
 
     override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {

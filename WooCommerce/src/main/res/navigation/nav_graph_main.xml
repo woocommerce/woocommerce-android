@@ -96,6 +96,9 @@
         <action
             android:id="@+id/action_dashboard_to_aiAssistantHostFragment"
             app:destination="@id/aiAssistantHostFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_scheduledImportInfoBottomSheet"
+            app:destination="@id/scheduledImportInfoBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -145,9 +148,6 @@
         <action
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment" />
-        <action
-            android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
-            app:destination="@id/createTestOrderDialogFragment" />
         <action
             android:id="@+id/action_orderListFragment_to_troubleshootConnectionFragment"
             app:destination="@id/troubleshootConnectionFragment" />
@@ -763,15 +763,6 @@
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
     <dialog
-        android:id="@+id/createTestOrderDialogFragment"
-        android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
-        android:label="CreateTestOrderDialogFragment">
-        <argument
-            android:name="siteUrl"
-            app:argType="string"
-            app:nullable="false" />
-    </dialog>
-    <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
         android:label="NameYourStoreDialogFragment">
@@ -792,6 +783,15 @@
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_aiProductPromptFragment"
             app:destination="@id/AiProductPromptFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/scheduledImportInfoBottomSheet"
+        android:name="com.woocommerce.android.ui.dashboard.ScheduledImportInfoBottomSheetFragment"
+        android:label="ScheduledImportInfoBottomSheetFragment">
+        <argument
+            android:name="isEnabled"
+            android:defaultValue="false"
+            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/AiProductPromptFragment"

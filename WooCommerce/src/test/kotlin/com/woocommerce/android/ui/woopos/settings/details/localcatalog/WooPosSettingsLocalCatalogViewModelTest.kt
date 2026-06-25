@@ -231,6 +231,52 @@ class WooPosSettingsLocalCatalogViewModelTest {
     }
 
     @Test
+    fun `given catalog file blocked, when runFullCatalogSync called, then error dialog is server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+                .thenReturn(PosLocalCatalogSyncResult.Failure.CatalogFileBlocked("Catalog file blocked by the host"))
+
+            sut = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.runFullCatalogSync()
+            advanceUntilIdle()
+
+            // THEN
+            verify(childToParentEventSender).sendToParent(
+                argThat {
+                    this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
+                        this.isServerPermissionsError
+                }
+            )
+        }
+
+    @Test
+    fun `given non-blocked failure, when runFullCatalogSync called, then error dialog is not server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+                .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError("Network error"))
+
+            sut = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.runFullCatalogSync()
+            advanceUntilIdle()
+
+            // THEN
+            verify(childToParentEventSender).sendToParent(
+                argThat {
+                    this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
+                        !this.isServerPermissionsError
+                }
+            )
+        }
+
+    @Test
     fun `given sync fails, when runFullCatalogSync called, then catalog status is restored to previous state`() = runTest {
         // GIVEN
         val errorMessage = "Network error"

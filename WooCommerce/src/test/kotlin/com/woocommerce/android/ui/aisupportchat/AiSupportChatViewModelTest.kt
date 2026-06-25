@@ -80,10 +80,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.canUseDiagnosticActions).isTrue()
         assertThat(state.showInputBar).isFalse()
         assertThat(state.showDiagnosticActions).isFalse()
+        assertThat(state.canContactHumanSupportFromToolbar).isTrue()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Greeting,
             AiSupportChatMessageContent.IssuePicker
         )
+    }
+
+    @Test
+    fun `given issue picker is shown, when contact support is clicked, then event excludes ai skip tag`() {
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        viewModel.onContactSupportClicked(
+            source = HumanSupportContactSource.TOOLBAR,
+            canCreateTicketDirectly = false
+        )
+
+        val event = events.single() as ContactHumanSupport
+        assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
+        assertThat(event.hasReceivedBotResponse).isFalse()
+        assertThat(event.extraTags).containsExactly("in_app_support_escalate")
     }
 
     @Test
@@ -97,6 +114,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.input).isEmpty()
             assertThat(state.hasStartedChat).isTrue()
             assertThat(state.showSendError).isFalse()
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue()
             assertThat(state.messages.map { it.content }).containsExactly(
                 AiSupportChatMessageContent.Greeting
             )
@@ -1111,6 +1129,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(event.ticketType).isEqualTo(TicketType.Payments)
             assertThat(event.subjectResId).isEqualTo(R.string.ai_support_chat_support_request_subject_woo_payments)
             assertThat(event.siteAddress).isEqualTo(SITE_URL)
+            assertThat(event.hasReceivedBotResponse).isTrue()
             assertThat(event.extraTags).containsExactly(
                 "in_app_support_escalate",
                 "ai_skip",
@@ -1178,7 +1197,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     @Test
     fun `given no support area and identity, when contact support is clicked, then form event has no preselected type`() =
         testBlocking {
-            startChat(createSuccessDiagnosticResult())
+            startChatWithBotResponse()
             val events = mutableListOf<MultiLiveEvent.Event>()
             viewModel.event.observeForever { events.add(it) }
 
@@ -1191,6 +1210,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(event.mode).isEqualTo(HumanSupportContactMode.OPEN_FORM)
             assertThat(event.ticketType).isNull()
             assertThat(event.subjectResId).isNull()
+            assertThat(event.hasReceivedBotResponse).isTrue()
             assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
         }
 
@@ -1274,7 +1294,27 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
 
             val state = viewModel.viewState.value
             assertThat(state.hasCreatedTicket).isTrue
+            assertThat(state.canUseDiagnosticActions).isFalse()
+            assertThat(state.canHandleDiagnosticAction).isFalse()
             verify(repository, never()).markChatAsTicketCreated(any())
+        }
+
+    @Test
+    fun `given ticket is created while issue picker is shown, when issue selected, then issue picker is ignored`() =
+        testBlocking {
+            viewModel.onSupportTicketCreated()
+
+            viewModel.onIssueSelected(SupportIssueType.LOADING_ORDERS, ISSUE_LABEL)
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasCreatedTicket).isTrue()
+            assertThat(state.hasProceededToChat).isFalse()
+            assertThat(state.selectedIssueType).isNull()
+            assertThat(state.messages.map { it.content }).containsExactly(
+                AiSupportChatMessageContent.Greeting,
+                AiSupportChatMessageContent.IssuePicker
+            )
+            verify(diagnosticsService, never()).runDiagnostics(any())
         }
 
     @Test
@@ -1318,6 +1358,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.sessionId).isNull()
             assertThat(state.diagnosticResult?.statuses).hasSize(2)
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue()
             assertThat(state.diagnosticResult?.statuses?.map { it.test }).containsExactly(
                 DiagnosticTest.INTERNET_CONNECTION,
                 DiagnosticTest.WPCOM_SERVERS
@@ -1393,6 +1434,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.showSendError).isFalse()
         assertThat(state.showLoadHistoryError).isFalse()
         assertThat(state.canContactHumanSupportFromToolbar).isTrue
+        assertThat(state.hasReceivedBotResponse).isTrue()
         assertThat(state.messages.map { it.content }).containsExactly(
             AiSupportChatMessageContent.Text(ISSUE_DETAILS),
             AiSupportChatMessageContent.Text(BOT_RESPONSE)
@@ -1429,6 +1471,45 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         assertThat(state.showInputBar).isFalse
         assertThat(state.shouldShowResolvedButton).isFalse
     }
+
+    @Test
+    fun `given resumed chat has filtered bot escalation response, when contact support clicked, then ai skip is included`() =
+        testBlocking {
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(
+                        messageId = 2L,
+                        role = SupportChatRole.BOT,
+                        content = BOT_RESPONSE,
+                        context = SupportChatMessageContext(flags = SupportChatFlags(forwardToHumanSupport = true))
+                    )
+                )
+            )
+            whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.Resume(
+                    chatId = CHAT_ID,
+                    botSlug = DEFAULT_BOT_SLUG,
+                    sessionId = SESSION_ID
+                )
+            )
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.BANNER,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.single() as ContactHumanSupport
+            assertThat(viewModel.viewState.value.hasReceivedBotResponse).isTrue()
+            assertThat(viewModel.viewState.value.messages.map { it.content }).doesNotContain(
+                AiSupportChatMessageContent.Text(BOT_RESPONSE)
+            )
+            assertThat(event.hasReceivedBotResponse).isTrue()
+            assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
+        }
 
     @Test
     fun `given resumed chat has created ticket, when loaded, then ticket created state is restored`() = testBlocking {
@@ -1658,7 +1739,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.hasStartedChat).isFalse()
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
-            assertThat(state.canContactHumanSupportFromToolbar).isFalse()
+            assertThat(state.canContactHumanSupportFromToolbar).isTrue()
             verify(repository, never()).registerChat(any(), any(), any(), any())
         }
 

@@ -37,7 +37,7 @@ class WooAiSmokeLiveChatServiceFactoryTest {
     }
 
     @Test
-    fun `when service streams turn, then chat uses woo mobile ai wrapper without jwt mint`() = runTest {
+    fun `when service streams turn, then chat uses woo mobile ai wrapper with wpcom oauth`() = runTest {
         server.enqueue(sseResponse(SAMPLE_SSE_BODY))
 
         val events = service().streamTurn(ChatRequest(listOf(AssistantMessage.User("hi")))).toList()

@@ -8,7 +8,7 @@ import com.woocommerce.android.aiassistant.core.chat.ToolCall
 import com.woocommerce.android.aiassistant.safety.RenderedConfirmationPreview
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 
-data class AssistantUiState(
+internal data class AssistantUiState(
     val messages: List<AssistantUiMessage> = emptyList(),
     val status: AssistantUiStatus = AssistantUiStatus.IDLE,
     val error: AssistantUiError? = null,
@@ -53,14 +53,14 @@ data class AssistantUiState(
         }
 }
 
-enum class AssistantUiStatus {
+internal enum class AssistantUiStatus {
     IDLE,
     STREAMING,
     ERROR,
     AWAITING_CONFIRMATION,
 }
 
-data class AssistantUiMessage(
+internal data class AssistantUiMessage(
     val id: String,
     val role: Role,
     val segments: List<AssistantUiSegment>,
@@ -87,7 +87,7 @@ data class AssistantUiMessage(
     }
 }
 
-data class AssistantToolActivity(
+internal data class AssistantToolActivity(
     val toolCallId: String,
     val toolName: String,
     val status: Status = Status.RUNNING,
@@ -98,7 +98,7 @@ data class AssistantToolActivity(
     }
 }
 
-sealed interface AssistantUiSegment {
+internal sealed interface AssistantUiSegment {
     data class Text(val text: String) : AssistantUiSegment
 
     data class ConfirmationCard(val model: AssistantConfirmationCard) : AssistantUiSegment
@@ -127,14 +127,14 @@ internal fun AssistantToolActivity.labelRes(): Int = when (toolName) {
     else -> R.string.ai_assistant_chat_tool_activity_generic
 }
 
-data class AssistantConfirmationCard(
+internal data class AssistantConfirmationCard(
     val confirmationId: String,
     val toolCall: ToolCall,
     val state: AssistantConfirmationCardState,
     val preview: RenderedConfirmationPreview? = null,
 )
 
-enum class AssistantConfirmationCardState {
+internal enum class AssistantConfirmationCardState {
     PENDING,
     CONFIRMED,
     CANCELLED,
@@ -154,12 +154,12 @@ internal fun AssistantConfirmationCardState.iconRes(): Int = when (this) {
     AssistantConfirmationCardState.CANCELLED -> R.drawable.ic_assistant_confirmation_cancelled
 }
 
-data class AssistantMessageError(
+internal data class AssistantMessageError(
     val error: AssistantError,
     val canRetry: Boolean,
 )
 
-enum class AssistantUiError {
+internal enum class AssistantUiError {
     NETWORK,
     AUTH,
     RATE_LIMIT,
@@ -175,7 +175,7 @@ enum class AssistantUiError {
     UNKNOWN,
 }
 
-fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
+internal fun AssistantError.toAssistantUiError(): AssistantUiError = when (this) {
     is AssistantError.Network -> AssistantUiError.NETWORK
     is AssistantError.Auth -> AssistantUiError.AUTH
     is AssistantError.RateLimit -> AssistantUiError.RATE_LIMIT

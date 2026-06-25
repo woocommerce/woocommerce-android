@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.woopos.cardpayment.WooPosIsCardPaymentEnabledForCountry
 import com.woocommerce.android.ui.woopos.cardreader.BuiltInReaderDiscoveryFailedException
 import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
@@ -85,6 +86,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync,
     private val isTapToPayAvailable: WooPosIsTapToPayAvailable,
+    private val isCardPaymentEnabledForCountry: WooPosIsCardPaymentEnabledForCountry,
     private val featureFlagRepository: FeatureFlagRepository,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val paymentsFlowTracker: PaymentsFlowTracker,
@@ -136,6 +138,14 @@ class WooPosTotalsViewModel @Inject constructor(
     // Drives the `listenToPaymentState` mode dispatch and silences the reader-status observer.
     private var isTapToPayPayment: Boolean by TTPPaymentProgressDelegate(savedState, KEY_IS_TAP_TO_PAY_PAYMENT)
 
+    // Country can't change for the lifetime of the VM, so resolve once and reuse.
+    private var cardPaymentEnabledForCountry: Boolean? = null
+
+    private suspend fun resolveCardPaymentEnabledForCountry(): Boolean =
+        cardPaymentEnabledForCountry ?: isCardPaymentEnabledForCountry().also {
+            cardPaymentEnabledForCountry = it
+        }
+
     private fun createCardReaderPaymentController(
         orderId: Long,
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL,
@@ -170,6 +180,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 .collect { (effective, data) ->
                     if (isTapToPayPayment) return@collect
                     val state = uiState.value as? WooPosTotalsViewState.Checkout ?: return@collect
+                    if (!state.isCardPaymentEnabledForCountry) return@collect
                     when (effective) {
                         WooPosEffectiveReaderStatus.RemoteConnected -> handleRemoteConnected(state, data)
                         WooPosEffectiveReaderStatus.BluetoothConnected -> handleBluetoothConnected(state, data)
@@ -330,6 +341,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun launchTapToPayConnect(orderId: Long) {
+        if (cardPaymentEnabledForCountry == false) return
         if (isTapToPayPayment) return
         isTapToPayPayment = true
         setTapToPayInProgress(true)
@@ -569,6 +581,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
+        if (cardPaymentEnabledForCountry == false) return
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(
@@ -596,7 +609,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPaymentRemote(orderOverride: Order? = null) {
-        if (remotePaymentJob?.isActive == true) return
+        if (cardPaymentEnabledForCountry == false || remotePaymentJob?.isActive == true) return
         if (!networkStatus.isConnected()) {
             viewModelScope.launch {
                 childrenToParentEventSender.sendToParent(
@@ -1107,10 +1120,11 @@ class WooPosTotalsViewModel @Inject constructor(
         val subtotalAmount = order.productsTotal
         val taxAmount = order.totalTax
         val totalAmount = order.total
-        val readerStatus = if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
-            WooPosTotalsViewState.ReaderStatus.Unavailable
-        } else {
-            when (effectiveReaderStatusProvider.current()) {
+        val cardEnabled = resolveCardPaymentEnabledForCountry()
+        val readerStatus = when {
+            !cardEnabled -> WooPosTotalsViewState.ReaderStatus.Unavailable
+            totalAmount.compareTo(BigDecimal.ZERO) == 0 -> WooPosTotalsViewState.ReaderStatus.Unavailable
+            else -> when (effectiveReaderStatusProvider.current()) {
                 WooPosEffectiveReaderStatus.RemoteConnected,
                 WooPosEffectiveReaderStatus.BluetoothConnected -> buildPreparingReaderStatusState()
                 WooPosEffectiveReaderStatus.Connecting,
@@ -1130,7 +1144,8 @@ class WooPosTotalsViewModel @Inject constructor(
                 orderTotalText = priceFormat(totalAmount),
             ),
             readerStatus = readerStatus,
-            isTapToPayAvailable = isTapToPayAvailable(),
+            isCardPaymentEnabledForCountry = cardEnabled,
+            isTapToPayAvailable = cardEnabled && isTapToPayAvailable(),
             isScanToPayEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SCAN_TO_PAY),
             isMarkOrderAsPaidEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_MARK_ORDER_AS_PAID),
         )
