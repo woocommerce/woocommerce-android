@@ -11,16 +11,20 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
@@ -35,6 +39,10 @@ class WooPosTotalsRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val variationMapper: WooPosVariationMapper = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_POS_STORE_API_CHECKOUT) } doReturn false
+    }
+    private val storeApiCheckoutUseCase: PosStoreApiCheckoutUseCase = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -341,6 +349,46 @@ class WooPosTotalsRepositoryTest {
         assertThat(feesLines.first().taxStatus).isEqualTo(Order.FeeLine.FeeLineTaxStatus.NONE)
     }
 
+    @Test
+    fun `given store-api flag off, when createOrderFromCartItems, then existing REST path is used`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_STORE_API_CHECKOUT)) doReturn false
+        repository = createRepository()
+        val itemClickedData = listOf<WooPosItemsViewModel.ItemClickedData>(
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+        )
+        whenever(getProductById(1L)).thenReturn(product1)
+
+        // WHEN
+        repository.createOrderFromCartItems(itemClickedData)
+
+        // THEN
+        verify(orderCreateEditRepository).createOrUpdateOrder(
+            any(),
+            eq(OrderCreationSource.POINT_OF_SALE),
+            eq("")
+        )
+        verifyNoInteractions(storeApiCheckoutUseCase)
+    }
+
+    @Test
+    fun `given store-api flag on, when createOrderFromCartItems, then Store API use case is invoked`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_STORE_API_CHECKOUT)) doReturn true
+        whenever(storeApiCheckoutUseCase.invoke(any())) doReturn Result.success(mock<Order>())
+        repository = createRepository()
+        val itemClickedData = listOf<WooPosItemsViewModel.ItemClickedData>(
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+        )
+
+        // WHEN
+        repository.createOrderFromCartItems(itemClickedData)
+
+        // THEN
+        verify(storeApiCheckoutUseCase).invoke(itemClickedData)
+        verify(orderCreateEditRepository, never()).createOrUpdateOrder(any(), any(), any())
+    }
+
     private fun createRepository() = WooPosTotalsRepository(
         orderCreateEditRepository,
         dateUtils,
@@ -351,5 +399,7 @@ class WooPosTotalsRepositoryTest {
         orderMapper,
         resourceProvider,
         variationMapper,
+        featureFlagRepository,
+        storeApiCheckoutUseCase,
     )
 }
