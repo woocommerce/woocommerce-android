@@ -82,7 +82,7 @@ class SitePickerViewModel @Inject constructor(
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
 
     // Non-zero when the app routed to the picker to recover from an error; read and consumed once to
-    // show the message. Auto-login is prevented separately by opening the picker with openedFromLogin=false.
+    // show the message.
     private val pendingErrorMessage = appPrefsWrapper.sitePickerErrorMessage.also {
         appPrefsWrapper.sitePickerErrorMessage = 0
     }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.tools
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.di.SiteComponent
 import com.woocommerce.android.di.SiteComponent.Builder
@@ -121,8 +122,7 @@ class SelectedSite @Inject constructor(
     fun reset(persistSynchronously: Boolean = false) {
         wasReset = true
         state.value = null
-        val editor = getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID)
-        if (persistSynchronously) editor.commit() else editor.apply()
+        getPreferences().edit(commit = persistSynchronously) { remove(SELECTED_SITE_LOCAL_ID) }
         siteComponent = null
         siteCoroutineScope?.cancel()
     }

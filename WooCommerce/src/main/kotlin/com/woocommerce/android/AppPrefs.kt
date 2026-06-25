@@ -286,15 +286,14 @@ object AppPrefs {
     var sitePickerErrorMessage: Int
         get() = getInt(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE, 0)
         set(value) {
-            val editor = getPreferences().edit()
             val key = DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE.toString()
             if (value == 0) {
                 // Cleared on the main thread (site picker init), so apply() to avoid blocking disk I/O.
-                editor.remove(key).apply()
+                getPreferences().edit { remove(key) }
             } else {
                 // Written right before a recovery restart that may kill the process, so commit()
                 // synchronously to make it durable before an async apply() could be lost.
-                editor.putString(key, value.toString()).commit()
+                getPreferences().edit(commit = true) { putString(key, value.toString()) }
             }
         }
 

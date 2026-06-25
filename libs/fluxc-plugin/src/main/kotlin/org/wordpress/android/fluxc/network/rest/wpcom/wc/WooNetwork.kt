@@ -131,7 +131,7 @@ class WooNetwork @Inject constructor(
 
     private fun <T : Any> notifyIfUnknownBlog(site: SiteModel, response: WPAPIResponse<T>) {
         if (response is WPAPIResponse.Error && response.error.errorCode == UNKNOWN_BLOG_ERROR_CODE) {
-            unknownBlogListener.takeIf { it.isPresent }?.get()?.onUnknownBlog(site.siteId)
+            unknownBlogListener.ifPresent { it.onUnknownBlog(site.siteId) }
         }
     }
 
