@@ -78,6 +78,10 @@ steps:
         # https://buildkite.com/docs/pipelines/configure/dependencies#how-skipped-steps-affect-dependencies
         depends_on: mobile_prototype_build_triggered
         command: .buildkite/commands/prototype-build.sh WooCommerce
+        # TEMP(AINFRA): route this main build job to the `android-staging` queue to
+        # validate the new staging AMI (ami-0be819222d2d17a46). DO NOT MERGE.
+        agents:
+          queue: android-staging
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "WooCommerce/build/outputs/apk/**/*"
