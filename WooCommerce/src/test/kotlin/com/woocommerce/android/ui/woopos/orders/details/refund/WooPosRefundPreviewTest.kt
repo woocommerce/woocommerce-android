@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -28,6 +31,9 @@ class WooPosRefundPreviewTest {
     private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val availabilityCache = WooPosV4RefundAvailabilityCache()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
+    }
 
     private val site = SiteModel().apply { siteId = SITE_ID }
     private val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
@@ -36,7 +42,21 @@ class WooPosRefundPreviewTest {
         whenever(selectedSite.get()).thenReturn(site)
         // The version mock defaults to null (unknown) → not below support → cases probe the network,
         // unless a test stubs a specific version.
-        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, getWooCoreVersion)
+        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, getWooCoreVersion, featureFlagRepository)
+    }
+
+    @Test
+    fun `given v4 flag disabled, when invoked, then falls back without probing or marking availability`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4)).thenReturn(false)
+
+        // WHEN
+        val result = sut(ORDER_ID, lineItems)
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
+        assertThat(availabilityCache.isV4Available(SITE_ID)).isNull()
+        verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
     @Test
