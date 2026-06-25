@@ -776,7 +776,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given dialog was cancelled, when app returns to foreground and store still unreachable, then show again`() =
+    fun `given dialog was dismissed, when app goes to background and store still unreachable, then show again`() =
         testBlocking {
             whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply { siteId = 42L }))
             createViewModel()
@@ -787,7 +787,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
             viewModel.onStoreConnectionErrorDismissed()
             advanceUntilIdle()
-            viewModel.onAppForegrounded()
+            viewModel.onAppBackgrounded()
             advanceUntilIdle()
 
             assertThat(shown).isTrue()

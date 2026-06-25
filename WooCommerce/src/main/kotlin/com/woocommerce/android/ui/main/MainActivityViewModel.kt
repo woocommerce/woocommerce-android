@@ -96,8 +96,8 @@ class MainActivityViewModel @Inject constructor(
 
     val isUserAgeRangeEligible = ageEligibilityChecker.ageEligibilityState.asLiveData()
 
-    // Snoozes the dialog when the merchant taps Dismiss. Reset when the app returns to the foreground
-    // (see [onAppForegrounded]) so a still-unreachable store reminds the merchant again next session.
+    // Snoozes the dialog when the merchant taps Dismiss. Reset when the app goes to the background
+    // (see [onAppBackgrounded]) so a still-unreachable store reminds the merchant again next session.
     private val connectionErrorSnoozed = MutableStateFlow(false)
     private val _showStoreConnectionErrorDialog = MutableStateFlow(false)
     val showStoreConnectionErrorDialog = _showStoreConnectionErrorDialog.asLiveData()
@@ -132,7 +132,7 @@ class MainActivityViewModel @Inject constructor(
         connectionErrorSnoozed.value = true
     }
 
-    fun onAppForegrounded() {
+    fun onAppBackgrounded() {
         connectionErrorSnoozed.value = false
     }
 

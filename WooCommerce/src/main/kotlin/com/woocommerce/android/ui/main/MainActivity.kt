@@ -219,9 +219,9 @@ class MainActivity :
 
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private val appForegroundObserver = object : DefaultLifecycleObserver {
-        override fun onStart(owner: LifecycleOwner) {
-            viewModel.onAppForegrounded()
+    private val appBackgroundObserver = object : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            viewModel.onAppBackgrounded()
         }
     }
 
@@ -497,7 +497,7 @@ class MainActivity :
     }
 
     public override fun onDestroy() {
-        ProcessLifecycleOwner.get().lifecycle.removeObserver(appForegroundObserver)
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(appBackgroundObserver)
         presenter.dropView()
         handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
@@ -884,9 +884,9 @@ class MainActivity :
     // endregion
 
     private fun setupStoreConnectionErrorDialog() {
-        // Reset the dialog snooze only when the app truly returns to the foreground (process lifecycle),
-        // not when returning from another in-app activity such as the support flow.
-        ProcessLifecycleOwner.get().lifecycle.addObserver(appForegroundObserver)
+        // Reset the dialog snooze when the app goes to the background (process lifecycle), so a
+        // still-unreachable store re-alerts on the next foreground.
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appBackgroundObserver)
 
         binding.storeConnectionErrorComposeView.setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
