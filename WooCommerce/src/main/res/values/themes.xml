@@ -124,6 +124,8 @@
         <!-- Colors -->
         <item name="buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
         <item name="android:buttonBarStyle">@style/Woo.Dialog.ButtonBar</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Woo.Dialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Woo.Dialog.Button</item>
     </style>
 
     <style name="Theme.Woo.Dialog.RoundedCorners" parent="Theme.Woo.Dialog">
@@ -139,6 +141,11 @@
     <style name="Woo.Dialog.ButtonBar">
         <item name="android:paddingStart">@dimen/minor_100</item>
         <item name="android:paddingEnd">@dimen/minor_100</item>
+    </style>
+
+    <style name="Woo.Dialog.Button" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:layout_marginStart">@dimen/minor_100</item>
+        <item name="android:layout_marginLeft">@dimen/minor_100</item>
     </style>
 
     <style name="Theme.Woo.NumberPicker" parent="Theme.Woo.DayNight">
