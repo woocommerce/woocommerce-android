@@ -4,9 +4,10 @@ package com.woocommerce.android.util
  * Feature flags control feature availability.
  *
  * - If overridden (debug builds) → use override value
- * - If [localValue] is false → the feature stays disabled
- * - If [localValue] is true and remote has a value for [remoteFlagKey] → use remote value
- * - Otherwise → use [localValue]
+ * - If remote has a value for [remoteFlagKey] → use remote value
+ * - Otherwise → fall back to [localValue]
+ *
+ * Remote is authoritative once known. [localValue] is the fallback whenever no remote value is available.
  *
  * Access via [FeatureFlagRepository.isEnabled].
  */
