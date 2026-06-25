@@ -46,7 +46,6 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
             }
 
             storeConnectionErrorMonitor.isDetectedForSelectedSite() -> {
-                // The store can't be reached due to a server-side signature problem the app can't fix.
                 // Stop the silent retry loop (it's re-enqueued the next time the app goes to background).
                 WorkManager.getInstance(appContext).cancelUniqueWork(WORK_NAME)
                 Result.failure()

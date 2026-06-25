@@ -28,7 +28,7 @@ fun StoreConnectionErrorDialog(
 ) {
     Dialog(
         onDismissRequest = onDismissClick,
-        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
     ) {
         Surface(
             shape = MaterialTheme.shapes.medium,

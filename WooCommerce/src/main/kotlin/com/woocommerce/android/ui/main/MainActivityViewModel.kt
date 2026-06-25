@@ -116,18 +116,9 @@ class MainActivityViewModel @Inject constructor(
                 val isAffected = site != null && site.siteId == affectedSiteId
                 isAffected to snoozed
             }.collect { (isAffected, snoozed) ->
-                // The dialog tracks the live error state: it stays visible (across navigation, on every
-                // main-app screen) until the store connection is resolved, and is only hidden early if the
-                // merchant taps Dismiss (snooze).
-                when {
-                    !isAffected -> {
-                        connectionErrorSnoozed.value = false
-                        _showStoreConnectionErrorDialog.value = false
-                    }
-
-                    snoozed -> _showStoreConnectionErrorDialog.value = false
-
-                    else -> _showStoreConnectionErrorDialog.value = true
+                _showStoreConnectionErrorDialog.value = isAffected && !snoozed
+                if (!isAffected) {
+                    connectionErrorSnoozed.value = false
                 }
             }
         }
@@ -141,10 +132,6 @@ class MainActivityViewModel @Inject constructor(
         connectionErrorSnoozed.value = true
     }
 
-    /**
-     * Called when the app returns to the foreground; clears the dialog snooze so a still-unreachable store
-     * reminds the merchant again.
-     */
     fun onAppForegrounded() {
         connectionErrorSnoozed.value = false
     }
