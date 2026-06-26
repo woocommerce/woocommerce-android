@@ -1,0 +1,2 @@
+25.0:
+Vender de qualquer lugar ficou mais fácil. O Woo POS agora está disponível no Canadá, com um fluxo de reembolso aprimorado. Além disso, ajustamos o pagamento por aproximação para que seja exibido apenas em dispositivos compatíveis, com uma mensagem mais clara (e link de configuração) quando não estiver disponível. Também adicionamos a verificação de idade para atender aos requisitos atualizados da loja. Boas vendas!

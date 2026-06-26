@@ -1,0 +1,2 @@
+25.0:
+Berjualan kapan saja dan di mana saja kini makin lancar. Woo POS kini tersedia di Kanada dengan alur pengembalian dana yang lebih baik, dan kami telah menyempurnakan fitur Ketuk untuk Bayar sehingga hanya ditampilkan di perangkat yang didukung—dengan pesan (dan tautan penyiapan) yang lebih jelas saat fitur tidak tersedia. Kami juga telah menambahkan verifikasi usia untuk memenuhi persyaratan toko terbaru. Selamat berjualan!
