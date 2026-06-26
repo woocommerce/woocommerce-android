@@ -2104,12 +2104,6 @@ Language: de
     <string name="coupon_type_picker_percentage_content_description">Gutscheintyp – prozentualer Rabatt</string>
     <string name="coupon_type_picker_title">Gutschein erstellen</string>
     <string name="coupon_list_add_coupon_content_description">Gutschein hinzufügen</string>
-    <string name="try_test_order_button">Testbestellung starten</string>
-    <string name="try_test_order_step_4">Verwende die App, um die Rückerstattung für die Testbestellung zu bearbeiten</string>
-    <string name="try_test_order_step_3">Schließe die Zahlung ab und warte auf die Push-Benachrichtigung über die Bestellung in deiner WooCommerce-App.</string>
-    <string name="try_test_order_step_2">Wähle dein Testprodukt aus, füge es zum Warenkorb hinzu und schließe wie ein echter Kunde den Bezahlvorgang in diesem Onlineshop ab.</string>
-    <string name="try_test_order_step_1">Tippe unten auf den Button, um über einen Webbrowser zu deinem Onlineshop weitergeleitet zu werden.</string>
-    <string name="try_test_order_heading">Testbestellung ausprobieren</string>
     <string name="empty_order_test_order_button">Testbestellung ausprobieren</string>
     <string name="empty_order_test_order_message">Führe eine Testbestellung durch, um sicherzugehen, dass die Kunden in deinem WooCommerce-Shop ein reibungsloses Einkauferlebnis genießen</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Details manuell hinzufügen</string>

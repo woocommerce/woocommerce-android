@@ -53,6 +53,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainErrorType.EMPTY_
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
@@ -113,7 +114,11 @@ class SiteRestClient @Inject constructor(
                 val siteArray = mutableListOf<SiteModel>()
                 val jetpackCPSiteArray = mutableListOf<SiteModel>()
                 for (siteResponse in response.data.sites) {
-                    val siteModel = siteResponseToSiteModel(siteResponse)
+                    val siteModel = siteResponseToSiteModel(siteResponse).getOrElse { exception ->
+                        return SitesModel(emptyList()).apply {
+                            error = siteResponseParseError(url, exception)
+                        }
+                    }
 
                     siteFeatures?.get(siteModel.siteId)?.let {
                         siteModel.planActiveFeatures = it.joinToString(",")
@@ -201,7 +206,11 @@ class SiteRestClient @Inject constructor(
         val response = wpComGsonRequestBuilder.syncGetRequest(this, url, params, SiteWPComRestResponse::class.java)
         return when (response) {
             is Success -> {
-                val newSite = siteResponseToSiteModel(response.data)
+                val newSite = siteResponseToSiteModel(response.data).getOrElse { exception ->
+                    return SiteModel().apply {
+                        error = siteResponseParseError(url, exception)
+                    }
+                }
                 // local ID is not copied into the new model, let's make sure it is
                 // otherwise the call that updates the DB can add a new row?
                 if (site.id > 0) {
@@ -566,8 +575,29 @@ class SiteRestClient @Inject constructor(
         add(request)
     }
 
+    private fun siteResponseParseError(url: String, exception: Throwable): BaseNetworkError {
+        reportSiteResponseParseError(url, exception)
+        return BaseNetworkError(GenericErrorType.PARSE_ERROR, exception.message.orEmpty())
+    }
+
+    private fun reportSiteResponseParseError(url: String, exception: Throwable) {
+        val parseException = exception as? Exception ?: return
+        val error = OnUnexpectedError(parseException, "API response parse error")
+        error.addExtra(OnUnexpectedError.KEY_URL, url)
+        mDispatcher.emitChange(error)
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun siteResponseToSiteModel(from: SiteWPComRestResponse): Result<SiteModel> {
+        return try {
+            Result.success(siteResponseToSiteModelOrThrow(from))
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
+    }
+
     @Suppress("LongMethod", "ComplexMethod")
-    private fun siteResponseToSiteModel(from: SiteWPComRestResponse): SiteModel {
+    private fun siteResponseToSiteModelOrThrow(from: SiteWPComRestResponse): SiteModel {
         val site = SiteModel()
         site.siteId = from.ID
         site.url = from.URL

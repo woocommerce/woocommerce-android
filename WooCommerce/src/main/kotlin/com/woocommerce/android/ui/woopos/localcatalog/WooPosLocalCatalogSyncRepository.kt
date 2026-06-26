@@ -49,7 +49,12 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
+                    syncTimestampManager.setCatalogFileBlocked(false)
                     trackSyncCompleted(site, SyncType.FULL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> {
+                    syncTimestampManager.setCatalogFileBlocked(true)
+                    trackSyncFailed(SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
                     trackSyncFailed(SyncType.FULL, result)

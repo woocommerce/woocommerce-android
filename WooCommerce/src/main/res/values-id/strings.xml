@@ -2104,12 +2104,6 @@ Language: id
     <string name="coupon_type_picker_percentage_content_description">Jenis kupon - persentase diskon</string>
     <string name="coupon_type_picker_title">Buat Kupon</string>
     <string name="coupon_list_add_coupon_content_description">Tambah kupon</string>
-    <string name="try_test_order_button">Mulai pesanan uji coba</string>
-    <string name="try_test_order_step_4">Pakai aplikasi guna memproses pengembalian dana untuk pesanan uji coba.</string>
-    <string name="try_test_order_step_3">Selesaikan pembayaran, lalu tunggu pemberitahuan push mengenai pesanan tersebut di aplikasi WooCommerce.</string>
-    <string name="try_test_order_step_2">Pilih produk uji coba Anda, tambahkan ke keranjang, lalu selesaikan proses checkout di toko web tersebut sebagai pelanggan sungguhan.</string>
-    <string name="try_test_order_step_1">Ketuk tombol di bawah ini untuk dialihkan ke toko online Anda melalui browser web.</string>
-    <string name="try_test_order_heading">Coba pesanan uji coba</string>
     <string name="empty_order_test_order_button">Coba pesanan uji coba</string>
     <string name="empty_order_test_order_message">Buat pesanan uji coba untuk menjamin kelancaran pengalaman pelanggan di toko Anda di WooCommerce</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Tambahkan detail secara manual</string>

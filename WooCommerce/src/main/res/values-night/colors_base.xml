@@ -185,7 +185,6 @@
     <!--
     Test order step number
     -->
-    <color name="try_test_order_step">@color/woo_black_60</color>
 
     <!--
     Woo Payments Setup

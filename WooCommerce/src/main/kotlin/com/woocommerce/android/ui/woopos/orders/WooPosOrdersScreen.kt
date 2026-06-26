@@ -149,6 +149,7 @@ fun WooPosOrdersScreen(
         val issueRefundAction = (event as? WooPosOrdersUIEvent.OrderActionClicked)
             ?.action as? WooPosOrdersState.OrderAction.IssueRefund
         if (issueRefundAction != null) {
+            listViewModel.onRefundStarted()
             detailPaneIssueRefundInstanceId += 1
             detailPaneIssueRefundOrderId = issueRefundAction.orderId
             detailPaneIssueRefundDismissRequestToken = 0
@@ -161,6 +162,7 @@ fun WooPosOrdersScreen(
     }
 
     val handleIssueRefundDismissed = {
+        listViewModel.onRefundDismissed()
         val action = detailPaneIssueRefundHandler.handleIssueRefundDismissed(
             refundedOrderId = detailPaneIssueRefundOrderId,
             pendingOrderSelectionAfterRefundDismiss = pendingOrderSelectionAfterRefundDismiss,
@@ -321,9 +323,7 @@ private fun WooPosOrdersScreen(
             )
         }
 
-        if (listState.searchInputState is WooPosSearchInputState.Closed &&
-            !(isSingleOrderMode && detailPaneIssueRefundOrderId != null)
-        ) {
+        if (listState.showToolbar) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (detailState as? WooPosOrderDetailsState.Loaded)
                     ?.details?.number.orEmpty()
@@ -660,36 +660,36 @@ private fun OrdersListWithDetails(
     onIssueRefundDismissRequestRejected: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListPane(
-            state = listContent,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = listContent.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = onOrderSelected,
-            onEndOfOrdersListReached = onEndOfOrdersListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            onSearchEvent = onSearchEvent,
-            onSearchErrorRetry = onSearchErrorRetry,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
+    if (detailPaneIssueRefundOrderId != null) {
+        WooPosIssueRefundScreen(
+            orderId = detailPaneIssueRefundOrderId,
+            onNavigationEvent = onNavigationEvent,
+            refundReasonUpdate = refundReasonUpdate,
+            onDismissed = onIssueRefundDismissed,
+            viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
+                detailPaneIssueRefundInstanceId,
+            dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
+            onPendingChangesChanged = onIssueRefundPendingChangesChanged,
+            onDismissRequestRejected = onIssueRefundDismissRequestRejected,
+            modifier = Modifier.fillMaxSize()
         )
-        if (detailPaneIssueRefundOrderId != null) {
-            WooPosIssueRefundScreen(
-                orderId = detailPaneIssueRefundOrderId,
-                onNavigationEvent = onNavigationEvent,
-                refundReasonUpdate = refundReasonUpdate,
-                onDismissed = onIssueRefundDismissed,
-                viewModelKey = "WooPosRefundViewModel:detail-pane:$detailPaneIssueRefundOrderId:" +
-                    detailPaneIssueRefundInstanceId,
-                dismissRequestToken = detailPaneIssueRefundDismissRequestToken,
-                onPendingChangesChanged = onIssueRefundPendingChangesChanged,
-                onDismissRequestRejected = onIssueRefundDismissRequestRejected,
-                modifier = Modifier.weight(0.7f)
+    } else {
+        Row(modifier = Modifier.fillMaxSize()) {
+            OrdersListPane(
+                state = listContent,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = listContent.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
             )
-        } else {
             OrderDetailsPane(
                 detailState = detailState,
                 onUIEvent = onUIEvent,
@@ -1062,7 +1062,8 @@ fun WooPosOrdersScreenPreview() {
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = true,
             ),
             detailState = WooPosOrderDetailsState.Loaded(
                 details = details1,
@@ -1100,7 +1101,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = false,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
@@ -1135,7 +1137,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                showToolbar = false,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),
@@ -1163,6 +1166,7 @@ fun WooPosOrdersEmptyStatePreview() {
             listState = WooPosOrdersListState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
+                showToolbar = true,
             ),
             detailState = WooPosOrderDetailsState.Idle,
             scrollToTopEvent = MutableSharedFlow(),

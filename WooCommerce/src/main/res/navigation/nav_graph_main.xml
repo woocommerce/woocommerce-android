@@ -149,9 +149,6 @@
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
             app:destination="@id/barcodeScanningFragment" />
         <action
-            android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
-            app:destination="@id/createTestOrderDialogFragment" />
-        <action
             android:id="@+id/action_orderListFragment_to_troubleshootConnectionFragment"
             app:destination="@id/troubleshootConnectionFragment" />
         <action
@@ -765,15 +762,6 @@
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
-    <dialog
-        android:id="@+id/createTestOrderDialogFragment"
-        android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
-        android:label="CreateTestOrderDialogFragment">
-        <argument
-            android:name="siteUrl"
-            app:argType="string"
-            app:nullable="false" />
-    </dialog>
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
         android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
