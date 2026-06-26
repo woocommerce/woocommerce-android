@@ -4901,4 +4901,6 @@
     <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Guest</string>
     <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Customer #%1$s</string>
     <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update variation %1$s (#%2$s) for product #%3$s</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">We couldn\'t establish a secure connection. Check that your device date and time are correct, then try again.</string>
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">We couldn\'t verify this site\'s security certificate. Contact your hosting provider or site administrator, then try again.</string>
 </resources>
