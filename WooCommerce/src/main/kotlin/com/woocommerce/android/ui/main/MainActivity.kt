@@ -23,6 +23,8 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -33,6 +35,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -61,7 +66,9 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.model.Notification
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
@@ -69,7 +76,9 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.bookings.tab.BookingsTabController
 import com.woocommerce.android.ui.common.InfoScreenFragment
+import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dashboard.StoreConnectionErrorDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.main.BottomNavigationPosition.BOOKINGS
@@ -210,6 +219,12 @@ class MainActivity :
 
     private val viewModel: MainActivityViewModel by viewModels()
 
+    private val appBackgroundObserver = object : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            viewModel.onAppBackgrounded()
+        }
+    }
+
     private var unfilledOrderCount: Int = 0
     private var menu: Menu? = null
 
@@ -336,6 +351,8 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setupStoreConnectionErrorDialog()
 
         edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
@@ -480,6 +497,7 @@ class MainActivity :
     }
 
     public override fun onDestroy() {
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(appBackgroundObserver)
         presenter.dropView()
         handler.removeCallbacks(notificationPermissionBarRunnable)
         super.onDestroy()
@@ -865,6 +883,27 @@ class MainActivity :
     }
     // endregion
 
+    private fun setupStoreConnectionErrorDialog() {
+        // Reset the dialog snooze when the app goes to the background (process lifecycle), so a
+        // still-unreachable store re-alerts on the next foreground.
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appBackgroundObserver)
+
+        binding.storeConnectionErrorComposeView.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        binding.storeConnectionErrorComposeView.setContent {
+            WooTheme {
+                val showDialog by viewModel.showStoreConnectionErrorDialog.observeAsState(false)
+                if (showDialog) {
+                    StoreConnectionErrorDialog(
+                        onContactSupportClick = viewModel::onStoreConnectionErrorContactSupportClicked,
+                        onDismissClick = viewModel::onStoreConnectionErrorDismissed,
+                    )
+                }
+            }
+        }
+    }
+
     @Suppress("ComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(this) { event ->
@@ -886,6 +925,8 @@ class MainActivity :
                 ViewWooPosPromo -> showWooPosPromoCarousel()
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
+                is MainActivityViewModel.ContactSupportForStoreConnection ->
+                    startHelpActivity(HelpOrigin.CONNECTION_ERROR)
                 is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
                     uiMessageResolver.getIndefiniteActionSnack(
                         R.string.privacy_banner_error_save,

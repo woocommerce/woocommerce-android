@@ -14,5 +14,5 @@ steps:
 notify:
   - slack:
       channels:
-        - "#android-core-notifs"
+        - "#woo-android-notifs"
     if: "build.state == 'failed'"
