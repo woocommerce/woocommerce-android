@@ -40,7 +40,7 @@ class WooPosV4RefundAvailabilityCacheTest {
     }
 
     private companion object {
-        private const val SITE_ID = 1L
-        private const val OTHER_SITE_ID = 2L
+        private const val SITE_ID = 1
+        private const val OTHER_SITE_ID = 2
     }
 }

@@ -4,17 +4,23 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Caches per-store v4 refund availability for the lifetime of the process.
+ *
+ * Keyed by the *local* site id (unique per stored site), not the remote WP.com site id, which is
+ * `0` for self-hosted/WPAPI stores and would collide across them.
+ */
 @Singleton
 class WooPosV4RefundAvailabilityCache @Inject constructor() {
-    private val availabilityBySiteId = ConcurrentHashMap<Long, Boolean>()
+    private val availabilityByLocalSiteId = ConcurrentHashMap<Int, Boolean>()
 
-    fun isV4Available(siteId: Long): Boolean? = availabilityBySiteId[siteId]
+    fun isV4Available(localSiteId: Int): Boolean? = availabilityByLocalSiteId[localSiteId]
 
-    fun markV4Available(siteId: Long) {
-        availabilityBySiteId[siteId] = true
+    fun markV4Available(localSiteId: Int) {
+        availabilityByLocalSiteId[localSiteId] = true
     }
 
-    fun markV4Unavailable(siteId: Long) {
-        availabilityBySiteId[siteId] = false
+    fun markV4Unavailable(localSiteId: Int) {
+        availabilityByLocalSiteId[localSiteId] = false
     }
 }

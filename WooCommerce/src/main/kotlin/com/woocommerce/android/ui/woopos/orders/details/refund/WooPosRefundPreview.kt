@@ -21,14 +21,15 @@ class WooPosRefundPreview @Inject constructor(
         lineItems: List<RefundV4LineItem>,
     ): Result {
         val site = selectedSite.get()
+        val localSiteId = site.localId().value
 
-        if (availabilityCache.isV4Available(site.siteId) == false) {
+        if (availabilityCache.isV4Available(localSiteId) == false) {
             return Result.FallbackToLocal
         }
 
         if (isWooVersionBelowV4Support()) {
             WooLog.i(WooLog.T.POS, "WooPosRefund: WooCommerce older than $MIN_WC_VERSION_FOR_V4; using v3")
-            availabilityCache.markV4Unavailable(site.siteId)
+            availabilityCache.markV4Unavailable(localSiteId)
             return Result.FallbackToLocal
         }
 
@@ -37,11 +38,12 @@ class WooPosRefundPreview @Inject constructor(
         }
 
         val response = refundStore.previewRefund(site, orderId, lineItems)
+        val preview = response.model
         return when {
             response.isError -> {
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
                     WooLog.i(WooLog.T.POS, "WooPosRefund: v4 preview not available; falling back to v3")
-                    availabilityCache.markV4Unavailable(site.siteId)
+                    availabilityCache.markV4Unavailable(localSiteId)
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(
@@ -53,9 +55,9 @@ class WooPosRefundPreview @Inject constructor(
                 }
             }
 
-            response.model != null -> {
-                availabilityCache.markV4Available(site.siteId)
-                Result.ServerCalculated(response.model!!)
+            preview != null -> {
+                availabilityCache.markV4Available(localSiteId)
+                Result.ServerCalculated(preview)
             }
 
             else -> Result.Error
