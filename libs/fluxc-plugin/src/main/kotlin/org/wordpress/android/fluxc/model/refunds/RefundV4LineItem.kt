@@ -15,8 +15,10 @@ import java.math.BigDecimal
  *
  * Gson omits null fields by default, so exactly one of [quantity] / [refundTotal] is sent per line.
  * The constructor is private; use [quantityBased] / [amountBased] so an invalid combination
- * (both set, or neither) can never reach the API.
+ * (both set, or neither) can never reach the API. [ConsistentCopyVisibility] makes the generated
+ * [copy] private too, so it can't bypass the factories and produce an invalid payload.
  */
+@ConsistentCopyVisibility
 data class RefundV4LineItem private constructor(
     @SerializedName("line_item_id")
     val lineItemId: Long,

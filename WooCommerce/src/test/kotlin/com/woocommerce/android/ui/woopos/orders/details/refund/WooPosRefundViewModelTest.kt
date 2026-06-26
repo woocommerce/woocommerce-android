@@ -307,7 +307,7 @@ class WooPosRefundViewModelTest {
     fun `given v4 unavailable, when continue clicked, then store settings fetched and totals calculated locally`() =
         runTest {
             // GIVEN — v4 is known unavailable for the site, so the local (v3) path is used.
-            v4RefundAvailabilityCache.markV4Unavailable(testSite.siteId)
+            v4RefundAvailabilityCache.markV4Unavailable(testSite.localId().value)
             val refundableItems = listOf(
                 testRefundableItem.copy(rowIndex = 0),
                 testRefundableItem.copy(rowIndex = 1)
@@ -434,7 +434,7 @@ class WooPosRefundViewModelTest {
     fun `given v4 available and preview succeeded, when refund confirmed, then processor receives v4 line items`() =
         runTest {
             // GIVEN — v4 is available, so the preview returns server-calculated totals.
-            v4RefundAvailabilityCache.markV4Available(testSite.siteId)
+            v4RefundAvailabilityCache.markV4Available(testSite.localId().value)
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -473,7 +473,7 @@ class WooPosRefundViewModelTest {
     fun `given preview loading, when selection toggled, then loading is cleared and stale preview dropped`() =
         runTest {
             // GIVEN — v4 is available; the preview is held open to simulate a request still in flight.
-            v4RefundAvailabilityCache.markV4Available(testSite.siteId)
+            v4RefundAvailabilityCache.markV4Available(testSite.localId().value)
             val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -677,7 +677,7 @@ class WooPosRefundViewModelTest {
             )
 
             // v4 unavailable so totals are calculated locally on Continue.
-            v4RefundAvailabilityCache.markV4Unavailable(testSite.siteId)
+            v4RefundAvailabilityCache.markV4Unavailable(testSite.localId().value)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
             whenever(
                 retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())

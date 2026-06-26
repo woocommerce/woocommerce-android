@@ -415,10 +415,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
         if (currentState.selectedItemIds.isEmpty()) return
         previewJob?.cancel()
 
-        val siteId = selectedSite.get().siteId
+        val localSiteId = selectedSite.get().localId().value
         val selectedItems = currentState.refundableItems.filter { it.uniqueId in currentState.selectedItemIds }
 
-        if (v4RefundAvailabilityCache.isV4Available(siteId) == false) {
+        if (v4RefundAvailabilityCache.isV4Available(localSiteId) == false) {
             // v4 is known unavailable for this store: skip the probe and resolve totals locally.
             _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
             previewJob = viewModelScope.launch {
@@ -553,7 +553,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
     ): WooPosRefundSubmissionRequest? {
-        if (v4RefundAvailabilityCache.isV4Available(selectedSite.get().siteId) == true) {
+        if (v4RefundAvailabilityCache.isV4Available(selectedSite.get().localId().value) == true) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,

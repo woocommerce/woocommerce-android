@@ -35,7 +35,10 @@ class WooPosRefundPreviewTest {
         on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
     }
 
-    private val site = SiteModel().apply { siteId = SITE_ID }
+    private val site = SiteModel().apply {
+        id = LOCAL_SITE_ID
+        siteId = SITE_ID
+    }
     private val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
 
     private val sut by lazy {
@@ -55,7 +58,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(SITE_ID)).isNull()
+        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isNull()
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
@@ -70,7 +73,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
-        assertThat(availabilityCache.isV4Available(SITE_ID)).isTrue()
+        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isTrue()
     }
 
     @Test
@@ -84,7 +87,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(SITE_ID)).isFalse()
+        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isFalse()
     }
 
     @Test
@@ -110,7 +113,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(SITE_ID)).isFalse()
+        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isFalse()
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
@@ -146,7 +149,7 @@ class WooPosRefundPreviewTest {
     @Test
     fun `given v4 known unavailable, when invoked, then falls back without probing`() = runTest {
         // GIVEN
-        availabilityCache.markV4Unavailable(SITE_ID)
+        availabilityCache.markV4Unavailable(LOCAL_SITE_ID)
 
         // WHEN
         val result = sut(ORDER_ID, lineItems)
@@ -165,6 +168,41 @@ class WooPosRefundPreviewTest {
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
+
+    @Test
+    fun `given two self-hosted sites share remote siteId 0, when one is unavailable, then other still probes`() =
+        runTest {
+            // GIVEN two distinct local sites that both report remote siteId 0 (self-hosted/WPAPI).
+            val siteA = SiteModel().apply {
+                id = 101
+                siteId = 0L
+            }
+            val siteB = SiteModel().apply {
+                id = 102
+                siteId = 0L
+            }
+            availabilityCache.markV4Unavailable(siteA.localId().value)
+
+            val selectedSiteB: com.woocommerce.android.tools.SelectedSite = mock()
+            whenever(selectedSiteB.get()).thenReturn(siteB)
+            whenever(refundStore.previewRefund(eq(siteB), eq(ORDER_ID), eq(lineItems)))
+                .thenReturn(WooResult(preview()))
+            val sutForB = WooPosRefundPreview(
+                refundStore,
+                selectedSiteB,
+                availabilityCache,
+                getWooCoreVersion,
+                featureFlagRepository,
+            )
+
+            // WHEN siteB requests a preview
+            val result = sutForB(ORDER_ID, lineItems)
+
+            // THEN siteA's verdict does not poison siteB — it probes v4 and is marked available.
+            assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
+            assertThat(availabilityCache.isV4Available(siteB.localId().value)).isTrue()
+            verify(refundStore).previewRefund(eq(siteB), eq(ORDER_ID), eq(lineItems))
+        }
 
     private fun preview() = WCRefundPreview(
         subtotal = BigDecimal("100.00"),
@@ -186,6 +224,7 @@ class WooPosRefundPreviewTest {
     )
 
     private companion object {
+        private const val LOCAL_SITE_ID = 11
         private const val SITE_ID = 7L
         private const val ORDER_ID = 123L
     }
