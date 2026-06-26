@@ -52,7 +52,8 @@ class WooPosPhonePersistentButtonStateResolver(
                     if (body.amountOfItems > 0) {
                         WooPosPhonePersistentButtonState.Primary(
                             label = buildCartLabel(body.amountOfItems),
-                            buttonState = WooPosButtonState.ENABLED,
+                            buttonState = cartState.checkoutButtonState.toWooPosButtonState()
+                                ?: WooPosButtonState.ENABLED,
                             action = WooPosPhonePersistentButtonAction.OpenCart,
                         )
                     } else {
