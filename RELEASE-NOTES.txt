@@ -4,7 +4,7 @@
 
 25.2
 -----
-
+- [*] Fixed duplicated products reusing the original product slug [https://github.com/woocommerce/woocommerce-android/pull/16142]
 
 25.1
 -----
