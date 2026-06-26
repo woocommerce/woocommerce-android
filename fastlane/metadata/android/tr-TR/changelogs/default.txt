@@ -1,0 +1,2 @@
+25.0:
+Hareket halindeyken satış yapmak artık daha kolay. Woo POS artık Kanada'da iyileştirilmiş geri ödeme akışıyla kullanılabilir ve Tap to Pay'i yalnızca desteklenen cihazlarda gösterilecek şekilde ayarladık, desteklenmediği durumlarda daha net bir mesaj (ve kurulum bağlantısı) ekledik. Güncellenen mağaza gereksinimlerini karşılamak için sayfa doğrulamasını da ekledik. İyi satışlar!
