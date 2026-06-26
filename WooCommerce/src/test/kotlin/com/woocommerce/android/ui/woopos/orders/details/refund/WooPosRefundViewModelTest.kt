@@ -334,6 +334,33 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given another local store lacks v4, when continue clicked, then this store still probes v4`() = runTest {
+        // GIVEN — a DIFFERENT local site is known to lack v4. The cache is keyed by local site id, so
+        // that verdict must not bleed into testSite (local id 1) — important for self-hosted/WPAPI
+        // stores that all share remote siteId 0.
+        val otherLocalSiteId = testSite.localId().value + 1
+        v4RefundAvailabilityCache.markV4Unavailable(otherLocalSiteId)
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+        whenever(refundPreview.invoke(any(), any())).thenReturn(
+            WooPosRefundPreview.Result.ServerCalculated(
+                refundPreview(subtotal = "55.00", tax = "5.00", total = "60.00", maxRefundable = "60.00")
+            )
+        )
+        viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+        advanceUntilIdle()
+
+        // THEN — testSite's availability is still unknown, so it probes v4 rather than skipping to v3.
+        verify(refundPreview).invoke(any(), any())
+    }
+
+    @Test
     fun `given v4 available, when continue clicked, then store settings are not fetched`() = runTest {
         // GIVEN
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
