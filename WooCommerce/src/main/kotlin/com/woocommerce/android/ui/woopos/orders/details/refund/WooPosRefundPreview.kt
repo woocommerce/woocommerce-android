@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
@@ -15,6 +17,7 @@ class WooPosRefundPreview @Inject constructor(
     private val selectedSite: SelectedSite,
     private val availabilityCache: WooPosV4RefundAvailabilityCache,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     suspend operator fun invoke(
         orderId: Long,
@@ -23,7 +26,12 @@ class WooPosRefundPreview @Inject constructor(
         val site = selectedSite.get()
         val localSiteId = site.localId().value
 
-        if (availabilityCache.isV4Available(localSiteId) == false) {
+        // v4 refunds are gated off in release builds (debug-only local flag). When disabled, or when
+        // v4 is already known unavailable for this store, we never probe v4 nor mark availability, so
+        // the whole flow stays on the v3 local-calculation path.
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4) ||
+            availabilityCache.isV4Available(localSiteId) == false
+        ) {
             return Result.FallbackToLocal
         }
 

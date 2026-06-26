@@ -4,6 +4,7 @@ sealed class WooPosRefundUIEvent {
     data object RefundFlowOpened : WooPosRefundUIEvent()
     data class ItemSelectionToggled(val uniqueId: String) : WooPosRefundUIEvent()
     data object SelectAllToggled : WooPosRefundUIEvent()
+    data object RetryPreview : WooPosRefundUIEvent()
     data object ContinueToReviewClicked : WooPosRefundUIEvent()
     data object BackToSelectItemsClicked : WooPosRefundUIEvent()
     data class OnRefundReasonChanged(val reason: String) : WooPosRefundUIEvent()

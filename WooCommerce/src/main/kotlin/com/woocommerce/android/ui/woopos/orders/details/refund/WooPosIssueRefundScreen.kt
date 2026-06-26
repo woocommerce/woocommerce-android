@@ -652,7 +652,7 @@ private fun RefundScreenButtons(
     ) {
         when (state) {
             is WooPosRefundState.Loading -> ContinueToReviewButton(
-                enabled = false,
+                state = WooPosButtonState.DISABLED,
                 onClick = {},
             )
             is WooPosRefundState.Content -> RefundContentStepButtons(
@@ -693,10 +693,25 @@ private fun RefundContentStepButtons(
     disablePartialRefund: Boolean,
 ) {
     when (state.step) {
-        WooPosRefundState.Content.RefundStep.SelectItems -> ContinueToReviewButton(
-            enabled = state.selectedItemIds.isNotEmpty(),
-            onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
-        )
+        WooPosRefundState.Content.RefundStep.SelectItems -> {
+            if (state.previewFailed) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_refund_preview_error),
+                    style = WooPosTypography.BodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                WooPosOutlinedButton(
+                    text = stringResource(R.string.retry),
+                    onClick = { onEvent(WooPosRefundUIEvent.RetryPreview) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            ContinueToReviewButton(
+                state = continueToReviewButtonState(state),
+                onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
+            )
+        }
         WooPosRefundState.Content.RefundStep.ReviewRefund -> {
             WooPosButton(
                 text = stringResource(R.string.continue_button),
@@ -843,15 +858,21 @@ private fun RefundSuccessButtons(
 
 @Composable
 private fun ContinueToReviewButton(
-    enabled: Boolean,
+    state: WooPosButtonState,
     onClick: () -> Unit,
 ) {
     WooPosButton(
         text = stringResource(R.string.continue_button),
         onClick = onClick,
-        state = if (enabled) WooPosButtonState.ENABLED else WooPosButtonState.DISABLED,
+        state = state,
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+private fun continueToReviewButtonState(state: WooPosRefundState.Content): WooPosButtonState = when {
+    state.isPreviewLoading -> WooPosButtonState.LOADING
+    state.selectedItemIds.isEmpty() || state.previewFailed -> WooPosButtonState.DISABLED
+    else -> WooPosButtonState.ENABLED
 }
 
 @Composable
