@@ -434,6 +434,7 @@ class AiSupportChatViewModel @Inject constructor(
                 messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
+                launchExtraTags = listOf(STORE_CONNECTION_ERROR_DETAIL),
                 hasProceededToChat = true,
                 hasStartedChat = true,
                 canPersistChatHistory = accountRepository.isUserLoggedIn(),
@@ -1001,6 +1002,7 @@ class AiSupportChatViewModel @Inject constructor(
                 add(AI_SKIP_TAG)
             }
             this@extraTags?.topic?.takeIf { it.isNotBlank() }?.let { add(it) }
+            _viewState.value.launchExtraTags.forEach { tag -> if (tag !in this) add(tag) }
         }
 
     private val SupportChatSupportArea.ticketType: TicketType
@@ -1046,6 +1048,7 @@ data class AiSupportChatViewState(
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
+    val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,

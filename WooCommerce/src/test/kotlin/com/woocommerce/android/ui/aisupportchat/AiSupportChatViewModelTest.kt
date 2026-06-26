@@ -1490,6 +1490,30 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given store connection error launch mode, when escalated to support, then ticket carries signature tag`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.filterIsInstance<ContactHumanSupport>().last()
+            assertThat(event.extraTags).contains("rest_invalid_signature")
+        }
+
+    @Test
     fun `given resume launch mode, when loaded, then saved chat is fetched with session id`() = testBlocking {
         val response = createResponse(
             messages = listOf(
