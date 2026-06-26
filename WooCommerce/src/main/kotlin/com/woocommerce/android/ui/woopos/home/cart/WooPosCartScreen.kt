@@ -75,9 +75,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState.CheckoutButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
@@ -171,8 +169,9 @@ fun WooPosCartScreen(
 
         when (checkoutSlot) {
             WooPosCartCheckoutButtonSlot.Inline -> {
+                val checkoutButtonState = state.checkoutButtonState.toWooPosButtonState()
                 AnimatedVisibility(
-                    visible = state.checkoutButtonState != WooPosCartState.CheckoutButtonState.Invisible,
+                    visible = checkoutButtonState != null,
                     enter = fadeIn(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(300)),
                     modifier = Modifier
@@ -183,21 +182,22 @@ fun WooPosCartScreen(
                             end.linkTo(parent.end)
                         }
                 ) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceBright,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        WooPosButton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = WooPosSpacing.Medium.value)
-                                .navigationBarsPadding()
-                                .testTag(WooPosTestTags.CHECKOUT_BUTTON),
-                            text = stringResource(R.string.woopos_checkout_button),
-                            state = state.checkoutButtonState.toWooPosButtonState()
-                                ?: WooPosButtonState.ENABLED,
-                            onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
-                        )
+                    if (checkoutButtonState != null) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.surfaceBright,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            WooPosButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = WooPosSpacing.Medium.value)
+                                    .navigationBarsPadding()
+                                    .testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                                text = stringResource(R.string.woopos_checkout_button),
+                                state = checkoutButtonState,
+                                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                            )
+                        }
                     }
                 }
             }
