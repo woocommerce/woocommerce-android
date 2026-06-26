@@ -87,12 +87,15 @@ class RefundMapper @Inject constructor(private val gson: Gson) {
         val totalTax = refundTax
             ?.sumOf { it.refundTotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO }
             ?: BigDecimal.ZERO
+        // v4 returns positive magnitudes, but WCRefundItem values are stored negative by contract
+        // (the v3 API returns them negative) and negated back to positive in Refund.toAppModel().
+        // Negate here so v4-created refunds honour the same contract as v3.
         return WCRefundItem(
             itemId = lineItemId ?: -1,
-            quantity = quantity ?: 0,
-            subtotal = subtotal,
-            totalTax = totalTax,
-            total = subtotal + totalTax
+            quantity = -(quantity ?: 0),
+            subtotal = -subtotal,
+            totalTax = -totalTax,
+            total = -(subtotal + totalTax)
         )
     }
 
