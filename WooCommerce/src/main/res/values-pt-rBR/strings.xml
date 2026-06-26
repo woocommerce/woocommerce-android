@@ -2103,16 +2103,10 @@ Language: pt_BR
     <string name="coupon_type_picker_fixed_cart_content_description">Tipo de cupom - fixo no carrinho</string>
     <string name="coupon_type_picker_title">Criar cupom</string>
     <string name="coupon_list_add_coupon_content_description">Adicionar cupom</string>
-    <string name="try_test_order_button">Iniciar pedido de teste</string>
-    <string name="try_test_order_step_4">Use o app para processar o reembolso do pedido de teste</string>
-    <string name="try_test_order_step_3">Finalize o pagamento e espere uma notificação por push sobre o pedido no seu app do WooCommerce.</string>
-    <string name="try_test_order_step_1">Toque no botão abaixo para ser redirecionado à sua loja online por um navegador.</string>
-    <string name="try_test_order_heading">Experimente um pedido de teste</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Adicionar detalhes manualmente</string>
     <string name="order_creation_customer_search_old_wc_hint">Pesquisar clientes por</string>
     <string name="coupon_type_picker_percentage_discount_title">Desconto percentual</string>
     <string name="coupon_type_picker_percentage_content_description">Tipo de cupom - desconto percentual</string>
-    <string name="try_test_order_step_2">Selecione seu produto de teste, adicione ao carrinho e finalize a compra na loja online em questão como um cliente real.</string>
     <string name="empty_order_test_order_button">Experimentar um pedido de teste</string>
     <string name="empty_order_test_order_message">Faça um pedido de teste para garantir que seu processo do WooCommerce ofereça uma experiência impecável ao cliente</string>
     <string name="order_creation_customer_search_empty_email">Sem endereço de e-mail</string>

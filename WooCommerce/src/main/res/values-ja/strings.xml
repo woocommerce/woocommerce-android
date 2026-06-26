@@ -2105,12 +2105,6 @@ Language: ja_JP
     <string name="coupon_type_picker_percentage_content_description">クーポンの種類 - 割引率</string>
     <string name="coupon_type_picker_title">クーポンを作成する</string>
     <string name="coupon_list_add_coupon_content_description">クーポンを追加します</string>
-    <string name="try_test_order_button">テスト注文を開始</string>
-    <string name="try_test_order_step_4">アプリを使用してテスト注文の返金を処理します。</string>
-    <string name="try_test_order_step_3">支払いを完了し、注文に関するプッシュ通知が WooCommerce アプリに届くのを待ちます。</string>
-    <string name="try_test_order_step_2">テスト商品を選択し、カートに追加して、実際の顧客として Web ストアで購入手続きを完了します。</string>
-    <string name="try_test_order_step_1">下のボタンをタップすると、Web ブラウザー経由でオンラインストアにリダイレクトされます。</string>
-    <string name="try_test_order_heading">テスト注文を試す</string>
     <string name="empty_order_test_order_button">テスト注文を試す</string>
     <string name="empty_order_test_order_message">テスト注文を実行して、WooCommerce のプロセスがシームレスなカスタマーエクスペリエンスを提供していることを確認します</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動で詳細を追加します</string>

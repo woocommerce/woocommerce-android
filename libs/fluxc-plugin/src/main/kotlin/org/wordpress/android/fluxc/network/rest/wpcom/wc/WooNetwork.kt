@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Jetpa
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.util.AppLog
 import java.security.GeneralSecurityException
+import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,7 +34,9 @@ class WooNetwork @Inject constructor(
     private val applicationPasswordsNetwork: ApplicationPasswordsNetwork,
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
-    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler
+    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler,
+    private val unknownBlogListener: Optional<UnknownBlogListener>,
+    private val invalidSignatureListener: Optional<InvalidSignatureListener>
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -106,7 +109,7 @@ class WooNetwork @Inject constructor(
         requestContext: RequestContext,
         request: suspend WPAPINetwork.() -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
-        return when (site.origin) {
+        val response = when (site.origin) {
             SiteModel.ORIGIN_WPAPI, SiteModel.ORIGIN_XMLRPC -> {
                 applicationPasswordsNetwork.request().copyWith(
                     networkingMode = WPAPINetworkingMode.ApplicationPasswords
@@ -122,6 +125,28 @@ class WooNetwork @Inject constructor(
             else -> {
                 throw IllegalArgumentException("Unsupported site origin: ${site.origin}")
             }
+        }
+        notifyIfUnknownBlog(site, response)
+        notifyInvalidSignatureListener(site, response)
+        return response
+    }
+
+    private fun <T : Any> notifyIfUnknownBlog(site: SiteModel, response: WPAPIResponse<T>) {
+        if (response is WPAPIResponse.Error && response.error.errorCode == UNKNOWN_BLOG_ERROR_CODE) {
+            unknownBlogListener.ifPresent { it.onUnknownBlog(site.siteId) }
+        }
+    }
+
+    private fun <T : Any> notifyInvalidSignatureListener(site: SiteModel, response: WPAPIResponse<T>) {
+        val listener = invalidSignatureListener.orElse(null) ?: return
+        when (response) {
+            is WPAPIResponse.Error -> {
+                if (response.error.errorCode == WooError.REST_INVALID_SIGNATURE_CODE) {
+                    listener.onInvalidSignatureDetected(site)
+                }
+            }
+
+            is WPAPIResponse.Success -> listener.onSuccessfulConnection(site)
         }
     }
 
@@ -205,4 +230,8 @@ class WooNetwork @Inject constructor(
         val path: String,
         val method: String
     )
+
+    companion object {
+        private const val UNKNOWN_BLOG_ERROR_CODE = "unknown_blog"
+    }
 }

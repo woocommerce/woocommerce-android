@@ -105,6 +105,35 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given only one card selected, when back is pressed without changes, then exit without discard dialog`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+                AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", false),
+                AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+            )
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+            whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
+            setup()
+
+            var event: MultiLiveEvent.Event? = null
+            sut.event.observeForever { latestEvent -> event = latestEvent }
+
+            var viewState: AnalyticsHubSettingsViewState? = null
+            sut.viewStateData.observeForever { _, new -> viewState = new }
+
+            advanceTimeBy(501)
+
+            sut.onBackPressed()
+
+            // The exit event is triggered
+            assertEquals(MultiLiveEvent.Event.Exit, event)
+            // The discard dialog is not displayed
+            assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+            assertThat((viewState as CardsConfiguration).showDiscardDialog).isEqualTo(false)
+        }
+
+    @Test
     fun `when the screen is displayed save button is disabled`() = testBlocking {
         whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(defaultConfiguration))
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)

@@ -331,6 +331,38 @@ class SitePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a pending site picker error message, when view model is created, then snackbar is shown and message cleared`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            whenever(appPrefsWrapper.sitePickerErrorMessage).thenReturn(R.string.site_picker_unknown_blog_error)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.site_picker_unknown_blog_error))
+            verify(appPrefsWrapper).sitePickerErrorMessage = 0
+        }
+
+    @Test
+    fun `given no pending site picker error message, when view model is created, then no error snackbar is shown`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            var snackbar: ShowSnackbar? = null
+            viewModel.event.observeForever {
+                if (it is ShowSnackbar) snackbar = it
+            }
+
+            assertThat(snackbar).isNull()
+        }
+
+    @Test
     fun `given that the view model is created, when store fetch is empty, then empty view is displayed`() =
         testBlocking {
             val expectedSitePickerViewState = SitePickerTestUtils.getEmptyViewState(

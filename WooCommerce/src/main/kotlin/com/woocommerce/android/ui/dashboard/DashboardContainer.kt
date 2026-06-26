@@ -25,6 +25,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -119,14 +120,16 @@ private fun DashboardWidgets(
         ) {
             Spacer(modifier = Modifier)
             widgetUiModels.forEach { widget ->
-                AnimatedVisibility(widget.isVisible) {
-                    DashboardWidgetCard(
-                        it = widget,
-                        mainActivityViewModel = mainActivityViewModel,
-                        dashboardViewModel = dashboardViewModel,
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                key(widget.stableKey()) {
+                    AnimatedVisibility(widget.isVisible) {
+                        DashboardWidgetCard(
+                            it = widget,
+                            mainActivityViewModel = mainActivityViewModel,
+                            dashboardViewModel = dashboardViewModel,
+                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier)
@@ -190,6 +193,13 @@ private fun splitWidgetsIntoColumns(
         widgetColumns[index % numberOfColumns].add(item)
     }
     return widgetColumns
+}
+
+private fun DashboardWidgetUiModel.stableKey(): Any = when (this) {
+    is ConfigurableWidget -> widget.type
+    is ShareStoreWidget -> "share_store"
+    is FeedbackWidget -> "feedback"
+    is NewWidgetsCard -> "new_widgets"
 }
 
 @Composable

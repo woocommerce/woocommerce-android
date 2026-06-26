@@ -2105,12 +2105,6 @@ Language: nl
     <string name="coupon_type_picker_percentage_content_description">Type coupon - procentuele korting</string>
     <string name="coupon_type_picker_title">Coupon aanmaken</string>
     <string name="coupon_list_add_coupon_content_description">Coupon toevoegen</string>
-    <string name="try_test_order_button">Proefbestelling starten</string>
-    <string name="try_test_order_step_4">Gebruik de app om de restitutie voor de proefbestelling te verwerken</string>
-    <string name="try_test_order_step_3">Voltooi de betaling en wacht op een pushbericht over de bestelling in je WooCommerce-app.</string>
-    <string name="try_test_order_step_2">Selecteer jouw testproduct, voeg deze toe aan de winkelwagen en voltooi het afrekenscherm in die webwinkel als een echte klant.</string>
-    <string name="try_test_order_step_1">Druk op de knop hieronder om doorgestuurd te worden naar jouw webwinkel via een webbrowser.</string>
-    <string name="try_test_order_heading">Probeer een proefbestelling</string>
     <string name="empty_order_test_order_button">Probeer een proefbestelling</string>
     <string name="empty_order_test_order_message">Voer een proefbestelling uit om je ervan te verzekeren dat jouw WooCommerce-proces een naadloze klantervaring levert</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Details handmatig toevoegen</string>
