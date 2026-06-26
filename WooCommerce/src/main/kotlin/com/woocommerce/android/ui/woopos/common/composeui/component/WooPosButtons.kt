@@ -4,6 +4,13 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +53,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCom
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIconSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
@@ -79,7 +87,7 @@ fun WooPosButton(
         textStyle = WooPosTypography.BodyLarge,
         text = text,
         state = state,
-        colors = ButtonDefaults.buttonColors(
+        baseColors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = WooPosTheme.colors.disabledContainer,
@@ -103,7 +111,7 @@ fun WooPosButtonSmall(
         textStyle = WooPosTypography.BodySmall,
         text = text,
         state = state,
-        colors = ButtonDefaults.buttonColors(
+        baseColors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = WooPosTheme.colors.disabledContainer,
@@ -122,7 +130,7 @@ fun WooPosOutlinedButton(
     textStyle: WooPosTypography = WooPosTypography.BodyLarge,
     onClick: () -> Unit,
 ) {
-    val borderColor = if (state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING) {
+    val borderColor = if (state != WooPosButtonState.DISABLED) {
         MaterialTheme.colorScheme.inverseSurface
     } else {
         WooPosTheme.colors.disabledContainer
@@ -134,7 +142,7 @@ fun WooPosOutlinedButton(
         textStyle = textStyle,
         text = text,
         border = BorderStroke(2.dp, borderColor),
-        colors = ButtonDefaults.buttonColors(
+        baseColors = ButtonDefaults.buttonColors(
             containerColor = WooPosTheme.colors.transparent,
             contentColor = MaterialTheme.colorScheme.onSurface,
             disabledContainerColor = WooPosTheme.colors.transparent,
@@ -153,7 +161,7 @@ fun WooPosOutlinedButtonSmall(
     text: String,
     onClick: () -> Unit,
 ) {
-    val borderColor = if (state == WooPosButtonState.ENABLED) {
+    val borderColor = if (state != WooPosButtonState.DISABLED) {
         MaterialTheme.colorScheme.inverseSurface
     } else {
         WooPosTheme.colors.disabledContainer
@@ -165,7 +173,7 @@ fun WooPosOutlinedButtonSmall(
         textStyle = WooPosTypography.BodySmall,
         text = text,
         border = BorderStroke(2.dp, borderColor),
-        colors = ButtonDefaults.buttonColors(
+        baseColors = ButtonDefaults.buttonColors(
             containerColor = WooPosTheme.colors.transparent,
             contentColor = MaterialTheme.colorScheme.onSurface,
             disabledContainerColor = WooPosTheme.colors.transparent,
@@ -263,23 +271,35 @@ private fun Button(
     textStyle: WooPosTypography,
     text: String,
     loadingIndicatorSize: Dp,
-    colors: ButtonColors,
+    baseColors: ButtonColors,
     border: BorderStroke? = null,
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     maxLines: Int = Int.MAX_VALUE,
     onClick: () -> Unit,
 ) {
-    val onClickLocal = if (state == WooPosButtonState.ENABLED) {
-        onClick
-    } else {
-        {}
-    }
+    val isSuccess = state == WooPosButtonState.SUCCESS
+    val animatedContainerColor by animateColorAsState(
+        targetValue = if (isSuccess) WooPosTheme.colors.success else baseColors.containerColor,
+        animationSpec = tween(200),
+        label = "button_container_color",
+    )
+    val animatedContentColor by animateColorAsState(
+        targetValue = if (isSuccess) WooPosTheme.colors.onSuccess else baseColors.contentColor,
+        animationSpec = tween(200),
+        label = "button_content_color",
+    )
+    val onClickLocal: () -> Unit = if (state == WooPosButtonState.ENABLED || isSuccess) onClick else ({})
     Button(
         onClick = onClickLocal,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-        enabled = state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING,
+        enabled = state == WooPosButtonState.ENABLED || state == WooPosButtonState.LOADING || isSuccess,
         border = border,
-        colors = colors,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = animatedContainerColor,
+            contentColor = animatedContentColor,
+            disabledContainerColor = baseColors.disabledContainerColor,
+            disabledContentColor = baseColors.disabledContentColor,
+        ),
         modifier = modifier
             .heightIn(min = height, max = height * 3),
         elevation = ButtonDefaults.buttonElevation(
@@ -290,24 +310,45 @@ private fun Button(
             focusedElevation = WooPosSpacing.None.value
         )
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            // Always include the text. When loading, hide it with alpha to keep the width
-            WooPosText(
-                text = text,
-                style = textStyle,
-                fontWeight = FontWeight.Bold,
-                maxLines = maxLines,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.alpha(if (state == WooPosButtonState.LOADING) 0f else 1f)
-            )
-            when (state) {
-                WooPosButtonState.ENABLED,
-                WooPosButtonState.DISABLED -> {
+        AnimatedContent(
+            targetState = isSuccess,
+            transitionSpec = {
+                if (targetState) {
+                    slideInVertically(tween(250)) { -it } togetherWith slideOutVertically(tween(250)) { it }
+                } else {
+                    slideInVertically(tween(250)) { it } togetherWith slideOutVertically(tween(250)) { -it }
                 }
-
-                WooPosButtonState.LOADING -> {
-                    ButtonsLoadingIndicator(size = loadingIndicatorSize)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+            label = "button_state_content",
+        ) { showSuccess ->
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (showSuccess) {
+                    Icon(
+                        imageVector = WooPosIcons.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(loadingIndicatorSize),
+                    )
+                } else {
+                    Box(contentAlignment = Alignment.Center) {
+                        // Always include the text. When loading, hide it with alpha to keep the width
+                        WooPosText(
+                            text = text,
+                            style = textStyle,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = maxLines,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.alpha(if (state == WooPosButtonState.LOADING) 0f else 1f)
+                        )
+                        if (state == WooPosButtonState.LOADING) {
+                            ButtonsLoadingIndicator(size = loadingIndicatorSize)
+                        }
+                    }
                 }
             }
         }
@@ -349,6 +390,13 @@ fun WooPosButtonsPreview() {
             WooPosButton(
                 text = "Button",
                 state = WooPosButtonState.LOADING,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            )
+
+            WooPosButton(
+                text = "Button",
+                state = WooPosButtonState.SUCCESS,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {}
             )
@@ -485,5 +533,5 @@ fun WooPosSmallButtonsPreview() {
 }
 
 enum class WooPosButtonState {
-    ENABLED, DISABLED, LOADING
+    ENABLED, DISABLED, LOADING, SUCCESS
 }

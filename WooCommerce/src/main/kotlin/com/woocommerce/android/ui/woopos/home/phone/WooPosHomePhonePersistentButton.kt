@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
+import com.woocommerce.android.ui.woopos.home.cart.toWooPosButtonState
 
 enum class WooPosPhonePersistentButtonAction {
     OpenCart,
@@ -63,20 +64,13 @@ class WooPosPhonePersistentButtonStateResolver(
             }
         }
         WooPosHomeState.ScreenPositionState.Cart -> {
-            when (cartState?.checkoutButtonState) {
-                WooPosCartState.CheckoutButtonState.Enabled -> WooPosPhonePersistentButtonState.Primary(
+            cartState?.checkoutButtonState?.toWooPosButtonState()?.let { buttonState ->
+                WooPosPhonePersistentButtonState.Primary(
                     label = checkoutLabel,
-                    buttonState = WooPosButtonState.ENABLED,
+                    buttonState = buttonState,
                     action = WooPosPhonePersistentButtonAction.Checkout,
                 )
-                WooPosCartState.CheckoutButtonState.Disabled -> WooPosPhonePersistentButtonState.Primary(
-                    label = checkoutLabel,
-                    buttonState = WooPosButtonState.DISABLED,
-                    action = WooPosPhonePersistentButtonAction.Checkout,
-                )
-                WooPosCartState.CheckoutButtonState.Invisible,
-                null -> WooPosPhonePersistentButtonState.Hidden
-            }
+            } ?: WooPosPhonePersistentButtonState.Hidden
         }
         is WooPosHomeState.ScreenPositionState.Checkout -> WooPosPhonePersistentButtonState.Hidden
     }

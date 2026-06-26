@@ -884,6 +884,7 @@ class WooPosCartViewModelTest {
                 eventForTracking = mockedEventForTracking
             )
         )
+        advanceUntilIdle()
 
         // THEN
         val finalState = states.last()
@@ -915,6 +916,7 @@ class WooPosCartViewModelTest {
                 eventForTracking = mockedEventForTracking
             )
         )
+        advanceUntilIdle()
 
         // THEN
         val finalState = states.last()
@@ -958,6 +960,7 @@ class WooPosCartViewModelTest {
     fun `given cart with products, when navigated to checkout, then checkout button not visible`() = runTest {
         // GIVEN
         val (sut, states) = createSutWithItemsInCart()
+        advanceUntilIdle()
         assertThat(states.last().checkoutButtonState).isEqualTo(WooPosCartState.CheckoutButtonState.Enabled)
 
         // WHEN

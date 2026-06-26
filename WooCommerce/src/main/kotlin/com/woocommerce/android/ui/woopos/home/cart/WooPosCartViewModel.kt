@@ -49,7 +49,9 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -93,8 +95,10 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateStateDependingOnCartStatus(it) }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
+    private var itemAddedFlashJob: Job? = null
 
     init {
+        _state.value = _state.value.copy(isItemJustAdded = false)
         listenEventsFromParent()
         viewModelScope.launch {
             soundHelper.preloadBarcodeScanFailure()
@@ -135,9 +139,12 @@ class WooPosCartViewModel @Inject constructor(
 
             WooPosCartUIEvent.ClearAllClicked -> {
                 viewModelScope.launch { analyticsTracker.track(ClearCartTapped) }
+                itemAddedFlashJob?.cancel()
+                itemAddedFlashJob = null
                 val currentState = _state.value
                 _state.value = currentState.copy(
-                    body = WooPosCartState.Body.Empty
+                    body = WooPosCartState.Body.Empty,
+                    isItemJustAdded = false,
                 )
             }
 
@@ -175,9 +182,11 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun goToTotals() {
+        itemAddedFlashJob?.cancel()
+        itemAddedFlashJob = null
         val itemClickedDataList = getCartItemsDataList()
         sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
-        _state.value = _state.value.copy(cartStatus = CHECKOUT)
+        _state.value = _state.value.copy(cartStatus = CHECKOUT, isItemJustAdded = false)
         trackCheckoutTapped(
             itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>().size,
             itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>().size
@@ -294,6 +303,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCustomAmountCartHandler.SubmittedResult.Added -> {
                 handleNewTransactionIfNeeded()
                 updateCartItem(result.newItem)
+                flashItemAdded()
                 analyticsTracker.track(
                     CustomAmountSubmitted(CustomAmountSubmitted.Mode.ADD, event.isTaxable)
                 )
@@ -426,6 +436,7 @@ class WooPosCartViewModel @Inject constructor(
 
             itemClicked.await()?.let {
                 updateCartItem(it)
+                flashItemAdded()
             }
             event.eventForTracking?.let {
                 analyticsTracker.track(it)
@@ -459,6 +470,8 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun clearCart() {
+        itemAddedFlashJob?.cancel()
+        itemAddedFlashJob = null
         _state.value = WooPosCartState()
     }
 
@@ -512,6 +525,9 @@ class WooPosCartViewModel @Inject constructor(
 
         analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
         updateCartItem(cartItem)
+        if (cartItem !is WooPosCartItemViewState.Error) {
+            flashItemAdded()
+        }
     }
 
     private suspend fun processBarcodeError(result: BarcodeInputDetector.BarcodeResult.Error) {
@@ -646,6 +662,8 @@ class WooPosCartViewModel @Inject constructor(
                 val checkoutButtonState = when {
                     newState.body !is WooPosCartState.Body.WithItems -> WooPosCartState.CheckoutButtonState.Invisible
                     cartContainsLoadingOrErrorItems(newState.body) -> WooPosCartState.CheckoutButtonState.Disabled
+                    cartContainsPurchasableItems(newState.body) && newState.isItemJustAdded ->
+                        WooPosCartState.CheckoutButtonState.Success
                     cartContainsPurchasableItems(newState.body) -> WooPosCartState.CheckoutButtonState.Enabled
                     else -> WooPosCartState.CheckoutButtonState.Invisible
                 }
@@ -659,6 +677,7 @@ class WooPosCartViewModel @Inject constructor(
                 newState.copy(
                     areItemsRemovable = false,
                     checkoutButtonState = WooPosCartState.CheckoutButtonState.Invisible,
+                    isItemJustAdded = false,
                 )
             }
         }
@@ -668,6 +687,15 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.Empty -> newState.copy(cartStatus = EMPTY)
             is WooPosCartState.Body.WithItems -> newState
         }
+
+    private fun flashItemAdded() {
+        itemAddedFlashJob?.cancel()
+        _state.value = _state.value.copy(isItemJustAdded = true)
+        itemAddedFlashJob = viewModelScope.launch {
+            delay(ITEM_ADDED_FLASH_DURATION_MS)
+            _state.value = _state.value.copy(isItemJustAdded = false)
+        }
+    }
 
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
@@ -786,5 +814,9 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    companion object {
+        private const val ITEM_ADDED_FLASH_DURATION_MS = 1000L
     }
 }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import android.os.Parcelable
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
@@ -11,6 +12,7 @@ data class WooPosCartState(
     val body: Body = Body.Empty,
     val areItemsRemovable: Boolean = true,
     val checkoutButtonState: CheckoutButtonState = CheckoutButtonState.Enabled,
+    val isItemJustAdded: Boolean = false,
 ) : Parcelable {
     @Parcelize
     sealed class Body : Parcelable {
@@ -39,12 +41,20 @@ data class WooPosCartState(
     enum class CheckoutButtonState {
         Enabled,
         Disabled,
-        Invisible
+        Invisible,
+        Success
     }
 }
 
 enum class WooPosCartStatus {
     EDITABLE, CHECKOUT, EMPTY,
+}
+
+fun WooPosCartState.CheckoutButtonState.toWooPosButtonState(): WooPosButtonState? = when (this) {
+    WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+    WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+    WooPosCartState.CheckoutButtonState.Success -> WooPosButtonState.SUCCESS
+    WooPosCartState.CheckoutButtonState.Invisible -> null
 }
 
 @Parcelize
