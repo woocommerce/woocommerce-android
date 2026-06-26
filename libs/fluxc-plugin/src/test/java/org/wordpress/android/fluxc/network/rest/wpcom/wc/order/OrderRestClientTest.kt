@@ -4,25 +4,34 @@ import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
 import kotlin.collections.emptyList
 
@@ -446,6 +455,81 @@ class OrderRestClientTest {
         assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
         assertThat(bodyCaptor.firstValue).doesNotContainKey("template_id")
     }
+
+    @Test
+    fun `given the proxy returns no_response_body with raw_body, when fetching summaries fails, then error is PARSE_ERROR`() =
+        runTest {
+            // Given
+            val errorData = mock<JSONObject> {
+                on { has("raw_body") } doReturn true
+            }
+            val error = WPAPINetworkError(
+                baseError = BaseRequest.BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),
+                errorCode = "no_response_body",
+                errorData = errorData
+            )
+            whenever(
+                wooNetwork.executeGetGsonRequest(
+                    site = any(),
+                    path = any(),
+                    clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+                    params = any(),
+                    enableCaching = any(),
+                    cacheTimeToLive = any(),
+                    forced = any(),
+                    requestTimeout = any(),
+                    retries = any()
+                )
+            ).thenReturn(WPAPIResponse.Error(error))
+
+            // When
+            orderRestClient.fetchOrderListSummaries(WCOrderListDescriptor(site = testSite), 0)
+
+            // Then
+            val actionCaptor = argumentCaptor<Action<FetchOrderListResponsePayload>>()
+            verify(dispatcher).dispatch(actionCaptor.capture())
+            assertThat(actionCaptor.firstValue.payload.error?.type).isEqualTo(OrderErrorType.PARSE_ERROR)
+
+            val reportCaptor = argumentCaptor<OnUnexpectedError>()
+            verify(dispatcher).emitChange(reportCaptor.capture())
+            assertThat(reportCaptor.firstValue.description).isEqualTo("Order API response parse error")
+        }
+
+    @Test
+    fun `given proxy returns no_response_body without raw_body, when fetching fails, then error is GENERIC and not reported`() =
+        runTest {
+            // Given
+            val errorData = mock<JSONObject> {
+                on { has("raw_body") } doReturn false
+            }
+            val error = WPAPINetworkError(
+                baseError = BaseRequest.BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),
+                errorCode = "no_response_body",
+                errorData = errorData
+            )
+            whenever(
+                wooNetwork.executeGetGsonRequest(
+                    site = any(),
+                    path = any(),
+                    clazz = eq(Array<OrderSummaryApiResponse>::class.java),
+                    params = any(),
+                    enableCaching = any(),
+                    cacheTimeToLive = any(),
+                    forced = any(),
+                    requestTimeout = any(),
+                    retries = any()
+                )
+            ).thenReturn(WPAPIResponse.Error(error))
+
+            // When
+            orderRestClient.fetchOrderListSummaries(WCOrderListDescriptor(site = testSite), 0)
+
+            // Then
+            val actionCaptor = argumentCaptor<Action<FetchOrderListResponsePayload>>()
+            verify(dispatcher).dispatch(actionCaptor.capture())
+            assertThat(actionCaptor.firstValue.payload.error?.type).isEqualTo(OrderErrorType.GENERIC_ERROR)
+            verify(dispatcher, never()).emitChange(any<OnUnexpectedError>())
+        }
 
     /* HELPER */
 

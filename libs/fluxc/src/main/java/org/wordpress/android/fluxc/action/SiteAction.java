@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DesignatePrimaryDomainPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DesignatedPrimaryDomainPayload;
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload;
+import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload;
 import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsPayload;
@@ -26,7 +27,7 @@ public enum SiteAction implements IAction {
     FETCH_SITES_XML_RPC,
     @Action(payloadType = SuggestDomainsPayload.class)
     SUGGEST_DOMAINS,
-    @Action(payloadType = String.class)
+    @Action(payloadType = FetchConnectSiteInfoPayload.class)
     FETCH_CONNECT_SITE_INFO,
     @Action(payloadType = String.class)
     FETCH_DOMAIN_SUPPORTED_STATES,

@@ -24,4 +24,10 @@ class WCWPAPIEndpointTest {
     fun testRevenueStatsUrl() {
         assertEquals("/wc-analytics/reports/revenue/stats/", WOOCOMMERCE.reports.revenue.stats.pathV4Analytics)
     }
+
+    @Test
+    fun `when building v4 refund paths, then namespace and routes are correct`() {
+        assertEquals("/wc/v4/refunds/", WOOCOMMERCE.refunds.pathV4)
+        assertEquals("/wc/v4/refunds/preview/", WOOCOMMERCE.refunds.preview.pathV4)
+    }
 }

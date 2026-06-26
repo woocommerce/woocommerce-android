@@ -116,4 +116,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu_bottom_bar" />
 
+    <!-- Hosts the store-connection-error dialog so it overlays every main-app screen. -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/store_connection_error_compose_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

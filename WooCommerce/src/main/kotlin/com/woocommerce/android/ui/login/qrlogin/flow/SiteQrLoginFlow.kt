@@ -74,12 +74,23 @@ internal class SiteQrLoginFlow(
         if (!failed.retryable) return
         when (failed.failedAt) {
             FailureStep.Exchange -> retainedGrant?.let(::startExchange) ?: startScan()
-            FailureStep.Poll -> retainedWaitingForApproval?.let(::resumePolling) ?: startScan()
+            FailureStep.Poll -> retainedWaitingForApproval?.let(::resumePollingOrTimeOut) ?: startScan()
             else -> startScan()
         }
     }
 
-    private fun resumePolling(waiting: FlowState.WaitingForApproval) {
+    /**
+     * The retained snapshot keeps the original 90-second window from scan time. If the user lingered
+     * on a retryable poll-error screen until that window elapsed, resuming would re-display the same
+     * already-expired number with "Expires in 0s" — which the browser can no longer confirm, a dead
+     * end. Treat an elapsed window as a timeout so the terminal error screen sends the user back to
+     * scan a fresh code instead of re-showing the stale number.
+     */
+    private fun resumePollingOrTimeOut(waiting: FlowState.WaitingForApproval) {
+        if (waiting.expiresAtEpochMs <= System.currentTimeMillis()) {
+            failApproveTerminal(ErrorReason.MatchTimedOut)
+            return
+        }
         _state.value = waiting
         activeJob = scope.launch { pollUntilApprovedOrTerminal(sessionId = waiting.sessionId) }
     }

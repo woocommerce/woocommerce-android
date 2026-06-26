@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderAction
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,6 +54,7 @@ class WooPosOrderDetailsViewModelTest {
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getProductById: WooPosGetProductById = mock()
     private val coordinator = WooPosOrdersCoordinator()
+    private val networkStatus: WooPosNetworkStatus = mock()
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
     private lateinit var orderActionsProvider: WooPosOrderActionsProvider
@@ -417,6 +419,7 @@ class WooPosOrderDetailsViewModelTest {
             refundInfoBuilder = refundInfoBuilder,
             formatPrice = formatPrice,
             coordinator = coordinator,
+            networkStatus = networkStatus,
         )
     }
 
@@ -479,6 +482,7 @@ class WooPosOrderDetailsViewModelTest {
     private suspend fun setupDataSourceMocks() {
         doReturn(Result.success(order(1L))).whenever(dataSource).getOrderById(any())
         doReturn(Result.success(order(1L))).whenever(dataSource).refreshOrderById(any())
+        whenever(networkStatus.isConnected()).thenReturn(true)
     }
 
     // region Refresh
@@ -525,6 +529,73 @@ class WooPosOrderDetailsViewModelTest {
 
             collectorJob.cancel()
         }
+
+    @Test
+    fun `given refresh fails, when back from issue refund, then refresh failed event emitted`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        val events = mutableListOf<Unit>()
+        val collectorJob = launch { viewModel.refreshFailedEvent.collect { events.add(it) } }
+        advanceUntilIdle()
+        doReturn(Result.failure<Order>(RuntimeException("network error")))
+            .whenever(dataSource).refreshOrderById(1L)
+
+        // WHEN
+        viewModel.onBackFromIssueRefund()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(events).hasSize(1)
+
+        collectorJob.cancel()
+    }
+
+    @Test
+    fun `given no connection, when back from issue refund, then event emitted without fetching order`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        val events = mutableListOf<Unit>()
+        val collectorJob = launch { viewModel.refreshFailedEvent.collect { events.add(it) } }
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onBackFromIssueRefund()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(events).hasSize(1)
+        verify(dataSource, never()).refreshOrderById(any())
+
+        collectorJob.cancel()
+    }
+
+    @Test
+    fun `given refresh succeeds, when back from issue refund, then refresh failed event not emitted`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        coordinator.selectOrder(1L)
+        advanceUntilIdle()
+        val events = mutableListOf<Unit>()
+        val collectorJob = launch { viewModel.refreshFailedEvent.collect { events.add(it) } }
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(events).isEmpty()
+
+        collectorJob.cancel()
+    }
 
     // endregion
 

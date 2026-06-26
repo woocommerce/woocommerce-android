@@ -2140,16 +2140,10 @@ Language: ar
     <string name="coupon_type_picker_percentage_discount_title">الخصم بالنسبة المئوية</string>
     <string name="coupon_type_picker_title">إنشاء قسيمة</string>
     <string name="coupon_list_add_coupon_content_description">إضافة قسيمة</string>
-    <string name="try_test_order_button">بدء طلب الاختبار</string>
-    <string name="try_test_order_step_3">أكمل السداد وانتظر تلقي تنبيه حول الطلب على تطبيق WooCommerce الخاص بك.</string>
-    <string name="try_test_order_step_2">حدد منتج الاختبار الخاص بك وأضفه إلى عربة التسوق وأكمل السداد على متجر الويب ذلك كعميل حقيقي.</string>
-    <string name="try_test_order_step_1">انقر على الزر أدناه المراد إعادة توجيهه إلى متجرك على الإنترنت عبر متصفح الويب.</string>
-    <string name="try_test_order_heading">تجربة طلب الاختبار</string>
     <string name="empty_order_test_order_button">تجربة طلب الاختبار</string>
     <string name="coupon_type_picker_fixed_product_content_description">نوع القسيمة - منتج ثابت</string>
     <string name="coupon_type_picker_fixed_cart_content_description">نوع القسيمة - عربة تسوق ثابتة</string>
     <string name="coupon_type_picker_percentage_content_description">نوع القسيمة - النسبة المئوية للخصم</string>
-    <string name="try_test_order_step_4">استخدم التطبيق لمعالجة رد الأموال الخاص بطلب الاختبار</string>
     <string name="empty_order_test_order_message">تشغيل طلب الاختبار لضمان تقديم معالجة WooCommerce التي تقوم بها تجربة عملاء سلسة</string>
     <string name="order_creation_customer_search_empty_add_details_manually">إضافة التفاصيل يدويًا</string>
     <string name="order_creation_customer_search_old_wc_hint">البحث عن العملاء حسب</string>

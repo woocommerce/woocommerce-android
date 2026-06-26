@@ -37,7 +37,7 @@ abstract class BaseWPV2MediaRestClient(
 ) {
     protected abstract fun WPAPIEndpoint.getFullUrl(site: SiteModel): String
 
-    protected abstract suspend fun getAuthorizationHeader(site: SiteModel): String
+    protected abstract suspend fun getAuthorizationHeader(site: SiteModel): AuthorizationHeaderResult
 
     protected abstract suspend fun <T : Any> executeGetGsonRequest(
         site: SiteModel,
@@ -55,6 +55,14 @@ abstract class BaseWPV2MediaRestClient(
         }
 
         return callbackFlow {
+            val authorizationHeader = when (val result = getAuthorizationHeader(site)) {
+                is AuthorizationHeaderResult.Success -> result.header
+                is AuthorizationHeaderResult.Failure -> {
+                    handleFailure(media, result.error)
+                    return@callbackFlow
+                }
+            }
+
             val url = WPAPI.media.getFullUrl(site)
             val body = WPRestUploadRequestBody(media) { media, progress ->
                 val payload = ProgressPayload(media, progress, false, null)
@@ -64,7 +72,7 @@ abstract class BaseWPV2MediaRestClient(
             val request = Request.Builder()
                 .url(url)
                 .post(body = body)
-                .header(WPComGsonRequest.REST_AUTHORIZATION_HEADER, getAuthorizationHeader(site))
+                .header(WPComGsonRequest.REST_AUTHORIZATION_HEADER, authorizationHeader)
                 .build()
 
             val call = okHttpClient.newCall(request)
@@ -107,6 +115,11 @@ abstract class BaseWPV2MediaRestClient(
                 call.cancel()
             }
         }
+    }
+
+    protected sealed class AuthorizationHeaderResult {
+        data class Success(val header: String) : AuthorizationHeaderResult()
+        data class Failure(val error: MediaError) : AuthorizationHeaderResult()
     }
 
     suspend fun fetchMedia(site: SiteModel, mediaId: Long): MediaPayload {

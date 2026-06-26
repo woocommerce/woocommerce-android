@@ -23,7 +23,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_DETAILS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
@@ -42,7 +41,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         GROUPED_PRODUCT_LIST,
         ORDER_LIST,
-        ORDER_LIST_CREATE_TEST_ORDER,
         ORDER_LIST_LOADING,
         ORDER_LIST_FILTERED,
         ORDER_DETAILS,
@@ -149,14 +147,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = context.getString(R.string.empty_order_list_title)
                 message = context.getString(R.string.empty_order_list_message)
                 buttonText = context.getString(R.string.learn_more)
-                drawableId = R.drawable.img_empty_orders_no_orders
-            }
-
-            ORDER_LIST_CREATE_TEST_ORDER -> {
-                isTitleBold = true
-                title = context.getString(R.string.empty_order_list_title)
-                message = context.getString(R.string.empty_order_test_order_message)
-                buttonText = context.getString(R.string.empty_order_test_order_button)
                 drawableId = R.drawable.img_empty_orders_no_orders
             }
 

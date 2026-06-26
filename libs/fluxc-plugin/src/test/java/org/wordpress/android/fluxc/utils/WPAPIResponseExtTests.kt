@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 
@@ -67,5 +68,19 @@ class WPAPIResponseExtTests {
 
         assertThat(result.isError).isTrue
         assertThat(result.error.type).isEqualTo(WooErrorType.INVALID_COUPON)
+    }
+
+    @Test
+    fun `given invalid signature error, when converting, then map the error type`() {
+        val error = WPAPINetworkError(
+            BaseNetworkError(BaseRequest.GenericErrorType.UNKNOWN),
+            WooError.REST_INVALID_SIGNATURE_CODE
+        )
+        val response = WPAPIResponse.Error<String>(error)
+
+        val result = response.toWooPayload { it.hashCode() }
+
+        assertThat(result.isError).isTrue
+        assertThat(result.error.type).isEqualTo(WooErrorType.REST_INVALID_SIGNATURE)
     }
 }

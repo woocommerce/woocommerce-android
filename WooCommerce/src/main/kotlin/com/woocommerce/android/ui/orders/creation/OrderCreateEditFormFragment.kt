@@ -246,6 +246,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
         productSelectorNavContainer.isVisible = requireContext().isTwoPanesShouldBeUsed
+        divider.isVisible = requireContext().isTwoPanesShouldBeUsed
         when (requireContext().isTwoPanesShouldBeUsed) {
             false -> twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
             true -> twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
