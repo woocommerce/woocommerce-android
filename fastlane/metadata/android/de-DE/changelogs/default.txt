@@ -1,2 +1,0 @@
-25.0:
-Das Verkaufen von unterwegs aus gelingt jetzt noch reibungsloser. Woo POS ist in Kanada jetzt mit einem verbesserten Rückerstattungsablauf verfügbar und wir haben Tap to Pay so optimiert, dass es nur auf unterstützten Geräten angezeigt wird – mit einer eindeutigeren Nachricht (und einem Einrichtungslink) wenn es nicht unterstützt wird. Wir haben auch eine Altersüberprüfung hinzugefügt, um so die aktualisierten Shop-Anforderungen zu erfüllen. Viel Spaß beim Verkaufen!

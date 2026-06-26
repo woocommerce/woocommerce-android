@@ -1,2 +1,0 @@
-25.0:
-Vendere ovunque ora è ancora più semplice. Woo POS è disponibile in Canada con un flusso di rimborso migliorato. Inoltre, abbiamo perfezionato la funzione Tap to Pay in modo che sia visibile solo sui dispositivi supportati, con un messaggio più chiaro (e un link di configurazione) per quelli che non lo sono. Abbiamo anche introdotto la verifica dell'età per soddisfare i requisiti aggiornati del negozio. Ti auguriamo di vendere con successo!
