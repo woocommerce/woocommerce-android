@@ -29,8 +29,8 @@ class RefundPreviewRestClientTest {
 
     private val orderId = 123L
     private val lineItems = listOf(
-        RefundV4LineItem(lineItemId = 1L, quantity = 2),
-        RefundV4LineItem(lineItemId = 9L, refundTotal = "5.00".toBigDecimal()),
+        RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2),
+        RefundV4LineItem.amountBased(lineItemId = 9L, refundTotal = "5.00".toBigDecimal()),
     )
 
     @Test
