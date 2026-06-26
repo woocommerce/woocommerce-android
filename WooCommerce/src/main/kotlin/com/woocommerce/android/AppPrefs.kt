@@ -79,6 +79,7 @@ object AppPrefs {
         SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME,
         SELECTED_SHIPMENT_TRACKING_PROVIDER_IS_CUSTOM,
         LOGIN_SITE_ADDRESS,
+        SITE_PICKER_ERROR_MESSAGE,
         DATABASE_DOWNGRADED,
         ORDER_SUMMARY_MIGRATED,
         GATEWAY_MIGRATED,
@@ -279,6 +280,22 @@ object AppPrefs {
     var isProductAddonsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_PRODUCT_ADDONS_ENABLED, value)
+
+    // String resource of a message to surface on the site picker after the app restarts into it
+    // (e.g. when the selected site was reset due to an error). 0 means no pending message.
+    var sitePickerErrorMessage: Int
+        get() = getInt(DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE, 0)
+        set(value) {
+            val key = DeletablePrefKey.SITE_PICKER_ERROR_MESSAGE.toString()
+            if (value == 0) {
+                // Cleared on the main thread (site picker init), so apply() to avoid blocking disk I/O.
+                getPreferences().edit { remove(key) }
+            } else {
+                // Written right before a recovery restart that may kill the process, so commit()
+                // synchronously to make it durable before an async apply() could be lost.
+                getPreferences().edit(commit = true) { putString(key, value.toString()) }
+            }
+        }
 
     var isSimulatedReaderEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.USE_SIMULATED_READER, false)

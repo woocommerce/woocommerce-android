@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_VARIATION_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.NO_CONNECTION
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.RESOURCE_ALREADY_EXISTS
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REST_INVALID_SIGNATURE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -66,7 +67,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
     private fun WooError.mapError(): WooPosSearchByIdentifierResult.Error =
         when (type) {
             TIMEOUT, NO_CONNECTION -> WooPosSearchByIdentifierResult.Error.NetworkError
-            API_ERROR -> WooPosSearchByIdentifierResult.Error.ServerError(
+            API_ERROR,
+            REST_INVALID_SIGNATURE -> WooPosSearchByIdentifierResult.Error.ServerError(
                 message?.ifEmpty { null } ?: "API error occurred"
             )
 

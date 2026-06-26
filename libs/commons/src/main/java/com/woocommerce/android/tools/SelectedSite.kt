@@ -1,6 +1,7 @@
 package com.woocommerce.android.tools
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.di.SiteComponent
 import com.woocommerce.android.di.SiteComponent.Builder
@@ -109,11 +110,19 @@ class SelectedSite @Inject constructor(
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
     }
 
+    /**
+     * Clears the selected site.
+     *
+     * @param persistSynchronously when true the preference is written with a blocking [commit] instead
+     * of [apply]. Recovery flows restart (and may kill) the process right after resetting, and an async
+     * [apply] can be lost before it flushes, leaving the site still "selected" on relaunch. Normal
+     * resets keep [apply] to avoid main-thread disk I/O.
+     */
     @Synchronized
-    fun reset() {
+    fun reset(persistSynchronously: Boolean = false) {
         wasReset = true
         state.value = null
-        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        getPreferences().edit(commit = persistSynchronously) { remove(SELECTED_SITE_LOCAL_ID) }
         siteComponent = null
         siteCoroutineScope?.cancel()
     }

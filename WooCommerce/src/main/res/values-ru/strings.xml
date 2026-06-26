@@ -2102,15 +2102,9 @@ Language: ru
     <string name="coupon_type_picker_percentage_discount_title">Процент скидки</string>
     <string name="coupon_type_picker_title">Создать купон</string>
     <string name="coupon_list_add_coupon_content_description">Добавить купон</string>
-    <string name="try_test_order_button">Создать тестовый заказ</string>
-    <string name="try_test_order_step_3">Оплатите заказ и дождитесь push-уведомления в приложении WooCommerce.</string>
     <string name="coupon_type_picker_fixed_product_content_description">Тип купона — фиксированный на товар</string>
     <string name="coupon_type_picker_fixed_cart_content_description">Тип купона — фиксированный на корзину</string>
     <string name="coupon_type_picker_percentage_content_description">Тип купона — процент скидки</string>
-    <string name="try_test_order_step_4">Попробуйте вернуть средства за тестовый заказ в приложении</string>
-    <string name="try_test_order_step_2">Выберите тестируемый товар, добавьте его в корзину и оформите заказ в магазине, как настоящий покупатель.</string>
-    <string name="try_test_order_step_1">Нажмите кнопку ниже, чтобы перейти в онлайн-магазин в браузере.</string>
-    <string name="try_test_order_heading">Оформите тестовый заказ</string>
     <string name="empty_order_test_order_button">Оформить тестовый заказ</string>
     <string name="empty_order_test_order_message">Создайте тестовый заказ, чтобы убедиться, что магазин WooCommerce работает как часы</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Добавить сведения вручную</string>

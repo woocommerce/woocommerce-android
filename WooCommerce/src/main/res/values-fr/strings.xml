@@ -2105,12 +2105,6 @@ Language: fr
     <string name="coupon_type_picker_percentage_content_description">Type de code promo - remise en pourcentage</string>
     <string name="coupon_type_picker_title">Créer un code promo</string>
     <string name="coupon_list_add_coupon_content_description">Ajouter un code promo</string>
-    <string name="try_test_order_button">Lancer la commande de test</string>
-    <string name="try_test_order_step_4">Utilisez l’application pour effectuer le remboursement de la commande de test.</string>
-    <string name="try_test_order_step_3">Finalisez le paiement. Vous recevrez une notification push concernant la commande dans votre application WooCommerce.</string>
-    <string name="try_test_order_step_2">Sélectionnez votre produit de test, ajoutez-le au panier et finalisez la commande dans cette boutique en ligne comme un vrai client.</string>
-    <string name="try_test_order_step_1">Appuyez sur le bouton ci-dessous pour être redirigé vers votre boutique en ligne via un navigateur Web.</string>
-    <string name="try_test_order_heading">Essayer une commande de test</string>
     <string name="empty_order_test_order_button">Essayer une commande de test</string>
     <string name="empty_order_test_order_message">Effectuez une commande de test pour vous assurer de la qualité de votre processus WooCommerce et de l’expérience de vos clients.</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ajouter des détails manuellement</string>
