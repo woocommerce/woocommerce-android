@@ -33,7 +33,7 @@ class WooPosRefundPreviewTest {
         id = LOCAL_SITE_ID
         siteId = SITE_ID
     }
-    private val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+    private val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)

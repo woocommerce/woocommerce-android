@@ -10,11 +10,11 @@ class WooPosBuildRefundV4LineItems @Inject constructor() {
         val productLineItems = productItems
             .groupBy { it.orderItemId }
             .map { (orderItemId, rows) ->
-                RefundV4LineItem(lineItemId = orderItemId, quantity = rows.size)
+                RefundV4LineItem.quantityBased(lineItemId = orderItemId, quantity = rows.size)
             }
 
         val feeLineItems = feeItems.map { fee ->
-            RefundV4LineItem(
+            RefundV4LineItem.amountBased(
                 lineItemId = fee.orderItemId,
                 refundTotal = fee.unitPrice + fee.unitTax,
             )
