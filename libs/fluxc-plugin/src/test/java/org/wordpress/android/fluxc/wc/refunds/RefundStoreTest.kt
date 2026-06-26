@@ -118,7 +118,7 @@ class RefundStoreTest {
             total = "110.00",
             maxRefundable = "200.00",
         )
-        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 2))
+        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2))
         whenever(previewRestClient.previewRefund(site, orderId, lineItems))
             .thenReturn(WooPayload(previewResponse))
 
@@ -130,7 +130,7 @@ class RefundStoreTest {
 
     @Test
     fun `when previewRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
-        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
         val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
         whenever(previewRestClient.previewRefund(site, orderId, lineItems))
             .thenReturn(WooPayload(notFound))
@@ -143,7 +143,7 @@ class RefundStoreTest {
 
     @Test
     fun `when createSimplifiedItemsRefund succeeds, then response is mapped to model`() = test {
-        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 2))
+        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2))
         val response = SimplifiedRefundResponse(
             refundId = 55L,
             dateCreated = null,
@@ -176,7 +176,7 @@ class RefundStoreTest {
 
     @Test
     fun `when createSimplifiedItemsRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
-        val lineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
         val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
         whenever(
             restClient.createSimplifiedRefund(

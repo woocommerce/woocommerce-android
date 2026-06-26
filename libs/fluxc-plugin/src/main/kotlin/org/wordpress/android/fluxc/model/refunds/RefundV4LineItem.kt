@@ -14,12 +14,24 @@ import java.math.BigDecimal
  *   [lineItemId] + [refundTotal].
  *
  * Gson omits null fields by default, so exactly one of [quantity] / [refundTotal] is sent per line.
+ * The constructor is private; use [quantityBased] / [amountBased] so an invalid combination
+ * (both set, or neither) can never reach the API.
  */
-data class RefundV4LineItem(
+data class RefundV4LineItem private constructor(
     @SerializedName("line_item_id")
     val lineItemId: Long,
     @SerializedName("quantity")
     val quantity: Int? = null,
     @SerializedName("refund_total")
     val refundTotal: BigDecimal? = null,
-)
+) {
+    companion object {
+        /** Quantity-based line (products): the server derives the refund total from the quantity. */
+        fun quantityBased(lineItemId: Long, quantity: Int) =
+            RefundV4LineItem(lineItemId = lineItemId, quantity = quantity)
+
+        /** Amount-based line (fees / shipping): the client specifies the exact total to refund. */
+        fun amountBased(lineItemId: Long, refundTotal: BigDecimal) =
+            RefundV4LineItem(lineItemId = lineItemId, refundTotal = refundTotal)
+    }
+}
