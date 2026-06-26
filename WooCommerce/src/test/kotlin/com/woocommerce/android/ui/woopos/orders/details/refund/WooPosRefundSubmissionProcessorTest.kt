@@ -174,7 +174,7 @@ class WooPosRefundSubmissionProcessorTest {
                 paymentMethodType = CARD_PRESENT
             )
         )
-        val v4LineItems = listOf(RefundV4LineItem(lineItemId = 1L, quantity = 1))
+        val v4LineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
         whenever(
             refundStore.createSimplifiedItemsRefund(
                 site = eq(site),
