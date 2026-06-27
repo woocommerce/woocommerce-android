@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.hub.sync.toAnalyticData
+import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
@@ -101,6 +102,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val dateUtils: DateUtils,
     private val selectedSite: SelectedSite,
     private val getReportUrl: GetReportUrl,
+    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider,
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -786,7 +788,11 @@ class AnalyticsHubViewModel @Inject constructor(
     ) = generateSelectionData(
         referenceStartDate = startDate,
         referenceEndDate = endDate,
-        calendar = Calendar.getInstance(),
+        calendar = if (this == SelectionType.WEEK_TO_DATE) {
+            siteWeekStartCalendarProvider.getCalendar()
+        } else {
+            Calendar.getInstance()
+        },
         locale = localeProvider.provideLocale() ?: Locale.getDefault()
     )
 

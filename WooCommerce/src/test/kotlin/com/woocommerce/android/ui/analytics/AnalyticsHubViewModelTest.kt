@@ -36,6 +36,8 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
@@ -57,6 +59,7 @@ import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doAnswer
@@ -68,6 +71,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -100,6 +104,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
+    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -128,6 +133,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         localeProvider = mock {
             on { provideLocale() } doReturn testLocale
         }
+        whenever(siteWeekStartCalendarProvider.getCalendar()).thenReturn(testCalendar)
         savedState = AnalyticsHubFragmentArgs(
             TODAY.generateSelectionData(
                 calendar = testCalendar,
@@ -222,6 +228,60 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 assertEquals(expectedSelection.previousRangeDescription, previousRange)
             }
         }
+
+    @Test
+    fun `given monday site week start, when week to date is selected, then selector and stats use monday range`() =
+        testBlocking {
+            withDefaultLocale(Locale.US) {
+                whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
+                val siteCalendar = givenSiteCalendar(Calendar.MONDAY)
+                configureVisibleCards()
+                configureSuccessfulStatsResponse()
+
+                sut = givenAViewModel()
+                clearInvocations(updateStats)
+
+                sut.onNewRangeSelection(WEEK_TO_DATE)
+
+                val expectedSelection = WEEK_TO_DATE.generateSelectionData(
+                    referenceStartDate = date("2026-06-15"),
+                    calendar = siteCalendar,
+                    locale = testLocale,
+                    referenceEndDate = Date()
+                )
+                val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
+                verify(updateStats).invoke(
+                    rangeSelection = rangeSelectionCaptor.capture(),
+                    scope = any(),
+                    forceUpdate = any(),
+                    visibleCards = any()
+                )
+
+                with(sut.viewState.value.analyticsDateRangeSelectorState) {
+                    assertEquals(WEEK_TO_DATE, selectionType)
+                    assertEquals(expectedSelection.currentRangeDescription, currentRange)
+                    assertEquals(expectedSelection.previousRangeDescription, previousRange)
+                }
+                with(rangeSelectionCaptor.firstValue.currentRange) {
+                    assertThat(start).isEqualTo(date("2026-06-15"))
+                    assertThat(end).isEqualTo(endOfDay("2026-06-21"))
+                }
+            }
+        }
+
+    @Test
+    fun `given site week start, when today is selected, then site calendar is not used`() = testBlocking {
+        givenSiteCalendar(Calendar.MONDAY)
+        configureVisibleCards()
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        clearInvocations(siteWeekStartCalendarProvider)
+
+        sut.onNewRangeSelection(TODAY)
+
+        verify(siteWeekStartCalendarProvider, never()).getCalendar()
+    }
 
     @Test
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
@@ -1020,9 +1080,39 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             dateUtils,
             selectedSite,
             getReportUrl,
+            siteWeekStartCalendarProvider,
             observeAnalyticsCardsConfiguration,
             savedState
         )
+    }
+
+    private fun givenSiteCalendar(firstDayOfWeek: Int): Calendar {
+        val calendar = Calendar.getInstance(Locale.US)
+        calendar.firstDayOfWeek = firstDayOfWeek
+        whenever(siteWeekStartCalendarProvider.getCalendar()).thenReturn(calendar)
+        return calendar
+    }
+
+    private fun date(value: String): Date = checkNotNull(DATE_FORMAT.parse(value))
+
+    private fun endOfDay(value: String): Date {
+        return Calendar.getInstance().apply {
+            time = date(value)
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+    }
+
+    private inline fun withDefaultLocale(locale: Locale, action: () -> Unit) {
+        val originalLocale = Locale.getDefault()
+        Locale.setDefault(locale)
+        try {
+            action()
+        } finally {
+            Locale.setDefault(originalLocale)
+        }
     }
 
     private fun getRevenueStats(
@@ -1122,6 +1212,8 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     companion object {
         private const val ANY_VALUE = "Today"
+
+        private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
         const val TOTAL_VALUE = 10.0
         const val TOTAL_DELTA = 5.0
