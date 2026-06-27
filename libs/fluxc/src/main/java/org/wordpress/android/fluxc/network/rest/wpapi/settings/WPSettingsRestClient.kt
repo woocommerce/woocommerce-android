@@ -1,19 +1,19 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.settings
 
 import com.google.gson.annotations.SerializedName
-import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkingMode
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.util.AppLog
 import java.security.GeneralSecurityException

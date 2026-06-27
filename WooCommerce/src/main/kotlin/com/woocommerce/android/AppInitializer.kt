@@ -86,8 +86,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpack
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WPSettingsStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.Date
 import java.util.concurrent.TimeUnit

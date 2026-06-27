@@ -18,14 +18,24 @@ class SiteWeekStartCalendarProvider @Inject constructor(
 
     private fun Int.toCalendarFirstDayOfWeek(): Int? {
         return when (this) {
-            0 -> Calendar.SUNDAY
-            1 -> Calendar.MONDAY
-            2 -> Calendar.TUESDAY
-            3 -> Calendar.WEDNESDAY
-            4 -> Calendar.THURSDAY
-            5 -> Calendar.FRIDAY
-            6 -> Calendar.SATURDAY
+            WP_WEEK_START_SUNDAY -> Calendar.SUNDAY
+            WP_WEEK_START_MONDAY -> Calendar.MONDAY
+            WP_WEEK_START_TUESDAY -> Calendar.TUESDAY
+            WP_WEEK_START_WEDNESDAY -> Calendar.WEDNESDAY
+            WP_WEEK_START_THURSDAY -> Calendar.THURSDAY
+            WP_WEEK_START_FRIDAY -> Calendar.FRIDAY
+            WP_WEEK_START_SATURDAY -> Calendar.SATURDAY
             else -> null
         }
+    }
+
+    private companion object {
+        const val WP_WEEK_START_SUNDAY = 0
+        const val WP_WEEK_START_MONDAY = 1
+        const val WP_WEEK_START_TUESDAY = 2
+        const val WP_WEEK_START_WEDNESDAY = 3
+        const val WP_WEEK_START_THURSDAY = 4
+        const val WP_WEEK_START_FRIDAY = 5
+        const val WP_WEEK_START_SATURDAY = 6
     }
 }

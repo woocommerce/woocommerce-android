@@ -31,15 +31,15 @@ import org.wordpress.android.fluxc.persistence.dao.AccountDao
 import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.persistence.dao.NotificationDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
-import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.dao.WPSiteSettingsDao
+import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 import org.wordpress.android.fluxc.persistence.entity.AccountEntity
 import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
+import org.wordpress.android.fluxc.persistence.entity.WPSiteSettingsModel
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
-import org.wordpress.android.fluxc.persistence.entity.WPSiteSettingsModel
 
 @Database(
         version = 38,
