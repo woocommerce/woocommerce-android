@@ -87,6 +87,7 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WPSettingsStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -118,6 +119,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
 
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
+
+    @Inject lateinit var wpSettingsStore: WPSettingsStore
 
     @Inject lateinit var selectedSite: SelectedSite
 
@@ -206,6 +209,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(site)
                     wooCommerceStore.fetchSiteProductSettings(site)
+                    wpSettingsStore.fetchSiteSettings(site)
                 }
             }
             return true

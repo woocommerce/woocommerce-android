@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
+import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -95,6 +96,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         on { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider = mock()
 
     private lateinit var viewModel: DashboardCouponsViewModel
 
@@ -103,7 +105,8 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         val getSelectedDateRange = GetSelectedRangeForCoupons(
             appPrefs = appPrefs,
             customDateRangeDataStore = customDateRangeDataStore,
-            dateUtils = dateUtils
+            dateUtils = dateUtils,
+            siteWeekStartCalendarProvider = siteWeekStartCalendarProvider
         )
 
         viewModel = DashboardCouponsViewModel(

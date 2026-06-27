@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.topperformers
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.GetSelectedDateRange
@@ -10,8 +11,9 @@ import javax.inject.Inject
 class GetSelectedRangeForTopPerformers @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
     customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
-    dateUtils: DateUtils
-) : GetSelectedDateRange(appPrefs, customDateRangeDataStore, dateUtils) {
+    dateUtils: DateUtils,
+    siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider
+) : GetSelectedDateRange(appPrefs, customDateRangeDataStore, dateUtils, siteWeekStartCalendarProvider) {
     override fun getSelectedRange(): SelectionType =
         runCatching {
             SelectionType.valueOf(appPrefs.getActiveTopPerformersTab())

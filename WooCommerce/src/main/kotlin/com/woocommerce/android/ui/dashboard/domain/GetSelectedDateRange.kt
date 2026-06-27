@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.dashboard.domain
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +20,8 @@ import java.util.Locale
 abstract class GetSelectedDateRange(
     private val appPrefs: AppPrefsWrapper,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider
 ) {
     operator fun invoke(): Flow<StatsTimeRangeSelection> {
         val selectedRangeTypeFlow = appPrefs.observePrefs()
@@ -41,7 +44,11 @@ abstract class GetSelectedDateRange(
 
                 else -> {
                     selectionType.generateSelectionData(
-                        calendar = Calendar.getInstance(),
+                        calendar = if (selectionType == WEEK_TO_DATE) {
+                            siteWeekStartCalendarProvider.getCalendar()
+                        } else {
+                            Calendar.getInstance()
+                        },
                         locale = Locale.getDefault(),
                         referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
                         referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
