@@ -270,6 +270,32 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given sunday site week start, when week to date is selected, then stats use sunday range`() = testBlocking {
+        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
+        givenSiteCalendar(Calendar.SUNDAY)
+        configureVisibleCards()
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        clearInvocations(updateStats)
+
+        sut.onNewRangeSelection(WEEK_TO_DATE)
+
+        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
+        verify(updateStats).invoke(
+            rangeSelection = rangeSelectionCaptor.capture(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = any()
+        )
+
+        with(rangeSelectionCaptor.firstValue.currentRange) {
+            assertThat(start).isEqualTo(date("2026-06-14"))
+            assertThat(end).isEqualTo(endOfDay("2026-06-20"))
+        }
+    }
+
+    @Test
     fun `given site week start, when today is selected, then site calendar is not used`() = testBlocking {
         givenSiteCalendar(Calendar.MONDAY)
         configureVisibleCards()
