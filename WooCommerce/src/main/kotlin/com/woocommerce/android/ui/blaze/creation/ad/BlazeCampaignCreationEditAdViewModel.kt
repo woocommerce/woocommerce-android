@@ -11,6 +11,9 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.InvalidSize
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.UnsupportedMimeType
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.Valid
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -131,42 +134,55 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onLocalImageSelected(uri: String) {
         launch {
-            val imageDetails = blazeRepository.getImageDetails(uri)
-            if (imageDetails.isValidAdImage()) {
-                _viewState.update {
-                    it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
-                }
-            } else {
-                showInvalidImageSizeDialog()
+            handleSelectedImage(uri) {
+                BlazeRepository.BlazeCampaignImage.LocalImage(uri)
             }
         }
     }
 
     fun onWPMediaSelected(image: Product.Image) {
         launch {
-            val imageDetails = blazeRepository.getImageDetails(image.source)
-            if (imageDetails.isValidAdImage()) {
-                _viewState.update {
-                    it.copy(
-                        adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                            uri = image.source,
-                            mimeType = imageDetails.mimeType
-                        )
-                    )
-                }
-            } else {
-                showInvalidImageSizeDialog()
+            handleSelectedImage(image.source) { imageDetails ->
+                BlazeRepository.BlazeCampaignImage.RemoteImage(
+                    uri = image.source,
+                    mimeType = imageDetails.mimeType
+                )
             }
         }
     }
 
-    private fun MediaFilesRepository.ImageDetails.isValidAdImage() = with(blazeRepository) { isValidAdImage() }
+    private suspend fun handleSelectedImage(
+        uri: String,
+        createCampaignImage: (MediaFilesRepository.ImageDetails) -> BlazeRepository.BlazeCampaignImage
+    ) {
+        val imageDetails = blazeRepository.getImageDetails(uri)
+        when (imageDetails.validateAdImage()) {
+            Valid -> {
+                _viewState.update {
+                    it.copy(adImage = createCampaignImage(imageDetails))
+                }
+            }
+            InvalidSize -> showInvalidImageSizeDialog()
+            UnsupportedMimeType -> showUnsupportedImageTypeDialog()
+        }
+    }
+
+    private fun MediaFilesRepository.ImageDetails.validateAdImage() =
+        with(blazeRepository) { this@validateAdImage.validateAdImage() }
 
     private fun showInvalidImageSizeDialog() {
+        showInvalidImageDialog(R.string.blaze_campaign_edit_ad_invalid_image_description)
+    }
+
+    private fun showUnsupportedImageTypeDialog() {
+        showInvalidImageDialog(R.string.blaze_campaign_edit_ad_unsupported_image_type_description)
+    }
+
+    private fun showInvalidImageDialog(messageId: Int) {
         triggerEvent(
             Event.ShowDialog(
                 titleId = R.string.blaze_campaign_edit_ad_invalid_image_title,
-                messageId = R.string.blaze_campaign_edit_ad_invalid_image_description,
+                messageId = messageId,
                 positiveButtonId = R.string.dialog_ok,
                 positiveBtnAction = { dialog, _ ->
                     dialog.dismiss()
