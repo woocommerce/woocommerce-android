@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodI
 import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
@@ -51,6 +52,16 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 400 // Must be at least 400 x 400 pixels
         const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
+        private val SUPPORTED_BLAZE_IMAGE_MIME_TYPES = setOf(
+            "image/png",
+            "image/x-png",
+            "image/webp",
+            "image/gif",
+            "image/jpeg",
+            "image/bmp",
+            "image/heic",
+            "image/heif"
+        )
     }
 
     fun observeObjectives() = blazeCampaignsStore.observeBlazeCampaignObjectives().map {
@@ -388,11 +399,15 @@ class BlazeRepository @Inject constructor(
 
     suspend fun getImageDetails(uri: String) = mediaFilesRepository.getImageDetails(uri)
 
-    fun MediaFilesRepository.ImageDetails.isValidAdImage(): Boolean {
+    fun MediaFilesRepository.ImageDetails.isValidAdImage() = validateAdImage() == AdImageValidationResult.Valid
+
+    fun MediaFilesRepository.ImageDetails.validateAdImage(): AdImageValidationResult {
+        val normalizedMimeType = mimeType.trim().lowercase(Locale.US)
         return when {
-            width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS || height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
-            !mimeType.startsWith("image/") -> false
-            else -> true
+            normalizedMimeType !in SUPPORTED_BLAZE_IMAGE_MIME_TYPES -> AdImageValidationResult.UnsupportedMimeType
+            width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS ||
+                height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> AdImageValidationResult.InvalidSize
+            else -> AdImageValidationResult.Valid
         }
     }
 
@@ -404,6 +419,12 @@ class BlazeRepository @Inject constructor(
 
     fun storeSelectedObjective(objectiveId: String) {
         appPrefsWrapper.blazeCampaignSelectedObjective = objectiveId
+    }
+
+    enum class AdImageValidationResult {
+        Valid,
+        InvalidSize,
+        UnsupportedMimeType
     }
 
     @Parcelize
