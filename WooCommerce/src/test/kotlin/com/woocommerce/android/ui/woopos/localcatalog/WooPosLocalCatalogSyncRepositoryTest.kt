@@ -82,6 +82,30 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given force is true, when full sync runs, then force is propagated to file based sync`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site, force = true)
+
+        // THEN
+        verify(posFileBasedSyncAction).syncCatalog(site, true)
+    }
+
+    @Test
+    fun `given force is not specified, when full sync runs, then force defaults to false`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(posFileBasedSyncAction).syncCatalog(site, false)
+    }
+
+    @Test
     fun `when full sync succeeds, then stores both last sync and last full sync timestamps`() = testBlocking {
         // GIVEN
         givenFileBasedFullSyncSucceeds()
@@ -358,7 +382,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         syncDurationMs: Long = 1000L,
         lastModifiedDate: String? = "2024-01-01T12:00:00Z"
     ) {
-        whenever(posFileBasedSyncAction.syncCatalog(any()))
+        whenever(posFileBasedSyncAction.syncCatalog(any(), any()))
             .thenReturn(
                 WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success(
                     result = PosLocalCatalogSyncResult.Success(
@@ -374,7 +398,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private suspend fun givenFileBasedFullSyncFails(
         failure: PosLocalCatalogSyncResult.Failure
     ) {
-        whenever(posFileBasedSyncAction.syncCatalog(any()))
+        whenever(posFileBasedSyncAction.syncCatalog(any(), any()))
             .thenReturn(
                 WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure(result = failure)
             )
