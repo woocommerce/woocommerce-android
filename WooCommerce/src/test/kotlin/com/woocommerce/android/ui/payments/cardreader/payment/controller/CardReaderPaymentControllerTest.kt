@@ -2122,6 +2122,21 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment flow is capturing state, when user presses back button, then exit event is not emitted`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(CapturingPayment) }
+            }
+
+            val events = controller.event.runAndCaptureValues {
+                controller.start()
+                controller.onBackPressed()
+            }
+
+            assertThat(events).noneMatch { it is CardReaderPaymentEvent.Exit }
+        }
+
+    @Test
     fun `given payment flow is payment failed, when user presses back button, then cancel event is not tracked`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(NoNetwork, false))
