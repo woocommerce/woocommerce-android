@@ -10,7 +10,7 @@ class CalendarHelper @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wpSettingsStore: WPSettingsStore
 ) {
-    fun getCalendarForSelectedSite(): Calendar {
+    suspend fun getCalendarForSelectedSite(): Calendar {
         val calendar = Calendar.getInstance()
         val site = selectedSite.getOrNull() ?: return calendar
         val firstDayOfWeek = wpSettingsStore.getStartOfWeek(site)?.toCalendarFirstDayOfWeek() ?: return calendar

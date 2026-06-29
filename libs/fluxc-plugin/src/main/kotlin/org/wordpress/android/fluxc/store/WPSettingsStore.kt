@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -39,15 +38,11 @@ class WPSettingsStore @Inject constructor(
         }
     }
 
-    fun getSiteSettings(site: SiteModel): WPSiteSettingsModel? = runBlocking {
-        getSiteSettingsAsync(site)
-    }
-
-    suspend fun getSiteSettingsAsync(site: SiteModel): WPSiteSettingsModel? {
+    suspend fun getSiteSettings(site: SiteModel): WPSiteSettingsModel? {
         return wpSiteSettingsDao.getSiteSettings(site.localId())
     }
 
-    fun getStartOfWeek(site: SiteModel): DayOfWeek? {
+    suspend fun getStartOfWeek(site: SiteModel): DayOfWeek? {
         return getSiteSettings(site)?.startOfWeek
     }
 

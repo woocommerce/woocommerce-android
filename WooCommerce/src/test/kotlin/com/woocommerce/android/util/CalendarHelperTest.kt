@@ -8,6 +8,7 @@ import org.junit.After
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WPSettingsStore
 import java.time.DayOfWeek
@@ -28,34 +29,23 @@ class CalendarHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given sunday site start, when calendar is requested, then first day is sunday`() {
-        givenStartOfWeek(DayOfWeek.SUNDAY)
+    fun `given site start, when calendar is requested, then first day uses matching calendar constant`() =
+        testBlocking {
+            listOf(
+                DayOfWeek.SUNDAY to Calendar.SUNDAY,
+                DayOfWeek.MONDAY to Calendar.MONDAY,
+                DayOfWeek.SATURDAY to Calendar.SATURDAY
+            ).forEach { (startOfWeek, expectedFirstDayOfWeek) ->
+                givenStartOfWeek(startOfWeek)
 
-        val calendar = createHelper().getCalendarForSelectedSite()
+                val calendar = createHelper().getCalendarForSelectedSite()
 
-        assertThat(calendar.firstDayOfWeek).isEqualTo(Calendar.SUNDAY)
-    }
-
-    @Test
-    fun `given monday site start, when calendar is requested, then first day is monday`() {
-        givenStartOfWeek(DayOfWeek.MONDAY)
-
-        val calendar = createHelper().getCalendarForSelectedSite()
-
-        assertThat(calendar.firstDayOfWeek).isEqualTo(Calendar.MONDAY)
-    }
+                assertThat(calendar.firstDayOfWeek).isEqualTo(expectedFirstDayOfWeek)
+            }
+        }
 
     @Test
-    fun `given saturday site start, when calendar is requested, then first day is saturday`() {
-        givenStartOfWeek(DayOfWeek.SATURDAY)
-
-        val calendar = createHelper().getCalendarForSelectedSite()
-
-        assertThat(calendar.firstDayOfWeek).isEqualTo(Calendar.SATURDAY)
-    }
-
-    @Test
-    fun `given unavailable start, when calendar is requested, then default calendar is unchanged`() {
+    fun `given unavailable start, when calendar is requested, then default calendar is unchanged`() = testBlocking {
         Locale.setDefault(Locale.US)
         givenStartOfWeek(null)
 
@@ -65,7 +55,7 @@ class CalendarHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no selected site, when calendar is requested, then default calendar is unchanged`() {
+    fun `given no selected site, when calendar is requested, then default calendar is unchanged`() = testBlocking {
         Locale.setDefault(Locale.US)
         val selectedSite: SelectedSite = mock {
             on { getOrNull() } doReturn null
@@ -79,8 +69,8 @@ class CalendarHelperTest : BaseUnitTest() {
         assertThat(calendar.firstDayOfWeek).isEqualTo(Calendar.getInstance().firstDayOfWeek)
     }
 
-    private fun givenStartOfWeek(startOfWeek: DayOfWeek?) {
-        doReturn(startOfWeek).`when`(wpSettingsStore).getStartOfWeek(site)
+    private suspend fun givenStartOfWeek(startOfWeek: DayOfWeek?) {
+        whenever(wpSettingsStore.getStartOfWeek(site)).thenReturn(startOfWeek)
     }
 
     private fun createHelper() = CalendarHelper(

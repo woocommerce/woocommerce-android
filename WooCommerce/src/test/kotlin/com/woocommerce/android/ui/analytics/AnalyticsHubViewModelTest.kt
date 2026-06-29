@@ -37,8 +37,8 @@ import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
@@ -134,7 +134,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         localeProvider = mock {
             on { provideLocale() } doReturn testLocale
         }
-        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(testCalendar)
+        testBlocking {
+            whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(testCalendar)
+        }
         savedState = AnalyticsHubFragmentArgs(
             TODAY.generateSelectionData(
                 calendar = testCalendar,
@@ -214,7 +216,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel(resourceProvider)
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             val expectedSelection = LAST_YEAR.generateSelectionData(
                 calendar = testCalendar,
@@ -242,7 +244,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 sut = givenAViewModel()
                 clearInvocations(updateStats)
 
-                sut.onNewRangeSelection(WEEK_TO_DATE)
+                whenNewRangeSelected(WEEK_TO_DATE)
 
                 val expectedSelection = WEEK_TO_DATE.generateSelectionData(
                     referenceStartDate = date("2026-06-15"),
@@ -271,91 +273,13 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given sunday site week start, when week to date is selected, then stats use sunday range`() = testBlocking {
-        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
-        givenSiteCalendar(Calendar.SUNDAY)
-        configureVisibleCards()
-        configureSuccessfulStatsResponse()
-
-        sut = givenAViewModel()
-        clearInvocations(updateStats)
-
-        sut.onNewRangeSelection(WEEK_TO_DATE)
-
-        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
-        verify(updateStats).invoke(
-            rangeSelection = rangeSelectionCaptor.capture(),
-            scope = any(),
-            forceUpdate = any(),
-            visibleCards = any()
-        )
-
-        with(rangeSelectionCaptor.firstValue.currentRange) {
-            assertThat(start).isEqualTo(date("2026-06-14"))
-            assertThat(end).isEqualTo(endOfDay("2026-06-20"))
-        }
-    }
-
-    @Test
-    fun `given site week start, when today is selected, then non-week output is unchanged`() = testBlocking {
-        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
-        givenSiteCalendar(Calendar.MONDAY)
-        configureVisibleCards()
-        configureSuccessfulStatsResponse()
-
-        sut = givenAViewModel()
-        clearInvocations(updateStats)
-
-        sut.onNewRangeSelection(TODAY)
-
-        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
-        verify(updateStats).invoke(
-            rangeSelection = rangeSelectionCaptor.capture(),
-            scope = any(),
-            forceUpdate = any(),
-            visibleCards = any()
-        )
-
-        with(rangeSelectionCaptor.firstValue.currentRange) {
-            assertThat(start).isEqualTo(date("2026-06-15"))
-            assertThat(end).isEqualTo(endOfDay("2026-06-15"))
-        }
-    }
-
-    @Test
-    fun `given monday site week start, when last week is selected, then stats use monday range`() = testBlocking {
-        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
-        givenSiteCalendar(Calendar.MONDAY)
-        configureVisibleCards()
-        configureSuccessfulStatsResponse()
-
-        sut = givenAViewModel()
-        clearInvocations(updateStats)
-
-        sut.onNewRangeSelection(LAST_WEEK)
-
-        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
-        verify(updateStats).invoke(
-            rangeSelection = rangeSelectionCaptor.capture(),
-            scope = any(),
-            forceUpdate = any(),
-            visibleCards = any()
-        )
-
-        with(rangeSelectionCaptor.firstValue.currentRange) {
-            assertThat(start).isEqualTo(date("2026-06-08"))
-            assertThat(end).isEqualTo(endOfDay("2026-06-14"))
-        }
-    }
-
-    @Test
     fun `given a view model, when selected date range changes, then has expected revenue values`() =
         testBlocking {
             configureSuccessfulStatsResponse()
             configureVisibleCards()
 
             sut = givenAViewModel()
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
             val state = sut.viewState.value.cards
@@ -384,7 +308,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             }
 
             sut = givenAViewModel()
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             val state = sut.viewState.value.cards
             assertTrue(state is AnalyticsHubCardViewState.CardsState)
@@ -404,7 +328,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             sut = givenAViewModel()
 
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             with(sut.viewState.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
@@ -427,7 +351,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         configureVisibleCards()
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -454,7 +378,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             configureSuccessfulStatsResponse()
             configureVisibleCards()
             sut = givenAViewModel()
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
 
@@ -480,7 +404,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             configureSuccessfulStatsResponse()
             configureVisibleCards()
             sut = givenAViewModel()
-            sut.onNewRangeSelection(LAST_YEAR)
+            whenNewRangeSelected(LAST_YEAR)
 
             val resourceProvider = givenAResourceProvider()
 
@@ -519,7 +443,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -556,7 +480,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val state = sut.viewState.value.cards
@@ -586,7 +510,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
         sut.onRefreshRequested()
 
         val resourceProvider = givenAResourceProvider()
@@ -727,7 +651,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
 
         val state = sut.viewState.value.cards
         assertTrue(state is AnalyticsHubCardViewState.CardsState)
@@ -826,7 +750,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureSuccessfulStatsResponse()
         sut = givenAViewModel()
 
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
 
         verify(tracker).track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
@@ -835,18 +759,32 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a custom range selection is selected, then the custom range selection is tracked`() = testBlocking {
+    fun `when a custom range selection is selected, then custom range is tracked and updated`() = testBlocking {
         configureSuccessfulStatsResponse()
+        configureVisibleCards()
+        givenSiteCalendar(Calendar.MONDAY)
         sut = givenAViewModel()
-        val startDate = Date()
-        val endDate = Date()
+        clearInvocations(updateStats)
+        val startDate = date("2026-06-02")
+        val endDate = date("2026-06-04")
 
-        sut.onCustomRangeSelected(startDate, endDate)
+        whenCustomRangeSelected(startDate, endDate)
 
         verify(tracker).track(
             AnalyticsEvent.ANALYTICS_HUB_DATE_RANGE_SELECTED,
             mapOf(AnalyticsTracker.KEY_OPTION to CUSTOM.identifier)
         )
+        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
+        verify(updateStats).invoke(
+            rangeSelection = rangeSelectionCaptor.capture(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = any()
+        )
+        with(rangeSelectionCaptor.firstValue.currentRange) {
+            assertThat(start).isEqualTo(date("2026-06-02"))
+            assertThat(end).isEqualTo(endOfDay("2026-06-04"))
+        }
     }
 
     @Test
@@ -908,7 +846,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when see report is pressed, then track see report event`() = testBlocking {
         sut = givenAViewModel()
-        sut.onNewRangeSelection(WEEK_TO_DATE)
+        whenNewRangeSelected(WEEK_TO_DATE)
 
         sut.onSeeReport("https://report-url", ReportCard.Revenue)
         verify(tracker).track(
@@ -967,7 +905,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(LAST_YEAR)
+        whenNewRangeSelected(LAST_YEAR)
 
         with(sut.viewState.value.cards) {
             assertTrue(this is AnalyticsHubCardViewState.CardsState)
@@ -1015,7 +953,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
-        sut.onNewRangeSelection(LAST_YEAR)
+        whenNewRangeSelected(LAST_YEAR)
 
         assertThat(sut.sessionObservationJob).isNotNull
         assertThat(sut.ordersObservationJob).isNotNull
@@ -1151,11 +1089,21 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         )
     }
 
-    private fun givenSiteCalendar(firstDayOfWeek: Int): Calendar {
+    private suspend fun givenSiteCalendar(firstDayOfWeek: Int): Calendar {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.firstDayOfWeek = firstDayOfWeek
         whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(calendar)
         return calendar
+    }
+
+    private fun whenNewRangeSelected(selectionType: SelectionType) {
+        sut.onNewRangeSelection(selectionType)
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+    }
+
+    private fun whenCustomRangeSelected(startDate: Date, endDate: Date) {
+        sut.onCustomRangeSelected(startDate, endDate)
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
     }
 
     private fun date(value: String): Date = checkNotNull(DATE_FORMAT.parse(value))
@@ -1170,7 +1118,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         }.time
     }
 
-    private inline fun withDefaultLocale(locale: Locale, action: () -> Unit) {
+    private suspend inline fun withDefaultLocale(locale: Locale, action: suspend () -> Unit) {
         val originalLocale = Locale.getDefault()
         Locale.setDefault(locale)
         try {

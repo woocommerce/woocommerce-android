@@ -79,7 +79,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -181,7 +180,9 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
-        rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+        launch {
+            rangeSelectionState.value = selectionType.generateLocalizedSelectionData()
+        }
     }
 
     private fun observeConfigurationChanges() {
@@ -220,10 +221,12 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(startDate: Date, endDate: Date) {
-        rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
-            startDate = startDate,
-            endDate = endDate
-        )
+        viewModelScope.launch {
+            rangeSelectionState.value = SelectionType.CUSTOM.generateLocalizedSelectionData(
+                startDate = startDate,
+                endDate = endDate
+            )
+        }
     }
 
     fun onCustomDateRangeClicked() {
@@ -782,17 +785,13 @@ class AnalyticsHubViewModel @Inject constructor(
         )
     }
 
-    private fun SelectionType.generateLocalizedSelectionData(
+    private suspend fun SelectionType.generateLocalizedSelectionData(
         startDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
         endDate: Date = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
     ) = generateSelectionData(
         referenceStartDate = startDate,
         referenceEndDate = endDate,
-        calendar = if (this == SelectionType.CUSTOM) {
-            Calendar.getInstance()
-        } else {
-            calendarHelper.getCalendarForSelectedSite()
-        },
+        calendar = calendarHelper.getCalendarForSelectedSite(),
         locale = localeProvider.provideLocale() ?: Locale.getDefault()
     )
 

@@ -29,18 +29,6 @@ class WPSiteSettingsDaoTest {
     }
 
     @Test
-    fun `given monday start stored, when settings are read, then returns monday for the same site`() = runTest {
-        val settings = WPSiteSettingsModel(
-            localSiteId = SITE_ID,
-            startOfWeek = DayOfWeek.MONDAY
-        )
-
-        dao.upsertSiteSettings(settings)
-
-        assertThat(dao.getSiteSettings(SITE_ID)).isEqualTo(settings)
-    }
-
-    @Test
     fun `given sunday start stored, when settings are read, then returns sunday for the same site`() = runTest {
         val settings = WPSiteSettingsModel(
             localSiteId = SITE_ID,

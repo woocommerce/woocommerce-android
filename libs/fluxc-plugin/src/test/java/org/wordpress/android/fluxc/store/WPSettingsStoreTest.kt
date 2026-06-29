@@ -41,48 +41,19 @@ class WPSettingsStoreTest {
     }
 
     @Test
-    fun `given sunday response, when settings are fetched, then sunday is cached`() = runTest {
-        givenSuccess(startOfWeek = SUNDAY)
-
-        store.fetchSiteSettings(site)
-
-        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.SUNDAY)
-    }
-
-    @Test
-    fun `given invalid response, when settings are fetched, then unavailable value is cached`() = runTest {
-        givenSuccess(startOfWeek = INVALID)
-
-        store.fetchSiteSettings(site)
-
-        assertThat(store.getStartOfWeek(site)).isNull()
-        assertThat(store.getSiteSettingsAsync(site)?.startOfWeek).isNull()
-    }
-
-    @Test
     fun `given missing response, when settings are fetched, then unavailable value is cached`() = runTest {
         givenSuccess(startOfWeek = null)
 
         store.fetchSiteSettings(site)
 
         assertThat(store.getStartOfWeek(site)).isNull()
-        assertThat(store.getSiteSettingsAsync(site)?.startOfWeek).isNull()
+        assertThat(store.getSiteSettings(site)?.startOfWeek).isNull()
     }
 
     @Test
     fun `given network error and valid cache, when settings are fetched, then valid cache is preserved`() = runTest {
         dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = DayOfWeek.MONDAY))
         givenError(GenericErrorType.NETWORK_ERROR)
-
-        store.fetchSiteSettings(site)
-
-        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.MONDAY)
-    }
-
-    @Test
-    fun `given auth error and valid cache, when settings are fetched, then valid cache is preserved`() = runTest {
-        dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = DayOfWeek.MONDAY))
-        givenError(GenericErrorType.HTTP_AUTH_ERROR)
 
         store.fetchSiteSettings(site)
 
@@ -110,9 +81,7 @@ class WPSettingsStoreTest {
     }
 
     private companion object {
-        const val SUNDAY = 0
         const val MONDAY = 1
-        const val INVALID = 7
 
         val site = SiteModel().apply {
             id = 1

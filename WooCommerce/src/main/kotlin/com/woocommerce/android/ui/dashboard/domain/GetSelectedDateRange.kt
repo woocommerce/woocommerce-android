@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -30,10 +29,11 @@ abstract class GetSelectedDateRange(
         val customRangeFlow = customDateRangeDataStore.dateRange
 
         return combine(selectedRangeTypeFlow, customRangeFlow) { selectionType, customRange ->
+            val calendar = calendarHelper.getCalendarForSelectedSite()
             when (selectionType) {
                 SelectionType.CUSTOM -> {
                     selectionType.generateSelectionData(
-                        calendar = Calendar.getInstance(),
+                        calendar = calendar,
                         locale = Locale.getDefault(),
                         referenceStartDate = customRange?.start ?: Date(),
                         referenceEndDate = customRange?.end ?: Date()
@@ -42,7 +42,7 @@ abstract class GetSelectedDateRange(
 
                 else -> {
                     selectionType.generateSelectionData(
-                        calendar = calendarHelper.getCalendarForSelectedSite(),
+                        calendar = calendar,
                         locale = Locale.getDefault(),
                         referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
                         referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()

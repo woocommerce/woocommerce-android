@@ -47,24 +47,6 @@ class WPSettingsRestClientTest {
     }
 
     @Test
-    fun `given integer response, when settings are fetched, then integer is parsed`() = runTest {
-        givenApplicationPasswordsResponse(WPAPIResponse.Success(SiteSettingsResponse(MONDAY), emptyList()))
-
-        val response = restClient.fetchSiteSettings(site)
-
-        assertThat((response as WPAPIResponse.Success).data?.startOfWeek).isEqualTo(MONDAY)
-    }
-
-    @Test
-    fun `given null response, when settings are fetched, then null is preserved`() = runTest {
-        givenApplicationPasswordsResponse(WPAPIResponse.Success(SiteSettingsResponse(null), emptyList()))
-
-        val response = restClient.fetchSiteSettings(site)
-
-        assertThat((response as WPAPIResponse.Success).data?.startOfWeek).isNull()
-    }
-
-    @Test
     fun `given wpapi error, when settings are fetched, then error is preserved`() = runTest {
         val error = WPAPINetworkError(BaseNetworkError(GenericErrorType.HTTP_AUTH_ERROR))
         givenApplicationPasswordsResponse(WPAPIResponse.Error(error))

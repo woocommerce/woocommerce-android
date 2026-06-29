@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.domain
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
@@ -9,6 +10,7 @@ import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -16,6 +18,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -76,10 +80,24 @@ class GetSelectedDateRangeTest : BaseUnitTest() {
         assertThat(selection.currentRange.end).isEqualTo(endOfDay("2026-06-15"))
     }
 
-    private fun givenSiteCalendar(firstDayOfWeek: Int) {
+    @Test
+    fun `given custom range, when custom is selected, then range uses custom dates and site calendar`() = testBlocking {
+        givenSiteCalendar(firstDayOfWeek = Calendar.MONDAY)
+        whenever(customDateRangeDataStore.dateRange).thenReturn(
+            flowOf(StatsTimeRange(start = date("2026-06-02"), end = date("2026-06-04")))
+        )
+
+        val selection = createGetSelectedDateRange(CUSTOM).invoke().first()
+
+        assertThat(selection.currentRange.start).isEqualTo(date("2026-06-02"))
+        assertThat(selection.currentRange.end).isEqualTo(endOfDay("2026-06-04"))
+        verify(calendarHelper).getCalendarForSelectedSite()
+    }
+
+    private suspend fun givenSiteCalendar(firstDayOfWeek: Int) {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.firstDayOfWeek = firstDayOfWeek
-        doReturn(calendar).`when`(calendarHelper).getCalendarForSelectedSite()
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(calendar)
     }
 
     private fun createGetSelectedDateRange(selectionType: SelectionType) = object : GetSelectedDateRange(
