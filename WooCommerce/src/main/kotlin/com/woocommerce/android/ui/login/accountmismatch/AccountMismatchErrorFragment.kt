@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToJetpackActivationSteps
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToWPComEmailLoginScreen
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -74,7 +74,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                     }
                 }
                 is NavigateToJetpackActivationSteps -> navigateToJetpackActivationSteps(event)
-                is NavigateToLoginScreen -> navigateToLoginScreen()
+                is NavigateToWPComEmailLoginScreen -> navigateToWPComEmailLoginScreen()
                 is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -108,9 +108,10 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         }
     }
 
-    private fun navigateToLoginScreen() {
+    private fun navigateToWPComEmailLoginScreen() {
         val intent = Intent(context, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            action = LoginActivity.LOGIN_WITH_WPCOM_EMAIL_ACTION
             LoginMode.WOO_LOGIN_MODE.putInto(this)
         }
         startActivity(intent)

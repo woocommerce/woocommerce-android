@@ -199,8 +199,12 @@ class LoginActivity :
 
         when {
             intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
-                val email = intent.extras!!.getString(EMAIL_PARAMETER)
-                gotWpcomEmail(email, verifyEmail = true, null)
+                val email = intent.extras?.getString(EMAIL_PARAMETER)
+                if (email.isNullOrBlank()) {
+                    startLoginViaWPComEmailScreen()
+                } else {
+                    gotWpcomEmail(email, verifyEmail = true, null)
+                }
             }
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
@@ -473,6 +477,10 @@ class LoginActivity :
     private fun startLoginViaWPCom() {
         // Clean previously saved site address, e.g: if merchants return from a store address flow.
         appPrefsWrapper.removeLoginSiteAddress()
+        startLoginViaWPComEmailScreen()
+    }
+
+    private fun startLoginViaWPComEmailScreen() {
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
