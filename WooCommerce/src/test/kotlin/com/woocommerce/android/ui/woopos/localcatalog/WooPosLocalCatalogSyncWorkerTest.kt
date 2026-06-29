@@ -100,7 +100,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 
@@ -117,7 +117,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
                 syncType = SyncType.FULL,
@@ -138,7 +138,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
                 syncType = SyncType.FULL,
@@ -160,7 +160,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
                 syncType = SyncType.FULL,
@@ -182,7 +182,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(analyticsTracker, never()).track(any())
     }
 
@@ -201,7 +201,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
             // THEN
             assertThat(result).isEqualTo(ListenableWorker.Result.success())
-            verify(syncRepository, never()).syncLocalCatalogFull(any())
+            verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
             verify(analyticsTracker).track(
                 LocalCatalogSyncSkipped(
                     syncType = SyncType.FULL,
@@ -234,7 +234,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 
@@ -251,7 +251,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
         verify(logger).d("Local catalog INCREMENTAL sync failed.")
     }
@@ -298,7 +298,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
     }
 
@@ -317,7 +317,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
@@ -341,7 +341,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
@@ -365,7 +365,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
@@ -388,7 +388,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 
@@ -406,7 +406,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogFull(eq(site), any())
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 }

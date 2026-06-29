@@ -51,7 +51,7 @@ class WooPosPerformInstantCatalogFullSyncTest {
         // THEN
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isInstanceOf(WooPosCatalogFileBlockedException::class.java)
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
     }
 
     @Test
