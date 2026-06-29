@@ -41,6 +41,7 @@ import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
+import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -86,7 +87,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpack
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WPSettingsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.Date
@@ -120,8 +120,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
-    @Inject lateinit var wpSettingsStore: WPSettingsStore
-
     @Inject lateinit var selectedSite: SelectedSite
 
     @Inject lateinit var networkStatus: NetworkStatus
@@ -129,6 +127,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
+
+    @Inject lateinit var refreshWPSettings: RefreshWPSettings
 
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
@@ -209,7 +209,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(site)
                     wooCommerceStore.fetchSiteProductSettings(site)
-                    wpSettingsStore.fetchSiteSettings(site)
+                    refreshWPSettings(site)
                 }
             }
             return true

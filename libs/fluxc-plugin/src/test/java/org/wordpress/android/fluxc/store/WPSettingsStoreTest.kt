@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -16,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.settings.SiteSettingsRe
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.settings.WPSettingsRestClient
 import org.wordpress.android.fluxc.persistence.dao.WPSiteSettingsDao
 import org.wordpress.android.fluxc.persistence.entity.WPSiteSettingsModel
+import org.wordpress.android.util.AppLog
 import java.time.DayOfWeek
 
 class WPSettingsStoreTest {
@@ -55,7 +57,9 @@ class WPSettingsStoreTest {
         dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = DayOfWeek.MONDAY))
         givenError(GenericErrorType.NETWORK_ERROR)
 
-        store.fetchSiteSettings(site)
+        mockStatic(AppLog::class.java).use {
+            store.fetchSiteSettings(site)
+        }
 
         assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.MONDAY)
     }
