@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -31,7 +32,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val webViewAuthenticator: WebViewAuthenticator,
-    val userAgent: UserAgent
+    val userAgent: UserAgent,
+    private val appPrefs: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
@@ -95,6 +97,8 @@ class AccountMismatchErrorViewModel @Inject constructor(
             launch {
                 accountRepository.logout().let {
                     if (it) {
+                        // Restore the account-mismatch site address after logout clears user preferences.
+                        appPrefs.setLoginSiteAddress(siteUrl)
                         triggerEvent(NavigateToWPComEmailLoginScreen)
                     }
                 }

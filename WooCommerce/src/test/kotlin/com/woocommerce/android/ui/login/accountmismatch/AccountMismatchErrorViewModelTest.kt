@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.accountmismatch
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
@@ -12,7 +13,9 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -30,11 +33,12 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val webViewAuthenticator: WebViewAuthenticator = mock()
     private val userAgent: UserAgent = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
 
     private lateinit var viewModel: AccountMismatchErrorViewModel
 
     @Test
-    fun `given logged in user, when logging in with another account, then open WPCom email login`() =
+    fun `given logged in user, when logging in with another account, then preserve site and open WPCom email login`() =
         testBlocking {
             setup(isUserLoggedIn = true, logoutResult = true)
             val viewState = viewModel.viewState.captureValues().last()
@@ -44,7 +48,10 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
             }.last()
 
             assertThat(event).isEqualTo(NavigateToWPComEmailLoginScreen)
-            verify(accountRepository).logout()
+            inOrder(accountRepository, appPrefs).apply {
+                verify(accountRepository).logout()
+                verify(appPrefs).setLoginSiteAddress(SITE_URL)
+            }
         }
 
     @Test
@@ -59,6 +66,7 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
 
             assertThat(event).isEqualTo(NavigateToWPComEmailLoginScreen)
             verify(accountRepository, never()).logout()
+            verify(appPrefs, never()).setLoginSiteAddress(any())
         }
 
     private suspend fun setup(isUserLoggedIn: Boolean, logoutResult: Boolean = false) {
@@ -74,7 +82,8 @@ class AccountMismatchErrorViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             webViewAuthenticator = webViewAuthenticator,
-            userAgent = userAgent
+            userAgent = userAgent,
+            appPrefs = appPrefs
         )
     }
 
