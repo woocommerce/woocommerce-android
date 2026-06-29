@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
 import org.wordpress.android.fluxc.persistence.converters.AppVersionTargetsConverter
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
+import org.wordpress.android.fluxc.persistence.converters.WPStartOfWeekConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AccountDao
 import org.wordpress.android.fluxc.persistence.dao.ListDao
@@ -89,7 +90,8 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
         StringListConverter::class,
         LocalIdConverter::class,
         AppVersionTargetsConverter::class,
-        RemoteIdConverter::class
+        RemoteIdConverter::class,
+        WPStartOfWeekConverter::class
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {

@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.dashboard.domain
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,7 +32,7 @@ class GetSelectedDateRangeTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock {
         on { getCurrentDateInSiteTimeZone() } doReturn date("2026-06-15")
     }
-    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider = mock()
+    private val calendarHelper: CalendarHelper = mock()
 
     @Test
     fun `given monday site week start and sunday default, when week to date is selected, then range starts monday`() =
@@ -55,30 +56,42 @@ class GetSelectedDateRangeTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site week start, when today is selected, then site calendar is not used`() = testBlocking {
+    fun `given monday site week start and sunday default, when last week is selected, then range starts monday`() =
+        testBlocking {
+            givenSiteCalendar(firstDayOfWeek = Calendar.MONDAY)
+
+            val selection = createGetSelectedDateRange(LAST_WEEK).invoke().first()
+
+            assertThat(selection.currentRange.start).isEqualTo(date("2026-06-08"))
+            assertThat(selection.currentRange.end).isEqualTo(endOfDay("2026-06-14"))
+        }
+
+    @Test
+    fun `given site week start, when today is selected, then non-week output is unchanged`() = testBlocking {
         givenSiteCalendar(firstDayOfWeek = Calendar.MONDAY)
 
-        createGetSelectedDateRange(TODAY).invoke().first()
+        val selection = createGetSelectedDateRange(TODAY).invoke().first()
 
-        org.mockito.kotlin.verify(siteWeekStartCalendarProvider, org.mockito.kotlin.never()).getCalendar()
+        assertThat(selection.currentRange.start).isEqualTo(date("2026-06-15"))
+        assertThat(selection.currentRange.end).isEqualTo(endOfDay("2026-06-15"))
     }
 
     private fun givenSiteCalendar(firstDayOfWeek: Int) {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.firstDayOfWeek = firstDayOfWeek
-        doReturn(calendar).`when`(siteWeekStartCalendarProvider).getCalendar()
+        doReturn(calendar).`when`(calendarHelper).getCalendarForSelectedSite()
     }
 
     private fun createGetSelectedDateRange(selectionType: SelectionType) = object : GetSelectedDateRange(
         appPrefs = appPrefs,
         customDateRangeDataStore = customDateRangeDataStore,
         dateUtils = dateUtils,
-        siteWeekStartCalendarProvider = siteWeekStartCalendarProvider
+        calendarHelper = calendarHelper
     ) {
         override fun getSelectedRange(): SelectionType = selectionType
     }
 
-    private fun date(value: String): Date = DATE_FORMAT.parse(value)!!
+    private fun date(value: String): Date = checkNotNull(DATE_FORMAT.parse(value))
 
     private fun endOfDay(value: String): Date {
         return Calendar.getInstance().apply {

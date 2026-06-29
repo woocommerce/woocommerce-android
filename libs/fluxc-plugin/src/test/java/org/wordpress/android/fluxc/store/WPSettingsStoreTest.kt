@@ -12,10 +12,11 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpapi.settings.SiteSettingsResponse
-import org.wordpress.android.fluxc.network.rest.wpapi.settings.WPSettingsRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.settings.SiteSettingsResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.settings.WPSettingsRestClient
 import org.wordpress.android.fluxc.persistence.dao.WPSiteSettingsDao
 import org.wordpress.android.fluxc.persistence.entity.WPSiteSettingsModel
+import java.time.DayOfWeek
 
 class WPSettingsStoreTest {
     private val restClient: WPSettingsRestClient = mock()
@@ -36,7 +37,7 @@ class WPSettingsStoreTest {
 
         store.fetchSiteSettings(site)
 
-        assertThat(store.getStartOfWeek(site)).isEqualTo(MONDAY)
+        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.MONDAY)
     }
 
     @Test
@@ -45,7 +46,7 @@ class WPSettingsStoreTest {
 
         store.fetchSiteSettings(site)
 
-        assertThat(store.getStartOfWeek(site)).isEqualTo(SUNDAY)
+        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.SUNDAY)
     }
 
     @Test
@@ -70,22 +71,22 @@ class WPSettingsStoreTest {
 
     @Test
     fun `given network error and valid cache, when settings are fetched, then valid cache is preserved`() = runTest {
-        dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = MONDAY, updatedAt = UPDATED_AT))
+        dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = DayOfWeek.MONDAY))
         givenError(GenericErrorType.NETWORK_ERROR)
 
         store.fetchSiteSettings(site)
 
-        assertThat(store.getStartOfWeek(site)).isEqualTo(MONDAY)
+        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.MONDAY)
     }
 
     @Test
     fun `given auth error and valid cache, when settings are fetched, then valid cache is preserved`() = runTest {
-        dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = MONDAY, updatedAt = UPDATED_AT))
+        dao.upsertSiteSettings(WPSiteSettingsModel(site.localId(), startOfWeek = DayOfWeek.MONDAY))
         givenError(GenericErrorType.HTTP_AUTH_ERROR)
 
         store.fetchSiteSettings(site)
 
-        assertThat(store.getStartOfWeek(site)).isEqualTo(MONDAY)
+        assertThat(store.getStartOfWeek(site)).isEqualTo(DayOfWeek.MONDAY)
     }
 
     private suspend fun givenSuccess(startOfWeek: Int?) {
@@ -112,7 +113,6 @@ class WPSettingsStoreTest {
         const val SUNDAY = 0
         const val MONDAY = 1
         const val INVALID = 7
-        const val UPDATED_AT = 123L
 
         val site = SiteModel().apply {
             id = 1

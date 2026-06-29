@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.dashboard.domain
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -21,7 +19,7 @@ abstract class GetSelectedDateRange(
     private val appPrefs: AppPrefsWrapper,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils,
-    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider
+    private val calendarHelper: CalendarHelper
 ) {
     operator fun invoke(): Flow<StatsTimeRangeSelection> {
         val selectedRangeTypeFlow = appPrefs.observePrefs()
@@ -33,7 +31,7 @@ abstract class GetSelectedDateRange(
 
         return combine(selectedRangeTypeFlow, customRangeFlow) { selectionType, customRange ->
             when (selectionType) {
-                CUSTOM -> {
+                SelectionType.CUSTOM -> {
                     selectionType.generateSelectionData(
                         calendar = Calendar.getInstance(),
                         locale = Locale.getDefault(),
@@ -44,11 +42,7 @@ abstract class GetSelectedDateRange(
 
                 else -> {
                     selectionType.generateSelectionData(
-                        calendar = if (selectionType == WEEK_TO_DATE) {
-                            siteWeekStartCalendarProvider.getCalendar()
-                        } else {
-                            Calendar.getInstance()
-                        },
+                        calendar = calendarHelper.getCalendarForSelectedSite(),
                         locale = Locale.getDefault(),
                         referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
                         referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()

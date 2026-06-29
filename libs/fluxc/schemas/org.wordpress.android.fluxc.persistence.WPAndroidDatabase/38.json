@@ -841,7 +841,7 @@
       },
       {
         "tableName": "WPSiteSettings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `startOfWeek` INTEGER, `updatedAt` INTEGER, PRIMARY KEY(`localSiteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `startOfWeek` INTEGER, PRIMARY KEY(`localSiteId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -852,11 +852,6 @@
           {
             "fieldPath": "startOfWeek",
             "columnName": "startOfWeek",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
             "affinity": "INTEGER"
           }
         ],

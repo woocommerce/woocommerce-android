@@ -36,15 +36,16 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
-import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_WEEK
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -104,7 +105,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
-    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider = mock()
+    private val calendarHelper: CalendarHelper = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -133,7 +134,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         localeProvider = mock {
             on { provideLocale() } doReturn testLocale
         }
-        whenever(siteWeekStartCalendarProvider.getCalendar()).thenReturn(testCalendar)
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(testCalendar)
         savedState = AnalyticsHubFragmentArgs(
             TODAY.generateSelectionData(
                 calendar = testCalendar,
@@ -296,17 +297,55 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given site week start, when today is selected, then site calendar is not used`() = testBlocking {
+    fun `given site week start, when today is selected, then non-week output is unchanged`() = testBlocking {
+        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
         givenSiteCalendar(Calendar.MONDAY)
         configureVisibleCards()
         configureSuccessfulStatsResponse()
 
         sut = givenAViewModel()
-        clearInvocations(siteWeekStartCalendarProvider)
+        clearInvocations(updateStats)
 
         sut.onNewRangeSelection(TODAY)
 
-        verify(siteWeekStartCalendarProvider, never()).getCalendar()
+        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
+        verify(updateStats).invoke(
+            rangeSelection = rangeSelectionCaptor.capture(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = any()
+        )
+
+        with(rangeSelectionCaptor.firstValue.currentRange) {
+            assertThat(start).isEqualTo(date("2026-06-15"))
+            assertThat(end).isEqualTo(endOfDay("2026-06-15"))
+        }
+    }
+
+    @Test
+    fun `given monday site week start, when last week is selected, then stats use monday range`() = testBlocking {
+        whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(date("2026-06-15"))
+        givenSiteCalendar(Calendar.MONDAY)
+        configureVisibleCards()
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+        clearInvocations(updateStats)
+
+        sut.onNewRangeSelection(LAST_WEEK)
+
+        val rangeSelectionCaptor = argumentCaptor<StatsTimeRangeSelection>()
+        verify(updateStats).invoke(
+            rangeSelection = rangeSelectionCaptor.capture(),
+            scope = any(),
+            forceUpdate = any(),
+            visibleCards = any()
+        )
+
+        with(rangeSelectionCaptor.firstValue.currentRange) {
+            assertThat(start).isEqualTo(date("2026-06-08"))
+            assertThat(end).isEqualTo(endOfDay("2026-06-14"))
+        }
     }
 
     @Test
@@ -1106,7 +1145,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             dateUtils,
             selectedSite,
             getReportUrl,
-            siteWeekStartCalendarProvider,
+            calendarHelper,
             observeAnalyticsCardsConfiguration,
             savedState
         )
@@ -1115,7 +1154,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private fun givenSiteCalendar(firstDayOfWeek: Int): Calendar {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.firstDayOfWeek = firstDayOfWeek
-        whenever(siteWeekStartCalendarProvider.getCalendar()).thenReturn(calendar)
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(calendar)
         return calendar
     }
 

@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.network.rest.wpapi.settings
+package org.wordpress.android.fluxc.network.rest.wpcom.wc.settings
 
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -13,38 +13,18 @@ import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
-import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceWPAPINetwork
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
-import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 
 class WPSettingsRestClientTest {
-    private val cookieNonceWPAPINetwork: CookieNonceWPAPINetwork = mock()
-    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration = mock()
-    private val applicationPasswordsNetwork: ApplicationPasswordsNetwork = mock()
-    private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork = mock()
-    private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
-    private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler = mock()
-    private val applicationPasswordsStore: ApplicationPasswordsStore = mock()
+    private val wooNetwork: WooNetwork = mock()
 
     private lateinit var restClient: WPSettingsRestClient
 
     @Before
     fun setUp() {
-        restClient = WPSettingsRestClient(
-            cookieNonceWPAPINetwork = cookieNonceWPAPINetwork,
-            applicationPasswordsConfiguration = applicationPasswordsConfiguration,
-            applicationPasswordsNetwork = applicationPasswordsNetwork,
-            jetpackTunnelWPAPINetwork = jetpackTunnelWPAPINetwork,
-            jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
-            jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler,
-            applicationPasswordsStore = applicationPasswordsStore
-        )
+        restClient = WPSettingsRestClient(wooNetwork)
     }
 
     @Test
@@ -53,7 +33,7 @@ class WPSettingsRestClientTest {
 
         restClient.fetchSiteSettings(site)
 
-        verify(applicationPasswordsNetwork).executeGetGsonRequest(
+        verify(wooNetwork).executeGetGsonRequest(
             site = eq(site),
             path = eq(WPAPI.settings.urlV2),
             clazz = eq(SiteSettingsResponse::class.java),
@@ -95,9 +75,8 @@ class WPSettingsRestClientTest {
     }
 
     private suspend fun givenApplicationPasswordsResponse(response: WPAPIResponse<SiteSettingsResponse>) {
-        whenever(applicationPasswordsStore.hasCredentials(site)).thenReturn(true)
         whenever(
-            applicationPasswordsNetwork.executeGetGsonRequest(
+            wooNetwork.executeGetGsonRequest(
                 site = eq(site),
                 path = eq(WPAPI.settings.urlV2),
                 clazz = eq(SiteSettingsResponse::class.java),

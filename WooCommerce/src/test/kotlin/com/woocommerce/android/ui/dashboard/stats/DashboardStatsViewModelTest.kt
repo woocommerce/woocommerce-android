@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.SiteWeekStartCalendarProvider
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
@@ -17,6 +16,7 @@ import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.getOrAwaitValue
@@ -96,7 +96,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val dateRangeFormatter: DashboardDateRangeFormatter = mock {
         on { formatRangeDate(any()) } doReturn "Jan 1"
     }
-    private val siteWeekStartCalendarProvider: SiteWeekStartCalendarProvider = mock()
+    private val calendarHelper: CalendarHelper = mock()
 
     private lateinit var viewModel: DashboardStatsViewModel
 
@@ -110,7 +110,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             appPrefs = appPrefsWrapper,
             customDateRangeDataStore = customDateRangeDataStore,
             dateUtils = dateUtils,
-            siteWeekStartCalendarProvider = siteWeekStartCalendarProvider
+            calendarHelper = calendarHelper
         )
 
         viewModel = DashboardStatsViewModel(
