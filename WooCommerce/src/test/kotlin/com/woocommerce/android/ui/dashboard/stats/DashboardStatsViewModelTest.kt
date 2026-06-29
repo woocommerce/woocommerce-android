@@ -49,6 +49,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardStatsViewModelTest : BaseUnitTest() {
@@ -101,6 +102,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DashboardStatsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(Calendar.getInstance())
         whenever(statsRepository.fetchAnalyticsOrderDateType())
             .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
         whenever(statsRepository.updateAnalyticsOrderDateType(any()))

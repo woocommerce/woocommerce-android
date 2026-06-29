@@ -39,6 +39,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Calendar
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -101,6 +102,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: DashboardCouponsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(Calendar.getInstance())
         prepareMocks()
         val getSelectedDateRange = GetSelectedRangeForCoupons(
             appPrefs = appPrefs,
