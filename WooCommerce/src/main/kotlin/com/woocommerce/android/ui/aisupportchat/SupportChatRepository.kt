@@ -70,7 +70,8 @@ class SupportChatRepository @Inject constructor(
         chatId: Long,
         botSlug: String,
         sessionId: String?,
-        firstUserMessage: String
+        firstUserMessage: String,
+        extraTags: List<String> = emptyList()
     ): Unit = withContext(dispatchers.io) {
         val selectedSiteModel = selectedSite.get()
         val now = currentTimeProvider.currentDate().time
@@ -83,6 +84,7 @@ class SupportChatRepository @Inject constructor(
                 sessionId = sessionId,
                 hasCreatedTicket = false,
                 isResolved = false,
+                extraTags = extraTags,
                 title = firstUserMessage.trim().take(MAX_TITLE_LENGTH).ifBlank { null },
                 createdAt = now,
                 updatedAt = now
@@ -134,6 +136,7 @@ class SupportChatRepository @Inject constructor(
             sessionId = sessionId,
             hasCreatedTicket = hasCreatedTicket,
             isResolved = isResolved,
+            extraTags = extraTags,
             title = title,
             createdAt = createdAt,
             updatedAt = updatedAt
@@ -152,6 +155,7 @@ data class SupportChatBookmark(
     val sessionId: String?,
     val hasCreatedTicket: Boolean,
     val isResolved: Boolean,
+    val extraTags: List<String> = emptyList(),
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long

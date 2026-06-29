@@ -459,6 +459,7 @@ class AiSupportChatViewModel @Inject constructor(
                 hasStartedChat = true,
                 hasCreatedTicket = launchMode.hasCreatedTicket,
                 isChatResolved = launchMode.isResolved,
+                launchExtraTags = launchMode.extraTags,
                 isLoadingHistory = true,
                 showSendError = false,
                 showLoadHistoryError = false
@@ -647,7 +648,8 @@ class AiSupportChatViewModel @Inject constructor(
                         chatId = response.chatId,
                         botSlug = response.botSlug,
                         sessionId = response.sessionId,
-                        firstUserMessage = sentMessage
+                        firstUserMessage = sentMessage,
+                        extraTags = _viewState.value.launchExtraTags
                     )
                 }.onFailure { error ->
                     if (error is CancellationException) throw error

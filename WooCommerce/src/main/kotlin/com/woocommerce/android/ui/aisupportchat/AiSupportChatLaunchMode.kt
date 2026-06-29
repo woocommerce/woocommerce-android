@@ -28,6 +28,7 @@ sealed interface AiSupportChatLaunchMode {
         val sessionId: String?,
         val hasCreatedTicket: Boolean = false,
         val isResolved: Boolean = false,
+        val extraTags: List<String> = emptyList(),
         override val siteAddress: String? = null
     ) : AiSupportChatLaunchMode
 }

@@ -65,6 +65,7 @@ class AiSupportChatActivity : AppCompatActivity() {
             sessionId: String?,
             hasCreatedTicket: Boolean = false,
             isResolved: Boolean = false,
+            extraTags: List<String> = emptyList(),
             siteAddress: String? = null
         ): Intent = Intent(context, AiSupportChatActivity::class.java).apply {
             putExtra(EXTRA_CHAT_ID, chatId)
@@ -72,6 +73,7 @@ class AiSupportChatActivity : AppCompatActivity() {
             putExtra(EXTRA_SESSION_ID, sessionId)
             putExtra(EXTRA_HAS_CREATED_TICKET, hasCreatedTicket)
             putExtra(EXTRA_IS_RESOLVED, isResolved)
+            putStringArrayListExtra(EXTRA_EXTRA_TAGS, ArrayList(extraTags))
             putSiteAddressExtra(siteAddress)
         }
 
@@ -107,6 +109,7 @@ class AiSupportChatActivity : AppCompatActivity() {
                     sessionId = extras.getString(EXTRA_SESSION_ID),
                     hasCreatedTicket = extras.getBoolean(EXTRA_HAS_CREATED_TICKET, false),
                     isResolved = extras.getBoolean(EXTRA_IS_RESOLVED, false),
+                    extraTags = extras.getStringArrayList(EXTRA_EXTRA_TAGS).orEmpty(),
                     siteAddress = siteAddress
                 )
                 else -> AiSupportChatLaunchMode.Help(siteAddress)
@@ -125,6 +128,7 @@ class AiSupportChatActivity : AppCompatActivity() {
         private const val EXTRA_SESSION_ID = "extra_session_id"
         private const val EXTRA_HAS_CREATED_TICKET = "extra_has_created_ticket"
         private const val EXTRA_IS_RESOLVED = "extra_is_resolved"
+        private const val EXTRA_EXTRA_TAGS = "extra_extra_tags"
         private const val EXTRA_SITE_ADDRESS = "extra_site_address"
     }
 }

@@ -145,7 +145,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.selectedIssueType).isNull()
             assertThat(state.diagnosticResult).isNull()
             verify(contextProvider).buildInitialContext()
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -179,7 +179,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onInputChanged(BOT_RESPONSE)
             viewModel.onSendClicked()
 
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -499,7 +499,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -525,7 +525,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onSendClicked()
 
             assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -543,7 +543,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
-            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList()))
                 .thenThrow(RuntimeException("Bookmark write failed"))
 
             continueToChatAfterSuccessfulDiagnostics(result)
@@ -1394,7 +1394,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 TestStatus.Failed()
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList())
         }
 
     @Test
@@ -1615,6 +1615,36 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             assertThat(event.hasReceivedBotResponse).isTrue()
             assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
+        }
+
+    @Test
+    fun `given resumed chat with stored signature tag, when escalated, then ticket carries the tag`() =
+        testBlocking {
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.Resume(
+                    chatId = CHAT_ID,
+                    botSlug = DEFAULT_BOT_SLUG,
+                    sessionId = SESSION_ID,
+                    extraTags = listOf("rest_invalid_signature")
+                )
+            )
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.filterIsInstance<ContactHumanSupport>().last()
+            assertThat(event.extraTags).contains("rest_invalid_signature")
         }
 
     @Test
@@ -1846,7 +1876,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
             assertThat(state.canContactHumanSupportFromToolbar).isTrue()
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
         }
 
     @Test
