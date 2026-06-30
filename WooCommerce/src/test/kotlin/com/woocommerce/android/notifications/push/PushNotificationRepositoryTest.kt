@@ -534,6 +534,52 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored token differs from current FCM token, when clearing stale Woo registrations, then removes metadata`() =
+        testBlocking {
+            val tokenIdKey = stringPreferencesKey("push_token_$SITE_ID")
+            val tokenValueKey = stringPreferencesKey("push_token_value_$SITE_ID")
+            val localeKey = stringPreferencesKey("push_locale_$SITE_ID")
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences.asMap()).thenReturn(mapOf(Pair(tokenIdKey, RETURNED_TOKEN)))
+            whenever(mutablePreferences[tokenValueKey]).thenReturn("old-token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationsForStaleToken(currentToken = "new-token")
+
+            verify(mutablePreferences).remove(tokenIdKey)
+            verify(mutablePreferences).remove(tokenValueKey)
+            verify(mutablePreferences).remove(localeKey)
+        }
+
+    @Test
+    fun `given stored token matches current FCM token, when clearing stale Woo registrations, then keeps metadata`() =
+        testBlocking {
+            val tokenIdKey = stringPreferencesKey("push_token_$SITE_ID")
+            val tokenValueKey = stringPreferencesKey("push_token_value_$SITE_ID")
+            val localeKey = stringPreferencesKey("push_locale_$SITE_ID")
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences.asMap()).thenReturn(mapOf(Pair(tokenIdKey, RETURNED_TOKEN)))
+            whenever(mutablePreferences[tokenValueKey]).thenReturn("token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationsForStaleToken(currentToken = "token")
+
+            verify(mutablePreferences, never()).remove(tokenIdKey)
+            verify(mutablePreferences, never()).remove(tokenValueKey)
+            verify(mutablePreferences, never()).remove(localeKey)
+        }
+
+    @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
