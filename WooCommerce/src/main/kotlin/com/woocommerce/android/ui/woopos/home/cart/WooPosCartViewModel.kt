@@ -50,6 +50,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -93,6 +96,9 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateStateDependingOnCartStatus(it) }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
+
+    private val _itemAddedEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val itemAddedEvents: SharedFlow<Unit> = _itemAddedEvents.asSharedFlow()
 
     init {
         listenEventsFromParent()
@@ -294,6 +300,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCustomAmountCartHandler.SubmittedResult.Added -> {
                 handleNewTransactionIfNeeded()
                 updateCartItem(result.newItem)
+                _itemAddedEvents.tryEmit(Unit)
                 analyticsTracker.track(
                     CustomAmountSubmitted(CustomAmountSubmitted.Mode.ADD, event.isTaxable)
                 )
@@ -426,6 +433,7 @@ class WooPosCartViewModel @Inject constructor(
 
             itemClicked.await()?.let {
                 updateCartItem(it)
+                _itemAddedEvents.tryEmit(Unit)
             }
             event.eventForTracking?.let {
                 analyticsTracker.track(it)
@@ -512,6 +520,9 @@ class WooPosCartViewModel @Inject constructor(
 
         analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart(item = cartItem))
         updateCartItem(cartItem)
+        if (cartItem !is WooPosCartItemViewState.Error) {
+            _itemAddedEvents.tryEmit(Unit)
+        }
     }
 
     private suspend fun processBarcodeError(result: BarcodeInputDetector.BarcodeResult.Error) {
