@@ -549,8 +549,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.clearWooPushRegistrationsForStaleToken(currentToken = "new-token")
+            val result = sut.clearWooPushRegistrationsForStaleToken(currentToken = "new-token")
 
+            assertThat(result).containsExactly(SITE_ID)
             verify(mutablePreferences).remove(tokenIdKey)
             verify(mutablePreferences).remove(tokenValueKey)
             verify(mutablePreferences).remove(localeKey)
@@ -572,8 +573,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.clearWooPushRegistrationsForStaleToken(currentToken = "token")
+            val result = sut.clearWooPushRegistrationsForStaleToken(currentToken = "token")
 
+            assertThat(result).isEmpty()
             verify(mutablePreferences, never()).remove(tokenIdKey)
             verify(mutablePreferences, never()).remove(tokenValueKey)
             verify(mutablePreferences, never()).remove(localeKey)

@@ -35,6 +35,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalCoroutinesApi
@@ -72,6 +73,13 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
     @Before
     fun setUp() {
+        runBlocking {
+            whenever(pushNotificationRepository.clearWooPushRegistrationsForStaleToken(any())).thenReturn(emptySet())
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(emptySet())
+            whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).thenReturn(
+                WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123")
+            )
+        }
         sut = RegisterDevice(
             appPrefsWrapper = appPrefs,
             accountStore = accountStore,
@@ -215,6 +223,57 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given stale visible Woo registration, when token refresh registers in WPCom, then enables WPCom notifications`() =
+        testBlocking {
+            // GIVEN
+            whenever(pushNotificationRepository.clearWooPushRegistrationsForStaleToken(TEST_TOKEN))
+                .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+
+            // WHEN
+            sut(TOKEN_REFRESH)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository).enableWpComNotificationsForSites(setOf(SITE_ID_ONE))
+        }
+
+    @Test
+    fun `given stale visible site is still Woo registered, when WPCom registration succeeds, then does not enable WPCom notifications`() =
+        testBlocking {
+            // GIVEN
+            whenever(pushNotificationRepository.clearWooPushRegistrationsForStaleToken(TEST_TOKEN))
+                .thenReturn(setOf(SITE_ID_ONE))
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_ONE))
+
+            // WHEN
+            sut(TOKEN_REFRESH)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+        }
+
+    @Test
+    fun `given stale visible Woo registration, when WPCom token refresh registration fails, then does not enable WPCom notifications`() =
+        testBlocking {
+            // GIVEN
+            whenever(pushNotificationRepository.clearWooPushRegistrationsForStaleToken(TEST_TOKEN))
+                .thenReturn(setOf(SITE_ID_ONE))
+            whenever(pushNotificationRepository.registerPushTokenInWpComSystem(TEST_TOKEN)).thenReturn(
+                WpComPushNotificationStore.RegisterDeviceResponsePayload(
+                    WpComPushNotificationStore.DeviceRegistrationError()
+                )
+            )
+
+            // WHEN
+            sut(TOKEN_REFRESH)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+        }
+
+    @Test
     fun `given app foreground trigger, when Woo registration is unchanged for one site, then registers only stale sites`() =
         testBlocking {
             // GIVEN
@@ -343,5 +402,6 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         private const val SELECTED_SITE_ID = 123L
         private const val SITE_ID_ONE = 456L
         private const val SITE_ID_TWO = 789L
+        private const val HIDDEN_SITE_ID = 999L
     }
 }

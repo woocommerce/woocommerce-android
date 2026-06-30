@@ -80,9 +80,10 @@ class RegisterDevice @Inject constructor(
         }
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
-        pushNotificationRepository.clearWooPushRegistrationsForStaleToken(token)
+        val staleWooRegisteredSiteIds = pushNotificationRepository.clearWooPushRegistrationsForStaleToken(token)
 
-        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
+        val isWooSelfDrivenEnabled = featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)
+        if (isWooSelfDrivenEnabled) {
             val sites = when (trigger) {
                 Trigger.LOGIN_SUCCESS,
                 Trigger.TOKEN_REFRESH -> getWooVisibleSites()
@@ -118,9 +119,27 @@ class RegisterDevice @Inject constructor(
 
         if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
-            pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            val wpComRegistration = pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            if (!wpComRegistration.isError) {
+                enableWpComNotificationsForStaleVisibleSites(staleWooRegisteredSiteIds)
+            }
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
+        }
+    }
+
+    private suspend fun enableWpComNotificationsForStaleVisibleSites(
+        staleWooRegisteredSiteIds: Set<Long>
+    ) {
+        if (staleWooRegisteredSiteIds.isEmpty()) return
+
+        val visibleSiteIds = getWooVisibleSites().map { it.siteId }.toSet()
+        val wooRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+        val staleWpComFallbackSiteIds = staleWooRegisteredSiteIds
+            .intersect(visibleSiteIds)
+            .minus(wooRegisteredSiteIds)
+        if (staleWpComFallbackSiteIds.isNotEmpty()) {
+            pushNotificationRepository.enableWpComNotificationsForSites(staleWpComFallbackSiteIds)
         }
     }
 

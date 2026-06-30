@@ -78,12 +78,14 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun registerPushTokenInWpComSystem(token: String) {
+    suspend fun registerPushTokenInWpComSystem(
+        token: String
+    ): WpComPushNotificationStore.RegisterDeviceResponsePayload {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        wpComPushNotificationStore.registerDevice(
+        return wpComPushNotificationStore.registerDevice(
             token,
             WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
         )
@@ -180,6 +182,25 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
+    suspend fun enableWpComNotificationsForSites(siteIds: Set<Long>) {
+        if (siteIds.isEmpty()) return
+
+        val settings = siteIds.map { siteId ->
+            SiteNotificationSetting(
+                siteId = siteId,
+                newCommentEnabled = true,
+                storeOrderEnabled = true
+            )
+        }
+
+        val result = wpComPushNotificationStore.updateNotificationSettingsFor(settings)
+        if (result.isFailure) {
+            WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to enable WPCom notifications for sites $siteIds")
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications enabled for sites $siteIds")
+        }
+    }
+
     private suspend fun savePushTokenForSite(siteId: Long, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
             preferences.savePushRegistration(siteId, registration)
@@ -226,10 +247,10 @@ class PushNotificationRepository @Inject constructor(
             registration.locale != getDeviceLocale()
     }
 
-    suspend fun clearWooPushRegistrationsForStaleToken(currentToken: String) {
-        if (currentToken.isEmpty()) return
+    suspend fun clearWooPushRegistrationsForStaleToken(currentToken: String): Set<Long> {
+        if (currentToken.isEmpty()) return emptySet()
 
-        var staleSiteIds = emptyList<Long>()
+        var staleSiteIds = emptySet<Long>()
 
         pushNotificationsDataStore.edit { preferences ->
             staleSiteIds = preferences.getSiteIdsWithStalePushRegistration(currentToken)
@@ -240,12 +261,14 @@ class PushNotificationRepository @Inject constructor(
         staleSiteIds.forEach { siteId ->
             WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site $siteId")
         }
+        return staleSiteIds
     }
 
-    private fun Preferences.getSiteIdsWithStalePushRegistration(currentToken: String): List<Long> = registeredSiteIds()
+    private fun Preferences.getSiteIdsWithStalePushRegistration(currentToken: String): Set<Long> = registeredSiteIds()
         .filter { siteId ->
             this[getPushTokenValueKeyForSite(siteId)] != currentToken
         }
+        .toSet()
 
     fun isWpComPushRegistered(): Boolean =
         prefsWrapper.getFluxCPreferences()
