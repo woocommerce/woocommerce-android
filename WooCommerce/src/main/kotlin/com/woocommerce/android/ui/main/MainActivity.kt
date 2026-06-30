@@ -135,6 +135,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -926,7 +927,10 @@ class MainActivity :
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
                 is MainActivityViewModel.ContactSupportForStoreConnection ->
-                    startHelpActivity(HelpOrigin.CONNECTION_ERROR)
+                    startHelpActivity(
+                        HelpOrigin.CONNECTION_ERROR,
+                        extraSupportTags = listOf(WooError.REST_INVALID_SIGNATURE_CODE)
+                    )
                 is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
                     uiMessageResolver.getIndefiniteActionSnack(
                         R.string.privacy_banner_error_save,

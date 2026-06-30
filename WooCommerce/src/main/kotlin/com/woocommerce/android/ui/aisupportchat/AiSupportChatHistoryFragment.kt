@@ -35,6 +35,7 @@ class AiSupportChatHistoryFragment : Fragment() {
                             sessionId = bookmark.sessionId,
                             hasCreatedTicket = bookmark.hasCreatedTicket,
                             isResolved = bookmark.isResolved,
+                            extraTags = bookmark.extraTags,
                             siteAddress = selectedSite.getIfExists()?.url
                         )
                     )
