@@ -15,7 +15,6 @@ enum class FeatureFlag(
     val remoteFlagKey: String,
     val localValue: Boolean = true
 ) {
-    BOOKINGS_MVP("bookings_mvp"),
     LOCAL_NOTIFICATION_STORE_CREATION_READY("woo_notification_store_creation_ready"),
     LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES("woo_notification_1d_before_free_trial_expires"),
     LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES("woo_notification_1d_after_free_trial_expires"),
@@ -33,7 +32,6 @@ enum class FeatureFlag(
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate", localValue = PackageUtils.isDebugBuild()),
     POS_PRODUCTS_FTS("pos_products_fts", localValue = PackageUtils.isDebugBuild()),
     AGE_ELIGIBILITY_CHECKS("age_eligibility_checks"),
-    BOOKINGS_RESCHEDULE("bookings_reschedule", localValue = PackageUtils.isDebugBuild()),
     WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1(
         "woo_self_driven_push_notifications_m1",
         localValue = PackageUtils.isDebugBuild()
