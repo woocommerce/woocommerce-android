@@ -480,11 +480,9 @@ Language: tr
     <string name="wpp_shipping_fedex_tos_condition_terms">&lt;a href=\"fedex-tos\"&gt;FedEx Hizmet Koşulları&lt;/a&gt;\'nı kabul ediyorum.</string>
     <string name="wpp_shipping_fedex_tos_title">FedEx Hizmet Koşulları</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Gönderim ücretlerini yükleyemedik. Lütfen hedef adrese bir ad ve soyadı ekleyin ve yeniden deneyin.</string>
-    <string name="product_type_bookable_service_desc">Müşterilerin çevrimiçi olarak rezervasyon yapabileceği bir hizmet</string>
     <string name="woopos_settings_receipt_edit_button">Makbuz bilgilerini düzenle</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d/%2$d öğe</string>
     <string name="woopos_home_syncing_catalog_preparing">Katalog hazırlanıyor…</string>
-    <string name="product_type_bookable_service_title">Hizmet</string>
     <string name="settings_troubleshoot_connection">Bağlantı Sorununu Giderin</string>
     <string name="connectivity_tool_copy">Kopyala</string>
     <string name="connectivity_tool_technical_details_copied">Teknik ayrıntılar panonuza kopyalandı.</string>
@@ -603,7 +601,6 @@ Language: tr
     <string name="pos_client_side_banner_title">WooCommerce POS\'u tabletlerde çalıştır</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Bu içeriği gizle</string>
     <string name="login_site_credentials_http_basic_auth_error">Temel Kimlik Doğrulama sitenizde etkinleştirildi. WooCommerce mobil uygulamasında Temel Kimlik Doğrulama desteklenmiyor. Lütfen bunu devre dışı bırakın veya sorun gidermek için desteğe başvurun.</string>
-    <string name="product_type_bookable_service">Hizmet</string>
     <string name="woopos_settings_store_physical_address_label">Fiziksel adres</string>
     <string name="woopos_settings_store_general_title">Genel</string>
     <string name="woopos_orders_details_refund_error">Para iadesi yüklenemedi</string>

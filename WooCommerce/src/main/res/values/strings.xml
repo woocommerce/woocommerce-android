@@ -2755,7 +2755,6 @@
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
-    <string name="product_type_bookable_service">Service</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -2773,8 +2772,6 @@
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_title">External product</string>
     <string name="product_type_external_desc">Link a product to an external website</string>
-    <string name="product_type_bookable_service_title">Service</string>
-    <string name="product_type_bookable_service_desc">A service that customers can book online</string>
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>

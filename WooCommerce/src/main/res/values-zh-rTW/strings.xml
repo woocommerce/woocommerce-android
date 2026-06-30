@@ -484,8 +484,6 @@ Language: zh_TW
     <string name="woopos_settings_receipt_edit_button">編輯收據資訊</string>
     <string name="woopos_home_syncing_catalog_progress">第 %1$d 個項目，共 %2$d 個項目</string>
     <string name="woopos_home_syncing_catalog_preparing">正在準備目錄…</string>
-    <string name="product_type_bookable_service_desc">顧客可以線上預訂的服務</string>
-    <string name="product_type_bookable_service_title">服務</string>
     <string name="settings_troubleshoot_connection">對連線問題進行疑難排解</string>
     <string name="connectivity_tool_copy">複製</string>
     <string name="connectivity_tool_technical_details_copied">技術詳細資料已複製到剪貼簿。</string>
@@ -604,7 +602,6 @@ Language: zh_TW
     <string name="pos_client_side_banner_title">在平板電腦上執行 WooCommerce POS</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">隱藏這項內容</string>
     <string name="login_site_credentials_http_basic_auth_error">你的網站已啟用基本驗證。 WooCommerce 行動應用程式不支援基本驗證。請停用，或聯絡支援團隊進行疑難排解。</string>
-    <string name="product_type_bookable_service">服務</string>
     <string name="woopos_settings_store_physical_address_label">實體地址</string>
     <string name="woopos_settings_store_general_title">一般</string>
     <string name="woopos_orders_details_refund_error">無法載入退款</string>

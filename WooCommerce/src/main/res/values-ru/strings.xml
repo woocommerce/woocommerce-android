@@ -484,8 +484,6 @@ Language: ru
     <string name="woopos_settings_receipt_edit_button">Редактировать данные чека</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d из %2$d элементов</string>
     <string name="woopos_home_syncing_catalog_preparing">Подготовка каталога…</string>
-    <string name="product_type_bookable_service_desc">Услуга, которую клиенты могут бронировать онлайн</string>
-    <string name="product_type_bookable_service_title">Услуга</string>
     <string name="settings_troubleshoot_connection">Устранение неполадок при подключении</string>
     <string name="connectivity_tool_copy">Копировать</string>
     <string name="connectivity_tool_technical_details_copied">Технические данные скопированы в буфер обмена.</string>
@@ -604,7 +602,6 @@ Language: ru
     <string name="pos_client_side_banner_title">Запускайте WooCommerce POS на планшетах</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Скрыть этот контент</string>
     <string name="login_site_credentials_http_basic_auth_error">На вашем сайте действует базовая аутентификация. Базовая аутентификация не поддерживается в мобильном приложении WooCommerce. Отключите её или обратитесь в службу поддержки для устранения неполадок.</string>
-    <string name="product_type_bookable_service">Услуга</string>
     <string name="woopos_settings_store_physical_address_label">Физический адрес</string>
     <string name="woopos_settings_store_general_title">Общие</string>
     <string name="woopos_orders_details_refund_error">Не удалось загрузить возврат средств</string>

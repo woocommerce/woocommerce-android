@@ -484,8 +484,6 @@ Language: de
     <string name="woopos_settings_receipt_edit_button">Beleginformationen bearbeiten</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d von %2$d Artikeln</string>
     <string name="woopos_home_syncing_catalog_preparing">Katalog wird vorbereitet …</string>
-    <string name="product_type_bookable_service_desc">Eine Dienstleistung, die Kunden online buchen können</string>
-    <string name="product_type_bookable_service_title">Dienstleistung</string>
     <string name="settings_troubleshoot_connection">Problembehandlung der Verbindung</string>
     <string name="connectivity_tool_copy">Kopieren</string>
     <string name="connectivity_tool_technical_details_copied">Technische Details wurden in deine Zwischenablage kopiert.</string>
@@ -604,7 +602,6 @@ Language: de
     <string name="pos_client_side_banner_title">WooCommerce POS auf Tablets ausführen</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Diesen Inhalt ausblenden</string>
     <string name="login_site_credentials_http_basic_auth_error">Die Basis-Authentifizierung ist auf deiner Website aktiviert. Die Basis-Authentifizierung wird in der WooCommerce-Mobil-App nicht unterstützt. Deaktiviere sie oder wende dich für die Problembehandlung an den Support.</string>
-    <string name="product_type_bookable_service">Dienstleistung</string>
     <string name="woopos_settings_store_physical_address_label">Physische Adresse</string>
     <string name="woopos_settings_store_general_title">Allgemein</string>
     <string name="woopos_orders_details_refund_error">Rückerstattung konnte nicht geladen werden</string>

@@ -482,8 +482,6 @@ Language: he_IL
     <string name="woopos_settings_receipt_edit_button">עריכת פרטי הקבלה</string>
     <string name="woopos_home_syncing_catalog_progress">⁦%1$d⁩ מתוך ⁦%2$d⁩ פריטים</string>
     <string name="woopos_home_syncing_catalog_preparing">מכין את הקטלוג…</string>
-    <string name="product_type_bookable_service_desc">שירות שלקוחות יכולים להזמין באינטרנט</string>
-    <string name="product_type_bookable_service_title">שירות</string>
     <string name="settings_troubleshoot_connection">פתרון בעיות בחיבור</string>
     <string name="connectivity_tool_copy">העתקה</string>
     <string name="connectivity_tool_technical_details_copied">הפרטים הטכניים הועתקו ללוח שלך.</string>
@@ -602,7 +600,6 @@ Language: he_IL
     <string name="pos_client_side_banner_title">להפעיל את WooCommerce POS בטאבלטים</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">להסתיר את התוכן הזה</string>
     <string name="login_site_credentials_http_basic_auth_error">\'אימות בסיסי\' מופעל באתר שלך. \'אימות בסיסי\' לא נתמך באפליקציה של WooCommerce לנייד. יש להשבית את האפשרות או לפנות לתמיכה לצורך פתרון בעיות.</string>
-    <string name="product_type_bookable_service">שירות</string>
     <string name="woopos_settings_store_physical_address_label">כתובת פיזית</string>
     <string name="woopos_settings_store_general_title">כללי</string>
     <string name="woopos_orders_details_refund_error">לא ניתן לטעון את ההחזר הכספי</string>

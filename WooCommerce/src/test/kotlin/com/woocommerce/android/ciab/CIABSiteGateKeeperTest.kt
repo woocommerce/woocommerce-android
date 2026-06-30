@@ -24,8 +24,7 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
         CIABAffectedFeature.entries
             .filter {
                 it != CIABAffectedFeature.POS &&
-                    it != CIABAffectedFeature.InPersonPayments &&
-                    it != CIABAffectedFeature.BookableServiceCreation
+                    it != CIABAffectedFeature.InPersonPayments
             }
             .forEach {
                 assertThat(ciabSiteGateKeeper.isFeatureSupported(it)).isFalse()
@@ -111,36 +110,9 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
 
         // WHEN / THEN
         CIABAffectedFeature.entries
-            .filter { it != CIABAffectedFeature.BookableServiceCreation }
             .forEach {
                 assertThat(ciabSiteGateKeeper.isFeatureSupported(it)).isTrue()
             }
-    }
-
-    @Test
-    fun `given CIAB site, when checking BookableServiceCreation support, then feature is supported`() {
-        // GIVEN
-        val site = createSite(isCIAB = true)
-        given(selectedSite.getOrNull()).willReturn(site)
-
-        // WHEN
-        val result = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation)
-
-        // THEN
-        assertThat(result).isTrue()
-    }
-
-    @Test
-    fun `given non-CIAB site, when checking BookableServiceCreation support, then feature is unsupported`() {
-        // GIVEN
-        val site = createSite(isCIAB = false)
-        given(selectedSite.getOrNull()).willReturn(site)
-
-        // WHEN
-        val result = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation)
-
-        // THEN
-        assertThat(result).isFalse()
     }
 
     private fun createSite(isCIAB: Boolean, planSlug: String? = null): SiteModel {

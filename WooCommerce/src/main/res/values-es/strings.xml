@@ -484,8 +484,6 @@ Language: es
     <string name="woopos_settings_receipt_edit_button">Editar la información del recibo</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d de %2$d elementos</string>
     <string name="woopos_home_syncing_catalog_preparing">Preparando catálogo…</string>
-    <string name="product_type_bookable_service_desc">Un servicio que los clientes pueden reservar en línea</string>
-    <string name="product_type_bookable_service_title">Servicio</string>
     <string name="settings_troubleshoot_connection">Solución de problemas de conexión</string>
     <string name="connectivity_tool_copy">Copiar</string>
     <string name="connectivity_tool_technical_details_copied">Los detalles técnicos se han copiado al portapapeles.</string>
@@ -604,7 +602,6 @@ Language: es
     <string name="pos_client_side_banner_title">Ejecutar WooCommerce POS en tabletas</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Ocultar este contenido</string>
     <string name="login_site_credentials_http_basic_auth_error">La autenticación básica está activada en tu sitio. La autenticación básica no es compatible con la aplicación móvil de WooCommerce. Desactívala o ponte en contacto con el servicio de soporte para la solución de problemas.</string>
-    <string name="product_type_bookable_service">Servicio</string>
     <string name="woopos_settings_store_physical_address_label">Dirección física</string>
     <string name="woopos_settings_store_general_title">General</string>
     <string name="woopos_orders_details_refund_error">No se puede cargar el reembolso</string>

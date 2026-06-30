@@ -483,8 +483,6 @@ Language: id
     <string name="woopos_settings_receipt_edit_button">Edit informasi tanda terima</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d dari %2$d item</string>
     <string name="woopos_home_syncing_catalog_preparing">Menyiapkan katalog…</string>
-    <string name="product_type_bookable_service_desc">Layanan yang dapat dipesan secara online oleh pelanggan</string>
-    <string name="product_type_bookable_service_title">Layanan</string>
     <string name="settings_troubleshoot_connection">Memecahkan Masalah Koneksi</string>
     <string name="connectivity_tool_copy">Salin</string>
     <string name="connectivity_tool_technical_details_copied">Detail teknis telah disalin ke clipboard Anda.</string>
@@ -603,7 +601,6 @@ Language: id
     <string name="pos_client_side_banner_title">Jalankan POS WooCommerce di tablet</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Sembunyikan konten ini</string>
     <string name="login_site_credentials_http_basic_auth_error">Autentikasi Dasar diaktifkan di situs Anda. Autentikasi Dasar tidak didukung di aplikasi seluler WooCommerce. Harap nonaktifkan, atau hubungi dukungan untuk pemecahan masalah.</string>
-    <string name="product_type_bookable_service">Layanan</string>
     <string name="woopos_settings_store_physical_address_label">Alamat fisik</string>
     <string name="woopos_settings_store_general_title">Umum</string>
     <string name="woopos_orders_details_refund_error">Tidak dapat memuat pengembalian dana</string>

@@ -484,8 +484,6 @@ Language: ko_KR
     <string name="woopos_settings_receipt_edit_button">영수증 정보 편집</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d/%2$d개 아이템</string>
     <string name="woopos_home_syncing_catalog_preparing">카탈로그 준비 중…</string>
-    <string name="product_type_bookable_service_desc">고객이 온라인으로 예약할 수 있는 서비스</string>
-    <string name="product_type_bookable_service_title">서비스</string>
     <string name="settings_troubleshoot_connection">연결 문제 해결</string>
     <string name="connectivity_tool_copy">복사</string>
     <string name="connectivity_tool_technical_details_copied">기술적인 상세 정보가 클립보드에 복사되었습니다.</string>
@@ -604,7 +602,6 @@ Language: ko_KR
     <string name="pos_client_side_banner_title">태블릿에서 우커머스 POS 실행</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">이 콘텐츠 숨기기</string>
     <string name="login_site_credentials_http_basic_auth_error">사이트에서 기본 인증이 활성화되었습니다. 기본 인증은 우커머스 모바일 앱에서 지원되지 않습니다. 비활성화하거나 지원 팀에 문의하여 문제를 해결하세요.</string>
-    <string name="product_type_bookable_service">서비스</string>
     <string name="woopos_settings_store_physical_address_label">실제 주소</string>
     <string name="woopos_settings_store_general_title">일반</string>
     <string name="woopos_orders_details_refund_error">환불 로드할 수 없음</string>

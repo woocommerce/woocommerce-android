@@ -484,8 +484,6 @@ Language: ar
     <string name="woopos_settings_receipt_edit_button">تحرير معلومات الإيصال</string>
     <string name="woopos_home_syncing_catalog_progress">⁦%1$d⁩ من ⁦%2$d⁩ العناصر</string>
     <string name="woopos_home_syncing_catalog_preparing">جارٍ إعداد الكتالوج…</string>
-    <string name="product_type_bookable_service_desc">خدمة يمكن للعملاء حجزها عبر الإنترنت</string>
-    <string name="product_type_bookable_service_title">الخدمة</string>
     <string name="settings_troubleshoot_connection">حل مشكلات الاتصال</string>
     <string name="connectivity_tool_copy">نسخ</string>
     <string name="connectivity_tool_technical_details_copied">نُسخت التفاصيل الفنية إلى الحافظة.</string>
@@ -604,7 +602,6 @@ Language: ar
     <string name="pos_client_side_banner_title">تشغيل نقطة بيع WooCommerce على الأجهزة اللوحية</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">إخفاء هذا المحتوى</string>
     <string name="login_site_credentials_http_basic_auth_error">تم تمكين المصادقة الأساسية على موقعك. المصادقة الأساسية غير مدعومة في تطبيق WooCommerce للهاتف المحمول. يرجى تعطيلها، أو الاتصال بالدعم لحل المشكلات.</string>
-    <string name="product_type_bookable_service">الخدمة</string>
     <string name="woopos_settings_store_physical_address_label">العنوان الفعلي</string>
     <string name="woopos_settings_store_general_title">عام</string>
     <string name="woopos_orders_details_refund_error">يتعذر تحميل استرداد المبلغ</string>

@@ -484,8 +484,6 @@ Language: sv_SE
     <string name="woopos_settings_receipt_edit_button">Redigera kvittoinformation</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d av %2$d artiklar</string>
     <string name="woopos_home_syncing_catalog_preparing">Förbereder katalog …</string>
-    <string name="product_type_bookable_service_desc">En tjänst som kunder kan boka online</string>
-    <string name="product_type_bookable_service_title">Tjänst</string>
     <string name="settings_troubleshoot_connection">Felsök anslutning</string>
     <string name="connectivity_tool_copy">Kopiera</string>
     <string name="connectivity_tool_technical_details_copied">Tekniska detaljer har kopierats till ditt urklipp.</string>
@@ -604,7 +602,6 @@ Language: sv_SE
     <string name="pos_client_side_banner_title">Kör WooCommerce POS på surfplattor</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Dölj detta innehåll</string>
     <string name="login_site_credentials_http_basic_auth_error">Grundläggande autentisering är aktiverat på din webbplats. Grundläggande autentisering stöds inte i WooCommerce-mobilappen. Inaktivera det eller kontakta supporten för felsökning.</string>
-    <string name="product_type_bookable_service">Tjänst</string>
     <string name="woopos_settings_store_physical_address_label">Fysisk adress</string>
     <string name="woopos_settings_store_general_title">Allmänt</string>
     <string name="woopos_orders_details_refund_error">Kan inte ladda återbetalning</string>

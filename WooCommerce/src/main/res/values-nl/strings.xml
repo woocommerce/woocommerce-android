@@ -484,8 +484,6 @@ Language: nl
     <string name="woopos_settings_receipt_edit_button">Gegevens betalingsbewijs bewerken</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d van %2$d artikelen</string>
     <string name="woopos_home_syncing_catalog_preparing">Catalogus voorbereiden …</string>
-    <string name="product_type_bookable_service_desc">Een service die klanten online kunnen boeken</string>
-    <string name="product_type_bookable_service_title">Dienst</string>
     <string name="settings_troubleshoot_connection">Problemen met verbinding oplossen</string>
     <string name="connectivity_tool_copy">Kopiëren</string>
     <string name="connectivity_tool_technical_details_copied">Technische details zijn gekopieerd naar je klembord.</string>
@@ -604,7 +602,6 @@ Language: nl
     <string name="pos_client_side_banner_title">WooCommerce POS uitvoeren op tablets</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Deze inhoud verbergen</string>
     <string name="login_site_credentials_http_basic_auth_error">Basis authenticatie is ingeschakeld op je site. Standaard authenticatie wordt niet ondersteund in de mobiele WooCommerce-app. Schakel het uit of neem contact op met ondersteuning voor probleemoplossing.</string>
-    <string name="product_type_bookable_service">Dienst</string>
     <string name="woopos_settings_store_physical_address_label">Fysiek adres</string>
     <string name="woopos_settings_store_general_title">Algemeen</string>
     <string name="woopos_orders_details_refund_error">Kan terugbetaling niet laden</string>

@@ -404,7 +404,6 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         start()
-        openInWebViewIfNeeded()
     }
 
     fun start() {
@@ -424,17 +423,6 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
-    }
-
-    fun openInWebViewIfNeeded() {
-        if (navArgs.mode !is ProductDetailFragment.Mode.ShowProduct) return
-
-        launch {
-            val product = storedProductAggregate.filterNotNull().first().product
-            if (selectedSite.get().isCIABSite() && product.productType == ProductType.BOOKABLE_SERVICE) {
-                triggerEvent(OpenProductInWebView(product.remoteId))
-            }
-        }
     }
 
     private fun initializeViewState() {
@@ -2734,8 +2722,6 @@ class ProductDetailViewModel @Inject constructor(
     data class ShowUpdateProductError(val message: String) : Event()
 
     data class TrashProduct(val productId: Long) : Event()
-
-    data class OpenProductInWebView(val productId: Long) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

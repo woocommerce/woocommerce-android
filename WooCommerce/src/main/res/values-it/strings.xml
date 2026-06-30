@@ -482,9 +482,7 @@ Language: it
     <string name="woo_shipping_labels_package_creation_shipping_rates_destination_name_error">Impossibile caricare le tariffe di spedizione. Aggiungi nome e cognome all\'indirizzo di destinazione e riprova.</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d di %2$d elementi</string>
     <string name="woopos_home_syncing_catalog_preparing">Preparazione del catalogo…</string>
-    <string name="product_type_bookable_service_desc">Un servizio che i clienti possono prenotare online</string>
     <string name="woopos_settings_receipt_edit_button">Modifica informazioni ricevuta</string>
-    <string name="product_type_bookable_service_title">Servizio</string>
     <string name="settings_troubleshoot_connection">Risoluzione dei problemi di connessione</string>
     <string name="connectivity_tool_copy">Copia</string>
     <string name="connectivity_tool_technical_details_copied">I dettagli tecnici sono stati copiati negli appunti.</string>
@@ -603,7 +601,6 @@ Language: it
     <string name="pos_client_side_banner_title">Esegui WooCommerce POS su tablet</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">Nascondi questo contenuto</string>
     <string name="login_site_credentials_http_basic_auth_error">L\'autenticazione di base è abilitata sul tuo sito. L\'autenticazione di base non è supportata nell\'app WooCommerce per dispositivi mobili. Disattivala o contatta il supporto per la risoluzione dei problemi.</string>
-    <string name="product_type_bookable_service">Servizio</string>
     <string name="woopos_settings_store_physical_address_label">Indirizzo fisico</string>
     <string name="woopos_settings_store_general_title">Generale</string>
     <string name="woopos_orders_details_refund_error">Impossibile caricare il rimborso</string>

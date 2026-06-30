@@ -484,8 +484,6 @@ Language: ja_JP
     <string name="woopos_settings_receipt_edit_button">領収書情報を編集</string>
     <string name="woopos_home_syncing_catalog_progress">%1$d/%2$dのアイテム</string>
     <string name="woopos_home_syncing_catalog_preparing">カタログを準備中…</string>
-    <string name="product_type_bookable_service_desc">顧客がオンラインで予約できるサービス</string>
-    <string name="product_type_bookable_service_title">サービス</string>
     <string name="settings_troubleshoot_connection">接続をトラブルシューティング</string>
     <string name="connectivity_tool_copy">コピー</string>
     <string name="connectivity_tool_technical_details_copied">技術詳細がクリップボードにコピーされました。</string>
@@ -604,7 +602,6 @@ Language: ja_JP
     <string name="pos_client_side_banner_title">タブレットで WooCommerce POS を実行</string>
     <string name="card_reader_upsell_card_reader_banner_hide_content">このコンテンツを非表示</string>
     <string name="login_site_credentials_http_basic_auth_error">サイトで基本認証が有効になっています。 WooCommerce モバイルアプリでは基本認証がサポートされていません。無効にするか、サポートに問い合わせてトラブルシューティングを行ってください。</string>
-    <string name="product_type_bookable_service">サービス</string>
     <string name="woopos_settings_store_physical_address_label">住所</string>
     <string name="woopos_settings_store_general_title">一般</string>
     <string name="woopos_orders_details_refund_error">返金を読み込めません</string>
