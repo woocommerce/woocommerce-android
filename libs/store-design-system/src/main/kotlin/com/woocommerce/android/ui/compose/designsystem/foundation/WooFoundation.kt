@@ -15,7 +15,6 @@ data class WooFoundation(
 )
 
 object WooFoundationDefaults {
-    val palette: WooPaletteColors = FixedWooPaletteColors
     val text: WooTypography = DefaultWooTypography
     val spacing: WooSpacing = DefaultWooSpacing
     val padding: WooPadding = DefaultWooPadding

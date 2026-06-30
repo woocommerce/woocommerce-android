@@ -28,6 +28,20 @@ internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPalet
         shade40 = context.color(R.color.woo_ds_color_palette_sandstone_shade40),
         shade60 = context.color(R.color.woo_ds_color_palette_sandstone_shade60),
     ),
+    gray = WooGrayColors(
+        shade0 = context.color(R.color.woo_ds_color_palette_gray_shade0),
+        shade5 = context.color(R.color.woo_ds_color_palette_gray_shade5),
+        shade10 = context.color(R.color.woo_ds_color_palette_gray_shade10),
+        shade20 = context.color(R.color.woo_ds_color_palette_gray_shade20),
+        shade30 = context.color(R.color.woo_ds_color_palette_gray_shade30),
+        shade40 = context.color(R.color.woo_ds_color_palette_gray_shade40),
+        shade50 = context.color(R.color.woo_ds_color_palette_gray_shade50),
+        shade60 = context.color(R.color.woo_ds_color_palette_gray_shade60),
+        shade70 = context.color(R.color.woo_ds_color_palette_gray_shade70),
+        shade80 = context.color(R.color.woo_ds_color_palette_gray_shade80),
+        shade90 = context.color(R.color.woo_ds_color_palette_gray_shade90),
+        shade100 = context.color(R.color.woo_ds_color_palette_gray_shade100),
+    ),
     wooBlue = WooPaletteRampColors(
         shade20 = context.color(R.color.woo_ds_color_palette_woo_blue_shade20),
         shade40 = context.color(R.color.woo_ds_color_palette_woo_blue_shade40),
@@ -64,6 +78,7 @@ internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPalet
     ),
 )
 
+@Suppress("LongMethod")
 private fun Context.loadWooColors(): WooColors {
     val palette = loadWooPaletteColors(this)
 
@@ -72,6 +87,12 @@ private fun Context.loadWooColors(): WooColors {
         onPrimary = color(R.color.woo_ds_color_on_primary),
         secondary = color(R.color.woo_ds_color_secondary),
         onSecondary = color(R.color.woo_ds_color_on_secondary),
+        container = WooContainerColors(
+            primaryContainer = color(R.color.woo_ds_color_container_primary_container),
+            onPrimaryContainer = color(R.color.woo_ds_color_container_on_primary_container),
+            secondaryContainer = color(R.color.woo_ds_color_container_secondary_container),
+            onSecondaryContainer = color(R.color.woo_ds_color_container_on_secondary_container),
+        ),
         background = WooBackgroundColors(
             section = color(R.color.woo_ds_color_background_section),
             onSection = color(R.color.woo_ds_color_background_on_section),
@@ -80,13 +101,13 @@ private fun Context.loadWooColors(): WooColors {
         ),
         surface = WooSurfaceColors(
             default = color(R.color.woo_ds_color_surface_default),
+            surfaceDim = color(R.color.woo_ds_color_surface_dim),
+            surfaceContainerHighest = color(R.color.woo_ds_color_surface_container_highest),
             onDefault = color(R.color.woo_ds_color_surface_on_default),
             onVariant = color(R.color.woo_ds_color_surface_on_variant),
-            onLowest = color(R.color.woo_ds_color_surface_on_lowest),
-            onHighest = color(R.color.woo_ds_color_surface_on_highest),
+            onVariantLowest = color(R.color.woo_ds_color_surface_on_variant_lowest),
             inverted = color(R.color.woo_ds_color_surface_inverted),
             onInverted = color(R.color.woo_ds_color_surface_on_inverted),
-            onInvertedVariant = color(R.color.woo_ds_color_surface_on_inverted_variant),
         ),
         outline = color(R.color.woo_ds_color_outline),
         outlineVariant = color(R.color.woo_ds_color_outline_variant),
@@ -103,8 +124,6 @@ private fun Context.loadWooColors(): WooColors {
             onInfoContainer = color(R.color.woo_ds_color_status_on_info_container),
             neutralContainer = color(R.color.woo_ds_color_status_neutral_container),
             onNeutralContainer = color(R.color.woo_ds_color_status_on_neutral_container),
-            neutralOutlined = color(R.color.woo_ds_color_status_neutral_outlined),
-            onNeutralOutlined = color(R.color.woo_ds_color_status_on_neutral_outlined),
         ),
         overlay = WooOverlayColors(
             overlay20 = color(R.color.woo_ds_color_overlay_overlay20),
@@ -112,9 +131,13 @@ private fun Context.loadWooColors(): WooColors {
         ),
         alert = WooAlertColors(
             red = color(R.color.woo_ds_color_alert_red),
-            yellow = color(R.color.woo_ds_color_alert_yellow),
+            onRed = color(R.color.woo_ds_color_alert_on_red),
+            orange = color(R.color.woo_ds_color_alert_orange),
+            onOrange = color(R.color.woo_ds_color_alert_on_orange),
             green = color(R.color.woo_ds_color_alert_green),
+            onGreen = color(R.color.woo_ds_color_alert_on_green),
             blue = color(R.color.woo_ds_color_alert_blue),
+            onBlue = color(R.color.woo_ds_color_alert_on_blue),
         ),
         palette = palette,
     )

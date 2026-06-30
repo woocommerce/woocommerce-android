@@ -4,7 +4,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -106,7 +105,6 @@ private fun textStyle(
     letterSpacing: Float,
     fontWeight: FontWeight,
 ): TextStyle = TextStyle(
-    fontFamily = FontFamily.Default,
     fontWeight = fontWeight,
     fontSize = size.sp,
     lineHeight = lineHeight.sp,

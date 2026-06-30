@@ -85,15 +85,29 @@ private fun ColorFoundationSection() {
 
     FoundationSection(title = "Color") {
         ColorSwatch("primary", colors.primary, colors.onPrimary)
+        ColorSwatch(
+            label = "container.primaryContainer",
+            color = colors.container.primaryContainer,
+            contentColor = colors.container.onPrimaryContainer,
+        )
         ColorSwatch("surface.default", colors.surface.default, colors.surface.onDefault)
+        ColorSwatch("surface.surfaceDim", colors.surface.surfaceDim, colors.surface.onDefault)
+        ColorSwatch(
+            label = "surface.surfaceContainerHighest",
+            color = colors.surface.surfaceContainerHighest,
+            contentColor = colors.surface.onDefault,
+        )
+        ColorSwatch("surface.onVariantLowest", colors.surface.onVariantLowest, colors.surface.default)
         ColorSwatch("outlineVariant", colors.outlineVariant, colors.surface.onDefault)
         ColorSwatch(
             label = "status.successContainer",
             color = colors.status.successContainer,
             contentColor = colors.status.onSuccessContainer,
         )
-        ColorSwatch("alert.red", colors.alert.red, colors.onPrimary)
+        ColorSwatch("alert.red", colors.alert.red, colors.alert.onRed)
+        ColorSwatch("alert.orange", colors.alert.orange, colors.alert.onOrange)
         ColorSwatch("overlay.overlay20", colors.overlay.overlay20, colors.surface.default)
+        ColorSwatch("palette.gray.shade40", colors.palette.gray.shade40, colors.onPrimary)
         ColorSwatch("palette.wooPurple.shade40", colors.palette.wooPurple.shade40, colors.onPrimary)
         MaterialProjectionSample()
     }
@@ -376,7 +390,7 @@ private fun IconSizeFoundationSection() {
 private fun OmittedFoundationSection() {
     FoundationSection(title = "Omitted In PR2") {
         Text(
-            text = "Elevation, minimum touch, and state-layer alpha primitives remain unsourced.",
+            text = "Elevation and minimum touch remain unsourced; state-layer color semantics remain internal.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall,
         )

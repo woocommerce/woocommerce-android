@@ -11,6 +11,7 @@ data class WooColors(
     val onPrimary: Color,
     val secondary: Color,
     val onSecondary: Color,
+    val container: WooContainerColors,
     val background: WooBackgroundColors,
     val surface: WooSurfaceColors,
     val outline: Color,
@@ -19,6 +20,14 @@ data class WooColors(
     val overlay: WooOverlayColors,
     val alert: WooAlertColors,
     val palette: WooPaletteColors,
+)
+
+@Immutable
+data class WooContainerColors(
+    val primaryContainer: Color,
+    val onPrimaryContainer: Color,
+    val secondaryContainer: Color,
+    val onSecondaryContainer: Color,
 )
 
 @Immutable
@@ -33,13 +42,13 @@ data class WooBackgroundColors(
 @Suppress("LongParameterList")
 data class WooSurfaceColors(
     val default: Color,
+    val surfaceDim: Color,
+    val surfaceContainerHighest: Color,
     val onDefault: Color,
     val onVariant: Color,
-    val onLowest: Color,
-    val onHighest: Color,
+    val onVariantLowest: Color,
     val inverted: Color,
     val onInverted: Color,
-    val onInvertedVariant: Color,
 )
 
 @Immutable
@@ -57,8 +66,6 @@ data class WooStatusColors(
     val onInfoContainer: Color,
     val neutralContainer: Color,
     val onNeutralContainer: Color,
-    val neutralOutlined: Color,
-    val onNeutralOutlined: Color,
 )
 
 @Immutable
@@ -70,14 +77,19 @@ data class WooOverlayColors(
 @Immutable
 data class WooAlertColors(
     val red: Color,
-    val yellow: Color,
+    val onRed: Color,
+    val orange: Color,
+    val onOrange: Color,
     val green: Color,
+    val onGreen: Color,
     val blue: Color,
+    val onBlue: Color,
 )
 
 @Immutable
 data class WooPaletteColors(
     val sandstone: WooSandstoneColors,
+    val gray: WooGrayColors,
     val wooBlue: WooPaletteRampColors,
     val wooGreen: WooPaletteRampColors,
     val wooOrange: WooPaletteRampColors,
@@ -92,6 +104,23 @@ data class WooSandstoneColors(
     val shade20: Color,
     val shade40: Color,
     val shade60: Color,
+)
+
+@Immutable
+@Suppress("LongParameterList")
+data class WooGrayColors(
+    val shade0: Color,
+    val shade5: Color,
+    val shade10: Color,
+    val shade20: Color,
+    val shade30: Color,
+    val shade40: Color,
+    val shade50: Color,
+    val shade60: Color,
+    val shade70: Color,
+    val shade80: Color,
+    val shade90: Color,
+    val shade100: Color,
 )
 
 @Immutable
@@ -121,50 +150,3 @@ data class WooPurpleColors(
 internal val LocalWooColors = staticCompositionLocalOf<WooColors> {
     error("WooTheme.colors is not available. Wrap content in WooDesignSystemTheme.")
 }
-
-@Suppress("MagicNumber")
-internal val FixedWooPaletteColors = WooPaletteColors(
-    sandstone = WooSandstoneColors(
-        shade5 = color(0xFFFBF9F6),
-        shade10 = color(0xFFF1EEEB),
-        shade20 = color(0xFFE6E2DE),
-        shade40 = color(0xFFC5C2BF),
-        shade60 = color(0xFF8B8A89),
-    ),
-    wooBlue = WooPaletteRampColors(
-        shade20 = color(0xFF75FFFF),
-        shade40 = color(0xFF1AD0FD),
-        shade60 = color(0xFF05096C),
-    ),
-    wooGreen = WooPaletteRampColors(
-        shade20 = color(0xFFD5FF4A),
-        shade40 = color(0xFF06E782),
-        shade60 = color(0xFF083D2D),
-    ),
-    wooOrange = WooPaletteRampColors(
-        shade20 = color(0xFFFFE500),
-        shade40 = color(0xFFFF9000),
-        shade60 = color(0xFFFF4800),
-    ),
-    wooPink = WooPaletteRampColors(
-        shade20 = color(0xFFFCA8FF),
-        shade40 = color(0xFFFF45E3),
-        shade60 = color(0xFF4E0061),
-    ),
-    wooPurple = WooPurpleColors(
-        shade0 = color(0xFFF2EDFF),
-        shade5 = color(0xFFE1D7FF),
-        shade10 = color(0xFFD1C1FF),
-        shade20 = color(0xFFB999FF),
-        shade30 = color(0xFFA77EFF),
-        shade40 = color(0xFF873EFF),
-        shade50 = color(0xFF720EEC),
-        shade60 = color(0xFF6108CE),
-        shade70 = color(0xFF5007AA),
-        shade80 = color(0xFF3C087E),
-        shade90 = color(0xFF2C045D),
-        shade100 = color(0xFF1F0342),
-    ),
-)
-
-private fun color(argb: Long): Color = Color(argb)
