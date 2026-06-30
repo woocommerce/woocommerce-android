@@ -2,9 +2,11 @@ package com.woocommerce.android.util
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -16,16 +18,26 @@ import javax.inject.Singleton
 
 @Singleton
 class FeatureFlagRepository @Inject constructor(
-    featureFlagsStore: FeatureFlagsStore,
+    private val featureFlagsStore: FeatureFlagsStore,
+    private val selectedSite: SelectedSite,
     @AppCoroutineScope appCoroutineScope: CoroutineScope,
 ) {
     private val remoteFlagValues = MutableStateFlow<Map<String, Boolean>?>(null)
 
     init {
         appCoroutineScope.launch {
-            featureFlagsStore.observeFeatureFlags().collect { remoteFlags ->
-                remoteFlagValues.value = remoteFlags.associate { remoteFlag -> remoteFlag.key to remoteFlag.value }
-            }
+            selectedSite.observe()
+                .distinctUntilChanged { old, new -> old?.id == new?.id }
+                .collectLatest { site ->
+                    remoteFlagValues.value = null
+                    site ?: return@collectLatest
+
+                    featureFlagsStore.observeFeatureFlags(site.localId()).collect { remoteFlags ->
+                        remoteFlagValues.value = remoteFlags.associate { remoteFlag ->
+                            remoteFlag.key to remoteFlag.value
+                        }
+                    }
+                }
         }
     }
 

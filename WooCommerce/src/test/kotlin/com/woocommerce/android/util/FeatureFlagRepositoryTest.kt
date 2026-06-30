@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,20 +11,32 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FeatureFlagRepositoryTest : BaseUnitTest() {
     private val remoteFlags = MutableStateFlow<List<FeatureFlagConfigDao.FeatureFlag>>(emptyList())
+    private val secondSiteRemoteFlags = MutableStateFlow<List<FeatureFlagConfigDao.FeatureFlag>>(emptyList())
     private val featureFlagsStore: FeatureFlagsStore = mock {
-        on { observeFeatureFlags() } doReturn remoteFlags
+        on { observeFeatureFlags(LOCAL_SITE_ID) } doReturn remoteFlags
+        on { observeFeatureFlags(SECOND_LOCAL_SITE_ID) } doReturn secondSiteRemoteFlags
+    }
+    private val selectedSiteFlow = MutableStateFlow<SiteModel?>(SITE)
+    private val selectedSite: SelectedSite = mock {
+        on { observe() } doReturn selectedSiteFlow
     }
     private lateinit var sut: FeatureFlagRepository
 
     @Before
     fun setup() {
-        sut = FeatureFlagRepository(featureFlagsStore, CoroutineScope(coroutinesTestRule.testDispatcher))
+        sut = FeatureFlagRepository(
+            featureFlagsStore,
+            selectedSite,
+            CoroutineScope(coroutinesTestRule.testDispatcher)
+        )
     }
 
     @Test
@@ -123,6 +136,24 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
         // THEN
         assertThat(state.remoteValue).isNull()
     }
+
+    @Test
+    fun `given selected site changes, when getFlagState called, then previous remote value is cleared`() =
+        testBlocking {
+            // GIVEN
+            val flag = FeatureFlag.WC_SHIPPING_BANNER
+            remoteFlags.value = listOf(createRemoteFlag(flag.remoteFlagKey, false))
+            advanceUntilIdle()
+
+            // WHEN
+            selectedSiteFlow.value = SiteModel().apply { id = SECOND_LOCAL_SITE_ID.value }
+            advanceUntilIdle()
+            val state = sut.getFlagState(flag)
+
+            // THEN
+            assertThat(state.remoteValue).isNull()
+            assertThat(state.effectiveValue).isTrue()
+        }
 
     @Test
     fun `given self driven push notifications feature flag, when inspected, then local value follows debug build`() {
@@ -254,9 +285,16 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
 
     private fun createRemoteFlag(key: String, value: Boolean) = FeatureFlagConfigDao.FeatureFlag(
         key = key,
+        localSiteId = LOCAL_SITE_ID,
         value = value,
         createdAt = 0L,
         modifiedAt = 0L,
         source = FeatureFlagConfigDao.FeatureFlagValueSource.REMOTE
     )
+
+    private companion object {
+        val LOCAL_SITE_ID = LocalId(1)
+        val SECOND_LOCAL_SITE_ID = LocalId(2)
+        val SITE = SiteModel().apply { id = LOCAL_SITE_ID.value }
+    }
 }

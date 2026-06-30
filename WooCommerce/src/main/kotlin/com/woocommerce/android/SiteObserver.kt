@@ -2,6 +2,7 @@ package com.woocommerce.android
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.config.WPComMobileActivePluginVersionsProvider
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -40,6 +41,7 @@ class SiteObserver @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val dispatcher: Dispatcher,
     private val appVersionName: GetAppVersionName,
+    private val activePluginVersionsProvider: WPComMobileActivePluginVersionsProvider,
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
@@ -47,16 +49,13 @@ class SiteObserver @Inject constructor(
             .distinctUntilChanged { old, new -> new.id == old.id }
             .collectLatest { site ->
                 coroutineScope {
-                    launch { fetchPlugins(site) }
+                    launch { fetchPluginsAndRemoteFeatureFlags(site) }
 
                     launch { fetchStoreId(site) }
 
                     launch { fetchOrderStatusOptions(site) }
 
                     launch { sendSiteDataToWearable(site) }
-
-                    launch { fetchRemoteFeatureFlags() }
-
                     if (site.connectionType == SiteConnectionType.ApplicationPasswords) {
                         launch { checkIfSiteIsWPComSuspended(site) }
                     }
@@ -64,9 +63,20 @@ class SiteObserver @Inject constructor(
             }
     }
 
-    private suspend fun fetchPlugins(site: SiteModel) {
+    private suspend fun fetchPluginsAndRemoteFeatureFlags(site: SiteModel) {
+        val activePluginVersions = fetchActivePluginVersions(site)
+        fetchRemoteFeatureFlags(site, activePluginVersions)
+    }
+
+    private suspend fun fetchActivePluginVersions(site: SiteModel): Map<String, String> {
         WooLog.d(WooLog.T.UTILS, "Fetch plugins for site ${site.name}")
-        wooCommerceStore.fetchSitePlugins(site)
+        val fetchResult = wooCommerceStore.fetchSitePlugins(site)
+        return if (fetchResult.isError) {
+            WooLog.e(WooLog.T.UTILS, "Error fetching plugins for site ${site.name}: ${fetchResult.error}")
+            emptyMap()
+        } else {
+            activePluginVersionsProvider.buildActivePluginVersions(fetchResult.model)
+        }
     }
 
     private suspend fun fetchStoreId(site: SiteModel) {
@@ -96,9 +106,16 @@ class SiteObserver @Inject constructor(
         wearableConnectionRepository.sendSiteData(site)
     }
 
-    private suspend fun fetchRemoteFeatureFlags() {
+    private suspend fun fetchRemoteFeatureFlags(
+        site: SiteModel,
+        activePluginVersions: Map<String, String>
+    ) {
         WooLog.d(WooLog.T.UTILS, "Fetching remote feature flags")
-        featureFlagRepository.fetchAndCacheFeatureFlags(appVersionName())
+        featureFlagRepository.fetchAndCacheFeatureFlags(
+            appVersion = appVersionName(),
+            localSiteId = site.localId(),
+            activePluginVersions = activePluginVersions
+        )
     }
 
     private suspend fun checkIfSiteIsWPComSuspended(site: SiteModel) {

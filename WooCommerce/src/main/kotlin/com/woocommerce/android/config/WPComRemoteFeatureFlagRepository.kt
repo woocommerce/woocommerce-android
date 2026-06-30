@@ -2,6 +2,7 @@ package com.woocommerce.android.config
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,14 +21,20 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
      * @param appVersion (Optional) In the backend, a remote feature flag can be set with various rules based on
      * app version. This parameter can be used to work with those rules.
      */
-    suspend fun fetchAndCacheFeatureFlags(appVersion: String = ""): Result<Unit> {
+    suspend fun fetchAndCacheFeatureFlags(
+        appVersion: String = "",
+        localSiteId: LocalId = FeatureFlagsStore.DEFAULT_LOCAL_SITE_ID,
+        activePluginVersions: Map<String, String> = emptyMap()
+    ): Result<Unit> {
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
             buildNumber = "",
             deviceId = "",
             identifier = "",
             marketingVersion = appVersion,
-            platform = PLATFORM_NAME
+            platform = PLATFORM_NAME,
+            localSiteId = localSiteId,
+            activePluginVersions = activePluginVersions
         )
         return if (result.isError) {
             WooLog.e(WooLog.T.UTILS, "Error fetching WPCom remote feature flags: ${result.error}")
