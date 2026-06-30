@@ -20,7 +20,7 @@ gem 'fastlane-plugin-wpmreleasetoolkit', '~> 13.8'
 
 ### Gems needed only for generating Promo Screenshots
 group :screenshots, optional: true do
-  gem 'rmagick', '~> 4.1'
+  gem 'rmagick', '~> 7.0'
 end
 
 # To avoid errors like:
