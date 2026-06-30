@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSuccessFlash
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCustomAmountInitialsAvatar
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
@@ -86,6 +87,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverfl
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.rememberSuccessFlash
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -104,8 +106,15 @@ fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     viewModel: WooPosCartViewModel = hiltViewModel(),
 ) {
+    val flashCheckoutSuccess = rememberSuccessFlash(viewModel.itemAddedEvents)
     viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartScreen(modifier, state, viewModel::onUIEvent, checkoutSlot = checkoutSlot)
+        WooPosCartScreen(
+            modifier = modifier,
+            state = state,
+            onUIEvent = viewModel::onUIEvent,
+            checkoutSlot = checkoutSlot,
+            flashCheckoutSuccess = flashCheckoutSuccess,
+        )
     }
 }
 
@@ -117,6 +126,7 @@ fun WooPosCartScreen(
     onUIEvent: (WooPosCartUIEvent) -> Unit,
     onPhoneBack: (() -> Unit)? = null,
     checkoutSlot: WooPosCartCheckoutButtonSlot,
+    flashCheckoutSuccess: Boolean = false,
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -186,20 +196,29 @@ fun WooPosCartScreen(
                         color = MaterialTheme.colorScheme.surfaceBright,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        WooPosButton(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = WooPosSpacing.Medium.value)
-                                .navigationBarsPadding()
-                                .testTag(WooPosTestTags.CHECKOUT_BUTTON),
-                            text = stringResource(R.string.woopos_checkout_button),
-                            onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
-                            state = when (state.checkoutButtonState) {
-                                WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
-                                WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
-                                WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
-                            }
-                        )
+                                .navigationBarsPadding(),
+                        ) {
+                            WooPosButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag(WooPosTestTags.CHECKOUT_BUTTON),
+                                text = stringResource(R.string.woopos_checkout_button),
+                                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
+                                state = when (state.checkoutButtonState) {
+                                    WooPosCartState.CheckoutButtonState.Enabled -> WooPosButtonState.ENABLED
+                                    WooPosCartState.CheckoutButtonState.Disabled -> WooPosButtonState.DISABLED
+                                    WooPosCartState.CheckoutButtonState.Invisible -> WooPosButtonState.ENABLED
+                                }
+                            )
+                            WooPosButtonSuccessFlash(
+                                visible = flashCheckoutSuccess &&
+                                    state.checkoutButtonState == WooPosCartState.CheckoutButtonState.Enabled,
+                            )
+                        }
                     }
                 }
             }

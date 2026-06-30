@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSuccessFlash
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartState
@@ -87,6 +89,7 @@ fun WooPosHomePhonePersistentButton(
     state: WooPosPhonePersistentButtonState,
     onAction: (WooPosPhonePersistentButtonAction) -> Unit,
     modifier: Modifier = Modifier,
+    flashSuccess: Boolean = false,
 ) {
     val visible = state !is WooPosPhonePersistentButtonState.Hidden
 
@@ -108,16 +111,21 @@ fun WooPosHomePhonePersistentButton(
             modifier = Modifier.fillMaxWidth(),
         ) {
             when (shown) {
-                is WooPosPhonePersistentButtonState.Primary -> WooPosButton(
-                    text = shown.label,
-                    state = shown.buttonState,
-                    onClick = { onAction(shown.action) },
+                is WooPosPhonePersistentButtonState.Primary -> Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(WooPosSpacing.Medium.value)
                         .padding(bottom = WooPosSpacing.Small.value)
                         .navigationBarsPadding(),
-                )
+                ) {
+                    WooPosButton(
+                        text = shown.label,
+                        state = shown.buttonState,
+                        onClick = { onAction(shown.action) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    WooPosButtonSuccessFlash(visible = flashSuccess && shown.buttonState == WooPosButtonState.ENABLED)
+                }
                 WooPosPhonePersistentButtonState.Hidden -> Unit
             }
         }

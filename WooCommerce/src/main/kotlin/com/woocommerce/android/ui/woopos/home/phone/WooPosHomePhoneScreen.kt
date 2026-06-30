@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.component.rememberSuccessFlash
 import com.woocommerce.android.ui.woopos.home.WooPosHomeDialogs
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent
@@ -101,6 +102,7 @@ private fun WooPosHomePhoneContent(
         screenPositionState = state.screenPositionState,
         cartState = cartState,
     )
+    val flashSuccess = rememberSuccessFlash(cartViewModel.itemAddedEvents)
 
     Box(
         modifier = Modifier.wooPosHomeRootContainer(state, onHomeUIEvent)
@@ -131,6 +133,7 @@ private fun WooPosHomePhoneContent(
 
         WooPosHomePhonePersistentButton(
             state = persistentButtonState,
+            flashSuccess = flashSuccess,
             onAction = { action ->
                 when (action) {
                     WooPosPhonePersistentButtonAction.OpenCart ->
