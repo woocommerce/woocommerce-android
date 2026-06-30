@@ -11,7 +11,6 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_CONFIGURATION
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
-import com.woocommerce.android.datastore.DataStoreType.BOOKINGS_FILTERS
 import com.woocommerce.android.datastore.DataStoreType.COUPONS
 import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.LAST_UPDATE
@@ -193,24 +192,6 @@ class DataStoreModule {
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent(
                 "Corrupted data store. DataStore Type: ${SHIPPING_LABELS_DATA.name}"
-            )
-            emptyPreferences()
-        },
-        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
-    )
-
-    @Provides
-    @Singleton
-    @DataStoreQualifier(BOOKINGS_FILTERS)
-    fun provideBookingsFiltersDataStore(
-        appContext: Context,
-        crashLogging: CrashLogging,
-        @AppCoroutineScope appCoroutineScope: CoroutineScope
-    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
-        produceFile = { appContext.preferencesDataStoreFile("bookings_filters") },
-        corruptionHandler = ReplaceFileCorruptionHandler {
-            crashLogging.recordEvent(
-                "Corrupted data store. DataStore Type: ${BOOKINGS_FILTERS.name}"
             )
             emptyPreferences()
         },
