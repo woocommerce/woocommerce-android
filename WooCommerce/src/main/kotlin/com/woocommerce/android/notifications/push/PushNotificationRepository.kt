@@ -226,6 +226,33 @@ class PushNotificationRepository @Inject constructor(
             registration.locale != getDeviceLocale()
     }
 
+    suspend fun clearWooPushRegistrationsForStaleToken(currentToken: String) {
+        if (currentToken.isEmpty()) return
+
+        var staleSiteIds = emptyList<Long>()
+
+        pushNotificationsDataStore.edit { preferences ->
+            staleSiteIds = preferences.getSiteIdsWithStalePushRegistration(currentToken)
+            staleSiteIds.forEach { siteId ->
+                preferences.clearPushRegistration(siteId)
+            }
+        }
+        staleSiteIds.forEach { siteId ->
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site $siteId")
+        }
+    }
+
+    private fun Preferences.getSiteIdsWithStalePushRegistration(currentToken: String): List<Long> = asMap().keys
+        .mapNotNull { key ->
+            key.name
+                .takeIf { it.startsWith(PUSH_TOKEN_KEY_PREFIX) }
+                ?.removePrefix(PUSH_TOKEN_KEY_PREFIX)
+                ?.toLongOrNull()
+        }
+        .filter { siteId ->
+            this[getPushTokenValueKeyForSite(siteId)] != currentToken
+        }
+
     fun isWpComPushRegistered(): Boolean =
         prefsWrapper.getFluxCPreferences()
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
