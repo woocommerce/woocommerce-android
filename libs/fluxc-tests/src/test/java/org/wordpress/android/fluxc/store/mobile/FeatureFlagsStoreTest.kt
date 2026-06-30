@@ -9,6 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsError
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsFetchedPayload
@@ -51,10 +52,11 @@ class FeatureFlagsStoreTest {
                 marketingVersion = MARKETING_VERSION_PARAM,
                 platform = PLATFORM_PARAM,
                 osVersion = OS_VERSION_PARAM,
-            )
+            ),
+            localSiteId = LOCAL_SITE_ID
         )
 
-        verify(featureFlagConfigDao).insert(successResponse)
+        verify(featureFlagConfigDao).insert(successResponse, LOCAL_SITE_ID)
         assertNotNull(response.featureFlags)
         assertEquals(FeatureFlagsResult(successResponse), response)
     }
@@ -88,5 +90,6 @@ class FeatureFlagsStoreTest {
         private const val MARKETING_VERSION_PARAM = "marketing_version_param"
         private const val PLATFORM_PARAM = "platform_param"
         private const val OS_VERSION_PARAM = "os_version_param"
+        private val LOCAL_SITE_ID = LocalId(123)
     }
 }

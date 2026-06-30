@@ -83,6 +83,30 @@ class FeatureFlagsRestClientTest {
     }
 
     @Test
+    fun `given active plugin versions, when feature flags are requested, then plugin versions are serialized`() =
+        test {
+            val json = UnitTestUtils.getStringFromResourceFile(javaClass, SUCCESS_JSON)
+            initFetchFeatureFlags(data = getResponseFromJsonString(json))
+
+            restClient.fetchFeatureFlags(
+                FeatureFlagsPayload(
+                    buildNumber = BUILD_NUMBER_PARAM,
+                    deviceId = DEVICE_ID_PARAM,
+                    identifier = IDENTIFIER_PARAM,
+                    marketingVersion = MARKETING_VERSION_PARAM,
+                    platform = PLATFORM_PARAM,
+                    osVersion = OS_VERSION_PARAM,
+                    activePluginVersions = mapOf(WOO_CORE_PLUGIN_PATH to WOO_VERSION)
+                )
+            )
+
+            assertEquals(
+                WOO_VERSION,
+                paramsCaptor.firstValue["active_plugin_versions[$WOO_CORE_PLUGIN_PATH]"]
+            )
+        }
+
+    @Test
     fun `given success call, when f-flags are requested, then correct response is returned`() = test {
         val json = UnitTestUtils.getStringFromResourceFile(javaClass, SUCCESS_JSON)
         initFetchFeatureFlags(data = getResponseFromJsonString(json))
@@ -255,6 +279,8 @@ class FeatureFlagsRestClientTest {
         private const val MARKETING_VERSION_PARAM = "marketing_version_param"
         private const val PLATFORM_PARAM = "platform_param"
         private const val OS_VERSION_PARAM = "os_version_param"
+        private const val WOO_CORE_PLUGIN_PATH = "woocommerce/woocommerce.php"
+        private const val WOO_VERSION = "10.9.2"
 
         private const val SUCCESS_JSON = "wp/mobile/feature-flags-success.json"
     }

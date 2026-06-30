@@ -40,7 +40,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 37,
+        version = 38,
         entities = [
             AccountEntity::class,
             FeatureFlag::class,
@@ -132,6 +132,7 @@ abstract class WPAndroidDatabase : RoomDatabase() {
                 .addMigrations(MIGRATION_19_20)
                 .addMigrations(MIGRATION_20_21)
                 .addMigrations(MIGRATION_26_27)
+                .addMigrations(MIGRATION_37_38)
                 .build()
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -362,6 +363,25 @@ abstract class WPAndroidDatabase : RoomDatabase() {
                     execSQL(
                         "CREATE INDEX IF NOT EXISTS `index_BlazeCampaigns_siteId` " +
                                 "ON `BlazeCampaigns` (`siteId`)"
+                    )
+                }
+            }
+        }
+
+        val MIGRATION_37_38 = object : Migration(37, 38) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.apply {
+                    execSQL("DROP TABLE IF EXISTS `FeatureFlagConfigurations`")
+                    execSQL(
+                        "CREATE TABLE IF NOT EXISTS `FeatureFlagConfigurations` (" +
+                            "`key` TEXT NOT NULL, " +
+                            "`local_site_id` INTEGER NOT NULL, " +
+                            "`value` INTEGER NOT NULL, " +
+                            "`created_at` INTEGER NOT NULL, " +
+                            "`modified_at` INTEGER NOT NULL, " +
+                            "`source` TEXT NOT NULL, " +
+                            "PRIMARY KEY(`key`, `local_site_id`)" +
+                            ")"
                     )
                 }
             }

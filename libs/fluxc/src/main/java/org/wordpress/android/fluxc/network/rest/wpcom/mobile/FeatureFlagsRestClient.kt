@@ -29,7 +29,6 @@ class FeatureFlagsRestClient @Inject constructor(
     userAgent: UserAgent
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
     suspend fun fetchFeatureFlags(payload: FeatureFlagsPayload): FeatureFlagsFetchedPayload {
-        // https://public-api.wordpress.com/wpcom/v2/mobile/feature-flagsdevice_id=12345&platform=android&build_number=570&marketing_version=15.1.1&identifier=com.jetpack.android
         val url = WPCOMV2.mobile.feature_flags.url
         val params = buildFeatureFlagsParams(payload)
         val response = wpComGsonRequestBuilder.syncGetRequest(
@@ -44,14 +43,17 @@ class FeatureFlagsRestClient @Inject constructor(
         }
     }
 
-    private fun buildFeatureFlagsParams(payload: FeatureFlagsPayload) = mapOf(
-            "build_number" to payload.buildNumber,
-            "device_id" to payload.deviceId,
-            "identifier" to payload.identifier,
-            "marketing_version" to payload.marketingVersion,
-            "platform" to payload.platform,
-            "os_version" to payload.osVersion,
-    )
+    private fun buildFeatureFlagsParams(payload: FeatureFlagsPayload) = buildMap {
+        put("build_number", payload.buildNumber)
+        put("device_id", payload.deviceId)
+        put("identifier", payload.identifier)
+        put("marketing_version", payload.marketingVersion)
+        put("platform", payload.platform)
+        put("os_version", payload.osVersion)
+        payload.activePluginVersions.forEach { (pluginPath, version) ->
+            put("active_plugin_versions[$pluginPath]", version)
+        }
+    }
 
     data class FeatureFlagsPayload(
         val buildNumber: String,
@@ -60,6 +62,7 @@ class FeatureFlagsRestClient @Inject constructor(
         val marketingVersion: String,
         val platform: String,
         val osVersion: String = Build.VERSION.RELEASE,
+        val activePluginVersions: Map<String, String> = emptyMap(),
     )
 
     private fun buildFeatureFlagsFetchedPayload(featureFlags: Map<*, *>?): FeatureFlagsFetchedPayload {

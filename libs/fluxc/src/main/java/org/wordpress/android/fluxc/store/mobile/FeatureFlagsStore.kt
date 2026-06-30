@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.store.mobile
 
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsError
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsRestClient
@@ -24,24 +25,31 @@ class FeatureFlagsStore @Inject constructor(
         deviceId: String,
         identifier: String,
         marketingVersion: String,
-        platform: String
+        platform: String,
+        localSiteId: LocalId = DEFAULT_LOCAL_SITE_ID,
+        activePluginVersions: Map<String, String> = emptyMap()
     ) = fetchFeatureFlags(
-        FeatureFlagsPayload(
+        payload = FeatureFlagsPayload(
             buildNumber = buildNumber,
             deviceId = deviceId,
             identifier = identifier,
             marketingVersion = marketingVersion,
-            platform = platform
-        )
+            platform = platform,
+            activePluginVersions = activePluginVersions
+        ),
+        localSiteId = localSiteId
     )
 
-    suspend fun fetchFeatureFlags(payload: FeatureFlagsPayload) =
+    suspend fun fetchFeatureFlags(
+        payload: FeatureFlagsPayload,
+        localSiteId: LocalId = DEFAULT_LOCAL_SITE_ID
+    ) =
         coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetch feature-flags") {
             val payload = featureFlagsRestClient.fetchFeatureFlags(payload)
             return@withDefaultContext when {
                 payload.isError -> FeatureFlagsResult(payload.error)
                 payload.featureFlags != null -> {
-                    featureFlagConfigDao.insert(payload.featureFlags)
+                    featureFlagConfigDao.insert(payload.featureFlags, localSiteId)
                     FeatureFlagsResult(payload.featureFlags)
                 }
 
@@ -49,8 +57,8 @@ class FeatureFlagsStore @Inject constructor(
             }
         }
 
-    fun observeFeatureFlags(): Flow<List<FeatureFlag>> {
-        return featureFlagConfigDao.observeFeatureFlagList()
+    fun observeFeatureFlags(localSiteId: LocalId = DEFAULT_LOCAL_SITE_ID): Flow<List<FeatureFlag>> {
+        return featureFlagConfigDao.observeFeatureFlagList(localSiteId)
     }
 
     data class FeatureFlagsResult(
@@ -59,5 +67,9 @@ class FeatureFlagsStore @Inject constructor(
         constructor(error: FeatureFlagsError) : this() {
             this.error = error
         }
+    }
+
+    companion object {
+        val DEFAULT_LOCAL_SITE_ID = LocalId(-1)
     }
 }
