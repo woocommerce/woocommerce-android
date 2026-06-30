@@ -1262,3 +1262,7 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
         db.execSQL("ALTER TABLE `CustomerEntity_new` RENAME TO `CustomerEntity`")
     }
 }
+
+@DeleteTable(tableName = "Bookings")
+@DeleteTable(tableName = "BookingResources")
+internal class AutoMigration89to90 : AutoMigrationSpec
