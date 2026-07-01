@@ -1291,6 +1291,7 @@ class OrderRestClient @Inject constructor(
             "date_paid_gmt",
             "discount_total",
             "fee_lines",
+            "gift_cards",
             "tax_lines",
             "id",
             "customer_id",
