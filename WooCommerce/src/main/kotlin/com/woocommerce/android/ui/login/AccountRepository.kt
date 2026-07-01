@@ -98,8 +98,8 @@ class AccountRepository @Inject constructor(
         zendeskSettings.clearIdentity()
 
         // Wipe user-specific preferences and data stores
-        prefs.resetUserPreferences()
         appCoroutineScope.launch {
+            prefs.resetUserPreferences()
             siteVisibilityDataStore.clearAll()
             posDataStore.edit { it.clear() }
         }

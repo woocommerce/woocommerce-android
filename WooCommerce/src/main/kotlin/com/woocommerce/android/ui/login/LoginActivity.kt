@@ -5,11 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -99,6 +99,32 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@VisibleForTesting
+internal sealed class LoginActivityActionDestination {
+    data class ContinueWithWPComEmail(val email: String) : LoginActivityActionDestination()
+    data class ShowSiteAddress(val siteAddress: String?) : LoginActivityActionDestination()
+    object StartWPComEmailLogin : LoginActivityActionDestination()
+}
+
+@VisibleForTesting
+internal fun resolveLoginActivityActionDestination(
+    action: String?,
+    email: String?,
+    siteAddress: String?
+): LoginActivityActionDestination? = when (action) {
+    LoginActivity.LOGIN_WITH_SITE_ADDRESS_ACTION -> {
+        LoginActivityActionDestination.ShowSiteAddress(siteAddress = siteAddress.takeUnless { it.isNullOrBlank() })
+    }
+    LoginActivity.LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+        if (email.isNullOrBlank()) {
+            LoginActivityActionDestination.StartWPComEmailLogin
+        } else {
+            LoginActivityActionDestination.ContinueWithWPComEmail(email)
+        }
+    }
+    else -> null
+}
+
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
@@ -127,7 +153,9 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
 
+        const val LOGIN_WITH_SITE_ADDRESS_ACTION = "login_with_site_address"
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
+        const val SITE_ADDRESS_PARAMETER = "siteAddress"
         const val EMAIL_PARAMETER = "email"
 
         const val SITE_URL_PARAMETER = "siteUrl"
@@ -198,12 +226,28 @@ class LoginActivity :
         applyDefaultWindowInsets()
 
         when {
-            intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
-                val email = intent.extras?.getString(EMAIL_PARAMETER)
-                if (email.isNullOrBlank()) {
-                    startLoginViaWPComEmailScreen()
-                } else {
-                    gotWpcomEmail(email, verifyEmail = true, null)
+            intent?.action == LOGIN_WITH_SITE_ADDRESS_ACTION || intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+                when (
+                    val destination = resolveLoginActivityActionDestination(
+                        action = intent?.action,
+                        email = intent.extras?.getString(EMAIL_PARAMETER),
+                        siteAddress = intent.extras?.getString(SITE_ADDRESS_PARAMETER)
+                    )
+                ) {
+                    is LoginActivityActionDestination.ContinueWithWPComEmail -> {
+                        gotWpcomEmail(destination.email, verifyEmail = true, null)
+                    }
+
+                    is LoginActivityActionDestination.ShowSiteAddress -> {
+                        disableDynamicEdgeToEdge()
+                        loginViaSiteAddress(prefilledSiteUrl = destination.siteAddress)
+                    }
+
+                    LoginActivityActionDestination.StartWPComEmailLogin -> {
+                        startLoginViaWPCom()
+                    }
+
+                    null -> Unit
                 }
             }
 

@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -32,8 +31,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val webViewAuthenticator: WebViewAuthenticator,
-    val userAgent: UserAgent,
-    private val appPrefs: AppPrefsWrapper
+    val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: AccountMismatchErrorFragmentArgs by savedStateHandle.navArgs()
     private val userAccount = accountRepository.getUserAccount()
@@ -92,14 +90,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun loginWithDifferentAccount() {
         if (!accountRepository.isUserLoggedIn()) {
-            triggerEvent(NavigateToWPComEmailLoginScreen)
+            triggerEvent(NavigateToSiteAddressLogin(siteUrl))
         } else {
             launch {
                 accountRepository.logout().let {
                     if (it) {
-                        // Restore the account-mismatch site address after logout clears user preferences.
-                        appPrefs.setLoginSiteAddress(siteUrl)
-                        triggerEvent(NavigateToWPComEmailLoginScreen)
+                        triggerEvent(NavigateToSiteAddressLogin(siteUrl))
                     }
                 }
             }
@@ -152,7 +148,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     )
 
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
-    object NavigateToWPComEmailLoginScreen : MultiLiveEvent.Event()
+    data class NavigateToSiteAddressLogin(val siteUrl: String) : MultiLiveEvent.Event()
     data class OnJetpackConnectedEvent(val email: String, val isAuthenticated: Boolean) : MultiLiveEvent.Event()
     data class NavigateToJetpackActivationSteps(
         val siteUrl: String,
