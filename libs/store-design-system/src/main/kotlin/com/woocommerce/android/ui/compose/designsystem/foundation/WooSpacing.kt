@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -37,3 +38,7 @@ internal val DefaultWooSpacing = WooSpacing(
     space11 = 56.dp,
     space12 = 64.dp,
 )
+
+internal val LocalWooSpacing = staticCompositionLocalOf<WooSpacing> {
+    error("WooTheme.spacing is not available. Wrap content in WooDesignSystemTheme.")
+}

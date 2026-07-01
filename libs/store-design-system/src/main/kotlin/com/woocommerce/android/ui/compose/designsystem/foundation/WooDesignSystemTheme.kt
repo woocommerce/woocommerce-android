@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -61,20 +60,4 @@ internal fun ProvideWooDesignSystemFoundation(
     ) {
         content()
     }
-}
-
-internal val LocalWooSpacing = staticCompositionLocalOf<WooSpacing> {
-    error("WooTheme.spacing is not available. Wrap content in WooDesignSystemTheme.")
-}
-
-internal val LocalWooPadding = staticCompositionLocalOf<WooPadding> {
-    error("WooTheme.padding is not available. Wrap content in WooDesignSystemTheme.")
-}
-
-internal val LocalWooRadius = staticCompositionLocalOf<WooRadius> {
-    error("WooTheme.radius is not available. Wrap content in WooDesignSystemTheme.")
-}
-
-internal val LocalWooIconSize = staticCompositionLocalOf<WooIconSize> {
-    error("WooTheme.iconSize is not available. Wrap content in WooDesignSystemTheme.")
 }

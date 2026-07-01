@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -37,3 +38,7 @@ internal val DefaultWooPadding = WooPadding(
     padding11 = 56.dp,
     padding12 = 64.dp,
 )
+
+internal val LocalWooPadding = staticCompositionLocalOf<WooPadding> {
+    error("WooTheme.padding is not available. Wrap content in WooDesignSystemTheme.")
+}

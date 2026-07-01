@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -23,3 +24,7 @@ internal val DefaultWooIconSize = WooIconSize(
     size24 = 24.dp,
     size32 = 32.dp,
 )
+
+internal val LocalWooIconSize = staticCompositionLocalOf<WooIconSize> {
+    error("WooTheme.iconSize is not available. Wrap content in WooDesignSystemTheme.")
+}
