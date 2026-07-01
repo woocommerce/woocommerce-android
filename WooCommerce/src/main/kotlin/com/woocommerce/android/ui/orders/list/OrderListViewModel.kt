@@ -53,7 +53,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
-import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.RetryLoadingOrders
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -111,7 +110,6 @@ class OrderListViewModel @Inject constructor(
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery,
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount,
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
-    private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val notificationChannelsHandler: NotificationChannelsHandler,
@@ -555,7 +553,6 @@ class OrderListViewModel @Inject constructor(
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
                         !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
-                        shouldShowCreateTestOrderScreen() -> EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
                         else -> EmptyViewType.ORDER_LIST
                     }
                 }

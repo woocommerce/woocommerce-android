@@ -1,2 +1,0 @@
-25.0:
-Det blev precis smidigare att sälja i farten. Woo POS är nu tillgängligt i Kanada med ett förbättrat återbetalningsflöde, och vi har finjusterat Tryck för att betala så att det endast visas på enheter som stöds – med ett tydligare meddelande (och en konfigurationslänk) när så inte är fallet. Vi har också lagt till åldersverifiering för att uppfylla uppdaterade butikskrav. Lycka till med försäljningen.

@@ -16,16 +16,22 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.check
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
+import org.wordpress.android.fluxc.action.ListAction
+import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder.newFetchedOrderListAction
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -48,6 +54,7 @@ import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.InsertOrder
+import org.wordpress.android.fluxc.store.ListStore.MarkListsNeedRefreshPayload
 import org.wordpress.android.fluxc.store.WCOrderFetcher
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
@@ -81,10 +88,11 @@ internal class WCOrderStoreTest {
     lateinit var metaDataDao: MetaDataDao
     lateinit var orderStore: WCOrderStore
     private val insertOrder: InsertOrder = mock()
+    private lateinit var dispatcher: Dispatcher
 
     @Before
     fun setUp() {
-        val dispatcher = Dispatcher()
+        dispatcher = spy(Dispatcher())
         ordersDaoDecorator = OrdersDaoDecorator(dispatcher, databaseRule.db.ordersDao)
         orderNotesDao = databaseRule.db.orderNotesDao
         metaDataDao = databaseRule.db.metaDataDao
@@ -403,6 +411,56 @@ internal class WCOrderStoreTest {
             })
         }
     }
+
+    @Test
+    fun `given fetch surfaces a new order, when fetch completes, then marks other lists of type for refresh`() =
+        runBlocking {
+            val site = SiteModel().apply { id = 8 }
+            val descriptor = WCOrderListDescriptor(site = site, statusFilter = "processing")
+            // Summaries not pre-inserted -> these orders are new to the device.
+            val summaries = listOf(
+                generateSampleOrderSummary(id = 8, remoteId = 1),
+                generateSampleOrderSummary(id = 8, remoteId = 2)
+            )
+            clearInvocations(dispatcher)
+
+            orderStore.onAction(
+                newFetchedOrderListAction(FetchOrderListResponsePayload(descriptor, orderSummaries = summaries))
+            )
+
+            val captor = argumentCaptor<Action<*>>()
+            verify(dispatcher, atLeastOnce()).dispatch(captor.capture())
+            val markPayloads = captor.allValues
+                .filter { it.type == ListAction.MARK_LISTS_OF_TYPE_NEED_REFRESH }
+                .map { it.payload as MarkListsNeedRefreshPayload }
+            assertThat(markPayloads).hasSize(1)
+            assertThat(markPayloads.first().excludedDescriptor.uniqueIdentifier)
+                .isEqualTo(descriptor.uniqueIdentifier)
+            Unit
+        }
+
+    @Test
+    fun `given fetch surfaces only known orders, when fetch completes, then does not mark lists for refresh`() =
+        runBlocking {
+            val site = SiteModel().apply { id = 8 }
+            val summaries = listOf(generateSampleOrderSummary(id = 8, remoteId = 1))
+            // Pre-insert the summary so the fetched order is already known.
+            databaseRule.db.orderSummaryDao.upsertOrderSummaries(summaries)
+            clearInvocations(dispatcher)
+
+            orderStore.onAction(
+                newFetchedOrderListAction(
+                    FetchOrderListResponsePayload(WCOrderListDescriptor(site = site), orderSummaries = summaries)
+                )
+            )
+
+            val captor = argumentCaptor<Action<*>>()
+            verify(dispatcher, atLeastOnce()).dispatch(captor.capture())
+            assertThat(
+                captor.allValues.none { it.type == ListAction.MARK_LISTS_OF_TYPE_NEED_REFRESH }
+            ).isTrue()
+            Unit
+        }
 
     @Test
     fun testUpdateOrderStatusRequestUpdatesLocalDatabase() = runBlocking {

@@ -47,6 +47,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.ListStore.FetchedListItemsPayload
 import org.wordpress.android.fluxc.store.ListStore.ListError
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType
+import org.wordpress.android.fluxc.store.ListStore.MarkListsNeedRefreshPayload
 import org.wordpress.android.fluxc.store.ListStore.OnListDataFailure
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.PARSE_ERROR
@@ -935,43 +936,82 @@ class WCOrderStore @Inject internal constructor(
         // - WCOrderModel
         // - WCOrderNoteModel
         // - WCOrderShipmentTrackingModel
-        if (!payload.isError) {
-            // Save order summaries to the db
-            coroutineEngine.launch(API, this, "handleFetchOrderListCompleted") {
+        // The whole handler runs in a single coroutine so the summaries are persisted and the
+        // "mark other lists for refresh" step is dispatched BEFORE the completion events below. This
+        // way, by the time the UI reacts to FETCHED_LIST_ITEMS, the sibling lists have already been
+        // flagged for refresh and the summaries are available for hydration.
+        coroutineEngine.launch(API, this, "handleFetchOrderListCompleted") {
+            if (!payload.isError) {
+                // When this fetch reveals orders we have never seen before, mark every other cached
+                // order list for refresh so they self-heal on next view.
+                markOtherOrderListsForRefreshIfNewOrders(payload.listDescriptor, payload.orderSummaries)
+                // Save order summaries to the db
                 orderSummaryDao.upsertOrderSummaries(payload.orderSummaries)
+                // Fetch outdated or missing orders
+                fetchOutdatedOrMissingOrders(payload.listDescriptor.site, payload.orderSummaries)
             }
 
-            // Fetch outdated or missing orders
-            fetchOutdatedOrMissingOrders(payload.listDescriptor.site, payload.orderSummaries)
-        }
-
-        emitChange(
-            OnOrderSummariesFetched(
-                listDescriptor = payload.listDescriptor,
-                duration = payload.requestDurationMs,
-                networkingMode = payload.networkingMode,
-                error = payload.error
+            emitChange(
+                OnOrderSummariesFetched(
+                    listDescriptor = payload.listDescriptor,
+                    duration = payload.requestDurationMs,
+                    networkingMode = payload.networkingMode,
+                    error = payload.error
+                )
             )
-        )
+
+            mDispatcher.dispatch(
+                ListActionBuilder.newFetchedListItemsAction(
+                    FetchedListItemsPayload(
+                        listDescriptor = payload.listDescriptor,
+                        remoteItemIds = payload.orderSummaries.map { it.orderId.value },
+                        loadedMore = payload.loadedMore,
+                        canLoadMore = payload.canLoadMore,
+                        error = payload.error?.let { fetchError ->
+                            ListError(
+                                type = when (fetchError.type) {
+                                    PARSE_ERROR -> ListErrorType.PARSE_ERROR
+                                    TIMEOUT_ERROR -> ListErrorType.TIMEOUT_ERROR
+                                    else -> ListErrorType.GENERIC_ERROR
+                                },
+                                message = fetchError.message
+                            )
+                        }
+                    )
+                )
+            )
+        }
+    }
+
+    /**
+     * Each order list (All and every filter combination) is a server-defined, fetch-populated
+     * sequence of order ids, so an order can be in the local DB yet absent from a given list until
+     * that list is refetched. When a fetch reveals an order we have never seen before, every *other*
+     * cached order list may legitimately need it (e.g. it belongs in All, and in any matching
+     * filter), so mark them all for refresh. They refetch lazily on next view and the server decides
+     * membership, so an order only appears where it actually belongs. The just-fetched list already
+     * includes these orders, so it is excluded to avoid a redundant refetch.
+     *
+     * "New order" is detected against the order summary table (the global record of every order id we
+     * have seen), computed before the summaries are upserted, so re-fetching known orders is a no-op
+     * and cannot cause a refetch loop.
+     */
+    private suspend fun markOtherOrderListsForRefreshIfNewOrders(
+        fetchedDescriptor: WCOrderListDescriptor,
+        fetchedSummaries: List<WCOrderSummaryModel>
+    ) {
+        if (fetchedSummaries.isEmpty()) return
+        val knownOrderIds = orderSummaryDao
+            .getOrderSummaries(fetchedDescriptor.site.localId(), fetchedSummaries.map { it.orderId })
+            .mapTo(HashSet()) { it.orderId.value }
+        val hasNewOrders = fetchedSummaries.any { it.orderId.value !in knownOrderIds }
+        if (!hasNewOrders) return
 
         mDispatcher.dispatch(
-            ListActionBuilder.newFetchedListItemsAction(
-            FetchedListItemsPayload(
-            listDescriptor = payload.listDescriptor,
-            remoteItemIds = payload.orderSummaries.map { it.orderId.value },
-            loadedMore = payload.loadedMore,
-            canLoadMore = payload.canLoadMore,
-            error = payload.error?.let { fetchError ->
-                ListError(
-                    type = when (fetchError.type) {
-                        PARSE_ERROR -> ListErrorType.PARSE_ERROR
-                        TIMEOUT_ERROR -> ListErrorType.TIMEOUT_ERROR
-                        else -> ListErrorType.GENERIC_ERROR
-                    },
-                    message = fetchError.message
-                )
-            }
-        )))
+            ListActionBuilder.newMarkListsOfTypeNeedRefreshAction(
+                MarkListsNeedRefreshPayload(excludedDescriptor = fetchedDescriptor)
+            )
+        )
     }
 
     private fun fetchOutdatedOrMissingOrders(site: SiteModel, fetchedSummaries: List<WCOrderSummaryModel>) {

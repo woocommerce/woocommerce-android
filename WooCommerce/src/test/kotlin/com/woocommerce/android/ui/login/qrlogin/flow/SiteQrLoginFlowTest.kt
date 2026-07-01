@@ -327,6 +327,34 @@ class SiteQrLoginFlowTest : BaseUnitTest() {
                 .isEqualTo(FlowState.Completed(FlowCompletion.LoggedIn(localSiteId = LOCAL_SITE_ID)))
         }
 
+    @Test
+    fun `given retryable poll failure after the approval window elapsed, when retry is called, then state is MatchTimedOut and polling does not resume`() =
+        testBlocking {
+            // expiresInSeconds = 0 means the retained snapshot's window is already elapsed by retry
+            // time — resuming would re-show the stale "Expires in 0s" number the browser has killed.
+            whenever(restClient.scan(ticket.siteUrl, ticket.token))
+                .thenReturn(Result.success(scanResult.copy(expiresInSeconds = 0)))
+            whenever(restClient.checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token))
+                .thenReturn(Result.failure(QrLoginSessionStatusException.Network))
+            val flow = newFlow()
+            flow.start()
+            advanceUntilIdle()
+            val failed = flow.state.value as FlowState.Failed
+            assertThat(failed.failedAt).isEqualTo(FailureStep.Poll)
+            assertThat(failed.retryable).isTrue()
+
+            flow.retry()
+            advanceUntilIdle()
+
+            val timedOut = flow.state.value as FlowState.Failed
+            assertThat(timedOut.reason).isEqualTo(ErrorReason.MatchTimedOut)
+            assertThat(timedOut.retryable).isFalse()
+            assertThat(timedOut.failedAt).isEqualTo(FailureStep.Approve)
+            // The dead session is not re-polled — only the original 4 consecutive failures ran.
+            verify(restClient, org.mockito.kotlin.times(4))
+                .checkSessionStatus(ticket.siteUrl, scanResult.sessionId, ticket.token)
+        }
+
     // endregion
 
     // region failedAt diagnostic field

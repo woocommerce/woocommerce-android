@@ -1,2 +1,0 @@
-25.0 :
-Vendez plus facilement pendant vos déplacements. WooPOS est désormais disponible au Canada avec un flux de remboursement amélioré. Nous avons affiné la fonctionnalité Tap to Pay afin qu’elle ne s’affiche que sur les appareils pris en charge. Quand elle ne l’est pas, un message plus clair est présenté (avec un lien de configuration). Nous avons également ajouté la vérification de l’âge pour répondre aux exigences récentes de la boutique. Bonnes ventes !

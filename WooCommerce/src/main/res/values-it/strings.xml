@@ -2140,12 +2140,6 @@ Language: it
     <string name="coupon_type_picker_percentage_content_description">Tipo di codice promozionale - Sconto percentuale</string>
     <string name="coupon_type_picker_title">Crea codice promozionale</string>
     <string name="coupon_list_add_coupon_content_description">Aggiungi codice promozionale</string>
-    <string name="try_test_order_button">Inizia l\'ordine di prova</string>
-    <string name="try_test_order_step_4">Usa l\'app per elaborare il rimborso per l\'ordine di prova</string>
-    <string name="try_test_order_step_3">Completa il pagamento e attendi una notifica push sull\'ordine sulla tua app WooCommerce.</string>
-    <string name="try_test_order_step_2">Seleziona il tuo prodotto di prova, aggiungilo al carrello e completa il pagamento su quel negozio web come un vero cliente.</string>
-    <string name="try_test_order_step_1">Tocca il pulsante sottostante per essere reindirizzato al tuo negozio online tramite un browser web.</string>
-    <string name="try_test_order_heading">Prova un ordine di prova</string>
     <string name="empty_order_test_order_button">Prova un ordine di prova</string>
     <string name="empty_order_test_order_message">Esegui un ordine di prova per assicurarti che il processo WooCommerce offra un\'esperienza cliente fluida</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Aggiungi dettagli manualmente</string>

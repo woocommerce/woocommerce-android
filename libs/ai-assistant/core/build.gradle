@@ -14,10 +14,14 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.json)
 
+    implementation(libs.kotlinx.serialization.core)
+
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.serialization.core)
 
     testFixturesApi(libs.kotlinx.coroutines.core)
+    testFixturesApi(libs.kotlinx.serialization.core)
     testFixturesApi(libs.kotlinx.serialization.json)
 }

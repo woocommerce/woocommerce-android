@@ -1,20 +1,20 @@
 package com.woocommerce.android.background
 
+import com.woocommerce.android.tools.ResolveSiteBySiteId
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
 class UpdateOrderAndOrderList @Inject constructor(
     private val updateOrdersListByStoreId: UpdateOrdersListByStoreId,
     private val orderStore: WCOrderStore,
-    private val siteStore: SiteStore
+    private val resolveSiteBySiteId: ResolveSiteBySiteId
 ) {
     suspend operator fun invoke(siteId: Long, remoteOrderId: Long): Result<Unit> {
-        val orderFetchedSuccess = siteStore.getSiteBySiteId(siteId)?.let { site ->
+        val orderFetchedSuccess = resolveSiteBySiteId(siteId)?.let { site ->
             orderStore.fetchSingleOrderSync(site, remoteOrderId)
         } ?: WooResult(
             WooError(

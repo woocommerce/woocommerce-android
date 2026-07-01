@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 open class AppPrefsWrapper @Inject constructor() {
+    var sitePickerErrorMessage by AppPrefs::sitePickerErrorMessage
+
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed

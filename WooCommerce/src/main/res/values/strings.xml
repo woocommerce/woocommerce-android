@@ -304,6 +304,9 @@
     <string name="login_open_installation_page">Open installation page</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
+    <string name="login_site_info_fallback_dialog_title">Connection Issue</string>
+    <string name="login_site_info_fallback_dialog_message">We couldn\'t verify your site details. You can try logging in with your site credentials instead.</string>
+    <string name="login_site_info_fallback_dialog_cta">Log In with Site Credentials</string>
     <string name="login_view_connected_stores">View connected stores</string>
     <string name="login_jetpack_what_is">What is Jetpack?</string>
     <string name="login_jetpack_what_is_description">Jetpack is a free WordPress plugin that connects your store with the tools needed to give you the best mobile experience, including push notifications and stats</string>
@@ -404,6 +407,7 @@
     <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="site_picker_unknown_blog_error">We couldn\'t access your store, so it\'s been signed out. Please select a store to continue.</string>
     <string name="site_picker_edit_store_list">Edit Stores</string>
     <string name="site_picker_edit_store_list_title">Visible Stores</string>
     <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders or product reviews.</string>
@@ -455,6 +459,11 @@
     <string name="dashboard_scheduled_import_store_wide_note">This is a store-wide setting, which also controls the \"Updates\" option in WooCommerce admin analytics settings.</string>
     <string name="dashboard_scheduled_import_option_selected">Selected</string>
     <string name="dashboard_scheduled_import_update_error">Couldn\'t update the setting. Please try again.</string>
+
+    <!-- Store connection error -->
+    <string name="store_connection_error_dialog_title">Your store can\'t be reached</string>
+    <string name="store_connection_error_dialog_body">We\'re having trouble connecting to your store. This is usually a connection issue on your WordPress site, often caused by a security plugin, a recent plugin update, or a Jetpack connection that needs to be refreshed. The WooCommerce app can\'t fix this from your phone.</string>
+    <string name="store_connection_error_dialog_contact_support">Contact support</string>
 
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
@@ -2303,16 +2312,6 @@
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
-    <!-- Empty order: try a test order -->
-    <string name="empty_order_test_order_message">Run a test order to ensure your WooCommerce process delivers a seamless customer experience</string>
-    <string name="empty_order_test_order_button">Try a test order</string>
-
-    <string name="try_test_order_heading">Try a test order</string>
-    <string name="try_test_order_step_1">Tap the button below to be redirected to your online store via a web browser.</string>
-    <string name="try_test_order_step_2">Select your test product, add to cart, and complete checkout on that web store as a real customer.</string>
-    <string name="try_test_order_step_3">Complete the payment and await a push notification about the order on your WooCommerce app.</string>
-    <string name="try_test_order_step_4">Use the app to process the refund for the test order</string>
-    <string name="try_test_order_button">Start test order</string>
     <!--
         Settings
     -->
@@ -4175,6 +4174,7 @@
     <string name="woopos_refund_back_to_order_button">Back to order</string>
     <string name="woopos_orders_refund_complete">Refund complete</string>
     <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
+    <string name="woopos_orders_details_refresh_error">Couldn\'t refresh the order. Please check your connection and try again.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
@@ -4191,6 +4191,7 @@
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
+    <string name="woopos_refund_preview_error">Couldn\'t calculate the refund total. Please try again.</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -4900,4 +4901,6 @@
     <string name="ai_assistant_confirmation_order_guest_display_name" a8c-src-lib="module:ai-assistant-feature">Guest</string>
     <string name="ai_assistant_confirmation_order_registered_customer_display_name" a8c-src-lib="module:ai-assistant-feature">Customer #%1$s</string>
     <string name="ai_assistant_confirmation_product_variation_update_title_with_name" a8c-src-lib="module:ai-assistant-feature">Update variation %1$s (#%2$s) for product #%3$s</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">We couldn\'t establish a secure connection. Check that your device date and time are correct, then try again.</string>
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">We couldn\'t verify this site\'s security certificate. Contact your hosting provider or site administrator, then try again.</string>
 </resources>

@@ -67,43 +67,34 @@ dependencies {
     implementation(project(":libs:fluxc-plugin"))
 
     implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui.main)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.squareup.okhttp3)
-    implementation(libs.squareup.okhttp3.sse)
     implementation(libs.google.dagger.hilt.android.main)
 
     ksp(libs.google.dagger.hilt.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling.main)
 
+    runtimeOnly(libs.kotlinx.coroutines.android)
+
     testImplementation(libs.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.androidx.test.main.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.serialization.core)
     testImplementation(libs.robolectric)
     testImplementation(libs.squareup.okhttp3.mockwebserver)
     testImplementation(libs.google.dagger.hilt.android.testing)
     testImplementation(libs.squareup.okhttp3.urlconnection)
-    testImplementation(libs.apache.http.client.android)
-    testImplementation(libs.apache.http.core)
     testImplementation(testFixtures(project(":libs:ai-assistant:core")))
     kspTest(libs.google.dagger.hilt.compiler)
-}
-
-dependencyAnalysis {
-    issues {
-        onUnusedDependencies {
-            // Required by hiltViewModel() at runtime even when dependency analysis cannot see generated references.
-            exclude(libs.androidx.hilt.navigation.compose.get().module.toString())
-        }
-    }
 }

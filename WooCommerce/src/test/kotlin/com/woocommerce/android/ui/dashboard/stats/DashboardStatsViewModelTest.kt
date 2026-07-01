@@ -501,6 +501,20 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given visitor stats unavailable, when screen starts, then data loading failed is not tracked`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
+            }
+
+            verify(analyticsTrackerWrapper, never()).track(
+                stat = eq(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED),
+                properties = any()
+            )
+        }
+
+    @Test
     fun `when changing tabs, clear selected date`() = testBlocking {
         setup {
             whenever(dateRangeFormatter.formatSelectedDate(any(), argThat { selectionType == DEFAULT_SELECTION_TYPE }))

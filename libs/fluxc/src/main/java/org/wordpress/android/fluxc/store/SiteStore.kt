@@ -129,6 +129,11 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    data class FetchConnectSiteInfoPayload @JvmOverloads constructor(
+        @JvmField val siteUrl: String,
+        @JvmField val discoverWPAPIOnFailure: Boolean = false
+    ) : Payload<BaseNetworkError>()
+
     data class ConnectSiteInfoPayload @JvmOverloads constructor(
         @JvmField val url: String,
         @JvmField val exists: Boolean = false,
@@ -153,6 +158,11 @@ open class SiteStore @Inject constructor(
         }
     }
 
+    data class WPAPIDiscoveryResult @JvmOverloads constructor(
+        @JvmField val connectSiteInfoApiError: String? = null,
+        @JvmField val wpApiBaseUrl: String? = null
+    )
+
     data class DesignatePrimaryDomainPayload(
         @JvmField val site: SiteModel,
         @JvmField val domain: String
@@ -169,7 +179,8 @@ open class SiteStore @Inject constructor(
     data class SiteError @JvmOverloads constructor(
         @JvmField val type: SiteErrorType,
         @JvmField val message: String? = null,
-        @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET
+        @JvmField val selfHostedErrorType: SelfHostedErrorType = NOT_SET,
+        @JvmField val wpApiDiscovery: WPAPIDiscoveryResult? = null
     ) : OnChangedError
 
     data class DomainSupportedStatesError
@@ -303,6 +314,8 @@ open class SiteStore @Inject constructor(
         NOT_AUTHENTICATED,
         GENERIC_ERROR,
         WPCOM_SITE_SUSPENDED,
+        TLS_CERTIFICATE_VALIDITY_ERROR,
+        REMOTE_SITE_CERTIFICATE_ERROR,
         WORDPRESS_COM_CONNECTIVITY_ERROR
     }
 
@@ -459,7 +472,7 @@ open class SiteStore @Inject constructor(
             }
             REMOVE_SITE -> removeSite(action.payload as SiteModel)
             REMOVE_ALL_SITES -> removeAllSites()
-            FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as String)
+            FETCH_CONNECT_SITE_INFO -> fetchConnectSiteInfo(action.payload as FetchConnectSiteInfoPayload)
             FETCHED_CONNECT_SITE_INFO -> handleFetchedConnectSiteInfo(action.payload as ConnectSiteInfoPayload)
             SUGGEST_DOMAINS -> suggestDomains(action.payload as SuggestDomainsPayload)
             SUGGESTED_DOMAINS -> handleSuggestedDomains(action.payload as SuggestDomainsResponsePayload)
@@ -615,13 +628,16 @@ open class SiteStore @Inject constructor(
         emitChange(event)
     }
 
-    private fun fetchConnectSiteInfo(payload: String) {
-        siteRestClient.fetchConnectSiteInfo(payload)
+    private fun fetchConnectSiteInfo(payload: FetchConnectSiteInfoPayload) {
+        siteRestClient.fetchConnectSiteInfo(payload.siteUrl, payload.discoverWPAPIOnFailure)
     }
 
-    suspend fun fetchConnectSiteInfoSync(siteUrl: String): ConnectSiteInfoPayload {
+    suspend fun fetchConnectSiteInfoSync(
+        siteUrl: String,
+        discoverWPAPIOnFailure: Boolean = false
+    ): ConnectSiteInfoPayload {
         return coroutineEngine.withDefaultContext(T.API, this, "Fetch Connect Site Info") {
-            siteRestClient.fetchConnectSiteInfoSync(siteUrl)
+            siteRestClient.fetchConnectSiteInfoSync(siteUrl, discoverWPAPIOnFailure)
         }
     }
 

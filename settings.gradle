@@ -13,7 +13,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.develocity' version '4.3.2'
+    id 'com.gradle.develocity' version '4.4.3'
     id "com.gradle.common-custom-user-data-gradle-plugin" version "2.6.0"
 }
 
@@ -58,6 +58,17 @@ static def readPropertiesFromFile(File file) {
 }
 
 buildCache {
+    if (!gradle.ext.isCi && !gradle.ext.developerProperties.getProperty("store_local_build_cache", "false").toBoolean()) {
+        /*
+         Local builds only read from the build cache, they don't store to it. Packing the app
+         module's huge task outputs into the cache slows every incremental build down by more
+         than it ever saves (see the introducing PR for measurements). Opt out with
+         store_local_build_cache=true in developer.properties.
+        */
+        local {
+            push = false
+        }
+    }
     if (gradle.ext.isCi) {
         remote(HttpBuildCache) {
             url = "http://10.0.2.214:5071/cache/"
