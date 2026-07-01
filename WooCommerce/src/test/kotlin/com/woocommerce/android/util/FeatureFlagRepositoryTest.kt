@@ -1,7 +1,7 @@
 package com.woocommerce.android.util
 
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

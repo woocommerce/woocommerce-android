@@ -66,7 +66,9 @@ class SiteObserverTest : BaseUnitTest() {
             origin = SiteModel.ORIGIN_WPAPI
         }
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
-        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(mock())
+        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
+            SiteStore.ConnectSiteInfoPayload(url = site.url)
+        )
         whenever(wooCommerceStore.fetchSitePlugins(site)).thenReturn(WooResult(emptyList()))
         whenever(appVersionName()).thenReturn(APP_VERSION)
 
@@ -150,7 +152,9 @@ class SiteObserverTest : BaseUnitTest() {
             origin = SiteModel.ORIGIN_WPAPI
         }
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
-        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(mock())
+        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
+            SiteStore.ConnectSiteInfoPayload(url = site.url)
+        )
         whenever(wooCommerceStore.fetchSitePlugins(site)).thenReturn(WooResult(emptyList()))
         whenever(appVersionName()).thenReturn(APP_VERSION)
 
@@ -184,7 +188,9 @@ class SiteObserverTest : BaseUnitTest() {
             )
         )
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
-        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(mock())
+        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
+            SiteStore.ConnectSiteInfoPayload(url = site.url)
+        )
         whenever(wooCommerceStore.fetchSitePlugins(site)).thenReturn(WooResult(plugins))
         whenever(appVersionName()).thenReturn(APP_VERSION)
 
@@ -216,7 +222,9 @@ class SiteObserverTest : BaseUnitTest() {
                 url = "https://example.com"
             }
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
-            whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(mock())
+            whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
+                SiteStore.ConnectSiteInfoPayload(url = site.url)
+            )
             whenever(wooCommerceStore.fetchSitePlugins(site)).thenReturn(
                 WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             )
