@@ -9,6 +9,7 @@
 
 25.1
 -----
+- [Internal] Updated the app's compile SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16158]
 - [*] POS: the Issue Refund flow now opens full screen from the start instead of inside the order details pane [https://github.com/woocommerce/woocommerce-android/pull/16116]
 - [*] Fixed a startup crash when WordPress.com returns malformed site details [https://github.com/woocommerce/woocommerce-android/pull/16102]
 - [*] You're now returned to the store picker with an explanation when the app can no longer access the selected store, instead of being stuck with repeated errors [https://github.com/woocommerce/woocommerce-android/pull/16117]
