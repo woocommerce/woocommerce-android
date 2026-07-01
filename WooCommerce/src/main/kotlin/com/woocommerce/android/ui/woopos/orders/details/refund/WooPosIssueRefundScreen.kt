@@ -84,6 +84,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -315,7 +316,9 @@ fun WooPosIssueRefundScreen(
                     closeButtonEnabled = !modalIsProcessing,
                     onEvent = viewModel::onUIEvent,
                     onNavigationEvent = onNavigationEvent,
-                    contentInsetsModifier = Modifier.statusBarsPadding(),
+                    contentInsetsModifier = Modifier
+                        .statusBarsPadding()
+                        .gesturesOrButtonsNavigationPadding(),
                     disablePartialRefund = disablePartialRefund,
                 )
             }
