@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.moremenu.domain
 
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
@@ -12,8 +10,7 @@ import javax.inject.Inject
 
 class MoreMenuRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val getWooVersion: GetWooCorePluginCachedVersion,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val getWooVersion: GetWooCorePluginCachedVersion
 ) {
     companion object {
         private const val INBOX_MINIMUM_SUPPORTED_VERSION = "6.4.0"
@@ -22,7 +19,6 @@ class MoreMenuRepository @Inject constructor(
     suspend fun isInboxEnabled(): Boolean =
         withContext(Dispatchers.IO) {
             if (!selectedSite.exists()) return@withContext false
-            if (ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Inbox)) return@withContext false
 
             val currentWooCoreVersion = getWooVersion() ?: return@withContext false
             currentWooCoreVersion.semverCompareTo(INBOX_MINIMUM_SUPPORTED_VERSION) >= 0
