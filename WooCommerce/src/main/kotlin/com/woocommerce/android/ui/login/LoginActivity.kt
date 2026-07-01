@@ -227,28 +227,7 @@ class LoginActivity :
 
         when {
             intent?.action == LOGIN_WITH_SITE_ADDRESS_ACTION || intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
-                when (
-                    val destination = resolveLoginActivityActionDestination(
-                        action = intent?.action,
-                        email = intent.extras?.getString(EMAIL_PARAMETER),
-                        siteAddress = intent.extras?.getString(SITE_ADDRESS_PARAMETER)
-                    )
-                ) {
-                    is LoginActivityActionDestination.ContinueWithWPComEmail -> {
-                        gotWpcomEmail(destination.email, verifyEmail = true, null)
-                    }
-
-                    is LoginActivityActionDestination.ShowSiteAddress -> {
-                        disableDynamicEdgeToEdge()
-                        loginViaSiteAddress(prefilledSiteUrl = destination.siteAddress)
-                    }
-
-                    LoginActivityActionDestination.StartWPComEmailLogin -> {
-                        startLoginViaWPCom()
-                    }
-
-                    null -> Unit
-                }
+                handleLoginActivityAction(requireNotNull(intent))
             }
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
@@ -291,6 +270,31 @@ class LoginActivity :
         }
 
         keepTrackOfAgeEligibility()
+    }
+
+    private fun handleLoginActivityAction(intent: Intent) {
+        when (
+            val destination = resolveLoginActivityActionDestination(
+                action = intent.action,
+                email = intent.extras?.getString(EMAIL_PARAMETER),
+                siteAddress = intent.extras?.getString(SITE_ADDRESS_PARAMETER)
+            )
+        ) {
+            is LoginActivityActionDestination.ContinueWithWPComEmail -> {
+                gotWpcomEmail(destination.email, verifyEmail = true, null)
+            }
+
+            is LoginActivityActionDestination.ShowSiteAddress -> {
+                disableDynamicEdgeToEdge()
+                loginViaSiteAddress(prefilledSiteUrl = destination.siteAddress)
+            }
+
+            LoginActivityActionDestination.StartWPComEmailLogin -> {
+                startLoginViaWPCom()
+            }
+
+            null -> Unit
+        }
     }
 
     private fun applyDefaultWindowInsets() {
