@@ -21,8 +21,6 @@ public class WCWPAPIEndpoint {
 
     private static final String WC_PREFIX_ADMIN = "wc-admin";
 
-    private static final String WC_PREFIX_V2_BOOKINGS = "wc-bookings/v2";
-
     private static final String WC_PREFIX_PUSH_NOTIFICATIONS = "wc-push-notifications";
 
     private final String mEndpoint;
@@ -81,10 +79,6 @@ public class WCWPAPIEndpoint {
 
     public String getPathWcAdmin() {
         return "/" + WC_PREFIX_ADMIN + mEndpoint;
-    }
-
-    public String getPathV2Bookings() {
-        return "/" + WC_PREFIX_V2_BOOKINGS + mEndpoint;
     }
 
     public String getPathPushNotifications() {

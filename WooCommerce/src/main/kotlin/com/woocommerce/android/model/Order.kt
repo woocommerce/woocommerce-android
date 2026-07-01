@@ -139,7 +139,6 @@ data class Order(
         val configuration: ProductConfiguration? = null,
         val configurationKey: Long? = null,
         val containsMetadata: Boolean = false,
-        val bookingId: Long? = null,
         val taxes: List<LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
