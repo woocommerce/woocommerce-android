@@ -11,6 +11,7 @@ import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequest
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
@@ -149,15 +150,7 @@ class JetpackTunnelGsonRequestTest {
     @Test
     fun `given failed direct tunnel request, when error is delivered, then API warning logs and listener receives error`() {
         val receivedErrors = mutableListOf<WPComGsonNetworkError>()
-        val request = JetpackTunnelGsonRequest.buildGetRequest(
-            "/wc/v3/orders",
-            DUMMY_SITE_ID,
-            emptyMap(),
-            Any::class.java,
-            { _: Any?, _: Any? -> },
-            { error -> receivedErrors.add(error) },
-            null
-        )
+        val request = buildRequest("GET", "/wc/v3/orders", receivedErrors)
         val volleyError = buildVolleyError()
 
         mockStatic(AppLog::class.java).use { appLog ->
@@ -167,6 +160,8 @@ class JetpackTunnelGsonRequestTest {
                 AppLog.w(
                     AppLog.T.API,
                     "Jetpack Tunnel raw_body error: method=GET, path=/wc/v3/orders, " +
+                        "transport_status=502, proxy_status=500, error_code=no_response_body, " +
+                        "error_message=Remote site returned non-JSON response, " +
                         "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
                 )
             }
@@ -174,6 +169,85 @@ class JetpackTunnelGsonRequestTest {
         assertThat(receivedErrors).hasSize(1)
         assertEquals("no_response_body", receivedErrors.single().apiError)
         assertEquals("<html>Fatal error</html>", receivedErrors.single().errorData?.optString("raw_body"))
+    }
+
+    @Test
+    fun `given failed direct tunnel requests, when errors are delivered, then each factory logs method and path`() {
+        val methods = listOf("GET", "POST", "PATCH", "PUT", "DELETE")
+        methods.forEach { method ->
+            val path = "/wc/v3/orders/${method.lowercase()}"
+            val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+            val request = buildRequest(method, path, receivedErrors)
+
+            mockStatic(AppLog::class.java).use { appLog ->
+                request.deliverError(buildVolleyError())
+
+                appLog.verify {
+                    AppLog.w(
+                        AppLog.T.API,
+                        "Jetpack Tunnel raw_body error: method=$method, path=$path, " +
+                            "transport_status=502, proxy_status=500, error_code=no_response_body, " +
+                            "error_message=Remote site returned non-JSON response, " +
+                            "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
+                    )
+                }
+            }
+            assertThat(receivedErrors).hasSize(1)
+        }
+    }
+
+    private fun buildRequest(
+        method: String,
+        path: String,
+        receivedErrors: MutableList<WPComGsonNetworkError>
+    ): WPComGsonRequest<*> {
+        val body = mapOf<String, Any>("name" to "test")
+        val listener = { _: Any?, _: Any? -> }
+        val errorListener = { error: WPComGsonNetworkError -> receivedErrors.add(error); Unit }
+        return when (method) {
+            "GET" -> JetpackTunnelGsonRequest.buildGetRequest(
+                path,
+                DUMMY_SITE_ID,
+                emptyMap(),
+                Any::class.java,
+                listener,
+                errorListener,
+                null
+            )
+            "POST" -> JetpackTunnelGsonRequest.buildPostRequest(
+                path,
+                DUMMY_SITE_ID,
+                body,
+                Any::class.java,
+                listener,
+                errorListener
+            )
+            "PATCH" -> JetpackTunnelGsonRequest.buildPatchRequest(
+                path,
+                DUMMY_SITE_ID,
+                body,
+                Any::class.java,
+                listener,
+                errorListener
+            )
+            "PUT" -> JetpackTunnelGsonRequest.buildPutRequest(
+                path,
+                DUMMY_SITE_ID,
+                body,
+                Any::class.java,
+                listener,
+                errorListener
+            )
+            "DELETE" -> JetpackTunnelGsonRequest.buildDeleteRequest(
+                path,
+                DUMMY_SITE_ID,
+                emptyMap(),
+                Any::class.java,
+                listener,
+                errorListener
+            )
+            else -> error("Unsupported method $method")
+        } ?: error("Expected request for $method")
     }
 
     private fun buildVolleyError(): VolleyError {
