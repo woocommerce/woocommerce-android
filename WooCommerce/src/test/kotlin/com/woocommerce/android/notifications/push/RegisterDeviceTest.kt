@@ -22,12 +22,14 @@ import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -35,6 +37,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalCoroutinesApi
@@ -72,6 +75,14 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
     @Before
     fun setUp() {
+        runBlocking {
+            lenient().doReturn(emptySet<Long>())
+                .whenever(pushNotificationRepository).getWooPushRegisteredSiteIds()
+            lenient().doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
+                .whenever(pushNotificationRepository).registerPushTokenInWpComSystem(any())
+            lenient().doReturn(Result.success(Unit))
+                .whenever(pushNotificationRepository).enableWpComNotificationsForSites(any())
+        }
         sut = RegisterDevice(
             appPrefsWrapper = appPrefs,
             accountStore = accountStore,
@@ -222,6 +233,163 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given M1 flag disabled and no Woo registrations, when registration runs, then does not migrate`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+            verify(pushNotificationRepository, never()).unregisterWooPushRegisteredSites(any())
+        }
+
+    @Test
+    fun `given M1 flag disabled and visible jetpack site, when WPCom takes over, then unregisters all Woo sites`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            stubJetpackConnection(siteOne)
+            runBlocking {
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                    .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            val migrationOrder = inOrder(pushNotificationRepository)
+            migrationOrder.verify(pushNotificationRepository).enableWpComNotificationsForSites(setOf(SITE_ID_ONE))
+            migrationOrder.verify(pushNotificationRepository)
+                .unregisterWooPushRegisteredSites(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+        }
+
+    @Test
+    fun `given M1 flag disabled, when WPCom registration fails, then unregisters only sites without fallback`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            stubJetpackConnection(siteOne)
+            runBlocking {
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                    .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+                whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).thenReturn(
+                    WpComPushNotificationStore.RegisterDeviceResponsePayload(
+                        WpComPushNotificationStore.DeviceRegistrationError()
+                    )
+                )
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+            verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(HIDDEN_SITE_ID))
+        }
+
+    @Test
+    fun `given M1 flag disabled, when enabling WPCom notifications fails, then keeps fallback sites on Woo`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            stubJetpackConnection(siteOne)
+            runBlocking {
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                    .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+                whenever(pushNotificationRepository.enableWpComNotificationsForSites(any()))
+                    .thenReturn(Result.failure(Exception("enable failed")))
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(HIDDEN_SITE_ID))
+        }
+
+    @Test
+    fun `given M1 flag disabled and no WPCom account, when migration runs, then unregisters all without WPCom calls`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            whenever(accountStore.hasAccessToken()).thenReturn(false)
+            runBlocking {
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                    .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(any())
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+            verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
+        }
+
+    @Test
+    fun `given M1 flag disabled and WPCom already registered, when migration runs, then skips WPCom device registration`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            stubJetpackConnection(siteOne)
+            runBlocking {
+                whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(true)
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_ONE))
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(any())
+            verify(pushNotificationRepository).enableWpComNotificationsForSites(setOf(SITE_ID_ONE))
+            verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(SITE_ID_ONE))
+        }
+
+    @Test
+    fun `given M1 flag disabled and visible non-jetpack site, when migration runs, then unregisters it unconditionally`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+            runBlocking {
+                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_TWO))
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+            verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(SITE_ID_TWO))
+        }
+
+    @Test
+    fun `given M1 flag disabled, when site switch trigger runs, then does not migrate`() = testBlocking {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+            .thenReturn(false)
+
+        // WHEN
+        sut(SITE_SWITCH)
+
+        // THEN
+        verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
+        verify(pushNotificationRepository, never()).unregisterWooPushRegisteredSites(any())
+    }
+
+    @Test
     fun `given app foreground trigger, when Woo registration is unchanged for one site, then registers only stale sites`() =
         testBlocking {
             // GIVEN
@@ -345,10 +513,16 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
 
+    private fun stubJetpackConnection(site: SiteModel) {
+        whenever(site.origin).thenReturn(SiteModel.ORIGIN_WPCOM_REST)
+        whenever(site.isJetpackConnected).thenReturn(true)
+    }
+
     companion object {
         private const val TEST_TOKEN = "test-fcm-token-123"
         private const val SELECTED_SITE_ID = 123L
         private const val SITE_ID_ONE = 456L
         private const val SITE_ID_TWO = 789L
+        private const val HIDDEN_SITE_ID = 999L
     }
 }

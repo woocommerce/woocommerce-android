@@ -3,6 +3,8 @@ package com.woocommerce.android.notifications.push
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -111,6 +113,8 @@ class RegisterDevice @Inject constructor(
                     }
                 }.awaitAll()
             }
+        } else {
+            migrateWooPushRegistrationsToWpCom(trigger, token)
         }
 
         // For WPCom, site switching doesn't affect registration
@@ -123,6 +127,47 @@ class RegisterDevice @Inject constructor(
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
+    }
+
+    private suspend fun migrateWooPushRegistrationsToWpCom(trigger: Trigger, token: String) {
+        if (trigger == Trigger.SITE_SWITCH) return
+
+        val wooRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+        if (wooRegisteredSiteIds.isEmpty()) return
+
+        WooLog.d(
+            WooLog.T.NOTIFICATIONS,
+            "Migrating Woo push registrations back to WP.com for sites $wooRegisteredSiteIds"
+        )
+
+        val wpComFallbackSiteIds = if (accountStore.hasAccessToken()) {
+            getWooVisibleSites()
+                .filter { it.siteId in wooRegisteredSiteIds && it.connectionType == SiteConnectionType.Jetpack }
+                .map { it.siteId }
+                .toSet()
+        } else {
+            emptySet()
+        }
+
+        val isWpComTakenOver = wpComFallbackSiteIds.isNotEmpty() &&
+            ensureWpComPushRegistered(token) &&
+            pushNotificationRepository.enableWpComNotificationsForSites(wpComFallbackSiteIds).isSuccess
+
+        // Sites with a working WP.com fallback are unregistered only after WP.com takes over, so a
+        // WP.com failure leaves them on Woo push until the next run retries. Sites without a
+        // fallback are unregistered unconditionally.
+        val siteIdsToUnregister = if (isWpComTakenOver) {
+            wooRegisteredSiteIds
+        } else {
+            wooRegisteredSiteIds - wpComFallbackSiteIds
+        }
+        pushNotificationRepository.unregisterWooPushRegisteredSites(siteIdsToUnregister)
+    }
+
+    private suspend fun ensureWpComPushRegistered(token: String): Boolean {
+        if (pushNotificationRepository.isWpComPushRegistered()) return true
+
+        return !pushNotificationRepository.registerPushTokenInWpComSystem(token).isError
     }
 
     enum class Trigger {
