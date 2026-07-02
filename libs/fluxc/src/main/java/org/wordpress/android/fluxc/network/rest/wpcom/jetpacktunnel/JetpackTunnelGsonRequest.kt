@@ -235,6 +235,7 @@ object JetpackTunnelGsonRequest {
         return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "DELETE", wpApiEndpoint, errorListener)
     }
 
+    @Suppress("LongParameterList")
     private fun <T : Any> buildWrappedPostRequest(
         siteId: Long,
         wrappedBody: Map<String, Any>,

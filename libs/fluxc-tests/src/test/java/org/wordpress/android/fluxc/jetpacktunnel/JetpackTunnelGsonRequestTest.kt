@@ -10,8 +10,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
-import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequest
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils

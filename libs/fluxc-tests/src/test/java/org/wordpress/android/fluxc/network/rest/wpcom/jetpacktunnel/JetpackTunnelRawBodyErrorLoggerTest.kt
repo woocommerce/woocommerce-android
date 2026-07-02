@@ -6,8 +6,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -175,14 +175,12 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         val baseError = transportStatus?.let { status ->
             BaseNetworkError(VolleyError(NetworkResponse(status, byteArrayOf(), emptyMap(), true)))
         } ?: BaseNetworkError(GenericErrorType.UNKNOWN)
+        val errorData = rawBody?.let { JSONObject().put("raw_body", it) }
+        if (proxyStatus != null) {
+            errorData?.put("status", proxyStatus)
+        }
         return WPComGsonNetworkError(baseError).apply {
-            errorData = rawBody?.let {
-                JSONObject()
-                    .put("raw_body", it)
-                    .apply {
-                        proxyStatus?.let { status -> put("status", status) }
-                    }
-            }
+            this.errorData = errorData
         }
     }
 
