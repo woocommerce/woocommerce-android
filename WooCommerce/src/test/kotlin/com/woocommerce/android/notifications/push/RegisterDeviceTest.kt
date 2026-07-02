@@ -199,6 +199,29 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
+    fun `given M1 flag enabled, when registration runs, then clears stale Woo registrations`() = testBlocking {
+        // WHEN
+        sut(TOKEN_REFRESH)
+
+        // THEN
+        verify(pushNotificationRepository).clearWooPushRegistrationsForStaleToken(TEST_TOKEN)
+    }
+
+    @Test
+    fun `given M1 flag disabled, when registration runs, then does not clear stale Woo registrations`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never()).clearWooPushRegistrationsForStaleToken(any())
+        }
+
+    @Test
     fun `given app foreground trigger, when Woo registration is unchanged for one site, then registers only stale sites`() =
         testBlocking {
             // GIVEN

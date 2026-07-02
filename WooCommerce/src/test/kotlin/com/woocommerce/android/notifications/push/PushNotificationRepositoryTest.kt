@@ -534,6 +534,58 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored token differs from current, when clearing stale registrations, then removes site metadata`() =
+        testBlocking {
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences.asMap()).thenReturn(
+                mapOf<Preferences.Key<*>, Any>(Pair(stringPreferencesKey("push_token_$SITE_ID"), "token-id-1"))
+            )
+            whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("old-token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationsForStaleToken(currentToken = "new-token")
+
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given stored token matches current, when clearing stale registrations, then keeps site metadata`() =
+        testBlocking {
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences.asMap()).thenReturn(
+                mapOf<Preferences.Key<*>, Any>(Pair(stringPreferencesKey("push_token_$SITE_ID"), "token-id-1"))
+            )
+            whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationsForStaleToken(currentToken = "token")
+
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_$SITE_ID"))
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given empty current token, when clearing stale registrations, then does not touch the datastore`() =
+        testBlocking {
+            sut.clearWooPushRegistrationsForStaleToken(currentToken = "")
+
+            verify(pushNotificationsDataStore, never()).updateData(any())
+        }
+
+    @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")

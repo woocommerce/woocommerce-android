@@ -82,6 +82,8 @@ class RegisterDevice @Inject constructor(
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
+            pushNotificationRepository.clearWooPushRegistrationsForStaleToken(token)
+
             val sites = when (trigger) {
                 Trigger.LOGIN_SUCCESS,
                 Trigger.TOKEN_REFRESH -> getWooVisibleSites()
