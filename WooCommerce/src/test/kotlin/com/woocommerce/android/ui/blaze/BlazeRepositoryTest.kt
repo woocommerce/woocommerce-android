@@ -4,6 +4,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.ImageDetails
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.InvalidSize
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.UnsupportedMimeType
+import com.woocommerce.android.ui.blaze.BlazeRepository.AdImageValidationResult.Valid
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage.RemoteImage
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
@@ -208,9 +211,97 @@ class BlazeRepositoryTest : BaseUnitTest() {
             assertThat(details.campaignImage).isInstanceOf(BlazeRepository.BlazeCampaignImage.None::class.java)
         }
 
+    @Test
+    fun `given supported image mime types, when validating ad image, then result is valid`() {
+        SUPPORTED_IMAGE_MIME_TYPES.forEach { mimeType ->
+            // GIVEN
+            val imageDetails = ImageDetails(width = VALID_IMAGE_SIZE, height = VALID_IMAGE_SIZE, mimeType = mimeType)
+
+            // WHEN
+            val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+            // THEN
+            assertThat(validationResult).isEqualTo(Valid)
+        }
+    }
+
+    @Test
+    fun `given supported image mime type with extra whitespace, when validating ad image, then result is valid`() {
+        // GIVEN
+        val imageDetails = ImageDetails(width = VALID_IMAGE_SIZE, height = VALID_IMAGE_SIZE, mimeType = " image/jpeg ")
+
+        // WHEN
+        val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+        // THEN
+        assertThat(validationResult).isEqualTo(Valid)
+    }
+
+    @Test
+    fun `given unsupported image mime types, when validating ad image, then result is unsupported mime type`() {
+        UNSUPPORTED_IMAGE_MIME_TYPES.forEach { mimeType ->
+            // GIVEN
+            val imageDetails = ImageDetails(width = VALID_IMAGE_SIZE, height = VALID_IMAGE_SIZE, mimeType = mimeType)
+
+            // WHEN
+            val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+            // THEN
+            assertThat(validationResult).isEqualTo(UnsupportedMimeType)
+        }
+    }
+
+    @Test
+    fun `given unsupported image mime type with small dimensions, when validating ad image, then result is unsupported mime type`() {
+        // GIVEN
+        val imageDetails = ImageDetails(
+            width = VALID_IMAGE_SIZE - 1,
+            height = VALID_IMAGE_SIZE,
+            mimeType = "image/avif"
+        )
+
+        // WHEN
+        val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+        // THEN
+        assertThat(validationResult).isEqualTo(UnsupportedMimeType)
+    }
+
+    @Test
+    fun `given supported image mime type with small dimensions, when validating ad image, then result is invalid size`() {
+        // GIVEN
+        val imageDetails = ImageDetails(
+            width = VALID_IMAGE_SIZE - 1,
+            height = VALID_IMAGE_SIZE,
+            mimeType = "image/jpeg"
+        )
+
+        // WHEN
+        val validationResult = with(repository) { imageDetails.validateAdImage() }
+
+        // THEN
+        assertThat(validationResult).isEqualTo(InvalidSize)
+    }
+
     companion object {
         private const val TOTAL_BUDGET = 35f
         private const val PAYMENT_METHOD_ID = "132435"
+        private const val VALID_IMAGE_SIZE = 400
+        private val SUPPORTED_IMAGE_MIME_TYPES = listOf(
+            "image/png",
+            "image/x-png",
+            "image/webp",
+            "image/gif",
+            "image/jpeg",
+            "image/bmp",
+            "image/heic",
+            "image/heif"
+        )
+        private val UNSUPPORTED_IMAGE_MIME_TYPES = listOf(
+            "image/avif",
+            "image/svg+xml",
+            "application/pdf"
+        )
         private val AD_IMAGE = RemoteImage(
             uri = "https://example.com/image.jpg",
             mimeType = "image/jpeg",
