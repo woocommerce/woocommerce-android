@@ -42,13 +42,4 @@
 
     <color name="woo_ds_color_overlay_overlay20">#33000000</color>
     <color name="woo_ds_color_overlay_overlay50">#BF000000</color>
-
-    <color name="woo_ds_color_alert_red">#DC3545</color>
-    <color name="woo_ds_color_alert_on_red">#DC3545</color>
-    <color name="woo_ds_color_alert_orange">#EAAB2D</color>
-    <color name="woo_ds_color_alert_on_orange">#EAAB2D</color>
-    <color name="woo_ds_color_alert_green">#69B66F</color>
-    <color name="woo_ds_color_alert_on_green">#69B66F</color>
-    <color name="woo_ds_color_alert_blue">#1E94D0</color>
-    <color name="woo_ds_color_alert_on_blue">#1E94D0</color>
 </resources>
