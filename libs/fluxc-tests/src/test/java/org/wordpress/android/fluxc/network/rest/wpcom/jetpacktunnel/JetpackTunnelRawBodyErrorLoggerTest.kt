@@ -130,6 +130,43 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         assertThat(messageCaptor.value).doesNotContain(requestBodySecretValue)
     }
 
+    @Test
+    fun `given raw body below limit, when message is built, then complete raw body is included`() {
+        val rawBody = "a".repeat(MAX_RAW_BODY_LOG_CHARS - 1)
+        val error = buildError(rawBody = rawBody)
+
+        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
+
+        assertThat(message).contains("raw_body_truncated=false")
+        assertThat(rawBodySnippet(message)).isEqualTo(rawBody)
+    }
+
+    @Test
+    fun `given raw body at exact limit, when message is built, then complete raw body is included`() {
+        val rawBody = "a".repeat(MAX_RAW_BODY_LOG_CHARS)
+        val error = buildError(rawBody = rawBody)
+
+        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
+
+        assertThat(message).contains("raw_body_truncated=false")
+        assertThat(rawBodySnippet(message)).hasSize(MAX_RAW_BODY_LOG_CHARS)
+        assertThat(rawBodySnippet(message)).isEqualTo(rawBody)
+    }
+
+    @Test
+    fun `given raw body above limit, when message is built, then raw body is capped and marked truncated`() {
+        val retainedPrefix = "a".repeat(MAX_RAW_BODY_LOG_CHARS)
+        val truncatedTail = "tail-content"
+        val error = buildError(rawBody = retainedPrefix + truncatedTail)
+
+        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
+
+        assertThat(message).contains("raw_body_truncated=true")
+        assertThat(rawBodySnippet(message)).hasSize(MAX_RAW_BODY_LOG_CHARS)
+        assertThat(rawBodySnippet(message)).isEqualTo(retainedPrefix)
+        assertThat(message).doesNotContain(truncatedTail)
+    }
+
     private fun buildError(
         rawBody: String?,
         proxyStatus: Int? = null,
@@ -149,7 +186,12 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         }
     }
 
+    private fun rawBodySnippet(message: String?): String {
+        return message?.substringAfter("raw_body_snippet=").orEmpty()
+    }
+
     private companion object {
+        const val MAX_RAW_BODY_LOG_CHARS = 2048
         const val requestBodySecretValue = "requestBodyShouldNotAppear"
 
         val rawBodyWithSecrets = """
