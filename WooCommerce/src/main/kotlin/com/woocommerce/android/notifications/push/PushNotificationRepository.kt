@@ -251,14 +251,17 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
-        val preferences = pushNotificationsDataStore.data.first()
-        return preferences.asMap().keys
-            .mapNotNull { key ->
-                key.name.removePrefix(PUSH_TOKEN_KEY_PREFIX).toLongOrNull()
-            }
-            .toSet()
-    }
+    suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
+        pushNotificationsDataStore.data.first().registeredSiteIds()
+
+    private fun Preferences.registeredSiteIds(): Set<Long> = asMap().keys
+        .mapNotNull { key ->
+            key.name
+                .takeIf { it.startsWith(PUSH_TOKEN_KEY_PREFIX) && !it.startsWith(PUSH_TOKEN_VALUE_KEY_PREFIX) }
+                ?.removePrefix(PUSH_TOKEN_KEY_PREFIX)
+                ?.toLongOrNull()
+        }
+        .toSet()
 
     suspend fun unregisterDeviceFromPushNotifications() {
         coroutineScope {
