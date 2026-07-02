@@ -134,7 +134,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
             _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog) }
 
-            val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get())
+            val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get(), force = true)
 
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {

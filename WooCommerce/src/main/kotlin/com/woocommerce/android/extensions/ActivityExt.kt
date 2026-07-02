@@ -12,12 +12,12 @@ import com.woocommerce.android.util.SystemVersionUtils
 /**
  * Used for starting the HelpActivity in a wrapped way whenever a troubleshooting URL click happens
  */
-fun FragmentActivity.startHelpActivity(origin: HelpOrigin) =
+fun FragmentActivity.startHelpActivity(origin: HelpOrigin, extraSupportTags: List<String>? = null) =
     startActivity(
         HelpActivity.createIntent(
             this,
             origin,
-            null
+            extraSupportTags
         )
     )
 

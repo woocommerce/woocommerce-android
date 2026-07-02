@@ -26,21 +26,24 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
 import org.wordpress.android.fluxc.persistence.converters.AppVersionTargetsConverter
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
+import org.wordpress.android.fluxc.persistence.converters.WPStartOfWeekConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AccountDao
 import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.persistence.dao.NotificationDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
+import org.wordpress.android.fluxc.persistence.dao.WPSiteSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
 import org.wordpress.android.fluxc.persistence.entity.AccountEntity
 import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
+import org.wordpress.android.fluxc.persistence.entity.WPSiteSettingsModel
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 37,
+        version = 38,
         entities = [
             AccountEntity::class,
             FeatureFlag::class,
@@ -57,6 +60,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             ListModel::class,
             ListItemModel::class,
             NotificationEntity::class,
+            WPSiteSettingsModel::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -78,6 +82,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             AutoMigration(from = 34, to = 35),
             AutoMigration(from = 35, to = 36),
             AutoMigration(from = 36, to = 37),
+            AutoMigration(from = 37, to = 38),
         ]
 )
 @TypeConverters(
@@ -85,7 +90,8 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
         StringListConverter::class,
         LocalIdConverter::class,
         AppVersionTargetsConverter::class,
-        RemoteIdConverter::class
+        RemoteIdConverter::class,
+        WPStartOfWeekConverter::class
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
@@ -110,6 +116,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     internal abstract fun notificationDao(): NotificationDao
 
     abstract fun sitePluginDao(): SitePluginDao
+
+    abstract fun wpSiteSettingsDao(): WPSiteSettingsDao
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {

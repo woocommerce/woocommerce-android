@@ -41,6 +41,7 @@ import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
+import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -127,6 +128,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
 
+    @Inject lateinit var refreshWPSettings: RefreshWPSettings
+
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
     @Inject lateinit var sendTelemetry: SendTelemetry
@@ -206,6 +209,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(site)
                     wooCommerceStore.fetchSiteProductSettings(site)
+                    refreshWPSettings(site)
                 }
             }
             return true

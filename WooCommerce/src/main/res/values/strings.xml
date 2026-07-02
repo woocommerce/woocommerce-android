@@ -2499,6 +2499,7 @@
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
     <string name="ai_support_chat_screen_title">Contact Support</string>
+    <string name="ai_support_chat_store_connection_error_message">My store can\'t be reached. The app detected a connection error when trying to reach my store. How can I fix this?</string>
     <string name="ai_support_chat_history_row_title">Chat history</string>
     <string name="ai_support_chat_history_row_subtitle">Revisit past support conversations</string>
     <string name="ai_support_chat_history_title">Chat history</string>

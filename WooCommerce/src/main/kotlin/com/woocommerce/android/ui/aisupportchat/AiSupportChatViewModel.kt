@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import javax.inject.Inject
 
 @Suppress("LargeClass")
@@ -40,7 +42,8 @@ class AiSupportChatViewModel @Inject constructor(
     private val contextProvider: SupportChatContextProvider,
     private val diagnosticsService: SupportDiagnosticsService,
     private val accountRepository: AccountRepository,
-    private val analyticsTracker: AiSupportChatAnalyticsTracker
+    private val analyticsTracker: AiSupportChatAnalyticsTracker,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(
         AiSupportChatViewState(
@@ -76,6 +79,7 @@ class AiSupportChatViewModel @Inject constructor(
             is AiSupportChatLaunchMode.Help -> Unit
             is AiSupportChatLaunchMode.PreLogin -> startFromPreLogin()
             is AiSupportChatLaunchMode.ConnectivityTool -> startFromConnectivityTool(launchMode.checks)
+            is AiSupportChatLaunchMode.StoreConnectionError -> startFromStoreConnectionError()
             is AiSupportChatLaunchMode.Resume -> resumeChat(launchMode)
         }
     }
@@ -414,6 +418,34 @@ class AiSupportChatViewModel @Inject constructor(
         }
     }
 
+    private fun startFromStoreConnectionError() {
+        val result = DiagnosticResult(
+            issueType = SupportIssueType.OTHER,
+            statuses = listOf(
+                DiagnosticStatus(
+                    test = DiagnosticTest.STORE_CONNECTION,
+                    status = TestStatus.Failed(technicalDetails = STORE_CONNECTION_ERROR_DETAIL)
+                )
+            )
+        )
+        _viewState.update {
+            it.copy(
+                input = "",
+                messages = listOf(greetingMessage()),
+                selectedIssueType = SupportIssueType.OTHER,
+                diagnosticResult = result,
+                launchExtraTags = listOf(STORE_CONNECTION_ERROR_DETAIL),
+                hasProceededToChat = true,
+                hasStartedChat = true,
+                canPersistChatHistory = accountRepository.isUserLoggedIn(),
+                showSendError = false
+            )
+        }
+        launch {
+            sendMessage(resourceProvider.getString(R.string.ai_support_chat_store_connection_error_message))
+        }
+    }
+
     private fun resumeChat(launchMode: AiSupportChatLaunchMode.Resume) {
         resumeLaunchMode = launchMode
         _viewState.update {
@@ -427,6 +459,7 @@ class AiSupportChatViewModel @Inject constructor(
                 hasStartedChat = true,
                 hasCreatedTicket = launchMode.hasCreatedTicket,
                 isChatResolved = launchMode.isResolved,
+                launchExtraTags = launchMode.extraTags,
                 isLoadingHistory = true,
                 showSendError = false,
                 showLoadHistoryError = false
@@ -615,7 +648,8 @@ class AiSupportChatViewModel @Inject constructor(
                         chatId = response.chatId,
                         botSlug = response.botSlug,
                         sessionId = response.sessionId,
-                        firstUserMessage = sentMessage
+                        firstUserMessage = sentMessage,
+                        extraTags = _viewState.value.launchExtraTags
                     )
                 }.onFailure { error ->
                     if (error is CancellationException) throw error
@@ -970,6 +1004,7 @@ class AiSupportChatViewModel @Inject constructor(
                 add(AI_SKIP_TAG)
             }
             this@extraTags?.topic?.takeIf { it.isNotBlank() }?.let { add(it) }
+            _viewState.value.launchExtraTags.forEach { tag -> if (tag !in this) add(tag) }
         }
 
     private val SupportChatSupportArea.ticketType: TicketType
@@ -999,6 +1034,7 @@ class AiSupportChatViewModel @Inject constructor(
         private const val MAX_TRANSCRIPT_MESSAGES = 20
         private const val SOURCE_TAG = "in_app_support_escalate"
         private const val AI_SKIP_TAG = "ai_skip"
+        private const val STORE_CONNECTION_ERROR_DETAIL = WooError.REST_INVALID_SIGNATURE_CODE
     }
 }
 
@@ -1014,6 +1050,7 @@ data class AiSupportChatViewState(
     val hasStartedChat: Boolean = false,
     val selectedIssueType: SupportIssueType? = null,
     val selectedIssueLabel: String? = null,
+    val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
@@ -1174,6 +1211,7 @@ private val AiSupportChatLaunchMode.entryPoint: AiSupportChatEntryPoint
         is AiSupportChatLaunchMode.Help -> AiSupportChatEntryPoint.HELP_AND_SUPPORT
         is AiSupportChatLaunchMode.PreLogin -> AiSupportChatEntryPoint.PRE_LOGIN
         is AiSupportChatLaunchMode.ConnectivityTool -> AiSupportChatEntryPoint.CONNECTIVITY_TOOL
+        is AiSupportChatLaunchMode.StoreConnectionError -> AiSupportChatEntryPoint.STORE_CONNECTION_ERROR
         is AiSupportChatLaunchMode.Resume -> AiSupportChatEntryPoint.CHAT_HISTORY
     }
 
