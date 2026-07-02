@@ -78,12 +78,14 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun registerPushTokenInWpComSystem(token: String) {
+    suspend fun registerPushTokenInWpComSystem(
+        token: String
+    ): WpComPushNotificationStore.RegisterDeviceResponsePayload {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        wpComPushNotificationStore.registerDevice(
+        return wpComPushNotificationStore.registerDevice(
             token,
             WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
         )
