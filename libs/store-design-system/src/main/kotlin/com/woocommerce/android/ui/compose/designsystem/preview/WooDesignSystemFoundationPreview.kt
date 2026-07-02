@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @PreviewLightDark
@@ -130,7 +129,7 @@ private fun ColorSwatch(
                 .clip(MaterialTheme.shapes.small)
                 .background(color)
                 .border(
-                    width = DefaultWooStroke.regular,
+                    width = WooTheme.stroke.regular,
                     color = MaterialTheme.colorScheme.outlineVariant,
                     shape = MaterialTheme.shapes.small,
                 ),
@@ -329,9 +328,9 @@ private fun RadiusSample(label: String, radius: Dp) {
 
 @Composable
 private fun StrokeFoundationSection() {
-    val stroke = DefaultWooStroke
+    val stroke = WooTheme.stroke
 
-    FoundationSection(title = "Internal Stroke") {
+    FoundationSection(title = "Stroke") {
         StrokeSample("none", stroke.none)
         StrokeSample("extraThin", stroke.extraThin)
         StrokeSample("thin", stroke.thin)

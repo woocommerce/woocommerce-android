@@ -7,12 +7,14 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooIconSi
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooRadius
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooSpacing
+import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.LocalWooText
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooIconSize
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooPadding
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooRadius
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooSpacing
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooStroke
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooTypography
 
 object WooTheme {
@@ -45,4 +47,9 @@ object WooTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalWooIconSize.current
+
+    val stroke: WooStroke
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalWooStroke.current
 }

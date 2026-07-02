@@ -57,6 +57,7 @@ internal fun ProvideWooDesignSystemFoundation(
         LocalWooPadding provides foundation.padding,
         LocalWooRadius provides foundation.radius,
         LocalWooIconSize provides foundation.iconSize,
+        LocalWooStroke provides foundation.stroke,
     ) {
         content()
     }

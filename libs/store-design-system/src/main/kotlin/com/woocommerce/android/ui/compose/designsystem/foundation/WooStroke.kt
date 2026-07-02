@@ -1,12 +1,13 @@
 package com.woocommerce.android.ui.compose.designsystem.foundation
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Immutable
 @Suppress("LongParameterList")
-internal data class WooStroke(
+data class WooStroke(
     val none: Dp,
     val extraThin: Dp,
     val thin: Dp,
@@ -27,3 +28,7 @@ internal val DefaultWooStroke = WooStroke(
     thick = 3.dp,
     extraThick = 4.dp,
 )
+
+internal val LocalWooStroke = staticCompositionLocalOf<WooStroke> {
+    error("WooTheme.stroke is not available. Wrap content in WooDesignSystemTheme.")
+}
