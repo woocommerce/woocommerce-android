@@ -165,13 +165,7 @@ class PushNotificationRepository @Inject constructor(
                 siteId = siteId,
                 errorDescription = error?.message,
                 errorType = error?.type?.let { it::class.simpleName },
-                errorCode = when (val type = error?.type) {
-                    is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
-                    WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
-                        WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
-
-                    null -> null
-                }
+                errorCode = error.toErrorCode()
             )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
@@ -181,6 +175,15 @@ class PushNotificationRepository @Inject constructor(
             )
         }
     }
+
+    private fun WpComPushNotificationStore.NotificationSettingsUpdateError?.toErrorCode(): String? =
+        when (val type = this?.type) {
+            is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
+            WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
+                WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
+
+            null -> null
+        }
 
     private suspend fun savePushTokenForSite(siteId: Long, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
