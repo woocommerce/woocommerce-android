@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.payments
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -47,7 +45,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -116,9 +113,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
-    }
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -917,7 +911,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isInstanceOf(OpenGenericWebView::class.java)
@@ -934,7 +928,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        ((viewModel.viewStateData.value as Success).learnMoreIpp as Success.LearnMoreIpp.Standard).onClick.invoke()
+        (viewModel.viewStateData.value as Success).learnMoreIpp.onClick.invoke()
 
         // THEN
         assertThat(viewModel.event.value).isEqualTo(
@@ -1196,20 +1190,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         )
     }
 
-    @Test
-    fun `given WooPayments unsupported by CIAB, when view model initialized, then hide IPP learn more link`() =
-        testBlocking {
-            // GIVEN
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)).thenReturn(false)
-
-            // WHEN
-            val viewModel = initViewModel(Payment(1L, ORDER))
-
-            // THEN
-            val state = (viewModel.viewStateData.value as Success).learnMoreIpp
-            assertThat(state).isInstanceOf(Success.LearnMoreIpp.Hidden::class.java)
-        }
-
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
             savedState = SelectPaymentMethodFragmentArgs(
@@ -1229,9 +1209,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
-            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
-            ciabSiteGateKeeper = ciabSiteGateKeeper,
-            resourceProvider = mock()
+            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings
         )
     }
 

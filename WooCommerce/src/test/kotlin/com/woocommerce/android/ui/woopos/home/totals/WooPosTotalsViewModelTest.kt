@@ -179,7 +179,7 @@ class WooPosTotalsViewModelTest {
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val builtInReaderConnector: WooPosBuiltInReaderConnector = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock {
-        on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Hidden
+        on { invoke() } doReturn TapToPayAvailabilityStatus.Result.Available
     }
     private val remoteReaderSession: WooPosRemoteReaderSession = mock {
         on { state }.thenReturn(MutableStateFlow(WooPosRemoteReaderSession.State.Idle))
@@ -2314,10 +2314,10 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given flag on and TTP Hidden, when ViewModel created, then reason not tracked`() = runTest {
+    fun `given flag on and TTP Available, when ViewModel created, then reason not tracked`() = runTest {
         // GIVEN
         whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
-        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Hidden)
+        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
         clearInvocations(tracker)
 
         // WHEN
