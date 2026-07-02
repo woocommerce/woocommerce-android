@@ -10,7 +10,7 @@ object JetpackTunnelRawBodyErrorLogger {
         val isRawBodyTruncated = sanitizedRawBody.length > MAX_RAW_BODY_LOG_CHARS
         val rawBodySnippet = sanitizedRawBody.take(MAX_RAW_BODY_LOG_CHARS)
         val fields = listOfNotNull(
-            "method=${sanitize(method)}",
+            "method=$method",
             "path=${sanitize(path)}",
             error.volleyError?.networkResponse?.statusCode?.let { "transport_status=$it" },
             error.errorData?.opt("status")?.let { "proxy_status=${sanitize(it.toString())}" },

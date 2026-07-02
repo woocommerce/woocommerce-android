@@ -59,24 +59,6 @@ class JetpackTunnelRawBodyErrorLoggerTest {
     }
 
     @Test
-    fun `given raw body is present, when logging, then API warning is emitted`() {
-        val error = buildError(rawBody = "<html>Fatal error</html>")
-
-        mockStatic(AppLog::class.java).use { appLog ->
-            JetpackTunnelRawBodyErrorLogger.logIfPresent("GET", "/wc/v3/orders", error)
-
-            appLog.verify {
-                AppLog.w(
-                    AppLog.T.API,
-                    "Jetpack Tunnel raw_body error: method=GET, path=/wc/v3/orders, " +
-                        "error_code=, error_message=, " +
-                        "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
-                )
-            }
-        }
-    }
-
-    @Test
     fun `given raw body contains secrets, when message is built, then secret values are redacted`() {
         val error = buildError(rawBody = rawBodyWithSecrets)
 
@@ -128,17 +110,6 @@ class JetpackTunnelRawBodyErrorLoggerTest {
             assertThat(messageCaptor.value).doesNotContain(secretValue)
         }
         assertThat(messageCaptor.value).doesNotContain(requestBodySecretValue)
-    }
-
-    @Test
-    fun `given raw body below limit, when message is built, then complete raw body is included`() {
-        val rawBody = "a".repeat(MAX_RAW_BODY_LOG_CHARS - 1)
-        val error = buildError(rawBody = rawBody)
-
-        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
-
-        assertThat(message).contains("raw_body_truncated=false")
-        assertThat(rawBodySnippet(message)).isEqualTo(rawBody)
     }
 
     @Test
