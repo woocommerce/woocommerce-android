@@ -354,6 +354,18 @@ class PushNotificationRepository @Inject constructor(
         return Result.success(Unit)
     }
 
+    suspend fun unregisterWooPushRegisteredSites(siteIds: Set<Long>) {
+        if (siteIds.isEmpty()) return
+
+        val sites = withContext(coroutineDispatchers.io) {
+            wooCommerceStore.getWooCommerceSites()
+        }.filter { it.siteId in siteIds }
+
+        coroutineScope {
+            sites.map { site -> async { unregisterWooPushTokenForSite(site) } }.awaitAll()
+        }
+    }
+
     private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val sites = withContext(coroutineDispatchers.io) {
             wooCommerceStore.getWooCommerceSites()

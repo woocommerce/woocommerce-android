@@ -646,6 +646,41 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored tokens, when unregistering selected woo sites, then deletes tokens only for those sites`() =
+        testBlocking {
+            val site1 = mock<SiteModel> { on { siteId } doReturn 123L }
+            val site2 = mock<SiteModel> { on { siteId } doReturn 456L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site1, site2))
+
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterWooPushRegisteredSites(setOf(123L))
+
+            verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(wooPushNotificationsStore, never()).deletePushToken(eq(site2), any())
+        }
+
+    @Test
+    fun `given empty site set, when unregistering woo sites, then does not load sites`() =
+        testBlocking {
+            sut.unregisterWooPushRegisteredSites(emptySet())
+
+            verify(wooCommerceStore, never()).getWooCommerceSites()
+        }
+
+    @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
