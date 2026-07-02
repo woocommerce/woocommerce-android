@@ -126,11 +126,13 @@ object JetpackTunnelGsonRequest {
                 )
             }
 
+        val wrappedErrorListener = wrapErrorListener("GET", wpApiEndpoint, errorListener)
+
         return jpTimeoutListener?.let { retryListener ->
             JetpackTimeoutRequestHandler(tunnelRequestUrl, wrappedParams, wrappedType,
-                    wrappedListener, errorListener, retryListener).getRequest()
+                    wrappedListener, wrappedErrorListener, retryListener).getRequest()
         } ?: WPComGsonRequest.buildGetRequest(tunnelRequestUrl, wrappedParams, wrappedType,
-                wrappedListener, errorListener)
+                wrappedListener, wrappedErrorListener)
     }
 
     /**
@@ -155,7 +157,7 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         val wrappedBody = createTunnelBody(method = "post", body = body, path = wpApiEndpoint)
-        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, errorListener)
+        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "POST", wpApiEndpoint, errorListener)
     }
 
     /**
@@ -180,7 +182,7 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         val wrappedBody = createTunnelBody(method = "patch", body = body, path = wpApiEndpoint)
-        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, errorListener)
+        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "PATCH", wpApiEndpoint, errorListener)
     }
 
     /**
@@ -205,7 +207,7 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         val wrappedBody = createTunnelBody(method = "put", body = body, path = wpApiEndpoint)
-        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, errorListener)
+        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "PUT", wpApiEndpoint, errorListener)
     }
 
     /**
@@ -230,7 +232,7 @@ object JetpackTunnelGsonRequest {
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         val wrappedBody = createTunnelBody(method = "delete", body = params, path = wpApiEndpoint)
-        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, errorListener)
+        return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "DELETE", wpApiEndpoint, errorListener)
     }
 
     private fun <T : Any> buildWrappedPostRequest(
@@ -238,6 +240,8 @@ object JetpackTunnelGsonRequest {
         wrappedBody: Map<String, Any>,
         type: Type,
         listener: (T?, List<Header>) -> Unit,
+        method: String,
+        wpApiEndpoint: String,
         errorListener: WPComErrorListener
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
         val tunnelRequestUrl = getTunnelApiUrl(siteId)
@@ -250,8 +254,21 @@ object JetpackTunnelGsonRequest {
                 )
             }
 
+        val wrappedErrorListener = wrapErrorListener(method, wpApiEndpoint, errorListener)
+
         return WPComGsonRequest.buildPostRequest(tunnelRequestUrl, wrappedBody, wrappedType,
-                wrappedListener, errorListener)
+                wrappedListener, wrappedErrorListener)
+    }
+
+    private fun wrapErrorListener(
+        method: String,
+        wpApiEndpoint: String,
+        errorListener: WPComErrorListener
+    ): WPComErrorListener {
+        return WPComErrorListener { error ->
+            JetpackTunnelRawBodyErrorLogger.logIfPresent(method, wpApiEndpoint, error)
+            errorListener.onErrorResponse(error)
+        }
     }
 
     private fun getTunnelApiUrl(siteId: Long): String = WPCOMREST.jetpack_blogs.site(siteId).rest_api.urlV1_1

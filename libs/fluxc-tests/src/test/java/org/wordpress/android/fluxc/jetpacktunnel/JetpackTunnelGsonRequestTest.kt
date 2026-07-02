@@ -1,12 +1,18 @@
 package org.wordpress.android.fluxc.jetpacktunnel
 
 import android.net.Uri
+import com.android.volley.NetworkResponse
+import com.android.volley.VolleyError
 import com.google.gson.Gson
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel.JetpackTunnelGsonRequest
+import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.UrlUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -138,5 +144,49 @@ class JetpackTunnelGsonRequestTest {
         assertEquals("{\"force\":\"true\"}", generatedBody["body"])
         assertEquals("/wp/v2/posts/6&_method=delete", generatedBody["path"])
         assertEquals("true", generatedBody["json"])
+    }
+
+    @Test
+    fun `given failed direct tunnel request, when error is delivered, then API warning logs and listener receives error`() {
+        val receivedErrors = mutableListOf<WPComGsonNetworkError>()
+        val request = JetpackTunnelGsonRequest.buildGetRequest(
+            "/wc/v3/orders",
+            DUMMY_SITE_ID,
+            emptyMap(),
+            Any::class.java,
+            { _: Any?, _: Any? -> },
+            { error -> receivedErrors.add(error) },
+            null
+        )
+        val volleyError = buildVolleyError()
+
+        mockStatic(AppLog::class.java).use { appLog ->
+            request?.deliverError(volleyError)
+
+            appLog.verify {
+                AppLog.w(
+                    AppLog.T.API,
+                    "Jetpack Tunnel raw_body error: method=GET, path=/wc/v3/orders, " +
+                        "raw_body_truncated=false, raw_body_snippet=<html>Fatal error</html>"
+                )
+            }
+        }
+        assertThat(receivedErrors).hasSize(1)
+        assertEquals("no_response_body", receivedErrors.single().apiError)
+        assertEquals("<html>Fatal error</html>", receivedErrors.single().errorData?.optString("raw_body"))
+    }
+
+    private fun buildVolleyError(): VolleyError {
+        val responseJson = """
+            {
+              "error": "no_response_body",
+              "message": "Remote site returned non-JSON response",
+              "data": {
+                "status": 500,
+                "raw_body": "<html>Fatal error</html>"
+              }
+            }
+        """.trimIndent()
+        return VolleyError(NetworkResponse(502, responseJson.toByteArray(), emptyMap(), true))
     }
 }
