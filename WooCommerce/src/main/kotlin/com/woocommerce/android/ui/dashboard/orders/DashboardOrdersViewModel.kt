@@ -9,7 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.ORDERS
@@ -174,11 +173,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 is Order.Status.Completed -> R.color.tag_bg_completed
                 is Order.Status.Failed -> R.color.tag_bg_failed
                 is Order.Status.OnHold -> R.color.tag_bg_on_hold
-                is Order.Status.Custom -> if (value == CIABOrderStatusMapper.OPEN_KEY) {
-                    R.color.tag_bg_processing
-                } else {
-                    R.color.tag_bg_other
-                }
+                is Order.Status.Custom -> R.color.tag_bg_other
                 else -> R.color.tag_bg_other
             }
         }

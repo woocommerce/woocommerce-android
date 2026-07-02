@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
@@ -85,10 +84,6 @@ private fun resolveOrderStatusColor(status: String): Int =
         is Order.Status.Completed -> R.color.tag_bg_completed
         is Order.Status.Failed -> R.color.tag_bg_failed
         is Order.Status.OnHold -> R.color.tag_bg_on_hold
-        is Order.Status.Custom -> if (status == CIABOrderStatusMapper.OPEN_KEY) {
-            R.color.tag_bg_processing
-        } else {
-            R.color.tag_bg_other
-        }
+        is Order.Status.Custom -> R.color.tag_bg_other
         else -> R.color.tag_bg_other
     }
