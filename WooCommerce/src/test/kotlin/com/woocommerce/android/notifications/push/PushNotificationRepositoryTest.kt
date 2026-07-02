@@ -586,6 +586,66 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given settings update succeeds, when enabling wpcom notifications, then tracks success for each site`() =
+        testBlocking {
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(Result.success(Unit))
+
+            val result = sut.enableWpComNotificationsForSites(setOf(123L, 456L))
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                listOf(
+                    SiteNotificationSetting(siteId = 123L, newCommentEnabled = true, storeOrderEnabled = true),
+                    SiteNotificationSetting(siteId = 456L, newCommentEnabled = true, storeOrderEnabled = true)
+                )
+            )
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS),
+                siteId = eq(123L)
+            )
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS),
+                siteId = eq(456L)
+            )
+        }
+
+    @Test
+    fun `given settings update fails with api code, when enabling wpcom notifications, then tracks error code`() =
+        testBlocking {
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(
+                Result.failure(
+                    WpComPushNotificationStore.NotificationSettingsUpdateError(
+                        type = WpComPushNotificationStore.NotificationSettingErrorType.ApiError(
+                            apiErrorMessage = "forbidden",
+                            apiErrorCode = "rest_forbidden"
+                        )
+                    )
+                )
+            )
+
+            val result = sut.enableWpComNotificationsForSites(setOf(SITE_ID))
+
+            assertThat(result.isFailure).isTrue()
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = anyOrNull(),
+                errorCode = eq("rest_forbidden")
+            )
+        }
+
+    @Test
+    fun `given empty site set, when enabling wpcom notifications, then does not call the store`() =
+        testBlocking {
+            val result = sut.enableWpComNotificationsForSites(emptySet())
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+        }
+
+    @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")

@@ -176,6 +176,41 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
+    suspend fun enableWpComNotificationsForSites(siteIds: Set<Long>): Result<Unit> {
+        if (siteIds.isEmpty()) return Result.success(Unit)
+
+        val settings = siteIds.map { siteId ->
+            SiteNotificationSetting(
+                siteId = siteId,
+                newCommentEnabled = true,
+                storeOrderEnabled = true
+            )
+        }
+        val result = wpComPushNotificationStore.updateNotificationSettingsFor(settings)
+        if (result.isFailure) {
+            val error = result.exceptionOrNull() as? WpComPushNotificationStore.NotificationSettingsUpdateError
+            WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to enable WPCom notifications for sites $siteIds")
+            siteIds.forEach { siteId ->
+                notificationAnalyticsTracker.trackError(
+                    stat = AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_ERROR,
+                    siteId = siteId,
+                    errorDescription = error?.message,
+                    errorType = error?.type?.let { it::class.simpleName },
+                    errorCode = error.toErrorCode()
+                )
+            }
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications enabled for sites $siteIds")
+            siteIds.forEach { siteId ->
+                notificationAnalyticsTracker.track(
+                    stat = AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS,
+                    siteId = siteId
+                )
+            }
+        }
+        return result
+    }
+
     private fun WpComPushNotificationStore.NotificationSettingsUpdateError?.toErrorCode(): String? =
         when (val type = this?.type) {
             is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
