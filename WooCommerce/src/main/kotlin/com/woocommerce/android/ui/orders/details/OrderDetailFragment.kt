@@ -37,8 +37,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
@@ -140,9 +138,6 @@ class OrderDetailFragment :
     @Inject
     lateinit var cardReaderManager: CardReaderManager
 
-    @Inject
-    lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
-
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
 
@@ -241,12 +236,7 @@ class OrderDetailFragment :
         setupResultHandlers(viewModel)
         setupOrdersCommunicationObservers(communicationViewModel)
 
-        val statusMode = if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
-            Mode.OrderEdit
-        } else {
-            Mode.ReadOnly
-        }
-        binding.orderDetailOrderStatus.initView(mode = statusMode) {
+        binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
         }
         binding.orderRefreshLayout.apply {

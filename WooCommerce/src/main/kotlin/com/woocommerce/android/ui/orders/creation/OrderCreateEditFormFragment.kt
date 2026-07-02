@@ -37,8 +37,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
@@ -132,9 +130,6 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var uiHelper: OrderCreateEditFormAddInfoButtonsStatusHelper
-
-    @Inject
-    lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -316,13 +311,8 @@ class OrderCreateEditFormFragment :
             }
 
             is Edit -> {
-                val statusMode = if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
-                    OrderDetailOrderStatusView.Mode.OrderEdit
-                } else {
-                    OrderDetailOrderStatusView.Mode.ReadOnly
-                }
                 orderStatusView.initView(
-                    mode = statusMode,
+                    mode = OrderDetailOrderStatusView.Mode.OrderEdit,
                     editOrderStatusClickListener = {
                         viewModel.orderStatusData.value?.let {
                             viewModel.onEditOrderStatusClicked(it)

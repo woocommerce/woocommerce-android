@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.dashboard.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.Companion.DEFAULT_FILTER_OPTION_STATUS
@@ -52,10 +51,6 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(amount = any(), any(), any()) } doAnswer { it.arguments[0].toString() }
     }
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
-        on { mapOrderStatus(any()) } doAnswer { it.getArgument(0) }
-        on { resolveFilterKeys(any()) } doAnswer { it.getArgument(0) }
-    }
     private lateinit var viewModel: DashboardOrdersViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -68,7 +63,6 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
             currencyFormatter = currencyFormatter,
             getOrderStatusFilterOptions = getOrderStatusFilterOptions,
             analyticsTrackerWrapper = analyticsTracker,
-            ciabOrderStatusMapper = ciabOrderStatusMapper,
         )
     }
 

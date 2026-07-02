@@ -54,8 +54,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val currencyFormatter: CurrencyFormatter,
     private val resourceProvider: ResourceProvider,
-    private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions,
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper
+    private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD = 3
@@ -97,7 +96,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     }.transformLatest { (filterStatus, refresh) ->
         val statusFilters = filterStatus
             .takeIf { it != DEFAULT_FILTER_OPTION_STATUS }
-            ?.let { ciabOrderStatusMapper.resolveFilterKeys(listOf(it)) }
+            ?.let { listOf(it) }
             ?.map { Order.Status.fromValue(it) }
             ?: emptyList()
         val hasOrders = orderListRepository.hasOrdersLocally(statusFilters)
@@ -119,15 +118,9 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                         trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                         Content(
                             orders = orders.map { order ->
-                                val mappedStatus = ciabOrderStatusMapper.mapOrderStatus(
-                                    Order.OrderStatus(
-                                        statusKey = order.status.value,
-                                        label = order.status.value
-                                    )
-                                )
                                 val status = statusOptions
                                     .firstOrNull { option ->
-                                        option.key == mappedStatus.statusKey
+                                        option.key == order.status.value
                                     }?.label ?: order.status.value
 
                                 ViewState.OrderItem(
@@ -139,7 +132,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                     },
                                     status = status,
                                     statusColor = Order.Status.fromValue(
-                                        mappedStatus.statusKey
+                                        order.status.value
                                     ).color,
                                     totalPrice = currencyFormatter.formatCurrency(
                                         order.total,
