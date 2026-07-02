@@ -6,6 +6,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -74,6 +76,60 @@ class JetpackTunnelRawBodyErrorLoggerTest {
         }
     }
 
+    @Test
+    fun `given raw body contains secrets, when message is built, then secret values are redacted`() {
+        val error = buildError(rawBody = rawBodyWithSecrets)
+
+        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("GET", "/wc/v3/orders", error)
+
+        assertThat(message).contains("[redacted]")
+        rawBodySecretValues.forEach { secretValue ->
+            assertThat(message).doesNotContain(secretValue)
+        }
+    }
+
+    @Test
+    fun `given context contains secrets, when message is built, then context secret values are redacted`() {
+        val error = buildError(rawBody = "<html>Fatal error</html>").apply {
+            apiError = "no_response_body Bearer apiErrorBearer consumer_secret=apiErrorConsumerSecret"
+            message = "Cookie: wordpress_logged_in=messageCookie password=messagePassword " +
+                "application_password=messageApplicationPassword"
+        }
+        val path = "/wc/v3/orders?consumer_key=pathConsumerKey&consumer_secret=pathConsumerSecret" +
+            "&access_token=pathAccessToken&password=hunter2&application_password=app-pass"
+
+        val message = JetpackTunnelRawBodyErrorLogger.buildMessage("POST", path, error)
+
+        assertThat(message).contains("[redacted]")
+        contextSecretValues.forEach { secretValue ->
+            assertThat(message).doesNotContain(secretValue)
+        }
+        assertThat(message).doesNotContain(requestBodySecretValue)
+    }
+
+    @Test
+    fun `given raw body and context contain secrets, when logging, then emitted API warning is redacted`() {
+        val error = buildError(rawBody = rawBodyWithSecrets).apply {
+            apiError = "consumer_secret=apiErrorConsumerSecret"
+            message = "Authorization: Bearer messageBearer"
+        }
+        val path = "/wc/v3/orders?consumer_key=pathConsumerKey&password=hunter2"
+        val messageCaptor = ArgumentCaptor.forClass(String::class.java)
+
+        mockStatic(AppLog::class.java).use { appLog ->
+            JetpackTunnelRawBodyErrorLogger.logIfPresent("PUT", path, error)
+
+            appLog.verify {
+                AppLog.w(eq(AppLog.T.API), messageCaptor.capture())
+            }
+        }
+        assertThat(messageCaptor.value).contains("[redacted]")
+        (rawBodySecretValues + contextSecretValues).forEach { secretValue ->
+            assertThat(messageCaptor.value).doesNotContain(secretValue)
+        }
+        assertThat(messageCaptor.value).doesNotContain(requestBodySecretValue)
+    }
+
     private fun buildError(
         rawBody: String?,
         proxyStatus: Int? = null,
@@ -91,5 +147,53 @@ class JetpackTunnelRawBodyErrorLoggerTest {
                     }
             }
         }
+    }
+
+    private companion object {
+        const val requestBodySecretValue = "requestBodyShouldNotAppear"
+
+        val rawBodyWithSecrets = """
+            Authorization: Bearer abc123
+            Cookie: wordpress_logged_in=wpLoginSecret
+            Set-Cookie: session=sessionSecret
+            consumer_key=ckSecretValue
+            consumer_secret=csSecretValue
+            {
+              "consumer_key": "jsonConsumerKey",
+              "consumer_secret": "jsonConsumerSecret",
+              "access_token": "jsonAccessToken",
+              "token": "jsonToken",
+              "application_password": "jsonApplicationPassword",
+              "password": "jsonPassword"
+            }
+        """.trimIndent()
+
+        val rawBodySecretValues = listOf(
+            "abc123",
+            "wpLoginSecret",
+            "sessionSecret",
+            "ckSecretValue",
+            "csSecretValue",
+            "jsonConsumerKey",
+            "jsonConsumerSecret",
+            "jsonAccessToken",
+            "jsonToken",
+            "jsonApplicationPassword",
+            "jsonPassword"
+        )
+
+        val contextSecretValues = listOf(
+            "apiErrorBearer",
+            "apiErrorConsumerSecret",
+            "messageCookie",
+            "messagePassword",
+            "messageApplicationPassword",
+            "pathConsumerKey",
+            "pathConsumerSecret",
+            "pathAccessToken",
+            "hunter2",
+            "app-pass",
+            "messageBearer"
+        )
     }
 }
