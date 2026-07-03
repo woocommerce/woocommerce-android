@@ -18,6 +18,8 @@ doc defines the technical boundaries that support that rollout.
 - Figma is the design-intent source of truth. Android owns the runtime API contract.
 - Source references use public-repo shorthands: P2 `pe5sF9-5ox-p2`, Figma
   `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
+- Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
+  collecting live Figma screenshots.
 - Foundation source values come from `docs/design-system/figma-export.json` and the row-level audit
   files under `docs/design-system/foundation-audit/`. This docs branch is allowed to lack runtime
   foundation code; future implementation consumes these docs as the contract.

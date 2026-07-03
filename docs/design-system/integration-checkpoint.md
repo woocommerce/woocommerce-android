@@ -95,6 +95,11 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   packages. App-layer rollout wiring stays outside the module.
 - Package root: `com.woocommerce.android.ui.compose.designsystem`.
 - Suggested subpackages: `foundation`, `component`, and `preview`.
+- PR3 ports production components into `:libs:store-design-system`; old app-local
+  `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/compose/designsystem` component paths are
+  historical only and should not be resurrected.
+- Module component previews may use module-local vector drawables for catalog coverage. App drawables,
+  app preview annotations, and app screenshot harnesses stay outside the library boundary.
 - Use a separate opt-in `WooDesignSystemTheme`, Material 3-only.
 - `WooDesignSystemTheme` is the migration-era wrapper name while the legacy
   `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper exists. Do not introduce `WooNewTheme`.
@@ -105,8 +110,16 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - `WooThemeWithBackground` remains app-owned in the earlier compatibility model and would provide
   legacy-compatible design-system foundation locals.
 - The design-system module does not read app resources directly.
-- Migrated first-wave screens should cover legacy-compatible and real design-system foundations in
-  light and dark mode.
+- `WooTopAppBar` in the module is design-system-only. The old root-provided legacy-compatible
+  appearance from pre-module PR3 is intentionally not part of the library.
+- XML toolbar convergence lives in `:libs:store-design-system` through `WooDesignSystemToolbar` and
+  the library-owned `Widget.Woo.DesignSystem.Toolbar` / `ThemeOverlay.Woo.DesignSystem.Toolbar`
+  styles. Prefer the subclass when inflated toolbar icon actions need design-system outlines; it
+  decorates visible rendered actions in place while preserving `SearchView`, custom action views, and
+  overflow ownership. PR3 uses Product List as the first XML toolbar opt-in; additional screen
+  adoption belongs to migration work.
+- Migrated first-wave screens and design-system previews should cover the selected design-system root
+  in light and dark mode.
 - New design-system foundations, components, preview catalog entries, and first-wave screen updates
   should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
 - Design-system component previews should wrap content in `WooDesignSystemTheme`, not

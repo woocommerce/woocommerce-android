@@ -120,10 +120,22 @@ Compose reading that same resource. Do not keep parallel Kotlin/Compose and XML 
 The toolbar goal is a unified design-system visual look, not one mandatory implementation.
 
 - Compose-owned screens use `WooTopAppBar`.
+- The module `WooTopAppBar` is design-system-only and lives in `:libs:store-design-system`.
 - Heavy XML screens may keep XML toolbar ownership if the toolbar matches the design-system look.
+- `Widget.Woo.DesignSystem.Toolbar` is a style scaffold for colors, centered title, and insets; it is
+  not enough on its own for parity with the Compose top app bar.
+- XML-heavy screens that need visual parity can use `WooDesignSystemToolbar` from
+  `:libs:store-design-system` for automatic design-system chrome. The library also owns
+  `Widget.Woo.DesignSystem.Toolbar` and `ThemeOverlay.Woo.DesignSystem.Toolbar` for XML opt-ins.
+  Visible inflated icon actions are decorated in place; text actions stay borderless, and
+  expanded/custom action views remain screen-owned.
 - Existing behavior must be preserved for `SearchView`, `ActionMode`, collapsing app bars,
   menu/action ownership, navigation ownership, and insets.
-- A DS-looking XML toolbar is an acceptable migration tool for legacy-heavy screens.
+- A DS-looking XML toolbar is an acceptable migration tool for legacy-heavy screens. PR3 adds
+  component/XML toolbar infrastructure and uses Product List as the first XML toolbar opt-in;
+  additional product-screen adoption remains migration work.
+- If a legacy-themed Compose root still needs toolbar compatibility, implement that compatibility in
+  app code rather than adding app theme/resource coupling to `:libs:store-design-system`.
 
 This keeps the migration focused on UI consistency without forcing a full app rewrite.
 

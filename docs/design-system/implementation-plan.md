@@ -103,9 +103,6 @@ can serve both Compose and targeted XML/View convergence. Non-color foundations 
 Kotlin/Compose-owned. Do not document an app-owned legacy-compatible design-system foundation bridge
 as required for this rollout path unless a future implementation explicitly chooses it.
 
-Do not add implementation work to recompute token-map color ratios. The docs intentionally remove
-stale manually maintained ratio and alpha-composition notes.
-
 ### 3. Components and Preview Catalog
 
 Implement the i1 component catalog with previews, while exposing production APIs only for ready components.

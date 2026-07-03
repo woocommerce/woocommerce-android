@@ -67,7 +67,7 @@ Before reusing this as a migration pattern:
 - Verify the inline help link.
 - Verify analytics are unchanged.
 - Verify the same screen implementation renders under the selected design-system root.
-- Verify DS components do not fall back to `LightWooColors`.
+- Verify DS components do not fall back to static light defaults.
 - Review light and dark previews/screenshots.
 - Confirm no POS APIs or patterns were introduced.
 

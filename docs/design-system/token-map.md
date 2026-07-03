@@ -16,7 +16,8 @@ Use source shorthands in the source-reference column. Do not use raw P2 or Figma
 docs.
 
 Agent note: Figma references use the public GitHub shorthand `{fileKey}-fi`. When using Figma tools,
-strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`.
+strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`. For live Figma component
+inspection, use [figma-navigation.md](figma-navigation.md).
 
 ## Figma Export Parsing Rules
 
