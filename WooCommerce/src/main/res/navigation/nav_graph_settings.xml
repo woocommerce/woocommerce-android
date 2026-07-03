@@ -175,6 +175,9 @@
             android:id="@+id/action_developerOptionsFragment_to_devFeatureFlagsFragment"
             app:destination="@id/devFeatureFlagsFragment" />
         <action
+            android:id="@+id/action_developerOptionsFragment_to_storeDesignSystemComponentCatalogFragment"
+            app:destination="@id/storeDesignSystemComponentCatalogFragment" />
+        <action
             android:id="@+id/action_developerOptionsFragment_to_featureAnnouncementDialogFragment"
             app:destination="@id/featureAnnouncementDialogFragment" />
     </fragment>
@@ -182,6 +185,10 @@
         android:id="@+id/devFeatureFlagsFragment"
         android:name="com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsFragment"
         android:label="DevFeatureFlagsFragment" />
+    <fragment
+        android:id="@+id/storeDesignSystemComponentCatalogFragment"
+        android:name="com.woocommerce.android.ui.prefs.developer.StoreDesignSystemComponentCatalogFragment"
+        android:label="StoreDesignSystemComponentCatalogFragment" />
     <fragment
         android:id="@+id/accountSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.account.AccountSettingsFragment"
