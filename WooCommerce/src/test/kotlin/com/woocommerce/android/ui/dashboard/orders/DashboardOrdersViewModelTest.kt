@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -38,8 +39,8 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
         on { refreshTrigger } doReturn emptyFlow()
     }
     private val orderListRepository: OrderListRepository = mock {
-        on { hasOrdersLocally(any()) } doReturn false
-        on { observeTopOrders(any(), any(), any()) } doReturn flowOf(Result.success(sampleOrders))
+        on { hasOrdersLocally(anyOrNull()) } doReturn false
+        on { observeTopOrders(any(), any(), anyOrNull()) } doReturn flowOf(Result.success(sampleOrders))
     }
     private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions = mock {
         on { invoke() } doReturn emptyList()
@@ -107,7 +108,7 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
     @Test
     fun `given failure when loading orders, when card is loaded, then show error`() = testBlocking {
         setup {
-            whenever(orderListRepository.observeTopOrders(any(), any(), any()))
+            whenever(orderListRepository.observeTopOrders(any(), any(), anyOrNull()))
                 .thenReturn(flowOf(Result.failure(Exception("Error"))))
         }
 
@@ -119,7 +120,7 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
     @Test
     fun `given failure when loading orders, when retry is clicked, then reload orders`() = testBlocking {
         setup {
-            whenever(orderListRepository.observeTopOrders(any(), any(), any()))
+            whenever(orderListRepository.observeTopOrders(any(), any(), anyOrNull()))
                 .thenReturn(flowOf(Result.failure(Exception("Error"))))
                 .thenReturn(flowOf(Result.success(sampleOrders)))
         }
@@ -171,15 +172,10 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
         )
         setup {
             whenever(getOrderStatusFilterOptions.invoke()) doReturn listOf(newFilter)
-            whenever(orderListRepository.observeTopOrders(any(), any(), eq(emptyList())))
+            whenever(orderListRepository.observeTopOrders(any(), any(), eq(null)))
                 .thenReturn(flowOf(Result.success(sampleOrders)))
-            whenever(
-                orderListRepository.observeTopOrders(
-                    any(),
-                    any(),
-                    argThat { any { it.value == newFilter.key } }
-                )
-            ).thenReturn(flowOf(Result.success(sampleOrders.take(2))))
+            whenever(orderListRepository.observeTopOrders(any(), any(), argThat { this.value == newFilter.key }))
+                .thenReturn(flowOf(Result.success(sampleOrders.take(2))))
         }
 
         val viewState = viewModel.viewState.runAndCaptureValues {

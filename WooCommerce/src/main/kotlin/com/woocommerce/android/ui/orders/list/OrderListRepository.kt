@@ -128,19 +128,15 @@ class OrderListRepository @Inject constructor(
         }
     }
 
-    suspend fun hasOrdersLocally(statusFilters: List<Order.Status> = emptyList()) =
+    suspend fun hasOrdersLocally(statusFilter: Order.Status? = null) =
         orderStore.getOrdersForSite(selectedSite.get())
-            .any { statusFilters.isEmpty() || it.status in statusFilters.map { s -> s.value } }
+            .any { statusFilter == null || it.status == statusFilter.value }
 
-    fun observeTopOrders(count: Int, isForced: Boolean, statusFilters: List<Order.Status> = emptyList()) = flow {
-        val statusFilterValues = statusFilters.map { it.value }.toSet()
+    fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
         if (!isForced) {
             val cachedOrders = orderStore.getOrdersForSite(selectedSite.get())
                 .asSequence()
-                .filter {
-                    it.status != ORDER_STATUS_TRASH &&
-                        (statusFilterValues.isEmpty() || it.status in statusFilterValues)
-                }
+                .filter { it.status != ORDER_STATUS_TRASH && (statusFilter == null || it.status == statusFilter.value) }
                 .sortedByDescending { it.dateCreated }
                 .take(count)
                 .toList()
@@ -153,7 +149,7 @@ class OrderListRepository @Inject constructor(
         val result = orderStore.fetchOrders(
             site = selectedSite.get(),
             count = count,
-            statusFilter = statusFilterValues.joinToString(",").ifEmpty { null },
+            statusFilter = statusFilter?.value,
             deleteOldData = false
         )
 

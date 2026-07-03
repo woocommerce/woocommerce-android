@@ -93,12 +93,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     val viewState = selectedFilter.flatMapLatest { status ->
         refreshTrigger.map { Pair(status, it) }
     }.transformLatest { (filterStatus, refresh) ->
-        val statusFilters = filterStatus
+        val statusFilter = filterStatus
             .takeIf { it != DEFAULT_FILTER_OPTION_STATUS }
-            ?.let { listOf(it) }
-            ?.map { Order.Status.fromValue(it) }
-            ?: emptyList()
-        val hasOrders = orderListRepository.hasOrdersLocally(statusFilters)
+            ?.let { Order.Status.fromValue(it) }
+        val hasOrders = orderListRepository.hasOrdersLocally(statusFilter)
         if (refresh.isForced || !hasOrders) {
             emit(ViewState.Loading)
             trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
@@ -108,7 +106,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 orderListRepository.observeTopOrders(
                     count = MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD,
                     isForced = refresh.isForced,
-                    statusFilters = statusFilters
+                    statusFilter = statusFilter
                 ),
                 statusOptions
             ) { result, statusOptions ->
@@ -118,9 +116,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                         Content(
                             orders = orders.map { order ->
                                 val status = statusOptions
-                                    .firstOrNull { option ->
-                                        option.key == order.status.value
-                                    }?.label ?: order.status.value
+                                    .firstOrNull { option -> option.key == order.status.value }?.label
+                                    ?: order.status.value
 
                                 ViewState.OrderItem(
                                     id = order.id,
@@ -130,13 +127,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                         resourceProvider.getString(R.string.orderdetail_customer_name_default)
                                     },
                                     status = status,
-                                    statusColor = Order.Status.fromValue(
-                                        order.status.value
-                                    ).color,
-                                    totalPrice = currencyFormatter.formatCurrency(
-                                        order.total,
-                                        order.currency
-                                    ),
+                                    statusColor = order.status.color,
+                                    totalPrice = currencyFormatter.formatCurrency(order.total, order.currency),
                                     isPosOrder = order.salesChannel == Order.SalesChannel.POS
                                 )
                             },
@@ -173,7 +165,6 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 is Order.Status.Completed -> R.color.tag_bg_completed
                 is Order.Status.Failed -> R.color.tag_bg_failed
                 is Order.Status.OnHold -> R.color.tag_bg_on_hold
-                is Order.Status.Custom -> R.color.tag_bg_other
                 else -> R.color.tag_bg_other
             }
         }
