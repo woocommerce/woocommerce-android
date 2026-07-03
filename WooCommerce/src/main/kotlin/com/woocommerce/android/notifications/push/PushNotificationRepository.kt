@@ -274,6 +274,20 @@ class PushNotificationRepository @Inject constructor(
 
         val result = wooPushNotificationsStore.deletePushToken(site, registration.tokenId)
         val isAlreadyDeleted = result.error?.type == WooErrorType.INVALID_ID
+        if (result.isError) {
+            notificationAnalyticsTracker.trackError(
+                stat = AnalyticsEvent.WOO_PUSH_TOKEN_DELETE_ERROR,
+                siteId = site.siteId,
+                errorDescription = result.error?.message,
+                errorType = result.error?.type?.name,
+                errorCode = result.error?.apiErrorCode
+            )
+        } else {
+            notificationAnalyticsTracker.track(
+                stat = AnalyticsEvent.WOO_PUSH_TOKEN_DELETE_SUCCESS,
+                siteId = site.siteId
+            )
+        }
         if (result.isError && !isAlreadyDeleted) {
             WooLog.w(
                 WooLog.T.NOTIFICATIONS,
