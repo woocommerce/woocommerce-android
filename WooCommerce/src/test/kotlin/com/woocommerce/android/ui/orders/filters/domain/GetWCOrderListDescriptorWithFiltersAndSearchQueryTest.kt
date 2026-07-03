@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders.filters.domain
 
-import com.woocommerce.android.R
-import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -11,18 +9,15 @@ import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 
 class GetWCOrderListDescriptorWithFiltersAndSearchQueryTest {
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
-    private val resourceProvider: ResourceProvider = mock()
     private val sut = GetWCOrderListDescriptorWithFiltersAndSearchQuery(
         getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
-        resourceProvider = resourceProvider,
     )
 
     @Test
-    fun `given regular search query, when invoked, then keeps filters and adds search query`() {
+    fun `given text search, when invoked, then keeps filters and adds search query`() {
         // GIVEN
         val descriptor = filteredDescriptor(customerId = CUSTOMER_ID)
         whenever(getWCOrderListDescriptorWithFilters()).thenReturn(descriptor)
-        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).thenReturn(GUEST_LABEL)
 
         // WHEN
         val result = sut(SEARCH_QUERY)
@@ -40,14 +35,13 @@ class GetWCOrderListDescriptorWithFiltersAndSearchQueryTest {
     }
 
     @Test
-    fun `given guest search query, when invoked, then filters by guest customer instead of text search`() {
+    fun `given guest orders search, when invoked, then filters by guest customer instead of text search`() {
         // GIVEN
         val descriptor = filteredDescriptor(customerId = null)
         whenever(getWCOrderListDescriptorWithFilters()).thenReturn(descriptor)
-        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).thenReturn(GUEST_LABEL)
 
         // WHEN
-        val result = sut(" guest ")
+        val result = sut(SEARCH_QUERY, searchGuestOrders = true)
 
         // THEN
         assertThat(result.searchQuery).isNull()
@@ -62,18 +56,17 @@ class GetWCOrderListDescriptorWithFiltersAndSearchQueryTest {
     }
 
     @Test
-    fun `given active customer filter, when guest search is invoked, then keeps customer filter`() {
+    fun `given guest orders search, when a customer filter is active, then replaces it with the guest customer`() {
         // GIVEN
         val descriptor = filteredDescriptor(customerId = CUSTOMER_ID)
         whenever(getWCOrderListDescriptorWithFilters()).thenReturn(descriptor)
-        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).thenReturn(GUEST_LABEL)
 
         // WHEN
-        val result = sut(GUEST_LABEL)
+        val result = sut(SEARCH_QUERY, searchGuestOrders = true)
 
         // THEN
-        assertThat(result.searchQuery).isEqualTo(GUEST_LABEL)
-        assertThat(result.customerId).isEqualTo(CUSTOMER_ID)
+        assertThat(result.searchQuery).isNull()
+        assertThat(result.customerId).isEqualTo(GUEST_CUSTOMER_ID)
     }
 
     private fun filteredDescriptor(customerId: Long?) = WCOrderListDescriptor(
@@ -95,7 +88,6 @@ class GetWCOrderListDescriptorWithFiltersAndSearchQueryTest {
         const val GUEST_CUSTOMER_ID = 0L
         const val PRODUCT_ID = 456L
         const val SEARCH_QUERY = "Joe Doe"
-        const val GUEST_LABEL = "Guest"
         const val STATUS_FILTER = "processing"
         const val BEFORE_FILTER = "2026-07-03T23:59:59"
         const val AFTER_FILTER = "2026-07-03T00:00:00"

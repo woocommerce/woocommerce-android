@@ -278,11 +278,23 @@ class OrderListViewModel @Inject constructor(
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
      */
-    fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+    fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(
+            searchQuery = sanitizeSearchQuery(searchQuery),
+            searchGuestOrders = searchGuestOrders
+        )
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Called from the search empty view when the query matches the Guest label shown on order rows.
+     * That label is not stored on guest orders, so a text search can't find them — re-submit the
+     * search as an explicit guest-orders filter instead.
+     */
+    fun onSearchGuestOrdersClicked() {
+        submitSearchOrFilter(searchQuery = searchQuery, searchGuestOrders = true)
     }
 
     fun changeTroubleshootingBannerVisibility(show: Boolean) {
@@ -549,7 +561,14 @@ class OrderListViewModel @Inject constructor(
                         }
                     }
 
-                    isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
+                    isSearching && searchQuery.isNotEmpty() -> {
+                        if (isGuestLabelSearch() && activeWCOrderListDescriptor?.customerId == null) {
+                            EmptyViewType.SEARCH_RESULTS_GUEST
+                        } else {
+                            EmptyViewType.SEARCH_RESULTS
+                        }
+                    }
+
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
                         !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
@@ -562,6 +581,12 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(newEmptyViewType)
         }
     }
+
+    private fun isGuestLabelSearch(): Boolean =
+        searchQuery.trim().equals(
+            resourceProvider.getString(R.string.orderdetail_customer_name_default),
+            ignoreCase = true
+        )
 
     private fun showOfflineSnack() {
         // Network is not connected

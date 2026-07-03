@@ -53,6 +53,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS_GUEST
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -63,6 +64,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
@@ -129,7 +131,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))
-        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString())).thenReturn(
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
             WCOrderListDescriptor(
                 site = mock()
             )
@@ -396,6 +398,70 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertNotNull(emptyView)
             assertEquals(emptyView, SEARCH_RESULTS)
         }
+    }
+
+    /**
+     * Test the logic that generates the guest-orders search empty view. It is shown instead of the
+     * regular search empty view when the search query matches the localized Guest label displayed
+     * on order list rows (guest orders don't store that label, so text search can't find them),
+     * as long as no customer filter is active.
+     */
+    @Test
+    fun `Display guest orders empty view when search query matches the guest label`() = testBlocking {
+        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
+        viewModel.isSearching = true
+        viewModel.searchQuery = " guest "
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
+
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, SEARCH_RESULTS_GUEST)
+        }
+    }
+
+    @Test
+    fun `Display regular search empty view for guest label search when a customer filter is active`() = testBlocking {
+        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
+            WCOrderListDescriptor(site = mock(), customerId = 123L)
+        )
+        viewModel.isSearching = true
+        viewModel.searchQuery = "guest"
+        viewModel.submitSearchOrFilter("guest")
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
+
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, SEARCH_RESULTS)
+        }
+    }
+
+    @Test
+    fun `Search for guest orders when the guest orders empty view button is clicked`() = testBlocking {
+        viewModel.searchQuery = "Guest"
+
+        viewModel.onSearchGuestOrdersClicked()
+
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+            searchQuery = "Guest",
+            searchGuestOrders = true
+        )
     }
 
     /**
