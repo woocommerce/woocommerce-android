@@ -1,16 +1,13 @@
 package com.woocommerce.android.ui.products.typesbottomsheet
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import javax.inject.Inject
 
 class ProductTypeBottomSheetBuilder @Inject constructor(
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) {
     @Suppress("LongMethod")
     suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
@@ -41,8 +38,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = ProductType.VARIABLE,
                 titleResource = R.string.product_type_variable_title,
                 descResource = R.string.product_type_variable_desc,
-                iconResource = R.drawable.ic_gridicons_types,
-                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
+                iconResource = R.drawable.ic_gridicons_types
             ),
 
             ProductTypesBottomSheetUiItem(
@@ -56,8 +52,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = ProductType.GROUPED,
                 titleResource = R.string.product_type_grouped_title,
                 descResource = R.string.product_type_grouped_desc,
-                iconResource = R.drawable.ic_widgets,
-                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
+                iconResource = R.drawable.ic_widgets
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.EXTERNAL,
