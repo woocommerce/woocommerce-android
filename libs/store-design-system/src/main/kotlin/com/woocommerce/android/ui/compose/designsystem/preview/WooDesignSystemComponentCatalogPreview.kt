@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooChoiceControlsDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooDividerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButtonDemo
@@ -43,9 +44,11 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooIconContaine
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
@@ -274,6 +277,24 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionIconContainersCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
+                    path = PRODUCTION_CHOICE_CONTROLS_PATH,
+                    title = "Choice controls",
+                    description = "Checkboxes, radio buttons, and filter chips.",
+                    content = { ProductionChoiceControlsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_SEARCH_PATH,
+                    title = "Search",
+                    description = "Search field states with clear and trailing actions.",
+                    content = { ProductionSearchCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_TABS_PATH,
+                    title = "Tabs",
+                    description = "Icon and text tab row variants.",
+                    content = { ProductionTabsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
                     path = PRODUCTION_SECTION_HEADERS_PATH,
                     title = "Section headers",
                     description = "Semantically marked headers for grouped content.",
@@ -343,6 +364,29 @@ private fun ProductionIconContainersCatalogLeaf() {
         WooIconContainerDemo(
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
         )
+    }
+}
+
+@Composable
+private fun ProductionChoiceControlsCatalogLeaf() {
+    CatalogSection("Choice controls") {
+        WooChoiceControlsDemo(
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+    }
+}
+
+@Composable
+private fun ProductionSearchCatalogLeaf() {
+    CatalogSection("Search") {
+        WooSearchFieldDemo()
+    }
+}
+
+@Composable
+private fun ProductionTabsCatalogLeaf() {
+    CatalogSection("Tabs") {
+        WooTabsDemo()
     }
 }
 
@@ -497,6 +541,9 @@ private const val PRODUCTION_ICON_ACTIONS_PATH = "production/icon-actions"
 private const val PRODUCTION_BADGES_PATH = "production/badges"
 private const val PRODUCTION_NOTICE_BANNERS_PATH = "production/notice-banners"
 private const val PRODUCTION_ICON_CONTAINERS_PATH = "production/icon-containers"
+private const val PRODUCTION_CHOICE_CONTROLS_PATH = "production/choice-controls"
+private const val PRODUCTION_SEARCH_PATH = "production/search"
+private const val PRODUCTION_TABS_PATH = "production/tabs"
 private const val PRODUCTION_SECTION_HEADERS_PATH = "production/section-headers"
 private const val PRODUCTION_ROWS_CELLS_PATH = "production/rows-cells"
 private const val PRODUCTION_DIVIDERS_PATH = "production/dividers"
