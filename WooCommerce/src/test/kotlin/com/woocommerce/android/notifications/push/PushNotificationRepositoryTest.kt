@@ -327,6 +327,82 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given token delete succeeds, when unregistering woo push token, then tracks delete success`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(site, "token-id-1")).thenReturn(WooResult(Unit))
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterWooPushTokenForSite(site)
+
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_DELETE_SUCCESS),
+                siteId = eq(SITE_ID)
+            )
+        }
+
+    @Test
+    fun `given token delete fails, when unregistering woo push token, then tracks delete error`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(site, "token-id-1"))
+                .thenReturn(PN_UNREGISTER_ERROR)
+
+            sut.unregisterWooPushTokenForSite(site)
+
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_DELETE_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = eq(WooErrorType.GENERIC_ERROR.name),
+                errorCode = anyOrNull()
+            )
+        }
+
+    @Test
+    fun `given token already deleted on server, when unregistering woo push token, then tracks invalid id error type`() =
+        testBlocking {
+            val site = mock<SiteModel> { on { siteId } doReturn SITE_ID }
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.deletePushToken(site, "token-id-1")).thenReturn(
+                WooResult(WooError(WooErrorType.INVALID_ID, BaseRequest.GenericErrorType.NOT_FOUND, "Not found"))
+            )
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterWooPushTokenForSite(site)
+
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_DELETE_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = eq(WooErrorType.INVALID_ID.name),
+                errorCode = anyOrNull()
+            )
+        }
+
+    @Test
     fun `given site without stored metadata, when unregistering single woo site, then succeeds without deleting token`() =
         testBlocking {
             whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(null)
