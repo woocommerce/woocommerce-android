@@ -290,6 +290,7 @@ dependencies {
 
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
+    implementation(project(":libs:store-design-system"))
     implementation(project(":libs:ai-assistant:feature"))
 
     implementation(libs.wordpress.aztec.main) {
