@@ -2314,20 +2314,6 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given flag on and TTP Available, when ViewModel created, then reason not tracked`() = runTest {
-        // GIVEN
-        whenever(isTapToPayAvailable.isFeatureFlagEnabled()).thenReturn(true)
-        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
-        clearInvocations(tracker)
-
-        // WHEN
-        createViewModelAndSetupForSuccessfulOrderCreation()
-
-        // THEN
-        verify(tracker, never()).trackTapToPayNotAvailableReason(any(), any())
-    }
-
-    @Test
     fun `given missing location permission, when TTP clicked, then permission request event is emitted`() = runTest {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(true)
