@@ -140,7 +140,7 @@ class RegisterDevice @Inject constructor(
             "Migrating Woo push registrations back to WP.com for sites $wooRegisteredSiteIds"
         )
 
-        val wpComFallbackSiteIds = if (accountStore.hasAccessToken()) {
+        val visibleJetpackSiteIds = if (accountStore.hasAccessToken()) {
             getWooVisibleSites()
                 .filter { it.siteId in wooRegisteredSiteIds && it.connectionType == SiteConnectionType.Jetpack }
                 .map { it.siteId }
@@ -149,17 +149,17 @@ class RegisterDevice @Inject constructor(
             emptySet()
         }
 
-        val isWpComTakenOver = wpComFallbackSiteIds.isNotEmpty() &&
+        val isWpComTakenOver = visibleJetpackSiteIds.isNotEmpty() &&
             ensureWpComPushRegistered(token) &&
-            pushNotificationRepository.enableWpComNotificationsForSites(wpComFallbackSiteIds).isSuccess
+            pushNotificationRepository.enableWpComNotificationsForSites(visibleJetpackSiteIds).isSuccess
 
-        // Sites with a working WP.com fallback are unregistered only after WP.com takes over, so a
-        // WP.com failure leaves them on Woo push until the next run retries. Sites without a
-        // fallback are unregistered unconditionally.
+        // Visible Jetpack sites have a working WP.com fallback, so they are unregistered only after
+        // WP.com takes over; a WP.com failure leaves them on Woo push until the next run retries.
+        // Sites without a fallback are unregistered unconditionally.
         val siteIdsToUnregister = if (isWpComTakenOver) {
             wooRegisteredSiteIds
         } else {
-            wooRegisteredSiteIds - wpComFallbackSiteIds
+            wooRegisteredSiteIds - visibleJetpackSiteIds
         }
         pushNotificationRepository.unregisterWooPushRegisteredSites(siteIdsToUnregister)
     }
