@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.login.error
 
-import androidx.core.os.bundleOf
+import android.os.Bundle
 import androidx.fragment.app.setFragmentResult
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
@@ -18,10 +18,10 @@ class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment(
 
         fun newInstance(siteUrl: String, isJetpackConnected: Boolean) =
             ApplicationPasswordsDisabledDialogFragment().apply {
-                arguments = bundleOf(
-                    SITE_URL_KEY to siteUrl,
-                    IS_JETPACK_CONNECTED_KEY to isJetpackConnected
-                )
+                arguments = Bundle().apply {
+                    putString(SITE_URL_KEY, siteUrl)
+                    putBoolean(IS_JETPACK_CONNECTED_KEY, isJetpackConnected)
+                }
             }
     }
 
@@ -55,7 +55,7 @@ class ApplicationPasswordsDisabledDialogFragment : LoginBaseErrorDialogFragment(
             LoginErrorButton(
                 title = R.string.retry,
                 onClick = {
-                    setFragmentResult(RETRY_RESULT, bundleOf())
+                    setFragmentResult(RETRY_RESULT, Bundle())
                     dismiss()
                 }
             )
