@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="woo_ds_toolbar_action_view" type="id" />
+    <item name="woo_ds_toolbar_action_icon" type="id" />
+</resources>
