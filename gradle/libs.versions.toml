@@ -2,7 +2,7 @@
 agp = '8.13.2'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
-androidx-activity = '1.12.4'
+androidx-activity = '1.13.0'
 androidx-appcompat = '1.7.1'
 androidx-arch-core = '2.2.0'
 androidx-annotation = '1.10.0'
