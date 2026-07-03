@@ -13,10 +13,14 @@ import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.ActionMenuView
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import com.google.android.material.appbar.MaterialToolbar
@@ -43,16 +47,19 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         // ActionMenuItemView centers icon-only items from the current icon bounds during measure.
+        decorateNavigationButton()
         decorateRenderedMenuActions()
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        if (decorateRenderedMenuActions()) {
+        if (decorateNavigationButton() || decorateRenderedMenuActions()) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+        decorateNavigationButton()
         decorateRenderedMenuActions()
+        applyToolbarControlEdgeInsets()
     }
 
     private fun applyStaticChrome() {
@@ -66,6 +73,21 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         setContentInsetStartWithNavigation(edgeInset)
         setContentInsetEndWithActions(edgeInset)
         minimumHeight = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_height)
+    }
+
+    private fun decorateNavigationButton(): Boolean {
+        val navigationButton = children.filterIsInstance<AppCompatImageButton>().firstOrNull() ?: return false
+        var changed = navigationButton.applyToolbarIconTouchTarget()
+        if (navigationButton.scaleType != ImageView.ScaleType.FIT_CENTER) {
+            navigationButton.scaleType = ImageView.ScaleType.FIT_CENTER
+            changed = true
+        }
+        if (navigationButton.getTag(R.id.woo_ds_toolbar_action_view) != true) {
+            navigationButton.background = context.toolbarIconButtonBackground(icon = null)
+            navigationButton.setTag(R.id.woo_ds_toolbar_action_view, true)
+            changed = true
+        }
+        return changed
     }
 
     private fun decorateRenderedMenuActions(): Boolean {
@@ -86,8 +108,8 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         return changed
     }
 
-    private fun android.view.View.applyOutlinedToolbarActionStyle(icon: Drawable?, iconSize: Int): Boolean {
-        var changed = false
+    private fun View.applyOutlinedToolbarActionStyle(icon: Drawable?, iconSize: Int): Boolean {
+        var changed = applyToolbarIconTouchTarget()
         val backgroundIcon = icon.takeIf { shouldDrawIconInBackground() }
         if (getTag(R.id.woo_ds_toolbar_action_view) != true ||
             getTag(R.id.woo_ds_toolbar_action_icon) !== backgroundIcon
@@ -109,8 +131,85 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         return changed
     }
 
-    private fun android.view.View.shouldDrawIconInBackground(): Boolean =
+    private fun View.shouldDrawIconInBackground(): Boolean =
         this !is TextView || text.isNullOrEmpty()
+
+    private fun applyToolbarControlEdgeInsets() {
+        val edgeInset = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
+        val isRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
+        val toolbarWidth = width
+
+        children.filterIsInstance<AppCompatImageButton>().firstOrNull()?.layoutWithStartInset(
+            edgeInset = edgeInset,
+            toolbarWidth = toolbarWidth,
+            isRtl = isRtl,
+        )
+
+        children.filterIsInstance<ActionMenuView>().firstOrNull()?.layoutWithEndInset(
+            edgeInset = edgeInset,
+            toolbarWidth = toolbarWidth,
+            isRtl = isRtl,
+        )
+    }
+}
+
+private fun View.layoutWithStartInset(
+    edgeInset: Int,
+    toolbarWidth: Int,
+    isRtl: Boolean,
+) {
+    val childWidth = measuredWidth
+    val childLeft = if (isRtl) {
+        toolbarWidth - edgeInset - childWidth
+    } else {
+        edgeInset
+    }
+    layout(childLeft, top, childLeft + childWidth, bottom)
+}
+
+private fun View.layoutWithEndInset(
+    edgeInset: Int,
+    toolbarWidth: Int,
+    isRtl: Boolean,
+) {
+    val childWidth = measuredWidth
+    val childLeft = if (isRtl) {
+        edgeInset
+    } else {
+        toolbarWidth - edgeInset - childWidth
+    }
+    layout(childLeft, top, childLeft + childWidth, bottom)
+}
+
+private fun View.applyToolbarIconTouchTarget(): Boolean {
+    var changed = false
+    val touchTarget = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+    val iconPadding = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_icon_padding)
+
+    if (minimumWidth != touchTarget) {
+        minimumWidth = touchTarget
+        changed = true
+    }
+    if (minimumHeight != touchTarget) {
+        minimumHeight = touchTarget
+        changed = true
+    }
+    if (layoutParams?.width != touchTarget || layoutParams?.height != touchTarget) {
+        layoutParams = (layoutParams ?: ViewGroup.LayoutParams(touchTarget, touchTarget)).apply {
+            width = touchTarget
+            height = touchTarget
+        }
+        changed = true
+    }
+    if (paddingLeft != iconPadding ||
+        paddingTop != iconPadding ||
+        paddingRight != iconPadding ||
+        paddingBottom != iconPadding
+    ) {
+        setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+        changed = true
+    }
+    return changed
 }
 
 private class CenteredToolbarIconButtonDrawable(
