@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -26,7 +25,6 @@ class WooPosSettingsStoreViewModelTest {
     private val storeRepository: WooPosSettingsStoreRepository = mock()
     private val receiptRepository: WooPosSettingsReceiptRepository = mock()
     private val selectedSite: SelectedSite = mock()
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
@@ -132,7 +130,6 @@ class WooPosSettingsStoreViewModelTest {
         // GIVEN
         val site = SiteModel().apply { url = "https://mystore.com" }
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(false)
         whenever(storeRepository.getStoreInfo()).thenReturn(
             WooPosSettingsStoreState.StoreInfo(storeName = "", address = "")
         )
@@ -156,40 +153,10 @@ class WooPosSettingsStoreViewModelTest {
         job.cancel()
     }
 
-    @Test
-    fun `when edit receipt clicked on CIAB site, then emits URL with next-admin path`() = runTest {
-        // GIVEN
-        val site = SiteModel().apply { url = "https://my.commerce-garden.com" }
-        whenever(selectedSite.get()).thenReturn(site)
-        whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
-        whenever(storeRepository.getStoreInfo()).thenReturn(
-            WooPosSettingsStoreState.StoreInfo(storeName = "", address = "")
-        )
-        whenever(receiptRepository.getReceiptInfo()).thenReturn(WooPosReceiptDataResult.NotAvailable)
-
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // WHEN
-        val results = mutableListOf<WooPosSettingsStoreViewModel.EditReceiptTarget>()
-        val job = launch(coroutineTestRule.testDispatcher) {
-            viewModel.openEditReceiptEvent.collect { results.add(it) }
-        }
-        viewModel.onEditReceiptClicked()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(results).hasSize(1)
-        assertThat(results.first().url).contains("next-admin")
-        assertThat(results.first().url).contains("woocommerce%2Fsettings%2Fpayments%2Fpos")
-        job.cancel()
-    }
-
     private fun createViewModel() = WooPosSettingsStoreViewModel(
         storeRepository = storeRepository,
         receiptRepository = receiptRepository,
         selectedSite = selectedSite,
-        ciabSiteGateKeeper = ciabSiteGateKeeper,
         analyticsTracker = analyticsTracker,
     )
 }
