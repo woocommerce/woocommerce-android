@@ -1,0 +1,63 @@
+# Smoke Test: Login - Help section
+# p2: login.help
+# P2 ref: Login > Help section
+#
+# Verifies the Help action in the login toolbar opens the help screen.
+# The `?` help icon lives in the login toolbar (menu id: help, title
+# "Help" from libs/login/res/menu/menu_login.xml), which is only
+# present once the user has tapped through the prologue and reached
+# the site-address screen — the prologue itself has no toolbar.
+#
+# No credentials required.
+appId: com.woocommerce.android.dev
+name: "Login - Help section"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Enter the login flow to reach a screen with the toolbar (the prologue
+# has no toolbar, so the help icon is only reachable from here on).
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+# Wait for the site-address screen's toolbar to settle
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+
+# Tap the help menu item. The Android menu sets id="@+id/help" and
+# title="Help", so Maestro can locate it by either — prefer the id
+# since the icon has no visible label.
+- tapOn:
+    id: "help"
+    retryTapIfNoChange: true
+
+# Verify the help screen opened. The Zendesk-backed help module shows
+# "Help Center" / "Contact support" / FAQ-style text.
+- extendedWaitUntil:
+    visible: ".*Help Center.*|.*Contact support.*|.*FAQ.*|.*frequently asked.*|.*Zendesk.*"
+    timeout: 15000
+
+- takeScreenshot: login_help_section
+
+- back

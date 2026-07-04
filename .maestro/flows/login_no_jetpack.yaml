@@ -1,0 +1,113 @@
+# Smoke Test: Login - No Jetpack
+# p2: login.no-jetpack
+# P2 ref: Login > No Jetpack
+#
+# Logs into a WooCommerce site that does NOT have Jetpack connected,
+# using site credentials (not WP.com), and verifies the post-login
+# dashboard surfaces the "Explore Jetpack" promo card — the app's way
+# of nudging users on non-Jetpack sites toward the install flow.
+#
+# Required env vars:
+#   WOO_JN_SITE_URL                  (any non-Jetpack WP site with WC)
+#   WOO_JN_USERNAME                  (site credentials — not WP.com)
+#   WOO_JN_PASSWORD
+appId: com.woocommerce.android.dev
+name: "Login - No Jetpack (Explore Jetpack banner)"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Enter JN store URL
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_JN_SITE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# For a site without Jetpack the app usually routes directly to the
+# site-credentials login screen, skipping the email screen entirely.
+# If it didn't (e.g. the site reports partial Jetpack support), the
+# email screen will show a "Log in with your site credentials" button
+# (id: login_site_creds) that we need to tap first.
+- runFlow:
+    when:
+      visible:
+        id: "login_site_creds"
+    commands:
+      - tapOn:
+          id: "login_site_creds"
+          retryTapIfNoChange: true
+
+# Site-credentials screen shows Username + Password on the SAME screen.
+# This screen is rendered by the libs/login Compose tree, which does
+# NOT apply `testTagsAsResourceId = true` (that's only on the app's
+# WooTheme), so UI nodes expose NO resource IDs to Maestro. Drive it
+# with visible text selectors ("Username", "Password", "Continue"),
+# which are always present as Material TextInputLayout labels.
+- extendedWaitUntil:
+    visible: "Username"
+    timeout: 15000
+- tapOn: "Username"
+- inputText: ${WOO_JN_USERNAME}
+
+# Tap the password label directly — its Material TextInputLayout focuses
+# the associated EditText. Avoid hideKeyboard here: the site-creds screen
+# uses a custom input rail that doesn't expose a standard dismiss action
+# (Maestro errors with "Couldn't hide the keyboard"), and Continue is
+# visible above the IME anyway.
+- tapOn: "Password"
+- inputText: ${WOO_JN_PASSWORD}
+
+- tapOn: "Continue"
+
+# After a successful site-credentials login, the app lands on the
+# dashboard and shows the "Manage privacy" bottom sheet first. Dismiss
+# it (Save accepts the defaults) so the dashboard cards are tappable
+# and visible for the Jetpack-banner assertion below.
+- extendedWaitUntil:
+    visible: ".*Manage privacy.*|.*My store.*"
+    timeout: 60000
+- runFlow:
+    when:
+      visible: ".*Manage privacy.*"
+    commands:
+      - tapOn: "Save"
+
+# Verify the "Explore Jetpack" promo banner is visible on the dashboard.
+# Text source: dashboard_jetpack_benefits_banner_*.xml strings
+# ("Get order notifications and more" / "boost store security. Explore
+# Jetpack now."). Matching on the unique "Explore Jetpack" phrasing
+# keeps the assertion stable across minor copy tweaks.
+- extendedWaitUntil:
+    visible: ".*Explore Jetpack.*|.*boost store security.*"
+    timeout: 30000
+
+- takeScreenshot: login_no_jetpack

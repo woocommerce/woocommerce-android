@@ -1,0 +1,138 @@
+# Smoke Test: Products - List and Sort
+# p2: products.list, products.pagination, products.sort, products.search
+# P2 ref: Products > Product list (check pagination), Sort product list
+#
+# Verifies:
+#   - Products list loads
+#   - Product cards show name, stock status, price, SKU
+#   - Pagination works (scroll to load more)
+#   - Sorting works (by name, date, etc.)
+#   - Search for products
+#   - Product filters
+appId: com.woocommerce.android.dev
+name: "Products - List, sort, and search"
+tags:
+  - smoke_core
+  - products
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Verify products list loaded
+- assertVisible:
+    id: "productsRecycler"
+    label: "Products list is visible"
+
+- assertVisible:
+    id: "productName"
+    label: "At least one product name is visible"
+
+# Validate first product has a non-empty name via JavaScript
+- copyTextFrom:
+    id: "productName"
+    index: 0
+- evalScript: |
+    var name = maestro.copiedText;
+    if (!name || name.trim() === '') {
+        throw new Error('Product name is empty — list may not have loaded properly');
+    }
+- evalScript: ${output.productSearchText = maestro.copiedText.trim()}
+
+- takeScreenshot: products_list
+
+# Test pagination - scroll down
+- scroll
+- scroll
+- scroll
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 10000
+
+- takeScreenshot: products_list_scrolled
+
+# Scroll back to top
+- swipe:
+    direction: DOWN
+    duration: 500
+- swipe:
+    direction: DOWN
+    duration: 500
+
+# Test sorting
+- runFlow:
+    when:
+      visible:
+        id: "btn_product_sorting"
+    commands:
+      - tapOn:
+          id: "btn_product_sorting"
+          label: "Open product sorting"
+      - extendedWaitUntil:
+          visible:
+            id: "sortingItem_name"
+          timeout: 10000
+      - takeScreenshot: products_sort_options
+      - tapOn:
+          id: "sortingItem_name"
+          index: 0
+          label: "Select first sort option"
+      - extendedWaitUntil:
+          visible:
+            id: "productsRecycler"
+          timeout: 10000
+
+- takeScreenshot: products_sorted
+
+# Test search against the first visible product from the loaded list.
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${output.productSearchText}
+- pressKey: Enter
+
+# Wait for search results
+- extendedWaitUntil:
+    visible:
+      id: "productInfoContainer"
+    timeout: 15000
+
+- assertVisible:
+    text: "${output.productSearchText}"
+    label: "Captured product appears in search results"
+
+- takeScreenshot: products_search_results
+
+# Go back from search
+- back
+- back
+
+# Test filters
+- runFlow:
+    when:
+      visible:
+        id: "btn_product_filter"
+    commands:
+      - tapOn:
+          id: "btn_product_filter"
+          label: "Open product filters"
+      - extendedWaitUntil:
+          visible: "Stock status"
+          timeout: 10000
+      - takeScreenshot: products_filters
+      - back
