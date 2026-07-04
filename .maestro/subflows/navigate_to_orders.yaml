@@ -1,0 +1,9 @@
+# Navigate to the Orders tab
+appId: com.woocommerce.android.dev
+---
+- tapOn:
+    id: "orders"
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000

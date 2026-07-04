@@ -1,0 +1,102 @@
+# Smoke Test: Login - Wrong account for the store
+# p2: login.wrong-account
+# P2 ref: Login > Wrong account for the store
+#
+# Logs into a WooCommerce store using a WP.com account that does NOT have
+# access to it, and verifies the "account not connected to Jetpack" error.
+#
+# Required env vars:
+#   WOO_EMAIL, WOO_PASSWORD          (shared primary account)
+#   WOO_WRONG_ACCOUNT_STORE_URL      (site the primary account can't access)
+appId: com.woocommerce.android.dev
+name: "Login - Wrong account for the store"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_WRONG_ACCOUNT_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "login_continue_button"
+    timeout: 15000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_EMAIL}
+- hideKeyboard
+- tapOn:
+    id: "login_continue_button"
+    retryTapIfNoChange: true
+
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+- runFlow:
+    when:
+      visible:
+        id: "login_enter_password"
+    commands:
+      - tapOn:
+          id: "login_enter_password"
+
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Verify "account not connected" error
+# String: login_jetpack_not_connected =
+#   "It looks like your account is not connected to %1$s's Jetpack"
+- extendedWaitUntil:
+    visible: ".*not connected.*Jetpack.*|.*account.*not connected.*"
+    timeout: 30000
+
+- takeScreenshot: login_wrong_account

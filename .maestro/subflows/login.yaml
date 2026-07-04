@@ -1,0 +1,115 @@
+# Reusable login subflow
+# Logs into the WooCommerce app with store URL + email + password.
+#
+# Required env vars: WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD
+appId: com.woocommerce.android.dev
+---
+- launchApp:
+    clearState: true
+
+# Wait for app to finish loading after clearState (splash screen can take a while)
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+# Skip the carousel if it appears
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Tap "Enter your store address" on the Welcome screen
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+# Enter store URL
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Enter email address
+- extendedWaitUntil:
+    visible:
+      id: "login_continue_button"
+    timeout: 15000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_EMAIL}
+- hideKeyboard
+- tapOn:
+    id: "login_continue_button"
+    retryTapIfNoChange: true
+
+# Dismiss Google Password Manager if it appears
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+# Handle Magic Link screen - tap "Enter your password instead"
+- runFlow:
+    when:
+      visible:
+        id: "login_enter_password"
+    commands:
+      - tapOn:
+          id: "login_enter_password"
+
+# Dismiss Google Password Manager again if it appears on password screen
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
+# Enter password
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Wait for dashboard to load (or privacy dialog)
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*"
+    timeout: 30000
+
+# Dismiss privacy dialog if it appears
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+
+# Dismiss any store setup or onboarding dialogs
+- runFlow:
+    when:
+      visible: ".*Got it.*"
+    commands:
+      - tapOn: ".*Got it.*"
+
+# Verify dashboard is loaded
+- extendedWaitUntil:
+    visible: "My store"
+    timeout: 10000
