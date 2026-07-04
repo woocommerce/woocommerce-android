@@ -1,0 +1,85 @@
+# Maestro workspace configuration for WooCommerce Android smoke tests.
+#
+# Execution order mirrors the Smoke Testing P2 category order:
+#   Login → Dashboard → Orders → Products → Hub Menu →
+#   Blaze → Google for Woo → POS
+#
+# Within the Login group, login_successful is intentionally LAST so the
+# app ends the login sequence authenticated with the primary Woo account
+# (MAESTRO_WOO_EMAIL / MAESTRO_WOO_STORE_URL). Subsequent flows reuse
+# that session via subflows/ensure_logged_in.yaml, avoiding the WPCom
+# security screens that fire when the same account re-authenticates too
+# many times in quick succession.
+#
+# Tags follow the v2 smoke-test taxonomy:
+#   smoke_core        Stable non-destructive release-signal paths.
+#   smoke_extended    Broader P2 coverage.
+#   pos_tablet        POS flows, tablet AVD required.
+#   destructive       Mutates store data; shared store only in CI under lock.
+#   flaky_quarantine  Provisional or known-unstable flows excluded by runner
+#                     defaults until promotion criteria are met.
+#
+# The local runner `.maestro/scripts/run-smoke-tests.sh` owns default tag
+# filtering, store selection, fixture seed/cleanup, retry accounting, and
+# artifact policy. This config keeps direct `maestro test .maestro/`
+# invocations ordered consistently.
+#
+# P2 reference:
+#   https://woomobilep2.wordpress.com/flows-for-app-features-smoke-testing/
+
+appId: com.woocommerce.android.dev
+
+flows:
+  - "flows/*"
+
+executionOrder:
+  continueOnFailure: true
+  flowsOrder:
+    # ── Login ────────────────────────────────────────────────────────────
+    # Error-path logins first (each clearState + re-authenticates);
+    # login_successful runs last so the app is left authenticated.
+    - flows/login_not_wp_site.yaml
+    - flows/login_wrong_credentials.yaml
+    - flows/login_help.yaml
+    - flows/login_not_woo_store.yaml
+    - flows/login_wrong_account.yaml
+    - flows/login_no_jetpack.yaml
+    - flows/login_google.yaml
+    - flows/login_successful.yaml
+
+    # ── Dashboard / Stats ───────────────────────────────────────────────
+    - flows/dashboard_stats.yaml
+    - flows/dashboard_view_all_analytics.yaml
+    - flows/dashboard_customize.yaml
+
+    # ── Orders ───────────────────────────────────────────────────────────
+    - flows/orders_list_and_search.yaml
+    - flows/orders_create.yaml
+    - flows/orders_details_and_actions.yaml
+    - flows/orders_mark_complete.yaml
+    - flows/orders_cash_payment.yaml
+    - flows/orders_refund.yaml
+
+    # ── Products ─────────────────────────────────────────────────────────
+    - flows/products_list_and_sort.yaml
+    - flows/products_detail.yaml
+    - flows/products_variations_and_tags.yaml
+    - flows/products_create.yaml
+    - flows/products_media_upload.yaml
+
+    # ── Hub Menu ────────────────────────────────────────────────────────
+    - flows/hub_menu_settings.yaml
+    - flows/hub_menu_payments.yaml
+    - flows/hub_menu_coupons.yaml
+    - flows/hub_menu_customers_inbox.yaml
+    - flows/hub_menu_admin_and_store.yaml
+
+    # ── Blaze ────────────────────────────────────────────────────────────
+    - flows/blaze_campaign.yaml
+
+    # ── Google for Woo ──────────────────────────────────────────────────
+    - flows/google_for_woo.yaml
+
+    # ── POS (tablet only) ────────────────────────────────────────────────
+    - flows/pos_search_and_coupons.yaml
+    - flows/pos_cash_payment.yaml
