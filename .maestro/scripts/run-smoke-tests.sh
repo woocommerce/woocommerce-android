@@ -493,6 +493,17 @@ while IFS='=' read -r name value; do
   [[ -n "$name" ]] && MAESTRO_ENV_ARGS+=(-e "${name#MAESTRO_}=${value}")
 done < <(env | grep '^MAESTRO_' || true)
 
+# Forward only the STRING_* variables the selected flows reference; forwarding
+# all generated strings would risk exceeding ARG_MAX.
+while IFS= read -r ref; do
+  [[ -z "$ref" ]] && continue
+  if [[ -z "${!ref:-}" ]]; then
+    echo "Missing generated string variable: $ref (regenerate .maestro/strings.env)" >&2
+    exit 1
+  fi
+  MAESTRO_ENV_ARGS+=(-e "${ref}=${!ref}")
+done < <(grep -Eoh '\$\{STRING_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" 2>/dev/null | sed 's/[${}]//g' | sort -u || true)
+
 scrub_log() {
   local file="$1"
   python3 - "$file" <<'PY'
@@ -611,7 +622,7 @@ run_one_attempt() {
   scrub_log "$log_file"
   local error_line recovery_count
   error_line="$(grep -E '^\[Failed\]|Assertion|Couldn|Could not find|Timeout|Exception|Error' "$log_file" | head -n 1 | tr '|' '/' || true)"
-  recovery_count="$(grep -Eci 'recovery|back-press|dismiss' "$log_file" || true)"
+  recovery_count="$(grep -c '✅.*recovery_' "$log_file" || true)"
   printf '%s|%s|%s|%s|%s|%s\n' "$exit_code" "$((ended - started))" "$media_rel" "logs/$(basename "$log_file")" "$error_line" "$recovery_count"
 }
 
