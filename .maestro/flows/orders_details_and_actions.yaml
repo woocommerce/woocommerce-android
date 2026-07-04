@@ -1,0 +1,125 @@
+# Smoke Test: Orders - Detail view and actions
+# p2: orders.receipt, orders.note
+# P2 ref: Orders > Refund, Add order note, Mark complete, See receipt
+#
+# Verifies:
+#   - Opening an order shows the detail container and status tags
+#   - Can scroll through products and payment sections
+#   - Can add an order note via the "Add a note" row (private by default)
+#   - Returns to orders list cleanly
+#
+# Uses the exact resource IDs from order_detail_note_list.xml
+# (noteList_addNoteContainer, notesList_notes) and menu_add.xml
+# (menu_add) to avoid ambiguous text matches that can collide with the
+# "Add note" button in the order creation flow.
+appId: com.woocommerce.android.dev
+name: "Orders - Detail view and actions"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+# Start from an already-authenticated session (see comment in
+# ensure_logged_in.yaml — re-logging in on every run triggers WPCom
+# security screens).
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Open the first order
+- tapOn:
+    id: "orderNum"
+    index: 0
+    label: "Tap first order in list"
+
+# Wait for order detail
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+# Verify order detail elements
+- assertVisible:
+    id: "orderStatus_orderTags"
+    label: "Order status tags are visible"
+
+- takeScreenshot: order_detail_top
+
+# Scroll down to see products
+- scroll
+
+- assertVisible:
+    id: "productInfo_name"
+    label: "Product name is visible in order detail"
+
+- takeScreenshot: order_detail_products
+
+# Scroll to payment info
+- scrollUntilVisible:
+    element:
+      id: "paymentInfo_total"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to payment total"
+
+- takeScreenshot: order_detail_payment
+
+# ── Add an order note ────────────────────────────────────────────────
+# Use the addNoteContainer ID directly — more robust than matching the
+# "Add a note" text which is not tagged as clickable (the outer
+# LinearLayout handles the click).
+- scrollUntilVisible:
+    element:
+      id: "noteList_addNoteContainer"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to notes section"
+
+- tapOn:
+    id: "noteList_addNoteContainer"
+    retryTapIfNoChange: true
+    label: "Tap Add a note row"
+
+# Add note screen
+- extendedWaitUntil:
+    visible:
+      id: "addNote_editor"
+    timeout: 15000
+
+- tapOn:
+    id: "addNote_editor"
+- inputText: "Maestro smoke test note"
+- hideKeyboard
+
+- takeScreenshot: order_note_typed
+
+# Save the note via the Add menu item
+- tapOn:
+    id: "menu_add"
+    label: "Save order note"
+
+# Back on order detail — verify note appears in the notes list
+- extendedWaitUntil:
+    visible:
+      id: "notesList_notes"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: ".*Maestro smoke test note.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to added note"
+
+- takeScreenshot: order_note_added
+
+# Go back to orders list
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
