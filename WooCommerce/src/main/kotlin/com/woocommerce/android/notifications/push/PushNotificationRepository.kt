@@ -289,17 +289,18 @@ class PushNotificationRepository @Inject constructor(
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
         pushNotificationsDataStore.data.first().registeredSiteIds()
 
-    suspend fun clearWooPushRegistrationsForStaleToken(currentToken: String) {
+    suspend fun clearWooPushRegistrationForStaleToken(siteId: Long, currentToken: String) {
         if (currentToken.isEmpty()) return
 
-        var staleSiteIds = emptySet<Long>()
+        var cleared = false
         pushNotificationsDataStore.edit { preferences ->
-            staleSiteIds = preferences.registeredSiteIds()
-                .filter { siteId -> preferences[getPushTokenValueKeyForSite(siteId)] != currentToken }
-                .toSet()
-            staleSiteIds.forEach { siteId -> preferences.clearPushRegistration(siteId) }
+            val isRegistered = preferences[getPushTokenIdKeyForSite(siteId)].isNotNullOrEmpty()
+            if (isRegistered && preferences[getPushTokenValueKeyForSite(siteId)] != currentToken) {
+                preferences.clearPushRegistration(siteId)
+                cleared = true
+            }
         }
-        staleSiteIds.forEach { siteId ->
+        if (cleared) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site $siteId")
         }
     }

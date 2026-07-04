@@ -610,13 +610,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stored token differs from current, when clearing stale registrations, then removes site metadata`() =
+    fun `given stored token differs from current, when clearing stale registration, then removes site metadata`() =
         testBlocking {
             val mutablePreferences: MutablePreferences = mock()
             whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
-            whenever(mutablePreferences.asMap()).thenReturn(
-                mapOf<Preferences.Key<*>, Any>(Pair(stringPreferencesKey("push_token_$SITE_ID"), "token-id-1"))
-            )
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("old-token")
             whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
                 val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
@@ -624,7 +622,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.clearWooPushRegistrationsForStaleToken(currentToken = "new-token")
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "new-token")
 
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
@@ -632,13 +630,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stored token matches current, when clearing stale registrations, then keeps site metadata`() =
+    fun `given stored token matches current, when clearing stale registration, then keeps site metadata`() =
         testBlocking {
             val mutablePreferences: MutablePreferences = mock()
             whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
-            whenever(mutablePreferences.asMap()).thenReturn(
-                mapOf<Preferences.Key<*>, Any>(Pair(stringPreferencesKey("push_token_$SITE_ID"), "token-id-1"))
-            )
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
             whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
                 val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
@@ -646,7 +642,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.clearWooPushRegistrationsForStaleToken(currentToken = "token")
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "token")
 
             verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
@@ -654,9 +650,26 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given empty current token, when clearing stale registrations, then does not touch the datastore`() =
+    fun `given site is not registered, when clearing stale registration, then keeps the datastore untouched`() =
         testBlocking {
-            sut.clearWooPushRegistrationsForStaleToken(currentToken = "")
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(null)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "token")
+
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_$SITE_ID"))
+        }
+
+    @Test
+    fun `given empty current token, when clearing stale registration, then does not touch the datastore`() =
+        testBlocking {
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "")
 
             verify(pushNotificationsDataStore, never()).updateData(any())
         }

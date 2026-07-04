@@ -210,13 +210,34 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given M1 flag enabled, when registration runs, then clears stale Woo registrations`() = testBlocking {
-        // WHEN
-        sut(TOKEN_REFRESH)
+    fun `given M1 flag enabled, when a site registers, then clears its stale registration before registering`() =
+        testBlocking {
+            // WHEN
+            sut(TOKEN_REFRESH)
 
-        // THEN
-        verify(pushNotificationRepository).clearWooPushRegistrationsForStaleToken(TEST_TOKEN)
-    }
+            // THEN
+            val siteOneOrder = inOrder(pushNotificationRepository)
+            siteOneOrder.verify(pushNotificationRepository)
+                .clearWooPushRegistrationForStaleToken(SITE_ID_ONE, TEST_TOKEN)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne)
+            verify(pushNotificationRepository).clearWooPushRegistrationForStaleToken(SITE_ID_TWO, TEST_TOKEN)
+        }
+
+    @Test
+    fun `given app foreground trigger, when a site does not need registration, then does not clear its registration`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                pushNotificationRepository.shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
+            ).thenReturn(false)
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository, never())
+                .clearWooPushRegistrationForStaleToken(eq(SELECTED_SITE_ID), any())
+        }
 
     @Test
     fun `given M1 flag disabled, when registration runs, then does not clear stale Woo registrations`() =
@@ -229,7 +250,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(APP_FOREGROUND)
 
             // THEN
-            verify(pushNotificationRepository, never()).clearWooPushRegistrationsForStaleToken(any())
+            verify(pushNotificationRepository, never()).clearWooPushRegistrationForStaleToken(any(), any())
         }
 
     @Test
