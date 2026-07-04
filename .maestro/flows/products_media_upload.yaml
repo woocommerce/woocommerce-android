@@ -24,11 +24,11 @@
 #        └─ tap Save / Publish → product detail updated on backend
 #
 # ⚠️  STAGING-STORE MUTATION: unlike most smoke flows, this one DOES
-# persist a change — the image is attached to the real product
-# returned by the list's first tap. Re-running the flow grows the
-# product's media gallery over time. That's an intentional trade-off
-# to actually exercise the upload path; clean the test product's
-# images manually if the staging store needs a reset.
+# persist a change — the image is attached to the product it opens.
+# The flow therefore targets this run's seeded simple product (located
+# via search on ${FIXTURE_SIMPLE_PRODUCT}), which manifest cleanup
+# deletes after the run, so the mutation never touches real store data
+# and never outlives the suite.
 #
 # Source strings (res/values/strings.xml):
 #   - image_source_wp_media_library → "WordPress media library"
@@ -56,12 +56,35 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
-# Open the first product. Its type doesn't matter for this flow —
-# every product type can have images attached.
+# Open this run's seeded simple product — never an arbitrary first
+# row. This flow persists an image on whatever product it opens, and
+# on the shared store index-0 can be a manual tester's real product.
+# The seeded fixture is deleted by manifest cleanup after the run, so
+# the gallery mutation never outlives the suite.
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${FIXTURE_SIMPLE_PRODUCT}
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 20000
+    label: "Wait for the seeded product in search results"
+
 - tapOn:
     id: "productName"
     index: 0
-    label: "Tap first product"
+    label: "Open seeded simple product"
 
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
