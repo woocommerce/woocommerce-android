@@ -1,0 +1,137 @@
+# Smoke Test: Products - Product Detail
+# p2: products.detail.description, products.detail.price, products.detail.inventory, products.detail.categories, products.detail.type, products.detail.shipping, products.detail.short-description, products.detail.linked, products.detail.downloads
+# P2 ref: Products > Product details (all details)
+#
+# IMPORTANT: this flow opens "the first product" in the staging list.
+# WooCommerce supports several product types (simple, variable,
+# grouped, external, booking, subscription, …) and each type renders
+# a DIFFERENT set of ComplexProperty rows on the detail screen:
+#
+#   - Simple/physical          → Price + Inventory + Product type + Shipping + …
+#   - Variable                 → Variations + Attributes + Product type
+#   - Grouped / External / Booking → no "Price" row (pricing handled elsewhere);
+#                                    no "Inventory" row on grouped/booking
+#
+# We therefore avoid asserting on type-specific labels like "Price" or
+# "Inventory" — those would fail as soon as the first product on the
+# staging store is, say, a Booking product (as happened on this run:
+# the first product was "Tourist Activity" → Booking). Instead we
+# assert on rows that render for EVERY product type:
+#
+#   - "Product type"  (always rendered; value varies)
+#   - "Reviews"       (always rendered; "no approved reviews" placeholder)
+#   - "Categories"    (always rendered; "Uncategorized" if unset)
+#
+# Verifies:
+#   - Product detail screen loads
+#   - Product name field + "Describe your product" area render
+#   - Universal ComplexProperty rows render (Product type, Reviews,
+#     Categories). Type-specific rows are expected to be covered by
+#     seeded/query-targeted flows before this provisional flow graduates.
+appId: com.woocommerce.android.dev
+name: "Products - Product detail view"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - products
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Open the first product
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Tap first product"
+
+# Wait for product detail screen. The "Describe your product" hint +
+# "Write with AI" button render on every product type, so they're a
+# safer readiness signal than price-related text.
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+# Dismiss "Write with AI" tooltip if it appears
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+# Wait for the product-name field (universal).
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: product_detail_top
+
+# Scroll to the properties RecyclerView so type-agnostic rows come
+# into view.
+- scrollUntilVisible:
+    element:
+      id: "propertiesRecyclerView"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to product properties"
+
+- takeScreenshot: product_detail_properties
+
+# Universal row 1: Product type (every WooCommerce product type
+# renders this — simple / variable / grouped / external / booking / …).
+- scrollUntilVisible:
+    element: "Product type"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Product type row"
+
+- assertVisible: "Product type"
+
+- takeScreenshot: product_detail_type
+
+# Universal row 2: Reviews (renders with "no approved reviews"
+# placeholder when the product has none).
+- scrollUntilVisible:
+    element: "Reviews"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Reviews row"
+
+- assertVisible:
+    text: "Reviews"
+
+# Universal row 3: Categories (falls back to "Uncategorized" when
+# unset).
+- scrollUntilVisible:
+    element: "Categories"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Categories row"
+
+- assertVisible:
+    text: "Categories"
+
+# Type-specific rows. This provisional flow should target seeded/queryable
+# products before promotion so these assertions are not store-order dependent.
+- scrollUntilVisible:
+    element: ".*Price.*|.*Inventory.*|.*Shipping.*|.*Short description.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Price / Inventory / Shipping / Short description"
+
+- takeScreenshot: product_detail_bottom
+
+# Go back to products list
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000

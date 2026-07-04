@@ -1,0 +1,72 @@
+# Smoke Test: Dashboard / View All store analytics
+# p2: dashboard.analytics
+# P2 ref: Dashboard/Stats > "View All" store analytics
+#
+# Verifies:
+#   - Tapping "View all store analytics" on the Top Performers card
+#     opens the Analytics Hub screen
+#   - The hub renders its date selector and at least one analytics card
+#     (Revenue, Orders, etc.)
+appId: com.woocommerce.android.dev
+name: "Dashboard - View All store analytics"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - dashboard
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Make sure the dashboard is actually on screen before scrolling
+- assertVisible:
+    id: "dashboard_container"
+    label: "Dashboard container is visible"
+
+# Scroll the Top Performers card into view — the "View all store analytics"
+# link lives at the bottom of that card
+- scrollUntilVisible:
+    element:
+      id: "dashboard_top_performers_card"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Top Performers card"
+
+# The WCTextButton's label comes from R.string.analytics_section_see_all
+# ("View all store analytics"). Match loosely so casing tweaks don't
+# break the flow.
+- scrollUntilVisible:
+    element:
+      text: ".*(?i)view all store analytics.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to View All store analytics button"
+
+- tapOn:
+    text: ".*(?i)view all store analytics.*"
+    label: "Tap View all store analytics"
+
+# Analytics Hub screen uses View-based XML (fragment_analytics.xml),
+# so Maestro can find the root IDs directly.
+- extendedWaitUntil:
+    visible:
+      id: "analyticsRefreshLayout"
+    timeout: 20000
+
+- assertVisible:
+    id: "analyticsDateSelectorCard"
+    label: "Analytics Hub date range card is visible"
+
+- assertVisible:
+    id: "cards"
+    label: "Analytics Hub cards list is visible"
+
+# At least one of the hub's canonical cards should be on screen.
+# Revenue is the first one and always rendered; fall back to Orders in
+# case layout/ordering changes in the future.
+- assertVisible:
+    text: ".*Revenue.*|.*Orders.*"
+    label: "Revenue or Orders analytics card is visible"
+
+- takeScreenshot: dashboard_view_all_analytics
