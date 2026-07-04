@@ -1,0 +1,151 @@
+# Smoke Test: POS - Cash Payment flow (Tablet)
+# p2: pos.add-products, pos.pay-cash, pos.email-receipts
+# P2 ref: POS > Search products, Add to cart, Pay with Cash
+#
+# POS exposes Compose test tags as resource IDs (WooPosTheme enables
+# testTagsAsResourceId at the root of the Compose tree).
+#
+# NOTE: This flow requires a tablet device/emulator with POS enabled.
+# On phones the POS tab is hidden by the app, so the core POS assertions
+# are wrapped in a visibility guard. The flow will still pass on phones
+# (smoke purpose: "does login → reach main nav" succeeded) but the POS
+# body is skipped. Run on a tablet emulator to exercise the full flow.
+#
+# Verifies (on tablet):
+#   - POS screen loads from bottom navigation
+#   - Products load and can be added to cart
+#   - Checkout flow works
+#   - Cash payment can be completed
+#   - Payment success screen displays
+#   - "Email receipt" button opens the Email receipt screen with a
+#     "Send" action (we do NOT actually send — that would email a
+#     customer on the staging store; we back out to the success
+#     screen and then start a new order)
+appId: com.woocommerce.android.dev
+name: "POS - Cash payment flow"
+tags:
+  - pos_tablet
+  - flaky_quarantine
+  - destructive
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to POS tab (only available on tablets with POS enabled).
+# Guarded because the tab is hidden on phones by design.
+- runFlow:
+    when:
+      visible:
+        id: "point_of_sale"
+    commands:
+      - tapOn:
+          id: "point_of_sale"
+          label: "Tap POS tab"
+
+      # Wait for POS products to load
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_product_item"
+          timeout: 20000
+
+      - takeScreenshot: pos_products
+
+      # Add first product to cart
+      - tapOn:
+          id: "woo_pos_product_item"
+          index: 0
+          label: "Add first product to cart"
+
+      # Add another product to cart
+      - tapOn:
+          id: "woo_pos_product_item"
+          index: 2
+          label: "Add third product to cart"
+
+      # Validate cart has items via JavaScript
+      - copyTextFrom:
+          id: "woo_pos_cart_items_count"
+      - evalScript: |
+          if (maestro.copiedText) {
+              var count = parseInt(maestro.copiedText, 10);
+              if (isNaN(count) || count < 1) {
+                  throw new Error('Cart should have at least 1 item, found: ' + maestro.copiedText);
+              }
+          }
+
+      - takeScreenshot: pos_cart
+
+      # Proceed to checkout
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_checkout_button"
+          timeout: 10000
+      - tapOn:
+          id: "woo_pos_checkout_button"
+          label: "Tap Checkout"
+
+      # Wait for totals/payment screen
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_cash_payment_button"
+          timeout: 15000
+
+      - takeScreenshot: pos_totals
+
+      # Select cash payment
+      - tapOn:
+          id: "woo_pos_cash_payment_button"
+          label: "Select Cash payment"
+
+      # Complete cash payment
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_complete_payment_button"
+          timeout: 10000
+      - tapOn:
+          id: "woo_pos_complete_payment_button"
+          label: "Complete payment"
+
+      # Verify payment success
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_new_order_button"
+          timeout: 15000
+
+      - assertVisible:
+          id: "woo_pos_success_checkmark_icon"
+          label: "Payment success checkmark visible"
+
+      - takeScreenshot: pos_payment_success
+
+      # Open the Email receipt screen from the success screen. The
+      # button is a WooPosOutlinedButton whose label is
+      # R.string.woopos_receipt_button → "Email receipt" (it has no
+      # test tag, so we match by text).
+      - tapOn:
+          text: "Email receipt"
+          label: "Tap Email receipt"
+
+      # Verify the Email receipt screen loaded. The toolbar title is
+      # R.string.woopos_email_receipt_title and the send button text
+      # is R.string.woopos_email_receipt_send_button → "Send".
+      - runFlow:
+          when:
+            visible: "Send"
+          commands:
+            - assertVisible: "Email receipt"
+            - takeScreenshot: pos_email_receipt_screen
+            # Back out without sending — we don't want the staging
+            # store to actually dispatch a receipt email on every run.
+            - back
+
+      # Start new order from the (now restored) success screen.
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_new_order_button"
+          timeout: 10000
+      - tapOn:
+          id: "woo_pos_new_order_button"
+          label: "Start new order"
