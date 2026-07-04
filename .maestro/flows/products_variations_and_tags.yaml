@@ -1,0 +1,276 @@
+# Smoke Test: Products - Variations via Product Type filter
+# p2: products.detail.tags, products.detail.variations, products.detail.variation-attributes
+# P2 ref: Products > Product details — Variations, Variation detail
+#
+# Exercises the real Variable-product path end-to-end:
+#
+#   Products list
+#     └─ tap Filters (btn_product_filter)
+#        └─ Filter list (filterList) — tap "Product type"
+#           └─ Filter options (filterOptionList) — tap "Variable"
+#              └─ tap "Show products" (filterOptionList_btnShowProducts)
+#                 └─ back on Filter list
+#                    └─ tap "Show products" (filterList_btnShowProducts)
+#                       └─ Products list now filtered to Variable
+#                           └─ tap first product (productName index 0)
+#                              └─ Product detail — assert "Variations" row
+#                                 └─ tap Variations → VariationListFragment
+#                                    └─ assert variationList recycler
+#                                       └─ tap first variation
+#                                          └─ Variation detail — assert cardsRecyclerView
+#
+# ⚠️  STAGING-STORE PREREQUISITE: at least ONE Variable product MUST
+# exist on the store this flow is pointed at. If none exist, the
+# assertion on `productName` after the filter is applied will fail —
+# that's intentional. The test doesn't know whether "no variable
+# products" is a regression in the app or missing seed data, so
+# surfacing the failure is the right behaviour. Seed a variable
+# product in wp-admin and re-run.
+#
+# Key selectors (from the app's XML layouts):
+#   - btn_product_filter              — WCToggleOutlinedButton on the
+#                                       sort+filters card above the list
+#   - filterList                      — RecyclerView on the Filter list
+#                                       screen (fragment_product_filter_list)
+#   - filterList_btnShowProducts      — "Show products" CTA
+#   - filterOptionList                — RecyclerView on the per-filter
+#                                       options screen
+#   - filterOptionList_btnShowProducts — "Show products" CTA on options
+#   - empty_view                      — shown on products list when no
+#                                       results match the active filter
+#   - variationList                   — RecyclerView on VariationListFragment
+#   - cardsRecyclerView               — RecyclerView on variation detail
+appId: com.woocommerce.android.dev
+name: "Products - Variations via Variable filter"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - products
+---
+# Reuse the logged-in session.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# ─────────────────────────────────────────────────────────────────────
+# 1. Open the product filter list
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "btn_product_filter"
+    direction: UP
+    timeout: 10000
+    label: "Make sure the Filters button is visible"
+
+- tapOn:
+    id: "btn_product_filter"
+    retryTapIfNoChange: true
+    label: "Tap Filters button"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterList"
+    timeout: 15000
+    label: "Wait for filter list screen"
+
+- takeScreenshot: products_filter_list
+
+# ─────────────────────────────────────────────────────────────────────
+# 2. Tap "Product type" filter row → 3. Tap "Variable"
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Tap Product type filter row"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterOptionList"
+    timeout: 15000
+    label: "Wait for Product type options"
+
+- takeScreenshot: products_filter_type_options
+
+- tapOn:
+    text: "Variable"
+    retryTapIfNoChange: true
+    label: "Select Variable"
+
+# ─────────────────────────────────────────────────────────────────────
+# 4. Apply the filter. "Show products" on the options screen already
+#    pops all the way back to the products list on current app
+#    builds; on older builds it only returns to the filter list and
+#    requires a second "Show products" tap there. Handle both.
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "filterOptionList_btnShowProducts"
+    retryTapIfNoChange: true
+    label: "Confirm Variable selection"
+
+# If the filter list is still visible, tap its own Show products.
+- runFlow:
+    when:
+      visible:
+        id: "filterList_btnShowProducts"
+    commands:
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Apply filters and return to list"
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Products list, now filtered. If the list is empty
+#    (empty_view rendered), fail with a clear message — the fix is
+#    a staging-data change, not a test change.
+# ─────────────────────────────────────────────────────────────────────
+# Wait until either the first product row OR the empty-state view
+# has painted. Both are hosted inside productsRecycler's container,
+# and only one renders at a time based on the filter result.
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 20000
+    label: "Wait for products list container"
+
+- assertNotVisible:
+    id: "empty_view"
+    label: "FAIL: staging store has no Variable products — seed at least one and re-run"
+
+- assertVisible:
+    id: "productName"
+    label: "At least one Variable product is in the filtered list"
+
+- takeScreenshot: products_filtered_variable
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Open the first variable product
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Open first Variable product"
+
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    timeout: 25000
+    label: "Wait for product detail"
+
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: products_variable_detail
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Assert the variation-specific rows on the detail screen.
+#
+# "Variations" renders as a ComplexProperty when numVariations > 0 and
+# variationEnabledAttributes is non-empty — both are guaranteed for
+# properly-configured Variable products.
+#
+# "Variations attributes" renders as a PropertyGroup listing the
+# attribute→term map. It's also Variable-specific.
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "Variations"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Variations row"
+
+- assertVisible: "Variations"
+
+- scrollUntilVisible:
+    element: ".*Variations attributes.*|.*Attributes.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Attributes row"
+
+- takeScreenshot: products_variable_detail_rows
+
+# ─────────────────────────────────────────────────────────────────────
+# 8. Tap the Variations row → VariationListFragment
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    text: "Variations"
+    retryTapIfNoChange: true
+    label: "Tap Variations row"
+
+- extendedWaitUntil:
+    visible:
+      id: "variationList"
+    timeout: 20000
+    label: "Wait for variations list"
+
+- assertVisible:
+    id: "variationList"
+    label: "Variations list loaded"
+
+- takeScreenshot: products_variations_list
+
+# ─────────────────────────────────────────────────────────────────────
+# 9. Open the first variation → Variation detail (cardsRecyclerView)
+# ─────────────────────────────────────────────────────────────────────
+# Variation list items don't expose a unique row id, but each
+# variation row renders the attribute summary as a text label — we
+# just tap the first item in the list. Tapping any row navigates to
+# VariationDetailFragment which always renders `cardsRecyclerView`.
+- tapOn:
+    id: "variationList"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open first variation"
+
+- extendedWaitUntil:
+    visible:
+      id: "cardsRecyclerView"
+    timeout: 20000
+    label: "Wait for variation detail"
+
+- assertVisible:
+    id: "cardsRecyclerView"
+    label: "Variation detail loaded with cards list"
+
+- takeScreenshot: products_variation_detail
+
+# ─────────────────────────────────────────────────────────────────────
+# 10. Back out cleanly — variation detail → variations list →
+#     product detail → products list
+# ─────────────────────────────────────────────────────────────────────
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "variationList"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- back
+
+# If a Discard changes dialog appears (shouldn't — we didn't edit),
+# dismiss it.
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn: "Discard"
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 15000

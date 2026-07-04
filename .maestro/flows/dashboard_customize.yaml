@@ -1,0 +1,91 @@
+# Smoke Test: Dashboard - Customize cards
+# p2: dashboard.customization
+# P2 ref: Dashboard/Stats > Customization — all cards can be toggled + reordered
+#
+# Verifies:
+#   - The dashboard toolbar "Customize" action (menu_edit_screen_widgets)
+#     opens the DashboardWidgetEditorScreen
+#   - The editor lists the core supported widgets (titles match
+#     R.string.my_store_widget_*_title). We assert on "Performance" and
+#     "Top performers" because those two widgets are always available
+#     regardless of store configuration.
+#   - The SAVE action and close (navigation) icon both render
+#   - Closing the editor returns to the dashboard without mutating
+#     widget state (we deliberately do NOT toggle/save anything to keep
+#     the staging store's widget layout untouched across runs)
+appId: com.woocommerce.android.dev
+name: "Dashboard - Customize cards"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - dashboard
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Wait for dashboard to settle before tapping the toolbar action.
+- assertVisible:
+    id: "dashboard_container"
+    label: "Dashboard container is visible"
+
+# Open the widget editor. The menu item id comes from
+# menu_dashboard_fragment.xml; the visible title is "Customize"
+# (R.string.my_store_edit_screen_widgets).
+- tapOn:
+    id: "menu_edit_screen_widgets"
+    retryTapIfNoChange: true
+    label: "Tap Customize toolbar action"
+
+# Wait for the editor's top-app-bar title + action button to render.
+# The title is the same "Customize" string; the SAVE TextButton is
+# rendered with the label uppercased.
+- extendedWaitUntil:
+    visible: "SAVE"
+    timeout: 15000
+    label: "Wait for widget editor to load"
+
+- assertVisible: "Customize"
+- assertVisible: "SAVE"
+
+- takeScreenshot: dashboard_customize_editor
+
+# Verify the two widget rows that are always available on a stock
+# store. Supported widgets come from DashboardWidget.Type; their titles
+# are the localized strings above.
+- assertVisible: "Performance"
+- assertVisible: "Top performers"
+
+# Additional widget rows. This flow remains quarantined until fixture/store
+# state makes these assertions deterministic across bursts.
+- scrollUntilVisible:
+    element: ".*Orders.*|.*Reviews.*|.*Most active coupons.*|.*Inbox.*"
+    direction: DOWN
+    timeout: 8000
+    label: "Scroll through widget rows"
+
+- takeScreenshot: dashboard_customize_widgets
+
+# Close the editor via the navigation icon (close icon with
+# contentDescription "Back"). Since we made no changes, this should
+# return straight to the dashboard without showing the
+# DiscardChangesDialog.
+- tapOn:
+    text: "Back"
+    label: "Tap close icon"
+
+# Fallback: if the icon content description isn't exposed on this
+# device, a hardware back press works the same way via BackHandler.
+- runFlow:
+    when:
+      visible: "SAVE"
+    commands:
+      - back
+
+# Verify we're back on the dashboard.
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 10000
+    label: "Wait for dashboard to reappear"

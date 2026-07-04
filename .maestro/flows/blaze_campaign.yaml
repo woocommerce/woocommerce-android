@@ -1,0 +1,78 @@
+# Smoke Test: Blaze - Campaign entry point
+# p2: hub.blaze.create
+# P2 ref: Hub menu > Blaze > Create Campaign
+#
+# Tapping "Blaze" in the More Menu has three possible destinations
+# depending on store state (see onPromoteProductsWithBlaze in
+# MoreMenuViewModel → BlazeCampaignCreationDispatcher):
+#
+#   1. Store has >=1 campaign already → Blaze campaign list screen
+#      ("Blaze campaigns" title, blaze_campaign_list_title).
+#   2. Store has no prior campaign → BlazeCampaignCreationIntro screen
+#      ("Get your products seen by millions" + "Start your campaign",
+#      blaze_campaign_creation_new_intro_*).
+#   3. Store has a recent campaign + products → creation form /
+#      product selector.
+#
+# Smoke-level guarantee: we left the More Menu AND landed on one of
+# the Blaze screens above. Asserting the literal word "Blaze" alone
+# (the previous flow's approach) was unreliable — the word appears
+# inline in composable text on the intro screen, where Maestro
+# sometimes sees the toolbar before the Column content finishes
+# rendering.
+appId: com.woocommerce.android.dev
+name: "Blaze - Campaign creation"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - hub_menu
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# ── Find & tap Blaze in the hub menu ─────────────────────────────────
+- scrollUntilVisible:
+    element: "Blaze"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Blaze in hub menu"
+
+- tapOn:
+    text: "Blaze"
+    retryTapIfNoChange: true
+    label: "Tap Blaze menu item"
+
+# ── Confirm we navigated off the More Menu ───────────────────────────
+# The click loads campaigns from the network first (async), so it can
+# take a few seconds before the destination fragment actually renders.
+- extendedWaitUntil:
+    notVisible:
+      id: "more_menu_compose_view"
+    timeout: 25000
+    label: "Verify we left the More Menu after tap"
+
+# ── Assert we landed on one of the Blaze destinations ────────────────
+# Match any of the per-destination anchor strings. Regex OR so the
+# flow passes regardless of the store's current campaign/product
+# state.
+- extendedWaitUntil:
+    visible: ".*Blaze campaigns.*|.*Get your products seen.*|.*Start your campaign.*|.*Select products.*|.*Campaign preview.*"
+    timeout: 20000
+    label: "Wait for Blaze destination screen"
+
+- takeScreenshot: blaze_screen
+
+# ── Back to More Menu ────────────────────────────────────────────────
+# The intro screen's top-left control is a close ("X") icon; the list
+# screen has a back arrow. Both call onDismiss / pop, so a single
+# `back` returns to the More Menu in both cases.
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu"
