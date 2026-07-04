@@ -1,0 +1,366 @@
+# Smoke Test: Orders - Create Order
+# p2: orders.create.products, orders.create.variable-products, orders.create.quantity, orders.create.product-discount, orders.create.custom-amount, orders.create.custom-amount-note, orders.create.shipping, orders.create.customer-add, orders.create.customer-edit, orders.create.note
+# P2 ref: Orders > Create an order (add products, custom amount, customer, customer note)
+#
+# Verifies:
+#   - Order creation FAB works
+#   - Add a product from the product selector
+#   - Add a fixed-amount custom amount with a name
+#   - Add an existing customer by searching their email
+#   - Edit the added customer's last name
+#   - Add a customer-facing note
+#   - All sections display the added data
+#   - Tap "Create" to submit the order — lands on order detail
+#   - Tap "Collect Payment" → pick Cash → Mark Order as Complete to
+#     fully exercise the post-creation cash checkout path
+#
+# The order IS committed to the staging store and completed via COD.
+# Staging orders use test data (SmokeTest customer, $10 gift wrap) so
+# accumulation across runs is acceptable.
+appId: com.woocommerce.android.dev
+name: "Orders - Create a new order"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+# Start from an already-authenticated session (see comment in
+# ensure_logged_in.yaml — re-logging in on every run triggers WPCom
+# security screens).
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Tap Create Order FAB
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
+
+# Wait for order creation screen (title and Add products are always visible on empty creation)
+- extendedWaitUntil:
+    visible: "Add products"
+    timeout: 15000
+
+- takeScreenshot: order_create_empty
+
+# ── Add a product ─────────────────────────────────────────────────────
+- tapOn:
+    text: "Add products"
+    label: "Tap Add products"
+
+# Product selector loaded
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_product_selector
+
+# Tap the first product row - product items sit below the search field
+- tapOn:
+    point: "50%,30%"
+    label: "Tap first product row"
+
+# Confirm selection (regex matches "Select 1 Product" or "Select N Products")
+- extendedWaitUntil:
+    visible: ".*Select \\d+ Product.*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Select \\d+ Product.*"
+    label: "Confirm product selection"
+
+# Back on order creation
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_with_product
+
+# ── Add a custom amount (fixed, with a name) ──────────────────────────
+- scrollUntilVisible:
+    element: "Add custom amount"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to custom amounts section"
+
+- tapOn:
+    text: "Add custom amount"
+    label: "Tap Add custom amount"
+
+# Same flake pattern as the orders_cash_payment Collect Payment tap:
+# occasionally the first tap visibly depresses the row but the "Select
+# custom amount type" bottom sheet never presents. Give the happy path
+# 8s, then re-tap if the sheet still isn't there (the first tap was
+# lost). On the normal path the re-tap is skipped because the sheet is
+# already visible.
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - extendedWaitUntil:
+          visible: "A fixed amount"
+          timeout: 8000
+
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - tapOn:
+          text: "Add custom amount"
+          retryTapIfNoChange: true
+          label: "Retry tap on Add custom amount (first was lost)"
+
+- extendedWaitUntil:
+    visible: "A fixed amount"
+    timeout: 15000
+
+- tapOn:
+    text: "A fixed amount"
+    label: "Choose fixed amount"
+
+# Fill amount and name in the custom amount dialog
+- extendedWaitUntil:
+    visible:
+      id: "editPrice"
+    timeout: 10000
+
+- tapOn:
+    id: "editPrice"
+- eraseText
+# Emulator locale uses comma as decimal separator — entering "1000" yields 10,00
+- inputText: "1000"
+- hideKeyboard
+
+- tapOn:
+    id: "customAmountNameText"
+- inputText: "Gift wrap"
+- hideKeyboard
+
+- takeScreenshot: order_create_custom_amount_dialog
+
+- tapOn:
+    id: "buttonDone"
+    label: "Tap Done on custom amount"
+
+# Back on order creation — verify custom amount was added
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: "Gift wrap"
+    label: "Custom amount name is visible in creation screen"
+
+- takeScreenshot: order_create_with_custom_amount
+
+# ── Add a customer-facing note ────────────────────────────────────────
+# Added BEFORE the customer on purpose: when both customer and note are
+# empty, the "Add note" button lives in customer_section (via
+# initCustomerAndNotesEmptySection). Once a customer is added, that
+# button migrates to notes_section whose bounds overlap with the Compose
+# totals_section, and the totals overlay intercepts taps on it.
+- scrollUntilVisible:
+    element: "Add note"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to notes button in customer section"
+
+- tapOn:
+    text: "Add note"
+    childOf:
+      id: "customer_section"
+    retryTapIfNoChange: true
+    label: "Tap Add note in empty customer section"
+
+- extendedWaitUntil:
+    visible:
+      id: "customerOrderNote_editor"
+    timeout: 15000
+
+- tapOn:
+    id: "customerOrderNote_editor"
+- inputText: "Maestro smoke test note - please gift wrap."
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_note_typed
+
+# Save via toolbar DONE
+- tapOn:
+    id: "menu_done"
+    label: "Save customer note"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: ".*Maestro smoke test note.*"
+    label: "Customer note visible in creation screen"
+
+# ── Add a customer ────────────────────────────────────────────────────
+# Uses the search flow to verify it works, then falls back to "Add
+# details manually" so the flow doesn't depend on the staging store
+# containing a matching customer.
+- scrollUntilVisible:
+    element: "Add customer details"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to customer section"
+
+- tapOn:
+    text: "Add customer details"
+    label: "Tap Add customer details"
+
+- extendedWaitUntil:
+    visible: "Search for customers"
+    timeout: 15000
+
+- tapOn:
+    text: "Search for customers"
+- inputText: "zzzzznomatch"
+- hideKeyboard
+
+# When no match, tap the "Add details manually" CTA to enter the editor
+- extendedWaitUntil:
+    visible: "Add details manually"
+    timeout: 15000
+
+- tapOn:
+    text: "Add details manually"
+    label: "Add customer details manually"
+
+# Customer edit form is now visible — fill first & last name
+- extendedWaitUntil:
+    visible: ".*First name.*|.*Last name.*|.*Email.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_customer_edit_form
+
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "first_name"
+- eraseText
+- inputText: "Maestro"
+- hideKeyboard
+
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "last_name"
+- eraseText
+- inputText: "SmokeTest"
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_edited
+
+# Save via toolbar DONE
+- tapOn:
+    id: "menu_done"
+    label: "Save customer details"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_with_customer
+
+# ── Edit the added customer ───────────────────────────────────────────
+- scrollUntilVisible:
+    element: ".*SmokeTest.*|.*Maestro.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to customer section"
+
+- tapOn:
+    id: "edit_button"
+    childOf:
+      id: "customer_section"
+    label: "Tap customer edit button"
+
+- extendedWaitUntil:
+    visible: ".*Last name.*"
+    timeout: 15000
+
+# Rewrite the last name with a per-suite-run-unique marker so
+# orders_refund.yaml can find THIS exact order and won't pick up an
+# already-refunded leftover from a previous suite run. SUITE_RUN_ID is
+# exported by .maestro/scripts/run-smoke-tests.sh (set to the run's
+# timestamp, e.g. 20260421-123100), so every run's customer last name
+# is distinct.
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "last_name"
+- eraseText
+- inputText: "SmokeTest-${SUITE_RUN_ID}"
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_re_edited
+
+- tapOn:
+    id: "menu_done"
+    label: "Save customer edit"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_fully_customized
+
+# ── Submit + auto-launch payment flow ─────────────────────────────────
+# The Compose totals overlay at the bottom of the creation screen
+# hosts a "Collect Payment" primary button (see
+# OrderCreateEditTotalsHelper.toButtonText → Creation branch). Tapping
+# it submits the order AND sets startPaymentFlow=true, so
+# OrderDetailViewModel's init auto-triggers StartPaymentFlow —
+# landing on the Take-payment selector without requiring a second tap
+# on order detail.
+- scrollUntilVisible:
+    element: "Collect Payment"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Collect Payment primary button"
+
+- tapOn:
+    text: "Collect Payment"
+    retryTapIfNoChange: true
+    label: "Tap Collect Payment to submit + start payment flow"
+
+# Take-payment bottom sheet appears (Card/Cash options).
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 30000
+
+- takeScreenshot: order_create_select_payment_method
+
+- tapOn:
+    text: "Cash"
+    retryTapIfNoChange: true
+    label: "Select Cash payment method"
+
+# Change Due Calculator — the order total is pre-filled, so tapping
+# "Mark Order as Complete" records the cash payment and closes out the
+# order.
+- extendedWaitUntil:
+    visible: ".*Mark Order as Complete.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_change_due_calculator
+
+- tapOn:
+    text: ".*Mark Order as Complete.*"
+    retryTapIfNoChange: true
+    label: "Mark order as complete with cash"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 30000
+
+- takeScreenshot: order_create_completed

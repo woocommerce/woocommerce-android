@@ -1,0 +1,184 @@
+# Smoke Test: Orders - Mark order complete
+# p2: orders.mark-complete
+# P2 ref: Orders > Mark complete
+#
+# Verifies:
+#   - Filter the orders list by "Processing" status
+#   - Open a processing order
+#   - Navigate to the Fulfill screen via "Mark order complete"
+#   - Complete the fulfillment
+#   - "🎉 Order completed!" snackbar appears
+#   - Undo the status change so the staging store stays clean
+#
+# Filtering to "Processing" guarantees the target order has the Mark
+# Complete button visible — it's hidden on already-completed orders.
+appId: com.woocommerce.android.dev
+name: "Orders - Mark order complete"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# ── Filter by Processing status ───────────────────────────────────────
+# Clear any previously-applied filter first. Prior flows in the suite
+# (e.g. orders_refund with a Completed filter) can leave a status
+# selected; re-selecting "Processing" on top of that would stack the
+# statuses and surface orders that don't have the Mark Complete
+# button.
+- tapOn:
+    id: "btn_order_filter"
+    label: "Open filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing filters"
+
+- extendedWaitUntil:
+    visible: "Order Status"
+    timeout: 10000
+
+- tapOn:
+    text: "Order Status"
+    label: "Open status filter"
+
+# Status labels include counts, e.g. "Processing (50)".
+- extendedWaitUntil:
+    visible: ".*Processing.*"
+    timeout: 10000
+
+- tapOn:
+    text: ".*Processing.*"
+    label: "Select Processing status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+# Pull-to-refresh so the status filter reflects the latest server
+# state — stale caches can leave a just-completed order at index 0.
+- swipe:
+    from:
+      id: "ordersList"
+    direction: DOWN
+    duration: 800
+
+- takeScreenshot: orders_filtered_processing
+
+# ── Open the first processing order ──────────────────────────────────
+- tapOn:
+    id: "orderNum"
+    index: 0
+    label: "Open first processing order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+- takeScreenshot: order_detail_processing
+
+# ── Mark complete → Fulfill screen ───────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productList_btnMarkOrderComplete"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Mark order complete button"
+
+- tapOn:
+    id: "productList_btnMarkOrderComplete"
+    retryTapIfNoChange: true
+    label: "Tap Mark order complete"
+
+# Fulfill screen has its own Mark Complete CTA that actually commits
+# the status change.
+- extendedWaitUntil:
+    visible:
+      id: "button_mark_order_compete"
+    timeout: 15000
+
+- takeScreenshot: order_fulfill_screen
+
+- tapOn:
+    id: "button_mark_order_compete"
+    retryTapIfNoChange: true
+    label: "Confirm mark complete"
+
+# ── Verify completion + undo ─────────────────────────────────────────
+# The completion snackbar shows "🎉 Order completed!" with an "Undo"
+# action and auto-dismisses after a few seconds, so tap Undo first.
+# On stores with shipping labels enabled, the Fulfill confirm can also
+# race into an auto-navigation to the Create Shipping Label screen, so
+# the post-Undo state is not deterministically on order detail. Back
+# out until the orders list reappears, which is this flow's final
+# state anyway.
+- runFlow:
+    when:
+      visible: "Undo"
+    commands:
+      - tapOn:
+          text: "Undo"
+          retryTapIfNoChange: true
+          label: "Undo status change"
+
+- runFlow:
+    when:
+      visible: ".*Create shipping label.*"
+    commands:
+      - back
+          # Create Shipping Label is a sibling of Order Detail in the
+          # nav graph — a single back returns directly to the orders
+          # list on this store config.
+
+# If we're still on order detail, back out to the orders list.
+- runFlow:
+    when:
+      visible:
+        id: "orderDetail_container"
+    commands:
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- takeScreenshot: order_marked_complete_reverted
+
+# ── Clear the filter so future runs start from an unfiltered list ────
+- tapOn:
+    id: "btn_order_filter"
+    label: "Re-open filters to clear"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear filters"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply cleared filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000

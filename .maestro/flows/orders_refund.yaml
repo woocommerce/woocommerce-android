@@ -1,0 +1,249 @@
+# Smoke Test: Orders - Issue refund
+# p2: orders.refund
+# P2 ref: Orders > Refund
+#
+# Verifies:
+#   - Filter the orders list by "Completed" status (the Refund button
+#     in the payment section is only exposed once an order has been
+#     transitioned to Completed — Processing orders do not show it
+#     on this app)
+#   - Open a completed order
+#   - Tap "Refund" in the payment info section
+#   - Select all items on the Issue Refund screen
+#   - Advance to the Refund Summary screen
+#   - Enter a refund reason
+#   - Tap the Refund CTA to reach the confirmation dialog
+#   - Confirm the refund by tapping the positive "Refund" button,
+#     which actually hits the WPCom refund endpoint
+#   - Wait for the success snackbar ("The refund was successfully
+#     submitted.") and verify we land back on order detail with the
+#     refund recorded
+#
+# Unlike the mark-complete flow, the refund is fully committed — the
+# staging store will accumulate refunded orders across runs. Test
+# orders on the store are priced low enough that this is acceptable.
+appId: com.woocommerce.android.dev
+name: "Orders - Issue refund"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# ── Filter by Completed status ────────────────────────────────────────
+# The Refund button in the payment info section is only exposed on
+# orders that have been transitioned to Completed. Processing-status
+# orders — even those paid via gateways that support refunds — do not
+# show the button on this app. Clear any previously-applied filters
+# first to avoid cross-test contamination.
+- tapOn:
+    id: "btn_order_filter"
+    label: "Open filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing filters"
+
+- extendedWaitUntil:
+    visible: "Order Status"
+    timeout: 10000
+
+- tapOn:
+    text: "Order Status"
+    label: "Open status filter"
+
+- extendedWaitUntil:
+    visible: ".*Completed.*"
+    timeout: 10000
+
+- tapOn:
+    text: ".*Completed.*"
+    label: "Select Completed status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+# Pull-to-refresh so the status filter reflects the latest server
+# state. Without this, the cached list can still contain an order
+# that was just refunded in a previous run — the refund button won't
+# exist on it once the refund API has reclassified it as Refunded,
+# and the scrollUntilVisible below would fail.
+- swipe:
+    from:
+      id: "ordersList"
+    direction: DOWN
+    duration: 800
+
+# ── Open the freshly-created order (suite) or first completed order ──
+# In a full-suite run, orders_create.yaml stamps the created order's
+# customer last name with the suite's unique run ID (SUITE_RUN_ID,
+# e.g. "SmokeTest-20260421-123100") so we can target that exact order
+# here instead of a leftover "SmokeTest*" customer from a previous
+# suite run — those prior orders will have already been fully
+# refunded and show 0 refundable items on the Issue Refund screen.
+# Fall back to the first completed order when the suite-tagged
+# customer isn't visible (e.g. this flow is run standalone).
+- runFlow:
+    when:
+      visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    commands:
+      - tapOn:
+          text: ".*SmokeTest-${SUITE_RUN_ID}.*"
+          retryTapIfNoChange: true
+          label: "Open this-run's SmokeTest order"
+
+- runFlow:
+    when:
+      notVisible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    commands:
+      - tapOn:
+          id: "orderNum"
+          index: 0
+          label: "Open first completed order (fallback)"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+# ── Refund → Issue Refund screen ─────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "paymentInfo_issueRefundButton"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Refund button"
+
+- tapOn:
+    id: "paymentInfo_issueRefundButton"
+    retryTapIfNoChange: true
+    label: "Tap Refund"
+
+- extendedWaitUntil:
+    visible:
+      id: "issueRefund_btnNextFromItems"
+    timeout: 15000
+
+- takeScreenshot: issue_refund_items
+
+# Select all items
+- tapOn:
+    id: "issueRefund_selectButton"
+    retryTapIfNoChange: true
+    label: "Select all items"
+
+- tapOn:
+    id: "issueRefund_btnNextFromItems"
+    retryTapIfNoChange: true
+    label: "Next to refund summary"
+
+# ── Refund Summary ───────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "refundSummary_btnRefund"
+    timeout: 15000
+
+- takeScreenshot: refund_summary
+
+# Enter a reason so the "Refund" CTA is verifiably exercised with a
+# filled-in reason field.
+- tapOn:
+    id: "refundSummary_reason"
+- inputText: "Maestro smoke test refund"
+- hideKeyboard
+
+- takeScreenshot: refund_summary_with_reason
+
+- tapOn:
+    id: "refundSummary_btnRefund"
+    retryTapIfNoChange: true
+    label: "Tap Refund (opens confirmation dialog)"
+
+# ── Confirmation dialog — confirm to submit the refund ───────────────
+- extendedWaitUntil:
+    visible: ".*Are you sure you want to issue a refund.*"
+    timeout: 15000
+
+- takeScreenshot: refund_confirmation_dialog
+
+# The MaterialAlertDialog positive button is the standard Android
+# `button1` resource ID, with label "Refund" (from
+# R.string.order_refunds_refund). Tapping it fires onRefundConfirmed
+# → initiateRefund → WPCom POST /wc/v3/orders/{id}/refunds.
+- tapOn:
+    id: "button1"
+    retryTapIfNoChange: true
+    label: "Confirm refund"
+
+# ── Verify the refund succeeded ──────────────────────────────────────
+# On success the ViewModel shows a transient snackbar ("The refund was
+# successfully submitted.") and pops the back stack past the
+# IssueRefund fragment, landing on order detail with a "Refunded"
+# line recorded in the payment totals section. The snackbar
+# auto-dismisses in ~3-5s which is often faster than Maestro can
+# observe reliably, so the durable assertion is the post-refund state:
+# we're back on orderDetail_container AND a Refunded line is present.
+- runFlow:
+    when:
+      visible: ".*The refund was successfully submitted.*"
+    commands:
+      - takeScreenshot: refund_success_snackbar
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 20000
+
+- scrollUntilVisible:
+    element: ".*Refunded.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Refunded line in payment totals"
+
+- takeScreenshot: order_detail_after_refund
+
+# ── Back out to orders list ──────────────────────────────────────────
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+
+# ── Clear the filter so future runs start from an unfiltered list ────
+- tapOn:
+    id: "btn_order_filter"
+    label: "Re-open filters to clear"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear filters"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply cleared filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
