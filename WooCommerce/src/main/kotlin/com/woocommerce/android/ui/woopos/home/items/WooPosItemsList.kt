@@ -368,6 +368,7 @@ fun WooPosCouponCard(
                     onClickLabel = stringResource(R.string.woopos_add_coupon_to_cart_accessibility_label)
                 ) { onItemClicked(item) }
                 .clearAndSetSemantics { contentDescription = itemContentDescription }
+                .testTag(WooPosTestTags.COUPON_ADD_TO_CART_BUTTON)
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
