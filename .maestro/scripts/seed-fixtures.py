@@ -236,6 +236,7 @@ def seed(args: argparse.Namespace) -> None:
 
     pending_order_ids: list[int] = []
     refundable_order_ids: list[int] = []
+    processing_order_ids: list[int] = []
     for index in range(1, CONSUMABLE_MULTIPLIER + 1):
         pending = create_order(
             client=client,
@@ -261,6 +262,20 @@ def seed(args: argparse.Namespace) -> None:
         refundable_order_ids.append(int(refundable["id"]))
         record(manifest, "order", int(refundable["id"]), f"refundable-order-{index}")
 
+        # Paid order awaiting fulfillment — the only status where the
+        # order detail screen exposes the Mark Complete action.
+        processing = create_order(
+            client=client,
+            run_id=run_id,
+            customer=customer,
+            product_id=int(simple_product["id"]),
+            status="processing",
+            set_paid=True,
+            label=f"processing-order-{index}",
+        )
+        processing_order_ids.append(int(processing["id"]))
+        record(manifest, "order", int(processing["id"]), f"processing-order-{index}")
+
     manifest["env"] = {
         "MAESTRO_SUITE_RUN_ID": run_id,
         "MAESTRO_FIXTURE_CUSTOMER_NAME": customer_name,
@@ -272,6 +287,8 @@ def seed(args: argparse.Namespace) -> None:
         "MAESTRO_FIXTURE_PENDING_ORDER_IDS": ",".join(str(item) for item in pending_order_ids),
         "MAESTRO_FIXTURE_REFUNDABLE_ORDER_ID": str(refundable_order_ids[0]),
         "MAESTRO_FIXTURE_REFUNDABLE_ORDER_IDS": ",".join(str(item) for item in refundable_order_ids),
+        "MAESTRO_FIXTURE_PROCESSING_ORDER_ID": str(processing_order_ids[0]),
+        "MAESTRO_FIXTURE_PROCESSING_ORDER_IDS": ",".join(str(item) for item in processing_order_ids),
     }
 
     write_json(args.manifest, manifest)
