@@ -30,11 +30,34 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# Open the first order
+# Open one of this run's seeded orders — never an arbitrary first row.
+# This flow persists a note on the order it opens, and on the shared
+# store index-0 can be a manual tester's real order. Searching the
+# suite run id scopes the list to automation-owned fixtures only.
+- tapOn:
+    id: "menu_search"
+    label: "Open order search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${SUITE_RUN_ID}
+- pressKey: Enter
+
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
+    timeout: 20000
+    label: "Wait for seeded orders in results"
+
 - tapOn:
     id: "orderNum"
     index: 0
-    label: "Tap first order in list"
+    label: "Open first seeded order"
 
 # Wait for order detail
 - extendedWaitUntil:

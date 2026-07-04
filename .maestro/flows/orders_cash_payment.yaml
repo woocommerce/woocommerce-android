@@ -3,18 +3,17 @@
 # P2 ref: Orders > Collect payment using cash on delivery
 #
 # Verifies:
-#   - Filter the orders list by "Processing" status
-#   - Open a processing order
+#   - Search locates this run's seeded pending-payment order
 #   - Tap "Collect Payment" in the payment info section
 #   - Pick the "Cash" option on the Select Payment Method screen
 #   - Change Due Calculator opens with the order total pre-filled
 #   - Tap "Mark Order as Complete" to record the cash payment
 #   - Returns to the order detail/list with the order marked completed
 #
-# Note: unlike mark-complete, the cash-payment flow has no undo — the
-# order stays Completed with a "Cash on Delivery" gateway recorded.
-# The staging store has plenty of processing orders, so one-per-run is
-# acceptable for smoke purposes.
+# Note: the cash-payment flow has no undo — the order stays Completed
+# with a "Cash on Delivery" gateway recorded. It therefore only ever
+# consumes a seeded fixture order (located via ${SUITE_RUN_ID} search),
+# never an arbitrary order from the shared store's list.
 appId: com.woocommerce.android.dev
 name: "Orders - Collect cash payment"
 tags:
@@ -29,62 +28,36 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# ── Filter by Pending payment status ──────────────────────────────────
-# "Processing" orders on this store have already been paid (the payment
-# info shows "Payment complete."), so the Collect Payment button is
-# hidden. "Pending payment" orders are awaiting payment and expose the
-# collect-payment action that the cash flow tests. Clear any
-# previously-applied filters first to avoid cross-test contamination.
+# ── Find this run's seeded pending-payment order ──────────────────────
+# Fixtures are located by query, never by list position — on the shared
+# store the first pending order can be a manual tester's real order, and
+# this flow's cash payment has no undo. Searching the suite run id only
+# surfaces automation-owned orders (seeded billing name is the run id);
+# a "Pending payment" row is a seeded COD fixture that still exposes the
+# Collect Payment action. If attempt 1 consumed pending-order-1, the
+# retry finds pending-order-2 through the same query.
 - tapOn:
-    id: "btn_order_filter"
-    label: "Open filters"
-
-- runFlow:
-    when:
-      visible: ".*Clear.*"
-    commands:
-      - tapOn:
-          text: ".*Clear.*"
-          label: "Clear existing filters"
-
-- extendedWaitUntil:
-    visible: "Order Status"
-    timeout: 10000
-
-- tapOn:
-    text: "Order Status"
-    label: "Open status filter"
-
-- extendedWaitUntil:
-    visible: ".*Pending payment.*"
-    timeout: 10000
-
-- tapOn:
-    text: ".*Pending payment.*"
-    label: "Select Pending payment status"
-
-- tapOn:
-    id: "showOrdersButton"
-    label: "Apply filter"
+    id: "menu_search"
+    label: "Open order search"
 
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
-    timeout: 15000
+      id: "search_src_text"
+    timeout: 10000
 
-# Pull-to-refresh the list so the status filter reflects the latest
-# server state (stale cache can leave a just-completed order at index 0).
-- swipe:
-    from:
-      id: "ordersList"
-    direction: DOWN
-    duration: 800
-
-# ── Open the first pending-payment order ──────────────────────────────
 - tapOn:
-    id: "orderNum"
-    index: 0
-    label: "Open first pending-payment order"
+    id: "search_src_text"
+- inputText: ${SUITE_RUN_ID}
+- pressKey: Enter
+
+- extendedWaitUntil:
+    visible: ".*Pending payment.*"
+    timeout: 20000
+    label: "Wait for a seeded pending-payment order in results"
+
+- tapOn:
+    text: ".*Pending payment.*"
+    label: "Open this run's pending-payment order"
 
 - extendedWaitUntil:
     visible:
@@ -161,22 +134,14 @@ tags:
 
 - takeScreenshot: orders_after_cash_payment
 
-# ── Clear the filter so future runs start from an unfiltered list ────
-- tapOn:
-    id: "btn_order_filter"
-    label: "Re-open filters to clear"
-
+# ── Exit search if still active so downstream flows start clean ──────
 - runFlow:
     when:
-      visible: ".*Clear.*"
+      visible:
+        id: "search_src_text"
     commands:
-      - tapOn:
-          text: ".*Clear.*"
-          label: "Clear filters"
-
-- tapOn:
-    id: "showOrdersButton"
-    label: "Apply cleared filter"
+      - back
+      - back
 
 - extendedWaitUntil:
     visible:

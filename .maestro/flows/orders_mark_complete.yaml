@@ -3,15 +3,15 @@
 # P2 ref: Orders > Mark complete
 #
 # Verifies:
-#   - Filter the orders list by "Processing" status
-#   - Open a processing order
+#   - Search locates this run's seeded processing order
 #   - Navigate to the Fulfill screen via "Mark order complete"
 #   - Complete the fulfillment
 #   - "🎉 Order completed!" snackbar appears
 #   - Undo the status change so the staging store stays clean
 #
-# Filtering to "Processing" guarantees the target order has the Mark
-# Complete button visible — it's hidden on already-completed orders.
+# The seeded processing fixture guarantees the target order has the
+# Mark Complete button visible — it's hidden on already-completed
+# orders — and that a missed Undo only ever affects automation data.
 appId: com.woocommerce.android.dev
 name: "Orders - Mark order complete"
 tags:
@@ -26,65 +26,37 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# ── Filter by Processing status ───────────────────────────────────────
-# Clear any previously-applied filter first. Prior flows in the suite
-# (e.g. orders_refund with a Completed filter) can leave a status
-# selected; re-selecting "Processing" on top of that would stack the
-# statuses and surface orders that don't have the Mark Complete
-# button.
+# ── Find this run's seeded processing order ──────────────────────────
+# Fixtures are located by query, never by list position — on the shared
+# store the first processing order can be a manual tester's real order,
+# and the Undo below is best-effort (the snackbar auto-dismisses).
+# Searching the suite run id only surfaces automation-owned orders
+# (seeded billing name is the run id); the "Processing" row is a seeded
+# paid fixture that exposes the Mark Complete action.
 - tapOn:
-    id: "btn_order_filter"
-    label: "Open filters"
-
-- runFlow:
-    when:
-      visible: ".*Clear.*"
-    commands:
-      - tapOn:
-          text: ".*Clear.*"
-          label: "Clear existing filters"
-
-- extendedWaitUntil:
-    visible: "Order Status"
-    timeout: 10000
-
-- tapOn:
-    text: "Order Status"
-    label: "Open status filter"
-
-# Status labels include counts, e.g. "Processing (50)".
-- extendedWaitUntil:
-    visible: ".*Processing.*"
-    timeout: 10000
-
-- tapOn:
-    text: ".*Processing.*"
-    label: "Select Processing status"
-
-- tapOn:
-    id: "showOrdersButton"
-    label: "Apply filter"
+    id: "menu_search"
+    label: "Open order search"
 
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
-    timeout: 15000
+      id: "search_src_text"
+    timeout: 10000
 
-# Pull-to-refresh so the status filter reflects the latest server
-# state — stale caches can leave a just-completed order at index 0.
-- swipe:
-    from:
-      id: "ordersList"
-    direction: DOWN
-    duration: 800
-
-- takeScreenshot: orders_filtered_processing
-
-# ── Open the first processing order ──────────────────────────────────
 - tapOn:
-    id: "orderNum"
-    index: 0
-    label: "Open first processing order"
+    id: "search_src_text"
+- inputText: ${SUITE_RUN_ID}
+- pressKey: Enter
+
+- extendedWaitUntil:
+    visible: ".*Processing.*"
+    timeout: 20000
+    label: "Wait for a seeded processing order in results"
+
+- takeScreenshot: orders_search_processing
+
+- tapOn:
+    text: ".*Processing.*"
+    label: "Open this run's processing order"
 
 - extendedWaitUntil:
     visible:
@@ -161,22 +133,14 @@ tags:
 
 - takeScreenshot: order_marked_complete_reverted
 
-# ── Clear the filter so future runs start from an unfiltered list ────
-- tapOn:
-    id: "btn_order_filter"
-    label: "Re-open filters to clear"
-
+# ── Exit search if still active so downstream flows start clean ──────
 - runFlow:
     when:
-      visible: ".*Clear.*"
+      visible:
+        id: "search_src_text"
     commands:
-      - tapOn:
-          text: ".*Clear.*"
-          label: "Clear filters"
-
-- tapOn:
-    id: "showOrdersButton"
-    label: "Apply cleared filter"
+      - back
+      - back
 
 - extendedWaitUntil:
     visible:

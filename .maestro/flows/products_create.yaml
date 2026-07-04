@@ -99,14 +99,16 @@ tags:
 - takeScreenshot: product_create_empty_form
 
 # ─────────────────────────────────────────────────────────────────────
-# 2. Name — fixed string so search at the end is deterministic even
-#    after previous runs have accumulated duplicates.
+# 2. Name — stamped with the suite run id so (a) the end-of-flow search
+#    matches exactly this run's product, never a leftover duplicate,
+#    and (b) the stale-orphan sweep can find and delete it if the run
+#    crashes before any cleanup.
 # ─────────────────────────────────────────────────────────────────────
 - tapOn:
     id: "editText"
     label: "Tap product name field"
 
-- inputText: "Maestro Smoke Product"
+- inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
 
 - hideKeyboard
 
@@ -333,19 +335,20 @@ tags:
 - tapOn:
     id: "search_src_text"
 
-- inputText: "Maestro Smoke"
+- inputText: ${SUITE_RUN_ID}
 
 - hideKeyboard
 
 # The search is debounced, and the staging backend can take a couple
 # of seconds to return results for a just-published product. Generous
-# timeout to accommodate that round-trip.
+# timeout to accommodate that round-trip. Matching on the run id makes
+# this assert immune to leftovers from previous runs.
 - extendedWaitUntil:
-    visible: "Maestro Smoke Product"
+    visible: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
     timeout: 30000
     label: "Wait for the new product in search results"
 
-- assertVisible: "Maestro Smoke Product"
+- assertVisible: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
 
 - takeScreenshot: product_create_found_in_list
 
