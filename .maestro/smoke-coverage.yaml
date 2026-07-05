@@ -111,16 +111,16 @@ items:
     flow: .maestro/flows/orders_create.yaml
   - id: orders.barcode.open-scanner
     title: Barcode button opens scanner
-    manual: "Requires camera or guided manual mode."
+    flow: .maestro/flows/orders_barcode_scanner_opens.yaml
   - id: orders.barcode.add-product
     title: Add product using barcode scanner
-    manual: "Requires camera or guided manual mode."
+    manual: "Requires virtual-scene camera injection."
   - id: orders.collect-payment.qr
     title: Scan to Pay displays QR code
-    manual: "Not in PR baseline; add after core phone suite is stable."
+    flow: .maestro/flows/orders_payment_qr_and_share.yaml
   - id: orders.collect-payment.share-link
     title: Share payment link
-    manual: "Not in PR baseline; add after core phone suite is stable."
+    flow: .maestro/flows/orders_payment_qr_and_share.yaml
   - id: orders.collect-payment.cash
     title: Cash payment method
     flow: .maestro/flows/orders_cash_payment.yaml
@@ -141,7 +141,7 @@ items:
     flow: .maestro/flows/orders_mark_complete.yaml
   - id: orders.barcode.start-order
     title: Start order creation by scanning barcode
-    manual: "Requires camera or guided manual mode."
+    flow: .maestro/flows/orders_barcode_scanner_opens.yaml
 
   - id: products.list
     title: Product list loads
