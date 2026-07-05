@@ -1,8 +1,8 @@
-# Smoke Test: Products - Media upload via WordPress media library
+# Smoke Test: Products - Media upload via WordPress media library and device media
 # p2: products.detail.media
 # P2 ref: Products > Media upload
 #
-# Exercises the full WP-media-library upload path end-to-end:
+# Exercises both supported gallery upload paths end-to-end:
 #
 #   Product detail
 #     └─ tap "Add image"
@@ -11,11 +11,13 @@
 #           ▼
 #   ProductImagesFragment ("Photos" screen)
 #     └─ image-source dialog auto-opens
-#        └─ tap "WordPress media library"
-#           (mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY))
+#        ├─ tap "WordPress media library"
+#        │  (mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY))
+#        └─ tap "Choose from device"
+#           (mediaPickerHelper.showMediaPicker(DEVICE))
 #              ▼
 #   MediaPickerActivity (external org.wordpress:mediapicker lib)
-#     └─ tap first image_thumbnail in the recycler
+#     └─ tap first image_thumbnail in each recycler
 #     └─ tap mnu_confirm_selection ("Add N") in the toolbar
 #        └─ result returned to ProductImagesFragment
 #           ▼
@@ -61,46 +63,10 @@ tags:
 # on the shared store index-0 can be a manual tester's real product.
 # The seeded fixture is deleted by manifest cleanup after the run, so
 # the gallery mutation never outlives the suite.
-- tapOn:
-    id: "menu_search"
-    label: "Open product search"
-
-- extendedWaitUntil:
-    visible:
-      id: "search_src_text"
-    timeout: 10000
-
-- tapOn:
-    id: "search_src_text"
-- inputText: ${FIXTURE_SIMPLE_PRODUCT}
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible:
-      id: "productName"
-    timeout: 20000
-    label: "Wait for the seeded product in search results"
-
-- tapOn:
-    id: "productName"
-    index: 0
-    label: "Open seeded simple product"
-
-- extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
-    timeout: 25000
-    label: "Wait for product detail to load"
-
 - runFlow:
-    when:
-      visible: "GOT IT"
-    commands:
-      - tapOn: "GOT IT"
-
-- extendedWaitUntil:
-    visible:
-      id: "editText"
-    timeout: 10000
+    file: ../subflows/open_product_by_name.yaml
+    env:
+      PRODUCT_NAME: ${FIXTURE_SIMPLE_PRODUCT}
 
 - takeScreenshot: media_upload_product_detail
 
@@ -212,6 +178,78 @@ tags:
       id: "editText"
     timeout: 10000
     label: "Wait for product detail to reappear"
+
+# Add a second image from device media. The runner pre-pushes a small
+# JPEG to /sdcard/Pictures and media-scans it before the flow starts.
+- tapOn:
+    id: "addImageIcon"
+    retryTapIfNoChange: true
+    label: "Tap add image icon for device media"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageContainer"
+          retryTapIfNoChange: true
+          label: "Tap add image container for device media"
+
+- extendedWaitUntil:
+    visible: "Select an upload method"
+    timeout: 15000
+    label: "Wait for image source dialog again"
+
+- takeScreenshot: media_upload_device_source_dialog
+
+- tapOn:
+    text: "Choose from device"
+    label: "Tap Choose from device"
+
+- runFlow:
+    when:
+      visible:
+        id: "soft_ask_view"
+    commands:
+      - tapOn:
+          text: ".*Allow access.*|.*Allow.*"
+
+- extendedWaitUntil:
+    visible:
+      id: "recycler"
+    timeout: 30000
+    label: "Wait for device media grid"
+
+- takeScreenshot: media_upload_device_grid
+
+- tapOn:
+    id: "image_thumbnail"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Tap first device media item"
+
+- takeScreenshot: media_upload_device_item_selected
+
+- tapOn:
+    id: "mnu_confirm_selection"
+    retryTapIfNoChange: true
+    label: "Tap Add for device media"
+
+- extendedWaitUntil:
+    visible:
+      id: "productImage"
+    timeout: 45000
+    label: "Wait for device image to appear in product gallery"
+
+- takeScreenshot: media_upload_device_image_in_gallery
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for product detail after device media"
 
 # Save the product so the image is persisted on the backend. On an
 # existing product the action is labelled "SAVE"; on a brand-new

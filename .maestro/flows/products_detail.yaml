@@ -2,32 +2,11 @@
 # p2: products.detail.description, products.detail.price, products.detail.inventory, products.detail.categories, products.detail.type, products.detail.shipping, products.detail.short-description, products.detail.linked, products.detail.downloads
 # P2 ref: Products > Product details (all details)
 #
-# IMPORTANT: this flow opens "the first product" in the staging list.
-# WooCommerce supports several product types (simple, variable,
-# grouped, external, booking, subscription, …) and each type renders
-# a DIFFERENT set of ComplexProperty rows on the detail screen:
-#
-#   - Simple/physical          → Price + Inventory + Product type + Shipping + …
-#   - Variable                 → Variations + Attributes + Product type
-#   - Grouped / External / Booking → no "Price" row (pricing handled elsewhere);
-#                                    no "Inventory" row on grouped/booking
-#
-# We therefore avoid asserting on type-specific labels like "Price" or
-# "Inventory" — those would fail as soon as the first product on the
-# staging store is, say, a Booking product (as happened on this run:
-# the first product was "Tourist Activity" → Booking). Instead we
-# assert on rows that render for EVERY product type:
-#
-#   - "Product type"  (always rendered; value varies)
-#   - "Reviews"       (always rendered; "no approved reviews" placeholder)
-#   - "Categories"    (always rendered; "Uncategorized" if unset)
-#
 # Verifies:
-#   - Product detail screen loads
-#   - Product name field + "Describe your product" area render
-#   - Universal ComplexProperty rows render (Product type, Reviews,
-#     Categories). Type-specific rows are expected to be covered by
-#     seeded/query-targeted flows before this provisional flow graduates.
+#   - Product detail opens for this run's seeded simple product
+#   - Description, price, inventory, categories, product type, shipping,
+#     short description, linked products, and downloadable files all open
+#     their editor/detail surfaces and return to product detail
 appId: com.woocommerce.android.dev
 name: "Products - Product detail view"
 tags:
@@ -35,100 +14,253 @@ tags:
   - flaky_quarantine
   - products
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to Products
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
-# Open the first product
-- tapOn:
-    id: "productName"
-    index: 0
-    label: "Tap first product"
-
-# Wait for product detail screen. The "Describe your product" hint +
-# "Write with AI" button render on every product type, so they're a
-# safer readiness signal than price-related text.
-- extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
-    timeout: 25000
-    label: "Wait for product detail to load"
-
-# Dismiss "Write with AI" tooltip if it appears
 - runFlow:
-    when:
-      visible: "GOT IT"
-    commands:
-      - tapOn: "GOT IT"
+    file: ../subflows/open_product_by_name.yaml
+    env:
+      PRODUCT_NAME: ${FIXTURE_SIMPLE_PRODUCT}
 
-# Wait for the product-name field (universal).
+- takeScreenshot: product_detail_top
+
+# Description editor
+- tapOn:
+    text: "Description"
+    retryTapIfNoChange: true
+    label: "Open product description"
+
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+    label: "Wait for description editor"
+
+- takeScreenshot: product_detail_description_editor
+- back
+
 - extendedWaitUntil:
     visible:
       id: "editText"
     timeout: 10000
 
-- takeScreenshot: product_detail_top
-
-# Scroll to the properties RecyclerView so type-agnostic rows come
-# into view.
+# Price editor
 - scrollUntilVisible:
-    element:
-      id: "propertiesRecyclerView"
+    element: "Price"
     direction: DOWN
+    timeout: 15000
+    label: "Scroll to Price"
+
+- tapOn:
+    text: "Price"
+    retryTapIfNoChange: true
+    label: "Open product price"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_regular_price"
+    timeout: 15000
+    label: "Wait for price editor"
+
+- takeScreenshot: product_detail_price_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
     timeout: 10000
-    label: "Scroll to product properties"
 
-- takeScreenshot: product_detail_properties
+# Inventory editor
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Inventory"
 
-# Universal row 1: Product type (every WooCommerce product type
-# renders this — simple / variable / grouped / external / booking / …).
+- tapOn:
+    text: "Inventory"
+    retryTapIfNoChange: true
+    label: "Open product inventory"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_sku"
+    timeout: 15000
+    label: "Wait for inventory editor"
+
+- takeScreenshot: product_detail_inventory_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Product type picker
 - scrollUntilVisible:
     element: "Product type"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to Product type row"
+    label: "Scroll to Product type"
 
-- assertVisible: "Product type"
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Open product type picker"
 
-- takeScreenshot: product_detail_type
+- extendedWaitUntil:
+    visible: ".*Select a product type.*|.*Simple physical product.*|.*Variable product.*"
+    timeout: 15000
+    label: "Wait for product type picker"
 
-# Universal row 2: Reviews (renders with "no approved reviews"
-# placeholder when the product has none).
+- takeScreenshot: product_detail_product_type_picker
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Shipping editor
 - scrollUntilVisible:
-    element: "Reviews"
+    element: "Shipping"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to Reviews row"
+    label: "Scroll to Shipping"
+
+- tapOn:
+    text: "Shipping"
+    retryTapIfNoChange: true
+    label: "Open product shipping"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_weight"
+    timeout: 15000
+    label: "Wait for shipping editor"
+
+- takeScreenshot: product_detail_shipping_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Short description editor
+- scrollUntilVisible:
+    element: "Short description"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Short description"
+
+- tapOn:
+    text: "Short description"
+    retryTapIfNoChange: true
+    label: "Open short description"
+
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+    label: "Wait for short description editor"
+
+- takeScreenshot: product_detail_short_description_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Linked products editor
+- scrollUntilVisible:
+    element: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to linked products"
+
+- tapOn:
+    text: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open linked products"
+
+- extendedWaitUntil:
+    visible:
+      id: "add_upsell_products"
+    timeout: 15000
+    label: "Wait for linked products editor"
 
 - assertVisible:
-    text: "Reviews"
+    id: "add_cross_sell_products"
+    label: "Cross-sells editor is visible"
 
-# Universal row 3: Categories (falls back to "Uncategorized" when
-# unset).
+- takeScreenshot: product_detail_linked_products_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Downloadable files editor
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Downloadable files"
+
+- tapOn:
+    text: "Downloadable files"
+    retryTapIfNoChange: true
+    label: "Open downloadable files"
+
+- extendedWaitUntil:
+    visible:
+      id: "productDownloadsRecycler"
+    timeout: 15000
+    label: "Wait for downloadable files list"
+
+- takeScreenshot: product_detail_downloads_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Categories editor
 - scrollUntilVisible:
     element: "Categories"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to Categories row"
+    label: "Scroll to Categories"
 
-- assertVisible:
+- tapOn:
     text: "Categories"
+    retryTapIfNoChange: true
+    label: "Open product categories"
 
-# Type-specific rows. This provisional flow should target seeded/queryable
-# products before promotion so these assertions are not store-order dependent.
-- scrollUntilVisible:
-    element: ".*Price.*|.*Inventory.*|.*Shipping.*|.*Short description.*"
-    direction: DOWN
+- extendedWaitUntil:
+    visible:
+      id: "productCategoriesRecycler"
+    timeout: 15000
+    label: "Wait for categories editor"
+
+- takeScreenshot: product_detail_categories_editor
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
     timeout: 10000
-    label: "Scroll to Price / Inventory / Shipping / Short description"
 
-- takeScreenshot: product_detail_bottom
+- takeScreenshot: product_detail_all_rows_checked
 
-# Go back to products list
 - back
 
 - extendedWaitUntil:
