@@ -28,6 +28,7 @@ items:
   - id: login.no-jetpack
     title: Login to WooCommerce site without Jetpack
     flow: .maestro/flows/login_no_jetpack.yaml
+    note: "Partial: covers login plus Explore Jetpack banner; full Jetpack install/list verification needs disposable Jurassic Ninja provisioning."
   - id: login.jetpack-not-connected
     title: Login with Jetpack installed but not connected
     manual: "Requires manually disconnecting Jetpack on a disposable Jurassic Ninja site."

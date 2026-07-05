@@ -1,0 +1,33 @@
+# Find and open a seeded order for this suite run.
+appId: com.woocommerce.android.dev
+---
+- tapOn:
+    id: "menu_search"
+    label: "Open order search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- eraseText
+- inputText: ${SUITE_RUN_ID}
+- pressKey: Enter
+
+- extendedWaitUntil:
+    visible: "${ORDER_STATUS_MATCH}"
+    timeout: 20000
+    label: "Wait for matching seeded order in results"
+
+- tapOn:
+    text: "${ORDER_STATUS_MATCH}"
+    retryTapIfNoChange: true
+    label: "Open matching seeded order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+

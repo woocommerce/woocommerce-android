@@ -17,6 +17,8 @@ FLOWS_DIR="$REPO_ROOT/.maestro/flows"
 ENV_FILE="$REPO_ROOT/.maestro/.env.local"
 STRINGS_ENV_FILE="$REPO_ROOT/.maestro/strings.env"
 SEED_SCRIPT="$REPO_ROOT/.maestro/scripts/seed-fixtures.py"
+MEDIA_FIXTURE="$REPO_ROOT/.maestro/assets/smoke-test-image.jpg"
+MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image.jpg"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
 RUN_HASH="$(printf '%s-%s-%s' "$RUN_STAMP" "$$" "${RANDOM:-0}" | cksum | awk '{print $1}')"
@@ -221,6 +223,7 @@ P2_ORDERED_FLOWS=(
   products_media_upload.yaml
   hub_menu_settings.yaml
   hub_menu_payments.yaml
+  hub_menu_payments_ipp_toggle.yaml
   hub_menu_coupons.yaml
   hub_menu_customers_inbox.yaml
   hub_menu_admin_and_store.yaml
@@ -435,6 +438,18 @@ restore_animation_settings() {
   done
 }
 
+prepare_device_fixtures() {
+  adb -s "$DEVICE_SERIAL" shell pm grant com.woocommerce.android.dev android.permission.CAMERA >/dev/null 2>&1 || true
+
+  if [[ -f "$MEDIA_FIXTURE" ]]; then
+    adb -s "$DEVICE_SERIAL" shell mkdir -p /sdcard/Pictures >/dev/null
+    adb -s "$DEVICE_SERIAL" push "$MEDIA_FIXTURE" "$MEDIA_FIXTURE_DEVICE_PATH" >/dev/null
+    adb -s "$DEVICE_SERIAL" shell am broadcast \
+      -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
+      -d "file://$MEDIA_FIXTURE_DEVICE_PATH" >/dev/null 2>&1 || true
+  fi
+}
+
 stop_screenrecord() {
   adb -s "$DEVICE_SERIAL" shell "pkill -INT screenrecord 2>/dev/null || true" >/dev/null 2>&1 || true
   sleep 1
@@ -458,6 +473,7 @@ cleanup_on_exit() {
 trap cleanup_on_exit EXIT INT TERM
 
 capture_animation_settings
+prepare_device_fixtures
 
 if [[ -n "$APK_PATH" ]]; then
   if [[ ! -f "$APK_PATH" ]]; then

@@ -1,0 +1,11 @@
+# Back out of an active Android SearchView, if one is still open.
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      visible:
+        id: "search_src_text"
+    commands:
+      - back
+      - back
+

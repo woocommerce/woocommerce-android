@@ -113,6 +113,9 @@ class WooClient:
     def create(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         return self.request("POST", path, payload)
 
+    def update(self, path: str, entity_id: int, payload: dict[str, Any]) -> dict[str, Any]:
+        return self.request("PUT", f"{path}/{entity_id}", payload)
+
     def delete(self, path: str, entity_id: int) -> None:
         self.request("DELETE", f"{path}/{entity_id}", query={"force": "true"})
 
@@ -163,6 +166,9 @@ def seed(args: argparse.Namespace) -> None:
     tag = client.create("products/tags", {"name": f"{run_id} Tag"})
     record(manifest, "product_tag", int(tag["id"]), "variable product tag")
 
+    category = client.create("products/categories", {"name": f"{run_id} Category"})
+    record(manifest, "product_category", int(category["id"]), "product detail category")
+
     simple_product = client.create(
         "products",
         {
@@ -172,7 +178,19 @@ def seed(args: argparse.Namespace) -> None:
             "sku": f"{run_id}-simple",
             "manage_stock": True,
             "stock_quantity": 20,
+            "short_description": f"{run_id} short description",
+            "description": f"{run_id} seeded product for Maestro product detail smoke coverage.",
+            "weight": "1.2",
+            "dimensions": {"length": "10", "width": "5", "height": "2"},
+            "downloadable": True,
+            "downloads": [
+                {
+                    "name": f"{run_id} download",
+                    "file": "https://example.com/woocommerce-android-smoke.txt",
+                }
+            ],
             "tags": [{"id": tag["id"]}],
+            "categories": [{"id": category["id"]}],
         },
     )
     record(manifest, "product", int(simple_product["id"]), "simple order product")
@@ -205,6 +223,15 @@ def seed(args: argparse.Namespace) -> None:
             },
         )
         record(manifest, "product_variation", int(variation["id"]), f"variation {option}")
+
+    simple_product = client.update(
+        "products",
+        int(simple_product["id"]),
+        {
+            "upsell_ids": [int(variable_product["id"])],
+            "cross_sell_ids": [int(variable_product["id"])],
+        },
+    )
 
     customer = client.create(
         "customers",
@@ -342,6 +369,7 @@ def cleanup(args: argparse.Namespace) -> None:
         "coupon": "coupons",
         "product_variation": None,
         "product": "products",
+        "product_category": "products/categories",
         "product_tag": "products/tags",
         "customer": "customers",
         "lock_product": "products",
@@ -369,6 +397,7 @@ def sweep(args: argparse.Namespace) -> None:
     candidates: list[tuple[str, str, dict[str, Any]]] = []
     for entity_type, path in (
         ("product", "products"),
+        ("product_category", "products/categories"),
         ("coupon", "coupons"),
         ("order", "orders"),
         ("customer", "customers"),

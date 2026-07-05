@@ -1,0 +1,44 @@
+# Search for a product by name and open it from the product list.
+appId: com.woocommerce.android.dev
+---
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- eraseText
+- inputText: ${PRODUCT_NAME}
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible: "${PRODUCT_NAME}"
+    timeout: 20000
+    label: "Wait for product in search results"
+
+- tapOn:
+    text: "${PRODUCT_NAME}"
+    retryTapIfNoChange: true
+    label: "Open searched product"
+
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
