@@ -5,8 +5,9 @@
 # Verifies:
 #   - More Menu top-level items are visible (Settings section + Payments)
 #   - Settings screen opens from the More Menu
-#   - Every first-level Settings item is rendered (P2: smoke-test all items)
-#   - Log Out button is visible at the bottom of the screen
+#   - Help & support, Troubleshoot Connection, Privacy settings,
+#     Experimental features, and About the app each open and return
+#   - Log Out is rendered but never tapped
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Settings"
 tags:
@@ -42,32 +43,102 @@ tags:
     index: 1
     label: "Open Settings screen"
 
-# ── Smoke-test all first-level Settings items ────────────────────────
-# P2: "Smoke test all items (ignore Delete Account)". We assert each
-# item renders — no need to open each sub-screen for a smoke check.
-# Items are ordered top-to-bottom in fragment_settings_main.xml.
 - extendedWaitUntil:
     visible: "Help & support"
     timeout: 15000
 
-- assertVisible: "Help & support"
-- assertVisible: "Troubleshoot Connection"
-
 - takeScreenshot: settings_screen_top
 
-# Scroll to reach items lower on the screen. Settings is a plain
-# ScrollView, so scroll commands move the whole list. "Themes"
-# (option_site_themes) is only visible on WPComAtomic sites, so we
-# skip it — our staging Jetpack store doesn't render it. We scroll
-# straight to Privacy settings, which is always present.
+# Help & support opens a separate help activity.
+- tapOn:
+    id: "option_help_and_support"
+    retryTapIfNoChange: true
+    label: "Open Help & support"
+
+- extendedWaitUntil:
+    visible: ".*How can we help.*|.*Help Center.*|.*Contact Support.*"
+    timeout: 15000
+    label: "Wait for Help & support"
+
+- takeScreenshot: settings_help_support
+- back
+
+- extendedWaitUntil:
+    visible: "Troubleshoot Connection"
+    timeout: 15000
+
+# Troubleshoot Connection.
+- tapOn:
+    id: "option_troubleshoot_connection"
+    retryTapIfNoChange: true
+    label: "Open Troubleshoot Connection"
+
+- extendedWaitUntil:
+    visible: "Troubleshoot Connection"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible: ".*Internet connection.*|.*Connecting to WordPress.com servers.*|.*Store connection.*|.*Orders.*|.*Products.*"
+    timeout: 30000
+    label: "Wait for troubleshoot checks"
+
+- takeScreenshot: settings_troubleshoot_connection
+- back
+
+- extendedWaitUntil:
+    visible: "Help & support"
+    timeout: 15000
+
+# Privacy settings.
 - scrollUntilVisible:
     element: "Privacy settings"
     direction: DOWN
     timeout: 10000
     label: "Scroll to Privacy settings"
 
-- assertVisible: "Privacy settings"
-- assertVisible: "Experimental features"
+- tapOn:
+    id: "option_privacy"
+    retryTapIfNoChange: true
+    label: "Open Privacy settings"
+
+- extendedWaitUntil:
+    visible: "Privacy"
+    timeout: 15000
+
+- assertVisible: "Analytics"
+
+- scrollUntilVisible:
+    element: "Report Crashes"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Report Crashes"
+
+- assertVisible: "Report Crashes"
+
+- takeScreenshot: settings_privacy
+- back
+
+- extendedWaitUntil:
+    visible: "Privacy settings"
+    timeout: 15000
+
+# Experimental features.
+- tapOn:
+    id: "option_beta_features"
+    retryTapIfNoChange: true
+    label: "Open Experimental features"
+
+- extendedWaitUntil:
+    visible: ".*View Add-ons.*|.*POS Local Catalog.*|.*Application Passwords.*"
+    timeout: 15000
+    label: "Wait for Experimental features"
+
+- takeScreenshot: settings_experimental_features
+- back
+
+- extendedWaitUntil:
+    visible: "Privacy settings"
+    timeout: 15000
 
 - scrollUntilVisible:
     element: "About the app"
@@ -76,6 +147,25 @@ tags:
     label: "Scroll to About section"
 
 - assertVisible: "About the app"
+
+# About the app row is labelled with the app name under the About
+# header, so tap the XML id instead of the repeated section text.
+- tapOn:
+    id: "option_about"
+    retryTapIfNoChange: true
+    label: "Open About the app"
+
+- extendedWaitUntil:
+    visible: ".*About WooCommerce.*|.*Automattic Family.*|.*Version.*"
+    timeout: 15000
+    label: "Wait for About screen"
+
+- takeScreenshot: settings_about_app
+- back
+
+- extendedWaitUntil:
+    visible: "About the app"
+    timeout: 15000
 
 - scrollUntilVisible:
     element: "Log out"

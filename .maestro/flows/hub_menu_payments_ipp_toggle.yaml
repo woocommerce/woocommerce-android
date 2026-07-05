@@ -1,0 +1,77 @@
+# Smoke Test: Hub Menu - Payments Pay In Person toggle
+# p2: hub.payments
+# P2 ref: Hub menu > Payments > Enable/Disable Pay in Person
+#
+# Verifies:
+#   - Payments hub opens
+#   - Pay In Person switch can be toggled
+#   - The switch is toggled back so the store setting is restored
+appId: com.woocommerce.android.dev
+name: "Hub Menu - Payments Pay In Person toggle"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - hub_menu
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+- scrollUntilVisible:
+    element: "Payments"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Payments in hub menu"
+
+- tapOn:
+    text: "Payments"
+    label: "Open Payments"
+
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 20000
+
+- assertVisible:
+    id: "paymentsHubSwitch"
+    label: "Pay In Person switch is visible"
+
+- takeScreenshot: hub_payments_ipp_before_toggle
+
+- tapOn:
+    id: "paymentsHubSwitch"
+    retryTapIfNoChange: true
+    label: "Toggle Pay In Person"
+
+# The repository call disables then re-enables the switch around the
+# remote update; waiting for the switch to be visible again gives the
+# setting write time to settle before we revert it.
+- extendedWaitUntil:
+    visible:
+      id: "paymentsHubSwitch"
+    timeout: 20000
+    label: "Wait for Pay In Person toggle write"
+
+- takeScreenshot: hub_payments_ipp_after_toggle
+
+- tapOn:
+    id: "paymentsHubSwitch"
+    retryTapIfNoChange: true
+    label: "Toggle Pay In Person back"
+
+- extendedWaitUntil:
+    visible:
+      id: "paymentsHubSwitch"
+    timeout: 20000
+    label: "Wait for Pay In Person restore write"
+
+- takeScreenshot: hub_payments_ipp_restored
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000

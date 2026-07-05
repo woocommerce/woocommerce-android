@@ -10,8 +10,8 @@
 #     bottom sheet (Percentage, Fixed Cart, Fixed Product)
 #   - Pick Percentage Discount and confirm the edit-coupon screen
 #     opens
-#   - Back out WITHOUT saving (discard dialog handled below) so the
-#     staging store isn't polluted with test coupons
+#   - Save a run-scoped percentage coupon and assert it appears in
+#     the list. The runner's orphan sweep removes stale SUITE-* coupons.
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Coupons"
 tags:
@@ -83,24 +83,51 @@ tags:
 
 - takeScreenshot: hub_coupons_edit_form
 
-# Back out. If there's any unsaved input (there isn't — we didn't type
-# anything), the app shows a discard-changes dialog. Handle it
-# defensively in case future changes add default values.
-- back
+- tapOn:
+    text: ".*Amount.*"
+    label: "Focus coupon amount"
 
-- runFlow:
-    when:
-      visible: "Discard"
-    commands:
-      - tapOn:
-          text: "Discard"
-          label: "Discard unsaved coupon"
+- eraseText
+- inputText: "10"
+- hideKeyboard
+
+- tapOn:
+    text: "Coupon Code"
+    label: "Focus coupon code"
+
+- eraseText
+- inputText: "SUITE-${SUITE_RUN_ID}-UI"
+- hideKeyboard
+
+- takeScreenshot: hub_coupons_filled_form
+
+- tapOn:
+    text: "Create"
+    retryTapIfNoChange: true
+    label: "Create smoke coupon"
 
 # ── Back on coupon list ──────────────────────────────────────────────
 - extendedWaitUntil:
     visible:
       id: "add_coupon_button"
+    timeout: 30000
+
+- extendedWaitUntil:
+    visible: ".*Coupon created.*|.*${SUITE_RUN_ID}.*"
+    timeout: 30000
+    label: "Wait for created coupon to be visible"
+
+- scrollUntilVisible:
+    element: ".*${SUITE_RUN_ID}.*"
+    direction: DOWN
     timeout: 15000
+    label: "Scroll to the created smoke coupon"
+
+- assertVisible:
+    text: ".*${SUITE_RUN_ID}.*"
+    label: "Created smoke coupon is visible"
+
+- takeScreenshot: hub_coupons_created_coupon
 
 # Back to the More Menu
 - back
