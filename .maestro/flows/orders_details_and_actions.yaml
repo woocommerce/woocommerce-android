@@ -30,40 +30,11 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# Open one of this run's seeded orders — never an arbitrary first row.
-# This flow persists a note on the order it opens, and on the shared
-# store index-0 can be a manual tester's real order. Searching the
-# suite run id scopes the list to automation-owned fixtures only.
-- tapOn:
-    id: "menu_search"
-    label: "Open order search"
-
-- extendedWaitUntil:
-    visible:
-      id: "search_src_text"
-    timeout: 10000
-
-- tapOn:
-    id: "search_src_text"
-- inputText: ${SUITE_RUN_ID}
-- pressKey: Enter
-
-- extendedWaitUntil:
-    visible:
-      id: "orderNum"
-    timeout: 20000
-    label: "Wait for seeded orders in results"
-
-- tapOn:
-    id: "orderNum"
-    index: 0
-    label: "Open first seeded order"
-
-# Wait for order detail
-- extendedWaitUntil:
-    visible:
-      id: "orderDetail_container"
-    timeout: 15000
+# Open this run's paid seeded order — never an arbitrary first row.
+- runFlow:
+    file: ../subflows/find_order_by_run_id.yaml
+    env:
+      ORDER_STATUS_MATCH: ".*Processing.*|.*Completed.*"
 
 # Verify order detail elements
 - assertVisible:
@@ -90,6 +61,32 @@ tags:
     label: "Scroll to payment total"
 
 - takeScreenshot: order_detail_payment
+
+# ── See receipt ─────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "See receipt"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to See receipt button"
+
+- tapOn:
+    text: "See receipt"
+    retryTapIfNoChange: true
+    label: "Open receipt preview"
+
+- extendedWaitUntil:
+    visible: ".*Receipt Preview.*|.*Print.*|.*Send.*"
+    timeout: 30000
+    label: "Wait for receipt preview"
+
+- takeScreenshot: order_receipt_preview
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
 
 # ── Add an order note ────────────────────────────────────────────────
 # Use the addNoteContainer ID directly — more robust than matching the

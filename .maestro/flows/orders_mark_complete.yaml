@@ -27,41 +27,12 @@ tags:
     file: ../subflows/navigate_to_orders.yaml
 
 # ── Find this run's seeded processing order ──────────────────────────
-# Fixtures are located by query, never by list position — on the shared
-# store the first processing order can be a manual tester's real order,
-# and the Undo below is best-effort (the snackbar auto-dismisses).
-# Searching the suite run id only surfaces automation-owned orders
-# (seeded billing name is the run id); the "Processing" row is a seeded
-# paid fixture that exposes the Mark Complete action.
-- tapOn:
-    id: "menu_search"
-    label: "Open order search"
-
-- extendedWaitUntil:
-    visible:
-      id: "search_src_text"
-    timeout: 10000
-
-- tapOn:
-    id: "search_src_text"
-- inputText: ${SUITE_RUN_ID}
-- pressKey: Enter
-
-- extendedWaitUntil:
-    visible: ".*Processing.*"
-    timeout: 20000
-    label: "Wait for a seeded processing order in results"
+- runFlow:
+    file: ../subflows/find_order_by_run_id.yaml
+    env:
+      ORDER_STATUS_MATCH: ".*Processing.*"
 
 - takeScreenshot: orders_search_processing
-
-- tapOn:
-    text: ".*Processing.*"
-    label: "Open this run's processing order"
-
-- extendedWaitUntil:
-    visible:
-      id: "orderDetail_container"
-    timeout: 15000
 
 - takeScreenshot: order_detail_processing
 
@@ -135,12 +106,7 @@ tags:
 
 # ── Exit search if still active so downstream flows start clean ──────
 - runFlow:
-    when:
-      visible:
-        id: "search_src_text"
-    commands:
-      - back
-      - back
+    file: ../subflows/exit_search_if_active.yaml
 
 - extendedWaitUntil:
     visible:

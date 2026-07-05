@@ -4,9 +4,12 @@
 #
 # Verifies:
 #   - Order creation FAB works
-#   - Add a product from the product selector
+#   - Add a seeded variable product from the product selector and choose a variation
+#   - Increase/decrease product quantity with the stepper
+#   - Add a product-level discount
 #   - Add a fixed-amount custom amount with a name
-#   - Add an existing customer by searching their email
+#   - Add a fixed shipping amount
+#   - Add an existing seeded customer by search
 #   - Edit the added customer's last name
 #   - Add a customer-facing note
 #   - All sections display the added data
@@ -60,10 +63,37 @@ tags:
 
 - takeScreenshot: order_create_product_selector
 
-# Tap the first product row - product items sit below the search field
+# Search for this run's seeded variable product instead of relying on
+# whichever product happens to be first in the store.
 - tapOn:
-    point: "50%,30%"
-    label: "Tap first product row"
+    text: ".*Search Products.*"
+    label: "Focus product selector search"
+
+- inputText: ${FIXTURE_VARIABLE_PRODUCT}
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible: "${FIXTURE_VARIABLE_PRODUCT}"
+    timeout: 20000
+    label: "Wait for seeded variable product"
+
+- tapOn:
+    text: "${FIXTURE_VARIABLE_PRODUCT}"
+    retryTapIfNoChange: true
+    label: "Open seeded variable product variations"
+
+# Pick a concrete variation so the order contains a purchasable item,
+# not just the parent variable product.
+- extendedWaitUntil:
+    visible: ".*Small.*|.*Large.*|.*Select a variation.*"
+    timeout: 20000
+    label: "Wait for variation selector"
+
+- tapOn:
+    text: ".*Small.*|.*Large.*"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Select first seeded variation"
 
 # Confirm selection (regex matches "Select 1 Product" or "Select N Products")
 - extendedWaitUntil:
@@ -80,6 +110,63 @@ tags:
     timeout: 15000
 
 - takeScreenshot: order_create_with_product
+
+# ── Adjust product quantity and apply product discount ───────────────
+- tapOn:
+    text: ".*${FIXTURE_VARIABLE_PRODUCT}.*|.*Small.*|.*Large.*"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Expand added product row"
+
+- extendedWaitUntil:
+    visible: "Order count"
+    timeout: 10000
+
+- tapOn:
+    text: "Increase product quantity"
+    retryTapIfNoChange: true
+    label: "Increase product quantity"
+
+- assertVisible:
+    text: ".*2 ×.*|.*2 x.*"
+    label: "Quantity increased to 2"
+
+- tapOn:
+    text: "Decrease product quantity"
+    retryTapIfNoChange: true
+    label: "Decrease product quantity"
+
+- assertVisible:
+    text: ".*1 ×.*|.*1 x.*"
+    label: "Quantity decreased back to 1"
+
+- tapOn:
+    text: "Add discount"
+    retryTapIfNoChange: true
+    label: "Open product discount editor"
+
+- extendedWaitUntil:
+    visible: "Discount"
+    timeout: 15000
+
+# The discount field auto-focuses when the screen opens.
+- inputText: "100"
+- hideKeyboard
+
+- takeScreenshot: order_create_product_discount
+
+- tapOn:
+    text: "Done"
+    retryTapIfNoChange: true
+    label: "Save product discount"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: ".*Discount.*|.*Price after discount.*"
+    label: "Discount is reflected on the product row"
 
 # ── Add a custom amount (fixed, with a name) ──────────────────────────
 - scrollUntilVisible:
@@ -158,6 +245,46 @@ tags:
 
 - takeScreenshot: order_create_with_custom_amount
 
+# ── Add shipping ────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "add_shipping_button"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add shipping"
+
+- tapOn:
+    id: "add_shipping_button"
+    retryTapIfNoChange: true
+    label: "Tap Add shipping"
+
+- extendedWaitUntil:
+    visible: "Add Shipping"
+    timeout: 15000
+
+- tapOn:
+    text: "Amount"
+    label: "Focus shipping amount"
+- inputText: "500"
+- hideKeyboard
+
+- takeScreenshot: order_create_shipping_form
+
+- tapOn:
+    text: "Add Shipping"
+    retryTapIfNoChange: true
+    label: "Save shipping line"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: ".*Shipping.*"
+    label: "Shipping line is visible in creation screen"
+
+- takeScreenshot: order_create_with_shipping
+
 # ── Add a customer-facing note ────────────────────────────────────────
 # Added BEFORE the customer on purpose: when both customer and note are
 # empty, the "Add note" button lives in customer_section (via
@@ -203,9 +330,7 @@ tags:
     label: "Customer note visible in creation screen"
 
 # ── Add a customer ────────────────────────────────────────────────────
-# Uses the search flow to verify it works, then falls back to "Add
-# details manually" so the flow doesn't depend on the staging store
-# containing a matching customer.
+# Uses the search flow to select the run's seeded existing customer.
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
@@ -222,47 +347,18 @@ tags:
 
 - tapOn:
     text: "Search for customers"
-- inputText: "zzzzznomatch"
+- inputText: ${FIXTURE_CUSTOMER_NAME}
 - hideKeyboard
 
-# When no match, tap the "Add details manually" CTA to enter the editor
 - extendedWaitUntil:
-    visible: "Add details manually"
-    timeout: 15000
+    visible: "${FIXTURE_CUSTOMER_NAME}"
+    timeout: 20000
+    label: "Wait for seeded customer in search results"
 
 - tapOn:
-    text: "Add details manually"
-    label: "Add customer details manually"
-
-# Customer edit form is now visible — fill first & last name
-- extendedWaitUntil:
-    visible: ".*First name.*|.*Last name.*|.*Email.*"
-    timeout: 15000
-
-- takeScreenshot: order_create_customer_edit_form
-
-- tapOn:
-    id: "edit_text"
-    childOf:
-      id: "first_name"
-- eraseText
-- inputText: "Maestro"
-- hideKeyboard
-
-- tapOn:
-    id: "edit_text"
-    childOf:
-      id: "last_name"
-- eraseText
-- inputText: "SmokeTest"
-- hideKeyboard
-
-- takeScreenshot: order_create_customer_edited
-
-# Save via toolbar DONE
-- tapOn:
-    id: "menu_done"
-    label: "Save customer details"
+    text: "${FIXTURE_CUSTOMER_NAME}"
+    retryTapIfNoChange: true
+    label: "Select seeded customer"
 
 - extendedWaitUntil:
     visible: "New order"
