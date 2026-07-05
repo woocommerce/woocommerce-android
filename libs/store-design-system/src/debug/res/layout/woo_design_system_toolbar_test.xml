@@ -7,5 +7,5 @@
     android:layout_height="@dimen/woo_ds_toolbar_height"
     app:menu="@menu/woo_design_system_toolbar_test_menu"
     app:navigationContentDescription="Back"
-    app:navigationIcon="@drawable/ic_back_24dp"
+    app:navigationIcon="@drawable/woo_ds_ic_regular_angle_left_24dp"
     app:title="XML Products" />

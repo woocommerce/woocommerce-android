@@ -23,13 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.icons.Box
+import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
+import com.woocommerce.android.ui.compose.designsystem.icons.House
+import com.woocommerce.android.ui.compose.designsystem.icons.List
+import com.woocommerce.android.ui.compose.designsystem.icons.Store
+import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
 
 @Composable
 internal fun PreviewOnlySegmentControlSample(
@@ -106,24 +110,24 @@ internal fun PreviewOnlyTabBarSample(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Top,
             ) {
                 PreviewOnlyTabBarItem(
-                    iconRes = R.drawable.ic_menu_dashboard,
+                    icon = WooDsIcons.Regular.House,
                     label = "Home",
                     selected = true,
                 )
                 PreviewOnlyTabBarItem(
-                    iconRes = R.drawable.ic_menu_orders_list,
+                    icon = WooDsIcons.Regular.List,
                     label = "Orders",
                 )
                 PreviewOnlyTabBarItem(
-                    iconRes = R.drawable.ic_menu_products_list,
+                    icon = WooDsIcons.Regular.Box,
                     label = "Products",
                 )
                 PreviewOnlyTabBarItem(
-                    iconRes = R.drawable.ic_more_menu_store,
+                    icon = WooDsIcons.Regular.Store,
                     label = "Store",
                 )
                 PreviewOnlyTabBarItem(
-                    iconRes = R.drawable.ic_menu_more,
+                    icon = WooDsIcons.Regular.Ellipsis,
                     label = "More",
                 )
             }
@@ -179,7 +183,7 @@ private fun PreviewOnlySegmentItem(
 
 @Composable
 private fun PreviewOnlyTabBarItem(
-    iconRes: Int,
+    icon: ImageVector,
     label: String,
     selected: Boolean = false,
 ) {
@@ -195,7 +199,7 @@ private fun PreviewOnlyTabBarItem(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(iconRes),
+                    imageVector = icon,
                     contentDescription = label,
                     modifier = Modifier.size(24.dp),
                 )
@@ -210,7 +214,7 @@ private fun PreviewOnlyTabBarItem(
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(iconRes),
+                imageVector = icon,
                 contentDescription = null,
                 tint = contentColor,
                 modifier = Modifier.size(24.dp),

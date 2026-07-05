@@ -46,7 +46,10 @@ class WooDesignSystemToolbarTest {
     fun `given navigation and actions, when laid out, then controls honor edge insets`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
         val edgeInset = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
-        toolbar.navigationIcon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_back_24dp)
+        toolbar.navigationIcon = AppCompatResources.getDrawable(
+            toolbar.context,
+            R.drawable.woo_ds_ic_regular_angle_left_24dp,
+        )
         toolbar.navigationContentDescription = "Back"
         toolbar.addIconAction()
 
@@ -88,7 +91,10 @@ class WooDesignSystemToolbarTest {
     fun `given navigation is set normally, when clicked, then navigation remains clickable`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
         var navigationClicked = false
-        toolbar.navigationIcon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_back_24dp)
+        toolbar.navigationIcon = AppCompatResources.getDrawable(
+            toolbar.context,
+            R.drawable.woo_ds_ic_regular_angle_left_24dp,
+        )
         toolbar.navigationContentDescription = "Back"
         toolbar.setNavigationOnClickListener {
             navigationClicked = true
@@ -187,7 +193,10 @@ class WooDesignSystemToolbarTest {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
         val searchView = SearchView(toolbar.context)
         val searchItem = toolbar.menu.add(0, SEARCH_ACTION_ID, 0, "Search").apply {
-            icon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_search_24dp)
+            icon = AppCompatResources.getDrawable(
+                toolbar.context,
+                R.drawable.woo_ds_ic_regular_magnifying_glass_24dp,
+            )
             actionView = searchView
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
         }
@@ -210,10 +219,18 @@ class WooDesignSystemToolbarTest {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
         val customActionView = AppCompatImageButton(toolbar.context).apply {
             id = ACTION_ID
-            setImageDrawable(AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_open_in_new_24dp))
+            setImageDrawable(
+                AppCompatResources.getDrawable(
+                    toolbar.context,
+                    R.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
+                )
+            )
         }
         val item = toolbar.menu.add(0, ACTION_ID, 0, "Custom").apply {
-            icon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_open_in_new_24dp)
+            icon = AppCompatResources.getDrawable(
+                toolbar.context,
+                R.drawable.woo_ds_ic_regular_arrow_up_right_24dp,
+            )
             actionView = customActionView
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
@@ -233,7 +250,7 @@ class WooDesignSystemToolbarTest {
         showAsAction: Int = MenuItem.SHOW_AS_ACTION_ALWAYS,
         enabled: Boolean = true,
     ): MenuItem = menu.add(0, ACTION_ID, 0, "Open").apply {
-        icon = AppCompatResources.getDrawable(context, R.drawable.ic_open_in_new_24dp)
+        icon = AppCompatResources.getDrawable(context, R.drawable.woo_ds_ic_regular_arrow_up_right_24dp)
         isEnabled = enabled
         setShowAsAction(showAsAction)
     }

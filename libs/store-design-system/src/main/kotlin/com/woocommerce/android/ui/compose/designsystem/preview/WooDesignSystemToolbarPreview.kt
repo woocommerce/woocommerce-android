@@ -18,11 +18,17 @@ internal fun WooDesignSystemToolbarDemo(modifier: Modifier = Modifier) {
         factory = { context -> WooDesignSystemToolbar(context.withToolbarPreviewTheme()) },
         update = { toolbar ->
             toolbar.title = "Products"
-            toolbar.navigationIcon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_back_24dp)
+            toolbar.navigationIcon = AppCompatResources.getDrawable(
+                toolbar.context,
+                R.drawable.woo_ds_ic_regular_angle_left_24dp,
+            )
             toolbar.navigationContentDescription = "Back"
             toolbar.menu.clear()
             toolbar.menu.add(0, TOOLBAR_DEMO_SEARCH_ACTION_ID, 0, "Search").apply {
-                icon = AppCompatResources.getDrawable(toolbar.context, R.drawable.ic_search_24dp)
+                icon = AppCompatResources.getDrawable(
+                    toolbar.context,
+                    R.drawable.woo_ds_ic_regular_magnifying_glass_24dp,
+                )
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
             toolbar.menu.add(0, TOOLBAR_DEMO_DONE_ACTION_ID, 1, "Done").apply {

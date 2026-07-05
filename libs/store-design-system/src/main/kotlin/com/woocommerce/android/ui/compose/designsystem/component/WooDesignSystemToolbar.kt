@@ -201,15 +201,18 @@ private fun View.applyToolbarIconTouchTarget(): Boolean {
         }
         changed = true
     }
-    if (paddingLeft != iconPadding ||
-        paddingTop != iconPadding ||
-        paddingRight != iconPadding ||
-        paddingBottom != iconPadding
-    ) {
+    if (!hasUniformPadding(iconPadding)) {
         setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
         changed = true
     }
     return changed
+}
+
+private fun View.hasUniformPadding(padding: Int): Boolean {
+    return paddingLeft == padding &&
+        paddingTop == padding &&
+        paddingRight == padding &&
+        paddingBottom == padding
 }
 
 private class CenteredToolbarIconButtonDrawable(

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/woo_ds_toolbar_test_action"
-        android:icon="@drawable/ic_open_in_new_24dp"
+        android:icon="@drawable/woo_ds_ic_regular_arrow_up_right_24dp"
         android:title="Open"
         app:showAsAction="always" />
 </menu>
