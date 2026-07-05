@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.role
@@ -50,12 +49,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooStroke
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
+import com.woocommerce.android.ui.compose.designsystem.icons.CircleFull
 import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
 
 @Composable
@@ -528,7 +527,7 @@ private fun FilterChipRows(
                 onClick = onSelectedFilterClick,
                 label = "Selected",
                 leadingIcon = {
-                    ChoiceControlPreviewIcon(ImageVector.vectorResource(R.drawable.ic_check_24dp))
+                    ChoiceControlPreviewIcon(WooDsIcons.Solid.CircleFull)
                 },
             )
         }
@@ -541,7 +540,7 @@ private fun FilterChipRows(
                 onClick = onFullFilterClick,
                 label = "Selected",
                 leadingIcon = {
-                    ChoiceControlPreviewIcon(ImageVector.vectorResource(R.drawable.ic_check_24dp))
+                    ChoiceControlPreviewIcon(WooDsIcons.Solid.CircleFull)
                 },
                 trailingIcon = { ChoiceControlPreviewIcon(WooDsIcons.Regular.AngleRight) },
             )
