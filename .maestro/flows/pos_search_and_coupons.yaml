@@ -17,9 +17,10 @@
 #
 # Verifies (on tablet):
 #   - POS screen loads with Products + Coupons tabs visible
-#   - Switching to the Coupons tab loads the coupons list
-#   - The search hint reflects the active tab (products vs coupons)
-#   - Switching back to Products reloads the product grid
+#   - Searching Products filters to the seeded simple product
+#   - Tapping that product adds it to the cart
+#   - Searching Coupons filters to the seeded coupon
+#   - Tapping the coupon applies it to the cart and exposes discount state
 appId: com.woocommerce.android.dev
 name: "POS - Search and Coupons tab"
 tags:
@@ -60,6 +61,43 @@ tags:
       - assertVisible:
           text: ".*Search products and variations.*"
 
+      - tapOn:
+          id: "woo_pos_search_input"
+          label: "Focus POS product search"
+
+      - eraseText
+      - inputText: ${FIXTURE_SIMPLE_PRODUCT}
+      - hideKeyboard
+
+      - extendedWaitUntil:
+          visible: "${FIXTURE_SIMPLE_PRODUCT}"
+          timeout: 20000
+          label: "Wait for seeded product search result"
+
+      - assertVisible:
+          id: "woo_pos_product_item"
+          label: "Filtered product card is visible"
+
+      - takeScreenshot: pos_product_search_filtered
+
+      - tapOn:
+          id: "woo_pos_product_item"
+          index: 0
+          retryTapIfNoChange: true
+          label: "Add seeded product to POS cart"
+
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_cart_items_count"
+          timeout: 15000
+          label: "Wait for cart count"
+
+      - assertVisible:
+          id: "woo_pos_checkout_button"
+          label: "Checkout is enabled after product add"
+
+      - takeScreenshot: pos_product_added_to_cart
+
       # Switch to the Coupons tab.
       - tapOn:
           text: "Coupons"
@@ -77,13 +115,45 @@ tags:
 
       - takeScreenshot: pos_coupons_tab
 
-      # Coupon add-to-cart action. Optional until the flow owns seeded
-      # cart prerequisites for coupon application.
+      - tapOn:
+          id: "woo_pos_search_input"
+          label: "Focus POS coupon search"
+
+      - eraseText
+      - inputText: ${FIXTURE_COUPON_CODE}
+      - hideKeyboard
+
+      - extendedWaitUntil:
+          visible: "${FIXTURE_COUPON_CODE}"
+          timeout: 20000
+          label: "Wait for seeded coupon search result"
+
       - assertVisible:
           id: "woo_pos_coupon_add_to_cart_button"
 
+      - takeScreenshot: pos_coupon_search_filtered
+
+      - tapOn:
+          id: "woo_pos_coupon_add_to_cart_button"
+          retryTapIfNoChange: true
+          label: "Apply seeded coupon to POS cart"
+
+      - extendedWaitUntil:
+          visible: ".*Coupon in cart ${FIXTURE_COUPON_CODE}.*|.*Discount total.*"
+          timeout: 20000
+          label: "Wait for coupon to be applied"
+
+      - takeScreenshot: pos_coupon_applied_to_cart
+
       # Switch back to the Products tab to leave POS in the default
       # state for any downstream flow that reuses it.
+      - tapOn:
+          id: "woo_pos_search_input"
+          label: "Clear POS coupon search"
+
+      - eraseText
+      - hideKeyboard
+
       - tapOn:
           text: "Products"
           retryTapIfNoChange: true
