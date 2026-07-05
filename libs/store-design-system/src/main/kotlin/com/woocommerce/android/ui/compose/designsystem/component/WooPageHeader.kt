@@ -13,16 +13,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
+import com.woocommerce.android.ui.compose.designsystem.icons.CommentQuestion
+import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
 
 @Composable
 fun WooPageHeader(
@@ -91,12 +91,12 @@ internal fun WooPageHeaderDemo(
         modifier = modifier,
         actions = {
             WooOutlinedIconButton(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
+                imageVector = WooDsIcons.Regular.ArrowUpRight,
                 contentDescription = "Open",
                 onClick = {},
             )
             WooIconButton(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_help_24dp),
+                imageVector = WooDsIcons.Regular.CommentQuestion,
                 contentDescription = "Help",
                 onClick = {},
                 emphasis = WooIconButtonEmphasis.Primary,
@@ -114,12 +114,12 @@ private fun WooPageHeaderLongTitlePreview() {
             title = "A very long page header title that should truncate before the trailing actions",
             actions = {
                 WooOutlinedIconButton(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
+                    imageVector = WooDsIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 )
                 WooIconButton(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_help_24dp),
+                    imageVector = WooDsIcons.Regular.CommentQuestion,
                     contentDescription = "Help",
                     onClick = {},
                     emphasis = WooIconButtonEmphasis.Primary,

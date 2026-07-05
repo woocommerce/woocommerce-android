@@ -26,17 +26,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import com.woocommerce.android.ui.compose.designsystem.icons.Box
+import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
+import com.woocommerce.android.ui.compose.designsystem.icons.List
+import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
 import kotlin.math.roundToInt
 
 @Composable
@@ -245,7 +246,7 @@ internal fun WooTabsDemo(
                 text = "Products",
                 icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_products_list),
+                        imageVector = WooDsIcons.Regular.Box,
                         contentDescription = null,
                     )
                 },
@@ -256,7 +257,7 @@ internal fun WooTabsDemo(
                 text = "Orders",
                 icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_orders_list),
+                        imageVector = WooDsIcons.Regular.List,
                         contentDescription = null,
                     )
                 },
@@ -267,7 +268,7 @@ internal fun WooTabsDemo(
                 text = "More",
                 icon = {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                        imageVector = WooDsIcons.Regular.CircleInfo,
                         contentDescription = null,
                     )
                 },

@@ -30,17 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
+import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
 
 @Composable
 @Suppress("CyclomaticComplexMethod")
@@ -105,7 +105,7 @@ fun WooSearchField(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
+                    imageVector = WooDsIcons.Regular.MagnifyingGlass,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size18),
                     tint = iconColor,
@@ -197,7 +197,7 @@ private fun WooSearchClearButton(
             color = color,
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                imageVector = WooDsIcons.Regular.Xmark,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(SEARCH_CLEAR_ICON_PADDING)

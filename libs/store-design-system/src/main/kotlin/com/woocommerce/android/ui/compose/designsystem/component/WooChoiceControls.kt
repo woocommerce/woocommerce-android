@@ -55,6 +55,8 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooStroke
+import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
+import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
 
 @Composable
 fun WooCheckbox(
@@ -519,13 +521,15 @@ private fun FilterChipRows(
                 selected = trailingFilterSelected,
                 onClick = onTrailingFilterClick,
                 label = "Filter",
-                trailingIcon = { ChoiceControlPreviewIcon(R.drawable.ic_chevron_right_24dp) },
+                trailingIcon = { ChoiceControlPreviewIcon(WooDsIcons.Regular.AngleRight) },
             )
             WooFilterChip(
                 selected = selectedFilterSelected,
                 onClick = onSelectedFilterClick,
                 label = "Selected",
-                leadingIcon = { ChoiceControlPreviewIcon(R.drawable.ic_check_24dp) },
+                leadingIcon = {
+                    ChoiceControlPreviewIcon(ImageVector.vectorResource(R.drawable.ic_check_24dp))
+                },
             )
         }
         Row(
@@ -536,8 +540,10 @@ private fun FilterChipRows(
                 selected = fullFilterSelected,
                 onClick = onFullFilterClick,
                 label = "Selected",
-                leadingIcon = { ChoiceControlPreviewIcon(R.drawable.ic_check_24dp) },
-                trailingIcon = { ChoiceControlPreviewIcon(R.drawable.ic_chevron_right_24dp) },
+                leadingIcon = {
+                    ChoiceControlPreviewIcon(ImageVector.vectorResource(R.drawable.ic_check_24dp))
+                },
+                trailingIcon = { ChoiceControlPreviewIcon(WooDsIcons.Regular.AngleRight) },
             )
             WooFilterChip(selected = false, onClick = {}, label = "Disabled", enabled = false)
         }
@@ -545,9 +551,9 @@ private fun FilterChipRows(
 }
 
 @Composable
-private fun ChoiceControlPreviewIcon(drawableId: Int) {
+private fun ChoiceControlPreviewIcon(imageVector: ImageVector) {
     Icon(
-        imageVector = ImageVector.vectorResource(drawableId),
+        imageVector = imageVector,
         contentDescription = null,
         modifier = Modifier.size(WooTheme.iconSize.size14),
     )
