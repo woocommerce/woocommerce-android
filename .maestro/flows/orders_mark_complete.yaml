@@ -3,15 +3,15 @@
 # P2 ref: Orders > Mark complete
 #
 # Verifies:
-#   - Search locates this run's seeded processing order
+#   - Status filter locates a processing order on the test store
 #   - Navigate to the Fulfill screen via "Mark order complete"
 #   - Complete the fulfillment
 #   - "🎉 Order completed!" snackbar appears
 #   - Undo the status change so the staging store stays clean
 #
-# The seeded processing fixture guarantees the target order has the
-# Mark Complete button visible — it's hidden on already-completed
-# orders — and that a missed Undo only ever affects automation data.
+# Processing status guarantees the Mark Complete button is visible —
+# it's hidden on already-completed orders. The flow is destructive and
+# should only run against test stores.
 appId: com.woocommerce.android.dev
 name: "Orders - Mark order complete"
 tags:
@@ -26,10 +26,11 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# ── Find this run's seeded processing order ──────────────────────────
+# ── Find a processing test-store order ───────────────────────────────
 - runFlow:
-    file: ../subflows/find_order_by_run_id.yaml
+    file: ../subflows/open_order_by_status.yaml
     env:
+      ORDER_STATUS_FILTER: ".*Processing.*"
       ORDER_STATUS_MATCH: ".*Processing.*"
 
 - takeScreenshot: orders_search_processing

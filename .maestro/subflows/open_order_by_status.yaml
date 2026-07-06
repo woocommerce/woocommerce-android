@@ -1,0 +1,55 @@
+# Filter the test-store order list by status and open the first matching order.
+appId: com.woocommerce.android.dev
+---
+- tapOn:
+    id: "btn_order_filter"
+    label: "Open order filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing order filters"
+
+- extendedWaitUntil:
+    visible: "Order Status"
+    timeout: 10000
+
+- tapOn:
+    text: "Order Status"
+    label: "Open status filter"
+
+- extendedWaitUntil:
+    visible: "${ORDER_STATUS_FILTER}"
+    timeout: 10000
+
+- tapOn:
+    text: "${ORDER_STATUS_FILTER}"
+    label: "Select requested order status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply order status filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible: "${ORDER_STATUS_MATCH}"
+    timeout: 20000
+    label: "Wait for a matching test-store order"
+
+- tapOn:
+    text: "${ORDER_STATUS_MATCH}"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open first matching test-store order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000

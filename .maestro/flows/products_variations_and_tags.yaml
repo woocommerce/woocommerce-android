@@ -23,9 +23,9 @@
 # exist on the store this flow is pointed at. If none exist, the
 # assertion on `productName` after the filter is applied will fail —
 # that's intentional. The test doesn't know whether "no variable
-# products" is a regression in the app or missing seed data, so
-# surfacing the failure is the right behaviour. Seed a variable
-# product in wp-admin and re-run.
+# products" is a regression in the app or missing test-store catalog
+# data, so surfacing the failure is the right behaviour. Add a
+# variable product in wp-admin and re-run.
 #
 # Key selectors (from the app's XML layouts):
 #   - btn_product_filter              — WCToggleOutlinedButton on the
@@ -137,7 +137,7 @@ tags:
 
 - assertNotVisible:
     id: "empty_view"
-    label: "FAIL: staging store has no Variable products — seed at least one and re-run"
+    label: "FAIL: staging store has no Variable products — add at least one and re-run"
 
 - assertVisible:
     id: "productName"

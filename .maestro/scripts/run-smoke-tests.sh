@@ -7,7 +7,7 @@ set -euo pipefail
 #   - lab store by default
 #   - smoke_core only by default
 #   - flaky_quarantine excluded unless explicitly requested
-#   - fixture seed + manifest cleanup
+#   - UI-created test fixtures are left on the selected test store
 #   - animation settings captured and restored
 #   - one retry per failed flow, recorded as flaky
 
@@ -16,7 +16,6 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FLOWS_DIR="$REPO_ROOT/.maestro/flows"
 ENV_FILE="$REPO_ROOT/.maestro/.env.local"
 STRINGS_ENV_FILE="$REPO_ROOT/.maestro/strings.env"
-SEED_SCRIPT="$REPO_ROOT/.maestro/scripts/seed-fixtures.py"
 MEDIA_FIXTURE="$REPO_ROOT/.maestro/assets/smoke-test-image.jpg"
 MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image.jpg"
 
@@ -32,9 +31,6 @@ DEVICE_SELECTOR=""
 TARGET=""
 OPEN_REPORT="auto"
 RECORD="yes"
-SEED="yes"
-CLEANUP="yes"
-SWEEP_DRY_RUN="no"
 OUTPUT_ROOT=""
 REPEAT=1
 INCLUDE_TAGS=("smoke_core")
@@ -50,7 +46,7 @@ Defaults:
   - lab store
   - smoke_core only
   - flaky_quarantine excluded unless explicitly requested
-  - fixture seed + manifest cleanup
+  - UI-created test fixtures are left on the selected test store
   - animation settings captured and restored
   - one retry per failed flow, recorded as flaky
 
@@ -70,9 +66,6 @@ Options:
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
   --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
-  --no-seed                   Skip REST fixture seed/cleanup.
-  --no-cleanup                Leave seeded manifest entities behind.
-  --sweep-dry-run             Log stale-orphan sweep candidates without deleting.
   --no-record                 Disable failure videos.
   --no-open                   Do not open the HTML report on macOS.
   --output-dir path           Override output root.
@@ -132,18 +125,6 @@ while [[ $# -gt 0 ]]; do
       add_csv_tags EXCLUDE_TAGS "${2:?--exclude-tags requires a tag}"
       shift 2
       ;;
-    --no-seed)
-      SEED="no"
-      shift
-      ;;
-    --no-cleanup)
-      CLEANUP="no"
-      shift
-      ;;
-    --sweep-dry-run)
-      SWEEP_DRY_RUN="yes"
-      shift
-      ;;
     --no-record)
       RECORD="no"
       shift
@@ -191,9 +172,6 @@ LOGS_DIR="$OUTPUT_DIR/logs"
 TMP_DIR="$OUTPUT_DIR/tmp"
 REPORT_FILE="$OUTPUT_DIR/report.html"
 JUNIT_FILE="$OUTPUT_DIR/report.xml"
-MANIFEST_FILE="$TMP_DIR/run-manifest.json"
-RUN_ENV_FILE="$TMP_DIR/run-env.sh"
-SWEEP_REPORT="$TMP_DIR/orphan-sweep.json"
 
 export MAESTRO_SUITE_RUN_ID="$SUITE_RUN_ID"
 mkdir -p "$LOGS_DIR" "$TMP_DIR" "$SCREENSHOTS_DIR"
@@ -212,14 +190,14 @@ P2_ORDERED_FLOWS=(
   dashboard_customize.yaml
   orders_list_and_search.yaml
   orders_create.yaml
+  orders_cash_payment.yaml
   orders_details_and_actions.yaml
   orders_mark_complete.yaml
-  orders_cash_payment.yaml
   orders_refund.yaml
   products_list_and_sort.yaml
+  products_create.yaml
   products_detail.yaml
   products_variations_and_tags.yaml
-  products_create.yaml
   products_media_upload.yaml
   hub_menu_settings.yaml
   hub_menu_payments.yaml
@@ -259,7 +237,7 @@ fi
 select_store_env() {
   local upper scoped value suffix
   upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
-  for suffix in STORE_URL EMAIL PASSWORD CONSUMER_KEY CONSUMER_SECRET; do
+  for suffix in STORE_URL EMAIL PASSWORD; do
     scoped="MAESTRO_WOO_${upper}_${suffix}"
     value="${!scoped:-}"
     if [[ -n "$value" ]]; then
@@ -268,6 +246,11 @@ select_store_env() {
   done
 }
 select_store_env
+
+export MAESTRO_FIXTURE_SIMPLE_PRODUCT="${MAESTRO_FIXTURE_SIMPLE_PRODUCT:-Maestro Smoke Product ${SUITE_RUN_ID}}"
+export MAESTRO_FIXTURE_VARIABLE_PRODUCT="${MAESTRO_FIXTURE_VARIABLE_PRODUCT:-V-Neck T-Shirt}"
+export MAESTRO_FIXTURE_CUSTOMER_EMAIL="${MAESTRO_FIXTURE_CUSTOMER_EMAIL:-maestro-${RUN_STAMP}-${RUN_HASH}@example.com}"
+export MAESTRO_FIXTURE_COUPON_CODE="${MAESTRO_FIXTURE_COUPON_CODE:-SUITE-${SUITE_RUN_ID}-UI}"
 
 flow_tags() {
   awk '
@@ -413,7 +396,6 @@ echo "Device: $DEVICE_SERIAL"
 ANIMATION_KEYS=(window_animation_scale transition_animation_scale animator_duration_scale)
 ORIGINAL_ANIMATION_VALUES=()
 SETTINGS_CAPTURED="no"
-LOCK_ACQUIRED="no"
 RECORDER_PID=""
 
 capture_animation_settings() {
@@ -455,22 +437,16 @@ stop_screenrecord() {
   sleep 1
 }
 
-cleanup_on_exit() {
+restore_on_exit() {
   local exit_code=$?
   if [[ -n "$RECORDER_PID" ]]; then
     stop_screenrecord
     wait "$RECORDER_PID" 2>/dev/null || true
   fi
-  if [[ "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE" || true
-  fi
-  if [[ "$LOCK_ACQUIRED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    "$SEED_SCRIPT" unlock --manifest "$MANIFEST_FILE" --store shared || true
-  fi
   restore_animation_settings
   exit "$exit_code"
 }
-trap cleanup_on_exit EXIT INT TERM
+trap restore_on_exit EXIT INT TERM
 
 capture_animation_settings
 prepare_device_fixtures
@@ -482,26 +458,6 @@ if [[ -n "$APK_PATH" ]]; then
   fi
   echo "--- Installing APK"
   adb -s "$DEVICE_SERIAL" install -r -g "$APK_PATH"
-fi
-
-if [[ "$SEED" == "yes" ]]; then
-  echo "--- Stale automation orphan sweep"
-  sweep_args=(sweep --store "$STORE" --report "$SWEEP_REPORT")
-  if [[ "$SWEEP_DRY_RUN" == "yes" ]]; then
-    sweep_args+=(--dry-run)
-  fi
-  "$SEED_SCRIPT" "${sweep_args[@]}"
-
-  if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
-    echo "--- Acquiring shared-store destructive lock"
-    "$SEED_SCRIPT" lock --store shared --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" >/dev/null
-    LOCK_ACQUIRED="yes"
-  fi
-
-  echo "--- Seeding deterministic fixtures"
-  "$SEED_SCRIPT" seed --store "$STORE" --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" --env-file "$RUN_ENV_FILE"
-  # shellcheck disable=SC1090
-  source "$RUN_ENV_FILE"
 fi
 
 MAESTRO_ENV_ARGS=()
@@ -749,7 +705,7 @@ HTML_HEAD
   cat <<HTML_FOOT
 </tbody>
 </table>
-<p><a href="report.xml">JUnit XML</a> | <a href="tmp/run-manifest.json">run manifest</a> | <a href="tmp/orphan-sweep.json">orphan sweep report</a></p>
+<p><a href="report.xml">JUnit XML</a></p>
 </body>
 </html>
 HTML_FOOT

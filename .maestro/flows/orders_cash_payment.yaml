@@ -3,7 +3,7 @@
 # P2 ref: Orders > Collect payment using cash on delivery
 #
 # Verifies:
-#   - Search locates this run's seeded pending-payment order
+#   - Search locates this run's UI-created pending-payment order
 #   - Tap "Collect Payment" in the payment info section
 #   - Pick the "Cash" option on the Select Payment Method screen
 #   - Change Due Calculator opens with the order total pre-filled
@@ -12,8 +12,8 @@
 #
 # Note: the cash-payment flow has no undo — the order stays Completed
 # with a "Cash on Delivery" gateway recorded. It therefore only ever
-# consumes a seeded fixture order (located via ${SUITE_RUN_ID} search),
-# never an arbitrary order from the shared store's list.
+# consumes the order created earlier in the suite (located via
+# ${SUITE_RUN_ID} search), never an arbitrary order from the store's list.
 appId: com.woocommerce.android.dev
 name: "Orders - Collect cash payment"
 tags:
@@ -28,7 +28,7 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# ── Find this run's seeded pending-payment order ──────────────────────
+# ── Find this run's UI-created pending-payment order ─────────────────
 - runFlow:
     file: ../subflows/find_order_by_run_id.yaml
     env:

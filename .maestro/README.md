@@ -10,7 +10,7 @@ The suite has two store targets:
 - `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use a disposable Jurassic Ninja store with a dedicated test account.
 - `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit non-destructive developer runs.
 
-Destructive flows against the shared store are refused outside CI. In CI, the runner creates a REST-backed store lock before destructive shared-store runs and removes it on exit.
+Destructive flows against the shared store are refused outside CI.
 
 ## Local Setup
 
@@ -31,7 +31,7 @@ Fill `.maestro/.env.local` yourself from the canonical secret store. Do not past
 
 ## Running
 
-Default local run: lab store, seeded fixtures, `smoke_core` only, quarantine excluded.
+Default local run: lab store, `smoke_core` only, quarantine excluded.
 
 ```bash
 .maestro/scripts/run-smoke-tests.sh --store lab
@@ -52,10 +52,8 @@ The runner:
 
 - selects one connected device automatically, or prompts when several are attached;
 - captures and restores animation settings;
-- seeds deterministic fixtures through the WooCommerce REST API;
-- writes created entity IDs to `run-manifest.json`;
-- deletes exactly those manifest IDs during cleanup;
-- performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h;
+- creates test data through the app UI and leaves it on the selected test store;
+- provides run-scoped fixture names and coupon codes to Maestro;
 - retries each failed flow once and records pass-on-retry as flaky;
 - redacts `MAESTRO_WOO_*` values from logs;
 - stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`.

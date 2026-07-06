@@ -19,7 +19,7 @@ It does NOT own the test-runner mechanics. Ordering, per-flow recording, report 
 4. **`.env.local`** — confirm `.maestro/.env.local` exists and contains every variable the selected command references. List missing variable names only.
 5. **Handoff** — print the exact CLI command. If the user explicitly asks ("run it", "go ahead", etc.), invoke the script for them and stream its output.
 
-Everything below the handoff — P2 ordering, store selection, seed/cleanup, animation restore, lock handling, retry accounting, artifact policy, HTML + JUnit reports — is handled by `.maestro/scripts/run-smoke-tests.sh`.
+Everything below the handoff — P2 ordering, store selection, UI fixture naming, animation restore, retry accounting, artifact policy, HTML + JUnit reports — is handled by `.maestro/scripts/run-smoke-tests.sh`.
 
 ## Steps
 
@@ -67,8 +67,6 @@ For default lab-store runs, the core required vars are:
 - `MAESTRO_WOO_LAB_STORE_URL`
 - `MAESTRO_WOO_LAB_EMAIL`
 - `MAESTRO_WOO_LAB_PASSWORD`
-- `MAESTRO_WOO_LAB_CONSUMER_KEY`
-- `MAESTRO_WOO_LAB_CONSUMER_SECRET`
 
 Shared-store runs require the matching `MAESTRO_WOO_SHARED_*` variables and must be explicit with `--store shared`. Additional `MAESTRO_WOO_*` vars are required per-flow (for example `MAESTRO_WOO_NOT_A_WOO_STORE_URL` for `login_not_woo_store.yaml`, `MAESTRO_WOO_JN_*` for `login_no_jetpack.yaml`). The canonical list lives in `.maestro/env.example`.
 
@@ -94,8 +92,8 @@ Tell the user:
 
 - The default command runs `smoke_core` only and excludes `flaky_quarantine`.
 - Use `--include-tags smoke_extended` or a single flow path for provisional repair work.
-- Use `--store shared` only for non-destructive ad-hoc runs; destructive shared-store runs are CI-only under the store lock.
-- The runner seeds fixtures, writes a manifest, and cleans exactly those IDs on exit.
+- Use `--store shared` only for non-destructive ad-hoc runs; destructive shared-store runs are CI-only.
+- The runner creates test data through the app UI and leaves it on the selected test store.
 - It captures and restores device animation settings.
 - Screen recordings are kept only for failed lab-store flows; shared-store credential paths use screenshots only.
 - Artifacts (recordings, logs, HTML + JUnit report) are written OUTSIDE the repo, under `$HOME/woocommerce-maestro-output/<timestamp>/` by default. Override with `--output-dir <path>` or the `WOO_MAESTRO_OUTPUT_DIR` env var.

@@ -27,10 +27,9 @@
 #
 # ⚠️  STAGING-STORE MUTATION: unlike most smoke flows, this one DOES
 # persist a change — the image is attached to the product it opens.
-# The flow therefore targets this run's seeded simple product (located
-# via search on ${FIXTURE_SIMPLE_PRODUCT}), which manifest cleanup
-# deletes after the run, so the mutation never touches real store data
-# and never outlives the suite.
+# The flow targets the product created earlier in this suite run
+# (located via search on ${FIXTURE_SIMPLE_PRODUCT}) and leaves that
+# test product in the store.
 #
 # Source strings (res/values/strings.xml):
 #   - image_source_wp_media_library → "WordPress media library"
@@ -58,11 +57,8 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
-# Open this run's seeded simple product — never an arbitrary first
-# row. This flow persists an image on whatever product it opens, and
-# on the shared store index-0 can be a manual tester's real product.
-# The seeded fixture is deleted by manifest cleanup after the run, so
-# the gallery mutation never outlives the suite.
+# Open this run's UI-created simple product — never an arbitrary first
+# row. This flow persists an image on whatever product it opens.
 - runFlow:
     file: ../subflows/open_product_by_name.yaml
     env:

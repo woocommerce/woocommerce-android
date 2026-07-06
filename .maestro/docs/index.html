@@ -20,7 +20,7 @@
   <p>Self-contained guide for the Maestro smoke suite rooted at <code>.maestro/</code>.</p>
 
   <h2>Architecture</h2>
-  <p>Top-level flows live in <code>.maestro/flows/</code>. Reusable login and navigation helpers live in <code>.maestro/subflows/</code>. The runner owns device selection, store selection, fixture seeding, cleanup, retries, artifacts, and reports.</p>
+  <p>Top-level flows live in <code>.maestro/flows/</code>. Reusable login and navigation helpers live in <code>.maestro/subflows/</code>. The runner owns device selection, store selection, UI fixture names, retries, artifacts, and reports.</p>
   <pre>flows -> subflows -> run-smoke-tests.sh -> Maestro CLI/MCP -> reports</pre>
 
   <h2>Stores</h2>
@@ -28,7 +28,7 @@
     <thead><tr><th>Store</th><th>Purpose</th><th>Rules</th></tr></thead>
     <tbody>
       <tr><td><code>lab</code></td><td>Disposable Jurassic Ninja automation store.</td><td>Default for local runs, repair loops, destructive iteration, and can-fail checks.</td></tr>
-      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Release-tool and Thursday burst runs. Destructive tags are CI-only under a REST lock.</td></tr>
+      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Release-tool and Thursday burst runs. Destructive tags are CI-only.</td></tr>
     </tbody>
   </table>
 
@@ -39,9 +39,9 @@
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
 .maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
 
-  <h2>Fixtures and Cleanup</h2>
-  <p>The runner calls <code>seed-fixtures.py</code> before flows. It creates pending orders, refundable orders, a variable product with variations and tags, a simple product, a coupon, and a customer. Consumable fixtures are created twice.</p>
-  <p>Every created entity is written to <code>run-manifest.json</code>. Cleanup deletes exactly those IDs. A guarded stale-orphan sweep only matches strict <code>SUITE-&lt;date&gt;-&lt;hash&gt;</code> values older than 48 hours and logs deletions into the run report.</p>
+  <h2>Fixtures</h2>
+  <p>The runner exports run-scoped fixture values such as <code>FIXTURE_SIMPLE_PRODUCT</code>, <code>FIXTURE_CUSTOMER_EMAIL</code>, and <code>FIXTURE_COUPON_CODE</code>. Flows create the corresponding product, order, customer, and coupon through the app UI and leave them on the selected test store.</p>
+  <p>No WooCommerce REST API credentials are required for the default runner path. If a store uses a different sample variable product than the default, override <code>MAESTRO_FIXTURE_VARIABLE_PRODUCT</code> in <code>.maestro/.env.local</code>.</p>
 
   <h2>Tags</h2>
   <table>
@@ -56,7 +56,7 @@
   </table>
 
   <h2>Selector Rules</h2>
-  <p>Interact through <code>id:</code> selectors whenever Compose <code>testTag</code> is available. Assert user-visible text through generated values from <code>.maestro/strings.env</code>. Use regex variables for parameterized strings and manifest-derived env vars for exact fixture values.</p>
+  <p>Interact through <code>id:</code> selectors whenever Compose <code>testTag</code> is available. Assert user-visible text through generated values from <code>.maestro/strings.env</code>. Use regex variables for parameterized strings and runner-provided fixture env vars for exact test data.</p>
   <p><code>point:</code> selectors require an inline YAML comment explaining why no semantic selector exists.</p>
 
   <h2>Reliability Policy</h2>

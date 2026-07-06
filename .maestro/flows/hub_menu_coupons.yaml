@@ -11,7 +11,7 @@
 #   - Pick Percentage Discount and confirm the edit-coupon screen
 #     opens
 #   - Save a run-scoped percentage coupon and assert it appears in
-#     the list. The runner's orphan sweep removes stale SUITE-* coupons.
+#     the list. The coupon is intentionally left on the test store.
 appId: com.woocommerce.android.dev
 name: "Hub Menu - Coupons"
 tags:
@@ -96,7 +96,7 @@ tags:
     label: "Focus coupon code"
 
 - eraseText
-- inputText: "SUITE-${SUITE_RUN_ID}-UI"
+- inputText: ${FIXTURE_COUPON_CODE}
 - hideKeyboard
 
 - takeScreenshot: hub_coupons_filled_form
@@ -113,18 +113,18 @@ tags:
     timeout: 30000
 
 - extendedWaitUntil:
-    visible: ".*Coupon created.*|.*${SUITE_RUN_ID}.*"
+    visible: ".*Coupon created.*|.*${FIXTURE_COUPON_CODE}.*"
     timeout: 30000
     label: "Wait for created coupon to be visible"
 
 - scrollUntilVisible:
-    element: ".*${SUITE_RUN_ID}.*"
+    element: ".*${FIXTURE_COUPON_CODE}.*"
     direction: DOWN
     timeout: 15000
     label: "Scroll to the created smoke coupon"
 
 - assertVisible:
-    text: ".*${SUITE_RUN_ID}.*"
+    text: ".*${FIXTURE_COUPON_CODE}.*"
     label: "Created smoke coupon is visible"
 
 - takeScreenshot: hub_coupons_created_coupon

@@ -17,9 +17,9 @@
 #
 # Verifies (on tablet):
 #   - POS screen loads with Products + Coupons tabs visible
-#   - Searching Products filters to the seeded simple product
+#   - Searching Products filters to the suite-created simple product
 #   - Tapping that product adds it to the cart
-#   - Searching Coupons filters to the seeded coupon
+#   - Searching Coupons filters to the suite-created coupon
 #   - Tapping the coupon applies it to the cart and exposes discount state
 appId: com.woocommerce.android.dev
 name: "POS - Search and Coupons tab"
@@ -72,7 +72,7 @@ tags:
       - extendedWaitUntil:
           visible: "${FIXTURE_SIMPLE_PRODUCT}"
           timeout: 20000
-          label: "Wait for seeded product search result"
+          label: "Wait for suite product search result"
 
       - assertVisible:
           id: "woo_pos_product_item"
@@ -84,7 +84,7 @@ tags:
           id: "woo_pos_product_item"
           index: 0
           retryTapIfNoChange: true
-          label: "Add seeded product to POS cart"
+          label: "Add suite product to POS cart"
 
       - extendedWaitUntil:
           visible:
@@ -105,7 +105,7 @@ tags:
           label: "Tap Coupons tab"
 
       # Either the coupons list loads OR the empty state appears —
-      # accept either so the assertion isn't tied to seed data on the
+      # accept either so the assertion isn't tied to existing data on the
       # staging store. The search hint changes as soon as the tab
       # switches, which is our signal that the tab switch worked.
       - extendedWaitUntil:
@@ -126,7 +126,7 @@ tags:
       - extendedWaitUntil:
           visible: "${FIXTURE_COUPON_CODE}"
           timeout: 20000
-          label: "Wait for seeded coupon search result"
+          label: "Wait for suite coupon search result"
 
       - assertVisible:
           id: "woo_pos_coupon_add_to_cart_button"
@@ -136,7 +136,7 @@ tags:
       - tapOn:
           id: "woo_pos_coupon_add_to_cart_button"
           retryTapIfNoChange: true
-          label: "Apply seeded coupon to POS cart"
+          label: "Apply suite coupon to POS cart"
 
       - extendedWaitUntil:
           visible: ".*Coupon in cart ${FIXTURE_COUPON_CODE}.*|.*Discount total.*"

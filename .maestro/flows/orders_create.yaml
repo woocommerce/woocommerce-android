@@ -4,20 +4,19 @@
 #
 # Verifies:
 #   - Order creation FAB works
-#   - Add a seeded variable product from the product selector and choose a variation
+#   - Add a configured test variable product from the product selector and choose a variation
 #   - Increase/decrease product quantity with the stepper
 #   - Add a product-level discount
 #   - Add a fixed-amount custom amount with a name
 #   - Add a fixed shipping amount
-#   - Add an existing seeded customer by search
+#   - Add a run-scoped customer manually
 #   - Edit the added customer's last name
 #   - Add a customer-facing note
 #   - All sections display the added data
-#   - Tap "Create" to submit the order — lands on order detail
-#   - Tap "Collect Payment" → pick Cash → Mark Order as Complete to
-#     fully exercise the post-creation cash checkout path
+#   - Tap "Create" to submit the order — lands on order detail and leaves
+#     the pending-payment order available for downstream payment flows
 #
-# The order IS committed to the staging store and completed via COD.
+# The order IS committed to the staging store.
 # Staging orders use test data (SmokeTest customer, $10 gift wrap) so
 # accumulation across runs is acceptable.
 appId: com.woocommerce.android.dev
@@ -63,8 +62,10 @@ tags:
 
 - takeScreenshot: order_create_product_selector
 
-# Search for this run's seeded variable product instead of relying on
-# whichever product happens to be first in the store.
+# Search for the configured test variable product instead of relying on
+# whichever product happens to be first in the store. Override
+# MAESTRO_FIXTURE_VARIABLE_PRODUCT in .env.local if the test store uses
+# a different sample product name.
 - tapOn:
     text: ".*Search Products.*"
     label: "Focus product selector search"
@@ -75,12 +76,12 @@ tags:
 - extendedWaitUntil:
     visible: "${FIXTURE_VARIABLE_PRODUCT}"
     timeout: 20000
-    label: "Wait for seeded variable product"
+    label: "Wait for configured variable product"
 
 - tapOn:
     text: "${FIXTURE_VARIABLE_PRODUCT}"
     retryTapIfNoChange: true
-    label: "Open seeded variable product variations"
+    label: "Open configured variable product variations"
 
 # Pick a concrete variation so the order contains a purchasable item,
 # not just the parent variable product.
@@ -93,7 +94,7 @@ tags:
     text: ".*Small.*|.*Large.*"
     index: 0
     retryTapIfNoChange: true
-    label: "Select first seeded variation"
+    label: "Select first variation"
 
 # Confirm selection (regex matches "Select 1 Product" or "Select N Products")
 - extendedWaitUntil:
@@ -330,7 +331,9 @@ tags:
     label: "Customer note visible in creation screen"
 
 # ── Add a customer ────────────────────────────────────────────────────
-# Uses the search flow to select the run's seeded existing customer.
+# Add a run-scoped customer manually. The flow intentionally avoids
+# depending on REST-created customers so the full suite only needs
+# UI-login credentials.
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
@@ -346,19 +349,39 @@ tags:
     timeout: 15000
 
 - tapOn:
-    text: "Search for customers"
-- inputText: ${FIXTURE_CUSTOMER_NAME}
-- hideKeyboard
+    text: "add customer"
+    retryTapIfNoChange: true
+    label: "Tap add customer FAB"
 
 - extendedWaitUntil:
-    visible: "${FIXTURE_CUSTOMER_NAME}"
-    timeout: 20000
-    label: "Wait for seeded customer in search results"
+    visible:
+      id: "first_name"
+    timeout: 15000
+    label: "Wait for manual customer form"
 
 - tapOn:
-    text: "${FIXTURE_CUSTOMER_NAME}"
-    retryTapIfNoChange: true
-    label: "Select seeded customer"
+    id: "first_name"
+    index: 0
+- inputText: "Maestro"
+- hideKeyboard
+
+- tapOn:
+    id: "last_name"
+    index: 0
+- inputText: "SmokeTest-${SUITE_RUN_ID}"
+- hideKeyboard
+
+- tapOn:
+    id: "email"
+    index: 0
+- inputText: ${FIXTURE_CUSTOMER_EMAIL}
+- hideKeyboard
+
+- takeScreenshot: order_create_manual_customer
+
+- tapOn:
+    id: "menu_done"
+    label: "Save manual customer"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -366,97 +389,29 @@ tags:
 
 - takeScreenshot: order_create_with_customer
 
-# ── Edit the added customer ───────────────────────────────────────────
-- scrollUntilVisible:
-    element: ".*SmokeTest.*|.*Maestro.*"
-    direction: DOWN
-    timeout: 10000
-    label: "Scroll to customer section"
-
-- tapOn:
-    id: "edit_button"
-    childOf:
-      id: "customer_section"
-    label: "Tap customer edit button"
-
-- extendedWaitUntil:
-    visible: ".*Last name.*"
-    timeout: 15000
-
-# Rewrite the last name with a per-suite-run-unique marker so
-# orders_refund.yaml can find THIS exact order and won't pick up an
-# already-refunded leftover from a previous suite run. SUITE_RUN_ID is
-# exported by .maestro/scripts/run-smoke-tests.sh (set to the run's
-# timestamp, e.g. 20260421-123100), so every run's customer last name
-# is distinct.
-- tapOn:
-    id: "edit_text"
-    childOf:
-      id: "last_name"
-- eraseText
-- inputText: "SmokeTest-${SUITE_RUN_ID}"
-- hideKeyboard
-
-- takeScreenshot: order_create_customer_re_edited
-
-- tapOn:
-    id: "menu_done"
-    label: "Save customer edit"
-
-- extendedWaitUntil:
-    visible: "New order"
-    timeout: 15000
-
 - takeScreenshot: order_create_fully_customized
 
-# ── Submit + auto-launch payment flow ─────────────────────────────────
-# The Compose totals overlay at the bottom of the creation screen
-# hosts a "Collect Payment" primary button (see
-# OrderCreateEditTotalsHelper.toButtonText → Creation branch). Tapping
-# it submits the order AND sets startPaymentFlow=true, so
-# OrderDetailViewModel's init auto-triggers StartPaymentFlow —
-# landing on the Take-payment selector without requiring a second tap
-# on order detail.
-- scrollUntilVisible:
-    element: "Collect Payment"
-    direction: DOWN
-    timeout: 10000
-    label: "Scroll to Collect Payment primary button"
-
+# ── Submit without collecting payment ────────────────────────────────
+# Use the toolbar Create action, not the totals-panel Collect Payment
+# button. This leaves the UI-created pending-payment order available
+# for the QR/share-link and cash-payment smoke flows that run next.
 - tapOn:
-    text: "Collect Payment"
+    id: "menu_create"
     retryTapIfNoChange: true
-    label: "Tap Collect Payment to submit + start payment flow"
+    label: "Create order without starting payment flow"
 
-# Take-payment bottom sheet appears (Card/Cash options).
 - extendedWaitUntil:
-    visible: ".*Take payment.*|.*Cash.*"
+    visible:
+      id: "orderDetail_container"
     timeout: 30000
 
-- takeScreenshot: order_create_select_payment_method
+- takeScreenshot: order_create_created_pending_detail
 
-- tapOn:
-    text: "Cash"
-    retryTapIfNoChange: true
-    label: "Select Cash payment method"
-
-# Change Due Calculator — the order total is pre-filled, so tapping
-# "Mark Order as Complete" records the cash payment and closes out the
-# order.
-- extendedWaitUntil:
-    visible: ".*Mark Order as Complete.*"
-    timeout: 15000
-
-- takeScreenshot: order_create_change_due_calculator
-
-- tapOn:
-    text: ".*Mark Order as Complete.*"
-    retryTapIfNoChange: true
-    label: "Mark order as complete with cash"
+- back
 
 - extendedWaitUntil:
     visible:
       id: "ordersList"
-    timeout: 30000
+    timeout: 15000
 
 - takeScreenshot: order_create_completed

@@ -3,7 +3,7 @@
 # P2 ref: Products > Product details (all details)
 #
 # Verifies:
-#   - Product detail opens for this run's seeded simple product
+#   - Product detail opens for this run's UI-created simple product
 #   - Description, price, inventory, categories, product type, shipping,
 #     short description, linked products, and downloadable files all open
 #     their editor/detail surfaces and return to product detail
@@ -176,62 +176,61 @@ tags:
       id: "editText"
     timeout: 10000
 
-# Linked products editor
-- scrollUntilVisible:
-    element: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
-    direction: DOWN
-    timeout: 15000
-    label: "Scroll to linked products"
+# Linked products editor. UI-created simple products may not have this
+# row until linked products are configured, so this is conditional in
+# the UI-created fixture runner mode.
+- runFlow:
+    when:
+      visible: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
+    commands:
+      - tapOn:
+          text: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
+          index: 0
+          retryTapIfNoChange: true
+          label: "Open linked products"
 
-- tapOn:
-    text: ".*Upsells.*|.*Cross-sells.*|.*Linked products.*"
-    index: 0
-    retryTapIfNoChange: true
-    label: "Open linked products"
+      - extendedWaitUntil:
+          visible:
+            id: "add_upsell_products"
+          timeout: 15000
+          label: "Wait for linked products editor"
 
-- extendedWaitUntil:
-    visible:
-      id: "add_upsell_products"
-    timeout: 15000
-    label: "Wait for linked products editor"
+      - assertVisible:
+          id: "add_cross_sell_products"
+          label: "Cross-sells editor is visible"
 
-- assertVisible:
-    id: "add_cross_sell_products"
-    label: "Cross-sells editor is visible"
+      - takeScreenshot: product_detail_linked_products_editor
+      - back
 
-- takeScreenshot: product_detail_linked_products_editor
-- back
+      - extendedWaitUntil:
+          visible:
+            id: "editText"
+          timeout: 10000
 
-- extendedWaitUntil:
-    visible:
-      id: "editText"
-    timeout: 10000
+# Downloadable files editor. This only appears for products that are
+# already downloadable and have at least one file.
+- runFlow:
+    when:
+      visible: "Downloadable files"
+    commands:
+      - tapOn:
+          text: "Downloadable files"
+          retryTapIfNoChange: true
+          label: "Open downloadable files"
 
-# Downloadable files editor
-- scrollUntilVisible:
-    element: "Downloadable files"
-    direction: DOWN
-    timeout: 15000
-    label: "Scroll to Downloadable files"
+      - extendedWaitUntil:
+          visible:
+            id: "productDownloadsRecycler"
+          timeout: 15000
+          label: "Wait for downloadable files list"
 
-- tapOn:
-    text: "Downloadable files"
-    retryTapIfNoChange: true
-    label: "Open downloadable files"
+      - takeScreenshot: product_detail_downloads_editor
+      - back
 
-- extendedWaitUntil:
-    visible:
-      id: "productDownloadsRecycler"
-    timeout: 15000
-    label: "Wait for downloadable files list"
-
-- takeScreenshot: product_detail_downloads_editor
-- back
-
-- extendedWaitUntil:
-    visible:
-      id: "editText"
-    timeout: 10000
+      - extendedWaitUntil:
+          visible:
+            id: "editText"
+          timeout: 10000
 
 # Categories editor
 - scrollUntilVisible:

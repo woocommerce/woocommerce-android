@@ -97,12 +97,9 @@ tags:
 # here instead of a leftover "SmokeTest*" customer from a previous
 # suite run — those prior orders will have already been fully
 # refunded and show 0 refundable items on the Issue Refund screen.
-# Fall back to this run's seeded refundable fixture (its billing name
-# is the run id) when the suite-tagged customer isn't visible (e.g.
-# this flow is run standalone). Never fall back to an arbitrary first
-# row — on the shared store that could issue a refund against a manual
-# tester's real order; if neither automation order is visible, failing
-# here is the correct outcome.
+# Never fall back to an arbitrary first row — even on test stores that
+# could issue a refund against the wrong order; if the UI-created
+# automation order is not visible, failing here is the correct outcome.
 - runFlow:
     when:
       visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
@@ -111,15 +108,6 @@ tags:
           text: ".*SmokeTest-${SUITE_RUN_ID}.*"
           retryTapIfNoChange: true
           label: "Open this-run's SmokeTest order"
-
-- runFlow:
-    when:
-      notVisible: ".*SmokeTest-${SUITE_RUN_ID}.*"
-    commands:
-      - tapOn:
-          text: ".*${SUITE_RUN_ID}.*"
-          retryTapIfNoChange: true
-          label: "Open this run's seeded refundable order (fallback)"
 
 - extendedWaitUntil:
     visible:

@@ -30,7 +30,7 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# Open this run's paid seeded order — never an arbitrary first row.
+# Open this run's paid UI-created order — never an arbitrary first row.
 - runFlow:
     file: ../subflows/find_order_by_run_id.yaml
     env:
