@@ -1373,6 +1373,8 @@
     <string name="order_refunds_method">%1$s via %2$s</string>
     <string name="order_refunds_refund_details">Refund details</string>
     <string name="order_refunds_manual_refund">Manual refund</string>
+    <string name="order_refunds_gift_card_unsupported_title">Refund from your store admin</string>
+    <string name="order_refunds_gift_card_unsupported_message">This order was paid with a gift card. Refunding here won\'t restore the gift-card balance. To refund correctly, please process it from your store admin on the web.</string>
     <string name="order_refunds_credit_card_refund">Credit card</string>
     <string name="order_refunds_quote_image_description">Quotation icon</string>
     <string name="order_refunds_amount_refund_progress_message">Your refund for %s is being processed. Please wait…</string>

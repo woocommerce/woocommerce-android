@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -113,21 +112,19 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         }.map { }
     }
 
-    private fun searchInCache() {
+    private suspend fun searchInCache() {
         val searchOptions = if (searchType.value == SearchType.SKU) {
             SkuSearchOptions.PartialMatch
         } else {
             SkuSearchOptions.Disabled
         }
-        runBlocking {
-            repository.searchProductsInCache(
-                offset = offset.value,
-                pageSize = PAGE_SIZE,
-                searchQuery = searchQuery.value,
-                skuSearchOptions = searchOptions,
-            ).let { loadedProducts ->
-                searchResults.update { list -> updateSearchResult(list, loadedProducts) }
-            }
+        repository.searchProductsInCache(
+            offset = offset.value,
+            pageSize = PAGE_SIZE,
+            searchQuery = searchQuery.value,
+            skuSearchOptions = searchOptions,
+        ).let { loadedProducts ->
+            searchResults.update { list -> updateSearchResult(list, loadedProducts) }
         }
     }
 

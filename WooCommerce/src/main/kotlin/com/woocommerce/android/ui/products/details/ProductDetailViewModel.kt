@@ -1111,7 +1111,7 @@ class ProductDetailViewModel @Inject constructor(
      * 1. they arrive to this product details screen from the onboarding list on My Store, or
      * 2. they arrive from other sources while the store's product list is empty.
      */
-    private fun isPublishingFirstProduct(): Boolean =
+    private suspend fun isPublishingFirstProduct(): Boolean =
         navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty()
 
     /**
