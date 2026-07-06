@@ -54,6 +54,13 @@ class PrivacySettingsViewModel @Inject constructor(
                 val event = repository.updateAccountSettings()
                 _state.value = _state.value?.copy(progressBarVisible = false)
 
+                event.onSuccess {
+                    _state.value = _state.value?.copy(
+                        crashReportingEnabled = repository.accountCrashReportingOptOut()?.not()
+                            ?: getCrashReportingEnabled()
+                    )
+                }
+
                 event.onFailure {
                     triggerEvent(
                         MultiLiveEvent.Event.ShowActionStringSnackbar(
@@ -101,6 +108,27 @@ class PrivacySettingsViewModel @Inject constructor(
     fun onCrashReportingSettingChanged(checked: Boolean) {
         _state.value = _state.value?.copy(crashReportingEnabled = checked)
         setCrashReportingEnabled(checked)
+
+        if (repository.isUserWPCOM()) {
+            launch {
+                _state.value = _state.value?.copy(progressBarVisible = true)
+
+                val event = repository.updateCrashReportingSetting(checked)
+
+                _state.value = _state.value?.copy(progressBarVisible = false)
+
+                event.onFailure {
+                    setCrashReportingEnabled(!checked)
+                    _state.value = _state.value?.copy(crashReportingEnabled = !checked)
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowActionStringSnackbar(
+                            message = resourceProvider.getString(R.string.settings_crash_reporting_error_update),
+                            actionText = resourceProvider.getString(R.string.retry),
+                        ) { onCrashReportingSettingChanged(checked) }
+                    )
+                }
+            }
+        }
     }
 
     fun onSendStatsSettingChanged(checked: Boolean) {

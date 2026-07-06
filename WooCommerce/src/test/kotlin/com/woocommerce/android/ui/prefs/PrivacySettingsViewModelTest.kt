@@ -136,6 +136,83 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given successful API response, when user turns on crash reporting, then local preference is updated and pushed to API`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { updateCrashReportingSetting(true) } doReturn Result.success(Unit)
+            }
+            init()
+            runCurrent()
+
+            // when
+            sut.onCrashReportingSettingChanged(true)
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.crashReportingEnabled).isTrue
+            verify(appPrefs).setCrashReportingEnabled(true)
+            verify(repository).updateCrashReportingSetting(true)
+        }
+
+    @Test
+    fun `given failed API response, when user turns on crash reporting, then local preference is reverted and snackbar is shown`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { updateCrashReportingSetting(true) } doReturn Result.failure(Exception())
+            }
+            init()
+            runCurrent()
+
+            // when
+            sut.onCrashReportingSettingChanged(true)
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.crashReportingEnabled).isFalse
+            verify(appPrefs).setCrashReportingEnabled(false)
+            assertThat(sut.event.value).isInstanceOf(MultiLiveEvent.Event.ShowActionStringSnackbar::class.java)
+        }
+
+    @Test
+    fun `given user is not WPCOM, when user changes crash reporting, then only local preference is updated`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { isUserWPCOM() } doReturn false
+            }
+            init()
+            runCurrent()
+
+            // when
+            sut.onCrashReportingSettingChanged(true)
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.crashReportingEnabled).isTrue
+            verify(appPrefs).setCrashReportingEnabled(true)
+            verify(repository, never()).updateCrashReportingSetting(any())
+        }
+
+    @Test
+    fun `given account has crash reporting opted out, when user opens the screen, then the account value is applied to state`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { updateAccountSettings() } doReturn Result.success(Unit)
+                on { accountCrashReportingOptOut() } doReturn true
+            }
+
+            // when
+            init()
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.crashReportingEnabled).isFalse
+        }
+
+    @Test
     fun `given failed API response, when user tapps on retry button, retry updating account settings`() =
         testBlocking {
             // given
