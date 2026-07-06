@@ -532,7 +532,6 @@ class ProductListFragment :
 
     private fun setupResultHandlers() {
         // Refresh the product list when returning from a webview-based product creation flow
-        // (e.g., bookable service creation on CIAB sites)
         handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
             productListViewModel.onRefreshRequested()
         }
