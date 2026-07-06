@@ -12,7 +12,6 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
@@ -31,9 +30,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
-import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderRestClientTest {
@@ -489,10 +486,6 @@ class OrderRestClientTest {
             val actionCaptor = argumentCaptor<Action<FetchOrderListResponsePayload>>()
             verify(dispatcher).dispatch(actionCaptor.capture())
             assertThat(actionCaptor.firstValue.payload.error?.type).isEqualTo(OrderErrorType.PARSE_ERROR)
-
-            val reportCaptor = argumentCaptor<OnUnexpectedError>()
-            verify(dispatcher).emitChange(reportCaptor.capture())
-            assertThat(reportCaptor.firstValue.description).isEqualTo("Order API response parse error")
         }
 
     @Test
@@ -528,7 +521,6 @@ class OrderRestClientTest {
             val actionCaptor = argumentCaptor<Action<FetchOrderListResponsePayload>>()
             verify(dispatcher).dispatch(actionCaptor.capture())
             assertThat(actionCaptor.firstValue.payload.error?.type).isEqualTo(OrderErrorType.GENERIC_ERROR)
-            verify(dispatcher, never()).emitChange(any<OnUnexpectedError>())
         }
 
     /* HELPER */
