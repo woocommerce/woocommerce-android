@@ -460,7 +460,10 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun createDefaultProductForAddFlow(): ProductAggregate {
         val preferredSavedType = appPrefsWrapper.getSelectedProductType()
+        // A previously saved type may no longer exist (e.g. the removed "bookable-service"), in which
+        // case fromString() resolves to OTHER, whose value is empty; fall back to SIMPLE for the add flow.
         val defaultProductType = ProductType.fromString(preferredSavedType)
+            .takeIf { it != ProductType.OTHER } ?: ProductType.SIMPLE
         val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
         return ProductHelper.getDefaultProductAggregate(defaultProductType, isProductVirtual)
     }

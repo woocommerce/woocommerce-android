@@ -1439,6 +1439,24 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given add flow with a removed saved product type, when starting, then draft falls back to SIMPLE`() =
+        testBlocking {
+            // GIVEN: a previously saved product type that no longer exists (e.g. the removed
+            // "bookable-service"), which ProductType.fromString() resolves to OTHER
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+            whenever(prefsWrapper.getSelectedProductType()).thenReturn("bookable-service")
+            whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+            setup()
+
+            // WHEN
+            viewModel.start()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            // THEN
+            Assertions.assertThat(productsDraft?.productType).isEqualTo(ProductType.SIMPLE)
+        }
+
+    @Test
     fun `given add new product flow, when product not yet created on server, then trashOption is hidden`() =
         testBlocking {
             // GIVEN: existing product (ShowProduct mode)
