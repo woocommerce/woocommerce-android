@@ -464,6 +464,58 @@ class OrderListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given a guest orders search, when the same query is re-submitted, then the guest filter is kept`() =
+        testBlocking {
+            // GIVEN a guest orders search, e.g. re-submitted by the restored search view after a config change
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            // WHEN the same query is re-submitted as a plain text search
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+
+            // THEN the guest filter is kept
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(2)).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = true
+            )
+        }
+
+    @Test
+    fun `given a guest orders search, when a different query is submitted, then the guest filter is cleared`() =
+        testBlocking {
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            viewModel.submitSearchOrFilter(searchQuery = "Guests")
+
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "Guests",
+                searchGuestOrders = false
+            )
+            // AND the guest filter is not restored for the original query anymore
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(1)).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = false
+            )
+        }
+
+    @Test
+    fun `given a guest orders search, when the search is closed, then the guest filter is cleared`() =
+        testBlocking {
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            viewModel.onSearchClosed()
+
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = false
+            )
+        }
+
     /**
      * Test the logic that generates the Loading empty list view for any tab of the order list
      * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].

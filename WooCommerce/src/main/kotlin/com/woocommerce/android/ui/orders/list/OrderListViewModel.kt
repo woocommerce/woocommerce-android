@@ -123,6 +123,7 @@ class OrderListViewModel @Inject constructor(
 ) : ScopedViewModel(savedState), LifecycleOwner {
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
+        private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
     }
 
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -188,6 +189,17 @@ class OrderListViewModel @Inject constructor(
 
     private var dismissListErrors = false
     var searchQuery = ""
+
+    /**
+     * The query the guest-orders filter was activated for. After a configuration change the restored
+     * search view re-submits the query as a plain text search, so [submitSearchOrFilter] uses this
+     * to keep the guest filter active as long as the query hasn't changed.
+     */
+    private var guestSearchQuery: String?
+        get() = savedState[KEY_GUEST_SEARCH_QUERY]
+        set(value) {
+            savedState[KEY_GUEST_SEARCH_QUERY] = value
+        }
 
     private var _lastUpdateOrdersList = MutableStateFlow<Long?>(null)
     val lastUpdateOrdersList: LiveData<String?> = _lastUpdateOrdersList
@@ -279,9 +291,12 @@ class OrderListViewModel @Inject constructor(
      * by the search component portion of the order list view.
      */
     fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+        val sanitizedQuery = sanitizeSearchQuery(searchQuery)
+        val isGuestSearch = searchGuestOrders || sanitizedQuery == guestSearchQuery
+        guestSearchQuery = sanitizedQuery.takeIf { isGuestSearch }
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(
-            searchQuery = sanitizeSearchQuery(searchQuery),
-            searchGuestOrders = searchGuestOrders
+            searchQuery = sanitizedQuery,
+            searchGuestOrders = isGuestSearch
         )
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
@@ -680,6 +695,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onSearchClosed() {
+        guestSearchQuery = null
         loadOrders()
     }
 
