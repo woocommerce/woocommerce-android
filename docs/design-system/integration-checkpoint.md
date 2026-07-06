@@ -32,11 +32,9 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   top Product Detail, and top Order Detail.
 - Product Detail and Order Detail launched child flows are out of scope for the first wave.
 - Each migrated first-wave screen should have one design-system UI implementation.
-- Earlier root/foundation notes treated theme selection as the visual rollout boundary.
-- `ComposeTheme.LEGACY` uses `WooThemeWithBackground` with a legacy-compatible design-system
-  foundation.
-- `ComposeTheme.DESIGN_SYSTEM` uses `WooDesignSystemThemeWithBackground` with the real
-  design-system foundation.
+- Migrated screens use an explicit design-system root builder during migration.
+- Non-migrated screens stay on the legacy root until the controlled rename boundary in
+  [rollout-direction.md](rollout-direction.md).
 - The XML bridge explored in earlier branches is out of scope.
 - Heavy XML screens may retain an XML shell only where needed for compatibility, with `ComposeView`
   hosting migrated sections, rows, or content areas.
@@ -94,23 +92,23 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - The module must not import app `R`, legacy app theme classes, Hilt, POS, or Store feature
   packages. App-layer rollout wiring stays outside the module.
 - Package root: `com.woocommerce.android.ui.compose.designsystem`.
-- Suggested subpackages: `foundation`, `component`, and `preview`.
+- Subpackages: `foundation`, `component`, and `preview`.
 - Use a separate opt-in `WooDesignSystemTheme`, Material 3-only.
 - `WooDesignSystemTheme` is the migration-era wrapper name while the legacy
   `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper exists. Do not introduce `WooNewTheme`.
   Future consolidation can merge wrapper/accessor naming after the legacy wrapper is removed.
 - `WooDesignSystemTheme` installs the Store design-system runtime; `WooTheme.*` is the
   component-facing accessor for theme-scoped foundation values.
-- `WooDesignSystemThemeWithBackground` uses the real design-system foundation.
-- `WooThemeWithBackground` remains app-owned in the earlier compatibility model and would provide
-  legacy-compatible design-system foundation locals.
+- `WooDesignSystemThemeWithBackground` uses the real design-system foundation for explicitly
+  migrated screens.
+- The legacy Store theme root remains app-owned until the controlled rename boundary in
+  [rollout-direction.md](rollout-direction.md).
 - The design-system module does not read app resources directly.
-- Migrated first-wave screens should cover legacy-compatible and real design-system foundations in
-  light and dark mode.
+- Migrated first-wave screens should cover the design-system root in light and dark mode.
 - New design-system foundations, components, preview catalog entries, and first-wave screen updates
   should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
-- Design-system component previews should wrap content in `WooDesignSystemTheme`, not
-  `WooThemeWithBackground`.
+- Design-system component previews should wrap content in `WooDesignSystemTheme`, not the legacy
+  Store theme root.
 - Preview coverage is required for every component; screenshot verification is required for first-wave screens and high-risk components.
 - Production components need accessibility review before product-screen adoption.
 - Fragment-hosted Compose layout migration means replacing XML/View layout content with Compose while
@@ -136,27 +134,9 @@ These remain rejected for i1:
 ## Screen Migration Candidate Criteria
 
 For first-wave screens, use [rollout-direction.md](rollout-direction.md) as the assignment source.
-The criteria below apply to future unassigned screens.
-
-A good unassigned candidate:
-
-- Is a low-risk product surface.
-- Has visible design-system value such as toolbar, text hierarchy, cells, buttons, banners, empty/loading states, or forms.
-- Has bounded state and navigation.
-- Can be verified with previews and screenshots in light and dark mode.
-- Avoids RecyclerView behavior, selection tracking, `ActionMode`, complex custom Views, or major accessibility redesign.
-- Has a clear before/after baseline for AI agents.
-
-High-risk unassigned screens require explicit confirmation before editing. High-risk signals include:
-
-- RecyclerView, ListAdapter, PagingDataAdapter, or adapter-heavy migration.
-- Selection tracking or `ActionMode`.
-- Complex custom Views or compound widgets.
-- Shared element transitions or complicated animation behavior.
-- Embedded WebView, camera, barcode scanner, media picker, or payment/card-reader UI.
-- Product, order, payment editing, or fulfillment flows.
-- Many navigation branches or multiple child fragments.
-- No reliable preview or screenshot baseline.
+For future unassigned screens, use the
+[Candidate Assessment](screen-migration-playbook.md#candidate-assessment) section in the migration
+playbook.
 
 ## AI-Agent Documentation
 

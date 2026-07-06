@@ -26,8 +26,6 @@ consume:
 - [material3-reference.md](material3-reference.md) for Material 3 projection behavior.
 - [android-adapter.md](android-adapter.md) for public/internal Android API boundaries and
   parser/mode handling.
-- The per-foundation audit files under `docs/design-system/foundation-audit/` for row-level source
-  paths, values, and unresolved details.
 
 Foundation source data comes from `figma-export.json`. Runtime/public token parsing uses
 non-`Semantic` top-level sections. Top-level `Semantic` remains traceability-only. High-contrast
@@ -39,8 +37,6 @@ Expected output:
 - Decision checkpoint with source references and rejected alternatives.
 - Material 3 reference for token semantics and Compose interop.
 - Token map, component catalog, migration playbook, and rollout direction.
-- Foundation audit files for colors, typography, spacing, padding, radius, icon size, and
-  stroke/unresolved foundations.
 
 The rollout direction doc is the canonical source for in-scope and out-of-scope screens. Other docs
 should link to it instead of repeating the scope table.
@@ -64,16 +60,14 @@ Expected output:
   migrated or renamed to `legacyComposeView` at the controlled boundary.
 - No root-selection indirection inside shared/default `composeView {}` calls. The root should be
   obvious at the call site.
-- Before final merge of the migration branch, a controlled root-API rename: current legacy
-  `composeView` -> `legacyComposeView`, current `WooThemeWithBackground` ->
-  `LegacyWooThemeWithBackground`, and DS-specific builder -> `composeView`.
+- Follow [rollout-direction.md](rollout-direction.md) for the exact controlled root-API rename
+  boundary and audits.
 - Manual i1 runtime tokens, with colors as the XML-safe resource-backed exception and non-color
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and internal stroke
   previews.
 - Source-backed color tokens exposed through `WooTheme.colors`, grouped shallowly by Store authoring
-  intent: core, container, surface, outline, status, alert, background, overlay, and intentionally
-  handled palette tokens.
+  intent: core, container, surface, outline, status, alert, background, overlay, and palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
@@ -90,6 +84,9 @@ Expected output:
 - Token map entries for implemented foundations.
 - Design-system module code does not import app resources, legacy app theme classes, Hilt, POS, or
   Store feature packages.
+- A detekt guardrail that reports files importing both legacy
+  `com.woocommerce.android.ui.compose.theme.*` and design-system
+  `com.woocommerce.android.ui.compose.designsystem.*` APIs.
 
 Implementation risks to verify when code work begins:
 
@@ -155,14 +152,8 @@ Expected output:
 - Previews and screenshot review for migrated surfaces under the design-system root in light and
   dark mode.
 
-Before final merge of the migration branch, perform the controlled root-API rename and verify it
-with strict `rg` audits:
-
-- Current legacy `composeView` becomes `legacyComposeView`.
-- Current `WooThemeWithBackground` becomes `LegacyWooThemeWithBackground`.
-- DS-specific builder becomes `composeView`.
-- Every remaining `composeView` call is intentionally migrated.
-- Every non-migrated screen uses `legacyComposeView`.
+Before final merge of the migration branch, follow the controlled root-API rename boundary defined
+in [rollout-direction.md](rollout-direction.md).
 
 The XML bridge explored in earlier branches is out of scope. A retained XML shell is allowed only as
 a compatibility boundary around migrated design-system content.
@@ -219,8 +210,8 @@ Add new example docs only when first-wave migrations produce reusable findings.
 - Temporary full-screen fallbacks inside in-scope migrated screens are allowed only for genuinely
   high-risk migration gaps and require an expiry/removal plan.
 - New design-system previews should use `androidx.compose.ui.tooling.preview.PreviewLightDark`.
-- Design-system component previews should wrap content in `WooDesignSystemTheme`, not
-  `WooThemeWithBackground`.
+- Design-system component previews should wrap content in `WooDesignSystemTheme`, not the legacy
+  Store theme root.
 - Migrated screen previews should cover the design-system root in light and dark mode.
 - Final root-API rename should be handled as a dedicated mechanical boundary and verified with
   strict `rg` audits before merge.

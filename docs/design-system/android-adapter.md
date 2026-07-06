@@ -18,9 +18,8 @@ doc defines the technical boundaries that support that rollout.
 - Figma is the design-intent source of truth. Android owns the runtime API contract.
 - Source references use public-repo shorthands: P2 `pe5sF9-5ox-p2`, Figma
   `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
-- Foundation source values come from `docs/design-system/figma-export.json` and the row-level audit
-  files under `docs/design-system/foundation-audit/`. This docs branch is allowed to lack runtime
-  foundation code; future implementation consumes these docs as the contract.
+- Foundation source values come from `docs/design-system/figma-export.json`. This docs branch is
+  allowed to lack runtime foundation code; future implementation consumes these docs as the contract.
 
 ## Package
 
@@ -30,7 +29,7 @@ New Compose APIs live under:
 com.woocommerce.android.ui.compose.designsystem
 ```
 
-Suggested subpackages:
+Subpackages:
 
 - `foundation`: theme, color, typography, spacing, shape, elevation, and token helpers.
 - `component`: production-ready Woo Mobile Design System components.
@@ -55,6 +54,9 @@ rollout wiring should stay outside the module.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
+- The foundation implementation should add a detekt guardrail that reports files importing both legacy
+  `com.woocommerce.android.ui.compose.theme.*` and design-system
+  `com.woocommerce.android.ui.compose.designsystem.*` APIs.
 - Do not expose raw Figma variable names as public Android API.
 - Public APIs should expose only production-ready tokens and components.
 - In-progress i1 areas may be documented, tracked, or preview-only until signed off.
@@ -83,15 +85,8 @@ screens stay on the legacy root. Do not add root-selection indirection to arbitr
 `composeView {}` calls; a screen is migrated by changing its call site to the DS root builder.
 
 During migration work, introduce or use a DS-specific builder such as `designSystemComposeView {}`.
-That name is transitional: before the final merge of the migration branch, run a controlled rename
-boundary where the current legacy `composeView` becomes `legacyComposeView`, the current
-`WooThemeWithBackground` becomes `LegacyWooThemeWithBackground`, and the DS-specific builder becomes
-`composeView`.
-
-That final API shape should make the intended root obvious at call sites during migration and
-restore `composeView` as the DS default only after legacy call sites are renamed. Every remaining
-`composeView` call must be intentionally migrated, every non-migrated screen must use
-`legacyComposeView`, and the boundary must be verified with strict `rg` audits.
+The controlled root-API rename boundary is defined in [rollout-direction.md](rollout-direction.md);
+keep that file as the source for exact rename steps and audits.
 
 The Store design-system module still owns pure foundations/components and still does not import app
 `R`, Hilt, POS, or Store feature packages. Do not document a legacy-compatible design-system

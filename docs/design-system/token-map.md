@@ -12,8 +12,7 @@ Source references use public-repo shorthands:
 - Figma file: `Woo Mobile Design System` (`50XIH5MmOf4xUYEkM6fAm6-fi`).
 - Full Figma variable export: `figma-export.json`.
 
-Use source shorthands in the source-reference column. Do not use raw P2 or Figma URLs in public repo
-docs.
+Use source shorthands in source-reference columns.
 
 Agent note: Figma references use the public GitHub shorthand `{fileKey}-fi`. When using Figma tools,
 strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`.
@@ -33,9 +32,8 @@ reconciliation. Refreshing the export should preserve this parser contract:
 - If a future component audit proves a `Semantic` variable is the intended source, update this
   token map with the component evidence and approved mapping before consuming that section.
 
-Use the committed full export plus the per-foundation audit files under
-`docs/design-system/foundation-audit/` for row-level source paths, values, and unresolved notes. Do
-not use older split token exports as current foundation sources.
+Use the committed full export for row-level source paths and values. Keep unresolved notes in this
+token map. Do not use older split token exports as current foundation sources.
 
 The Figma `Color roles` frame validates the role inventory and light-mode values for Primary and
 Secondary, Container, Surface, Outline, and Error/alert/success. Background, Overlay, and Palette are
@@ -96,20 +94,13 @@ Group the public API shallowly by source intent; do not collapse the source into
 - `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
 - Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
   public `WooTheme.stateAlpha` floats from mode-aware state-layer color tokens.
-- Do not expose the top-level `Semantic` section unless a concrete component audit updates this token
-  map with approved evidence.
 - Do not create a separate `WooTheme.semanticColors` group in PR 2.
 - If a non-color Figma variable has no clean Material 3 role, add it as an internal adapter token
   first.
 - Expose a non-color token with no clean Material 3 role publicly only when a production component
   or first-wave screen needs it.
-- Keep `WooTheme.colors` as the Store authoring API even when color primitives are resource-backed internally.
-- Store design-system color primitives are the XML-safe exception and may live in module-local
-  Android color resources so Compose and targeted XML/View usage share the same values.
-- Non-color foundations remain Kotlin/Compose-owned unless a later approved plan says otherwise.
-- Do not keep parallel Kotlin/Compose and XML resource definitions for the same token primitive value.
-- Keep source token names or page references in this document when useful, but do not record raw
-  Figma variable IDs in repo docs.
+- Follow [Token Ownership And XML/View Usage](#token-ownership-and-xmlview-usage) for resource-backed
+  color and non-color foundation boundaries.
 - Include light and dark values before marking a token `production`.
 - Include the closest Material 3 role when the token maps to `ColorScheme`, typography, shape, or elevation.
 - Mark unsettled tokens `preview_only`, `needs_design`, or `needs_android_mapping`.
@@ -144,10 +135,8 @@ When defining tokens:
 
 ## Public Color Source Reconciliation
 
-Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from the
-non-`Semantic` `Woo theme` section in `figma-export.json`. The `Semantic` section and high-contrast
-modes are not runtime/public mapping sources. Source paths are public shorthands; keep raw variable
-IDs and raw Figma node IDs out of repo docs.
+Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
+`figma-export.json` according to the Figma export parsing rules.
 
 | Android API | Source path | Export file | Light hex / alpha | Dark hex / alpha | M3 projection | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -233,10 +222,9 @@ IDs and raw Figma node IDs out of repo docs.
 `lightColorScheme(...)` / `darkColorScheme(...)` builders. Direct rows reuse public source fields.
 Alias rows are internal projection decisions only and are not additional public `WooTheme.colors`
 fields. Omitted rows intentionally use Material 3 defaults until a source-backed Store token is
-approved. Use normal `Light` / `Dark` values from non-`Semantic` `Woo theme` sources; do not fold
-high-contrast modes into the normal projection. In this projection table only, `defaulted` means
-omitted from the builder to use Material defaults, and `implicit` means resolved by the Material
-builder from another supplied source role.
+approved. Projection inputs follow the Figma export parsing rules. In this projection table only,
+`defaulted` means omitted from the builder to use Material defaults, and `implicit` means resolved by
+the Material builder from another supplied source role.
 
 | Material role | Projection source | Status | Notes |
 | --- | --- | --- | --- |
