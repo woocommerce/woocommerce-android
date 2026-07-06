@@ -8,6 +8,7 @@
 
 25.1
 -----
+- [*] Fixed a crash when the Play Store age signals service disconnected during the age eligibility check [https://github.com/woocommerce/woocommerce-android/pull/16206]
 - [Internal] Added analytics for Woo Core push token deletion results [https://github.com/woocommerce/woocommerce-android/pull/16184]
 - [*] POS: the Issue Refund flow now opens full screen from the start instead of inside the order details pane [https://github.com/woocommerce/woocommerce-android/pull/16116]
 - [*] Fixed a startup crash when WordPress.com returns malformed site details [https://github.com/woocommerce/woocommerce-android/pull/16102]
