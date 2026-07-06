@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'danger-dangermattic', '~> 1.3'
-gem 'fastlane', '~> 2.236'
+gem 'fastlane', '~> 2.237'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 1.0'
 gem 'nokogiri', '>= 1.19.3' # GHSA-c4rq-3m3g-8wgx — drop floor once toolkit is on >= 14.4.1
 gem 'rubocop', '~> 1.88'
