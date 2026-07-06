@@ -329,8 +329,9 @@ internal fun calculateWooTabRowLayout(
     selectedTabIndex: Int,
 ): WooTabRowLayoutResult {
     val totalTabWidth = tabWidths.sum()
-    val contentWidth = rowWidth - horizontalPadding * 2
-    val firstTabPosition = horizontalPadding + (contentWidth - totalTabWidth) / 2
+    val contentWidth = (rowWidth - horizontalPadding * 2).coerceAtLeast(0)
+    val centeredInset = ((contentWidth - totalTabWidth) / 2).coerceAtLeast(0)
+    val firstTabPosition = horizontalPadding + centeredInset
     var tabPosition = firstTabPosition
     val tabPositions = tabWidths.map { tabWidth ->
         tabPosition.also {
@@ -361,9 +362,10 @@ private fun calculateDividerSegments(
         return listOf(WooTabRowDividerSegment(position = 0, width = rowWidth))
     }
 
-    val selectedIndicatorEnd = selectedIndicatorPosition + selectedIndicatorWidth
+    val selectedIndicatorStart = selectedIndicatorPosition.coerceIn(0, rowWidth)
+    val selectedIndicatorEnd = (selectedIndicatorPosition + selectedIndicatorWidth).coerceIn(0, rowWidth)
     return listOf(
-        WooTabRowDividerSegment(position = 0, width = selectedIndicatorPosition),
+        WooTabRowDividerSegment(position = 0, width = selectedIndicatorStart),
         WooTabRowDividerSegment(position = selectedIndicatorEnd, width = rowWidth - selectedIndicatorEnd),
     ).filter { it.width > 0 }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -138,7 +139,16 @@ fun WooFilterChip(
     CompositionLocalProvider(LocalContentColor provides style.contentColor) {
         Box(
             modifier = modifier
-                .minimumInteractiveComponentSize(),
+                .defaultMinSize(
+                    minWidth = MIN_INTERACTIVE_COMPONENT_SIZE,
+                    minHeight = MIN_INTERACTIVE_COMPONENT_SIZE,
+                )
+                .clip(shape)
+                .wooFilterChipToggleable(
+                    selected = selected,
+                    enabled = enabled,
+                    onClick = onClick,
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Row(
@@ -152,12 +162,6 @@ fun WooFilterChip(
                     .background(
                         color = style.containerColor,
                         shape = shape,
-                    )
-                    .clip(shape)
-                    .wooFilterChipToggleable(
-                        selected = selected,
-                        enabled = enabled,
-                        onClick = onClick,
                     )
                     .padding(horizontal = WooTheme.padding.padding4),
                 horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
@@ -568,6 +572,7 @@ private val CHECKBOX_CORNER_RADIUS = 8.dp
 private val CHECKMARK_STROKE_WIDTH = 2.dp
 private val RADIO_DOT_RADIUS = 4.dp
 private val FILTER_CHIP_HEIGHT = 32.dp
+private val MIN_INTERACTIVE_COMPONENT_SIZE = 48.dp
 
 private const val DISABLED_STATE_LAYER_ALPHA = 0.08f
 private const val CHECKMARK_START_X = 0.29f
