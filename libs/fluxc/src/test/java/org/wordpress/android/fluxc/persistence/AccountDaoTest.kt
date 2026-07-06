@@ -113,6 +113,7 @@ class AccountDaoTest {
         twoStepEnabled = true,
         webAddress = "https://web.address",
         tracksOptOut = false,
+        crashReportingOptOut = null,
         usernameCanBeChanged = true,
     )
 }

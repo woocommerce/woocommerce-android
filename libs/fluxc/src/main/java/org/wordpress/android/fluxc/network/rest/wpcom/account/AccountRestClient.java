@@ -929,6 +929,7 @@ public class AccountRestClient extends BaseWPComRestClient {
         account.setTwoStepEnabled(from.two_step_enabled);
         account.setUsernameCanBeChanged(from.user_login_can_be_changed);
         account.setTracksOptOut(from.tracks_opt_out);
+        account.setCrashReportingOptOut(from.woomobile_crash_reporting_opt_out);
         account.setWebAddress(from.user_URL);
         account.setPrimarySiteId(from.primary_site_ID);
         return account;
@@ -962,6 +963,9 @@ public class AccountRestClient extends BaseWPComRestClient {
         }
         if (from.containsKey("tracks_opt_out")) {
             accountModel.setTracksOptOut((Boolean) from.get("tracks_opt_out"));
+        }
+        if (from.containsKey("woomobile_crash_reporting_opt_out")) {
+            accountModel.setCrashReportingOptOut((Boolean) from.get("woomobile_crash_reporting_opt_out"));
         }
         if (from.containsKey("new_user_email")) accountModel.setEmail((String) from.get("new_user_email"));
         if (from.containsKey("user_URL")) accountModel.setWebAddress((String) from.get("user_URL"));
