@@ -50,7 +50,7 @@ rollout wiring should stay outside the module.
   such as `WooNewTheme`; future consolidation can merge wrapper/accessor naming after the legacy
   wrapper is removed.
 - Use `WooTheme` as the design-system foundation accessor object for theme-scoped values such as
-  colors, typography, spacing, padding, and radius.
+  colors, typography, spacing, padding, radius, icon size, and stroke.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
@@ -69,11 +69,12 @@ rollout wiring should stay outside the module.
   - `WooTheme.spacing` and `WooTheme.padding` as separate APIs with identical value scales.
   - `WooTheme.radius` including Woo-only `none` and `full` plus Material projection roles.
   - `WooTheme.iconSize` scoped to glyph sizes only.
+  - `WooTheme.stroke` for source-backed border and divider widths used by production components.
 - Expose primitive palette ramps intentionally through public `WooTheme.colors.palette.*` fields.
 - Treat `surfaceBright`, `surfaceDim`, and `surfaceContainerHighest` as source-backed Store roles,
   not generated Material aliases.
-- Keep `WooStroke` internal or `preview_only` until production component usage requires public
-  authoring access.
+- Expose `WooTheme.stroke` because production design-system components use the source-backed stroke
+  scale. Fractional stroke widths still need visual verification in components that use them.
 - Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
   public `WooTheme.stateAlpha` floats from mode-aware state-layer color tokens.
 - Do not create public `WooTheme.minimumTouchTarget` from legacy dimensions or screen-size variables.
@@ -112,8 +113,8 @@ Migrate screens once to design-system components. Do not keep duplicate `LegacyS
 
 No design-system component should depend on hardcoded light fallback defaults. Rendering a
 design-system component under the design-system root must receive valid `WooTheme.colors`,
-`WooTheme.text`, `WooTheme.spacing`, `WooTheme.padding`, `WooTheme.radius`, and `WooTheme.iconSize`
-values.
+`WooTheme.text`, `WooTheme.spacing`, `WooTheme.padding`, `WooTheme.radius`, `WooTheme.iconSize`, and
+`WooTheme.stroke` values.
 
 ## Chrome Component Compatibility
 
@@ -142,7 +143,8 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Use source-backed names and shallow intent groups for public Store authoring roles under `WooTheme`.
 - Product-screen and design-system component code should read approved foundations from `WooTheme`,
   for example `WooTheme.colors.primary`, `WooTheme.text.titleMedium.emphasized`,
-  `WooTheme.spacing.space5`, `WooTheme.padding.padding5`, and `WooTheme.radius.medium`.
+  `WooTheme.spacing.space5`, `WooTheme.padding.padding5`, `WooTheme.radius.medium`, and
+  `WooTheme.stroke.regular`.
 - `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
@@ -170,9 +172,9 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   alert, background, overlay, and palette.
 - Keep unresolved non-color Figma variables tracked in docs or internal mapping first, but
   source-backed color tokens still belong in the public foundation surface.
-- `WooTheme.radius` and `WooTheme.iconSize` are public because both are source-backed
-  design-system foundations. `WooTheme.iconSize` is glyph-size only; it is not a generic layout-size
-  or touch-target API. `WooStroke` remains internal until a production component needs public access.
+- `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke` are public because they are
+  source-backed design-system foundations. `WooTheme.iconSize` is glyph-size only; it is not a
+  generic layout-size or touch-target API. `WooTheme.stroke` is scoped to border and divider widths.
   Unresolved foundation groups may stay documented-only.
 - Keep source token names in documentation and internal mapping metadata when useful, but do not
   record raw Figma variable IDs in repo docs.

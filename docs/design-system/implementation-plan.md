@@ -64,22 +64,21 @@ Expected output:
   boundary and audits.
 - Manual i1 runtime tokens, with colors as the XML-safe resource-backed exception and non-color
   foundations remaining Kotlin/Compose-owned.
-- Foundation groups for color, typography, spacing, padding, radius, icon size, and internal stroke
-  previews.
+- Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
 - Source-backed color tokens exposed through `WooTheme.colors`, grouped shallowly by Store authoring
   intent: core, container, surface, outline, status, alert, background, overlay, and palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
-- Spacing, padding, radius, and icon size through `WooTheme.spacing`, `WooTheme.padding`,
-  `WooTheme.radius`, and `WooTheme.iconSize`.
+- Spacing, padding, radius, icon size, and stroke through `WooTheme.spacing`, `WooTheme.padding`,
+  `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke`.
 - Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
   no separate `WooTheme.semanticColors`.
 - `surfaceDim`, `surfaceBright`, and `surfaceContainerHighest` as source-backed Store roles.
 - State layers remain internal-first until semantic names and mode behavior are approved.
 - `WooTheme.iconSize` scoped to glyph sizes only.
-- Internal or `preview_only` stroke from `Shape/Stroke/Weight/*`; public stroke waits for production
-  component need.
+- Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
+  production component usage.
 - Preview wrappers and light/dark previews using `@PreviewLightDark`.
 - Token map entries for implemented foundations.
 - Design-system module code does not import app resources, legacy app theme classes, Hilt, POS, or

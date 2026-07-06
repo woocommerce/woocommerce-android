@@ -151,7 +151,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.main)
     implementation(libs.androidx.compose.animation.main)
-    implementation(libs.androidx.compose.ui.tooling.main)
+    debugImplementation(libs.androidx.compose.ui.tooling.main)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.ui.text.google.fonts)
 

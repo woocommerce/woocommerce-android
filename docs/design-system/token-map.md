@@ -333,12 +333,13 @@ they encode different design intent.
 | `WooTheme.padding.padding11` | `Spacing/Padding/11` | `56dp` | No Material role | production | Source-ready. |
 | `WooTheme.padding.padding12` | `Spacing/Padding/12` | `64dp` | No Material role | production | Source-ready. |
 
-## Radius, Icon Size, And Internal Stroke
+## Radius, Icon Size, And Stroke
 
 Radius is source-backed and public through `WooTheme.radius`. Icon size is source-backed and public
-through `WooTheme.iconSize`, scoped to glyph sizes only. Stroke remains internal in PR2. Do not add
-public stroke, elevation, state-layer, or minimum-touch-target accessors on the Store design-system
-theme namespace.
+through `WooTheme.iconSize`, scoped to glyph sizes only. Stroke is source-backed and public through
+`WooTheme.stroke` because production design-system components consume the stroke scale. Do not add
+public elevation, state-layer, or minimum-touch-target accessors on the Store design-system theme
+namespace.
 
 | Token | Source path | Value | Material projection | Status | Notes |
 | --- | --- | ---: | --- | --- | --- |
@@ -355,14 +356,14 @@ theme namespace.
 | `WooTheme.iconSize.size20` | `Icon/Size/Large` | `20dp` | No Material role | production | Glyph size only. |
 | `WooTheme.iconSize.size24` | `Icon/Size/Large-Increased` | `24dp` | No Material role | production | Glyph size only. |
 | `WooTheme.iconSize.size32` | `Icon/Size/Extra-Large` | `32dp` | No Material role | production | Glyph size only. |
-| `WooStroke.none` | `Shape/Stroke/Weight/None` | `0dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.extraThin` | `Shape/Stroke/Weight/Extra-Thin` | `0.5dp` | No Material role | preview_only | Internal only; verify fractional rendering before broad use. |
-| `WooStroke.thin` | `Shape/Stroke/Weight/Thin` | `0.75dp` | No Material role | preview_only | Internal only; verify fractional rendering before broad use. |
-| `WooStroke.regular` | `Shape/Stroke/Weight/Regular` | `1dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.medium` | `Shape/Stroke/Weight/Medium` | `1.5dp` | No Material role | preview_only | Internal only; verify fractional rendering before broad use. |
-| `WooStroke.mediumIncreased` | `Shape/Stroke/Weight/Medium-Increased` | `2dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.thick` | `Shape/Stroke/Weight/Thick` | `3dp` | No Material role | preview_only | Internal only. |
-| `WooStroke.extraThick` | `Shape/Stroke/Weight/Extra-Thick` | `4dp` | No Material role | preview_only | Internal only. |
+| `WooTheme.stroke.none` | `Shape/Stroke/Weight/None` | `0dp` | No Material role | production | Public zero-stroke token. |
+| `WooTheme.stroke.extraThin` | `Shape/Stroke/Weight/Extra-Thin` | `0.5dp` | No Material role | production | Public stroke token; verify fractional rendering in consuming components. |
+| `WooTheme.stroke.thin` | `Shape/Stroke/Weight/Thin` | `0.75dp` | No Material role | production | Public stroke token; verify fractional rendering in consuming components. |
+| `WooTheme.stroke.regular` | `Shape/Stroke/Weight/Regular` | `1dp` | No Material role | production | Public stroke token. |
+| `WooTheme.stroke.medium` | `Shape/Stroke/Weight/Medium` | `1.5dp` | No Material role | production | Public stroke token; verify fractional rendering in consuming components. |
+| `WooTheme.stroke.mediumIncreased` | `Shape/Stroke/Weight/Medium-Increased` | `2dp` | No Material role | production | Public stroke token. |
+| `WooTheme.stroke.thick` | `Shape/Stroke/Weight/Thick` | `3dp` | No Material role | production | Public stroke token. |
+| `WooTheme.stroke.extraThick` | `Shape/Stroke/Weight/Extra-Thick` | `4dp` | No Material role | production | Public stroke token. |
 
 ## Unresolved Groups
 
