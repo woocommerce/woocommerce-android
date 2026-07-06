@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -36,7 +35,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingRe
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderFulfillmentsResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsResponsePayload
@@ -691,33 +689,6 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderFulfillments(
-        site: SiteModel,
-        orderId: Long
-    ): FetchOrderFulfillmentsResponsePayload {
-        val url = WOOCOMMERCE.orders.id(orderId).fulfillments.pathV3
-
-        val response = wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            clazz = Array<OrderFulfillmentApiResponse>::class.java
-        )
-
-        return when (response) {
-            is WPAPIResponse.Success -> {
-                val fulfillments = response.data?.map {
-                    orderFulfillmentResponseToModel(it, site.localId(), orderId)
-                }.orEmpty()
-                FetchOrderFulfillmentsResponsePayload(site, orderId, fulfillments)
-            }
-
-            is WPAPIResponse.Error -> {
-                val orderError = wpAPINetworkErrorToOrderError(response.error)
-                FetchOrderFulfillmentsResponsePayload(orderError, site, orderId)
-            }
-        }
-    }
-
     /**
      * Posts a new Order Shipment Tracking record to the API for an order.
      *
@@ -1210,31 +1181,6 @@ class OrderRestClient @Inject constructor(
         )
     }
 
-    private fun orderFulfillmentResponseToModel(
-        response: OrderFulfillmentApiResponse,
-        siteId: LocalId,
-        orderId: Long
-    ): WCOrderFulfillmentModel {
-        val metaData = response.metaData
-            ?.takeIf { element -> element.isJsonArray }
-            ?.asJsonArray
-            ?.mapNotNull { metaElement -> WCMetaData.fromJson(metaElement) }
-            .orEmpty()
-
-        return WCOrderFulfillmentModel(
-            localSiteId = siteId,
-            orderId = RemoteId(orderId),
-            fulfillmentId = response.id ?: 0L,
-            status = response.status,
-            isFulfilled = response.isFulfilled ?: false,
-            dateUpdated = response.dateUpdated,
-            dateFulfilled = metaData.firstOrNull { it.key == DATE_FULFILLED_META_KEY }?.valueAsString,
-            trackingNumber = metaData.firstOrNull { it.key == TRACKING_NUMBER_META_KEY }?.valueAsString,
-            shipmentProvider = metaData.firstOrNull { it.key == SHIPMENT_PROVIDER_META_KEY }?.valueAsString,
-            trackingUrl = metaData.firstOrNull { it.key == TRACKING_URL_META_KEY }?.valueAsString
-        )
-    }
-
     private fun convertDateToUTCString(date: String?): String =
         date?.let { DateUtils.formatGmtAsUtcDateString(it) } ?: "" // Store the date in UTC format
 
@@ -1305,11 +1251,6 @@ class OrderRestClient @Inject constructor(
             "tracking_number",
             "tracking_provider"
         ).joinToString(separator = ",")
-
-        private const val DATE_FULFILLED_META_KEY = "_date_fulfilled"
-        private const val TRACKING_NUMBER_META_KEY = "_tracking_number"
-        private const val SHIPMENT_PROVIDER_META_KEY = "_shipment_provider"
-        private const val TRACKING_URL_META_KEY = "_tracking_url"
 
         private const val BATCH_UPDATE_LIMIT = 100
     }

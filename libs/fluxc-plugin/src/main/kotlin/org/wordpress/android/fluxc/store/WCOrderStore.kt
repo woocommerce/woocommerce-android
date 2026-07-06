@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -35,7 +34,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.O
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderUpdatePaymentDetails
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
-import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -72,7 +70,6 @@ class WCOrderStore @Inject internal constructor(
     private val ordersDaoDecorator: OrdersDaoDecorator,
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
-    private val orderFulfillmentDao: OrderFulfillmentDao,
     private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
     private val orderShipmentTrackingDao: OrderShipmentTrackingDao,
     private val orderStatusDao: OrderStatusDao,
@@ -214,17 +211,6 @@ class WCOrderStore @Inject internal constructor(
         var site: SiteModel,
         var orderId: Long,
         var trackings: List<WCOrderShipmentTrackingModel> = emptyList()
-    ) : Payload<OrderError>() {
-        constructor(error: OrderError, site: SiteModel, orderId: Long) :
-            this(site, orderId) {
-            this.error = error
-        }
-    }
-
-    class FetchOrderFulfillmentsResponsePayload(
-        var site: SiteModel,
-        var orderId: Long,
-        var fulfillments: List<WCOrderFulfillmentModel> = emptyList()
     ) : Payload<OrderError>() {
         constructor(error: OrderError, site: SiteModel, orderId: Long) :
             this(site, orderId) {
@@ -504,9 +490,6 @@ class WCOrderStore @Inject internal constructor(
      */
     suspend fun getShipmentTrackingsForOrder(site: SiteModel, orderId: Long): List<WCOrderShipmentTrackingModel> =
         orderShipmentTrackingDao.getShipmentTrackings(site.localId(), RemoteId(orderId))
-
-    suspend fun getOrderFulfillmentsForOrder(site: SiteModel, orderId: Long): List<WCOrderFulfillmentModel> =
-        orderFulfillmentDao.getOrderFulfillments(site.localId(), RemoteId(orderId))
 
     suspend fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
         orderShipmentTrackingDao.getShipmentTrackingByNumber(site.localId(), RemoteId(orderId), trackingNumber)
@@ -849,22 +832,6 @@ class WCOrderStore @Inject internal constructor(
 
                 // Save new shipment trackings to the database
                 result.trackings.forEach { orderShipmentTrackingDao.upsertShipmentTracking(it) }
-                OnOrderChanged()
-            }
-        }
-    }
-
-    suspend fun fetchOrderFulfillments(orderId: Long, site: SiteModel): OnOrderChanged {
-        return coroutineEngine.withDefaultContext(API, this, "fetchOrderFulfillments") {
-            val result = wcOrderRestClient.fetchOrderFulfillments(site, orderId)
-            return@withDefaultContext if (result.isError) {
-                OnOrderChanged(orderError = result.error)
-            } else {
-                orderFulfillmentDao.replaceAll(
-                    siteId = result.site.localId(),
-                    orderId = RemoteId(result.orderId),
-                    fulfillments = result.fulfillments
-                )
                 OnOrderChanged()
             }
         }

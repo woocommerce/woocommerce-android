@@ -1265,4 +1265,5 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
 
 @DeleteTable(tableName = "Bookings")
 @DeleteTable(tableName = "BookingResources")
+@DeleteTable(tableName = "OrderFulfillmentEntity")
 internal class AutoMigration89to90 : AutoMigrationSpec

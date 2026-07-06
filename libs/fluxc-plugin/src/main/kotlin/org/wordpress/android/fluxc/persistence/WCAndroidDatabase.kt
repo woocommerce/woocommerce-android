@@ -8,7 +8,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
-import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -49,7 +48,6 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
-import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -185,7 +183,6 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCProductSettingsModel::class,
         WCCustomerModel::class,
         WCLocationModel::class,
-        WCOrderFulfillmentModel::class,
         WCOrderShipmentProviderModel::class,
         WCOrderShipmentTrackingModel::class,
         WCUserModel::class,
@@ -302,7 +299,6 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
     internal abstract val locationsDao: LocationsDao
-    internal abstract val orderFulfillmentDao: OrderFulfillmentDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val orderShipmentTrackingDao: OrderShipmentTrackingDao
     internal abstract val customerDao: CustomerDao

@@ -53,29 +53,10 @@ data class Order(
     val giftCardDiscountedAmount: BigDecimal?,
     val shippingTax: BigDecimal,
     val salesChannel: SalesChannel,
-    val fulfillmentStatus: FulfillmentStatus = FulfillmentStatus.NO_FULFILLMENTS,
 ) : Parcelable {
     enum class SalesChannel {
         POS,
         NON_POS
-    }
-
-    enum class FulfillmentStatus {
-        FULFILLED,
-        PARTIALLY_FULFILLED,
-        UNFULFILLED,
-        NO_FULFILLMENTS,
-        UNKNOWN;
-
-        companion object {
-            fun fromApiValue(value: String?): FulfillmentStatus = when (value) {
-                "fulfilled" -> FULFILLED
-                "partially_fulfilled" -> PARTIALLY_FULFILLED
-                "unfulfilled" -> UNFULFILLED
-                null -> NO_FULFILLMENTS
-                else -> UNKNOWN
-            }
-        }
     }
 
     @IgnoredOnParcel
@@ -414,7 +395,6 @@ data class Order(
                 giftCardDiscountedAmount = null,
                 shippingTax = BigDecimal(0),
                 salesChannel = SalesChannel.NON_POS,
-                fulfillmentStatus = FulfillmentStatus.NO_FULFILLMENTS
             )
         }
 

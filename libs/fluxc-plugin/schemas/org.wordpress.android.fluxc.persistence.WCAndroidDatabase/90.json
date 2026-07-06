@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 90,
-    "identityHash": "8e14d415eb055a4cb90e55141a014d97",
+    "identityHash": "599325c8dc42bfca3bcc562f10cc531a",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3356,74 +3356,6 @@
         }
       },
       {
-        "tableName": "OrderFulfillmentEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `fulfillmentId` INTEGER NOT NULL, `status` TEXT, `isFulfilled` INTEGER NOT NULL, `dateUpdated` TEXT, `dateFulfilled` TEXT, `trackingNumber` TEXT, `shipmentProvider` TEXT, `trackingUrl` TEXT, PRIMARY KEY(`localSiteId`, `orderId`, `fulfillmentId`))",
-        "fields": [
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "orderId",
-            "columnName": "orderId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fulfillmentId",
-            "columnName": "fulfillmentId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "isFulfilled",
-            "columnName": "isFulfilled",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateUpdated",
-            "columnName": "dateUpdated",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "dateFulfilled",
-            "columnName": "dateFulfilled",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "trackingNumber",
-            "columnName": "trackingNumber",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "shipmentProvider",
-            "columnName": "shipmentProvider",
-            "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "trackingUrl",
-            "columnName": "trackingUrl",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "localSiteId",
-            "orderId",
-            "fulfillmentId"
-          ]
-        }
-      },
-      {
         "tableName": "OrderShipmentProviderEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `country` TEXT NOT NULL, `carrierName` TEXT NOT NULL, `carrierLink` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `carrierName`, `country`))",
         "fields": [
@@ -4548,7 +4480,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8e14d415eb055a4cb90e55141a014d97')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '599325c8dc42bfca3bcc562f10cc531a')"
     ]
   }
 }

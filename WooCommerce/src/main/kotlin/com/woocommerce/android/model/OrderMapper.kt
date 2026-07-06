@@ -6,7 +6,6 @@ import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
-import org.wordpress.android.fluxc.model.metadata.WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS
 import org.wordpress.android.fluxc.model.metadata.get
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
@@ -76,7 +75,6 @@ class OrderMapper @Inject constructor(
             } else {
                 Order.SalesChannel.NON_POS
             },
-            fulfillmentStatus = Order.FulfillmentStatus.fromApiValue(metaDataList.getOrNull(FULFILLMENT_STATUS)),
         )
     }
 
