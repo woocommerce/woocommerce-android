@@ -39,6 +39,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -186,7 +187,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 selectedSite = selectedSite,
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
-                productListRepository = mock(),
+                productListRepository = mock {
+                    on { getProductList(any(), any(), anyOrNull()) } doReturn emptyList()
+                },
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = mock(),

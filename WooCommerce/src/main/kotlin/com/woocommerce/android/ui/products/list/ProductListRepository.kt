@@ -20,7 +20,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -206,20 +205,18 @@ class ProductListRepository @Inject constructor(
     /**
      * Returns all products for the current site that are in the database
      */
-    fun getProductList(
+    suspend fun getProductList(
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long> = emptyList(),
         sortType: WCProductStore.ProductSorting? = null
     ): List<Product> {
         return if (selectedSite.exists()) {
-            val wcProducts = runBlocking {
-                productStore.getProducts(
-                    selectedSite.get(),
-                    filterOptions = productFilterOptions,
-                    sortType = sortType ?: productSortingChoice,
-                    excludedProductIds = excludedProductIds
-                )
-            }
+            val wcProducts = productStore.getProducts(
+                selectedSite.get(),
+                filterOptions = productFilterOptions,
+                sortType = sortType ?: productSortingChoice,
+                excludedProductIds = excludedProductIds
+            )
             wcProducts.map { it.toAppModel() }
         } else {
             WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")
