@@ -407,7 +407,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * as long as no customer filter is active.
      */
     @Test
-    fun `Display guest orders empty view when search query matches the guest label`() = testBlocking {
+    fun `given search query matches the guest label, when there are no results, then show guest empty view`() = testBlocking {
         whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
         viewModel.isSearching = true
         viewModel.searchQuery = " guest "
@@ -428,7 +428,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display regular search empty view for guest label search when a customer filter is active`() = testBlocking {
+    fun `given a customer filter is active, when guest label search has no results, then show regular search empty view`() = testBlocking {
         whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
         whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
             WCOrderListDescriptor(site = mock(), customerId = 123L)
@@ -453,7 +453,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Search for guest orders when the guest orders empty view button is clicked`() = testBlocking {
+    fun `when the guest orders empty view button is clicked, then search for guest orders`() = testBlocking {
         viewModel.searchQuery = "Guest"
 
         viewModel.onSearchGuestOrdersClicked()
