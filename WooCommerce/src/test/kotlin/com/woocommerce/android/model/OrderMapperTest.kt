@@ -10,6 +10,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import java.math.BigDecimal
 import java.util.Date
 
 class OrderMapperTest {
@@ -188,9 +189,37 @@ class OrderMapperTest {
         assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
     }
 
+    @Test
+    fun `when order has gift cards json, then maps them to gift card summaries`() = runTest {
+        val orderEntity = createTestOrderEntity(
+            giftCards = """[{"id":4,"code":"NZR8-BMP8-XJZ2-ZKS9","amount":18}]"""
+        )
+
+        val result = orderMapper.toAppModel(orderEntity)
+
+        assertThat(result.giftCards).hasSize(1)
+        assertThat(result.giftCards.first().code).isEqualTo("NZR8-BMP8-XJZ2-ZKS9")
+        assertThat(result.giftCards.first().used).isEqualByComparingTo(BigDecimal(18))
+    }
+
+    @Test
+    fun `when order gift cards json is blank, then gift cards is empty`() = runTest {
+        val result = orderMapper.toAppModel(createTestOrderEntity(giftCards = ""))
+
+        assertThat(result.giftCards).isEmpty()
+    }
+
+    @Test
+    fun `when order gift cards json is the null literal, then gift cards is empty`() = runTest {
+        val result = orderMapper.toAppModel(createTestOrderEntity(giftCards = "null"))
+
+        assertThat(result.giftCards).isEmpty()
+    }
+
     private fun createTestOrderEntity(
         createdVia: String = "",
         metaData: List<WCMetaData> = emptyList(),
+        giftCards: String = "",
     ): OrderEntity {
         return OrderEntity(
             localSiteId = localSiteId,
@@ -203,6 +232,7 @@ class OrderMapperTest {
             total = "100.00",
             createdVia = createdVia,
             metaData = metaData,
+            giftCards = giftCards,
         )
     }
 }
