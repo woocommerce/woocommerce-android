@@ -78,12 +78,14 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun registerPushTokenInWpComSystem(token: String) {
+    suspend fun registerPushTokenInWpComSystem(
+        token: String
+    ): WpComPushNotificationStore.RegisterDeviceResponsePayload {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        wpComPushNotificationStore.registerDevice(
+        return wpComPushNotificationStore.registerDevice(
             token,
             WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
         )
@@ -163,13 +165,7 @@ class PushNotificationRepository @Inject constructor(
                 siteId = siteId,
                 errorDescription = error?.message,
                 errorType = error?.type?.let { it::class.simpleName },
-                errorCode = when (val type = error?.type) {
-                    is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
-                    WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
-                        WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
-
-                    null -> null
-                }
+                errorCode = error.toErrorCode()
             )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
@@ -179,6 +175,50 @@ class PushNotificationRepository @Inject constructor(
             )
         }
     }
+
+    suspend fun enableWpComNotificationsForSites(siteIds: Set<Long>): Result<Unit> {
+        if (siteIds.isEmpty()) return Result.success(Unit)
+
+        val settings = siteIds.map { siteId ->
+            SiteNotificationSetting(
+                siteId = siteId,
+                newCommentEnabled = true,
+                storeOrderEnabled = true
+            )
+        }
+        val result = wpComPushNotificationStore.updateNotificationSettingsFor(settings)
+        if (result.isFailure) {
+            val error = result.exceptionOrNull() as? WpComPushNotificationStore.NotificationSettingsUpdateError
+            WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to enable WPCom notifications for sites $siteIds")
+            siteIds.forEach { siteId ->
+                notificationAnalyticsTracker.trackError(
+                    stat = AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_ERROR,
+                    siteId = siteId,
+                    errorDescription = error?.message,
+                    errorType = error?.type?.let { it::class.simpleName },
+                    errorCode = error.toErrorCode()
+                )
+            }
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications enabled for sites $siteIds")
+            siteIds.forEach { siteId ->
+                notificationAnalyticsTracker.track(
+                    stat = AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS,
+                    siteId = siteId
+                )
+            }
+        }
+        return result
+    }
+
+    private fun WpComPushNotificationStore.NotificationSettingsUpdateError?.toErrorCode(): String? =
+        when (val type = this?.type) {
+            is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
+            WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
+                WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
+
+            null -> null
+        }
 
     private suspend fun savePushTokenForSite(siteId: Long, registration: WooPushRegistrationData) {
         pushNotificationsDataStore.edit { preferences ->
@@ -246,14 +286,33 @@ class PushNotificationRepository @Inject constructor(
         }
     }
 
-    suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
-        val preferences = pushNotificationsDataStore.data.first()
-        return preferences.asMap().keys
-            .mapNotNull { key ->
-                key.name.removePrefix(PUSH_TOKEN_KEY_PREFIX).toLongOrNull()
+    suspend fun getWooPushRegisteredSiteIds(): Set<Long> =
+        pushNotificationsDataStore.data.first().registeredSiteIds()
+
+    suspend fun clearWooPushRegistrationForStaleToken(siteId: Long, currentToken: String) {
+        if (currentToken.isEmpty()) return
+
+        var cleared = false
+        pushNotificationsDataStore.edit { preferences ->
+            val isRegistered = preferences[getPushTokenIdKeyForSite(siteId)].isNotNullOrEmpty()
+            if (isRegistered && preferences[getPushTokenValueKeyForSite(siteId)] != currentToken) {
+                preferences.clearPushRegistration(siteId)
+                cleared = true
             }
-            .toSet()
+        }
+        if (cleared) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Cleared stale Woo Core push registration for site $siteId")
+        }
     }
+
+    private fun Preferences.registeredSiteIds(): Set<Long> = asMap().keys
+        .mapNotNull { key ->
+            key.name
+                .takeIf { it.startsWith(PUSH_TOKEN_KEY_PREFIX) && !it.startsWith(PUSH_TOKEN_VALUE_KEY_PREFIX) }
+                ?.removePrefix(PUSH_TOKEN_KEY_PREFIX)
+                ?.toLongOrNull()
+        }
+        .toSet()
 
     suspend fun unregisterDeviceFromPushNotifications() {
         coroutineScope {
@@ -308,6 +367,18 @@ class PushNotificationRepository @Inject constructor(
             WooLog.d(WooLog.T.NOTIFICATIONS, "Woo Core push token deleted for site ${site.siteId}")
         }
         return Result.success(Unit)
+    }
+
+    suspend fun unregisterWooPushRegisteredSites(siteIds: Set<Long>) {
+        if (siteIds.isEmpty()) return
+
+        val sites = withContext(coroutineDispatchers.io) {
+            wooCommerceStore.getWooCommerceSites()
+        }.filter { it.siteId in siteIds }
+
+        coroutineScope {
+            sites.map { site -> async { unregisterWooPushTokenForSite(site) } }.awaitAll()
+        }
     }
 
     private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {

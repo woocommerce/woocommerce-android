@@ -610,6 +610,166 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given stored token differs from current, when clearing stale registration, then removes site metadata`() =
+        testBlocking {
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("old-token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "new-token")
+
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given stored token matches current, when clearing stale registration, then keeps site metadata`() =
+        testBlocking {
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn("token-id-1")
+            whenever(mutablePreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "token")
+
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_$SITE_ID"))
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+        }
+
+    @Test
+    fun `given site is not registered, when clearing stale registration, then keeps the datastore untouched`() =
+        testBlocking {
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(mutablePreferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(null)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "token")
+
+            verify(mutablePreferences, never()).remove(stringPreferencesKey("push_token_$SITE_ID"))
+        }
+
+    @Test
+    fun `given empty current token, when clearing stale registration, then does not touch the datastore`() =
+        testBlocking {
+            sut.clearWooPushRegistrationForStaleToken(SITE_ID, currentToken = "")
+
+            verify(pushNotificationsDataStore, never()).updateData(any())
+        }
+
+    @Test
+    fun `given settings update succeeds, when enabling wpcom notifications, then tracks success for each site`() =
+        testBlocking {
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
+                .thenReturn(Result.success(Unit))
+
+            val result = sut.enableWpComNotificationsForSites(setOf(123L, 456L))
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
+                listOf(
+                    SiteNotificationSetting(siteId = 123L, newCommentEnabled = true, storeOrderEnabled = true),
+                    SiteNotificationSetting(siteId = 456L, newCommentEnabled = true, storeOrderEnabled = true)
+                )
+            )
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS),
+                siteId = eq(123L)
+            )
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_SUCCESS),
+                siteId = eq(456L)
+            )
+        }
+
+    @Test
+    fun `given settings update fails with api code, when enabling wpcom notifications, then tracks error code`() =
+        testBlocking {
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(
+                Result.failure(
+                    WpComPushNotificationStore.NotificationSettingsUpdateError(
+                        type = WpComPushNotificationStore.NotificationSettingErrorType.ApiError(
+                            apiErrorMessage = "forbidden",
+                            apiErrorCode = "rest_forbidden"
+                        )
+                    )
+                )
+            )
+
+            val result = sut.enableWpComNotificationsForSites(setOf(SITE_ID))
+
+            assertThat(result.isFailure).isTrue()
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WPCOM_DEVICE_ENABLE_PUSH_NOTIFICATIONS_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = anyOrNull(),
+                errorCode = eq("rest_forbidden")
+            )
+        }
+
+    @Test
+    fun `given empty site set, when enabling wpcom notifications, then does not call the store`() =
+        testBlocking {
+            val result = sut.enableWpComNotificationsForSites(emptySet())
+
+            assertThat(result.isSuccess).isTrue()
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+        }
+
+    @Test
+    fun `given stored tokens, when unregistering selected woo sites, then deletes tokens only for those sites`() =
+        testBlocking {
+            val site1 = mock<SiteModel> { on { siteId } doReturn 123L }
+            val site2 = mock<SiteModel> { on { siteId } doReturn 456L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site1, site2))
+
+            whenever(preferences[stringPreferencesKey("push_token_123")]).thenReturn("token-id-1")
+            whenever(preferences[stringPreferencesKey("push_token_value_123")]).thenReturn("token-1")
+            whenever(preferences[stringPreferencesKey("push_locale_123")]).thenReturn("en_US")
+
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.unregisterWooPushRegisteredSites(setOf(123L))
+
+            verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(wooPushNotificationsStore, never()).deletePushToken(eq(site2), any())
+        }
+
+    @Test
+    fun `given empty site set, when unregistering woo sites, then does not load sites`() =
+        testBlocking {
+            sut.unregisterWooPushRegisteredSites(emptySet())
+
+            verify(wooCommerceStore, never()).getWooCommerceSites()
+        }
+
+    @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
