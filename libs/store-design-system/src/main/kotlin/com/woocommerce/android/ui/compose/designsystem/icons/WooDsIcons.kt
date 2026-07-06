@@ -121,7 +121,6 @@ val WooDsIcons.Light.Wallet: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_wallet_24dp)
 
-
 val WooDsIcons.Regular.AngleDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_angle_down_24dp)
@@ -413,7 +412,6 @@ val WooDsIcons.Regular.Wallet: ImageVector
 val WooDsIcons.Regular.Xmark: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_xmark_24dp)
-
 
 val WooDsIcons.Solid.AngleDown: ImageVector
     @Composable
