@@ -35,7 +35,7 @@ public class AccountModel extends Payload<BaseNetworkError> {
     private String mWebAddress; // WPCom rest API: user_URL
     private boolean mTracksOptOut;
     // WPCom rest API: woomobile_crash_reporting_opt_out. Null means the user never made a persisted choice.
-    private Boolean mCrashReportingOptOut;
+    @Nullable private Boolean mCrashReportingOptOut;
     private boolean mUsernameCanBeChanged;
 
     public AccountModel() {
