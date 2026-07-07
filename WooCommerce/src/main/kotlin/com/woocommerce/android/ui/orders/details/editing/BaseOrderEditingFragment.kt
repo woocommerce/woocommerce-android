@@ -95,11 +95,20 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
+                is OrderEditingViewModel.OrderLoaded -> {
+                    onOrderLoaded()
+                }
             }
         }
 
         sharedViewModel.start()
     }
+
+    /**
+     * Called once the shared view model has loaded the order. Descendants that read
+     * [OrderEditingViewModel.order] should do so from here instead of [onViewCreated].
+     */
+    protected open fun onOrderLoaded() {}
 
     @CallSuper
     fun onMenuItemSelected(item: MenuItem): Boolean {

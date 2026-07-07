@@ -20,7 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -51,8 +50,11 @@ class OrderEditingViewModel @Inject constructor(
     lateinit var order: Order
     private var orderId: Long = -1L
 
+    val isOrderLoaded
+        get() = ::order.isInitialized
+
     fun start() {
-        runBlocking {
+        launch {
             val orderId = if (orderId == -1L) {
                 navArgs.orderId
             } else {
@@ -61,6 +63,7 @@ class OrderEditingViewModel @Inject constructor(
             order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
                 "Order $orderId not found in the database."
             }
+            triggerEvent(OrderLoaded)
         }
     }
 
@@ -166,6 +169,7 @@ class OrderEditingViewModel @Inject constructor(
         val replicateBothAddressesToggleActivated: Boolean? = null
     ) : Parcelable
 
+    object OrderLoaded : MultiLiveEvent.Event()
     object OrderEdited : MultiLiveEvent.Event()
     data class OrderEditFailed(@StringRes val message: Int) : MultiLiveEvent.Event()
 }

@@ -20,26 +20,37 @@ class CustomerOrderNoteEditingFragment :
     private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     private val binding get() = _binding!!
 
+    private var pendingInitialNoteFill = false
+
     override val analyticsValue: String = AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
+        pendingInitialNoteFill = savedInstanceState == null
+
+        super.onViewCreated(view, savedInstanceState)
 
         setupToolbar()
         onPrepareMenu()
 
         if (savedInstanceState == null) {
-            binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
             binding.customerOrderNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
         }
 
         binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
+    }
+
+    override fun onOrderLoaded() {
+        if (pendingInitialNoteFill) {
+            pendingInitialNoteFill = false
+            binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
+        } else {
+            updateDoneMenuItem()
+        }
     }
 
     private fun setupToolbar() {
@@ -83,7 +94,8 @@ class CustomerOrderNoteEditingFragment :
         }
     }
 
-    override fun hasChanges() = getCustomerNote() != sharedViewModel.order.customerNote
+    override fun hasChanges() =
+        sharedViewModel.isOrderLoaded && getCustomerNote() != sharedViewModel.order.customerNote
 
     override fun saveChanges() = sharedViewModel.updateCustomerOrderNote(getCustomerNote())
 

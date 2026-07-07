@@ -46,6 +46,22 @@ class OrderEditingViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when started, then order is loaded and OrderLoaded event is emitted`() =
+        testBlocking {
+            var orderLoadedEmitted = false
+
+            sut.start()
+
+            observeEvents { event ->
+                if (event is OrderEditingViewModel.OrderLoaded) orderLoadedEmitted = true
+            }
+
+            assertThat(sut.isOrderLoaded).isTrue
+            assertThat(sut.order).isEqualTo(testOrder)
+            assertThat(orderLoadedEmitted).isTrue
+        }
+
+    @Test
     fun `should replicate billing to shipping when toggle is activated`() =
         testBlocking {
             orderEditingRepository.stub {
