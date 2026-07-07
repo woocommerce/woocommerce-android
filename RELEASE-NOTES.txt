@@ -5,6 +5,8 @@
 25.2
 -----
 - [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
+- [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
+- [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
 - [*] Refunding an order paid with a gift card is now blocked in the app with a prompt to refund from your store admin, so the gift-card balance is restored correctly [https://github.com/woocommerce/woocommerce-android/pull/16169]
 - [*] Fixed duplicated products reusing the original product slug [https://github.com/woocommerce/woocommerce-android/pull/16142]
 - [*] Fixed account-mismatch login retry requiring merchants to re-enter their store URL [https://github.com/woocommerce/woocommerce-android/pull/16162]

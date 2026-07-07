@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader
 
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -24,13 +22,9 @@ import java.util.Date
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
-    private val testCiabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.InPersonPayments) } doReturn true
-    }
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         orderDetailRepository = repository,
-        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker,
-        ciabSiteGateKeeper = testCiabSiteGateKeeper
+        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
@@ -348,20 +342,6 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(isCollectable).isTrue()
-        }
-
-    @Test
-    fun `given WooPayments is not supported by CIAB, when check order is collectable, then returns false`() =
-        testBlocking {
-            // GIVEN
-            whenever(testCiabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)) doReturn false
-            val order = getOrder()
-
-            // WHEN
-            val isCollectable = checker.isCollectable(order)
-
-            // THEN
-            assertThat(isCollectable).isFalse()
         }
 
     private fun getOrder(

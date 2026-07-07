@@ -64,9 +64,6 @@
     <string name="this_month">This Month</string>
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
-    <!-- Booking note discard changes dialog -->
-    <string name="booking_note_discard_changes_message">Are you sure you want to discard these changes?</string>
-    <string name="booking_note_discard_changes_discard">Discard changes</string>
     <string name="products">Products</string>
     <string name="point_of_sale">Point of Sale</string>
     <string name="custom_amounts">Custom Amounts</string>
@@ -2311,6 +2308,8 @@
 
     <string name="orders_empty_message_for_filtered_orders">We\'re sorry, we couldn\'t find any orders</string>
     <string name="empty_message_with_search">We\'re sorry, we couldn\'t find results for \"%s\"</string>
+    <string name="empty_message_with_search_guest">Looking for orders placed by guest customers?</string>
+    <string name="empty_search_guest_orders_button">Show guest orders</string>
     <string name="empty_message_with_filters">We\'re sorry, no products match the selected filters"</string>
 
     <!--
@@ -2757,7 +2756,6 @@
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
-    <string name="product_type_bookable_service">Service</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -2775,8 +2773,6 @@
     <string name="product_type_grouped_desc">A collection of related products</string>
     <string name="product_type_external_title">External product</string>
     <string name="product_type_external_desc">Link a product to an external website</string>
-    <string name="product_type_bookable_service_title">Service</string>
-    <string name="product_type_bookable_service_desc">A service that customers can book online</string>
     <string name="product_type_confirm_dialog_title">Are you sure you want to change the product type?</string>
     <string name="product_type_confirm_dialog_message">Changing the product type will modify some of the product data</string>
     <string name="product_type_confirm_button">Yes, change</string>
@@ -3379,7 +3375,6 @@
     <string name="more_menu_button_ai_assistant_description">Ask about your store</string>
     <string name="ai_assistant_variation_card_id_title">Variation %1$d</string>
 
-    <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -4198,9 +4193,6 @@
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
-    <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
-    <string name="woopos_orders_details_booking_info_error">Booking info unavailable</string>
-    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · Jan 1, 2025, 12:00 AM - 1:00 AM</string>
     <string name="woopos_orders_details_refund_label_numbered">Refund #%1$d</string>
     <string name="woopos_orders_details_refund_view_details">View details</string>
     <string name="woopos_orders_details_refund_items_subtotal_one">Items subtotal (%d item)</string>
@@ -4646,124 +4638,6 @@
     <string name="media_library_title">WordPress Media Library</string>
     <string name="media_loading_failed">Media loading failed</string>
     <string name="no_network_message">There is no network available</string>
-
-    <!--
-    Bookings
-    -->
-    <string name="bookings_tab_title">Bookings</string>
-    <string name="bookings_fetch_error">Error fetching bookings</string>
-    <string name="bookings_resources_fetch_error">Error fetching team members</string>
-    <string name="bookings_tab_today">Today</string>
-    <string name="bookings_tab_upcoming">Upcoming</string>
-    <string name="bookings_tab_all">All</string>
-    <string name="bookings_search_hint">Search bookings</string>
-    <string name="bookings_search_with_filters_hint">Search filtered bookings</string>
-    <string name="bookings_sort_by_oldest_to_newest">Oldest to newest</string>
-    <string name="bookings_sort_by_newest_to_oldest">Newest to oldest</string>
-    <string name="bookings_sort_by_oldest_to_newest_short">Oldest</string>
-    <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
-    <string name="bookings_empty_state_title_default">No bookings found</string>
-    <string name="bookings_empty_state_title_today">No bookings today</string>
-    <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
-    <string name="bookings_empty_state_title_all">No bookings yet</string>
-    <string name="bookings_empty_state_description_all">Bookings will appear here once customers start scheduling your services or registering for events.</string>
-    <string name="bookings_empty_state_description_today_v2">Any bookings scheduled for today will appear here.</string>
-    <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
-    <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
-    <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
-    <string name="bookings_filtered_empty_state_description">Try adjusting or clearing your filters to see more results.</string>
-    <string name="bookings_empty_state_change_filters_button">Change filters</string>
-    <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
-    <string name="bookings_filters_default_title">Filters</string>
-    <string name="bookings_filters_enabled_title">Filters • %d</string>
-    <string name="bookings_filters_title_with_count">Filters (%s)</string>
-    <string name="bookings_filters_show_bookings">Show bookings</string>
-    <string name="bookings_filter_title_member">Team member</string>
-    <string name="bookings_filter_title_attendance_status">Attendance status</string>
-    <string name="bookings_filter_title_payment_status">Payment status</string>
-    <string name="bookings_filter_title_type">Booking type</string>
-    <string name="bookings_filter_customer">Customer</string>
-    <string name="bookings_filter_location">Location</string>
-    <string name="bookings_filter_title_date">Date &amp; time</string>
-    <string name="bookings_filter_title_service">Service</string>
-    <string name="bookings_filter_search_service">Search service</string>
-    <string name="bookings_filter_default">Any</string>
-    <string name="bookings_filter_type_service">Service</string>
-    <string name="bookings_filter_type_event">Event</string>
-    <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
-    <string name="bookings_filter_date_label">Date</string>
-    <string name="bookings_filter_time_label">Time</string>
-    <string name="bookings_filter_date_from">FROM</string>
-    <string name="bookings_filter_date_to">TO</string>
-    <string name="bookings_filter_time_picker_title">Select time</string>
-    <string name="bookings_filter_date_filter_value">Custom range</string>
-    <string name="booking_filter_date_time_swap_info">Your time selection was reordered to create a valid range</string>
-
-    <!-- Booking details view-->
-    <string name="booking_details_title">Booking #%s</string>
-    <string name="booking_details_section_header">BOOKING DETAILS</string>
-    <string name="booking_appointment_label_date">Date</string>
-    <string name="booking_appointment_label_time">Time</string>
-    <string name="booking_appointment_label_team_member">Team member</string>
-    <string name="booking_appointment_label_location">Location</string>
-    <string name="booking_appointment_label_duration">Duration</string>
-    <string name="booking_payment_status_unpaid">Unpaid</string>
-    <string name="booking_payment_status_paid">Paid</string>
-    <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
-    <string name="booking_payment_status_cancelled">Canceled</string>
-    <string name="booking_payment_status_in_cart">In Cart</string>
-    <string name="booking_payment_status_confirmed">Confirmed</string>
-    <string name="booking_payment_status_complete">Complete</string>
-    <string name="booking_payment_status_pay_on_site">Pay on site</string>
-    <string name="booking_payment_status_refunded">Refunded</string>
-    <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
-    <string name="booking_payment_status_failed">Failed</string>
-    <string name="booking_payment_status_authorized">Authorized</string>
-    <string name="booking_payment_status_authorization_voided">Authorization Voided</string>
-    <string name="booking_attendance_status_attended">Attended</string>
-    <string name="booking_attendance_status_unattended">Unattended</string>
-    <string name="booking_mark_as_attended">Mark as attended</string>
-    <string name="booking_mark_as_unattended">Mark as unattended</string>
-    <string name="booking_attendance_status_cancelled">Canceled</string>
-    <string name="booking_details_cancel_booking_button">Cancel booking</string>
-    <string name="booking_details_reschedule_button">Reschedule</string>
-    <string name="booking_reschedule_screen_title">Reschedule booking</string>
-    <string name="booking_reschedule_change_team_member">Change team member</string>
-    <string name="booking_customer_details_header">CUSTOMER</string>
-    <string name="booking_customer_label_name">Customer name</string>
-    <string name="booking_customer_label_email">Email</string>
-    <string name="booking_customer_label_phone">Phone</string>
-    <string name="booking_billing_address_label">Billing address</string>
-    <string name="booking_customer_note_label">Note</string>
-    <string name="booking_payment_header">PAYMENT</string>
-    <string name="booking_payment_label_service">Service</string>
-    <string name="booking_payment_mark_as_paid">Mark as paid</string>
-    <string name="booking_payment_view_order">View order</string>
-    <string name="booking_fetch_error">Error fetching booking</string>
-    <string name="booking_attendance_status_error">Error changing the attendance status</string>
-    <string name="booking_duration_minute">%1$d minute</string>
-    <string name="booking_duration_minutes">%1$d minutes</string>
-    <string name="booking_duration_hour">%1$d hour</string>
-    <string name="booking_duration_hours">%1$d hours</string>
-    <string name="booking_duration_day">%1$d day</string>
-    <string name="booking_duration_days">%1$d days</string>
-    <string name="booking_duration_second">%1$d second</string>
-    <string name="booking_duration_seconds">%1$d seconds</string>
-    <string name="booking_note_header">BOOKING NOTE</string>
-    <string name="booking_note_label_add_note">Add note</string>
-    <string name="booking_note_description_private">This is a private note. It’ll not be shared with the customer.</string>
-    <string name="booking_cancel_dialog_title_v2">Cancel booking?</string>
-    <string name="booking_cancel_dialog_message">%1$s will no longer be able to attend “%2$s” on %3$s at %4$s.</string>
-    <string name="booking_cancel_dialog_message_v2">%1$s can no longer attend “%2$s” on %3$s at %4$s.</string>
-    <string name="booking_cancel_dialog_keep">No, keep it</string>
-    <string name="booking_cancel_dialog_confirm">Yes, cancel it</string>
-    <string name="booking_note_screen_title">Booking note</string>
-    <string name="booking_note_screen_done">DONE</string>
-    <string name="booking_note_screen_update_error">Error saving booking note</string>
-    <string name="booking_cancel_error">Error canceling the booking</string>
-    <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
-    <string name="booking_not_selected">Booking not selected</string>
-    <string name="booking_overflow_refund">Issue refund</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
