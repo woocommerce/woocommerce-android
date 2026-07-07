@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -39,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
 
 @Composable
@@ -105,7 +106,7 @@ fun WooSearchField(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    imageVector = WooDsIcons.Regular.MagnifyingGlass,
+                    imageVector = WooIcons.Regular.MagnifyingGlass,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size18),
                     tint = iconColor,
@@ -115,6 +116,7 @@ fun WooSearchField(
                     value = value,
                     onValueChange = onValueChange,
                     modifier = Modifier
+                        .testTag(WooSearchFieldTestTags.INPUT)
                         .padding(start = WooTheme.spacing.space4)
                         .weight(1f),
                     enabled = enabled,
@@ -140,7 +142,7 @@ fun WooSearchField(
                 )
 
                 if (showClearButton) {
-                    Spacer(modifier = Modifier.width(WooTheme.spacing.space4 + WooTheme.iconSize.size16))
+                    Spacer(modifier = Modifier.width(SEARCH_ACTION_TOUCH_TARGET_SIZE))
                 }
             }
 
@@ -152,7 +154,9 @@ fun WooSearchField(
                     contentDescription = clearContentDescription.orEmpty(),
                     color = clearIconColor,
                     iconColor = fieldContainerColor,
-                    modifier = Modifier.align(Alignment.CenterEnd),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .testTag(WooSearchFieldTestTags.CLEAR_BUTTON),
                 )
             }
         }
@@ -197,7 +201,7 @@ private fun WooSearchClearButton(
             color = color,
         ) {
             Icon(
-                imageVector = WooDsIcons.Regular.Xmark,
+                imageVector = WooIcons.Regular.Xmark,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(SEARCH_CLEAR_ICON_PADDING)
@@ -206,6 +210,11 @@ private fun WooSearchClearButton(
             )
         }
     }
+}
+
+internal object WooSearchFieldTestTags {
+    const val INPUT = "WooSearchFieldInput"
+    const val CLEAR_BUTTON = "WooSearchFieldClearButton"
 }
 
 @Composable

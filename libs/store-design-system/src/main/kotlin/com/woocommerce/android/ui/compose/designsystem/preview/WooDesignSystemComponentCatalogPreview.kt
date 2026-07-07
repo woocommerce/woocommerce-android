@@ -360,13 +360,13 @@ private fun ProductionTopAppBarsCatalogLeaf() {
     CatalogSection("Top app bars") {
         WooTopAppBar(
             title = "Store settings",
-            navigationIcon = WooDsIcons.Regular.AngleLeft,
+            navigationIcon = WooIcons.Regular.AngleLeft,
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
             actions = listOf(
                 WooTopAppBarAction.Icon(
-                    imageVector = WooDsIcons.Regular.ArrowUpRight,
+                    imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 ),
@@ -385,7 +385,7 @@ private fun ProductionTopAppBarsCatalogLeaf() {
                     onClick = {},
                 ),
                 WooTopAppBarAction.Icon(
-                    imageVector = WooDsIcons.Regular.ArrowUpRight,
+                    imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 ),

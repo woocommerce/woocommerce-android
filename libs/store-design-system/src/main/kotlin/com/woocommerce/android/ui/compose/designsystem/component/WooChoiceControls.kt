@@ -56,7 +56,7 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooStroke
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleFull
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooCheckbox(
@@ -524,14 +524,14 @@ private fun FilterChipRows(
                 selected = trailingFilterSelected,
                 onClick = onTrailingFilterClick,
                 label = "Filter",
-                trailingIcon = { ChoiceControlPreviewIcon(WooDsIcons.Regular.AngleRight) },
+                trailingIcon = { ChoiceControlPreviewIcon(WooIcons.Regular.AngleRight) },
             )
             WooFilterChip(
                 selected = selectedFilterSelected,
                 onClick = onSelectedFilterClick,
                 label = "Selected",
                 leadingIcon = {
-                    ChoiceControlPreviewIcon(WooDsIcons.Solid.CircleFull)
+                    ChoiceControlPreviewIcon(WooIcons.Solid.CircleFull)
                 },
             )
         }
@@ -544,9 +544,9 @@ private fun FilterChipRows(
                 onClick = onFullFilterClick,
                 label = "Selected",
                 leadingIcon = {
-                    ChoiceControlPreviewIcon(WooDsIcons.Solid.CircleFull)
+                    ChoiceControlPreviewIcon(WooIcons.Solid.CircleFull)
                 },
-                trailingIcon = { ChoiceControlPreviewIcon(WooDsIcons.Regular.AngleRight) },
+                trailingIcon = { ChoiceControlPreviewIcon(WooIcons.Regular.AngleRight) },
             )
             WooFilterChip(selected = false, onClick = {}, label = "Disabled", enabled = false)
         }

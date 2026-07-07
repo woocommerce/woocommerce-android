@@ -37,7 +37,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -335,13 +335,13 @@ private fun WooTopAppBarDesignSystemPreview() {
     WooDesignSystemTheme {
         WooTopAppBar(
             title = "Store settings",
-            navigationIcon = WooDsIcons.Regular.AngleLeft,
+            navigationIcon = WooIcons.Regular.AngleLeft,
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
             actions = listOf(
                 WooTopAppBarAction.Icon(
-                    imageVector = WooDsIcons.Regular.ArrowUpRight,
+                    imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 ),
@@ -361,7 +361,7 @@ private fun WooTopAppBarLongTitlePreview() {
     WooDesignSystemTheme {
         WooTopAppBar(
             title = "A very long top app bar title that should truncate before actions",
-            navigationIcon = WooDsIcons.Regular.AngleLeft,
+            navigationIcon = WooIcons.Regular.AngleLeft,
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
@@ -371,7 +371,7 @@ private fun WooTopAppBarLongTitlePreview() {
                     onClick = {},
                 ),
                 WooTopAppBarAction.Icon(
-                    imageVector = WooDsIcons.Regular.ArrowUpRight,
+                    imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 ),
@@ -388,7 +388,7 @@ private fun WooTopAppBarLongTextActionPreview() {
         Column(modifier = Modifier.width(PREVIEW_PHONE_WIDTH)) {
             WooTopAppBar(
                 title = "Products",
-                navigationIcon = WooDsIcons.Regular.AngleLeft,
+                navigationIcon = WooIcons.Regular.AngleLeft,
                 navigationIconContentDescription = "Back",
                 onNavigationClick = {},
                 windowInsets = WindowInsets(0),
@@ -398,7 +398,7 @@ private fun WooTopAppBarLongTextActionPreview() {
                         onClick = {},
                     ),
                     WooTopAppBarAction.Icon(
-                        imageVector = WooDsIcons.Regular.ArrowUpRight,
+                        imageVector = WooIcons.Regular.ArrowUpRight,
                         contentDescription = "Open",
                         onClick = {},
                     ),
@@ -416,7 +416,7 @@ private fun WooTopAppBarRtlPreview() {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             WooTopAppBar(
                 title = "RTL title",
-                navigationIcon = WooDsIcons.Regular.AngleLeft,
+                navigationIcon = WooIcons.Regular.AngleLeft,
                 navigationIconContentDescription = "Back",
                 onNavigationClick = {},
                 windowInsets = WindowInsets(0),

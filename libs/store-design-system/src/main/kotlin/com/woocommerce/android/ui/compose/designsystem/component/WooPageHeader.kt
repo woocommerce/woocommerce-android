@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CommentQuestion
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooPageHeader(
@@ -91,12 +91,12 @@ internal fun WooPageHeaderDemo(
         modifier = modifier,
         actions = {
             WooOutlinedIconButton(
-                imageVector = WooDsIcons.Regular.ArrowUpRight,
+                imageVector = WooIcons.Regular.ArrowUpRight,
                 contentDescription = "Open",
                 onClick = {},
             )
             WooIconButton(
-                imageVector = WooDsIcons.Regular.CommentQuestion,
+                imageVector = WooIcons.Regular.CommentQuestion,
                 contentDescription = "Help",
                 onClick = {},
                 emphasis = WooIconButtonEmphasis.Primary,
@@ -114,12 +114,12 @@ private fun WooPageHeaderLongTitlePreview() {
             title = "A very long page header title that should truncate before the trailing actions",
             actions = {
                 WooOutlinedIconButton(
-                    imageVector = WooDsIcons.Regular.ArrowUpRight,
+                    imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 )
                 WooIconButton(
-                    imageVector = WooDsIcons.Regular.CommentQuestion,
+                    imageVector = WooIcons.Regular.CommentQuestion,
                     contentDescription = "Help",
                     onClick = {},
                     emphasis = WooIconButtonEmphasis.Primary,

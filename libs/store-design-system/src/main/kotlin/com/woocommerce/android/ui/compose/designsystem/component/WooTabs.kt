@@ -37,7 +37,7 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 import com.woocommerce.android.ui.compose.designsystem.icons.Box
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.List
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import kotlin.math.roundToInt
 
 @Composable
@@ -246,7 +246,7 @@ internal fun WooTabsDemo(
                 text = "Products",
                 icon = {
                     Icon(
-                        imageVector = WooDsIcons.Regular.Box,
+                        imageVector = WooIcons.Regular.Box,
                         contentDescription = null,
                     )
                 },
@@ -257,7 +257,7 @@ internal fun WooTabsDemo(
                 text = "Orders",
                 icon = {
                     Icon(
-                        imageVector = WooDsIcons.Regular.List,
+                        imageVector = WooIcons.Regular.List,
                         contentDescription = null,
                     )
                 },
@@ -268,7 +268,7 @@ internal fun WooTabsDemo(
                 text = "More",
                 icon = {
                     Icon(
-                        imageVector = WooDsIcons.Regular.CircleInfo,
+                        imageVector = WooIcons.Regular.CircleInfo,
                         contentDescription = null,
                     )
                 },
