@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
-import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
@@ -34,7 +33,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
@@ -121,7 +119,6 @@ class OrderDetailViewModel @Inject constructor(
     private val getWooShippingShipments: GetShipments,
     private val orderDetailsTransactionLauncher: OrderDetailsTransactionLauncher,
     private val getOrderSubscriptions: GetOrderSubscriptions,
-    private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     featureFlagRepository: FeatureFlagRepository,
@@ -174,9 +171,6 @@ class OrderDetailViewModel @Inject constructor(
     private val _shippingLabels = MutableLiveData<List<ShippingLabelModel>>()
     val shippingLabels: LiveData<List<ShippingLabelModel>> = _shippingLabels
 
-    private val _giftCards = MutableLiveData<List<GiftCardSummary>>()
-    val giftCards: LiveData<List<GiftCardSummary>> = _giftCards
-
     private val _subscriptions = MutableLiveData<List<Subscription>>()
     val subscriptions: LiveData<List<Subscription>> = _subscriptions
 
@@ -213,6 +207,7 @@ class OrderDetailViewModel @Inject constructor(
         }.asLiveData()
 
     private var isFetchingData = false
+    private var isGiftCardShownTracked = false
 
     private val productListObserver = Observer<List<OrderProduct>> { products ->
         launch {
@@ -281,6 +276,14 @@ class OrderDetailViewModel @Inject constructor(
         loadOrderNotes()
         displayProductAndShippingDetails()
         displayCustomAmounts()
+        trackGiftCardShownIfNeeded()
+    }
+
+    private suspend fun trackGiftCardShownIfNeeded() {
+        if (!isGiftCardShownTracked && awaitOrder().giftCards.isNotEmpty()) {
+            isGiftCardShownTracked = true
+            tracker.trackOrderDetailsGiftCardShown()
+        }
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -307,10 +310,7 @@ class OrderDetailViewModel @Inject constructor(
 
             if (hasOrder()) {
                 displayOrderDetails()
-                awaitAll(
-                    fetchOrderSubscriptionsAsync(),
-                    fetchGiftCardsAsync()
-                )
+                fetchOrderSubscriptionsAsync().await()
             }
 
             viewState = viewState.copy(
@@ -369,7 +369,20 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onIssueOrderRefundClicked() {
         viewModelScope.launch {
-            triggerEvent(IssueOrderRefund(remoteOrderId = awaitOrder().id))
+            val order = awaitOrder()
+            // In-app refunds can't restore gift-card credit, so block orders paid with a gift card
+            // and point the merchant to the store admin. Gift cards arrive with the order itself.
+            if (order.giftCards.isNotEmpty()) {
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowDialog(
+                        titleId = string.order_refunds_gift_card_unsupported_title,
+                        messageId = string.order_refunds_gift_card_unsupported_message,
+                        positiveButtonId = string.dialog_ok
+                    )
+                )
+            } else {
+                triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
+            }
         }
     }
 
@@ -385,14 +398,15 @@ class OrderDetailViewModel @Inject constructor(
 
     private fun handleEditClick() {
         launch {
-            tracker.trackEditButtonTapped(awaitOrder().feesLines.size, awaitOrder().shippingLines.size)
-            val firstGiftCard = giftCards.value?.firstOrNull()
+            val order = awaitOrder()
+            tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
+            val firstGiftCard = order.giftCards.firstOrNull()
             triggerEvent(
                 EditOrder(
-                    orderId = awaitOrder().id,
+                    orderId = order.id,
                     giftCard = firstGiftCard?.code,
                     appliedDiscount = firstGiftCard?.used,
-                    orderCurrency = awaitOrder().currency
+                    orderCurrency = order.currency
                 )
             )
         }
@@ -917,22 +931,6 @@ class OrderDetailViewModel @Inject constructor(
             }
         }
         orderDetailsTransactionLauncher.onSubscriptionsFetched()
-    }
-
-    private fun fetchGiftCardsAsync() = async {
-        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName]
-        if (plugin != null && plugin.isOperational) {
-            giftCardRepository.fetchGiftCardSummaryByOrderId(navArgs.orderId)
-                .takeIf { result -> result.isError.not() }
-                ?.let { result ->
-                    val giftCardSummaries = result.model ?: return@let
-                    _giftCards.value = giftCardSummaries
-                    if (giftCardSummaries.isNotEmpty()) {
-                        tracker.trackOrderDetailsGiftCardShown()
-                    }
-                }
-        }
-        orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
     private suspend fun loadWooShippingShipments(): ListInfo<ShipmentUIModel> {

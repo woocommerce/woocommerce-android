@@ -712,6 +712,12 @@ class OrderListFragment :
                         emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
 
+                    EmptyViewType.SEARCH_RESULTS_GUEST -> {
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery) {
+                            viewModel.onSearchGuestOrdersClicked()
+                        }
+                    }
+
                     EmptyViewType.ORDER_LIST -> {
                         communicationViewModel.notifyOrdersEmpty()
 

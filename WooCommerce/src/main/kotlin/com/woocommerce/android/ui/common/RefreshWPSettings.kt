@@ -15,7 +15,7 @@ class RefreshWPSettings @Inject constructor(
         }
     }
 
-    private fun canFetchWPSettings(): Boolean {
+    private suspend fun canFetchWPSettings(): Boolean {
         val roles = userEligibilityFetcher.getUser()?.roles ?: return true
         // /wp/v2/settings requires manage_options, which Shop Managers do not have.
         return UserRole.Administrator in roles || UserRole.Owner in roles
