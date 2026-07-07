@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.payments.taptopay
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
 import com.woocommerce.android.cardreader.connection.ReaderType
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
@@ -18,12 +16,10 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider,
     private val wooStore: WooCommerceStore,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker,
 ) {
     operator fun invoke() =
         when {
-            ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.InPersonPayments) -> Result.Hidden
             !systemVersionUtilsWrapper.isAtLeastR() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
@@ -44,7 +40,6 @@ class TapToPayAvailabilityStatus @Inject constructor(
 
     sealed class Result {
         object Available : Result()
-        object Hidden : Result()
         sealed class NotAvailable : Result() {
             object SystemVersionNotSupported : NotAvailable()
             object GooglePlayServicesNotAvailable : NotAvailable()

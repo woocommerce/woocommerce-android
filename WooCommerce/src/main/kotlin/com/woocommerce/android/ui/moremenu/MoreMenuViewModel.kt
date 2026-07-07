@@ -19,8 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
@@ -73,7 +71,6 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
 
@@ -124,7 +121,6 @@ class MoreMenuViewModel @Inject constructor(
             googleForWooState = buttonsStates[MoreMenuItemButton.Type.GoogleForWoo]!!,
             blazeState = buttonsStates[MoreMenuItemButton.Type.Blaze]!!,
             inboxState = buttonsStates[MoreMenuItemButton.Type.Inbox]!!,
-            paymentsState = buttonsStates[MoreMenuItemButton.Type.Payments]!!,
         )
     )
 
@@ -143,7 +139,6 @@ class MoreMenuViewModel @Inject constructor(
         googleForWooState: MoreMenuItemButton.State,
         blazeState: MoreMenuItemButton.State,
         inboxState: MoreMenuItemButton.State,
-        paymentsState: MoreMenuItemButton.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
@@ -153,7 +148,6 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
-                state = paymentsState
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_google,
@@ -471,9 +465,6 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.Payments) {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
-            },
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second
