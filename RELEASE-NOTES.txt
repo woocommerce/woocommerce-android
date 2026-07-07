@@ -4,7 +4,7 @@
 
 25.2
 -----
-- [*] Tapping the current bottom tab again now scrolls the screen back to the top as intended [PR URL]
+- [*] Tapping the current bottom tab again now scrolls the screen back to the top as intended [https://github.com/woocommerce/woocommerce-android/pull/16221]
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
 - [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
