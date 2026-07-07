@@ -104,7 +104,7 @@ private fun WooButton(
     leadingIcon: @Composable (() -> Unit)?,
 ) {
     val buttonSpec = size.toButtonSpec()
-    val buttonColors = style.toButtonColors(enabled)
+    val buttonColors = style.toButtonColors()
     val shape = RoundedCornerShape(buttonSpec.radius)
     val buttonModifier = modifier.heightIn(min = buttonSpec.visualHeight)
     val contentPadding = PaddingValues(horizontal = WooTheme.padding.padding5)
@@ -173,27 +173,27 @@ private fun WooButtonContent(
 }
 
 @Composable
-private fun WooButtonStyle.toButtonColors(enabled: Boolean): ButtonColors {
+private fun WooButtonStyle.toButtonColors(): ButtonColors {
     val colors = WooTheme.colors
     val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
     val disabledContentColor = colors.surface.onDefault.copy(alpha = DISABLED_CONTENT_ALPHA)
 
     return when (this) {
         WooButtonStyle.Filled -> ButtonDefaults.buttonColors(
-            containerColor = if (enabled) colors.primary else disabledStateLayerColor,
-            contentColor = if (enabled) colors.onPrimary else disabledContentColor,
+            containerColor = colors.primary,
+            contentColor = colors.onPrimary,
             disabledContainerColor = disabledStateLayerColor,
             disabledContentColor = disabledContentColor,
         )
         WooButtonStyle.FilledTonal -> ButtonDefaults.filledTonalButtonColors(
-            containerColor = if (enabled) colors.container.secondaryContainer else disabledStateLayerColor,
-            contentColor = if (enabled) colors.container.onSecondaryContainer else disabledContentColor,
+            containerColor = colors.container.secondaryContainer,
+            contentColor = colors.container.onSecondaryContainer,
             disabledContainerColor = disabledStateLayerColor,
             disabledContentColor = disabledContentColor,
         )
         WooButtonStyle.Outlined -> ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = if (enabled) colors.primary else disabledContentColor,
+            contentColor = colors.primary,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = disabledContentColor,
         )
