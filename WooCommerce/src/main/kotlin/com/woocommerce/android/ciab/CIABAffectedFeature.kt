@@ -7,6 +7,5 @@ enum class CIABAffectedFeature {
     BundleProducts,
     CompositeProducts,
     GiftCardEditing,
-    OrderStatusEditing,
     POS
 }
