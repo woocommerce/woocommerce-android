@@ -126,9 +126,6 @@ class MainSettingsPresenter @Inject constructor(
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
 
-    override val isPluginsSectionVisible: Boolean
-        get() = true
-
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {
             shouldShowEnablePushNotificationsUi().collect { shouldShowOption ->

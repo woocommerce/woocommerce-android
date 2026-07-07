@@ -31,7 +31,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainSettingsPresenterTest : BaseUnitTest() {
@@ -254,14 +253,6 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(true)
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(false)
-        }
-
-    @Test
-    fun `when checking plugins section visibility, then plugins section is visible`() =
-        testBlocking {
-            setup()
-
-            assertTrue(presenter.isPluginsSectionVisible)
         }
 
     @Test
