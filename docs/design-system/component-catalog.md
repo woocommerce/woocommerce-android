@@ -33,8 +33,8 @@ Production components should read approved foundation values through `WooTheme.*
 inside wrappers when Material 3 components or defaults require interop projection values.
 
 Production components must render correctly under the design-system root and must not rely on static
-fallback defaults such as `LightWooColors`. Non-migrated screens stay on the legacy root and should
-not consume production design-system components until explicitly migrated.
+hardcoded light fallback defaults. Non-migrated screens stay on the legacy root and should not
+consume production design-system components until explicitly migrated.
 
 Do not add additional thin wrappers beyond this subset unless a later design-system decision
 explicitly expands the catalog. This prevents the adapter from becoming an unlimited Material 3
@@ -48,9 +48,8 @@ Older Store Compose screens may use the project `LightDarkThemePreviews` annotat
 design-system foundations, components, preview catalog entries, and first-wave screen updates should
 use `@PreviewLightDark`.
 
-Design-system component previews should wrap content in `WooDesignSystemTheme`, not
-`WooThemeWithBackground`. Migrated screen previews should cover the design-system root in light and
-dark mode.
+Design-system component previews should wrap content in `WooDesignSystemTheme`, not the legacy Store
+theme root. Migrated screen previews should cover the design-system root in light and dark mode.
 
 Preview coverage is required for every component. Screenshot verification is required for first-wave
 screens and high-risk components, but not for every small primitive component.

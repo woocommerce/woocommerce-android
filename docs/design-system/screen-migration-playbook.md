@@ -119,16 +119,10 @@ Migrated first-wave screens use one design-system component tree. Do not create 
   migration gaps and must include an expiry/removal plan.
 - Out-of-scope child flows may remain legacy for this wave without an expiry plan.
 
-Before the final merge of the migration branch, run a controlled root-API rename:
-
-- Rename the current legacy `composeView` to `legacyComposeView`.
-- Rename the current `WooThemeWithBackground` to `LegacyWooThemeWithBackground`.
-- Rename the DS-specific builder to `composeView`.
-- Audit every remaining `composeView` call as intentionally migrated.
-- Move every non-migrated screen to `legacyComposeView`.
-
-Verify the boundary with strict `rg` audits. A legacy-compatible design-system foundation bridge is
-not required by this rollout path unless a future implementation explicitly chooses it.
+Before the final merge of the migration branch, follow the controlled root-API rename boundary and
+audit steps defined in [rollout-direction.md](rollout-direction.md). A legacy-compatible
+design-system foundation bridge is not required by this rollout path unless a future implementation
+explicitly chooses it.
 
 ## Chrome Components
 
@@ -166,11 +160,10 @@ The current toolbar direction is a unified design-system visual look, not one fo
     RTL and large-font coverage for row-heavy screens.
 11. Verify first-wave screens with screenshot review, targeted tests when behavior changes, and an
     accessibility regression check against the original screen.
-12. Verify design-system components do not fall back to static `LightWooColors` or other hardcoded
-    light defaults under the design-system root.
-13. Before final merge, verify the controlled rename boundary with strict `rg` audits so every
-    remaining `composeView` call is intentionally migrated and every non-migrated screen uses
-    `legacyComposeView`.
+12. Verify design-system components do not fall back to hardcoded light defaults under the
+    design-system root.
+13. Before final merge, verify the controlled root-API rename boundary with the strict `rg` audits
+    defined in [rollout-direction.md](rollout-direction.md).
 
 ## Android Migration Skill
 

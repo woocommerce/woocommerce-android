@@ -129,9 +129,9 @@ fun WooShippingSavedPackageContent(
             key = { index, packageData -> packageData.id }
         ) { index, packageData ->
             WooShippingPackageListItem(
-                modifier.animateItem(),
-                packageData,
-                onSavedPackageSelected,
+                modifier = modifier.animateItem(),
+                packageData = packageData,
+                onPackageSelected = onSavedPackageSelected,
                 divider = index < savedPackages.size - 1,
                 packageItemSupportsStarring = false,
                 onPackageRemoved = onSavedPackageRemoved

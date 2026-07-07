@@ -339,6 +339,20 @@ class NotificationDaoTest {
 
         assertThat(dao.getNotificationsCount()).isEqualTo(1)
     }
+
+    @Test
+    fun `given more ids than sqlite variable limit, when delete all by remote ids, then deletes all matching`() =
+        runTest {
+            val idsToDelete = (1L..1500L).map { RemoteId(it) }
+            dao.insertAll(idsToDelete.map { notification(remoteNoteId = it, remoteSiteId = SITE_ID_1) })
+            val keptId = RemoteId(9999L)
+            dao.insert(notification(remoteNoteId = keptId, remoteSiteId = SITE_ID_1))
+
+            dao.deleteAllByRemoteIds(idsToDelete)
+
+            assertThat(dao.getNotificationsCount()).isEqualTo(1)
+            assertThat(dao.getNotificationByRemoteId(keptId)).isNotNull
+        }
     // endregion
 
     /* HELPER */

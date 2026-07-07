@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -33,9 +32,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
         roles = listOf(UserRole.Editor, UserRole.Author)
     )
 
-    private val userEligibilityFetcher: UserEligibilityFetcher = mock {
-        on { getUser() } doReturn testUser
-    }
+    private val userEligibilityFetcher: UserEligibilityFetcher = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
@@ -43,8 +40,8 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     private val viewState = ViewState()
 
-    @Before
-    fun setup() {
+    private suspend fun setup(user: User? = testUser) {
+        doReturn(user).whenever(userEligibilityFetcher).getUser()
         viewModel = UserEligibilityErrorViewModel(
             savedState = SavedStateHandle(),
             accountRepository = accountRepository,
@@ -55,6 +52,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the user eligibility error screen correctly`() = testBlocking {
+        setup()
         val expectedViewState = viewState.copy(user = testUser)
 
         var userData: ViewState? = null
@@ -67,6 +65,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is not eligible`() =
         testBlocking {
             doReturn(testUser).whenever(userEligibilityFetcher).fetchUserInfo()
+            setup()
 
             val isProgressDialogShown = ArrayList<Boolean>()
             viewModel.viewStateData.observeForever { old, new ->
@@ -92,6 +91,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     fun `Handles retry button correctly when user is eligible`() = testBlocking {
         val user = testUser.copy(roles = listOf(UserRole.ShopManager))
         doReturn(user).whenever(userEligibilityFetcher).fetchUserInfo()
+        setup()
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -119,6 +119,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     @Test
     fun `when user roles cannot be fetched on retry, then show the role verification error`() = testBlocking {
         whenever(userEligibilityFetcher.fetchUserInfo()).thenReturn(Result.failure(Exception()))
+        setup()
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -143,6 +144,7 @@ class UserEligibilityErrorViewModelTest : BaseUnitTest() {
     @Test
     fun `Handles logout button click correctly`() = testBlocking {
         doReturn(true).whenever(accountRepository).logout()
+        setup()
 
         var logoutEvent: Logout? = null
         viewModel.event.observeForever {

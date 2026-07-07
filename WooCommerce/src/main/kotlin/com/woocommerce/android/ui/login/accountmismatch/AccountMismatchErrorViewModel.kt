@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -29,7 +28,6 @@ import javax.inject.Inject
 class AccountMismatchErrorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     val webViewAuthenticator: WebViewAuthenticator,
@@ -92,13 +90,12 @@ class AccountMismatchErrorViewModel @Inject constructor(
 
     private fun loginWithDifferentAccount() {
         if (!accountRepository.isUserLoggedIn()) {
-            triggerEvent(NavigateToLoginScreen)
+            triggerEvent(NavigateToSiteAddressLogin(siteUrl))
         } else {
             launch {
                 accountRepository.logout().let {
                     if (it) {
-                        appPrefsWrapper.removeLoginSiteAddress()
-                        triggerEvent(NavigateToLoginScreen)
+                        triggerEvent(NavigateToSiteAddressLogin(siteUrl))
                     }
                 }
             }
@@ -151,7 +148,7 @@ class AccountMismatchErrorViewModel @Inject constructor(
     )
 
     object NavigateToEmailHelpDialogEvent : MultiLiveEvent.Event()
-    object NavigateToLoginScreen : MultiLiveEvent.Event()
+    data class NavigateToSiteAddressLogin(val siteUrl: String) : MultiLiveEvent.Event()
     data class OnJetpackConnectedEvent(val email: String, val isAuthenticated: Boolean) : MultiLiveEvent.Event()
     data class NavigateToJetpackActivationSteps(
         val siteUrl: String,

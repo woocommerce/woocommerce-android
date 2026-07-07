@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.login.error.notwoo
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -18,7 +17,7 @@ class LoginNotWooDialogFragment : LoginBaseErrorDialogFragment() {
         const val SITE_URL_KEY = "site-url"
         const val INSTALLATION_RESULT = "installation-result"
         fun newInstance(siteUrl: String) = LoginNotWooDialogFragment().apply {
-            arguments = bundleOf(SITE_URL_KEY to siteUrl)
+            arguments = Bundle().apply { putString(SITE_URL_KEY, siteUrl) }
         }
     }
 
@@ -44,7 +43,7 @@ class LoginNotWooDialogFragment : LoginBaseErrorDialogFragment() {
             when (it) {
                 is LaunchWooInstallation -> ChromeCustomTabUtils.launchUrl(requireContext(), it.installationUrl)
                 is ExitWithResult<*> -> {
-                    setFragmentResult(INSTALLATION_RESULT, bundleOf())
+                    setFragmentResult(INSTALLATION_RESULT, Bundle())
                     dismiss()
                 }
             }

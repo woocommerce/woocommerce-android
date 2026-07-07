@@ -27,14 +27,4 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/productDetailInfo_progress"
-        android:indeterminateTint="@color/color_primary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/major_200"
-        android:layout_marginBottom="@dimen/major_200"
-        android:visibility="gone" />
-
 </FrameLayout>

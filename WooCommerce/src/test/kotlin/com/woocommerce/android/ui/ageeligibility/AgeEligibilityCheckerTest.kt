@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.ageeligibility
 
+import android.os.RemoteException
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
@@ -181,7 +182,23 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
     @Test
     fun `given checkAge throws exception, when checkAge called, then user is eligible`() = testBlocking {
-        client.setThrowException(true)
+        client.setThrowException(AgeSignalsException(-5))
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "access_restricted" to false
+            )
+        )
+    }
+
+    @Test
+    fun `given age signals service binder dies, when checkAge called, then user is eligible`() = testBlocking {
+        client.setThrowException(mock<RemoteException>())
 
         ageEligibilityChecker.checkAge()
 
@@ -235,7 +252,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     class FakeAgeSignalsClient : AgeSignalsClient {
-        private var shouldThrow = false
+        private var exceptionToThrow: Exception? = null
         private var userStatus: Int = DEFAULT_USER_AGE_STATUS
         private var ageUpper: Int? = DEFAULT_USER_AGE_UPPER
 
@@ -244,14 +261,12 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             this.ageUpper = ageUpper
         }
 
-        fun setThrowException(shouldThrow: Boolean) {
-            this.shouldThrow = shouldThrow
+        fun setThrowException(exception: Exception) {
+            this.exceptionToThrow = exception
         }
 
         override suspend fun checkAge(): AgeCheckResult {
-            if (shouldThrow) {
-                throw AgeSignalsException(-5)
-            }
+            exceptionToThrow?.let { throw it }
             return AgeCheckResult(userStatus, ageUpper)
         }
     }

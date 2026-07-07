@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
@@ -81,6 +82,22 @@ internal abstract class NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertAll(entities: List<NotificationEntity>)
 
+    /**
+     * Deletes the notifications matching the [remoteNoteIds] provided. This method uses
+     * Kotlin's chunked functionality to ensure we don't crash with the "SQLiteException: too many SQL variables"
+     * exception.
+     */
+    @Transaction
+    open suspend fun deleteAllByRemoteIds(remoteNoteIds: List<RemoteId>) {
+        remoteNoteIds.chunked(CHUNK_SIZE).forEach { chunk ->
+            deleteAllByRemoteIdsForSubset(chunk)
+        }
+    }
+
     @Query("DELETE FROM NotificationEntity WHERE remoteNoteId IN (:remoteNoteIds)")
-    abstract suspend fun deleteAllByRemoteIds(remoteNoteIds: List<RemoteId>)
+    protected abstract suspend fun deleteAllByRemoteIdsForSubset(remoteNoteIds: List<RemoteId>)
+
+    private companion object {
+        const val CHUNK_SIZE = 200
+    }
 }

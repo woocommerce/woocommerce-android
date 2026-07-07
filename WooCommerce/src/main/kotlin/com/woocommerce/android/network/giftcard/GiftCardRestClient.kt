@@ -11,20 +11,6 @@ import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
 class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
-    suspend fun fetchGiftCardSummaryByOrderId(site: SiteModel, orderId: Long): WooPayload<List<GiftCardSummaryDto>> {
-        val url = WOOCOMMERCE.orders.id(orderId).pathV3
-        val params = mapOf("_fields" to "gift_cards")
-
-        return wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            clazz = GiftCardSummaryResponse::class.java,
-            params = params
-        ).toWooPayload { giftCardSummaryResponse ->
-            giftCardSummaryResponse.giftCards ?: emptyList()
-        }
-    }
-
     suspend fun fetchGiftCardStats(
         site: SiteModel,
         startDate: String,
@@ -67,14 +53,6 @@ class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork)
         val count: Long? = null,
         @SerializedName("net_amount")
         val netAmount: Double? = null,
-    )
-
-    data class GiftCardSummaryResponse(@SerializedName("gift_cards") val giftCards: List<GiftCardSummaryDto>? = null)
-
-    data class GiftCardSummaryDto(
-        val id: Long? = null,
-        val code: String? = null,
-        val amount: String? = null,
     )
 }
 

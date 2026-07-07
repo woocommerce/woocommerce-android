@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.blaze
 
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.SiteModel
@@ -15,33 +12,8 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class IsBlazeEnabledTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(CIABAffectedFeature.Blaze) } doReturn true
-    }
 
-    val sut = IsBlazeEnabled(selectedSite, ciabSiteGateKeeper)
-
-    @Test
-    fun `given Blaze is supported, when feature is disabled by CIAB gate keepe, then Blaze is disabled`() {
-        val site = createSite()
-        given(selectedSite.getOrNull()).willReturn(site)
-        given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Blaze)).willReturn(false)
-
-        val result = sut.invoke()
-
-        assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `given Blaze is supported, when feature is enabled by CIAB gate keeper, then Blaze is enabled`() {
-        val site = createSite()
-        given(selectedSite.getOrNull()).willReturn(site)
-        given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Blaze)).willReturn(true)
-
-        val result = sut.invoke()
-
-        assertThat(result).isTrue()
-    }
+    val sut = IsBlazeEnabled(selectedSite)
 
     @Test
     fun `given site without admin capabilities, when checking if Blaze is enabled, then Blaze is disabled`() {
