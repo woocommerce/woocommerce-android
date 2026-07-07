@@ -1,9 +1,7 @@
 package com.woocommerce.android.ciab
 
 enum class CIABAffectedFeature {
-    Blaze,
     InPersonPayments,
-    WooShippingSplitShipments,
     GroupedProducts,
     VariableProducts,
     SubscriptionProducts,
@@ -11,6 +9,5 @@ enum class CIABAffectedFeature {
     CompositeProducts,
     GiftCardEditing,
     OrderStatusEditing,
-    Plugins,
     POS
 }
