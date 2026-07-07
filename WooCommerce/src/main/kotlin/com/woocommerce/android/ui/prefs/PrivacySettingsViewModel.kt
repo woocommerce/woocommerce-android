@@ -122,15 +122,22 @@ class PrivacySettingsViewModel @Inject constructor(
 
                 _state.value = _state.value?.copy(progressBarVisible = false)
 
-                event.onFailure {
-                    setCrashReportingEnabled(!checked)
-                    triggerEvent(
-                        MultiLiveEvent.Event.ShowActionStringSnackbar(
-                            message = resourceProvider.getString(R.string.settings_crash_reporting_error_update),
-                            actionText = resourceProvider.getString(R.string.retry),
-                        ) { onCrashReportingSettingChanged(checked) }
-                    )
-                }
+                event.fold(
+                    onSuccess = {
+                        // Re-assert the user's choice in case an account-settings sync overwrote
+                        // the local preference with the stale account value while the push was in flight.
+                        setCrashReportingEnabled(checked)
+                    },
+                    onFailure = {
+                        setCrashReportingEnabled(!checked)
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionStringSnackbar(
+                                message = resourceProvider.getString(R.string.settings_crash_reporting_error_update),
+                                actionText = resourceProvider.getString(R.string.retry),
+                            ) { onCrashReportingSettingChanged(checked) }
+                        )
+                    }
+                )
             }
         }
     }

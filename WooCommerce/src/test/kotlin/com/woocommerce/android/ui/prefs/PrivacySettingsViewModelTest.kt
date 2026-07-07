@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -167,7 +168,7 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // then
             assertThat(sut.state.value?.crashReportingEnabled).isTrue
-            verify(appPrefs).setCrashReportingEnabled(true)
+            verify(appPrefs, atLeastOnce()).setCrashReportingEnabled(true)
             verify(repository).updateCrashReportingSetting(true)
         }
 
@@ -248,6 +249,28 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             advanceUntilIdle()
 
             // then
+            assertThat(sut.state.value?.crashReportingEnabled).isTrue
+        }
+
+    @Test
+    fun `given the preference is overwritten during the push, when the push succeeds, then the user choice is restored`() =
+        testBlocking {
+            // given
+            givenCrashReportingPreferenceIsWritable()
+            repository.stub {
+                on { updateAccountSettings() } doReturn Result.success(Unit)
+                on { updateCrashReportingSetting(true) } doReturn Result.success(Unit)
+            }
+            init()
+            advanceUntilIdle()
+
+            // when the user enables it and a concurrent settings sync overwrites the
+            // preference with the stale account value before the push resolves
+            sut.onCrashReportingSettingChanged(true)
+            crashReportingPreference.value = false
+            advanceUntilIdle()
+
+            // then the push-success re-assert restores the user's choice
             assertThat(sut.state.value?.crashReportingEnabled).isTrue
         }
 
