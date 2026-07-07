@@ -10,10 +10,7 @@ enum class CIABAffectedFeature {
     BundleProducts,
     CompositeProducts,
     GiftCardEditing,
-    ProductsStockDashboardCard,
-    Onboarding,
     OrderStatusEditing,
     Plugins,
-    POS,
-    Inbox
+    POS
 }
