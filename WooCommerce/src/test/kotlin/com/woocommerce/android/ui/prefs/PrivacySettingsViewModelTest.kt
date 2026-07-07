@@ -8,8 +8,10 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,8 +27,12 @@ import org.mockito.kotlin.verify
 @OptIn(ExperimentalCoroutinesApi::class)
 class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     private val fakeSharedPreferencesEmitter = MutableStateFlow(false)
+    private val crashReportingPreference = MutableStateFlow(false)
 
-    private val appPrefs: AppPrefsWrapper = mock()
+    private val appPrefs: AppPrefsWrapper = mock {
+        on { observePrefs() } doReturn crashReportingPreference.map { }
+        on { isCrashReportingEnabled() } doAnswer { crashReportingPreference.value }
+    }
     private val repository: PrivacySettingsRepository = mock {
         on { isUserWPCOM() } doReturn true
     }
@@ -58,6 +64,14 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
             repository,
         )
         sut.state.observeForever { }
+    }
+
+    private fun givenCrashReportingPreferenceIsWritable() {
+        appPrefs.stub {
+            on { setCrashReportingEnabled(any()) } doAnswer {
+                crashReportingPreference.value = it.getArgument<Boolean>(0)
+            }
+        }
     }
 
     @Test
@@ -139,15 +153,17 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given successful API response, when user turns on crash reporting, then local preference is updated and pushed to API`() =
         testBlocking {
             // given
+            givenCrashReportingPreferenceIsWritable()
             repository.stub {
+                on { updateAccountSettings() } doReturn Result.success(Unit)
                 on { updateCrashReportingSetting(true) } doReturn Result.success(Unit)
             }
             init()
-            runCurrent()
+            advanceUntilIdle()
 
             // when
             sut.onCrashReportingSettingChanged(true)
-            runCurrent()
+            advanceUntilIdle()
 
             // then
             assertThat(sut.state.value?.crashReportingEnabled).isTrue
@@ -159,15 +175,17 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given failed API response, when user turns on crash reporting, then local preference is reverted and snackbar is shown`() =
         testBlocking {
             // given
+            givenCrashReportingPreferenceIsWritable()
             repository.stub {
+                on { updateAccountSettings() } doReturn Result.success(Unit)
                 on { updateCrashReportingSetting(true) } doReturn Result.failure(Exception())
             }
             init()
-            runCurrent()
+            advanceUntilIdle()
 
             // when
             sut.onCrashReportingSettingChanged(true)
-            runCurrent()
+            advanceUntilIdle()
 
             // then
             assertThat(sut.state.value?.crashReportingEnabled).isFalse
@@ -179,15 +197,16 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
     fun `given user is not WPCOM, when user changes crash reporting, then only local preference is updated`() =
         testBlocking {
             // given
+            givenCrashReportingPreferenceIsWritable()
             repository.stub {
                 on { isUserWPCOM() } doReturn false
             }
             init()
-            runCurrent()
+            advanceUntilIdle()
 
             // when
             sut.onCrashReportingSettingChanged(true)
-            runCurrent()
+            advanceUntilIdle()
 
             // then
             assertThat(sut.state.value?.crashReportingEnabled).isTrue
@@ -196,35 +215,37 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `given account has crash reporting opted out, when user opens the screen, then the account value is applied to state`() =
+    fun `given crash reporting preference changes externally, when observed, then state reflects the new value`() =
         testBlocking {
             // given
             repository.stub {
                 on { updateAccountSettings() } doReturn Result.success(Unit)
-                on { accountCrashReportingOptOut() } doReturn true
             }
-
-            // when
             init()
-            runCurrent()
+            advanceUntilIdle()
+
+            // when the preference is updated (e.g. by CrashReportingSettingSync after a fetch)
+            crashReportingPreference.value = true
+            advanceUntilIdle()
 
             // then
-            assertThat(sut.state.value?.crashReportingEnabled).isFalse
+            assertThat(sut.state.value?.crashReportingEnabled).isTrue
         }
 
     @Test
     fun `given user toggled crash reporting during fetch, when fetch succeeds, then the choice is not overridden`() =
         testBlocking {
             // given
+            givenCrashReportingPreferenceIsWritable()
             repository.stub {
                 on { updateAccountSettings() } doReturn Result.success(Unit)
                 on { updateCrashReportingSetting(true) } doReturn Result.success(Unit)
             }
             init()
 
-            // when
+            // when the user toggles while the fetch launched by init() is still in flight
             sut.onCrashReportingSettingChanged(true)
-            runCurrent()
+            advanceUntilIdle()
 
             // then
             assertThat(sut.state.value?.crashReportingEnabled).isTrue
