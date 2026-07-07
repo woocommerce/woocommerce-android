@@ -4,7 +4,7 @@
 
 25.2
 -----
-- [*] Variation list rows now show a chevron to indicate they open the variation editor [PR URL]
+- [*] Variation list rows now show a chevron to indicate they open the variation editor [https://github.com/woocommerce/woocommerce-android/pull/16219]
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
 - [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
