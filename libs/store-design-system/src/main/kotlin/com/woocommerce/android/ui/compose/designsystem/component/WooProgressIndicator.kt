@@ -21,13 +21,9 @@ fun WooLinearProgressIndicator(
     modifier: Modifier = Modifier,
     progress: Float? = null,
 ) {
-    val colors = WooTheme.colors
-
     if (progress == null) {
         LinearProgressIndicator(
             modifier = modifier,
-            color = colors.primary,
-            trackColor = colors.secondary,
         )
     } else {
         val coercedProgress = progress.coerceIn(MIN_PROGRESS, MAX_PROGRESS)
@@ -35,8 +31,6 @@ fun WooLinearProgressIndicator(
         LinearProgressIndicator(
             progress = { coercedProgress },
             modifier = modifier,
-            color = colors.primary,
-            trackColor = colors.secondary,
         )
     }
 }
@@ -46,13 +40,9 @@ fun WooCircularProgressIndicator(
     modifier: Modifier = Modifier,
     progress: Float? = null,
 ) {
-    val colors = WooTheme.colors
-
     if (progress == null) {
         CircularProgressIndicator(
             modifier = modifier,
-            color = colors.primary,
-            trackColor = colors.secondary,
         )
     } else {
         val coercedProgress = progress.coerceIn(MIN_PROGRESS, MAX_PROGRESS)
@@ -60,8 +50,6 @@ fun WooCircularProgressIndicator(
         CircularProgressIndicator(
             progress = { coercedProgress },
             modifier = modifier,
-            color = colors.primary,
-            trackColor = colors.secondary,
         )
     }
 }
