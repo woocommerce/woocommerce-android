@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooIconContainer(
@@ -72,31 +72,31 @@ internal fun WooIconContainerDemo(
         verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3)) {
-            WooIconContainer(WooDsIcons.Regular.Star)
+            WooIconContainer(WooIcons.Regular.Star)
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.Sandstone,
             )
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.Blue,
             )
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.Green,
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3)) {
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.Orange,
             )
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.Pink,
             )
             WooIconContainer(
-                imageVector = WooDsIcons.Regular.Star,
+                imageVector = WooIcons.Regular.Star,
                 tone = WooIconContainerTone.DarkPurple,
             )
         }

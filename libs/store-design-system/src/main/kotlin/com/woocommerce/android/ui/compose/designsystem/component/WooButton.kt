@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooFilledButton(
@@ -226,7 +226,7 @@ private enum class WooButtonStyle {
 @Composable
 private fun LeadingButtonIcon() {
     Icon(
-        imageVector = WooDsIcons.Regular.Star,
+        imageVector = WooIcons.Regular.Star,
         contentDescription = null,
     )
 }

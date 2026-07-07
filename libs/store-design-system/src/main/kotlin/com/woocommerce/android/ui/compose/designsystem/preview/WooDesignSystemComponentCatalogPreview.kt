@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeade
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @PreviewLightDark
 @Composable
@@ -171,7 +171,7 @@ private fun CatalogNavigationRow(
             }
         }
         Icon(
-            imageVector = WooDsIcons.Regular.ArrowUpRight,
+            imageVector = WooIcons.Regular.ArrowUpRight,
             contentDescription = null,
             modifier = Modifier.size(WooTheme.iconSize.size18),
             tint = WooTheme.colors.surface.onVariant,
@@ -413,7 +413,7 @@ private fun CatalogTopBar(
         ) {
             if (showNavigationIcon) {
                 WooIconButton(
-                    imageVector = WooDsIcons.Regular.AngleLeft,
+                    imageVector = WooIcons.Regular.AngleLeft,
                     contentDescription = "Back",
                     onClick = onBackClick,
                 )

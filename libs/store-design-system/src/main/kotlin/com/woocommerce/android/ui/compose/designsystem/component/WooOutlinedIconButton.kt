@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CommentQuestion
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import androidx.compose.material3.OutlinedIconButton as MaterialOutlinedIconButton
 
 @Composable
@@ -114,18 +114,18 @@ internal fun WooOutlinedIconButtonDemo(
         horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
     ) {
         WooOutlinedIconButton(
-            imageVector = WooDsIcons.Regular.CommentQuestion,
+            imageVector = WooIcons.Regular.CommentQuestion,
             contentDescription = "Help",
             onClick = {},
         )
         WooOutlinedIconButton(
-            imageVector = WooDsIcons.Regular.ArrowUpRight,
+            imageVector = WooIcons.Regular.ArrowUpRight,
             contentDescription = "Open",
             onClick = {},
             emphasis = WooIconButtonEmphasis.Primary,
         )
         WooOutlinedIconButton(
-            imageVector = WooDsIcons.Regular.CommentQuestion,
+            imageVector = WooIcons.Regular.CommentQuestion,
             contentDescription = "Disabled help",
             onClick = {},
             enabled = false,

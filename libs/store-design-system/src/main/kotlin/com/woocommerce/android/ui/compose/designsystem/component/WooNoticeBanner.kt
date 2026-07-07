@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.CirclePlus
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooNoticeBanner(
@@ -99,7 +99,7 @@ internal fun WooNoticeBannerDemo(
             tone = WooNoticeBannerTone.Success,
             leadingIcon = {
                 Icon(
-                    imageVector = WooDsIcons.Solid.CirclePlus,
+                    imageVector = WooIcons.Solid.CirclePlus,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size24),
                 )
@@ -111,7 +111,7 @@ internal fun WooNoticeBannerDemo(
             tone = WooNoticeBannerTone.NeutralOutlined,
             leadingIcon = {
                 Icon(
-                    imageVector = WooDsIcons.Regular.CircleInfo,
+                    imageVector = WooIcons.Regular.CircleInfo,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size24),
                 )
@@ -123,7 +123,7 @@ internal fun WooNoticeBannerDemo(
             tone = WooNoticeBannerTone.Warning,
             leadingIcon = {
                 Icon(
-                    imageVector = WooDsIcons.Regular.Bolt,
+                    imageVector = WooIcons.Regular.Bolt,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size24),
                 )

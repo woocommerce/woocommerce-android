@@ -22,7 +22,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CommentQuestion
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 fun WooIconButton(
@@ -109,18 +109,18 @@ internal fun WooIconButtonDemo(
         horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
     ) {
         WooIconButton(
-            imageVector = WooDsIcons.Regular.CommentQuestion,
+            imageVector = WooIcons.Regular.CommentQuestion,
             contentDescription = "Help",
             onClick = {},
         )
         WooIconButton(
-            imageVector = WooDsIcons.Regular.ArrowUpRight,
+            imageVector = WooIcons.Regular.ArrowUpRight,
             contentDescription = "Open",
             onClick = {},
             emphasis = WooIconButtonEmphasis.Primary,
         )
         WooIconButton(
-            imageVector = WooDsIcons.Regular.CommentQuestion,
+            imageVector = WooIcons.Regular.CommentQuestion,
             contentDescription = "Disabled help",
             onClick = {},
             enabled = false,
