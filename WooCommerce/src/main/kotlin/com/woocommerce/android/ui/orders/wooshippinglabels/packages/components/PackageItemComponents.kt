@@ -36,11 +36,11 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 
 @Composable
 fun WooShippingPackageListItem(
-    modifier: Modifier = Modifier,
     packageData: PackageData,
     onPackageSelected: (PackageData, Boolean) -> Unit,
-    divider: Boolean = true,
     packageItemSupportsStarring: Boolean,
+    modifier: Modifier = Modifier,
+    divider: Boolean = true,
     onPackageStarred: (PackageData, Boolean) -> Unit = { _, _ -> },
     onPackageRemoved: ((PackageData) -> Unit)? = null,
 ) {
