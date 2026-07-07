@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.moremenu
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -89,10 +87,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureSupported(any()) } doReturn true
-    }
-
     private lateinit var viewModel: MoreMenuViewModel
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
 
@@ -113,7 +107,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            ciabSiteGateKeeper = ciabSiteGateKeeper,
         )
     }
 
@@ -493,22 +486,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         assertThat(event).isInstanceOf(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView::class.java)
-    }
-
-    @Test
-    fun `given CIAB reports payments disabled, when building state, then payments button is hidden`() = testBlocking {
-        // GIVEN
-        setup {
-            whenever(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments))
-                .thenReturn(false)
-        }
-
-        // WHEN
-        val state = viewModel.moreMenuViewState.captureValues().last()
-
-        // THEN
-        val items = state.menuSections.flatMap { it.items }
-        assertThat(items.none { it.title == R.string.more_menu_button_payments }).isTrue()
     }
 
     @Test

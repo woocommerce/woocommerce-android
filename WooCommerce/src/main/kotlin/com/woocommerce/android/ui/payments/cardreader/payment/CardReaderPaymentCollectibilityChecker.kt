@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.payment
 
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.STRIPE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
@@ -18,20 +16,18 @@ import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
-    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker
 ) {
     suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
-        return ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments) &&
-            with(order) {
-                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
-                    isStatusCollectable(allowCancelledStatus) &&
-                    !isOrderPaid &&
-                    order.total.compareTo(BigDecimal.ZERO) == 1 &&
-                    BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
-                    isPaymentMethodCollectable() &&
-                    !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
-            }
+        return with(order) {
+            cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
+                isStatusCollectable(allowCancelledStatus) &&
+                !isOrderPaid &&
+                order.total.compareTo(BigDecimal.ZERO) == 1 &&
+                BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
+                isPaymentMethodCollectable() &&
+                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+        }
     }
 
     private fun Order.isPaymentMethodCollectable() =
