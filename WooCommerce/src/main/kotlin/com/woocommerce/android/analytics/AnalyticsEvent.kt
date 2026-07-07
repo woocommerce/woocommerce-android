@@ -510,10 +510,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     MAIN_TAB_HUB_MENU_SELECTED,
     MAIN_TAB_HUB_MENU_RESELECTED,
 
-    // -- Bookings (error events only — other booking events use EventHorizon codegen)
-    BOOKING_LIST_FAILED_TO_FETCH_BOOKINGS,
-    BOOKING_LIST_FAILED_TO_UPDATE_BOOKING_DETAILS,
-
     // -- Settings
     SETTING_CHANGE,
     SETTING_CHANGE_FAILED,

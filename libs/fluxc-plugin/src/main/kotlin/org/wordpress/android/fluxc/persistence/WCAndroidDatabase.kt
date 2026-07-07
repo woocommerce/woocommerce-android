@@ -8,7 +8,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
-import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -40,7 +39,6 @@ import org.wordpress.android.fluxc.persistence.converters.StatsGranularityConver
 import org.wordpress.android.fluxc.persistence.converters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
-import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
@@ -50,7 +48,6 @@ import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
 import org.wordpress.android.fluxc.persistence.dao.LocationsDao
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
-import org.wordpress.android.fluxc.persistence.dao.OrderFulfillmentDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
@@ -85,8 +82,6 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.AddonEntity
 import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
-import org.wordpress.android.fluxc.persistence.entity.BookingEntity
-import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
@@ -123,6 +118,7 @@ import org.wordpress.android.fluxc.persistence.migrations.AutoMigration19to20
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration23to24
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration32to33
 import org.wordpress.android.fluxc.persistence.migrations.AutoMigration37to38
+import org.wordpress.android.fluxc.persistence.migrations.AutoMigration89to90
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_10_11
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_11_12
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_15_16
@@ -145,7 +141,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 89
+const val WC_DATABASE_VERSION = 90
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -187,7 +183,6 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCProductSettingsModel::class,
         WCCustomerModel::class,
         WCLocationModel::class,
-        WCOrderFulfillmentModel::class,
         WCOrderShipmentProviderModel::class,
         WCOrderShipmentTrackingModel::class,
         WCUserModel::class,
@@ -201,8 +196,6 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WCGlobalAttributeModel::class,
         GatewayEntity::class,
         WCNewVisitorStatsModel::class,
-        BookingEntity::class,
-        BookingResourceEntity::class,
         WCRevenueStatsModel::class,
         WCShippingLabelModel::class,
         WCShippingLabelCreationEligibility::class,
@@ -277,6 +270,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 86, to = 87),
         AutoMigration(from = 87, to = 88),
         AutoMigration(from = 88, to = 89),
+        AutoMigration(from = 89, to = 90, spec = AutoMigration89to90::class),
     ]
 )
 @TypeConverters(
@@ -304,9 +298,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val visitorSummaryStatsDao: VisitorSummaryStatsDao
     abstract val shippingMethodDao: ShippingMethodDao
     abstract val customerFromAnalyticsDao: CustomerFromAnalyticsDao
-    abstract val bookingsDao: BookingsDao
     internal abstract val locationsDao: LocationsDao
-    internal abstract val orderFulfillmentDao: OrderFulfillmentDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
     internal abstract val orderShipmentTrackingDao: OrderShipmentTrackingDao
     internal abstract val customerDao: CustomerDao

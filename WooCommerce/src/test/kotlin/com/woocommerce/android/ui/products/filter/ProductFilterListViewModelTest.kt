@@ -227,7 +227,6 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     fun `given CIAB site, when product type list build, then limited options available`() =
         testBlocking {
             whenever(ciabSiteGateKeeper.isFeatureSupported(any())).thenReturn(false)
-            whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
             whenever(pluginRepository.getPluginsInfo(any(), any())).thenReturn(
                 mapOf(
                     WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName to installedPlugin,
@@ -252,7 +251,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             val expectedTypeFilters = buildList {
                 add("") // Empty represent the Any option
                 addAll(
-                    listOf(ProductType.SIMPLE, ProductType.EXTERNAL, ProductType.BOOKABLE_SERVICE).map { it.value }
+                    listOf(ProductType.SIMPLE, ProductType.EXTERNAL).map { it.value }
                 )
             }
 

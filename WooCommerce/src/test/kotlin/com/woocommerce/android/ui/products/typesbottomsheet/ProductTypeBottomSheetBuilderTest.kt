@@ -96,28 +96,4 @@ class ProductTypeBottomSheetBuilderTest : BaseUnitTest() {
             val groupedProduct = result.find { it.type == ProductType.GROUPED }
             assertThat(groupedProduct?.isVisible).isFalse()
         }
-
-    @Test
-    fun `given bookable service creation supported, when building bottom sheet list, then bookable service is visible`() =
-        testBlocking {
-            given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation))
-                .willReturn(true)
-
-            val result = sut.buildBottomSheetList()
-
-            val bookableService = result.find { it.type == ProductType.BOOKABLE_SERVICE }
-            assertThat(bookableService?.isVisible).isTrue()
-        }
-
-    @Test
-    fun `given bookable service creation not supported, when building bottom sheet list, then bookable service is not visible`() =
-        testBlocking {
-            given(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BookableServiceCreation))
-                .willReturn(false)
-
-            val result = sut.buildBottomSheetList()
-
-            val bookableService = result.find { it.type == ProductType.BOOKABLE_SERVICE }
-            assertThat(bookableService?.isVisible).isFalse()
-        }
 }
