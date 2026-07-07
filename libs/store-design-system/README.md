@@ -14,11 +14,11 @@ This module owns design-system icon drawables for store UI components.
 Use these drawables from later component branches instead of copying app-module icons into
 `libs/store-design-system`.
 
-Compose code should prefer the `WooDsIcons` catalog instead of referencing drawable IDs directly:
+Compose code should prefer the `WooIcons` catalog instead of referencing drawable IDs directly:
 
 ```kotlin
 Icon(
-    imageVector = WooDsIcons.Regular.Store,
+    imageVector = WooIcons.Regular.Store,
     contentDescription = null,
 )
 ```
