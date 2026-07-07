@@ -33,6 +33,8 @@ class PrivacySettingsViewModel @Inject constructor(
 
     private val _state = MutableLiveData(defaultState())
 
+    private var crashReportingChangedByUser = false
+
     val state: LiveData<State> = _state.combineWith(analyticsEnabled) { state, analyticsEnabled ->
         state?.copy(sendUsageStats = analyticsEnabled == true) ?: defaultState()
     }
@@ -55,10 +57,12 @@ class PrivacySettingsViewModel @Inject constructor(
                 _state.value = _state.value?.copy(progressBarVisible = false)
 
                 event.onSuccess {
-                    _state.value = _state.value?.copy(
-                        crashReportingEnabled = repository.accountCrashReportingOptOut()?.not()
-                            ?: getCrashReportingEnabled()
-                    )
+                    if (!crashReportingChangedByUser) {
+                        _state.value = _state.value?.copy(
+                            crashReportingEnabled = repository.accountCrashReportingOptOut()?.not()
+                                ?: getCrashReportingEnabled()
+                        )
+                    }
                 }
 
                 event.onFailure {
@@ -106,6 +110,7 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
+        crashReportingChangedByUser = true
         _state.value = _state.value?.copy(crashReportingEnabled = checked)
         setCrashReportingEnabled(checked)
 

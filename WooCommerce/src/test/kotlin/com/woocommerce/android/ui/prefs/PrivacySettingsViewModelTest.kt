@@ -213,6 +213,24 @@ class PrivacySettingsViewModelTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
+    fun `given user toggled crash reporting during fetch, when fetch succeeds, then the choice is not overridden`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { updateAccountSettings() } doReturn Result.success(Unit)
+                on { updateCrashReportingSetting(true) } doReturn Result.success(Unit)
+            }
+            init()
+
+            // when
+            sut.onCrashReportingSettingChanged(true)
+            runCurrent()
+
+            // then
+            assertThat(sut.state.value?.crashReportingEnabled).isTrue
+        }
+
+    @Test
     fun `given failed API response, when user tapps on retry button, retry updating account settings`() =
         testBlocking {
             // given

@@ -965,7 +965,9 @@ public class AccountRestClient extends BaseWPComRestClient {
             accountModel.setTracksOptOut((Boolean) from.get("tracks_opt_out"));
         }
         if (from.containsKey("woomobile_crash_reporting_opt_out")) {
-            accountModel.setCrashReportingOptOut((Boolean) from.get("woomobile_crash_reporting_opt_out"));
+            Object crashReportingOptOutValue = from.get("woomobile_crash_reporting_opt_out");
+            accountModel.setCrashReportingOptOut(
+                    crashReportingOptOutValue instanceof Boolean ? (Boolean) crashReportingOptOutValue : null);
         }
         if (from.containsKey("new_user_email")) accountModel.setEmail((String) from.get("new_user_email"));
         if (from.containsKey("user_URL")) accountModel.setWebAddress((String) from.get("user_URL"));
