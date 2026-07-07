@@ -4,6 +4,7 @@
 
 25.2
 -----
+- [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
 - [*] Refunding an order paid with a gift card is now blocked in the app with a prompt to refund from your store admin, so the gift-card balance is restored correctly [https://github.com/woocommerce/woocommerce-android/pull/16169]
 - [*] Fixed duplicated products reusing the original product slug [https://github.com/woocommerce/woocommerce-android/pull/16142]
 - [*] Fixed account-mismatch login retry requiring merchants to re-enter their store URL [https://github.com/woocommerce/woocommerce-android/pull/16162]
