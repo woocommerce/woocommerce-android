@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.ageeligibility
 
+import android.os.RemoteException
 import androidx.annotation.StringRes
 import com.google.android.gms.common.api.ApiException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
@@ -58,12 +59,12 @@ class AgeEligibilityChecker @Inject constructor(
                 trackingProperties["retrieved_age"] = result.ageUpper ?: -1
                 trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
             } catch (exception: ApiException) {
-                WooLog.i(
-                    WooLog.T.UTILS,
-                    "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
-                        "age: ${exception.message}, reverting user eligibility to default true"
-                )
-                _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
+                revertEligibilityToDefault(exception)
+            } catch (exception: RemoteException) {
+                // The age signals service is backed by a Play Store binder that can die at any
+                // time (e.g. Play Store killed or updated); the pending check then fails with a
+                // plain RemoteException instead of an ApiException
+                revertEligibilityToDefault(exception)
             }
 
             val isAccessRestricted = _ageEligibilityState.value.isUserAgeRangeEligible.not()
@@ -76,6 +77,15 @@ class AgeEligibilityChecker @Inject constructor(
         } else {
             _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
         }
+    }
+
+    private fun revertEligibilityToDefault(exception: Exception) {
+        WooLog.i(
+            WooLog.T.UTILS,
+            "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
+                "age: ${exception.message}, reverting user eligibility to default true"
+        )
+        _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
     }
 
     private fun isAgeBelowWooCommerceTOSMinimum(ageUpper: Int?): Boolean =
