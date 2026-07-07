@@ -119,7 +119,7 @@ private fun WooBadgeTone.toBadgeColors(): WooBadgeColors {
         WooBadgeTone.NeutralOutlined -> WooBadgeColors(
             containerColor = Color.Transparent,
             contentColor = colors.surface.onDefault,
-            border = BorderStroke(WooTheme.stroke.regular, colors.outlineVariant),
+            border = BorderStroke(WooTheme.stroke.regular, colors.status.neutralContainer),
         )
         WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)
         WooBadgeTone.Success -> WooBadgeColors(colors.status.successContainer, colors.status.onSuccessContainer)
