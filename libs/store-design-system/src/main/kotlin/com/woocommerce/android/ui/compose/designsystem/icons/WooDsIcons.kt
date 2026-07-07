@@ -397,9 +397,9 @@ val WooDsIcons.Regular.TicketPerforated: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_ticket_perforated_24dp)
 
-val WooDsIcons.Regular.UseShield: ImageVector
+val WooDsIcons.Regular.UserShield: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_use_shield_24dp)
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_user_shield_24dp)
 
 val WooDsIcons.Regular.UserGroup: ImageVector
     @Composable
