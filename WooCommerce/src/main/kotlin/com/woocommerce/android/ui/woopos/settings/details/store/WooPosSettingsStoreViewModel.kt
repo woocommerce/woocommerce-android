@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.common.data.WOO_POS_CIAB_SETTINGS_PATH
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_SETTINGS_PATH
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -23,7 +21,6 @@ class WooPosSettingsStoreViewModel @Inject constructor(
     private val storeRepository: WooPosSettingsStoreRepository,
     private val receiptRepository: WooPosSettingsReceiptRepository,
     private val selectedSite: SelectedSite,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsStoreState())
@@ -50,11 +47,7 @@ class WooPosSettingsStoreViewModel @Inject constructor(
 
     private fun buildReceiptSettingsUrl(): String {
         val siteUrl = selectedSite.get().url.trimEnd('/')
-        return if (ciabSiteGateKeeper.isCurrentSiteCIAB()) {
-            "$siteUrl$WOO_POS_CIAB_SETTINGS_PATH"
-        } else {
-            "$siteUrl$WOO_POS_SETTINGS_PATH"
-        }
+        return "$siteUrl$WOO_POS_SETTINGS_PATH"
     }
 
     private fun loadStoreData() {

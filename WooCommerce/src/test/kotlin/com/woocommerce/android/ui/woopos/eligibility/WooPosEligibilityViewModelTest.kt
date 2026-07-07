@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
-import android.net.Uri
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -17,8 +15,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.reset
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -34,7 +30,6 @@ class WooPosEligibilityViewModelTest {
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockSelectedSite: SelectedSite = mock()
     private val mockWooCommerceStore: WooCommerceStore = mock()
-    private val mockCiabSiteGateKeeper: CIABSiteGateKeeper = mock()
 
     @Rule
     @JvmField
@@ -109,7 +104,6 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
-            mockCiabSiteGateKeeper,
         )
 
         // WHEN
@@ -131,7 +125,6 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
-            mockCiabSiteGateKeeper,
         )
 
         sut.initialize(reason)
@@ -158,7 +151,6 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
-            mockCiabSiteGateKeeper,
         )
 
         sut.initialize(initialReason)
@@ -173,52 +165,6 @@ class WooPosEligibilityViewModelTest {
         verify(tracker).track(IneligibleUIShown(retryReason))
     }
 
-    @Test
-    fun `given CIAB plan upgrade reason, when initialized, then state is CiabPlanUpgradeRequired`() = runTest {
-        mockUriParse().use {
-            // GIVEN
-            val reason = WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
-            whenever(mockCiabSiteGateKeeper.buildPlanUpgradeUrl()).thenReturn("https://example.com")
-            val sut = createSut()
-
-            // WHEN
-            sut.initialize(reason)
-
-            // THEN
-            assertThat(sut.retryState.value)
-                .isInstanceOf(WooPosEligibilityRetryState.CiabPlanUpgradeRequired::class.java)
-        }
-    }
-
-    @Test
-    fun `given learn more tapped, when onResumed and becomes eligible, then navigation is emitted`() = runTest {
-        mockUriParse().use {
-            // GIVEN
-            val reason = WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
-            whenever(mockCiabSiteGateKeeper.buildPlanUpgradeUrl()).thenReturn("https://example.com")
-            whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
-            val sut = createSut()
-            sut.initialize(reason)
-            val navigated = mutableListOf<Unit>()
-            val job = launch { sut.navigateToPos.collect { navigated.add(it) } }
-
-            // WHEN
-            sut.learnMoreTapped()
-            sut.onResumed()
-            advanceUntilIdle()
-
-            // THEN
-            assertThat(navigated).hasSize(1)
-            job.cancel()
-        }
-    }
-
-    private fun mockUriParse(): MockedStatic<Uri> {
-        return mockStatic(Uri::class.java).apply {
-            `when`<Uri> { Uri.parse(any()) }.thenReturn(mock())
-        }
-    }
-
     private fun createSut(): WooPosEligibilityViewModel {
         return WooPosEligibilityViewModel(
             canBeLaunchedInTab,
@@ -226,7 +172,6 @@ class WooPosEligibilityViewModelTest {
             mockResourceProvider,
             mockSelectedSite,
             mockWooCommerceStore,
-            mockCiabSiteGateKeeper,
         )
     }
 }
