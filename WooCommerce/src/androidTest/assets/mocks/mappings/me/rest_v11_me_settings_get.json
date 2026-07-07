@@ -54,6 +54,7 @@
             "is_desktop_app_user": false,
             "locale_variant": false,
             "tracks_opt_out": false,
+            "woomobile_crash_reporting_opt_out": false,
             "i18n_empathy_mode": false,
             "use_fallback_for_incomplete_languages": false,
             "gravatar_profile_hidden": false
