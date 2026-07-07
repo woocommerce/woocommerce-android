@@ -84,6 +84,5 @@ private fun resolveOrderStatusColor(status: String): Int =
         is Order.Status.Completed -> R.color.tag_bg_completed
         is Order.Status.Failed -> R.color.tag_bg_failed
         is Order.Status.OnHold -> R.color.tag_bg_on_hold
-        is Order.Status.Custom -> R.color.tag_bg_other
         else -> R.color.tag_bg_other
     }

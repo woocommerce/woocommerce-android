@@ -79,7 +79,6 @@ import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
-import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.details.views.OrderDetailWooShippingShipmentListView
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
@@ -236,7 +235,7 @@ class OrderDetailFragment :
         setupResultHandlers(viewModel)
         setupOrdersCommunicationObservers(communicationViewModel)
 
-        binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
+        binding.orderDetailOrderStatus.initView {
             viewModel.onEditOrderStatusSelected()
         }
         binding.orderRefreshLayout.apply {
