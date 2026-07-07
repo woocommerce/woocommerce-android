@@ -37,7 +37,10 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = Int.MAX_VALUE
     }
 
-    suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
+    suspend fun syncLocalCatalogFull(
+        site: SiteModel,
+        force: Boolean = false
+    ): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
         analyticsTracker.track(
             LocalCatalogSyncStarted(
                 syncType = SyncType.FULL,
@@ -45,11 +48,16 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             )
         )
 
-        return@withContext performFileBasedSync(site).also { result ->
+        return@withContext performFileBasedSync(site, force).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
+                    syncTimestampManager.setCatalogFileBlocked(false)
                     trackSyncCompleted(site, SyncType.FULL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> {
+                    syncTimestampManager.setCatalogFileBlocked(true)
+                    trackSyncFailed(SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
                     trackSyncFailed(SyncType.FULL, result)
@@ -86,8 +94,8 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         }
     }
 
-    private suspend fun performFileBasedSync(site: SiteModel): PosLocalCatalogSyncResult {
-        return when (val result = posFileBasedSyncAction.syncCatalog(site)) {
+    private suspend fun performFileBasedSync(site: SiteModel, force: Boolean): PosLocalCatalogSyncResult {
+        return when (val result = posFileBasedSyncAction.syncCatalog(site, force)) {
             is WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success -> result.result.also {
                 if (result.lastModifiedDate != null) {
                     syncTimestampManager.parseTimestampFromApi(result.lastModifiedDate)?.let { timestamp ->
@@ -133,6 +141,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
             is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
+            is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked -> SyncErrorType.CATALOG_FILE_BLOCKED
         }
 
         analyticsTracker.track(

@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
@@ -22,12 +23,14 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Jetpa
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.fluxc.test
 import java.security.GeneralSecurityException
+import java.util.Optional
 
 @RunWith(RobolectricTestRunner::class)
 class WooNetworkTest {
     private val testSite = SiteModel().apply {
         origin = SiteModel.ORIGIN_WPCOM_REST
         url = "https://example.com"
+        siteId = 123
     }
     private val testPath = "path"
     private val applicationPasswordsConfiguration = FakeApplicationPasswordsConfiguration()
@@ -35,13 +38,17 @@ class WooNetworkTest {
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork = mock()
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler = mock()
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
+    private val unknownBlogListener: UnknownBlogListener = mock()
+    private val invalidSignatureListener: InvalidSignatureListener = mock()
 
     private val sut = WooNetwork(
         applicationPasswordsConfiguration = applicationPasswordsConfiguration,
         applicationPasswordsNetwork = applicationPasswordsNetwork,
         jetpackTunnelWPAPINetwork = jetpackTunnelWPAPINetwork,
         jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
-        jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler
+        jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler,
+        unknownBlogListener = Optional.of(unknownBlogListener),
+        invalidSignatureListener = Optional.of(invalidSignatureListener)
     )
 
     @Test
@@ -167,6 +174,70 @@ class WooNetworkTest {
             eq(testSite),
             argThat { errorCode == ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR }
         )
+    }
+
+    @Test
+    fun `given a request returns unknown_blog, when making request, then notify the unknown blog listener`() = test {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
+        givenJetpackTunnelResponse(WPAPIResponse.Error(WPAPINetworkError(mock(), "unknown_blog")))
+
+        sut.executeGetGsonRequest(site = testSite, path = testPath, clazz = SampleResponse::class.java)
+
+        verify(unknownBlogListener).onUnknownBlog(testSite.siteId)
+    }
+
+    @Test
+    fun `given a successful request, when making request, then do not notify the unknown blog listener`() = test {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
+        givenJetpackTunnelResponse(WPAPIResponse.Success(SampleResponse("value"), emptyList()))
+
+        sut.executeGetGsonRequest(site = testSite, path = testPath, clazz = SampleResponse::class.java)
+
+        verify(unknownBlogListener, never()).onUnknownBlog(any())
+    }
+
+    @Test
+    fun `given invalid signature error, when making request, then notify invalid signature listener`() = test {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
+        givenJetpackTunnelResponse(
+            WPAPIResponse.Error(WPAPINetworkError(mock(), WooError.REST_INVALID_SIGNATURE_CODE))
+        )
+
+        sut.executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+
+        verify(invalidSignatureListener).onInvalidSignatureDetected(testSite)
+    }
+
+    @Test
+    fun `given a different error code, when making request, then do not notify invalid signature listener`() = test {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
+        givenJetpackTunnelResponse(WPAPIResponse.Error(WPAPINetworkError(mock(), "rest_too_many_requests")))
+
+        sut.executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+
+        verify(invalidSignatureListener, never()).onInvalidSignatureDetected(testSite)
+    }
+
+    @Test
+    fun `given a successful response, when making request, then notify listener of successful connection`() = test {
+        whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
+        givenJetpackTunnelResponse(WPAPIResponse.Success(SampleResponse("value"), emptyList()))
+
+        sut.executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+
+        verify(invalidSignatureListener).onSuccessfulConnection(testSite)
     }
 
     private suspend fun givenAppPasswordsResponse(response: WPAPIResponse<SampleResponse>) {

@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
@@ -51,6 +52,10 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
     private val diagnosticsService: SupportDiagnosticsService = mock()
     private val accountRepository: AccountRepository = mock()
     private val analyticsTracker: AiSupportChatAnalyticsTracker = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.ai_support_chat_store_connection_error_message) }
+            .thenReturn(STORE_CONNECTION_ERROR_MESSAGE)
+    }
 
     private lateinit var viewModel: AiSupportChatViewModel
 
@@ -67,7 +72,8 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             contextProvider = contextProvider,
             diagnosticsService = diagnosticsService,
             accountRepository = accountRepository,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -139,7 +145,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.selectedIssueType).isNull()
             assertThat(state.diagnosticResult).isNull()
             verify(contextProvider).buildInitialContext()
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -173,7 +179,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onInputChanged(BOT_RESPONSE)
             viewModel.onSendClicked()
 
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -493,7 +499,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Text(ISSUE_DETAILS),
                 AiSupportChatMessageContent.Text(BOT_RESPONSE)
             )
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -519,7 +525,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             viewModel.onSendClicked()
 
             assertThat(viewModel.viewState.value.chatId).isEqualTo(CHAT_ID)
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
             verify(repository, never()).markChatAsUpdated(any(), any())
         }
 
@@ -537,7 +543,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             whenever(contextProvider.buildInitialContext(diagnosticResult = result)).thenReturn(CONTEXT)
             whenever(repository.sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null))
                 .thenReturn(Result.success(response))
-            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS))
+            whenever(repository.registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList()))
                 .thenThrow(RuntimeException("Bookmark write failed"))
 
             continueToChatAfterSuccessfulDiagnostics(result)
@@ -1388,7 +1394,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 TestStatus.Failed()
             )
             verify(repository).sendMessage(DEFAULT_BOT_SLUG, ISSUE_DETAILS, CONTEXT, null, null)
-            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS)
+            verify(repository).registerChat(CHAT_ID, DEFAULT_BOT_SLUG, SESSION_ID, ISSUE_DETAILS, emptyList())
         }
 
     @Test
@@ -1405,6 +1411,106 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
                 AiSupportChatMessageContent.Greeting
             )
             verify(repository, never()).sendMessage(any(), any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given store connection error launch mode, when loaded, then bot is messaged automatically with context`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            val state = viewModel.viewState.value
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.hasStartedChat).isTrue()
+            assertThat(state.selectedIssueType).isEqualTo(SupportIssueType.OTHER)
+            assertThat(state.diagnosticResult?.statuses).hasSize(1)
+            val status = state.diagnosticResult?.statuses?.first()
+            assertThat(status?.test).isEqualTo(DiagnosticTest.STORE_CONNECTION)
+            assertThat(status?.status).isEqualTo(TestStatus.Failed(technicalDetails = "rest_invalid_signature"))
+
+            val diagnosticResultCaptor = argumentCaptor<DiagnosticResult>()
+            verify(contextProvider).buildInitialContext(
+                diagnosticResult = diagnosticResultCaptor.capture(),
+                siteAddress = anyOrNull()
+            )
+            assertThat(diagnosticResultCaptor.firstValue.statuses.map { it.status }).containsExactly(
+                TestStatus.Failed(technicalDetails = "rest_invalid_signature")
+            )
+            verify(repository).sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null)
+        }
+
+    @Test
+    fun `given store connection error launch mode, when auto-send fails, then send error is shown`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.failure(Exception("Network error")))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            val state = viewModel.viewState.value
+            assertThat(state.showSendError).isTrue()
+            assertThat(state.isSending).isFalse()
+            assertThat(state.hasProceededToChat).isTrue()
+            assertThat(state.input).isEqualTo(STORE_CONNECTION_ERROR_MESSAGE)
+        }
+
+    @Test
+    fun `given store connection error launch mode, when loaded, then entry point analytics are tracked`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+
+            verify(analyticsTracker).trackEntryPointTapped(
+                entryPoint = AiSupportChatEntryPoint.STORE_CONNECTION_ERROR,
+                isAuthenticated = true,
+                isResumedChat = false
+            )
+        }
+
+    @Test
+    fun `given store connection error launch mode, when escalated to support, then ticket carries signature tag`() =
+        testBlocking {
+            whenever(
+                contextProvider.buildInitialContext(
+                    diagnosticResult = any(),
+                    siteAddress = anyOrNull()
+                )
+            ).thenReturn(CONTEXT)
+            whenever(repository.sendMessage(DEFAULT_BOT_SLUG, STORE_CONNECTION_ERROR_MESSAGE, CONTEXT, null, null))
+                .thenReturn(Result.success(createResponse()))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.StoreConnectionError())
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.filterIsInstance<ContactHumanSupport>().last()
+            assertThat(event.extraTags).contains("rest_invalid_signature")
         }
 
     @Test
@@ -1509,6 +1615,36 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             )
             assertThat(event.hasReceivedBotResponse).isTrue()
             assertThat(event.extraTags).containsExactly("in_app_support_escalate", "ai_skip")
+        }
+
+    @Test
+    fun `given resumed chat with stored signature tag, when escalated, then ticket carries the tag`() =
+        testBlocking {
+            val response = createResponse(
+                messages = listOf(
+                    createMessage(messageId = 1L, role = SupportChatRole.USER, content = ISSUE_DETAILS),
+                    createMessage(messageId = 2L, role = SupportChatRole.BOT, content = BOT_RESPONSE)
+                )
+            )
+            whenever(repository.fetchChat(DEFAULT_BOT_SLUG, CHAT_ID, SESSION_ID)).thenReturn(Result.success(response))
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+
+            viewModel.onLaunchModeLoaded(
+                AiSupportChatLaunchMode.Resume(
+                    chatId = CHAT_ID,
+                    botSlug = DEFAULT_BOT_SLUG,
+                    sessionId = SESSION_ID,
+                    extraTags = listOf("rest_invalid_signature")
+                )
+            )
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.filterIsInstance<ContactHumanSupport>().last()
+            assertThat(event.extraTags).contains("rest_invalid_signature")
         }
 
     @Test
@@ -1740,7 +1876,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
             assertThat(state.isSending).isFalse()
             assertThat(state.showSendError).isTrue()
             assertThat(state.canContactHumanSupportFromToolbar).isTrue()
-            verify(repository, never()).registerChat(any(), any(), any(), any())
+            verify(repository, never()).registerChat(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -2213,6 +2349,7 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         const val OTHER_ISSUE_LABEL = "Something else"
         const val ISSUE_DETAILS = "My latest orders are missing"
         const val FOLLOW_UP_MESSAGE = "Still broken"
+        const val STORE_CONNECTION_ERROR_MESSAGE = "My store can't be reached."
         const val BOT_MESSAGE_ID = 2L
         const val BOT_RESPONSE = "Let's troubleshoot orders."
         const val FOLLOW_UP_BOT_RESPONSE = "Let's keep troubleshooting."

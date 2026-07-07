@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersCount
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
-import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
@@ -52,9 +51,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS_GUEST
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -65,6 +64,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
@@ -114,7 +114,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getWCOrderListDescriptorWithFiltersAndSearchQuery: GetWCOrderListDescriptorWithFiltersAndSearchQuery =
         mock()
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
-    private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
     private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
@@ -132,7 +131,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(WCOrderListDescriptor(site = mock()))
-        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString())).thenReturn(
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
             WCOrderListDescriptor(
                 site = mock()
             )
@@ -171,7 +170,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         getWCOrderListDescriptorWithFiltersAndSearchQuery = getWCOrderListDescriptorWithFiltersAndSearchQuery,
         getSelectedOrderFiltersCount = getSelectedOrderFiltersCount,
         orderListTransactionLauncher = mock(),
-        shouldShowCreateTestOrderScreen = shouldShowCreateTestOrderScreen,
         analyticsTracker = analyticsTracker,
         barcodeScanningTracker = barcodeScanningTracker,
         notificationChannelsHandler = notificationChannelsHandler,
@@ -298,8 +296,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-        whenever(shouldShowCreateTestOrderScreen()).doReturn(false)
-
         viewModel.createAndPostEmptyViewType(pagedListWrapper)
         advanceUntilIdle()
 
@@ -308,25 +304,6 @@ class OrderListViewModelTest : BaseUnitTest() {
             val emptyView = viewModel.emptyViewType.value
             assertNotNull(emptyView)
             assertEquals(emptyView, ORDER_LIST)
-        }
-    }
-
-    @Test
-    fun `Display 'Try test order' empty view when shouldShowCreateTestOrderScreen is true`() = testBlocking {
-        viewModel.isSearching = false
-        whenever(pagedListWrapper.data.value).doReturn(mock())
-        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
-        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
-        whenever(shouldShowCreateTestOrderScreen()).doReturn(true)
-
-        viewModel.createAndPostEmptyViewType(pagedListWrapper)
-        advanceUntilIdle()
-
-        viewModel.emptyViewType.observeForTesting {
-            // Verify
-            val emptyView = viewModel.emptyViewType.value
-            assertNotNull(emptyView)
-            assertEquals(emptyView, ORDER_LIST_CREATE_TEST_ORDER)
         }
     }
 
@@ -422,6 +399,122 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertEquals(emptyView, SEARCH_RESULTS)
         }
     }
+
+    /**
+     * Test the logic that generates the guest-orders search empty view. It is shown instead of the
+     * regular search empty view when the search query matches the localized Guest label displayed
+     * on order list rows (guest orders don't store that label, so text search can't find them),
+     * as long as no customer filter is active.
+     */
+    @Test
+    fun `given search query matches the guest label, when there are no results, then show guest empty view`() = testBlocking {
+        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
+        viewModel.isSearching = true
+        viewModel.searchQuery = " guest "
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
+
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, SEARCH_RESULTS_GUEST)
+        }
+    }
+
+    @Test
+    fun `given a customer filter is active, when guest label search has no results, then show regular search empty view`() = testBlocking {
+        whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
+        whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
+            WCOrderListDescriptor(site = mock(), customerId = 123L)
+        )
+        viewModel.isSearching = true
+        viewModel.searchQuery = "guest"
+        viewModel.submitSearchOrFilter("guest")
+        whenever(pagedListWrapper.data.value).doReturn(mock())
+        whenever(pagedListWrapper.isEmpty.value).doReturn(true)
+        whenever(pagedListWrapper.listError.value).doReturn(null)
+        whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
+
+        viewModel.createAndPostEmptyViewType(pagedListWrapper)
+        advanceUntilIdle()
+
+        viewModel.emptyViewType.observeForTesting {
+            // Verify
+            val emptyView = viewModel.emptyViewType.value
+            assertNotNull(emptyView)
+            assertEquals(emptyView, SEARCH_RESULTS)
+        }
+    }
+
+    @Test
+    fun `when the guest orders empty view button is clicked, then search for guest orders`() = testBlocking {
+        viewModel.searchQuery = "Guest"
+
+        viewModel.onSearchGuestOrdersClicked()
+
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+            searchQuery = "Guest",
+            searchGuestOrders = true
+        )
+    }
+
+    @Test
+    fun `given a guest orders search, when the same query is re-submitted, then the guest filter is kept`() =
+        testBlocking {
+            // GIVEN a guest orders search, e.g. re-submitted by the restored search view after a config change
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            // WHEN the same query is re-submitted as a plain text search
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+
+            // THEN the guest filter is kept
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(2)).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = true
+            )
+        }
+
+    @Test
+    fun `given a guest orders search, when a different query is submitted, then the guest filter is cleared`() =
+        testBlocking {
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            viewModel.submitSearchOrFilter(searchQuery = "Guests")
+
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "Guests",
+                searchGuestOrders = false
+            )
+            // AND the guest filter is not restored for the original query anymore
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(1)).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = false
+            )
+        }
+
+    @Test
+    fun `given a guest orders search, when the search is closed, then the guest filter is cleared`() =
+        testBlocking {
+            viewModel.searchQuery = "Guest"
+            viewModel.onSearchGuestOrdersClicked()
+
+            viewModel.onSearchClosed()
+
+            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "Guest",
+                searchGuestOrders = false
+            )
+        }
 
     /**
      * Test the logic that generates the Loading empty list view for any tab of the order list

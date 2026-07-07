@@ -8,8 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -19,6 +23,7 @@ class WooPosPerformInstantCatalogFullSyncTest {
     private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val selectedSite: SelectedSite = mock()
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
+    private val isCatalogFileBlocked: WooPosIsCatalogFileBlocked = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
 
     private val sut = WooPosPerformInstantCatalogFullSync(
@@ -26,8 +31,28 @@ class WooPosPerformInstantCatalogFullSyncTest {
         syncTimestampManager = syncTimestampManager,
         syncScheduler = syncScheduler,
         selectedSite = selectedSite,
+        isCatalogFileBlocked = isCatalogFileBlocked,
         wooPosLogWrapper = wooPosLogWrapper
     )
+
+    @Before
+    fun setup() = runTest {
+        whenever(isCatalogFileBlocked()).thenReturn(false)
+    }
+
+    @Test
+    fun `given catalog file blocked, when invoke called, then returns failure without syncing`() = runTest {
+        // GIVEN
+        whenever(isCatalogFileBlocked()).thenReturn(true)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosCatalogFileBlockedException::class.java)
+        verify(syncRepository, never()).syncLocalCatalogFull(any(), any())
+    }
 
     @Test
     fun `given no site selected, when invoke called, then returns failure `() = runTest {

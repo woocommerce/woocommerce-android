@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -16,7 +17,9 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -76,6 +79,30 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+    }
+
+    @Test
+    fun `given force is true, when full sync runs, then force is propagated to file based sync`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site, force = true)
+
+        // THEN
+        verify(posFileBasedSyncAction).syncCatalog(site, true)
+    }
+
+    @Test
+    fun `given force is not specified, when full sync runs, then force defaults to false`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(posFileBasedSyncAction).syncCatalog(site, false)
     }
 
     @Test
@@ -247,6 +274,70 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when full sync fails with catalog file blocked, then tracks catalog_file_blocked`() =
+        testBlocking {
+            // GIVEN
+            givenFileBasedFullSyncFails(
+                PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(
+                    error = "Catalog file blocked by the host"
+                )
+            )
+
+            // WHEN
+            sut.syncLocalCatalogFull(site)
+
+            // THEN
+            verify(analyticsTracker).track(
+                argThat {
+                    this is WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed &&
+                        errorType == WooPosAnalyticsEventConstant.SyncErrorType.CATALOG_FILE_BLOCKED
+                }
+            )
+        }
+
+    @Test
+    fun `when full sync succeeds, then clears catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager).setCatalogFileBlocked(false)
+    }
+
+    @Test
+    fun `when full sync fails with catalog file blocked, then sets catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.CatalogFileBlocked(
+                error = "Catalog file blocked by the host"
+            )
+        )
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager).setCatalogFileBlocked(true)
+    }
+
+    @Test
+    fun `when full sync fails with non-blocked error, then does not change catalog file blocked flag`() = testBlocking {
+        // GIVEN
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
+        )
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(syncTimestampManager, never()).setCatalogFileBlocked(any())
+    }
+
+    @Test
     fun `when incremental sync starts, then tracks sync started event`() = testBlocking {
         // GIVEN
         givenIncrementalSyncSucceeds()
@@ -291,7 +382,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         syncDurationMs: Long = 1000L,
         lastModifiedDate: String? = "2024-01-01T12:00:00Z"
     ) {
-        whenever(posFileBasedSyncAction.syncCatalog(any()))
+        whenever(posFileBasedSyncAction.syncCatalog(any(), any()))
             .thenReturn(
                 WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success(
                     result = PosLocalCatalogSyncResult.Success(
@@ -307,7 +398,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private suspend fun givenFileBasedFullSyncFails(
         failure: PosLocalCatalogSyncResult.Failure
     ) {
-        whenever(posFileBasedSyncAction.syncCatalog(any()))
+        whenever(posFileBasedSyncAction.syncCatalog(any(), any()))
             .thenReturn(
                 WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure(result = failure)
             )

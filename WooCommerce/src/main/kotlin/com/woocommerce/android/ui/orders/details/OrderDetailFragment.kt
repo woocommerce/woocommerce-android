@@ -477,11 +477,6 @@ class OrderDetailFragment :
         viewModel.subscriptions.observe(viewLifecycleOwner) {
             showSubscriptions(it)
         }
-        viewModel.giftCards.observe(viewLifecycleOwner) {
-            lifecycleScope.launch {
-                showGiftCards(it, viewModel.awaitOrder().currency)
-            }
-        }
         showShippingLines(viewModel.shippingLineList)
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
@@ -685,6 +680,7 @@ class OrderDetailFragment :
                 viewModel.onPrintingInstructionsClicked()
             }
         )
+        showGiftCards(order.giftCards, order.currency)
     }
 
     private fun shouldShowViewCustomerOrdersButton(): Boolean {

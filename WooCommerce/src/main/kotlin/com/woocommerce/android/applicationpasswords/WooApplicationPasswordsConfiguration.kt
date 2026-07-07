@@ -13,7 +13,7 @@ class WooApplicationPasswordsConfiguration @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
 ) : ApplicationPasswordsConfiguration {
     override val applicationName: String =
-        "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.replace(' ', '-')}"
+        "${BuildConfig.APPLICATION_ID}.app-client.${DeviceInfo.name.toApplicationPasswordSafeDeviceName()}"
 
     override suspend fun isEnabledForJetpackAccess(): Boolean {
         if (!appPrefs.jetpackAppPasswordsEnabled) return false
@@ -22,3 +22,8 @@ class WooApplicationPasswordsConfiguration @Inject constructor(
         return featureFlagRepository.isEnabled(FeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
     }
 }
+
+internal fun String.toApplicationPasswordSafeDeviceName(): String =
+    replace(' ', '-')
+        .replace('/', '-')
+        .replace('\\', '-')

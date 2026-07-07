@@ -32,7 +32,7 @@ import kotlin.time.TimeSource.Monotonic
 
 @HiltViewModel
 class WooPosOrdersListViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val ordersDataSource: WooPosOrdersDataSource,
     private val resourceProvider: ResourceProvider,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
@@ -42,9 +42,16 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
 
+    private var isIssuingRefund: Boolean
+        get() = savedStateHandle[KEY_IS_ISSUING_REFUND] ?: false
+        set(value) {
+            savedStateHandle[KEY_IS_ISSUING_REFUND] = value
+        }
+
     private val _state = MutableStateFlow<WooPosOrdersListState>(
         WooPosOrdersListState.Loading(
-            searchInputState = WooPosSearchInputState.Closed
+            searchInputState = WooPosSearchInputState.Closed,
+            showToolbar = showToolbarFor(WooPosSearchInputState.Closed),
         )
     )
     val state: StateFlow<WooPosOrdersListState> = _state.asStateFlow()
@@ -65,6 +72,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY_MS = 300L
+        private const val KEY_IS_ISSUING_REFUND = "is_issuing_refund"
     }
 
     init {
@@ -229,9 +237,30 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
         _state.value = WooPosOrdersListState.Loading(
-            searchInputState = WooPosSearchInputState.Closed
+            searchInputState = WooPosSearchInputState.Closed,
+            showToolbar = showToolbarFor(WooPosSearchInputState.Closed),
         )
         loadOrders()
+    }
+
+    fun onRefundStarted() = updateIssuingRefund(issuing = true)
+
+    fun onRefundDismissed() = updateIssuingRefund(issuing = false)
+
+    private fun updateIssuingRefund(issuing: Boolean) {
+        if (isIssuingRefund == issuing) return
+        isIssuingRefund = issuing
+        _state.value = _state.value.withShowToolbar(showToolbarFor(_state.value.searchInputState))
+    }
+
+    private fun showToolbarFor(searchInputState: WooPosSearchInputState): Boolean =
+        searchInputState is WooPosSearchInputState.Closed && !isIssuingRefund
+
+    private fun WooPosOrdersListState.withShowToolbar(show: Boolean): WooPosOrdersListState = when (this) {
+        is WooPosOrdersListState.Content -> copy(showToolbar = show)
+        is WooPosOrdersListState.Empty -> copy(showToolbar = show)
+        is WooPosOrdersListState.Error -> copy(showToolbar = show)
+        is WooPosOrdersListState.Loading -> copy(showToolbar = show)
     }
 
     private fun refreshOrderItem(orderId: Long) {
@@ -266,14 +295,16 @@ class WooPosOrdersListViewModel @Inject constructor(
                         coordinator.selectOrder(null)
                         _state.value = WooPosOrdersListState.Error(
                             message = result.message,
-                            searchInputState = WooPosSearchInputState.Closed
+                            searchInputState = WooPosSearchInputState.Closed,
+                            showToolbar = showToolbarFor(WooPosSearchInputState.Closed),
                         )
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
                         if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersListState.Loading(
-                                searchInputState = WooPosSearchInputState.Closed
+                                searchInputState = WooPosSearchInputState.Closed,
+                                showToolbar = showToolbarFor(WooPosSearchInputState.Closed),
                             )
                         } else {
                             replaceOrders(result.orders)
@@ -286,7 +317,8 @@ class WooPosOrdersListViewModel @Inject constructor(
 
                         if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersListState.Empty(
-                                searchInputState = WooPosSearchInputState.Closed
+                                searchInputState = WooPosSearchInputState.Closed,
+                                showToolbar = showToolbarFor(WooPosSearchInputState.Closed),
                             )
                         } else {
                             replaceOrders(result.orders)
@@ -306,7 +338,8 @@ class WooPosOrdersListViewModel @Inject constructor(
                     items = WooPosOrdersListState.Content.Items.Searching,
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
                     searchInputState = _state.value.searchInputState,
-                    paginationState = WooPosPaginationState.None
+                    paginationState = WooPosPaginationState.None,
+                    showToolbar = showToolbarFor(_state.value.searchInputState),
                 )
             }
 
@@ -323,7 +356,8 @@ class WooPosOrdersListViewModel @Inject constructor(
                         ),
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
-                        paginationState = WooPosPaginationState.None
+                        paginationState = WooPosPaginationState.None,
+                        showToolbar = showToolbarFor(_state.value.searchInputState),
                     )
                 }
 
@@ -337,7 +371,8 @@ class WooPosOrdersListViewModel @Inject constructor(
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
-                            paginationState = WooPosPaginationState.None
+                            paginationState = WooPosPaginationState.None,
+                            showToolbar = showToolbarFor(_state.value.searchInputState),
                         )
                     } else {
                         replaceOrders(result.orders)
@@ -390,7 +425,7 @@ class WooPosOrdersListViewModel @Inject constructor(
         val newSelectedId = if (isSelectedOrderStillInList) {
             currentSelectedId
         } else {
-            requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+            newFirstOrderId ?: return
         }
 
         val items = orders.map { order ->
@@ -401,7 +436,8 @@ class WooPosOrdersListViewModel @Inject constructor(
             items = WooPosOrdersListState.Content.Items.Loaded(items),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            showToolbar = showToolbarFor(_state.value.searchInputState),
         )
 
         coordinator.selectOrder(newSelectedId)
@@ -429,16 +465,22 @@ class WooPosOrdersListViewModel @Inject constructor(
             items = WooPosOrdersListState.Content.Items.Loaded(allItems),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            showToolbar = showToolbarFor(_state.value.searchInputState),
         )
     }
 
     private fun updateSearchState(searchState: WooPosSearchInputState) {
+        val showToolbar = showToolbarFor(searchState)
         _state.value = when (val currentState = _state.value) {
-            is WooPosOrdersListState.Content -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersListState.Empty -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersListState.Error -> currentState.copy(searchInputState = searchState)
-            is WooPosOrdersListState.Loading -> currentState.copy(searchInputState = searchState)
+            is WooPosOrdersListState.Content ->
+                currentState.copy(searchInputState = searchState, showToolbar = showToolbar)
+            is WooPosOrdersListState.Empty ->
+                currentState.copy(searchInputState = searchState, showToolbar = showToolbar)
+            is WooPosOrdersListState.Error ->
+                currentState.copy(searchInputState = searchState, showToolbar = showToolbar)
+            is WooPosOrdersListState.Loading ->
+                currentState.copy(searchInputState = searchState, showToolbar = showToolbar)
         }
     }
 

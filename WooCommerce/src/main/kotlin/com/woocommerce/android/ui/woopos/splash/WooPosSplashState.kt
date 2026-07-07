@@ -7,7 +7,7 @@ sealed class WooPosSplashState {
     data object Syncing : WooPosSplashState()
     data object SyncPreparing : WooPosSplashState()
     data class SyncProgress(val processed: Int, val total: Int) : WooPosSplashState()
-    data class SyncFailed(val error: String) : WooPosSplashState()
+    data class SyncFailed(val error: String, val isServerPermissionsError: Boolean = false) : WooPosSplashState()
     data object Loaded : WooPosSplashState()
     data class NotEligible(val reason: WooPosLaunchability.NonLaunchabilityReason) : WooPosSplashState()
 }

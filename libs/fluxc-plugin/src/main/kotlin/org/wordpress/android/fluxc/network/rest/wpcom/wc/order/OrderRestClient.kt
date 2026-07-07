@@ -1174,11 +1174,24 @@ class OrderRestClient @Inject constructor(
             wpAPINetworkError.errorCode == "rest_invalid_param" -> OrderErrorType.INVALID_PARAM
             wpAPINetworkError.errorCode == "woocommerce_rest_shop_order_invalid_id" -> OrderErrorType.INVALID_ID
             wpAPINetworkError.errorCode == "rest_no_route" -> OrderErrorType.PLUGIN_NOT_ACTIVE
+            isSiteReturnedNonJsonResponse(wpAPINetworkError) -> {
+                OrderErrorType.PARSE_ERROR
+            }
             wpAPINetworkError.type == BaseRequest.GenericErrorType.PARSE_ERROR -> OrderErrorType.PARSE_ERROR
             wpAPINetworkError.type == BaseRequest.GenericErrorType.TIMEOUT -> TIMEOUT_ERROR
             else -> OrderErrorType.fromString(wpAPINetworkError.errorCode.orEmpty())
         }
         return OrderError(orderErrorType, wpAPINetworkError.combinedErrorMessage, wpAPINetworkError)
+    }
+
+    /**
+     * Detects when the merchant's site returned a non-JSON body through the Jetpack proxy: the proxy
+     * (see CONNECT-38) wraps the upstream bytes as `no_response_body` with the raw payload carried in
+     * `data.raw_body`. This usually means a plugin error or a maintenance page on the merchant's site.
+     */
+    private fun isSiteReturnedNonJsonResponse(wpAPINetworkError: WPAPINetworkError): Boolean {
+        return wpAPINetworkError.errorCode == "no_response_body" &&
+            wpAPINetworkError.errorData?.has("raw_body") == true
     }
 
     private fun orderShipmentTrackingResponseToModel(
@@ -1260,6 +1273,7 @@ class OrderRestClient @Inject constructor(
             "date_paid_gmt",
             "discount_total",
             "fee_lines",
+            "gift_cards",
             "tax_lines",
             "id",
             "customer_id",

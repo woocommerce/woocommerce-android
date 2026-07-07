@@ -44,7 +44,7 @@ import kotlin.time.TimeSource
 
 @HiltViewModel(assistedFactory = AssistantViewModel.Factory::class)
 @Suppress("LargeClass")
-class AssistantViewModel @AssistedInject internal constructor(
+internal class AssistantViewModel @AssistedInject constructor(
     private val runtime: AssistantRuntime,
     private val selectedSite: SelectedSite,
     private val assistantTelemetryTracker: AssistantTelemetryTracker,

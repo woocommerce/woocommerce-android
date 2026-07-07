@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.getOrAwaitValue
@@ -48,6 +49,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardStatsViewModelTest : BaseUnitTest() {
@@ -95,10 +97,12 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val dateRangeFormatter: DashboardDateRangeFormatter = mock {
         on { formatRangeDate(any()) } doReturn "Jan 1"
     }
+    private val calendarHelper: CalendarHelper = mock()
 
     private lateinit var viewModel: DashboardStatsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(Calendar.getInstance())
         whenever(statsRepository.fetchAnalyticsOrderDateType())
             .thenReturn(Result.success(WCAnalyticsOrderDateType.PAID))
         whenever(statsRepository.updateAnalyticsOrderDateType(any()))
@@ -107,7 +111,8 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         val getSelectedDateRange = GetSelectedRangeForDashboardStats(
             appPrefs = appPrefsWrapper,
             customDateRangeDataStore = customDateRangeDataStore,
-            dateUtils = dateUtils
+            dateUtils = dateUtils,
+            calendarHelper = calendarHelper
         )
 
         viewModel = DashboardStatsViewModel(
@@ -498,6 +503,20 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
             Assertions.assertThat(viewModel.visitorStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.VisitorStatsViewState.Unavailable::class.java)
+        }
+
+    @Test
+    fun `given visitor stats unavailable, when screen starts, then data loading failed is not tracked`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any(), anyOrNull()))
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
+            }
+
+            verify(analyticsTrackerWrapper, never()).track(
+                stat = eq(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED),
+                properties = any()
+            )
         }
 
     @Test

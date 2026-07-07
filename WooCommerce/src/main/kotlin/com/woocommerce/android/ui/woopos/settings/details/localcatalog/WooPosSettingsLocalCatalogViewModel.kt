@@ -134,7 +134,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
             _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog) }
 
-            val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get())
+            val result = localCatalogSyncRepository.syncLocalCatalogFull(selectedSite.get(), force = true)
 
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
@@ -145,7 +145,11 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 is PosLocalCatalogSyncResult.Failure -> {
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
                     childToParentEventSender.sendToParent(
-                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(result.error)
+                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(
+                            errorMessage = result.error,
+                            isServerPermissionsError =
+                            result is PosLocalCatalogSyncResult.Failure.CatalogFileBlocked
+                        )
                     )
                 }
             }

@@ -712,6 +712,12 @@ class OrderListFragment :
                         emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
 
+                    EmptyViewType.SEARCH_RESULTS_GUEST -> {
+                        emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery) {
+                            viewModel.onSearchGuestOrdersClicked()
+                        }
+                    }
+
                     EmptyViewType.ORDER_LIST -> {
                         communicationViewModel.notifyOrdersEmpty()
 
@@ -728,13 +734,6 @@ class OrderListFragment :
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         emptyView.show(emptyViewType) {
                             refreshOrders()
-                        }
-                    }
-
-                    EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER -> {
-                        AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TEST_ORDER_DISPLAYED)
-                        emptyView.show(emptyViewType) {
-                            navigateToTryTestOrderScreen()
                         }
                     }
 
@@ -945,15 +944,6 @@ class OrderListFragment :
     private fun showOrderFilters() {
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderFilterListFragment()
-        )
-    }
-
-    private fun navigateToTryTestOrderScreen() {
-        AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TRY_TEST_ORDER_TAPPED)
-        findNavController().navigateSafely(
-            OrderListFragmentDirections.actionOrderListFragmentToCreateTestOrderDialogFragment(
-                siteUrl = selectedSite.get().url
-            )
         )
     }
 
@@ -1179,7 +1169,7 @@ class OrderListFragment :
             show = show,
             title = getString(R.string.orderlist_parsing_error_title),
             message = getString(R.string.orderlist_parsing_error_message),
-            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            troubleshootingClick = { openTroubleshootConnection() },
             supportContactClick = { openSupportRequestScreen() }
         )
     }

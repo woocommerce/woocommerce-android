@@ -55,6 +55,9 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
         doReturn(WCProductStore.ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
+        productRepository.stub {
+            on { getProductList(any(), any(), anyOrNull()) } doReturn emptyList()
+        }
     }
 
     private fun createViewModel() {

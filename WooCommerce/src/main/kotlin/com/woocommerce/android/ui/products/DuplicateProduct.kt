@@ -28,7 +28,9 @@ class DuplicateProduct @Inject constructor(
                     productAggregate.product.name
                 ),
                 sku = "",
-                status = ProductStatus.DRAFT
+                status = ProductStatus.DRAFT,
+                slug = "",
+                permalink = ""
             )
         )
 

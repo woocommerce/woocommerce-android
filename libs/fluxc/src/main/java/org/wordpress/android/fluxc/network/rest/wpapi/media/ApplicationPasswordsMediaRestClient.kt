@@ -5,13 +5,15 @@ import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult.Created
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult.Existing
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult.Failure
-import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult.NotSupported
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCreationResult
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsManager
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
+import org.wordpress.android.fluxc.store.MediaStore.MediaError
+import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 import javax.inject.Named
@@ -30,19 +32,22 @@ class ApplicationPasswordsMediaRestClient @Inject constructor(
         return (site.wpApiRestUrl ?: site.url.slashJoin("wp-json")).slashJoin(urlV2)
     }
 
-    override suspend fun getAuthorizationHeader(site: SiteModel): String {
-        val credentials = when (val result = applicationPasswordsManager.getApplicationCredentials(site)) {
-            is Created -> result.credentials
-            is Existing -> result.credentials
-            // If there is no saved password yet or the creation fails, the request will simply fail with a 401 error
-            // This is unlikely to happen though, since media handling happens later in the app
-            is Failure -> null
-            is NotSupported -> null
-        }
+    override suspend fun getAuthorizationHeader(site: SiteModel): AuthorizationHeaderResult {
+        return when (val result = applicationPasswordsManager.getApplicationCredentials(site)) {
+            is ApplicationPasswordCreationResult.Created -> AuthorizationHeaderResult.Success(
+                Credentials.basic(result.credentials.userName, result.credentials.password)
+            )
 
-        return credentials?.let {
-            Credentials.basic(credentials.userName, credentials.password)
-        }.orEmpty()
+            is ApplicationPasswordCreationResult.Existing -> AuthorizationHeaderResult.Success(
+                Credentials.basic(result.credentials.userName, result.credentials.password)
+            )
+
+            is ApplicationPasswordCreationResult.Failure ->
+                AuthorizationHeaderResult.Failure(result.error.toGenerationFailureMediaError())
+
+            is ApplicationPasswordCreationResult.NotSupported ->
+                AuthorizationHeaderResult.Failure(result.originalError.toGenerationFailureMediaError())
+        }
     }
 
     override suspend fun <T : Any> executeGetGsonRequest(
@@ -57,5 +62,21 @@ class ApplicationPasswordsMediaRestClient @Inject constructor(
             clazz = clazz,
             params = params
         )
+    }
+
+    private fun BaseNetworkError.toGenerationFailureMediaError(): MediaError {
+        val originalErrorCode = when (this) {
+            is WPAPINetworkError -> errorCode
+            is WPComGsonNetworkError -> apiError
+            else -> null
+        }
+
+        return MediaError(MediaErrorType.fromBaseNetworkError(this)).apply {
+            statusCode = volleyError?.networkResponse?.statusCode ?: 0
+            apiErrorCode = ApplicationPasswordsNetwork.APP_PASSWORDS_GENERATION_FAILURE_ERROR_CODE_PREFIX +
+                originalErrorCode.orEmpty()
+            message = this@toGenerationFailureMediaError.message
+            logMessage = getCombinedErrorMessage()
+        }
     }
 }

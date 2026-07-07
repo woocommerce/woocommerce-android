@@ -60,7 +60,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         whenever(preferencesRepository.allowCellularDataUpdate).thenReturn(allowCellularDataFlow)
         whenever(parentToChildEventReceiver.events).thenReturn(parentEventsFlow)
         whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(any()))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(any(), any()))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
                     productsSynced = 10,
@@ -201,7 +201,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         // THEN
         val finalStatus = sut.state.value.catalogStatus
         assertThat(finalStatus).isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
-        verify(localCatalogSyncRepository).syncLocalCatalogFull(mockSite)
+        verify(localCatalogSyncRepository).syncLocalCatalogFull(mockSite, true)
         verify(syncTimestampManager, times(2)).getProductsLastSyncTimestamp()
         verify(syncTimestampManager, times(2)).getVariationsLastSyncTimestamp()
         verify(syncTimestampManager, times(2)).getFullSyncLastCompletedTimestamp()
@@ -211,7 +211,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     fun `given sync fails, when runFullCatalogSync called, then ShowSyncErrorDialog event is sent`() = runTest {
         // GIVEN
         val errorMessage = "Network error"
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
             .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError(errorMessage))
 
         sut = createViewModel()
@@ -231,10 +231,56 @@ class WooPosSettingsLocalCatalogViewModelTest {
     }
 
     @Test
+    fun `given catalog file blocked, when runFullCatalogSync called, then error dialog is server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
+                .thenReturn(PosLocalCatalogSyncResult.Failure.CatalogFileBlocked("Catalog file blocked by the host"))
+
+            sut = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.runFullCatalogSync()
+            advanceUntilIdle()
+
+            // THEN
+            verify(childToParentEventSender).sendToParent(
+                argThat {
+                    this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
+                        this.isServerPermissionsError
+                }
+            )
+        }
+
+    @Test
+    fun `given non-blocked failure, when runFullCatalogSync called, then error dialog is not server permissions error`() =
+        runTest {
+            // GIVEN
+            whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
+                .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError("Network error"))
+
+            sut = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.runFullCatalogSync()
+            advanceUntilIdle()
+
+            // THEN
+            verify(childToParentEventSender).sendToParent(
+                argThat {
+                    this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
+                        !this.isServerPermissionsError
+                }
+            )
+        }
+
+    @Test
     fun `given sync fails, when runFullCatalogSync called, then catalog status is restored to previous state`() = runTest {
         // GIVEN
         val errorMessage = "Network error"
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
             .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError(errorMessage))
 
         sut = createViewModel()
@@ -253,7 +299,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `given sync succeeds, when runFullCatalogSync called, then catalog status is reloaded`() = runTest {
         // GIVEN
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
                     productsSynced = 10,
@@ -277,7 +323,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `given RetrySyncRequested event, when received from parent, then runFullCatalogSync is triggered`() = runTest {
         // GIVEN
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
                     productsSynced = 10,
@@ -301,7 +347,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `when runFullCatalogSync called, then catalog status eventually updates to Available`() = runTest {
         // GIVEN
-        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite, true))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
                     productsSynced = 10,
@@ -348,6 +394,20 @@ class WooPosSettingsLocalCatalogViewModelTest {
 
         // THEN
         verify(localCatalogSyncRepository).syncLocalCatalogIncremental(mockSite)
+    }
+
+    @Test
+    fun `when runFullCatalogSync called, then full sync is requested with force true`() = runTest {
+        // GIVEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        verify(localCatalogSyncRepository).syncLocalCatalogFull(mockSite, force = true)
     }
 
     @Test

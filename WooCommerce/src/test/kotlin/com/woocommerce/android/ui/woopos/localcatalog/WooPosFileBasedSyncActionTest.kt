@@ -171,6 +171,36 @@ class WooPosFileBasedSyncActionTest {
     }
 
     @Test
+    fun `given force is true, when syncCatalog, then forces only the first generation request`() = runTest {
+        // GIVEN - the forced first request is scheduled, then a follow-up poll completes
+        val scheduled = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.SCHEDULED)
+        )
+        val completed = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.COMPLETED, url = defaultUrl)
+        )
+        whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site, force = true)).thenReturn(scheduled)
+        whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site, force = false)).thenReturn(completed)
+
+        // WHEN
+        sut.syncCatalog(site, force = true)
+
+        // THEN
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = true)
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = false)
+    }
+
+    @Test
+    fun `given force is false, when syncCatalog, then never forces generation`() = runTest {
+        // WHEN
+        sut.syncCatalog(site, force = false)
+
+        // THEN
+        verify(posLocalCatalogStore, never()).generateCatalogOrGetStatus(site, force = true)
+        verify(posLocalCatalogStore).generateCatalogOrGetStatus(site, force = false)
+    }
+
+    @Test
     fun `given single API failure, when syncCatalog, then continues polling`() = runTest {
         // GIVEN
         givenCatalogGenerationFailsOnceThenCompleted()
@@ -244,6 +274,34 @@ class WooPosFileBasedSyncActionTest {
 
         // THEN
         verify(catalogFileParser, never()).parseCatalogFile(any(), any())
+    }
+
+    @Test
+    fun `given download is blocked by host, when syncCatalog, then returns catalog file blocked failure`() =
+        runTest {
+            // GIVEN
+            whenever(catalogFileDownloader.downloadCatalogFile(any(), any()))
+                .thenReturn(Result.failure(WooPosCatalogFileBlockedException()))
+
+            // WHEN
+            val result = sut.syncCatalog(site)
+
+            // THEN
+            val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+            assertThat(failure).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogFileBlocked::class.java)
+        }
+
+    @Test
+    fun `given download fails with transport error, when syncCatalog, then returns network error`() = runTest {
+        // GIVEN
+        givenFileDownloadFails("Download error")
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        val failure = (result as WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure).result
+        assertThat(failure).isInstanceOf(PosLocalCatalogSyncResult.Failure.NetworkError::class.java)
     }
 
     @Test
@@ -440,6 +498,20 @@ class WooPosFileBasedSyncActionTest {
         // state-change reset this would exceed MAX_POLL_ATTEMPTS=20 and time out, but each phase
         // alone is below the budget so the overall sync should succeed.
         givenCatalogScheduledThenInProgressThenCompleted(scheduledPolls = 15, inProgressPolls = 15)
+
+        // WHEN
+        val result = sut.syncCatalog(site)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success::class.java)
+    }
+
+    @Test
+    fun `given progress advances within a state, when syncCatalog, then poll budget resets`() = runTest {
+        // GIVEN — 25 IN_PROGRESS polls, each reporting more processed items, before COMPLETED.
+        // 25 exceeds MAX_POLL_ATTEMPTS=20 and the state never changes, so without a
+        // progress-based reset this would time out; advancing progress resets the budget.
+        givenCatalogInProgressWithAdvancingProgressThenCompleted(inProgressPolls = 25)
 
         // WHEN
         val result = sut.syncCatalog(site)
@@ -685,6 +757,22 @@ class WooPosFileBasedSyncActionTest {
         var stub = whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site)).thenReturn(scheduled)
         repeat(scheduledPolls - 1) { stub = stub.thenReturn(scheduled) }
         repeat(inProgressPolls) { stub = stub.thenReturn(inProgress) }
+        stub.thenReturn(completed)
+    }
+
+    private suspend fun givenCatalogInProgressWithAdvancingProgressThenCompleted(inProgressPolls: Int) {
+        val completed = Result.success(
+            WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.COMPLETED, url = defaultUrl)
+        )
+        fun inProgress(processed: Int) = Result.success(
+            WooPosGenerateCatalogResult(
+                state = WooPosGenerateCatalogState.IN_PROGRESS,
+                processed = processed,
+                total = 1000,
+            )
+        )
+        var stub = whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site)).thenReturn(inProgress(1))
+        repeat(inProgressPolls - 1) { index -> stub = stub.thenReturn(inProgress(index + 2)) }
         stub.thenReturn(completed)
     }
 

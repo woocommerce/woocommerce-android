@@ -125,12 +125,12 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given self driven push notifications feature flag, when inspected, then local value is enabled`() {
+    fun `given self driven push notifications feature flag, when inspected, then local value follows debug build`() {
         // WHEN
         val localValue = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1.localValue
 
         // THEN
-        assertThat(localValue).isTrue()
+        assertThat(localValue).isEqualTo(PackageUtils.isDebugBuild())
     }
 
     @Test
@@ -151,12 +151,46 @@ class FeatureFlagRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given local is false and remote is true, when effectiveValue accessed, then local keeps feature disabled`() {
+    fun `given local is false and remote is true, when effectiveValue accessed, then remote enables feature`() {
         // GIVEN
         val state = FeatureFlagRepository.FeatureFlagState(
             flag = FeatureFlag.WC_SHIPPING_BANNER,
             localValue = false,
             remoteValue = true,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isTrue()
+    }
+
+    @Test
+    fun `given local is false and remote is null, when effectiveValue accessed, then feature stays disabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
+            localValue = false,
+            remoteValue = null,
+            overrideValue = null
+        )
+
+        // WHEN
+        val effectiveValue = state.effectiveValue
+
+        // THEN
+        assertThat(effectiveValue).isFalse()
+    }
+
+    @Test
+    fun `given local is false and remote is false, when effectiveValue accessed, then feature stays disabled`() {
+        // GIVEN
+        val state = FeatureFlagRepository.FeatureFlagState(
+            flag = FeatureFlag.WC_SHIPPING_BANNER,
+            localValue = false,
+            remoteValue = false,
             overrideValue = null
         )
 

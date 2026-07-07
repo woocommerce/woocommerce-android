@@ -23,7 +23,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_DETAILS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_LOADING
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_CATEGORY_LIST
@@ -31,6 +30,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.PRODUCT_TAG_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.REVIEW_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS_GUEST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED_REVIEW_LIST
@@ -42,7 +42,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         DASHBOARD,
         GROUPED_PRODUCT_LIST,
         ORDER_LIST,
-        ORDER_LIST_CREATE_TEST_ORDER,
         ORDER_LIST_LOADING,
         ORDER_LIST_FILTERED,
         ORDER_DETAILS,
@@ -50,6 +49,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         REVIEW_LIST,
         UNREAD_FILTERED_REVIEW_LIST,
         SEARCH_RESULTS,
+        SEARCH_RESULTS_GUEST,
         FILTER_RESULTS,
         NETWORK_ERROR,
         NETWORK_OFFLINE,
@@ -152,14 +152,6 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 drawableId = R.drawable.img_empty_orders_no_orders
             }
 
-            ORDER_LIST_CREATE_TEST_ORDER -> {
-                isTitleBold = true
-                title = context.getString(R.string.empty_order_list_title)
-                message = context.getString(R.string.empty_order_test_order_message)
-                buttonText = context.getString(R.string.empty_order_test_order_button)
-                drawableId = R.drawable.img_empty_orders_no_orders
-            }
-
             ORDER_LIST_LOADING -> {
                 isTitleBold = true
                 title = context.getString(R.string.orderlist_loading)
@@ -222,6 +214,15 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
                 message = null
                 buttonText = null
+                drawableId = R.drawable.img_empty_search
+            }
+
+            SEARCH_RESULTS_GUEST -> {
+                isTitleBold = false
+                val fmtArgs = "<strong>$searchQueryOrFilter</strong>"
+                title = String.format(context.getString(R.string.empty_message_with_search), fmtArgs)
+                message = context.getString(R.string.empty_message_with_search_guest)
+                buttonText = context.getString(R.string.empty_search_guest_orders_button)
                 drawableId = R.drawable.img_empty_search
             }
 

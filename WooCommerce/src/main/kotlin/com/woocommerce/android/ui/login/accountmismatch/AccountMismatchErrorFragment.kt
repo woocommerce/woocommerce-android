@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment.Listener
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToJetpackActivationSteps
-import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToLoginScreen
+import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.NavigateToSiteAddressLogin
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.OnJetpackConnectedEvent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -74,7 +74,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
                     }
                 }
                 is NavigateToJetpackActivationSteps -> navigateToJetpackActivationSteps(event)
-                is NavigateToLoginScreen -> navigateToLoginScreen()
+                is NavigateToSiteAddressLogin -> navigateToSiteAddressLogin(event.siteUrl)
                 is OnJetpackConnectedEvent -> onJetpackConnected(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -108,9 +108,11 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
         }
     }
 
-    private fun navigateToLoginScreen() {
+    private fun navigateToSiteAddressLogin(siteUrl: String) {
         val intent = Intent(context, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            action = LoginActivity.LOGIN_WITH_SITE_ADDRESS_ACTION
+            putExtra(LoginActivity.SITE_ADDRESS_PARAMETER, siteUrl)
             LoginMode.WOO_LOGIN_MODE.putInto(this)
         }
         startActivity(intent)

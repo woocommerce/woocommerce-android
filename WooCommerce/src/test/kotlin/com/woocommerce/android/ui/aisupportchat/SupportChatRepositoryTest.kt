@@ -207,6 +207,34 @@ class SupportChatRepositoryTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given extra tags, when registering chat, then tags are persisted joined`() = testBlocking {
+        stubSelectedSite()
+        val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
+
+        repository.registerChat(
+            chatId = CHAT_ID,
+            botSlug = BOT_SLUG,
+            sessionId = SESSION_ID,
+            firstUserMessage = "Help",
+            extraTags = listOf("rest_invalid_signature", "another_tag")
+        )
+
+        verify(bookmarkDao).insertOrReplace(bookmarkCaptor.capture())
+        assertThat(bookmarkCaptor.firstValue.extraTags).containsExactly("rest_invalid_signature", "another_tag")
+    }
+
+    @Test
+    fun `given bookmark with extra tags, when loading history, then tags are mapped`() = testBlocking {
+        stubSelectedSite()
+        val entity = createBookmarkEntity().copy(extraTags = listOf("rest_invalid_signature", "another_tag"))
+        whenever(bookmarkDao.getForSite(LocalId(LOCAL_SITE_ID))).thenReturn(listOf(entity))
+
+        val bookmarks = repository.loadChatHistory()
+
+        assertThat(bookmarks.single().extraTags).containsExactly("rest_invalid_signature", "another_tag")
+    }
+
+    @Test
     fun `given blank first message, when registering chat, then title is null`() = testBlocking {
         stubSelectedSite()
         val bookmarkCaptor = argumentCaptor<SupportChatBookmarkEntity>()
@@ -268,6 +296,7 @@ class SupportChatRepositoryTest : BaseUnitTest() {
                 sessionId = entity.sessionId,
                 hasCreatedTicket = entity.hasCreatedTicket,
                 isResolved = entity.isResolved,
+                extraTags = entity.extraTags,
                 title = entity.title,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt

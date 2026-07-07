@@ -40,38 +40,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         ) : Error() {
             override val name: String = "order_creation_failed"
         }
-
-        data class BookingCancelError(
-            override val errorContext: KClass<out Any>,
-            override val errorType: String?,
-            override val errorDescription: String?,
-        ) : Error() {
-            override val name: String = "booking_cancel_failed"
-        }
-
-        data class BookingAttendanceChangeError(
-            override val errorContext: KClass<out Any>,
-            override val errorType: String?,
-            override val errorDescription: String?,
-        ) : Error() {
-            override val name: String = "booking_attendance_change_failed"
-        }
-
-        data class BookingNoteAddError(
-            override val errorContext: KClass<out Any>,
-            override val errorType: String?,
-            override val errorDescription: String?,
-        ) : Error() {
-            override val name: String = "booking_note_add_failed"
-        }
-
-        data class BookingRefundError(
-            override val errorContext: KClass<out Any>,
-            override val errorType: String?,
-            override val errorDescription: String?,
-        ) : Error() {
-            override val name: String = "booking_refund_failed"
-        }
     }
 
     sealed class Event : WooPosAnalyticsEvent() {
@@ -248,62 +216,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
-        }
-
-        data object GoToBookingsTapped : Event() {
-            override val name: String = "bookings_menu_item_tapped"
-        }
-
-        data object BookingListItemTapped : Event() {
-            override val name: String = "bookings_list_booking_tapped"
-        }
-
-        data object BookingsListSearchButtonTapped : Event() {
-            override val name: String = "bookings_list_search_button_tapped"
-        }
-
-        data object BookingCancelled : Event() {
-            override val name: String = "booking_cancelled"
-        }
-
-        data object BookingAttendanceChanged : Event() {
-            override val name: String = "booking_attendance_changed"
-        }
-
-        data object BookingAddNoteTapped : Event() {
-            override val name: String = "booking_add_note_tapped"
-        }
-
-        data object BookingNoteAdded : Event() {
-            override val name: String = "booking_note_added"
-        }
-
-        data class BookingDatePreviousTapped(val deltaFromToday: Long) : Event() {
-            override val name: String = "booking_date_previous_tapped"
-
-            init {
-                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
-            }
-        }
-
-        data class BookingDateNextTapped(val deltaFromToday: Long) : Event() {
-            override val name: String = "booking_date_next_tapped"
-
-            init {
-                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
-            }
-        }
-
-        data class BookingDateCalendarSelected(val deltaFromToday: Long) : Event() {
-            override val name: String = "booking_date_calendar_selected"
-
-            init {
-                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
-            }
-        }
-
-        data object BookingViewOrderTapped : Event() {
-            override val name: String = "booking_view_order_tapped"
         }
 
         data object OrdersListPullToRefreshTriggered : Event() {
@@ -1010,6 +922,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object WooCommerceVersionSunsetWarningDismissed : Event() {
             override val name: String = "woocommerce_version_sunset_warning_dismissed"
+        }
+
+        data class LocalCatalogBlockedFellBackToRemote(val wooCommerceVersion: String?) : Event() {
+            override val name: String = "local_catalog_blocked_fell_back_to_remote"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "woocommerce_version" to wooCommerceVersion.orEmpty()
+                    )
+                )
+            }
+        }
+
+        data object CatalogBlockedContinueWithBasicSyncTapped : Event() {
+            override val name: String = "catalog_blocked_continue_with_basic_sync_tapped"
         }
 
         data object SplashScreenErrorShown : Event() {

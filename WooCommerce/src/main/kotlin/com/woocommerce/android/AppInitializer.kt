@@ -24,6 +24,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.network.UnknownBlogNotifier
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
@@ -40,6 +41,7 @@ import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
+import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -126,6 +128,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
 
+    @Inject lateinit var refreshWPSettings: RefreshWPSettings
+
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
     @Inject lateinit var sendTelemetry: SendTelemetry
@@ -142,6 +146,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var registerDevice: RegisterDevice
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
+
+    @Inject lateinit var unknownBlogNotifier: UnknownBlogNotifier
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
@@ -203,6 +209,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(site)
                     wooCommerceStore.fetchSiteProductSettings(site)
+                    refreshWPSettings(site)
                 }
             }
             return true
@@ -257,6 +264,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()
+
+        monitorUnknownBlogErrors()
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
@@ -355,8 +364,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
+    private val isAppInForeground: Boolean
+        get() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)
+
     private fun restartMainActivity() {
-        if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(STARTED)) {
+        if (isAppInForeground) {
             val intent = Intent(application, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             application.startActivity(intent)
@@ -387,6 +399,28 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                         WooLog.w(T.LOGIN, "Use is unauthorized to generate a new application password")
                         logUserOut()
                     }
+                }.launchIn(this)
+        }
+    }
+
+    private fun monitorUnknownBlogErrors() {
+        appCoroutineScope.launch {
+            // Reset the selected site and route the user to the site picker when WPCom no longer
+            // recognises the selected site (the `unknown_blog` error code)
+            unknownBlogNotifier.unknownBlogEvents
+                .onEach { siteId ->
+                    val selected = selectedSite.getOrNull() ?: return@onEach
+                    // siteId is the WPCom blog id; ignore non-WPCom (0) and other sites
+                    if (siteId == 0L || siteId != selected.siteId) return@onEach
+                    // Only recover while in the foreground; resetting in the background would strip the
+                    // selected site without being able to route to the picker. A foreground request will
+                    // fail with unknown_blog again and trigger recovery then.
+                    if (!isAppInForeground) return@onEach
+                    WooLog.w(T.LOGIN, "Received unknown_blog for the selected site, resetting selected site")
+                    analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                    prefs.sitePickerErrorMessage = R.string.site_picker_unknown_blog_error
+                    selectedSite.reset(persistSynchronously = true)
+                    restartMainActivity()
                 }.launchIn(this)
         }
     }

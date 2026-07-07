@@ -72,6 +72,8 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
                         updateBluetoothAndSendSnapshot(mutex, state, event.list)
                     }
                     is CardReaderDiscoveryEvents.Failed -> send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
+                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                        send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
                     is CardReaderDiscoveryEvents.Succeeded -> send(WooPosUnifiedDiscoveryEvent.Succeeded)
                 }
             }
