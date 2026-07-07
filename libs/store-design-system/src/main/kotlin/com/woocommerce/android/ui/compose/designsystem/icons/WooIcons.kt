@@ -57,6 +57,10 @@ val WooIcons.Light.ChartLineUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_chart_line_up_24dp)
 
+val WooIcons.Light.CheckSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_check_small_24dp)
+
 val WooIcons.Light.CircleFull: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_circle_full_24dp)
@@ -84,6 +88,10 @@ val WooIcons.Light.House: ImageVector
 val WooIcons.Light.List: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_list_24dp)
+
+val WooIcons.Light.MinusSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_minus_small_24dp)
 
 val WooIcons.Light.PointOfSale: ImageVector
     @Composable
@@ -217,6 +225,10 @@ val WooIcons.Regular.ChartSimple: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_chart_simple_24dp)
 
+val WooIcons.Regular.CheckSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_check_small_24dp)
+
 val WooIcons.Regular.ChevronDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_chevron_down_24dp)
@@ -308,6 +320,10 @@ val WooIcons.Regular.List: ImageVector
 val WooIcons.Regular.MagnifyingGlass: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_magnifying_glass_24dp)
+
+val WooIcons.Regular.MinusSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_minus_small_24dp)
 
 val WooIcons.Regular.Mobile: ImageVector
     @Composable
@@ -517,6 +533,10 @@ val WooIcons.Solid.ChartSimple: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_chart_simple_24dp)
 
+val WooIcons.Solid.CheckSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_check_small_24dp)
+
 val WooIcons.Solid.CircleFull: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_circle_full_24dp)
@@ -596,6 +616,10 @@ val WooIcons.Solid.MagnifyingGlass: ImageVector
 val WooIcons.Solid.MessageLines: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_message_lines_24dp)
+
+val WooIcons.Solid.MinusSmall: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_minus_small_24dp)
 
 val WooIcons.Solid.ObjectExclude: ImageVector
     @Composable
