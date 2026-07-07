@@ -33,7 +33,7 @@ import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.House
 import com.woocommerce.android.ui.compose.designsystem.icons.List
 import com.woocommerce.android.ui.compose.designsystem.icons.Store
-import com.woocommerce.android.ui.compose.designsystem.icons.WooDsIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
 internal fun PreviewOnlySegmentControlSample(
@@ -110,24 +110,24 @@ internal fun PreviewOnlyTabBarSample(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.Top,
             ) {
                 PreviewOnlyTabBarItem(
-                    icon = WooDsIcons.Regular.House,
+                    icon = WooIcons.Regular.House,
                     label = "Home",
                     selected = true,
                 )
                 PreviewOnlyTabBarItem(
-                    icon = WooDsIcons.Regular.List,
+                    icon = WooIcons.Regular.List,
                     label = "Orders",
                 )
                 PreviewOnlyTabBarItem(
-                    icon = WooDsIcons.Regular.Box,
+                    icon = WooIcons.Regular.Box,
                     label = "Products",
                 )
                 PreviewOnlyTabBarItem(
-                    icon = WooDsIcons.Regular.Store,
+                    icon = WooIcons.Regular.Store,
                     label = "Store",
                 )
                 PreviewOnlyTabBarItem(
-                    icon = WooDsIcons.Regular.Ellipsis,
+                    icon = WooIcons.Regular.Ellipsis,
                     label = "More",
                 )
             }

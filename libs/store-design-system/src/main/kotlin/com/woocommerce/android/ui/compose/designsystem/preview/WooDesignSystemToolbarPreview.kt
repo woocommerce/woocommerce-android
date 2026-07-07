@@ -29,10 +29,10 @@ internal fun WooDesignSystemToolbarDemo(modifier: Modifier = Modifier) {
                     toolbar.context,
                     R.drawable.woo_ds_ic_regular_magnifying_glass_24dp,
                 )
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             }
             toolbar.menu.add(0, TOOLBAR_DEMO_DONE_ACTION_ID, 1, "Done").apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             }
         },
     )
