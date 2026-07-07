@@ -12,7 +12,6 @@ Fully Compose-based. Identify items by text labels.
 - "Blaze" -> Blaze Campaign List (if enabled)
 - "Google for WooCommerce" -> Google Ads (if enabled)
 - "Subscriptions" -> Plan Upgrades (if eligible)
-- "Bookings" -> Booking List (if extension active, larger screens)
 - "Inbox" -> Inbox messages
 - "Settings" -> Settings activity
 
@@ -105,18 +104,6 @@ Identify by review content, rating stars, and moderation buttons (Approve, Spam,
 | 1 | Tap "Google for WooCommerce" in menu | text: "Google for WooCommerce" |
 | 2 | WebView opens | Google Ads dashboard or creation flow |
 | 3 | Campaign creation success | success bottom sheet |
-
-### Bookings (if extension active)
-
-| Step | Action | Element |
-|------|--------|---------|
-| 1 | Tap "Bookings" in menu or bottom tab | text: "Bookings" |
-| 2 | Filter by date/status | filter controls |
-| 3 | Tap a booking | booking row |
-| 4 | View booking details | booking detail screen |
-| 5 | Cancel booking | cancel button |
-| 6 | Add note | add note button |
-| 7 | View linked order | order link |
 
 ### Settings
 

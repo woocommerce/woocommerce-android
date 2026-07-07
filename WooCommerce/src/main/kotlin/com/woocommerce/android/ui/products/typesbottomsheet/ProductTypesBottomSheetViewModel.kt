@@ -49,8 +49,6 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
                         ?.let { nonNullProductType -> ProductType.fromString(nonNullProductType) }
 
                     return@filter it.isVisible &&
-                        // Exclude product types that require a WebView, to keep a usable experience during the change
-                        it.supportsNativeEditor &&
                         (it.type != currentProductType || it.isVirtual != navArgs.isCurrentProductVirtual)
                 }
         }
@@ -92,6 +90,5 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         @DrawableRes val iconResource: Int,
         val isVirtual: Boolean = false,
         val isVisible: Boolean = true,
-        val supportsNativeEditor: Boolean = true,
     ) : Parcelable
 }

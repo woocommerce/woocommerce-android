@@ -30,7 +30,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given is not Add Product flow, when loading product types, then current type and webview-only types are filtered`() =
+    fun `given is not Add Product flow, when loading product types, then the current type is filtered out`() =
         testBlocking {
             viewModel = ProductTypesBottomSheetViewModel(
                 ProductTypesBottomSheetFragmentArgs(
@@ -41,13 +41,12 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 bottomSheetBuilder,
             )
 
-            // Current type (SIMPLE non-virtual) and webview-only type should be filtered out
-            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 2)
-            assertThat(viewModel.productTypesBottomSheetList.value!!.none { !it.supportsNativeEditor }).isTrue()
+            // Current type (SIMPLE non-virtual) should be filtered out
+            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
         }
 
     @Test
-    fun `given current type is virtual, when loading product types, then only virtual type and webview-only types are filtered out`() =
+    fun `given current type is virtual, when loading product types, then only the virtual type is filtered out`() =
         testBlocking {
             viewModel = ProductTypesBottomSheetViewModel(
                 ProductTypesBottomSheetFragmentArgs(
@@ -58,21 +57,10 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 bottomSheetBuilder,
             )
 
-            // Virtual SIMPLE and webview-only type should be filtered out
-            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 2)
+            // Only the virtual SIMPLE should be filtered out; the non-virtual SIMPLE stays first
+            assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
             assertThat(viewModel.productTypesBottomSheetList.value!![0].isVirtual).isFalse
-            assertThat(viewModel.productTypesBottomSheetList.value!!.none { !it.supportsNativeEditor }).isTrue()
         }
-
-    @Test
-    fun `given is Add Product flow, when loading product types, then webview-only types are included`() = testBlocking {
-        viewModel = ProductTypesBottomSheetViewModel(
-            ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
-            bottomSheetBuilder,
-        )
-
-        assertThat(viewModel.productTypesBottomSheetList.value!!.any { !it.supportsNativeEditor }).isTrue()
-    }
 
     private val uiItems: List<ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem> = listOf(
         ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem(
@@ -98,8 +86,7 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
             type = ProductType.EXTERNAL,
             titleResource = 0,
             descResource = 0,
-            iconResource = 0,
-            supportsNativeEditor = false
+            iconResource = 0
         )
     )
 }
