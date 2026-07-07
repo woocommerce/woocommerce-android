@@ -4,7 +4,7 @@
 
 25.2
 -----
-- [*] The customer note editor now shows a back arrow like the other order editing screens instead of an X [PR URL]
+- [*] The customer note editor now shows a back arrow like the other order editing screens instead of an X [https://github.com/woocommerce/woocommerce-android/pull/16218]
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
 - [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
