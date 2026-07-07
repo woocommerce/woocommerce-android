@@ -8,7 +8,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -185,9 +184,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
-        on { mapOrderStatus(any()) } doAnswer { it.arguments[0] as OrderStatus }
-    }
 
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
@@ -221,7 +217,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
-                ciabOrderStatusMapper = ciabOrderStatusMapper,
             )
         )
     }
