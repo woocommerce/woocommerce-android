@@ -8,7 +8,6 @@ import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.bookings.tab.ObserveBookingsVisibility
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -87,10 +85,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
-    private val observeBookingsVisibility: ObserveBookingsVisibility = mock {
-        on { invoke() } doReturn flowOf(false)
-    }
-
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
@@ -118,7 +112,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isBlazeEnabled = isBlazeEnabled,
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
-            observeBookingsVisibility = observeBookingsVisibility,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             ciabSiteGateKeeper = ciabSiteGateKeeper,
         )
@@ -438,45 +431,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
     }
-
-    @Test
-    fun `given bookings is visible and on tablet, when building state, then bookings button is displayed`() = testBlocking {
-        // GIVEN
-        setup {
-            whenever(observeBookingsVisibility.invoke()).thenReturn(flowOf(true))
-        }
-        viewModel.onWindowClassChanged(true)
-
-        // WHEN
-        val states = viewModel.moreMenuViewState.captureValues()
-        advanceUntilIdle()
-
-        // THEN
-        val bookingsButton =
-            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.bookings_tab_title }
-        assertThat(bookingsButton.description).isEqualTo(R.string.more_menu_button_bookings_description)
-    }
-
-    @Test
-    fun `given bookings is visible, when switching to non tablet, then bookings button is not displayed`() =
-        testBlocking {
-            // GIVEN
-            setup {
-                whenever(observeBookingsVisibility.invoke()).thenReturn(flowOf(true))
-            }
-            viewModel.onWindowClassChanged(true)
-
-            // WHEN
-            val states = viewModel.moreMenuViewState.captureValues()
-            advanceUntilIdle()
-            viewModel.onWindowClassChanged(false)
-            advanceUntilIdle()
-
-            // THEN
-            assertThat(
-                states.last().menuSections.flatMap { it.items }.none { it.title == R.string.bookings_tab_title }
-            ).isTrue()
-        }
 
     @Test
     fun `when building state, then all optional buttons start with loading state`() = testBlocking {

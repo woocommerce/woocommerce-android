@@ -136,8 +136,6 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
 
-        @Provides internal fun provideOrderFulfillmentDao(database: WCAndroidDatabase) = database.orderFulfillmentDao
-
         @Provides internal fun provideOrderShipmentTrackingDao(database: WCAndroidDatabase) = database.orderShipmentTrackingDao
 
         @Provides internal fun provideTaxClassDao(database: WCAndroidDatabase) = database.taxClassDao
@@ -163,8 +161,6 @@ interface WCDatabaseModule {
         @Provides internal fun provideGatewaysDao(database: WCAndroidDatabase) = database.gatewaysDao
 
         @Provides internal fun provideNewVisitorStatsDao(database: WCAndroidDatabase) = database.newVisitorStatsDao
-
-        @Provides internal fun provideBookingsDao(database: WCAndroidDatabase) = database.bookingsDao
 
         @Provides internal fun provideRevenueStatsDao(database: WCAndroidDatabase) = database.revenueStatsDao
 

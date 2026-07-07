@@ -183,7 +183,7 @@ dependencyResolutionManagement {
 
 rootProject.name = 'WCAndroid'
 
-include ':libs:commons', ':libs:cardreader', ':libs:apifaker', ':libs:pos'
+include ':libs:commons', ':libs:cardreader', ':libs:apifaker', ':libs:pos', ':libs:store-design-system'
 include ':libs:ai-assistant:feature', ':libs:ai-assistant:core'
 include ':libs:fluxc', ':libs:fluxc-annotations', ':libs:fluxc-processor', ':libs:fluxc-plugin', ':libs:fluxc-tests'
 include ':libs:login'
@@ -194,7 +194,7 @@ gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source-camera"
 
 gradle.ext {
-    compileSdkVersion = 36
+    compileSdkVersion = 37
     targetSdkVersion = 36
     minSdkVersion = 26
 }

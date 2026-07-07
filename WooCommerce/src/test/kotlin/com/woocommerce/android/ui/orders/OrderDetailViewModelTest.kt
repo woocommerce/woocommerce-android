@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ciab.CIABOrderStatusMapper
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -23,12 +22,11 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
@@ -74,9 +72,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.UseConstructor
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
@@ -92,7 +88,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
@@ -186,23 +181,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
 
     private val getOrderSubscriptions: GetOrderSubscriptions = mock()
-    private val giftCardRestClient: GiftCardRestClient = mock()
-    private val giftCardRepository: GiftCardRepository = mock(
-        useConstructor = UseConstructor.withArguments(
-            selectedSite,
-            giftCardRestClient,
-            coroutinesTestRule.testDispatchers
-        )
-    )
 
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
     private val ciabOrderStatusMapper: CIABOrderStatusMapper = mock {
         on { mapOrderStatus(any()) } doAnswer { it.arguments[0] as OrderStatus }
-    }
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isCurrentSiteCIAB() } doReturn false
     }
 
     private fun createViewModel() {
@@ -229,7 +213,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 getWooShippingShipments,
                 orderDetailsTransactionLauncher,
                 getOrderSubscriptions,
-                giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
                 featureFlagRepository,
@@ -239,7 +222,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
                 ciabOrderStatusMapper = ciabOrderStatusMapper,
-                ciabSiteGateKeeper = ciabSiteGateKeeper,
             )
         )
     }
@@ -1680,33 +1662,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when current site is CIAB, then fetch order fulfillments`() = testBlocking {
-        doReturn(true).whenever(ciabSiteGateKeeper).isCurrentSiteCIAB()
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderFulfillments(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(orderDetailRepository).fetchOrderFulfillments(any())
-        verify(orderDetailsTransactionLauncher).onOrderFulfillmentsFetched()
-    }
-
-    @Test
-    fun `when current site is not CIAB, then do not fetch order fulfillments`() = testBlocking {
-        doReturn(false).whenever(ciabSiteGateKeeper).isCurrentSiteCIAB()
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(orderDetailRepository, never()).fetchOrderFulfillments(any())
-        verify(orderDetailsTransactionLauncher).onOrderFulfillmentsFetched()
-    }
-
-    @Test
     fun `when shipment tracking plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
         val shipmentTracking = WooCommerceStore.WooPlugin.WOO_SHIPMENT_TRACKING.pluginName
         pluginsInfo[shipmentTracking] = WooPlugin(
@@ -1852,52 +1807,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when gift cards plugin is installed and active, then fetch plugin data`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
+    fun `given order has gift cards, when order opened, then track gift cards shown event`() = testBlocking {
+        val orderWithGiftCard = order.copy(
+            giftCards = listOf(GiftCardSummary(id = 1, code = "ABCD-1234", used = BigDecimal.TEN))
         )
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
-    }
-
-    @Test
-    fun `when gift cards plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = false,
-            version = "1.0.0"
-        )
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
-    }
-
-    @Test
-    fun `when gift cards fetched is NOT empty, then track gift cards shown event`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
-        val giftCard: GiftCardSummary = mock()
-        val result = WooResult(listOf(giftCard))
-
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
+        doReturn(orderWithGiftCard).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
@@ -1907,61 +1821,14 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when gift cards fetched is empty, then DON'T track gift cards shown event`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
-        val result = WooResult(emptyList<Subscription>())
-
+    fun `given order has no gift cards, when order opened, then DON'T track gift cards shown event`() = testBlocking {
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         createViewModel()
 
         viewModel.start()
 
         verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
-    }
-
-    @Test
-    fun `when gift cards fetched is null, then DON'T track gift cards shown event`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
-        val result = WooResult(null)
-
-        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(result).whenever(giftCardRepository).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(orderDetailTracker, never()).trackOrderDetailsGiftCardShown()
-    }
-
-    @Test
-    fun `when the order is null then don't fetch gift cards summaries`() = testBlocking {
-        val giftCards = WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName
-        pluginsInfo[giftCards] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
-        doReturn(null).whenever(orderDetailRepository).getOrderById(any())
-        doReturn(null).whenever(orderDetailRepository).fetchOrderById(any())
-        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
-        createViewModel()
-
-        viewModel.start()
-
-        verify(giftCardRepository, never()).fetchGiftCardSummaryByOrderId(any(), anyOrNull())
     }
 
     @Test
@@ -2124,6 +1991,47 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
         verify(analyticsTracker).track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
     }
+
+    @Test
+    fun `given order has gift cards, when issue refund clicked, then show dialog and don't open refund flow`() =
+        testBlocking {
+            // GIVEN
+            val orderWithGiftCard = order.copy(
+                giftCards = listOf(GiftCardSummary(id = 1, code = "ABCD-1234", used = BigDecimal.TEN))
+            )
+            doReturn(orderWithGiftCard).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+            createViewModel()
+            viewModel.start()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onIssueOrderRefundClicked()
+            }.last()
+
+            // THEN
+            assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+            assertThat((event as MultiLiveEvent.Event.ShowDialog).messageId)
+                .isEqualTo(string.order_refunds_gift_card_unsupported_message)
+        }
+
+    @Test
+    fun `given order has no gift cards, when issue refund clicked, then open refund flow`() =
+        testBlocking {
+            // GIVEN
+            doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+            createViewModel()
+            viewModel.start()
+
+            // WHEN
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onIssueOrderRefundClicked()
+            }.last()
+
+            // THEN
+            assertThat(event).isInstanceOf(IssueOrderRefund::class.java)
+        }
 
     @Test
     fun `when we can get shipping titles from the cached shipping methods then refresh is NOT call`() =

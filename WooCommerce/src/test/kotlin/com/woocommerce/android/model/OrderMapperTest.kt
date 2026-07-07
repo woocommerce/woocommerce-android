@@ -10,6 +10,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
+import java.math.BigDecimal
 import java.util.Date
 
 class OrderMapperTest {
@@ -78,119 +79,36 @@ class OrderMapperTest {
     }
 
     @Test
-    fun `when fulfillment status is fulfilled, then map to FULFILLED`() = runTest {
+    fun `when order has gift cards json, then maps them to gift card summaries`() = runTest {
         val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = "fulfilled"
-                )
-            )
+            giftCards = """[{"id":4,"code":"NZR8-BMP8-XJZ2-ZKS9","amount":18}]"""
         )
 
         val result = orderMapper.toAppModel(orderEntity)
 
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.FULFILLED)
+        assertThat(result.giftCards).hasSize(1)
+        assertThat(result.giftCards.first().code).isEqualTo("NZR8-BMP8-XJZ2-ZKS9")
+        assertThat(result.giftCards.first().used).isEqualByComparingTo(BigDecimal(18))
     }
 
     @Test
-    fun `when fulfillment status is partially fulfilled, then map to PARTIALLY_FULFILLED`() = runTest {
-        val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = "partially_fulfilled"
-                )
-            )
-        )
+    fun `when order gift cards json is blank, then gift cards is empty`() = runTest {
+        val result = orderMapper.toAppModel(createTestOrderEntity(giftCards = ""))
 
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.PARTIALLY_FULFILLED)
+        assertThat(result.giftCards).isEmpty()
     }
 
     @Test
-    fun `when fulfillment status is unfulfilled, then map to UNFULFILLED`() = runTest {
-        val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = "unfulfilled"
-                )
-            )
-        )
+    fun `when order gift cards json is the null literal, then gift cards is empty`() = runTest {
+        val result = orderMapper.toAppModel(createTestOrderEntity(giftCards = "null"))
 
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNFULFILLED)
-    }
-
-    @Test
-    fun `when fulfillment status metadata is missing, then map to NO_FULFILLMENTS`() = runTest {
-        val orderEntity = createTestOrderEntity()
-
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.NO_FULFILLMENTS)
-    }
-
-    @Test
-    fun `when fulfillment status is empty, then map to UNKNOWN`() = runTest {
-        val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = ""
-                )
-            )
-        )
-
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
-    }
-
-    @Test
-    fun `when fulfillment status is no fulfillments, then map to UNKNOWN`() = runTest {
-        val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = "no_fulfillments"
-                )
-            )
-        )
-
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
-    }
-
-    @Test
-    fun `when fulfillment status is unknown, then map to UNKNOWN`() = runTest {
-        val orderEntity = createTestOrderEntity(
-            metaData = listOf(
-                WCMetaData(
-                    id = 1L,
-                    key = WCMetaData.OrderFulfillmentMetadataKeys.FULFILLMENT_STATUS,
-                    value = "custom_future_status"
-                )
-            )
-        )
-
-        val result = orderMapper.toAppModel(orderEntity)
-
-        assertThat(result.fulfillmentStatus).isEqualTo(Order.FulfillmentStatus.UNKNOWN)
+        assertThat(result.giftCards).isEmpty()
     }
 
     private fun createTestOrderEntity(
         createdVia: String = "",
         metaData: List<WCMetaData> = emptyList(),
+        giftCards: String = "",
     ): OrderEntity {
         return OrderEntity(
             localSiteId = localSiteId,
@@ -203,6 +121,7 @@ class OrderMapperTest {
             total = "100.00",
             createdVia = createdVia,
             metaData = metaData,
+            giftCards = giftCards,
         )
     }
 }

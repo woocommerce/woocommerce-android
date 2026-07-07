@@ -506,7 +506,6 @@ class AnalyticsTracker private constructor(
 
         // -- More Menu (aka Hub Menu) option values
         const val VALUE_MORE_MENU_VIEW_STORE = "view_store"
-        const val VALUE_MORE_MENU_BOOKINGS = "bookings"
         const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"

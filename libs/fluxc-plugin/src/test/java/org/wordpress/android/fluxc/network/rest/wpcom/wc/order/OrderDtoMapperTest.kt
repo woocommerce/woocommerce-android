@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.order
 
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -85,6 +86,22 @@ internal class OrderDtoMapperTest {
         val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
 
         assertThat(orderEntity.needsPayment).isTrue()
+    }
+
+    @Test
+    fun `when gift_cards is in json, then the order entity stores the gift cards json`() = runTest {
+        val giftCard = JsonObject().apply {
+            addProperty("id", 4)
+            addProperty("code", "NZR8-BMP8-XJZ2-ZKS9")
+            addProperty("amount", 18)
+        }
+        val json = JsonObject().apply {
+            add("gift_cards", JsonArray().apply { add(giftCard) })
+        }
+        val orderDto = Gson().fromJson(json, OrderDto::class.java)
+        val (orderEntity, _) = sut.toDatabaseEntity(orderDto, localSiteId)
+
+        assertThat(orderEntity.giftCards).contains("NZR8-BMP8-XJZ2-ZKS9")
     }
 
     @Test

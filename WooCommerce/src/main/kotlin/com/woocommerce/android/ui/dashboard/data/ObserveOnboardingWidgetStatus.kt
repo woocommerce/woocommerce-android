@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
@@ -19,18 +17,12 @@ import javax.inject.Inject
 class ObserveOnboardingWidgetStatus @Inject constructor(
     private val selectedSite: SelectedSite,
     private val storeOnboardingRepository: StoreOnboardingRepository,
-    private val shouldShowOnboarding: ShouldShowOnboarding,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val shouldShowOnboarding: ShouldShowOnboarding
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke() = selectedSite.observe()
         .filterNotNull()
         .transformLatest {
-            if (ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Onboarding)) {
-                emit(DashboardWidget.Status.Hidden)
-                return@transformLatest
-            }
-
             // Start with the cached value
             if (shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
                 emit(DashboardWidget.Status.Unavailable(R.string.my_store_widget_onboarding_completed))

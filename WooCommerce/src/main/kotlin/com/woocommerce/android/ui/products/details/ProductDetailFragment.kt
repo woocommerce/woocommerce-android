@@ -405,12 +405,6 @@ class ProductDetailFragment :
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
-                is ProductDetailViewModel.OpenProductInWebView -> findNavController().navigateSafely(
-                    ProductDetailFragmentDirections.actionProductDetailFragmentToProductDetailWebViewFragment(
-                        remoteProductId = event.productId
-                    )
-                )
-
                 is RefreshMenu -> toolbarHelper.setupToolbar()
 
                 is TrashProduct -> {

@@ -3,14 +3,19 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WooPosIsCountryAllowedTest {
 
     private val site = SiteModel().apply { id = 1 }
@@ -25,7 +30,7 @@ class WooPosIsCountryAllowedTest {
     )
 
     @Test
-    fun `given all-countries flag enabled, when invoked, then returns true regardless of country`() {
+    fun `given all-countries flag enabled, when invoked, then returns true regardless of country`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(true)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("JP")
 
@@ -33,7 +38,7 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and supported country, when invoked, then returns true`() {
+    fun `given flag disabled and supported country, when invoked, then returns true`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("US")
 
@@ -41,20 +46,21 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and POS-supported country, when invoked, then returns true for each supported country`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+    fun `given flag disabled and POS-supported country, when invoked, then returns true for each supported country`() =
+        runTest {
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
 
-        listOf("US", "PR", "GB", "CA", "IE", "NL", "SG", "NZ", "FI", "LU", "AU").forEach { countryCode ->
-            whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(countryCode)
+            listOf("US", "PR", "GB", "CA", "IE", "NL", "SG", "NZ", "FI", "LU", "AU").forEach { countryCode ->
+                whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(countryCode)
 
-            assertThat(sut())
-                .describedAs("$countryCode should be allowed")
-                .isTrue
+                assertThat(sut())
+                    .describedAs("$countryCode should be allowed")
+                    .isTrue
+            }
         }
-    }
 
     @Test
-    fun `given flag disabled and lowercase country code, when invoked, then matches case-insensitively`() {
+    fun `given flag disabled and lowercase country code, when invoked, then matches case-insensitively`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("gb")
 
@@ -62,7 +68,7 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and unsupported country, when invoked, then returns false`() {
+    fun `given flag disabled and unsupported country, when invoked, then returns false`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("JP")
 
@@ -70,7 +76,7 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and fiscalization-only country, when invoked, then returns false`() {
+    fun `given flag disabled and fiscalization-only country, when invoked, then returns false`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
 
         listOf("AT", "BE", "FR", "IT", "DE", "PT", "ES").forEach { countryCode ->
@@ -83,7 +89,7 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and no selected site, when invoked, then returns false`() {
+    fun `given flag disabled and no selected site, when invoked, then returns false`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
@@ -91,10 +97,29 @@ class WooPosIsCountryAllowedTest {
     }
 
     @Test
-    fun `given flag disabled and site without country code, when invoked, then returns false`() {
+    fun `given cached country code present, when invoked, then does not fetch general settings`() = runTest {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+        whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn("CA")
+
+        assertThat(sut()).isTrue
+        verify(wooCommerceStore, never()).fetchSiteGeneralSettings(site)
+    }
+
+    @Test
+    fun `given country code missing, when invoked, then fetches general settings and re-reads country`() = runTest {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+        whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(null, "CA")
+
+        assertThat(sut()).isTrue
+        verify(wooCommerceStore).fetchSiteGeneralSettings(site)
+    }
+
+    @Test
+    fun `given country code missing even after fetch, when invoked, then returns false`() = runTest {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
         whenever(wooCommerceStore.getStoreCountryCode(site)).thenReturn(null)
 
         assertThat(sut()).isFalse
+        verify(wooCommerceStore).fetchSiteGeneralSettings(site)
     }
 }

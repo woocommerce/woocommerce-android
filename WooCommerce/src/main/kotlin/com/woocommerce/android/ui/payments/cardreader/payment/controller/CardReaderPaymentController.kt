@@ -810,6 +810,7 @@ class CardReaderPaymentController(
     }
 
     fun onBackPressed() {
+        if (_paymentState.value is CardReaderPaymentState.PaymentCapturing) return
         onCancelPaymentFlow()
         disconnectFromReaderIfPaymentFailedState()
     }
