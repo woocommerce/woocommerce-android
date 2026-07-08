@@ -23,12 +23,10 @@
 #     └─ back → product detail (dirty — new image in draft)
 #        └─ tap Save / Publish → product detail updated on backend
 #
-# ⚠️  STAGING-STORE MUTATION: unlike most smoke flows, this one DOES
-# persist a change — the image is attached to the product it opens.
-# The flow therefore targets this run's seeded simple product (located
-# via search on ${FIXTURE_SIMPLE_PRODUCT}), which manifest cleanup
-# deletes after the run, so the mutation never touches real store data
-# and never outlives the suite.
+# ⚠️  STORE MUTATION: unlike most smoke flows, this one DOES persist a
+# change — the image is attached to the product it opens. The flow
+# therefore targets the automation-owned product created earlier in the
+# suite by products_create.yaml, located by the unique suite run id.
 #
 # Source strings (res/values/strings.xml):
 #   - image_source_wp_media_library → "WordPress media library"
@@ -56,11 +54,37 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_products.yaml
 
-# Open this run's seeded simple product — never an arbitrary first
-# row. This flow persists an image on whatever product it opens, and
-# on the shared store index-0 can be a manual tester's real product.
-# The seeded fixture is deleted by manifest cleanup after the run, so
-# the gallery mutation never outlives the suite.
+# products_variations_and_tags.yaml leaves the Product type filter
+# active when it runs earlier in the suite. Clear active filters before
+# searching for this run's simple product.
+- runFlow:
+    when:
+      visible: "Filters.*[0-9]"
+    commands:
+      - tapOn:
+          id: "btn_product_filter"
+          retryTapIfNoChange: true
+          label: "Open active product filters"
+      - extendedWaitUntil:
+          visible:
+            id: "filterList"
+          timeout: 15000
+      - tapOn:
+          id: "menu_clear"
+          retryTapIfNoChange: true
+          label: "Clear active product filters"
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Show products without filters"
+      - extendedWaitUntil:
+          visible:
+            id: "productsRecycler"
+          timeout: 15000
+
+# Open this run's newly-created product — never an arbitrary first row.
+# This flow persists an image on whatever product it opens, and on the
+# shared store index-0 can be a manual tester's real product.
 - tapOn:
     id: "menu_search"
     label: "Open product search"
@@ -72,19 +96,22 @@ tags:
 
 - tapOn:
     id: "search_src_text"
-- inputText: ${FIXTURE_SIMPLE_PRODUCT}
+- inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
 - hideKeyboard
 
 - extendedWaitUntil:
     visible:
-      text: "${FIXTURE_SIMPLE_PRODUCT}"
+      text: "Maestro Smoke Product ${SUITE_RUN_ID}"
     timeout: 20000
-    label: "Wait for the seeded product in search results"
+    label: "Wait for this run's product in search results"
+
+- hideKeyboard
 
 - tapOn:
-    text: "${FIXTURE_SIMPLE_PRODUCT}"
+    id: "productName"
+    index: 0
     retryTapIfNoChange: true
-    label: "Open seeded simple product"
+    label: "Open this run's product"
 
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
@@ -104,14 +131,31 @@ tags:
 
 - takeScreenshot: media_upload_product_detail
 
-# Tap the add-image affordance. We try the gallery per-item icon
-# first (addImageIcon) and fall back to the empty-state container;
-# both call ProductDetailViewModel.onAddImageButtonClicked which
-# navigates to ProductImagesFragment with showChooser = true.
-- tapOn:
-    id: "addImageIcon"
-    retryTapIfNoChange: true
-    label: "Tap add image icon (gallery)"
+# Tap the add-image affordance. Newly-created products show the
+# empty-gallery "Add a product image" row; products that already have
+# media show the gallery add icon/container. All paths call
+# ProductDetailViewModel.onAddImageButtonClicked which navigates to
+# ProductImagesFragment with showChooser = true.
+- runFlow:
+    when:
+      visible: "Add a product image"
+    commands:
+      - tapOn:
+          text: "Add a product image"
+          retryTapIfNoChange: true
+          label: "Tap empty-gallery add image row"
+      - extendedWaitUntil:
+          visible: "Select an upload method"
+          timeout: 10000
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageIcon"
+          retryTapIfNoChange: true
+          label: "Tap add image icon (gallery)"
 
 - runFlow:
     when:
@@ -203,9 +247,15 @@ tags:
 
 - takeScreenshot: media_upload_image_in_gallery
 
-# Navigate back to the product detail. ProductImagesFragment's back
-# press returns to ProductDetail with the draft's images updated.
-- back
+# Navigate back to the product detail through ProductImagesFragment's
+# toolbar navigation. That path calls onNavigateBackButtonClicked()
+# and returns ExitWithResult(images) to ProductDetailFragment. A raw
+# device back can pop the destination without delivering that result
+# on some app/back-stack states.
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Tap image gallery toolbar back"
 
 - extendedWaitUntil:
     visible:
