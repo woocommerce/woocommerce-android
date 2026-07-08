@@ -28,6 +28,8 @@ STORE="lab"
 APK_PATH=""
 DEVICE_SELECTOR=""
 TARGET=""
+PROFILE=""
+RERUN_FAILED_FILE=""
 OPEN_REPORT="auto"
 RECORD="yes"
 SEED="no"
@@ -54,13 +56,17 @@ Defaults:
 
 Usage:
   .maestro/scripts/run-smoke-tests.sh
+  .maestro/scripts/run-smoke-tests.sh --profile core
+  .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
   .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
   .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
   .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --apk path/to/app.apk
   .maestro/scripts/run-smoke-tests.sh --repeat 5 --store shared --include-tags smoke_core,smoke_extended
+  .maestro/scripts/run-smoke-tests.sh --rerun-failed path/to/report.xml --store lab
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
+  --profile name              Preset: core, phone-full, release, burst, pos-tablet.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
   --apk path                  Install APK before running.
@@ -68,6 +74,7 @@ Options:
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
   --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
+  --rerun-failed report.xml   Rerun only testcases with failure/error in a previous JUnit report.
   --seed                      Run REST fixture seed/cleanup. Requires Woo REST API credentials.
   --no-seed                   Skip REST fixture seed/cleanup.
   --no-cleanup                Leave seeded manifest entities behind.
@@ -93,8 +100,59 @@ add_csv_tags() {
   done
 }
 
+apply_profile() {
+  PROFILE="$1"
+  case "$PROFILE" in
+    core)
+      STORE="lab"
+      REPEAT=1
+      INCLUDE_TAGS=("smoke_core")
+      EXCLUDE_TAGS=("flaky_quarantine")
+      ;;
+    phone-full)
+      STORE="lab"
+      REPEAT=1
+      INCLUDE_TAGS=("smoke_core" "smoke_extended")
+      EXCLUDE_TAGS=("pos_tablet")
+      ;;
+    release)
+      STORE="shared"
+      REPEAT=1
+      INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
+      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet")
+      ;;
+    burst)
+      STORE="shared"
+      REPEAT=3
+      INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
+      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet")
+      ;;
+    pos-tablet)
+      STORE="lab"
+      REPEAT=1
+      INCLUDE_TAGS=("pos_tablet")
+      EXCLUDE_TAGS=()
+      ;;
+    *)
+      echo "Unknown --profile: $PROFILE" >&2
+      echo "Valid profiles: core, phone-full, release, burst, pos-tablet" >&2
+      exit 2
+      ;;
+  esac
+  INCLUDE_TAGS_EXPLICIT="yes"
+  EXCLUDE_TAGS_EXPLICIT="yes"
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --profile)
+      apply_profile "${2:?--profile requires a profile name}"
+      shift 2
+      ;;
+    --rerun-failed)
+      RERUN_FAILED_FILE="${2:?--rerun-failed requires a JUnit report path}"
+      shift 2
+      ;;
     --apk)
       APK_PATH="${2:?--apk requires a path}"
       shift 2
@@ -170,6 +228,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -n "$RERUN_FAILED_FILE" && -n "$TARGET" ]]; then
+  echo "--rerun-failed cannot be combined with a positional flow target." >&2
+  exit 2
+fi
 if [[ "$STORE" != "lab" && "$STORE" != "shared" ]]; then
   echo "--store must be lab or shared" >&2
   exit 2
@@ -384,8 +446,56 @@ EOF
   fi
 }
 
+read_failed_flow_names() {
+  local report="$1"
+  if [[ ! -f "$report" ]]; then
+    echo "JUnit report not found: $report" >&2
+    exit 1
+  fi
+  python3 - "$report" <<'PY'
+import pathlib
+import sys
+import xml.etree.ElementTree as ET
+
+path = pathlib.Path(sys.argv[1])
+try:
+    root = ET.parse(path).getroot()
+except ET.ParseError as error:
+    raise SystemExit(f"Could not parse JUnit report {path}: {error}")
+
+seen = set()
+for testcase in root.iter("testcase"):
+    if testcase.find("failure") is None and testcase.find("error") is None:
+        continue
+    name = testcase.attrib.get("name", "").strip()
+    if not name or name in seen:
+        continue
+    seen.add(name)
+    print(name)
+PY
+}
+
 ORDERED_FLOWS=()
-if [[ -n "$TARGET" ]]; then
+if [[ -n "$RERUN_FAILED_FILE" ]]; then
+  RERUN_FAILED_NAMES=()
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    RERUN_FAILED_NAMES+=("$name")
+  done < <(read_failed_flow_names "$RERUN_FAILED_FILE")
+  if [[ ${#RERUN_FAILED_NAMES[@]} -eq 0 ]]; then
+    echo "No failed or flaky testcases found in $RERUN_FAILED_FILE."
+    exit 0
+  fi
+  for name in "${RERUN_FAILED_NAMES[@]}"; do
+    name="${name%.yaml}.yaml"
+    flow_path="$FLOWS_DIR/$name"
+    if [[ ! -f "$flow_path" ]]; then
+      echo "Failed testcase does not map to a flow file: $name" >&2
+      exit 1
+    fi
+    ORDERED_FLOWS+=("$flow_path")
+  done
+elif [[ -n "$TARGET" ]]; then
   if [[ ! -f "$TARGET" ]]; then
     echo "Target flow not found: $TARGET" >&2
     exit 1

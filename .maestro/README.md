@@ -46,13 +46,30 @@ Default local run: lab store, `smoke_core` only, quarantine excluded.
 Common variants:
 
 ```bash
+.maestro/scripts/run-smoke-tests.sh --profile core
+.maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
+.maestro/scripts/run-smoke-tests.sh --profile release
+.maestro/scripts/run-smoke-tests.sh --profile burst
+.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
+.maestro/scripts/run-smoke-tests.sh --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml --store lab
 ```
+
+Profiles are copy/paste-safe presets:
+
+- `core`: lab store, `smoke_core`, quarantine excluded.
+- `phone-full`: lab store, `smoke_core,smoke_extended`, `pos_tablet` excluded. This includes quarantined phone flows.
+- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine and tablet POS excluded.
+- `burst`: same as `release`, repeated 3 times.
+- `pos-tablet`: lab store, `pos_tablet`, quarantine included.
+
+`--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
+store, device, APK, repeat, and profile options.
 
 The runner:
 
