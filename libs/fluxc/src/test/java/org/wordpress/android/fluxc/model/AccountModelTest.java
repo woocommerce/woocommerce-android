@@ -61,6 +61,7 @@ public class AccountModelTest {
         copyAccount.setPendingEmailChange(!testAccount.getPendingEmailChange());
         copyAccount.setTwoStepEnabled(!testAccount.getTwoStepEnabled());
         copyAccount.setTracksOptOut(!testAccount.getTracksOptOut());
+        copyAccount.setCrashReportingOptOut(Boolean.TRUE);
         copyAccount.setUsernameCanBeChanged(!testAccount.getUsernameCanBeChanged());
         copyAccount.setWebAddress("copyWebAddress");
         copyAccount.setUserId(testAccount.getUserId() + 1);
