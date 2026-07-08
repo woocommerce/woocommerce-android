@@ -35,7 +35,10 @@ appId: com.woocommerce.android.dev
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_JETPACK_STORE_URL}
+- runFlow:
+    file: paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_JETPACK_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -48,7 +51,10 @@ appId: com.woocommerce.android.dev
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_EMAIL}
+- runFlow:
+    file: paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -84,7 +90,10 @@ appId: com.woocommerce.android.dev
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_PASSWORD}
+- runFlow:
+    file: paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

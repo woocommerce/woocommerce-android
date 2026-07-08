@@ -46,7 +46,10 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_NO_JETPACK_SITE_URL}
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_NO_JETPACK_SITE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -76,7 +79,10 @@ tags:
     visible: "Username"
     timeout: 15000
 - tapOn: "Username"
-- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
 
 # Tap the password label directly — its Material TextInputLayout focuses
 # the associated EditText. Avoid hideKeyboard here: the site-creds screen
@@ -84,7 +90,10 @@ tags:
 # (Maestro errors with "Couldn't hide the keyboard"), and Continue is
 # visible above the IME anyway.
 - tapOn: "Password"
-- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
 
 - tapOn: "Continue"
 
