@@ -4,6 +4,7 @@
 
 25.2
 -----
+- [*****] [Internal] Update Stripe Terminal SDK from 5.1.1 to 5.6.0 [https://github.com/woocommerce/woocommerce-android/pull/16223]
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
 - [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
