@@ -34,6 +34,11 @@ cp .maestro/env.example .maestro/.env.local
 ```
 
 Fill `.maestro/.env.local` yourself from the canonical secret store. Do not paste credential values into agent conversations.
+Validate the file before running flows, especially after pasting passwords:
+
+```bash
+.maestro/scripts/lint-env.py
+```
 
 ## Running
 
