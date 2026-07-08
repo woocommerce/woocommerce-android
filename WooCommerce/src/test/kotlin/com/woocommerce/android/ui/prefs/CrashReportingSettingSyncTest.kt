@@ -51,7 +51,7 @@ class CrashReportingSettingSyncTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given account has no crash reporting choice, when syncing, then local value is backfilled to the account`() =
+    fun `given account is null and user made a local choice, when syncing, then local value is backfilled to the account`() =
         testBlocking {
             // given
             repository.stub {
@@ -59,6 +59,7 @@ class CrashReportingSettingSyncTest : BaseUnitTest() {
                 on { updateCrashReportingSetting(false) } doReturn Result.success(Unit)
             }
             appPrefs.stub {
+                on { hasCrashReportingChoice() } doReturn true
                 on { isCrashReportingEnabled() } doReturn false
             }
 
@@ -71,7 +72,26 @@ class CrashReportingSettingSyncTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given account has no crash reporting choice, when backfill fails, then local value stays untouched`() =
+    fun `given account is null and user never made a choice, when syncing, then nothing is pushed`() =
+        testBlocking {
+            // given
+            repository.stub {
+                on { accountCrashReportingOptOut() } doReturn null
+            }
+            appPrefs.stub {
+                on { hasCrashReportingChoice() } doReturn false
+            }
+
+            // when
+            sut()
+
+            // then
+            verify(repository, never()).updateCrashReportingSetting(any())
+            verify(appPrefs, never()).setCrashReportingEnabled(any())
+        }
+
+    @Test
+    fun `given account is null and user made a choice, when backfill fails, then local value stays untouched`() =
         testBlocking {
             // given
             repository.stub {
@@ -79,6 +99,7 @@ class CrashReportingSettingSyncTest : BaseUnitTest() {
                 on { updateCrashReportingSetting(true) } doReturn Result.failure(Exception())
             }
             appPrefs.stub {
+                on { hasCrashReportingChoice() } doReturn true
                 on { isCrashReportingEnabled() } doReturn true
             }
 
