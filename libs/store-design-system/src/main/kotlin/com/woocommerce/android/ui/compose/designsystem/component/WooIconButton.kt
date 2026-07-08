@@ -57,7 +57,7 @@ fun WooIconButton(
     emphasis: WooIconButtonEmphasis = WooIconButtonEmphasis.Neutral,
     icon: @Composable () -> Unit,
 ) {
-    require(contentDescription.isNotBlank()) {
+    assert(contentDescription.isNotBlank()) {
         "WooIconButton contentDescription must not be blank"
     }
 
@@ -110,7 +110,7 @@ internal fun WooIconButtonDemo(
     ) {
         WooIconButton(
             imageVector = WooIcons.Regular.CommentQuestion,
-            contentDescription = "Help",
+            contentDescription = "",
             onClick = {},
         )
         WooIconButton(

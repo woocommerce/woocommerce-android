@@ -59,7 +59,7 @@ fun WooOutlinedIconButton(
     emphasis: WooIconButtonEmphasis = WooIconButtonEmphasis.Neutral,
     icon: @Composable () -> Unit,
 ) {
-    require(contentDescription.isNotBlank()) {
+    assert(contentDescription.isNotBlank()) {
         "WooOutlinedIconButton contentDescription must not be blank"
     }
 

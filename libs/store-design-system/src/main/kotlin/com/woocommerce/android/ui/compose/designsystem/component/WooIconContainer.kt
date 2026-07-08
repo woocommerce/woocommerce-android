@@ -28,12 +28,6 @@ fun WooIconContainer(
     tone: WooIconContainerTone = WooIconContainerTone.Purple,
     contentDescription: String? = null,
 ) {
-    if (contentDescription != null) {
-        require(contentDescription.isNotBlank()) {
-            "WooIconContainer contentDescription must not be blank when provided"
-        }
-    }
-
     val colors = tone.toIconContainerColors()
 
     Surface(
