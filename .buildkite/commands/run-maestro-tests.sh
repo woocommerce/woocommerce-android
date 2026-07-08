@@ -4,17 +4,16 @@ set -euo pipefail
 # Run the Maestro smoke suite through the repository runner.
 #
 # Expected CI secrets:
-#   MAESTRO_WOO_SHARED_STORE_URL
-#   MAESTRO_WOO_SHARED_EMAIL
-#   MAESTRO_WOO_SHARED_PASSWORD
-#   MAESTRO_WOO_SHARED_CONSUMER_KEY
-#   MAESTRO_WOO_SHARED_CONSUMER_SECRET
+#   MAESTRO_WOO_SHARED_JETPACK_STORE_URL
+#   MAESTRO_WOO_SHARED_WPCOM_EMAIL
+#   MAESTRO_WOO_SHARED_WPCOM_PASSWORD
 #
 # Optional controls:
 #   MAESTRO_STORE=shared|lab
 #   MAESTRO_INCLUDE_TAGS=smoke_core,smoke_extended,destructive
 #   MAESTRO_REPEAT=3
 #   MAESTRO_APK_PATH=/path/to/beta.apk
+#   MAESTRO_SEED=true
 
 if .buildkite/commands/should-skip-job.sh --job-type validation; then
   echo "Skipping Maestro tests - no relevant changes"
@@ -25,6 +24,10 @@ STORE="${MAESTRO_STORE:-shared}"
 INCLUDE_TAGS="${MAESTRO_INCLUDE_TAGS:-smoke_core}"
 REPEAT="${MAESTRO_REPEAT:-1}"
 OUTPUT_DIR="${MAESTRO_OUTPUT_DIR:-WooCommerce/build/outputs/maestro-smoke}"
+SEED_ARGS=()
+if [[ "${MAESTRO_SEED:-false}" == "true" ]]; then
+  SEED_ARGS+=(--seed)
+fi
 
 if [[ -n "${MAESTRO_APK_PATH:-}" ]]; then
   APK_PATH="$MAESTRO_APK_PATH"
@@ -43,6 +46,7 @@ if [[ -n "$APK_PATH" ]]; then
     --include-tags "$INCLUDE_TAGS" \
     --repeat "$REPEAT" \
     --output-dir "$OUTPUT_DIR" \
+    "${SEED_ARGS[@]}" \
     --no-open \
     --apk "$APK_PATH"
 else
@@ -51,6 +55,7 @@ else
     --include-tags "$INCLUDE_TAGS" \
     --repeat "$REPEAT" \
     --output-dir "$OUTPUT_DIR" \
+    "${SEED_ARGS[@]}" \
     --no-open
 fi
 MAESTRO_EXIT_STATUS=$?
