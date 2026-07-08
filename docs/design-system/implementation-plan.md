@@ -123,7 +123,7 @@ Expected output:
 Production screens should consume only production-ready components. In-progress components can remain preview-only.
 
 The initial production subset should cover top/navigation bar, page title/body/link text styles or
-wrappers, primary button, list/cell rows, section header, switch, icon button, divider, progress
+wrappers, primary button, list/cell rows, switch, icon button, divider, progress
 indicator, and the spacing/radius/color/typography tokens they depend on.
 
 Chrome components should follow [rollout-direction.md](rollout-direction.md): unified visual look,

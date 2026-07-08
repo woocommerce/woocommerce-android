@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIcon
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
@@ -310,12 +309,6 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionTabsCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
-                    path = PRODUCTION_SECTION_HEADERS_PATH,
-                    title = "Section headers",
-                    description = "Semantically marked headers for grouped content.",
-                    content = { ProductionSectionHeadersCatalogLeaf() },
-                ),
-                CatalogNode.Leaf(
                     path = PRODUCTION_ROWS_CELLS_PATH,
                     title = "Rows and cells",
                     description = "Cells, settings rows, switches, and switch rows.",
@@ -452,14 +445,6 @@ private fun ProductionTabsCatalogLeaf() {
 }
 
 @Composable
-private fun ProductionSectionHeadersCatalogLeaf() {
-    CatalogSection("Section headers") {
-        WooSectionHeader("Tracking")
-        WooSectionHeader("Orders")
-    }
-}
-
-@Composable
 private fun ProductionRowsCellsCatalogLeaf() {
     CatalogSection("Rows and cells") {
         WooCellDemo()
@@ -587,7 +572,6 @@ private const val PRODUCTION_ICON_CONTAINERS_PATH = "production/icon-containers"
 private const val PRODUCTION_CHOICE_CONTROLS_PATH = "production/choice-controls"
 private const val PRODUCTION_SEARCH_PATH = "production/search"
 private const val PRODUCTION_TABS_PATH = "production/tabs"
-private const val PRODUCTION_SECTION_HEADERS_PATH = "production/section-headers"
 private const val PRODUCTION_ROWS_CELLS_PATH = "production/rows-cells"
 private const val PRODUCTION_DIVIDERS_PATH = "production/dividers"
 private const val PRODUCTION_PROGRESS_INDICATORS_PATH = "production/progress-indicators"

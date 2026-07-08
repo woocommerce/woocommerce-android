@@ -80,7 +80,7 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Component PR scope is full i1 catalog with previews, but production APIs only for first-wave needs and low-risk primitives.
 - Unsettled components stay private/internal preview catalog implementations.
 - Initial production subset covers top/navigation bar, page title/body/link text styles or wrappers,
-  primary button, list/cell rows, section header, switch, icon button, divider, progress indicator,
+  primary button, list/cell rows, switch, icon button, divider, progress indicator,
   and the tokens they depend on.
 - Progress indicator is not listed as an i1 Figma component, but should still be wrapped as a thin
   Material 3 adapter for future custom design replacement.
