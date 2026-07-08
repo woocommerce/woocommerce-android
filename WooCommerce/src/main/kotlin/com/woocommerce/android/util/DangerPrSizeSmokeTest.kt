@@ -456,4 +456,3 @@ package com.woocommerce.android.util
 object DangerPrSizeSmokeTest {
     const val COUNTED_LINES = 4
 }
-
