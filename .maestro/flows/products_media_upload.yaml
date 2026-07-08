@@ -77,13 +77,13 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "productName"
+      text: "${FIXTURE_SIMPLE_PRODUCT}"
     timeout: 20000
     label: "Wait for the seeded product in search results"
 
 - tapOn:
-    id: "productName"
-    index: 0
+    text: "${FIXTURE_SIMPLE_PRODUCT}"
+    retryTapIfNoChange: true
     label: "Open seeded simple product"
 
 - extendedWaitUntil:
