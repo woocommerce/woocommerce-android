@@ -14,6 +14,7 @@
 - [*] Fixed This Week stats ranges using the app/device week start instead of the store's configured week start [https://github.com/woocommerce/woocommerce-android/pull/16160]
 - [*] Blaze now shows a clear error when you pick an unsupported ad image type such as AVIF [https://github.com/woocommerce/woocommerce-android/pull/16151]
 - [Internal] Updated the app's compile SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16158]
+- [*] Variation list rows now show a chevron to indicate they open the variation editor [https://github.com/woocommerce/woocommerce-android/pull/16219]
 
 25.1
 -----
