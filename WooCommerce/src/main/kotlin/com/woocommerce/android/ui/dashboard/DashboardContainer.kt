@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,7 +64,12 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
+
+private const val SCROLL_INTERACTION_DEBOUNCE_MS = 1000L
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -103,6 +109,7 @@ fun DashboardContainer(
     }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 private fun DashboardWidgets(
     widgetUiModels: List<DashboardWidgetUiModel>,
@@ -120,6 +127,13 @@ private fun DashboardWidgets(
         scrollToTopTrigger.collect {
             scrollState.animateScrollTo(0)
         }
+    }
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.value }
+            .drop(1) // Ignore the initial value emitted on composition
+            .debounce(SCROLL_INTERACTION_DEBOUNCE_MS)
+            .collect { dashboardViewModel.onDashboardInteracted() }
     }
 
     if (numberOfColumns == 1) {
