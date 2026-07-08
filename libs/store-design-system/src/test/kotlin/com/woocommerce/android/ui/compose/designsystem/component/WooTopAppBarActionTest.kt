@@ -2,19 +2,20 @@ package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.Test
 
 class WooTopAppBarActionTest {
     @Test
     fun `given blank icon content description, when creating icon action, then throw`() {
-        assertThatIllegalArgumentException().isThrownBy {
+        assertThatThrownBy {
             WooTopAppBarAction.Icon(
                 imageVector = TEST_ICON,
                 contentDescription = " ",
                 onClick = {},
             )
-        }
+        }.isInstanceOf(AssertionError::class.java)
     }
 
     @Test

@@ -10,7 +10,7 @@ sealed interface WooTopAppBarAction {
         val enabled: Boolean = true,
     ) : WooTopAppBarAction {
         init {
-            require(contentDescription.isNotBlank()) {
+            assert(contentDescription.isNotBlank()) {
                 "WooTopAppBarAction.Icon contentDescription must not be blank"
             }
         }

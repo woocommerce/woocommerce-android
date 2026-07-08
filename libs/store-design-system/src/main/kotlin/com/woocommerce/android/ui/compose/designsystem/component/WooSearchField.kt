@@ -60,7 +60,7 @@ fun WooSearchField(
     trailingActionEnabled: Boolean = enabled,
 ) {
     if (onClearClick != null) {
-        require(!clearContentDescription.isNullOrBlank()) {
+        assert(!clearContentDescription.isNullOrBlank()) {
             "WooSearchField clearContentDescription must not be blank when onClearClick is provided"
         }
     }
@@ -147,9 +147,8 @@ fun WooSearchField(
             }
 
             if (showClearButton) {
-                val clearAction = checkNotNull(onClearClick)
                 WooSearchClearButton(
-                    onClick = clearAction,
+                    onClick = onClearClick,
                     enabled = enabled,
                     contentDescription = clearContentDescription.orEmpty(),
                     color = clearIconColor,
