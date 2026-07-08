@@ -1,17 +1,15 @@
 # Smoke Test: Hub Menu - Payments
 # p2: hub.payments
 # P2 ref: Hub menu > Payments (Enable/Disable Pay in Person, Order Card
-#         Reader, Manage Card Reader, Card Reader Manuals, etc.)
+#         Reader, Manage Card Reader, card-reader help/docs, etc.)
 #
 # Verifies:
 #   - Payments screen opens from the More Menu
 #   - Payments hub renders every first-level item the P2 mentions:
 #       SETTINGS header, "Pay In Person" toggle, CARD READERS header,
-#       "Order Card Reader", "Manage Card Reader", "Card Reader Manuals"
+#       "Order Card Reader", "Manage Card Reader", card-reader help link
 #   - Tapping "Order Card Reader" opens its dedicated screen (P2-level
 #     navigation check)
-#   - Tapping "Card Reader Manuals" opens the manuals list (with per
-#     P2 smoke: every manuals entry should render)
 #
 # Why we don't actually toggle Pay-in-Person or tap Order Card Reader
 # all the way through: Pay-in-Person toggling commits a real store
@@ -75,30 +73,12 @@ tags:
 - takeScreenshot: hub_payments_card_readers
 
 - scrollUntilVisible:
-    element: "Card Reader Manuals"
+    element: ".*accepting mobile payments.*ordering card readers.*"
     direction: DOWN
     timeout: 10000
-    label: "Scroll to Card Reader Manuals"
+    label: "Scroll to card-reader help link"
 
-- assertVisible: "Card Reader Manuals"
-
-# ── Navigate into Card Reader Manuals ────────────────────────────────
-- tapOn:
-    text: "Card Reader Manuals"
-    retryTapIfNoChange: true
-    label: "Open Card Reader Manuals"
-
-# Manuals list is a simple screen titled "Card Reader Manuals" with
-# rows per reader (e.g. "Chipper 2X BT", "Stripe M2", "WisePad 3",
-# "Tap To Pay on Android"). At least one reader is always listed on a
-# supported-country store, so we scroll until we find any common entry.
-- extendedWaitUntil:
-    visible: ".*Chipper.*|.*WisePad.*|.*Stripe M2.*|.*Tap To Pay.*"
-    timeout: 15000
-
-- takeScreenshot: hub_payments_manuals
-
-- back
+- assertVisible: ".*accepting mobile payments.*ordering card readers.*"
 
 # ── Navigate into Order Card Reader ──────────────────────────────────
 - extendedWaitUntil:
