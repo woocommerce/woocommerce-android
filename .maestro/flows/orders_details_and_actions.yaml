@@ -72,12 +72,14 @@ tags:
 
 - takeScreenshot: order_detail_top
 
-# Scroll down to see products
-- scroll
-
-- assertVisible:
-    id: "productInfo_name"
-    label: "Product name is visible in order detail"
+# Scroll to the products section. A plain `scroll` can overshoot on
+# taller devices and land in payment totals before this assertion runs.
+- scrollUntilVisible:
+    element:
+      id: "productInfo_name"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to product row in order detail"
 
 - takeScreenshot: order_detail_products
 
