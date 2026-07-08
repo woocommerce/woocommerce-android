@@ -1,5 +1,5 @@
 [versions]
-agp = '8.13.2'
+agp = '9.2.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
@@ -60,7 +60,7 @@ fastlane-screengrab = '2.1.1'
 fladle = '0.21.0'
 glassfish-javax-annotation = "10.0-b28"
 google-autoService = "1.1.1"
-google-dagger = "2.58"
+google-dagger = "2.60.1"
 google-firebase-bom = '34.5.0'
 google-gson = '2.14.0'
 google-guava = '33.6.0-android'
@@ -304,10 +304,9 @@ google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "goo
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
