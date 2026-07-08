@@ -111,10 +111,16 @@ tags:
           text: ".*SmokeTest-${SUITE_RUN_ID}.*"
           retryTapIfNoChange: true
           label: "Open this-run's SmokeTest order"
+      - extendedWaitUntil:
+          visible:
+            id: "orderDetail_container"
+          timeout: 15000
+          label: "Wait for SmokeTest order detail"
 
 - runFlow:
     when:
-      notVisible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+      notVisible:
+        id: "orderDetail_container"
     commands:
       - tapOn:
           text: ".*${SUITE_RUN_ID}.*"
