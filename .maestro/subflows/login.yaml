@@ -1,7 +1,7 @@
 # Reusable login subflow
 # Logs into the WooCommerce app with store URL + email + password.
 #
-# Required env vars: WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD
+# Required env vars: WOO_JETPACK_STORE_URL, WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD
 appId: com.woocommerce.android.dev
 ---
 - launchApp:
@@ -35,7 +35,7 @@ appId: com.woocommerce.android.dev
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_STORE_URL}
+- inputText: ${WOO_JETPACK_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -48,7 +48,7 @@ appId: com.woocommerce.android.dev
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_EMAIL}
+- inputText: ${WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -84,7 +84,7 @@ appId: com.woocommerce.android.dev
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_PASSWORD}
+- inputText: ${WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

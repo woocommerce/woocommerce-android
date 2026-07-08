@@ -6,7 +6,8 @@
 # access to it, and verifies the "account not connected to Jetpack" error.
 #
 # Required env vars:
-#   WOO_EMAIL, WOO_PASSWORD          (shared primary account)
+#   WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD
+#                                      (selected WP.com account)
 #   WOO_WRONG_ACCOUNT_STORE_URL      (site the primary account can't access)
 appId: com.woocommerce.android.dev
 name: "Login - Wrong account for the store"
@@ -54,7 +55,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_EMAIL}
+- inputText: ${WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -86,7 +87,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_PASSWORD}
+- inputText: ${WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

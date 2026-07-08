@@ -9,7 +9,7 @@
 # Preconditions (device/emulator):
 #   - A Google account is already signed in on the device.
 #   - That Google identity is LINKED on WP.com to an account with access
-#     to ${WOO_STORE_URL}. This is a stronger requirement than "a WP.com
+#     to ${WOO_JETPACK_STORE_URL}. This is a stronger requirement than "a WP.com
 #     account with the same email exists": WP.com sign-in via Google
 #     uses the Google identity, not the email, so an account created
 #     via email+password will silently fail Google login unless the
@@ -18,7 +18,7 @@
 #     returns to the empty email screen with no visible error.
 #
 # Required env vars:
-#   WOO_STORE_URL                    (any store the linked account accesses)
+#   WOO_JETPACK_STORE_URL            (any Jetpack-connected store the linked account accesses)
 appId: com.woocommerce.android.dev
 name: "Login - Social login (Google)"
 tags:
@@ -54,7 +54,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_STORE_URL}
+- inputText: ${WOO_JETPACK_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

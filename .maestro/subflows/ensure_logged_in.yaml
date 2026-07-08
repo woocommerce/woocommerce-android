@@ -15,9 +15,10 @@
 #   4. Fallback path — the device was never signed in, the session
 #      was wiped by a previous `clearState`, or WPCom expired the
 #      token: run the login.yaml subflow. It clearStates and
-#      authenticates with the primary Woo credentials
-#      (MAESTRO_WOO_EMAIL / MAESTRO_WOO_PASSWORD /
-#      MAESTRO_WOO_STORE_URL) and lands back on the dashboard.
+#      authenticates with the selected Jetpack-connected store and
+#      WP.com credentials (MAESTRO_WOO_JETPACK_STORE_URL,
+#      MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD) and
+#      lands back on the dashboard.
 #
 # Why the fallback matters: previously this subflow simply asserted
 # "My store" was visible and timed out (failing the flow) if the

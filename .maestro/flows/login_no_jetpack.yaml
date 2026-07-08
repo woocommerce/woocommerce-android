@@ -8,9 +8,9 @@
 # of nudging users on non-Jetpack sites toward the install flow.
 #
 # Required env vars:
-#   WOO_JN_SITE_URL                  (any non-Jetpack WP site with WC)
-#   WOO_JN_USERNAME                  (site credentials — not WP.com)
-#   WOO_JN_PASSWORD
+#   WOO_NO_JETPACK_SITE_URL                  (any non-Jetpack WP site with WC)
+#   WOO_NO_JETPACK_SITE_ADMIN_USERNAME       (site admin credentials — not WP.com)
+#   WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
 appId: com.woocommerce.android.dev
 name: "Login - No Jetpack (Explore Jetpack banner)"
 tags:
@@ -31,7 +31,7 @@ tags:
     commands:
       - tapOn: "Skip"
 
-# Enter JN store URL
+# Enter no-Jetpack store URL
 - extendedWaitUntil:
     visible:
       id: "button_login_store"
@@ -46,7 +46,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_JN_SITE_URL}
+- inputText: ${WOO_NO_JETPACK_SITE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -76,7 +76,7 @@ tags:
     visible: "Username"
     timeout: 15000
 - tapOn: "Username"
-- inputText: ${WOO_JN_USERNAME}
+- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
 
 # Tap the password label directly — its Material TextInputLayout focuses
 # the associated EditText. Avoid hideKeyboard here: the site-creds screen
@@ -84,7 +84,7 @@ tags:
 # (Maestro errors with "Couldn't hide the keyboard"), and Continue is
 # visible above the IME anyway.
 - tapOn: "Password"
-- inputText: ${WOO_JN_PASSWORD}
+- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
 
 - tapOn: "Continue"
 
@@ -101,13 +101,20 @@ tags:
     commands:
       - tapOn: "Save"
 
-# Verify the "Explore Jetpack" promo banner is visible on the dashboard.
+# Verify the Jetpack benefits promo banner is visible on the dashboard.
 # Text source: dashboard_jetpack_benefits_banner_*.xml strings
 # ("Get order notifications and more" / "boost store security. Explore
 # Jetpack now."). Matching on the unique "Explore Jetpack" phrasing
 # keeps the assertion stable across minor copy tweaks.
+- scrollUntilVisible:
+    element:
+      text: ".*Get order notifications and more.*|.*Explore Jetpack.*|.*boost store security.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Jetpack benefits banner"
+
 - extendedWaitUntil:
-    visible: ".*Explore Jetpack.*|.*boost store security.*"
-    timeout: 30000
+    visible: ".*Get order notifications and more.*|.*Explore Jetpack.*|.*boost store security.*"
+    timeout: 10000
 
 - takeScreenshot: login_no_jetpack

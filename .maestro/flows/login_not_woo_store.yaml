@@ -7,7 +7,8 @@
 # "not a WooCommerce site" error.
 #
 # Required env vars:
-#   WOO_EMAIL, WOO_PASSWORD          (shared primary account)
+#   WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD
+#                                      (selected WP.com account)
 #   WOO_NOT_A_WOO_STORE_URL          (notawoostore.wordpress.com)
 appId: com.woocommerce.android.dev
 name: "Login - Not a WooCommerce store error"
@@ -57,7 +58,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_EMAIL}
+- inputText: ${WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -90,7 +91,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_PASSWORD}
+- inputText: ${WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

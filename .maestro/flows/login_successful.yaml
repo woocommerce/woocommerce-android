@@ -3,10 +3,14 @@
 # P2 ref: Login > Jetpack (site address + WP.com credentials)
 #
 # Prerequisites:
-#   - WOO_STORE_URL, WOO_EMAIL, WOO_PASSWORD env vars set
+#   - WOO_JETPACK_STORE_URL, WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD env vars set
 #
 # Run:
-#   maestro test -e WOO_EMAIL="..." -e WOO_PASSWORD="..." -e WOO_STORE_URL="..." .maestro/flows/login_successful.yaml
+#   maestro test \
+#     -e WOO_WPCOM_EMAIL="..." \
+#     -e WOO_WPCOM_PASSWORD="..." \
+#     -e WOO_JETPACK_STORE_URL="..." \
+#     .maestro/flows/login_successful.yaml
 appId: com.woocommerce.android.dev
 name: "Login - Successful store login"
 tags:
