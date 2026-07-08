@@ -3,7 +3,7 @@
 # P2 ref: Orders > Collect payment using cash on delivery
 #
 # Verifies:
-#   - Search locates this run's seeded pending-payment order
+#   - Create a fresh unpaid order through the app UI
 #   - Tap "Collect Payment" in the payment info section
 #   - Pick the "Cash" option on the Select Payment Method screen
 #   - Change Due Calculator opens with the order total pre-filled
@@ -11,9 +11,9 @@
 #   - Returns to the order detail/list with the order marked completed
 #
 # Note: the cash-payment flow has no undo — the order stays Completed
-# with a "Cash on Delivery" gateway recorded. It therefore only ever
-# consumes a seeded fixture order (located via ${SUITE_RUN_ID} search),
-# never an arbitrary order from the shared store's list.
+# with a "Cash on Delivery" gateway recorded. It therefore creates its
+# own pending-payment order first instead of consuming an arbitrary row
+# from the shared store.
 appId: com.woocommerce.android.dev
 name: "Orders - Collect cash payment"
 tags:
@@ -28,41 +28,59 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# ── Find this run's seeded pending-payment order ──────────────────────
-# Fixtures are located by query, never by list position — on the shared
-# store the first pending order can be a manual tester's real order, and
-# this flow's cash payment has no undo. Searching the suite run id only
-# surfaces automation-owned orders (seeded billing name is the run id);
-# a "Pending payment" row is a seeded COD fixture that still exposes the
-# Collect Payment action. If attempt 1 consumed pending-order-1, the
-# retry finds pending-order-2 through the same query.
+# ── Create a fresh pending-payment order ──────────────────────────────
 - tapOn:
-    id: "menu_search"
-    label: "Open order search"
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
 
 - extendedWaitUntil:
-    visible:
-      id: "search_src_text"
-    timeout: 10000
+    visible: "Add products"
+    timeout: 15000
 
 - tapOn:
-    id: "search_src_text"
-- inputText: ${SUITE_RUN_ID}
-- pressKey: Enter
+    text: "Add products"
+    label: "Tap Add products"
 
 - extendedWaitUntil:
-    visible: ".*Pending payment.*"
-    timeout: 20000
-    label: "Wait for a seeded pending-payment order in results"
+    visible: ".*Search Products.*"
+    timeout: 15000
 
 - tapOn:
-    text: ".*Pending payment.*"
-    label: "Open this run's pending-payment order"
+    point: "50%,30%"
+    label: "Tap first product row"
+
+- extendedWaitUntil:
+    visible: ".*Select \\d+ Product.*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Select \\d+ Product.*"
+    label: "Confirm product selection"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: cash_payment_order_ready_to_create
+
+# The toolbar Create action submits the order without starting the
+# payment flow. That leaves a safe automation-owned Pending payment
+# order whose detail screen exposes Collect Payment.
+- tapOn:
+    id: "menu_create"
+    retryTapIfNoChange: true
+    label: "Create pending-payment order"
 
 - extendedWaitUntil:
     visible:
       id: "orderDetail_container"
     timeout: 15000
+
+- extendedWaitUntil:
+    visible: ".*Pending payment.*"
+    timeout: 20000
+    label: "Wait for pending-payment order detail"
 
 - takeScreenshot: order_detail_before_collect
 
@@ -133,15 +151,6 @@ tags:
     timeout: 30000
 
 - takeScreenshot: orders_after_cash_payment
-
-# ── Exit search if still active so downstream flows start clean ──────
-- runFlow:
-    when:
-      visible:
-        id: "search_src_text"
-    commands:
-      - back
-      - back
 
 - extendedWaitUntil:
     visible:
