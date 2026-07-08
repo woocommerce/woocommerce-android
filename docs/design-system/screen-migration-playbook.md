@@ -160,7 +160,7 @@ The current toolbar direction is a unified design-system visual look, not one fo
     RTL and large-font coverage for row-heavy screens.
 11. Verify first-wave screens with screenshot review, targeted tests when behavior changes, and an
     accessibility regression check against the original screen.
-12. Verify design-system components do not fall back to hardcoded light defaults under the
+12. Verify design-system components do not fall back to static light defaults under the
     design-system root.
 13. Before final merge, verify the controlled root-API rename boundary with the strict `rg` audits
     defined in [rollout-direction.md](rollout-direction.md).
