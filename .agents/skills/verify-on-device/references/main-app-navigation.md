@@ -62,10 +62,6 @@ MainActivity
 |       +-- -> Product Add-ons
 |       +-- -> Blaze Campaign Creation
 |
-+-- Bookings tab (if extension active)
-|   +-- Booking List (filterable)
-|   +-- -> Booking Detail
-|
 +-- Point of Sale tab (if enabled)
 |   +-- -> WooPosActivity (see pos-navigation.md)
 |
@@ -108,7 +104,6 @@ MainActivity
 | My Store | `dashboard` | "My store" | Dashboard |
 | Orders | `orders` | "Orders" | Orders List |
 | Products | `products` | "Products" | Products List |
-| Bookings | `bookings` | "Bookings" | Bookings List (only if extension active) |
 | Point of Sale | `point_of_sale` | "Point of Sale" | POS (only if enabled) |
 | Menu | `moreMenu` | "Menu" | More Menu |
 

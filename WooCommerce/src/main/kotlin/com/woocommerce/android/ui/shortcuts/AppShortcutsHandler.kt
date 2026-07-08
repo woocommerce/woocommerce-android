@@ -5,8 +5,6 @@ import android.content.Intent
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
@@ -18,7 +16,6 @@ import javax.inject.Inject
 class AppShortcutsHandler @Inject constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     fun init() {
@@ -37,10 +34,7 @@ class AppShortcutsHandler @Inject constructor(
 
     private fun buildShortcutsList(): List<ShortcutInfoCompat> {
         return buildList {
-            if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)) {
-                add(AppShortcut.Payments.toShortcutInfo())
-            }
-
+            add(AppShortcut.Payments.toShortcutInfo())
             add(AppShortcut.CreateOrder.toShortcutInfo())
         }
     }

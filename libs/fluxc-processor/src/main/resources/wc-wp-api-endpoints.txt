@@ -1,7 +1,6 @@
 /orders/
 /orders/<id>/
 /orders/<id>/notes/
-/orders/<id>/fulfillments/
 /orders/<id>/shipment-trackings/
 /orders/<id>/shipment-trackings/<tracking>#String/
 /orders/<id>/shipment-trackings/providers/
@@ -141,8 +140,6 @@
 /gla/ads/campaigns
 /gla/ads/reports/programs
 
-/bookings
-/bookings/<id>/
 /resources/team-members/
 /resources/team-members/<id>/
 

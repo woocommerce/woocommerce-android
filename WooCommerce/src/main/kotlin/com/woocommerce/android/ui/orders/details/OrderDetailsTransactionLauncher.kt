@@ -47,7 +47,6 @@ class OrderDetailsTransactionLauncher @Inject constructor(
 
     private enum class Conditions {
         ORDER_FETCHED,
-        ORDER_FULFILLMENTS_FETCHED,
         SHIPMENTS_FETCHED,
         SHIPPING_LABEL_FETCHED,
         NOTES_FETCHED,
@@ -58,8 +57,6 @@ class OrderDetailsTransactionLauncher @Inject constructor(
     }
 
     fun onOrderFetched() = satisfyCondition(Conditions.ORDER_FETCHED)
-
-    fun onOrderFulfillmentsFetched() = satisfyCondition(Conditions.ORDER_FULFILLMENTS_FETCHED)
 
     fun onShipmentsFetchingCompleted() = satisfyCondition(Conditions.SHIPMENTS_FETCHED)
 

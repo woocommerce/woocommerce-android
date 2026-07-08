@@ -48,12 +48,6 @@ WooPosActivity (landscape)
     |           +-- -> Email Receipt Screen
     |
     +-- FLOATING TOOLBAR (bottom-left)
-        +-- -> Bookings (CIAB sites only)
-        |   +-- Date Selector
-        |   +-- Booking List
-        |   +-- -> Booking Note
-        |   +-- -> Booking Payment (Card/Cash)
-        |       +-- -> Payment Success
         +-- -> Orders
         |   +-- -> Order Detail
         |       +-- -> Issue Refund
@@ -98,7 +92,6 @@ POS screens are 100% Compose. Elements are identified via `Modifier.testTag()` o
 | Orders List | Text "Orders" as screen title, order rows with # numbers |
 | Order Detail | Order number header with "Issue refund" button |
 | Settings | Text "Settings" with category list (Hardware, Store, etc.) |
-| Bookings | Text "Bookings" with date selector |
 | Eligibility | Text about POS requirements or plan upgrade |
 
 ## Key Workflows
@@ -129,16 +122,6 @@ Each step shows: action and element to find.
 | 6 | Select items to refund | items pre-selected, tap "Continue" |
 | 7 | Review and confirm refund | verify amounts, tap "Continue" |
 | 8 | Confirm in dialog | tap confirmation button |
-
-### Bookings Flow (CIAB sites only)
-
-| Step | Action | Element |
-|------|--------|---------|
-| 1 | Open toolbar menu, tap "Bookings" | text: "Bookings" |
-| 2 | Browse bookings | date selector to filter |
-| 3 | Select a booking | tap booking row |
-| 4 | View details / add note | booking detail pane |
-| 5 | Accept payment | card/cash flow with `source=BOOKINGS` |
 
 ### Other Events
 

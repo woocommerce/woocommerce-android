@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
@@ -27,9 +25,6 @@ class WooPosTabShouldBeVisibleTest {
     private val appPrefs: AppPrefs = mock()
     private val selectedSite: SelectedSite = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureUnsupported(CIABAffectedFeature.POS) } doReturn false
-    }
     private val isCountryAllowed: WooPosIsCountryAllowed = mock {
         on { invoke() } doReturn true
     }
@@ -52,7 +47,6 @@ class WooPosTabShouldBeVisibleTest {
             appPrefs = appPrefs,
             selectedSite = selectedSite,
             isScreenSizeAllowed = isScreenSizeAllowed,
-            ciabSiteGateKeeper = ciabSiteGateKeeper,
             isCountryAllowed = isCountryAllowed,
             wooPosLog = mock()
         )
@@ -79,16 +73,6 @@ class WooPosTabShouldBeVisibleTest {
         val r = sut(forceRefresh = true)
         assertTrue(r.isFailure)
         assertTrue(r.exceptionOrNull() is WooPosCouldNotDetermineValueException)
-    }
-
-    @Test
-    fun `given feature unsupported for CIAB site, when invoked with forceRefresh, then return success false`() = runTest {
-        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.POS)).thenReturn(true)
-
-        val r = sut(forceRefresh = true)
-
-        assertTrue(r.isSuccess)
-        assertFalse(r.getOrThrow())
     }
 
     @Test

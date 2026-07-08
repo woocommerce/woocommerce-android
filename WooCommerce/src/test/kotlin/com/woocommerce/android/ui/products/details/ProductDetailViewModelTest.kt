@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCa
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
-import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -1440,6 +1439,24 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given add flow with a removed saved product type, when starting, then draft falls back to SIMPLE`() =
+        testBlocking {
+            // GIVEN: a previously saved product type that no longer exists (e.g. the removed
+            // "bookable-service"), which ProductType.fromString() resolves to OTHER
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+            whenever(prefsWrapper.getSelectedProductType()).thenReturn("bookable-service")
+            whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+            setup()
+
+            // WHEN
+            viewModel.start()
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            // THEN
+            Assertions.assertThat(productsDraft?.productType).isEqualTo(ProductType.SIMPLE)
+        }
+
+    @Test
     fun `given add new product flow, when product not yet created on server, then trashOption is hidden`() =
         testBlocking {
             // GIVEN: existing product (ShowProduct mode)
@@ -1506,62 +1523,5 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // THEN: once the product is stored, trash option should be visible
             Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
-        }
-
-    @Test
-    fun `given CIAB site and bookable product, when product detail is opened, then show WebView`() = testBlocking {
-        // GIVEN
-        whenever(selectedSite.get()).thenReturn(
-            SiteModel().apply {
-                setIsGardenSite(true)
-                gardenName = SiteModel.CIAB_GARDEN_NAME
-            }
-        )
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
-        val testProductAggregate = productAggregate.copy(
-            product = productAggregate.product.copy(type = ProductType.BOOKABLE_SERVICE.value)
-        )
-        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
-        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
-
-        setup()
-        viewModel.start()
-
-        // WHEN
-        val event = viewModel.event.getOrAwaitValue()
-
-        // THEN
-        Assertions.assertThat(event).isEqualTo(
-            ProductDetailViewModel.OpenProductInWebView(testProductAggregate.product.remoteId)
-        )
-    }
-
-    @Test
-    fun `given CIAB site and non-bookable product, when product detail is opened, then don't show WebView`() =
-        testBlocking {
-            // GIVEN
-            whenever(selectedSite.get()).thenReturn(
-                SiteModel().apply {
-                    setIsGardenSite(true)
-                    gardenName = SiteModel.CIAB_GARDEN_NAME
-                }
-            )
-            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-                .toSavedStateHandle()
-            val testProductAggregate = productAggregate.copy(
-                product = productAggregate.product.copy(type = ProductType.SIMPLE.value)
-            )
-            doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
-            doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
-
-            setup()
-            viewModel.start()
-
-            // WHEN
-            val events = viewModel.event.captureValues()
-
-            // THEN
-            Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
         }
 }

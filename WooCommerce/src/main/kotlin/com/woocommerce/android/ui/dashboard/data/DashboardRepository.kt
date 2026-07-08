@@ -32,7 +32,6 @@ class DashboardRepository @Inject constructor(
     observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus,
     observeStockWidgetStatus: ObserveStockWidgetStatus,
     observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus,
-    observeInboxWidgetStatus: ObserveInboxWidgetStatus,
     observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus,
 ) {
     private val siteCoroutineScopeFlow = selectedSite.observe().map {
@@ -64,8 +63,6 @@ class DashboardRepository @Inject constructor(
 
     private val googleAdsWidgetStatus = widgetStatusFlow { observeGoogleAdsWidgetStatus() }
 
-    private val inboxWidgetStatus = widgetStatusFlow { observeInboxWidgetStatus() }
-
     private val aiAssistantWidgetStatus = widgetStatusFlow { observeAIAssistantWidgetStatus() }
 
     val widgets = combine(
@@ -76,10 +73,9 @@ class DashboardRepository @Inject constructor(
         onboardingWidgetStatus,
         stockWidgetStatus,
         googleAdsWidgetStatus,
-        inboxWidgetStatus,
         aiAssistantWidgetStatus
     ) { widgets, siteOrdersState, blazeWidgetStatus, pushNotificationsWidgetStatus, onboardingWidgetStatus,
-        stockWidgetStatus, googleAdsWidgetStatus, inboxWidgetStatus, aiAssistantWidgetStatus ->
+        stockWidgetStatus, googleAdsWidgetStatus, aiAssistantWidgetStatus ->
         widgets.toDomainModel(
             siteOrdersState,
             blazeWidgetStatus,
@@ -87,7 +83,6 @@ class DashboardRepository @Inject constructor(
             onboardingWidgetStatus,
             stockWidgetStatus,
             googleAdsWidgetStatus,
-            inboxWidgetStatus,
             aiAssistantWidgetStatus
         )
     }
@@ -155,7 +150,6 @@ class DashboardRepository @Inject constructor(
         onboardingWidgetStatus: DashboardWidget.Status,
         stockWidgetStatus: DashboardWidget.Status,
         googleAdsWidgetStatus: DashboardWidget.Status,
-        inboxWidgetStatus: DashboardWidget.Status,
         aiAssistantWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
@@ -173,7 +167,6 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                     DashboardWidget.Type.STOCK -> stockWidgetStatus
                     DashboardWidget.Type.GOOGLE_ADS -> googleAdsWidgetStatus
-                    DashboardWidget.Type.INBOX -> inboxWidgetStatus
                     DashboardWidget.Type.AI_ASSISTANT -> aiAssistantWidgetStatus
 
                     else -> DashboardWidget.Status.Available
