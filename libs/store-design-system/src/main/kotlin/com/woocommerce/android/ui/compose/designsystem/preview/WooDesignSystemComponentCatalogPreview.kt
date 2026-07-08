@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooButtonDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooCellDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooDividerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButtonDemo
@@ -43,6 +44,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
+import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
@@ -277,6 +280,12 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionSectionHeadersCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
+                    path = PRODUCTION_ROWS_CELLS_PATH,
+                    title = "Rows and cells",
+                    description = "Cells, settings rows, switches, and switch rows.",
+                    content = { ProductionRowsCellsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
                     path = PRODUCTION_DIVIDERS_PATH,
                     title = "Dividers",
                     description = "Horizontal and vertical separators.",
@@ -342,6 +351,15 @@ private fun ProductionSectionHeadersCatalogLeaf() {
     CatalogSection("Section headers") {
         WooSectionHeader("Tracking")
         WooSectionHeader("Orders")
+    }
+}
+
+@Composable
+private fun ProductionRowsCellsCatalogLeaf() {
+    CatalogSection("Rows and cells") {
+        WooCellDemo()
+        WooSwitchDemo(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+        WooSettingsRowDemo()
     }
 }
 
@@ -480,5 +498,6 @@ private const val PRODUCTION_BADGES_PATH = "production/badges"
 private const val PRODUCTION_NOTICE_BANNERS_PATH = "production/notice-banners"
 private const val PRODUCTION_ICON_CONTAINERS_PATH = "production/icon-containers"
 private const val PRODUCTION_SECTION_HEADERS_PATH = "production/section-headers"
+private const val PRODUCTION_ROWS_CELLS_PATH = "production/rows-cells"
 private const val PRODUCTION_DIVIDERS_PATH = "production/dividers"
 private const val PRODUCTION_PROGRESS_INDICATORS_PATH = "production/progress-indicators"
