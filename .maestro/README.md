@@ -7,10 +7,16 @@ https://woomobilep2.wordpress.com/flows-for-app-features-smoke-testing/
 
 The suite has two store targets:
 
-- `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use a disposable Jurassic Ninja store with a dedicated test account.
-- `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit non-destructive developer runs.
+- `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use an
+  automation-owned WooCommerce store that is connected to Jetpack/WP.com with a dedicated WP.com test account.
+- `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit
+  non-destructive developer runs.
 
-Destructive flows against the shared store are refused outside CI. In CI, the runner creates a REST-backed store lock before destructive shared-store runs and removes it on exit.
+The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
+site credentials as the `lab` store block when running the broader suite.
+
+Destructive flows against the shared store are refused outside CI. In CI, the runner creates a REST-backed store lock
+before destructive shared-store runs and removes it on exit.
 
 ## Local Setup
 
@@ -31,7 +37,7 @@ Fill `.maestro/.env.local` yourself from the canonical secret store. Do not past
 
 ## Running
 
-Default local run: lab store, seeded fixtures, `smoke_core` only, quarantine excluded.
+Default local run: lab store, `smoke_core` only, quarantine excluded.
 
 ```bash
 .maestro/scripts/run-smoke-tests.sh --store lab
@@ -52,10 +58,10 @@ The runner:
 
 - selects one connected device automatically, or prompts when several are attached;
 - captures and restores animation settings;
-- seeds deterministic fixtures through the WooCommerce REST API;
-- writes created entity IDs to `run-manifest.json`;
-- deletes exactly those manifest IDs during cleanup;
-- performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h;
+- can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;
+- writes created entity IDs to `run-manifest.json` when seeding;
+- deletes exactly those manifest IDs during cleanup when seeding;
+- performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
 - retries each failed flow once and records pass-on-retry as flaky;
 - redacts `MAESTRO_WOO_*` values from logs;
 - stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`.

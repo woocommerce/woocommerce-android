@@ -7,7 +7,7 @@ set -euo pipefail
 #   - lab store by default
 #   - smoke_core only by default
 #   - flaky_quarantine excluded unless explicitly requested
-#   - fixture seed + manifest cleanup
+#   - no REST fixture seed unless --seed is passed
 #   - animation settings captured and restored
 #   - one retry per failed flow, recorded as flaky
 
@@ -30,7 +30,7 @@ DEVICE_SELECTOR=""
 TARGET=""
 OPEN_REPORT="auto"
 RECORD="yes"
-SEED="yes"
+SEED="no"
 CLEANUP="yes"
 SWEEP_DRY_RUN="no"
 OUTPUT_ROOT=""
@@ -48,7 +48,7 @@ Defaults:
   - lab store
   - smoke_core only
   - flaky_quarantine excluded unless explicitly requested
-  - fixture seed + manifest cleanup
+  - no REST fixture seed unless --seed is passed
   - animation settings captured and restored
   - one retry per failed flow, recorded as flaky
 
@@ -68,6 +68,7 @@ Options:
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
   --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
+  --seed                      Run REST fixture seed/cleanup. Requires Woo REST API credentials.
   --no-seed                   Skip REST fixture seed/cleanup.
   --no-cleanup                Leave seeded manifest entities behind.
   --sweep-dry-run             Log stale-orphan sweep candidates without deleting.
@@ -132,6 +133,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --no-seed)
       SEED="no"
+      shift
+      ;;
+    --seed)
+      SEED="yes"
       shift
       ;;
     --no-cleanup)
@@ -253,16 +258,50 @@ if [[ -f "$STRINGS_ENV_FILE" ]]; then
   set +a
 fi
 
-select_store_env() {
-  local upper scoped value suffix
-  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
-  for suffix in STORE_URL EMAIL PASSWORD CONSUMER_KEY CONSUMER_SECRET; do
-    scoped="MAESTRO_WOO_${upper}_${suffix}"
-    value="${!scoped:-}"
+map_store_env() {
+  local target="$1"
+  shift
+  local source value
+  for source in "$@"; do
+    value="${!source:-}"
     if [[ -n "$value" ]]; then
-      export "MAESTRO_WOO_${suffix}=$value"
+      export "$target=$value"
+      return
     fi
   done
+}
+
+alias_env() {
+  local target="$1"
+  local source="$2"
+  if [[ -z "${!target:-}" && -n "${!source:-}" ]]; then
+    export "$target=${!source}"
+  fi
+}
+
+select_store_env() {
+  local upper
+  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
+  map_store_env \
+    MAESTRO_WOO_JETPACK_STORE_URL \
+    "MAESTRO_WOO_${upper}_JETPACK_STORE_URL" \
+    "MAESTRO_WOO_${upper}_STORE_URL"
+  map_store_env MAESTRO_WOO_WPCOM_EMAIL "MAESTRO_WOO_${upper}_WPCOM_EMAIL" "MAESTRO_WOO_${upper}_EMAIL"
+  map_store_env \
+    MAESTRO_WOO_WPCOM_PASSWORD \
+    "MAESTRO_WOO_${upper}_WPCOM_PASSWORD" \
+    "MAESTRO_WOO_${upper}_PASSWORD"
+
+  alias_env MAESTRO_WOO_STORE_URL MAESTRO_WOO_JETPACK_STORE_URL
+  alias_env MAESTRO_WOO_EMAIL MAESTRO_WOO_WPCOM_EMAIL
+  alias_env MAESTRO_WOO_PASSWORD MAESTRO_WOO_WPCOM_PASSWORD
+
+  map_store_env MAESTRO_WOO_CONSUMER_KEY "MAESTRO_WOO_${upper}_CONSUMER_KEY"
+  map_store_env MAESTRO_WOO_CONSUMER_SECRET "MAESTRO_WOO_${upper}_CONSUMER_SECRET"
+
+  alias_env MAESTRO_WOO_NO_JETPACK_SITE_URL MAESTRO_WOO_JN_SITE_URL
+  alias_env MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME MAESTRO_WOO_JN_USERNAME
+  alias_env MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD MAESTRO_WOO_JN_PASSWORD
 }
 select_store_env
 
@@ -294,6 +333,57 @@ flow_has_any_tag() {
   return 1
 }
 
+url_host() {
+  local value="${1:-}"
+  value="${value#http://}"
+  value="${value#https://}"
+  value="${value%%/*}"
+  value="${value%%:*}"
+  printf '%s' "$value" | tr '[:upper:]' '[:lower:]'
+}
+
+flow_uses_wpcom_credentials() {
+  local flow name
+  local wpcom_ref_pattern
+  wpcom_ref_pattern='\$\{WOO_(JETPACK_STORE_URL|WPCOM_EMAIL|WPCOM_PASSWORD)\}'
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    name="$(basename "$flow")"
+    case "$name" in
+      login_help.yaml|login_no_jetpack.yaml|login_not_wp_site.yaml)
+        continue
+        ;;
+    esac
+    if grep -Eq "$wpcom_ref_pattern|subflows/(ensure_logged_in|login)\\.yaml" "$flow"; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+validate_login_store_env() {
+  flow_uses_wpcom_credentials || return 0
+
+  local selected_host no_jetpack_host upper
+  upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
+  selected_host="$(url_host "${MAESTRO_WOO_JETPACK_STORE_URL:-}")"
+  no_jetpack_host="$(url_host "${MAESTRO_WOO_NO_JETPACK_SITE_URL:-}")"
+
+  if [[ -n "$selected_host" && -n "$no_jetpack_host" && "$selected_host" == "$no_jetpack_host" ]]; then
+    cat >&2 <<EOF
+Setup error: selected --store $STORE points the Jetpack store at the same host as the no-Jetpack site.
+
+The selected flow set includes WP.com/Jetpack login flows. Set the $STORE store
+block to a Jetpack-connected WooCommerce store with MAESTRO_WOO_${upper}_JETPACK_STORE_URL,
+MAESTRO_WOO_${upper}_WPCOM_EMAIL, and MAESTRO_WOO_${upper}_WPCOM_PASSWORD.
+Keep MAESTRO_WOO_NO_JETPACK_* only for login_no_jetpack.yaml.
+
+To run only the no-Jetpack flow:
+  .maestro/scripts/run-smoke-tests.sh --no-seed .maestro/flows/login_no_jetpack.yaml
+EOF
+    exit 1
+  fi
+}
+
 ORDERED_FLOWS=()
 if [[ -n "$TARGET" ]]; then
   if [[ ! -f "$TARGET" ]]; then
@@ -318,6 +408,7 @@ if [[ ${#ORDERED_FLOWS[@]} -eq 0 ]]; then
   echo "No flows matched the current filters." >&2
   exit 1
 fi
+validate_login_store_env
 
 SUITE_HAS_DESTRUCTIVE="no"
 for flow in "${ORDERED_FLOWS[@]}"; do

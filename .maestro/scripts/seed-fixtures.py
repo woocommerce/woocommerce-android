@@ -67,10 +67,19 @@ def env_required(name: str) -> str:
 
 def load_store_env(store: str) -> None:
     prefix = f"MAESTRO_WOO_{store.upper()}_"
-    for suffix in ("STORE_URL", "CONSUMER_KEY", "CONSUMER_SECRET", "EMAIL", "PASSWORD"):
-        scoped = os.environ.get(prefix + suffix, "").strip()
-        if scoped:
-            os.environ[f"MAESTRO_WOO_{suffix}"] = scoped
+    mappings = {
+        "STORE_URL": ("JETPACK_STORE_URL", "STORE_URL"),
+        "EMAIL": ("WPCOM_EMAIL", "EMAIL"),
+        "PASSWORD": ("WPCOM_PASSWORD", "PASSWORD"),
+        "CONSUMER_KEY": ("CONSUMER_KEY",),
+        "CONSUMER_SECRET": ("CONSUMER_SECRET",),
+    }
+    for target, suffixes in mappings.items():
+        for suffix in suffixes:
+            scoped = os.environ.get(prefix + suffix, "").strip()
+            if scoped:
+                os.environ[f"MAESTRO_WOO_{target}"] = scoped
+                break
 
 
 class WooClient:
