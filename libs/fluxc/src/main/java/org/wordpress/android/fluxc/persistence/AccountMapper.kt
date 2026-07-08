@@ -28,6 +28,7 @@ class AccountMapper @Inject constructor() {
         twoStepEnabled = model.twoStepEnabled,
         webAddress = model.webAddress.orEmpty(),
         tracksOptOut = model.tracksOptOut,
+        crashReportingOptOut = model.crashReportingOptOut,
         usernameCanBeChanged = model.usernameCanBeChanged,
     )
 
@@ -53,6 +54,7 @@ class AccountMapper @Inject constructor() {
         twoStepEnabled = entity.twoStepEnabled
         webAddress = entity.webAddress
         tracksOptOut = entity.tracksOptOut
+        crashReportingOptOut = entity.crashReportingOptOut
         usernameCanBeChanged = entity.usernameCanBeChanged
     }
 }

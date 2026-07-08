@@ -44,5 +44,6 @@ data class AccountEntity(
     val twoStepEnabled: Boolean,
     val webAddress: String,
     val tracksOptOut: Boolean,
+    val crashReportingOptOut: Boolean?,
     val usernameCanBeChanged: Boolean,
 )

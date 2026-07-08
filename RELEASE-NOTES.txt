@@ -4,7 +4,7 @@
 
 25.2
 -----
-- [*] Variation list rows now show a chevron to indicate they open the variation editor [https://github.com/woocommerce/woocommerce-android/pull/16219]
+- [*] The Report Crashes privacy setting is now saved on your WordPress.com account, so it's kept across logins and devices
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
 - [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
@@ -14,6 +14,7 @@
 - [*] Fixed This Week stats ranges using the app/device week start instead of the store's configured week start [https://github.com/woocommerce/woocommerce-android/pull/16160]
 - [*] Blaze now shows a clear error when you pick an unsupported ad image type such as AVIF [https://github.com/woocommerce/woocommerce-android/pull/16151]
 - [Internal] Updated the app's compile SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16158]
+- [*] Variation list rows now show a chevron to indicate they open the variation editor [https://github.com/woocommerce/woocommerce-android/pull/16219]
 
 25.1
 -----
