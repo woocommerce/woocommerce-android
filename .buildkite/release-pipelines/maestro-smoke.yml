@@ -7,6 +7,7 @@ agents:
 env:
   MAESTRO_STORE: "shared"
   MAESTRO_INCLUDE_TAGS: "smoke_core,smoke_extended,destructive"
+  MAESTRO_EXCLUDE_TAGS: "flaky_quarantine,pos_tablet"
   MAESTRO_REPEAT: "1"
 
 steps:

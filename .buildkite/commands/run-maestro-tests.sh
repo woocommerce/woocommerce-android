@@ -11,6 +11,7 @@ set -euo pipefail
 # Optional controls:
 #   MAESTRO_STORE=shared|lab
 #   MAESTRO_INCLUDE_TAGS=smoke_core,smoke_extended,destructive
+#   MAESTRO_EXCLUDE_TAGS=flaky_quarantine,pos_tablet
 #   MAESTRO_REPEAT=3
 #   MAESTRO_APK_PATH=/path/to/beta.apk
 #   MAESTRO_SEED=true
@@ -25,8 +26,12 @@ INCLUDE_TAGS="${MAESTRO_INCLUDE_TAGS:-smoke_core}"
 REPEAT="${MAESTRO_REPEAT:-1}"
 OUTPUT_DIR="${MAESTRO_OUTPUT_DIR:-WooCommerce/build/outputs/maestro-smoke}"
 SEED_ARGS=()
+EXCLUDE_TAGS_ARGS=()
 if [[ "${MAESTRO_SEED:-false}" == "true" ]]; then
   SEED_ARGS+=(--seed)
+fi
+if [[ -n "${MAESTRO_EXCLUDE_TAGS:-}" ]]; then
+  EXCLUDE_TAGS_ARGS+=(--exclude-tags "$MAESTRO_EXCLUDE_TAGS")
 fi
 
 if [[ -n "${MAESTRO_APK_PATH:-}" ]]; then
@@ -47,6 +52,7 @@ if [[ -n "$APK_PATH" ]]; then
     --repeat "$REPEAT" \
     --output-dir "$OUTPUT_DIR" \
     "${SEED_ARGS[@]}" \
+    "${EXCLUDE_TAGS_ARGS[@]}" \
     --no-open \
     --apk "$APK_PATH"
 else
@@ -56,6 +62,7 @@ else
     --repeat "$REPEAT" \
     --output-dir "$OUTPUT_DIR" \
     "${SEED_ARGS[@]}" \
+    "${EXCLUDE_TAGS_ARGS[@]}" \
     --no-open
 fi
 MAESTRO_EXIT_STATUS=$?
