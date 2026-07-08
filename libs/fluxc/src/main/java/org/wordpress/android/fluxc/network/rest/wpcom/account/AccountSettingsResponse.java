@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.account;
 
+import androidx.annotation.Nullable;
+
 import org.wordpress.android.fluxc.network.Response;
 
 /**
@@ -22,4 +24,6 @@ public class AccountSettingsResponse implements Response {
     public String avatar_URL;
     public long primary_site_ID;
     public boolean tracks_opt_out;
+    // Three-state: null means the user never made a persisted choice
+    @Nullable public Boolean woomobile_crash_reporting_opt_out;
 }
