@@ -531,6 +531,10 @@ stop_screenrecord() {
   sleep 1
 }
 
+collapse_system_ui() {
+  adb -s "$DEVICE_SERIAL" shell cmd statusbar collapse >/dev/null 2>&1 || true
+}
+
 cleanup_on_exit() {
   local exit_code=$?
   if [[ -n "$RECORDER_PID" ]]; then
@@ -652,10 +656,13 @@ run_one_attempt() {
     device_recording="/sdcard/maestro_${repeat_index}_${base}_attempt${attempt}.mp4"
     host_recording="$RECORDINGS_DIR/${repeat_index}_${base}_attempt${attempt}.mp4"
     stop_screenrecord
+    collapse_system_ui
     adb -s "$DEVICE_SERIAL" shell "rm -f $device_recording" >/dev/null
     adb -s "$DEVICE_SERIAL" shell "screenrecord --time-limit 180 --bit-rate 4000000 $device_recording" >/dev/null 2>&1 &
     RECORDER_PID=$!
     sleep 1
+  else
+    collapse_system_ui
   fi
 
   local started ended exit_code
