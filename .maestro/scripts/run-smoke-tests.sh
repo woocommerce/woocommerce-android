@@ -729,6 +729,101 @@ xml_escape() {
   python3 -c 'import html,sys; print(html.escape(sys.stdin.read()), end="")'
 }
 
+join_csv() {
+  local old_ifs="$IFS"
+  IFS=","
+  printf '%s' "$*"
+  IFS="$old_ifs"
+}
+
+shell_arg() {
+  local value="$1"
+  if [[ "$value" =~ ^[A-Za-z0-9_./:=,+@%-]+$ ]]; then
+    printf '%s' "$value"
+  else
+    printf "'%s'" "$(printf '%s' "$value" | sed "s/'/'\\\\''/g")"
+  fi
+}
+
+render_command() {
+  local first="yes"
+  local arg
+  for arg in "$@"; do
+    if [[ "$first" == "yes" ]]; then
+      first="no"
+    else
+      printf ' '
+    fi
+    shell_arg "$arg"
+  done
+}
+
+selection_args() {
+  if [[ -n "$PROFILE" ]]; then
+    printf '%s\0%s\0' --profile "$PROFILE"
+  else
+    printf '%s\0%s\0' --include-tags "$(join_csv "${INCLUDE_TAGS[@]}")"
+    printf '%s\0%s\0' --exclude-tags "$(join_csv "${EXCLUDE_TAGS[@]}")"
+  fi
+}
+
+common_run_args() {
+  printf '%s\0%s\0' --store "$STORE"
+  if [[ -n "$DEVICE_SELECTOR" ]]; then
+    printf '%s\0%s\0' --device "$DEVICE_SELECTOR"
+  fi
+  if [[ -n "$APK_PATH" ]]; then
+    printf '%s\0%s\0' --apk "$APK_PATH"
+  fi
+  printf '%s\0%s\0' --repeat "$REPEAT"
+  if [[ "$SEED" == "yes" ]]; then
+    printf '%s\0' --seed
+  else
+    printf '%s\0' --no-seed
+  fi
+  printf '%s\0' --no-open
+}
+
+build_current_command() {
+  local args=(".maestro/scripts/run-smoke-tests.sh")
+  local value
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(selection_args)
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(common_run_args)
+  render_command "${args[@]}"
+}
+
+build_rerun_failed_command() {
+  local args=(".maestro/scripts/run-smoke-tests.sh" "--rerun-failed" "$JUNIT_FILE")
+  local value
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(selection_args)
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(common_run_args)
+  render_command "${args[@]}"
+}
+
+build_doctor_command() {
+  local args=(".maestro/scripts/doctor.sh")
+  local value
+  while IFS= read -r -d '' value; do
+    args+=("$value")
+  done < <(selection_args)
+  args+=(--store "$STORE")
+  if [[ -n "$DEVICE_SELECTOR" ]]; then
+    args+=(--device "$DEVICE_SELECTOR")
+  fi
+  if [[ "$SEED" == "yes" ]]; then
+    args+=(--seed)
+  fi
+  render_command "${args[@]}"
+}
+
 RESULTS=()
 PASSED=0
 FLAKY=0
@@ -900,6 +995,11 @@ echo "--- Generating reports"
   printf '</testsuite>\n'
 } > "$JUNIT_FILE"
 
+CURRENT_COMMAND_HTML="$(build_current_command | xml_escape)"
+RERUN_FAILED_COMMAND_HTML="$(build_rerun_failed_command | xml_escape)"
+DOCTOR_COMMAND_HTML="$(build_doctor_command | xml_escape)"
+OPEN_REPORT_COMMAND_HTML="$(render_command open "$REPORT_FILE" | xml_escape)"
+
 {
   cat <<HTML_HEAD
 <!doctype html>
@@ -915,12 +1015,35 @@ th { background: #f6f8fa; }
 .PASS { color: #136f2d; font-weight: 700; }
 .FAIL, .FLAKY, .FLAKY_RECOVERY { color: #9a1111; font-weight: 700; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; padding: 10px 12px; overflow-x: auto; }
+.commands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0 20px; }
+.command-card { border: 1px solid #d8dee4; border-radius: 8px; padding: 12px; }
+.command-card h2 { font-size: 15px; margin: 0 0 8px; }
+@media (max-width: 760px) { .commands { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
 <p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $STORE | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
 <p><strong>Result:</strong> $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS executions.</p>
+<section class="commands">
+  <div class="command-card">
+    <h2>Run the same selection</h2>
+    <pre><code>$CURRENT_COMMAND_HTML</code></pre>
+  </div>
+  <div class="command-card">
+    <h2>Rerun failed or flaky flows</h2>
+    <pre><code>$RERUN_FAILED_COMMAND_HTML</code></pre>
+  </div>
+  <div class="command-card">
+    <h2>Pre-flight doctor</h2>
+    <pre><code>$DOCTOR_COMMAND_HTML</code></pre>
+  </div>
+  <div class="command-card">
+    <h2>Open this report</h2>
+    <pre><code>$OPEN_REPORT_COMMAND_HTML</code></pre>
+  </div>
+</section>
 <table>
 <thead><tr><th>Repeat</th><th>Flow</th><th>Status</th><th>Duration</th><th>Recovery</th><th>Artifact</th><th>Error</th></tr></thead>
 <tbody>

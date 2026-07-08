@@ -93,7 +93,9 @@ The runner:
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
 - retries each failed flow once and records pass-on-retry as flaky;
 - redacts `MAESTRO_WOO_*` values from logs;
-- stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`.
+- stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`;
+- writes copy/paste commands into the HTML report for rerunning the same selection, rerunning failed flows, and running
+  the doctor.
 
 ## Tags
 
