@@ -384,42 +384,6 @@ EOF
   fi
 }
 
-flow_requires_seed() {
-  local flow="$1"
-  case "$(basename "$flow")" in
-    orders_cash_payment.yaml|orders_mark_complete.yaml)
-      return 0
-      ;;
-  esac
-  grep -Eq '\$\{FIXTURE_[A-Z0-9_]+\}' "$flow"
-}
-
-validate_seed_requirements() {
-  [[ "$SEED" == "no" ]] || return 0
-
-  local seed_required=()
-  local flow
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    if flow_requires_seed "$flow"; then
-      seed_required+=("$(basename "$flow")")
-    fi
-  done
-
-  if [[ ${#seed_required[@]} -gt 0 ]]; then
-    cat >&2 <<EOF
-Setup error: selected flows require deterministic REST fixtures, but this run uses --no-seed.
-
-These flows target this run's seeded products/orders and do not safely fall back
-to arbitrary store data:
-$(printf '  - %s\n' "${seed_required[@]}")
-
-Rerun with --seed and Woo REST API credentials for the selected store, or remove
-these flows from the selection.
-EOF
-    exit 1
-  fi
-}
-
 ORDERED_FLOWS=()
 if [[ -n "$TARGET" ]]; then
   if [[ ! -f "$TARGET" ]]; then
@@ -445,7 +409,6 @@ if [[ ${#ORDERED_FLOWS[@]} -eq 0 ]]; then
   exit 1
 fi
 validate_login_store_env
-validate_seed_requirements
 
 SUITE_HAS_DESTRUCTIVE="no"
 for flow in "${ORDERED_FLOWS[@]}"; do
