@@ -67,6 +67,13 @@ tags:
     label: "Scroll to Privacy settings"
 
 - assertVisible: "Privacy settings"
+
+- scrollUntilVisible:
+    element: "Experimental features"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Experimental features"
+
 - assertVisible: "Experimental features"
 
 - scrollUntilVisible:
