@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 
 class WooTopAppBarActionTest {
