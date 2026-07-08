@@ -40,6 +40,12 @@ Validate the file before running flows, especially after pasting passwords:
 .maestro/scripts/lint-env.py
 ```
 
+Run the pre-flight doctor when setting up a machine, changing credentials, or preparing CI secrets:
+
+```bash
+.maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
+```
+
 ## Running
 
 Default local run: lab store, `smoke_core` only, quarantine excluded.
@@ -56,6 +62,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile release
 .maestro/scripts/run-smoke-tests.sh --profile burst
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
+.maestro/scripts/doctor.sh --profile phone-full --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
