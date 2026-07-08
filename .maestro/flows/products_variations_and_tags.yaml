@@ -145,13 +145,40 @@ tags:
 
 - takeScreenshot: products_filtered_variable
 
+# Target this run's seeded variable product instead of whichever
+# variable product currently sorts first on the staging store. Some
+# long-lived variable products are valid but have no generated
+# variations, which makes the variation-list assertions below depend
+# on mutable store data instead of the seeded fixture contract.
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${FIXTURE_VARIABLE_PRODUCT}
+- pressKey: Enter
+
+- extendedWaitUntil:
+    visible:
+      text: "${FIXTURE_VARIABLE_PRODUCT}"
+    timeout: 20000
+    label: "Wait for seeded variable product in search results"
+
+- takeScreenshot: products_filtered_seeded_variable
+
 # ─────────────────────────────────────────────────────────────────────
-# 6. Open the first variable product
+# 6. Open the seeded variable product
 # ─────────────────────────────────────────────────────────────────────
 - tapOn:
-    id: "productName"
-    index: 0
-    label: "Open first Variable product"
+    text: "${FIXTURE_VARIABLE_PRODUCT}"
+    retryTapIfNoChange: true
+    label: "Open seeded Variable product"
 
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
@@ -274,3 +301,18 @@ tags:
     visible:
       id: "productsRecycler"
     timeout: 15000
+
+# If the product search is still active, exit it so downstream flows
+# start from the normal products list.
+- runFlow:
+    when:
+      visible:
+        id: "search_src_text"
+    commands:
+      - back
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000
