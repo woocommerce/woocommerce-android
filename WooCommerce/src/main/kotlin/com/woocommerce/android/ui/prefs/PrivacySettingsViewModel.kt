@@ -13,6 +13,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,15 +34,27 @@ class PrivacySettingsViewModel @Inject constructor(
         .observeSendUsageStats()
         .asLiveData()
 
+    private val crashReportingEnabled: LiveData<Boolean> = appPrefs.observePrefs()
+        .onStart { emit(Unit) }
+        .map { appPrefs.isCrashReportingEnabled() }
+        .distinctUntilChanged()
+        .asLiveData()
+
     private val _state = MutableLiveData(defaultState())
 
-    val state: LiveData<State> = _state.combineWith(analyticsEnabled) { state, analyticsEnabled ->
-        state?.copy(sendUsageStats = analyticsEnabled == true) ?: defaultState()
+    val state: LiveData<State> = _state.combineWith(
+        analyticsEnabled,
+        crashReportingEnabled,
+    ) { state, analyticsEnabled, crashReportingEnabled ->
+        state?.copy(
+            sendUsageStats = analyticsEnabled == true,
+            crashReportingEnabled = crashReportingEnabled ?: state.crashReportingEnabled,
+        ) ?: defaultState()
     }
 
     private fun defaultState() = State(
         sendUsageStats = analyticsTrackerWrapper.sendUsageStats,
-        crashReportingEnabled = getCrashReportingEnabled(),
+        crashReportingEnabled = appPrefs.isCrashReportingEnabled(),
         progressBarVisible = false,
     )
 
@@ -80,8 +95,6 @@ class PrivacySettingsViewModel @Inject constructor(
         }
     }
 
-    private fun getCrashReportingEnabled() = appPrefs.isCrashReportingEnabled()
-
     fun onPoliciesClicked() {
         triggerEvent(PrivacySettingsEvent.OpenPolicies)
     }
@@ -99,8 +112,34 @@ class PrivacySettingsViewModel @Inject constructor(
     }
 
     fun onCrashReportingSettingChanged(checked: Boolean) {
-        _state.value = _state.value?.copy(crashReportingEnabled = checked)
         setCrashReportingEnabled(checked)
+
+        if (repository.isUserWPCOM()) {
+            launch {
+                _state.value = _state.value?.copy(progressBarVisible = true)
+
+                val event = repository.updateCrashReportingSetting(checked)
+
+                _state.value = _state.value?.copy(progressBarVisible = false)
+
+                event.fold(
+                    onSuccess = {
+                        // Re-assert the user's choice in case an account-settings sync overwrote
+                        // the local preference with the stale account value while the push was in flight.
+                        setCrashReportingEnabled(checked)
+                    },
+                    onFailure = {
+                        setCrashReportingEnabled(!checked)
+                        triggerEvent(
+                            MultiLiveEvent.Event.ShowActionStringSnackbar(
+                                message = resourceProvider.getString(R.string.settings_crash_reporting_error_update),
+                                actionText = resourceProvider.getString(R.string.retry),
+                            ) { onCrashReportingSettingChanged(checked) }
+                        )
+                    }
+                )
+            }
+        }
     }
 
     fun onSendStatsSettingChanged(checked: Boolean) {

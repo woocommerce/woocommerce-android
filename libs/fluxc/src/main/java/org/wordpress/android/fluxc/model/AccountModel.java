@@ -1,8 +1,12 @@
 package org.wordpress.android.fluxc.model;
 
+import androidx.annotation.Nullable;
+
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.util.StringUtils;
+
+import java.util.Objects;
 
 public class AccountModel extends Payload<BaseNetworkError> {
     private int mId;
@@ -30,6 +34,8 @@ public class AccountModel extends Payload<BaseNetworkError> {
     private boolean mTwoStepEnabled;
     private String mWebAddress; // WPCom rest API: user_URL
     private boolean mTracksOptOut;
+    // WPCom rest API: woomobile_crash_reporting_opt_out. Null means the user never made a persisted choice.
+    @Nullable private Boolean mCrashReportingOptOut;
     private boolean mUsernameCanBeChanged;
 
     public AccountModel() {
@@ -71,6 +77,7 @@ public class AccountModel extends Payload<BaseNetworkError> {
                && StringUtils.equals(getWebAddress(), otherAccount.getWebAddress())
                && getHasUnseenNotes() == otherAccount.getHasUnseenNotes()
                && getTracksOptOut() == otherAccount.getTracksOptOut()
+               && Objects.equals(getCrashReportingOptOut(), otherAccount.getCrashReportingOptOut())
                && getUsernameCanBeChanged() == otherAccount.getUsernameCanBeChanged();
     }
 
@@ -94,6 +101,7 @@ public class AccountModel extends Payload<BaseNetworkError> {
         mTwoStepEnabled = false;
         mWebAddress = "";
         mTracksOptOut = false;
+        mCrashReportingOptOut = null;
         mUsernameCanBeChanged = false;
     }
 
@@ -130,6 +138,7 @@ public class AccountModel extends Payload<BaseNetworkError> {
         setPendingEmailChange(other.getPendingEmailChange());
         setTwoStepEnabled(other.getTwoStepEnabled());
         setTracksOptOut(other.getTracksOptOut());
+        setCrashReportingOptOut(other.getCrashReportingOptOut());
         setWebAddress(other.getWebAddress());
         setDisplayName(other.getDisplayName());
         setUsernameCanBeChanged(other.getUsernameCanBeChanged());
@@ -293,6 +302,15 @@ public class AccountModel extends Payload<BaseNetworkError> {
 
     public void setTracksOptOut(boolean tracksOptOut) {
         mTracksOptOut = tracksOptOut;
+    }
+
+    @Nullable
+    public Boolean getCrashReportingOptOut() {
+        return mCrashReportingOptOut;
+    }
+
+    public void setCrashReportingOptOut(@Nullable Boolean crashReportingOptOut) {
+        mCrashReportingOptOut = crashReportingOptOut;
     }
 
     public boolean getUsernameCanBeChanged() {
