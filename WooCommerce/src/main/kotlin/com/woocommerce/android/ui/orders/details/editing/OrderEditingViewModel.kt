@@ -160,7 +160,7 @@ class OrderEditingViewModel @Inject constructor(
 
     private inline fun runWhenUpdateIsPossible(
         crossinline action: suspend () -> Unit
-    ) = checkConnectionAndResetState().also {
+    ) = (isOrderLoaded && checkConnectionAndResetState()).also {
         if (it) launch(dispatchers.io) { action() }
     }
 
