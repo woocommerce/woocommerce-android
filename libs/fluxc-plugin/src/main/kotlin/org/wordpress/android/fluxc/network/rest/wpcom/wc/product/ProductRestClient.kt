@@ -998,12 +998,14 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
         posProductsOnly: Boolean = false,
+        context: String = "view",
     ): WooPayload<List<WCProductVariationModel>> {
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "orderby" to "menu_order",
             "order" to "asc",
-            "offset" to offset.toString()
+            "offset" to offset.toString(),
+            "context" to context
         ).putIfNotEmpty("search" to searchQuery)
             .putIfNotEmpty("include" to includedVariationIds.map { it }.joinToString())
             .putIfNotEmpty("exclude" to excludedVariationIds.map { it }.joinToString())

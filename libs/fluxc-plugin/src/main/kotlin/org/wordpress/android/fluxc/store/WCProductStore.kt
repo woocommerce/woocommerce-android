@@ -1338,11 +1338,13 @@ class WCProductStore @Inject internal constructor(
     suspend fun fetchProductVariations(payload: FetchProductVariationsPayload): WooResult<ProductVariationsPage> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductVariations") {
             val response = with(payload) {
+                // Edit context keeps the cached list consistent with the variation edit screen.
                 wcProductRestClient.fetchProductVariationsWithSyncRequest(
                     site = site,
                     productId = remoteProductId,
                     pageSize = pageSize,
-                    offset = offset
+                    offset = offset,
+                    context = "edit"
                 )
             }
             handleFetchedProductVariations(
