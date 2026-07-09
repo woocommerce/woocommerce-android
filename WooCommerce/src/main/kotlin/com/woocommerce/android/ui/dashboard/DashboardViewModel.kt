@@ -214,6 +214,10 @@ class DashboardViewModel @Inject constructor(
         maybeShowScheduledImportNotice()
     }
 
+    fun onDashboardInteracted() {
+        usageTracksEventEmitter.interacted()
+    }
+
     private fun maybeShowScheduledImportNotice() {
         val shouldShow = _isScheduledImportEnabled.value &&
             hasVisibleDelayedStatsCard() &&
