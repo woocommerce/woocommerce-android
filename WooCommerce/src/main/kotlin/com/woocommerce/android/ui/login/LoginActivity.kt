@@ -1137,7 +1137,6 @@ class LoginActivity :
             event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
-                    isCommerceGarden = it.isCommerceGarden,
                     isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
@@ -1250,11 +1249,10 @@ class LoginActivity :
     @Parcelize
     internal data class ConnectSiteInfo(
         val isWPCom: Boolean,
-        val isCommerceGarden: Boolean,
         val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
     ) : Parcelable {
         val shouldUseWPComAuth: Boolean
-            get() = isWPCom || isCommerceGarden
+            get() = isWPCom
     }
 }

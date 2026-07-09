@@ -23,6 +23,12 @@ android {
         buildConfig = false
         compose = true
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -32,4 +38,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.main)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling.main)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.robolectric)
 }

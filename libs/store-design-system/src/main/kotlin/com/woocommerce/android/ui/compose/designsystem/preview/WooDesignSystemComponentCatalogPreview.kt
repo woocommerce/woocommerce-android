@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,16 +37,20 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooChoiceControlsDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooDividerDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooSectionHeader
+import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarAction
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
@@ -256,6 +261,18 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionIconActionsCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
+                    path = PRODUCTION_TOP_APP_BARS_PATH,
+                    title = "Top app bars",
+                    description = "Compose-owned screen bars with navigation, icon actions, and text actions.",
+                    content = { ProductionTopAppBarsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_PAGE_HEADERS_PATH,
+                    title = "Page headers",
+                    description = "Page-level headers with optional trailing actions.",
+                    content = { ProductionPageHeadersCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
                     path = PRODUCTION_BADGES_PATH,
                     title = "Badges",
                     description = "Status tones and icon-leading variants.",
@@ -274,10 +291,22 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionIconContainersCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
-                    path = PRODUCTION_SECTION_HEADERS_PATH,
-                    title = "Section headers",
-                    description = "Semantically marked headers for grouped content.",
-                    content = { ProductionSectionHeadersCatalogLeaf() },
+                    path = PRODUCTION_CHOICE_CONTROLS_PATH,
+                    title = "Choice controls",
+                    description = "Checkboxes, radio buttons, and filter chips.",
+                    content = { ProductionChoiceControlsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_SEARCH_PATH,
+                    title = "Search",
+                    description = "Search field states with clear and trailing actions.",
+                    content = { ProductionSearchCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_TABS_PATH,
+                    title = "Tabs",
+                    description = "Icon and text tab row variants.",
+                    content = { ProductionTabsCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
                     path = PRODUCTION_ROWS_CELLS_PATH,
@@ -320,6 +349,52 @@ private fun ProductionIconActionsCatalogLeaf() {
 }
 
 @Composable
+private fun ProductionTopAppBarsCatalogLeaf() {
+    CatalogSection("Top app bars") {
+        WooTopAppBar(
+            title = "Store settings",
+            navigationIcon = WooIcons.Regular.AngleLeft,
+            navigationIconContentDescription = "Back",
+            onNavigationClick = {},
+            windowInsets = WindowInsets(0),
+            actions = listOf(
+                WooTopAppBarAction.Icon(
+                    imageVector = WooIcons.Regular.ArrowUpRight,
+                    contentDescription = "Open",
+                    onClick = {},
+                ),
+                WooTopAppBarAction.Text(
+                    text = "Done",
+                    onClick = {},
+                ),
+            ),
+        )
+        WooTopAppBar(
+            title = "Products",
+            windowInsets = WindowInsets(0),
+            actions = listOf(
+                WooTopAppBarAction.Text(
+                    text = "Save",
+                    onClick = {},
+                ),
+                WooTopAppBarAction.Icon(
+                    imageVector = WooIcons.Regular.ArrowUpRight,
+                    contentDescription = "Open",
+                    onClick = {},
+                ),
+            ),
+        )
+    }
+}
+
+@Composable
+private fun ProductionPageHeadersCatalogLeaf() {
+    CatalogSection("Page headers") {
+        WooPageHeaderDemo()
+    }
+}
+
+@Composable
 private fun ProductionBadgesCatalogLeaf() {
     CatalogSection("Badges") {
         WooBadgeDemo(
@@ -347,10 +422,25 @@ private fun ProductionIconContainersCatalogLeaf() {
 }
 
 @Composable
-private fun ProductionSectionHeadersCatalogLeaf() {
-    CatalogSection("Section headers") {
-        WooSectionHeader("Tracking")
-        WooSectionHeader("Orders")
+private fun ProductionChoiceControlsCatalogLeaf() {
+    CatalogSection("Choice controls") {
+        WooChoiceControlsDemo(
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+    }
+}
+
+@Composable
+private fun ProductionSearchCatalogLeaf() {
+    CatalogSection("Search") {
+        WooSearchFieldDemo()
+    }
+}
+
+@Composable
+private fun ProductionTabsCatalogLeaf() {
+    CatalogSection("Tabs") {
+        WooTabsDemo()
     }
 }
 
@@ -418,37 +508,17 @@ private fun CatalogTopBar(
     onBackClick: () -> Unit,
     showNavigationIcon: Boolean,
 ) {
-    Surface(
-        color = WooTheme.colors.surface.default,
-        contentColor = WooTheme.colors.surface.onDefault,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .padding(horizontal = WooTheme.padding.padding2),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (showNavigationIcon) {
-                WooIconButton(
-                    imageVector = WooIcons.Regular.AngleLeft,
-                    contentDescription = "Back",
-                    onClick = onBackClick,
-                )
-            } else {
-                Box(modifier = Modifier.size(48.dp))
-            }
-            Text(
-                text = title,
-                modifier = Modifier.weight(1f),
-                color = WooTheme.colors.surface.onDefault,
-                style = WooTheme.text.bodyLarge.strong,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Box(modifier = Modifier.size(48.dp))
-        }
-    }
+    WooTopAppBar(
+        title = title,
+        navigationIcon = if (showNavigationIcon) {
+            WooIcons.Regular.AngleLeft
+        } else {
+            null
+        },
+        navigationIconContentDescription = if (showNavigationIcon) "Back" else null,
+        onNavigationClick = if (showNavigationIcon) onBackClick else null,
+        windowInsets = WindowInsets(0),
+    )
 }
 
 @Composable
@@ -494,10 +564,14 @@ private fun CatalogBodyText(
 private const val ROOT_PATH = ""
 private const val PRODUCTION_BUTTONS_PATH = "production/buttons"
 private const val PRODUCTION_ICON_ACTIONS_PATH = "production/icon-actions"
+private const val PRODUCTION_TOP_APP_BARS_PATH = "production/top-app-bars"
+private const val PRODUCTION_PAGE_HEADERS_PATH = "production/page-headers"
 private const val PRODUCTION_BADGES_PATH = "production/badges"
 private const val PRODUCTION_NOTICE_BANNERS_PATH = "production/notice-banners"
 private const val PRODUCTION_ICON_CONTAINERS_PATH = "production/icon-containers"
-private const val PRODUCTION_SECTION_HEADERS_PATH = "production/section-headers"
+private const val PRODUCTION_CHOICE_CONTROLS_PATH = "production/choice-controls"
+private const val PRODUCTION_SEARCH_PATH = "production/search"
+private const val PRODUCTION_TABS_PATH = "production/tabs"
 private const val PRODUCTION_ROWS_CELLS_PATH = "production/rows-cells"
 private const val PRODUCTION_DIVIDERS_PATH = "production/dividers"
 private const val PRODUCTION_PROGRESS_INDICATORS_PATH = "production/progress-indicators"

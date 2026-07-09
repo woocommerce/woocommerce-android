@@ -22,7 +22,6 @@ Before first-wave screen migration begins, production-ready APIs should exist fo
 - Page title/body/link text styles or wrappers.
 - Primary button.
 - Settings cell/row.
-- Section header.
 - Switch.
 - Icon button.
 - Divider.

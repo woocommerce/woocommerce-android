@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="woo_ds_toolbar_edge_padding">24dp</dimen>
+</resources>
