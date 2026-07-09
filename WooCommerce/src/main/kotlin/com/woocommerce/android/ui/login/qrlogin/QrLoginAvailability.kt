@@ -9,9 +9,9 @@ import javax.inject.Inject
 /**
  * Decides whether the QR login flow should be offered.
  *
- * The remote feature flag gates both entry points: we require an explicit `remoteValue == true`
- * (a `null`/not-yet-loaded remote value is treated as off) since this runs in the login flow before
- * remote flags are guaranteed to have loaded. Only a debug override bypasses this.
+ * [FeatureFlag.QR_LOGIN] gates both entry points via its effective value (override → remote →
+ * local). No remote flag is configured for it, so the local value (enabled) applies; creating
+ * the `woo_qr_code_login` remote key would act as a kill-switch.
  *
  * For the in-app entry point ([isAvailable]):
  *  - The device must have a camera — we don't gate on Google Play Services: we ship the bundled
@@ -27,15 +27,8 @@ class QrLoginAvailability @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
     private val deviceFeatures: DeviceFeatures,
 ) {
-    @Suppress("ReturnCount")
     fun isAvailable(): Boolean {
-        val flagState = featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)
-        val override = flagState.overrideValue
-        if (override != null) {
-            if (!override) return false
-        } else {
-            if (flagState.remoteValue != true) return false
-        }
+        if (!featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)) return false
 
         if (!deviceFeatures.hasCamera()) {
             WooLog.d(WooLog.T.LOGIN, "QR login unavailable: device has no camera")
@@ -45,8 +38,5 @@ class QrLoginAvailability @Inject constructor(
         return true
     }
 
-    fun isAvailableForDeepLink(): Boolean {
-        val flagState = featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)
-        return flagState.overrideValue ?: (flagState.remoteValue == true)
-    }
+    fun isAvailableForDeepLink(): Boolean = featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)
 }

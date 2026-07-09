@@ -45,5 +45,5 @@ enum class FeatureFlag(
     IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
     IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
     IPP_AUSTRALIA_WOOPAYMENTS("woo_ipp_australia_woopayments"),
-    QR_LOGIN("woo_qr_code_login", localValue = PackageUtils.isDebugBuild()),
+    QR_LOGIN("woo_qr_code_login"),
 }

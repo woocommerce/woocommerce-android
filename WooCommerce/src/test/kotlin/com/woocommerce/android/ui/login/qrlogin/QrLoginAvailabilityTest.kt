@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login.qrlogin
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
-import com.woocommerce.android.util.FeatureFlagRepository.FeatureFlagState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -24,7 +23,7 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = true))
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)).thenReturn(true)
         whenever(deviceFeatures.hasCamera()).thenReturn(true)
     }
 
@@ -34,15 +33,8 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given remote flag false, when isAvailable, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = false))
-
-        assertThat(availability.isAvailable()).isFalse()
-    }
-
-    @Test
-    fun `given remote flag not loaded, when isAvailable, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = null))
+    fun `given flag disabled, when isAvailable, then false`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)).thenReturn(false)
 
         assertThat(availability.isAvailable()).isFalse()
     }
@@ -55,44 +47,13 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given override enabled and remote disabled, when isAvailable, then true`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN))
-            .thenReturn(flagState(remote = false, override = true))
-
-        assertThat(availability.isAvailable()).isTrue()
-    }
-
-    @Test
-    fun `given override disabled, when isAvailable, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN))
-            .thenReturn(flagState(remote = true, override = false))
-
-        assertThat(availability.isAvailable()).isFalse()
-    }
-
-    @Test
-    fun `given remote true, when isAvailableForDeepLink, then true`() {
+    fun `given flag enabled, when isAvailableForDeepLink, then true`() {
         assertThat(availability.isAvailableForDeepLink()).isTrue()
     }
 
     @Test
-    fun `given remote false, when isAvailableForDeepLink, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = false))
-
-        assertThat(availability.isAvailableForDeepLink()).isFalse()
-    }
-
-    @Test
-    fun `given remote not loaded, when isAvailableForDeepLink, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN)).thenReturn(flagState(remote = null))
-
-        assertThat(availability.isAvailableForDeepLink()).isFalse()
-    }
-
-    @Test
-    fun `given override disabled, when isAvailableForDeepLink, then false`() {
-        whenever(featureFlagRepository.getFlagState(FeatureFlag.QR_LOGIN))
-            .thenReturn(flagState(remote = true, override = false))
+    fun `given flag disabled, when isAvailableForDeepLink, then false`() {
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.QR_LOGIN)).thenReturn(false)
 
         assertThat(availability.isAvailableForDeepLink()).isFalse()
     }
@@ -103,11 +64,4 @@ class QrLoginAvailabilityTest : BaseUnitTest() {
 
         verify(deviceFeatures, never()).hasCamera()
     }
-
-    private fun flagState(remote: Boolean?, override: Boolean? = null) = FeatureFlagState(
-        flag = FeatureFlag.QR_LOGIN,
-        localValue = FeatureFlag.QR_LOGIN.localValue,
-        remoteValue = remote,
-        overrideValue = override
-    )
 }
