@@ -415,6 +415,12 @@ dependencies {
         androidTestImplementation(libs.commons.fileupload) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
+        androidTestImplementation(libs.hamcrest.core) {
+            because("Espresso requests hamcrest 1.3 on the compile classpath while runtime resolves to 2.2, which dropped the fixed-arity CoreMatchers.allOf overloads; align both to avoid NoSuchMethodError")
+        }
+        androidTestImplementation(libs.hamcrest.library) {
+            because("keep hamcrest-library aligned with hamcrest-core at 2.2")
+        }
     }
 
     implementation(libs.zendesk.support) {

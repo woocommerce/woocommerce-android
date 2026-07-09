@@ -81,6 +81,7 @@ google-protobuf-library = '4.34.2'
 google-services = '4.4.4'
 google-zxing = '3.5.4'
 gravatar = '2.5.1'
+hamcrest = '2.2'
 jackson = '2.18.8'
 java = '11'
 jetty = '9.4.57.v20241219'
@@ -256,6 +257,8 @@ jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref
 jetty-server = { group = "org.eclipse.jetty", name = "jetty-server", version.ref = "jetty" }
 json-path = { group = "com.jayway.jsonpath", name = "json-path", version.ref = "json-path" }
 json-smart = { group = "net.minidev", name = "json-smart", version.ref = "json-smart" }
+hamcrest-core = { group = "org.hamcrest", name = "hamcrest-core", version.ref = "hamcrest" }
+hamcrest-library = { group = "org.hamcrest", name = "hamcrest-library", version.ref = "hamcrest" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
