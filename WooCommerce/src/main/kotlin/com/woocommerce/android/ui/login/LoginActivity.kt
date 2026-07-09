@@ -307,7 +307,7 @@ class LoginActivity :
 
     override fun onQrLoginFallbackClicked() {
         disableDynamicEdgeToEdge()
-        loginViaSiteAddress()
+        loginViaSiteAddress(prefilledSiteUrl = null, flow = Flow.LOGIN_QR)
     }
 
     override fun onQrLoginCompleted(localSiteId: Int) {
@@ -541,8 +541,8 @@ class LoginActivity :
 
     override fun loginViaSiteAddress() = loginViaSiteAddress(prefilledSiteUrl = null)
 
-    private fun loginViaSiteAddress(prefilledSiteUrl: String?) {
-        unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
+    private fun loginViaSiteAddress(prefilledSiteUrl: String?, flow: Flow = LOGIN_SITE_ADDRESS) {
+        unifiedLoginTracker.setFlowAndStep(flow, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment()
             ?: WooLoginSiteAddressFragment.newInstance(prefilledSiteUrl)
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)

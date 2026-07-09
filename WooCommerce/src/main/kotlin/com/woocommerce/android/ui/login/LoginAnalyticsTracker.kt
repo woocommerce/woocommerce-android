@@ -193,7 +193,8 @@ class LoginAnalyticsTracker(
 
     override fun trackUrlFormViewed() {
         AnalyticsTracker.track(AnalyticsEvent.LOGIN_URL_FORM_VIEWED)
-        unifiedLoginTracker.track(Flow.LOGIN_SITE_ADDRESS, Step.START)
+        val flow = if (unifiedLoginTracker.getFlow() == Flow.LOGIN_QR) Flow.LOGIN_QR else Flow.LOGIN_SITE_ADDRESS
+        unifiedLoginTracker.track(flow, Step.START)
     }
 
     override fun trackUrlHelpScreenViewed() {
