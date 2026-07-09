@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,6 +71,7 @@ fun DashboardContainer(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    scrollToTopTrigger: Flow<Unit>,
 ) {
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
@@ -84,6 +86,7 @@ fun DashboardContainer(
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = dashboardViewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                scrollToTopTrigger = scrollToTopTrigger,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
@@ -106,16 +109,24 @@ private fun DashboardWidgets(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    scrollToTopTrigger: Flow<Unit>,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        scrollToTopTrigger.collect {
+            scrollState.animateScrollTo(0)
+        }
+    }
 
     if (numberOfColumns == 1) {
         Column(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Spacer(modifier = Modifier)
@@ -142,7 +153,7 @@ private fun DashboardWidgets(
         Box(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
             Row(

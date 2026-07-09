@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -61,8 +62,10 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private val viewModel: MoreMenuViewModel by viewModels()
 
+    private val scrollToTopTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     override fun scrollToTop() {
-        return
+        scrollToTopTrigger.tryEmit(Unit)
     }
 
     override fun onCreateView(
@@ -76,7 +79,7 @@ class MoreMenuFragment : TopLevelFragment() {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    MoreMenuScreen(viewModel)
+                    MoreMenuScreen(viewModel, scrollToTopTrigger)
                 }
             }
         }
