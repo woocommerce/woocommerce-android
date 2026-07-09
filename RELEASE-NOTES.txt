@@ -4,6 +4,7 @@
 
 25.2
 -----
+- [*] Fixed the Contact Support form losing the subject and site address fields after rotating the device [PR URL]
 - [*] The Report Crashes privacy setting is now saved on your WordPress.com account, so it's kept across logins and devices
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
 - [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
