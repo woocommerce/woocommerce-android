@@ -369,7 +369,9 @@ class ProductRestClient @Inject constructor(
         remoteVariationId: Long
     ): RemoteVariationPayload {
         val url = WOOCOMMERCE.products.id(remoteProductId).variations.variation(remoteVariationId).pathV3
-        val params = emptyMap<String, String>()
+        // Use the edit context so the variation's own image is returned instead of the parent
+        // product's image, matching how the WooCommerce admin loads the variation for editing.
+        val params = mapOf("context" to "edit")
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
