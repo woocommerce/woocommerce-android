@@ -11,7 +11,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
@@ -29,9 +28,6 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
     @Inject
     internal lateinit var navigator: ProductNavigator
-
-    @Inject
-    internal lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
@@ -65,10 +61,6 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
-                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
-                }
-
                 is MultiLiveEvent.Event.Exit -> {
                     dismiss()
                 }
