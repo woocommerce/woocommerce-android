@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.AppLog
 
@@ -101,9 +102,14 @@ object ProductVariationMapper {
         if (storedVariationModel.shippingClass != updatedVariationModel.shippingClass) {
             body["shipping_class"] = updatedVariationModel.shippingClass
         }
-        // TODO: Once removal is supported, we can remove the extra isNotBlank() condition
-        if (storedVariationModel.image != updatedVariationModel.image && updatedVariationModel.image.isNotBlank()) {
-            body["image"] = updatedVariationModel.getImageModel()?.toJson() ?: ""
+        if (storedVariationModel.image != updatedVariationModel.image) {
+            body["image"] = if (updatedVariationModel.image.isNotBlank()) {
+                updatedVariationModel.getImageModel()?.toJson() ?: ""
+            } else {
+                // A blank image means it was removed. WooCommerce deletes the variation image
+                // when the image id is 0 (supported since WooCommerce 4.7).
+                WCProductImageModel(id = 0L).toJson()
+            }
         }
         if (storedVariationModel.menuOrder != updatedVariationModel.menuOrder) {
             body["menu_order"] = updatedVariationModel.menuOrder
