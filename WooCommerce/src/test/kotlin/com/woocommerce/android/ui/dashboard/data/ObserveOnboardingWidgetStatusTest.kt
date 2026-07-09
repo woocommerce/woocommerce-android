@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
@@ -13,7 +11,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
@@ -21,9 +18,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveOnboardingWidgetStatusTest : BaseUnitTest() {
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureUnsupported(any()) } doReturn false
-    }
     private val shouldShowOnboarding: ShouldShowOnboarding = mock()
     private val storeOnboardingRepository: StoreOnboardingRepository = mock()
     private val selectedSite: SelectedSite = mock {
@@ -33,26 +27,12 @@ class ObserveOnboardingWidgetStatusTest : BaseUnitTest() {
     private val sut = ObserveOnboardingWidgetStatus(
         selectedSite,
         storeOnboardingRepository,
-        shouldShowOnboarding,
-        ciabSiteGateKeeper
+        shouldShowOnboarding
     )
 
     @Test
-    fun `given CIAB feature unsupported, when observing onboarding widget status, then status is Hidden`() =
+    fun `given onboarding not completed, when observing, then status is Available`() =
         testBlocking {
-            given(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Onboarding))
-                .willReturn(true)
-
-            val status = sut().first()
-
-            assertThat(status).isEqualTo(DashboardWidget.Status.Hidden)
-        }
-
-    @Test
-    fun `given CIAB feature supported and onboarding not completed, when observing, then status is Available`() =
-        testBlocking {
-            given(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Onboarding))
-                .willReturn(false)
             given(shouldShowOnboarding.isOnboardingMarkedAsCompleted())
                 .willReturn(false)
             given(storeOnboardingRepository.observeOnboardingTasks())
@@ -66,10 +46,8 @@ class ObserveOnboardingWidgetStatusTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given CIAB feature supported and onboarding completed, when observing, then status is Unavailable`() =
+    fun `given onboarding completed, when observing, then status is Unavailable`() =
         testBlocking {
-            given(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.Onboarding))
-                .willReturn(false)
             given(shouldShowOnboarding.isOnboardingMarkedAsCompleted())
                 .willReturn(true)
             given(storeOnboardingRepository.observeOnboardingTasks())

@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.prefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRepository
@@ -39,7 +37,6 @@ class MainSettingsPresenter @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val featureFlagRepository: FeatureFlagRepository,
     private val pushNotificationRepository: PushNotificationRepository
 ) : MainSettingsContract.Presenter {
@@ -128,9 +125,6 @@ class MainSettingsPresenter @Inject constructor(
 
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
-
-    override val isPluginsSectionVisible: Boolean
-        get() = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Plugins)
 
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {

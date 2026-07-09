@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderFulfillmentModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
@@ -36,7 +35,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingRe
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchHasOrdersResponsePayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderFulfillmentsResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentProvidersResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderShipmentTrackingsResponsePayload
@@ -52,7 +50,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType.TIMEOUT_ERR
 import org.wordpress.android.fluxc.store.WCOrderStore.RemoteOrderPayload
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.DateUtils
-import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import org.wordpress.android.fluxc.utils.putIfNotEmpty
 import org.wordpress.android.fluxc.utils.toWooPayload
 import org.wordpress.android.util.AppLog
@@ -692,33 +689,6 @@ class OrderRestClient @Inject constructor(
         }
     }
 
-    suspend fun fetchOrderFulfillments(
-        site: SiteModel,
-        orderId: Long
-    ): FetchOrderFulfillmentsResponsePayload {
-        val url = WOOCOMMERCE.orders.id(orderId).fulfillments.pathV3
-
-        val response = wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            clazz = Array<OrderFulfillmentApiResponse>::class.java
-        )
-
-        return when (response) {
-            is WPAPIResponse.Success -> {
-                val fulfillments = response.data?.map {
-                    orderFulfillmentResponseToModel(it, site.localId(), orderId)
-                }.orEmpty()
-                FetchOrderFulfillmentsResponsePayload(site, orderId, fulfillments)
-            }
-
-            is WPAPIResponse.Error -> {
-                val orderError = wpAPINetworkErrorToOrderError(response.error)
-                FetchOrderFulfillmentsResponsePayload(orderError, site, orderId)
-            }
-        }
-    }
-
     /**
      * Posts a new Order Shipment Tracking record to the API for an order.
      *
@@ -1176,7 +1146,6 @@ class OrderRestClient @Inject constructor(
             wpAPINetworkError.errorCode == "woocommerce_rest_shop_order_invalid_id" -> OrderErrorType.INVALID_ID
             wpAPINetworkError.errorCode == "rest_no_route" -> OrderErrorType.PLUGIN_NOT_ACTIVE
             isSiteReturnedNonJsonResponse(wpAPINetworkError) -> {
-                reportNonJsonResponse(wpAPINetworkError)
                 OrderErrorType.PARSE_ERROR
             }
             wpAPINetworkError.type == BaseRequest.GenericErrorType.PARSE_ERROR -> OrderErrorType.PARSE_ERROR
@@ -1196,20 +1165,6 @@ class OrderRestClient @Inject constructor(
             wpAPINetworkError.errorData?.has("raw_body") == true
     }
 
-    /**
-     * Reports the non-JSON proxy response through the existing FluxC parse-error reporting path so the
-     * occurrence is visible in crash/error reporting (and its impact measurable). The raw body itself
-     * is intentionally not attached as it may contain the merchant's page content.
-     */
-    private fun reportNonJsonResponse(wpAPINetworkError: WPAPINetworkError) {
-        val report = OnUnexpectedError(
-            Exception("Order API returned a non-JSON response through the Jetpack proxy"),
-            ORDER_RESPONSE_PARSE_ERROR_DESCRIPTION
-        )
-        wpAPINetworkError.errorCode?.let { report.addExtra("error_code", it) }
-        dispatcher.emitChange(report)
-    }
-
     private fun orderShipmentTrackingResponseToModel(
         response: OrderShipmentTrackingApiResponse,
         siteId: LocalId,
@@ -1223,31 +1178,6 @@ class OrderRestClient @Inject constructor(
             trackingProvider = response.tracking_provider ?: "",
             trackingLink = response.tracking_link ?: "",
             dateShipped = response.date_shipped ?: ""
-        )
-    }
-
-    private fun orderFulfillmentResponseToModel(
-        response: OrderFulfillmentApiResponse,
-        siteId: LocalId,
-        orderId: Long
-    ): WCOrderFulfillmentModel {
-        val metaData = response.metaData
-            ?.takeIf { element -> element.isJsonArray }
-            ?.asJsonArray
-            ?.mapNotNull { metaElement -> WCMetaData.fromJson(metaElement) }
-            .orEmpty()
-
-        return WCOrderFulfillmentModel(
-            localSiteId = siteId,
-            orderId = RemoteId(orderId),
-            fulfillmentId = response.id ?: 0L,
-            status = response.status,
-            isFulfilled = response.isFulfilled ?: false,
-            dateUpdated = response.dateUpdated,
-            dateFulfilled = metaData.firstOrNull { it.key == DATE_FULFILLED_META_KEY }?.valueAsString,
-            trackingNumber = metaData.firstOrNull { it.key == TRACKING_NUMBER_META_KEY }?.valueAsString,
-            shipmentProvider = metaData.firstOrNull { it.key == SHIPMENT_PROVIDER_META_KEY }?.valueAsString,
-            trackingUrl = metaData.firstOrNull { it.key == TRACKING_URL_META_KEY }?.valueAsString
         )
     }
 
@@ -1278,8 +1208,6 @@ class OrderRestClient @Inject constructor(
     }
 
     companion object {
-        private const val ORDER_RESPONSE_PARSE_ERROR_DESCRIPTION = "Order API response parse error"
-
         private val ORDER_FIELDS = arrayOf(
             "billing",
             "coupon_lines",
@@ -1291,6 +1219,7 @@ class OrderRestClient @Inject constructor(
             "date_paid_gmt",
             "discount_total",
             "fee_lines",
+            "gift_cards",
             "tax_lines",
             "id",
             "customer_id",
@@ -1322,11 +1251,6 @@ class OrderRestClient @Inject constructor(
             "tracking_number",
             "tracking_provider"
         ).joinToString(separator = ",")
-
-        private const val DATE_FULFILLED_META_KEY = "_date_fulfilled"
-        private const val TRACKING_NUMBER_META_KEY = "_tracking_number"
-        private const val SHIPMENT_PROVIDER_META_KEY = "_shipment_provider"
-        private const val TRACKING_URL_META_KEY = "_tracking_url"
 
         private const val BATCH_UPDATE_LIMIT = 100
     }

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
@@ -13,8 +12,7 @@ import javax.inject.Inject
 class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
     private val orderFiltersRepository: OrderFiltersRepository,
     private val dateUtils: DateUtils,
-    private val resolveSiteBySiteId: ResolveSiteBySiteId,
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper
+    private val resolveSiteBySiteId: ResolveSiteBySiteId
 ) {
     operator fun invoke(siteId: Long): WCOrderListDescriptor? {
         val selectedDateRange = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.DATE_RANGE)
@@ -22,9 +20,9 @@ class GetWCOrderListDescriptorWithFiltersBySiteId @Inject constructor(
             .firstOrNull()
         val rangeStartAndEnd = selectedDateRange.getBeforeAndAfterFrom(orderFiltersRepository, dateUtils)
 
-        val orderStatusFilters = ciabOrderStatusMapper.resolveFilterKeys(
-            orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
-        ).joinToString(separator = ",")
+        val orderStatusFilters = orderFiltersRepository
+            .getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
+            .joinToString(separator = ",")
 
         val site = resolveSiteBySiteId(siteId) ?: return null
 

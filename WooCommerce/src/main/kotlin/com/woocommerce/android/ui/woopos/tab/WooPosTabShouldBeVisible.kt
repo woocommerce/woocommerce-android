@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
@@ -15,7 +13,6 @@ class WooPosTabShouldBeVisible @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val isCountryAllowed: WooPosIsCountryAllowed,
     private val wooPosLog: WooPosLogWrapper,
 ) {
@@ -25,13 +22,6 @@ class WooPosTabShouldBeVisible @Inject constructor(
 
         if (!forceRefresh && appPrefs.isPOSTabVisibleForSite(site.id)) {
             return@withContext Result.success(true)
-        }
-
-        if (ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.POS)) {
-            appPrefs.clearPOSTabVisibilityForSite(site.id)
-            return@withContext Result.success(false).also {
-                wooPosLog.i("POS Tab Not visible reason: Site is CIAB")
-            }
         }
 
         if (!isScreenSizeAllowed()) {

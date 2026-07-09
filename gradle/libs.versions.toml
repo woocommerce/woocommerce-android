@@ -2,7 +2,7 @@
 agp = '8.13.2'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
-androidx-activity = '1.12.4'
+androidx-activity = '1.13.0'
 androidx-appcompat = '1.7.1'
 androidx-arch-core = '2.2.0'
 androidx-annotation = '1.10.0'
@@ -52,7 +52,7 @@ bumptech-glide = '5.0.7'
 cashapp-turbine = '1.2.1'
 coil = '2.7.0'
 commons-fileupload = '1.6.0'
-dependency-analysis = '3.9.0'
+dependency-analysis = '3.14.1'
 detekt = '1.23.8'
 eventbus = "3.3.1"
 facebook-shimmer = '0.5.0'
@@ -127,6 +127,7 @@ androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycl
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "androidx-camera" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "androidx-cardview" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-compose-animation-main = { group = "androidx.compose.animation", name = "animation" }
 androidx-compose-material-main = { group = "androidx.compose.material", name = "material" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }

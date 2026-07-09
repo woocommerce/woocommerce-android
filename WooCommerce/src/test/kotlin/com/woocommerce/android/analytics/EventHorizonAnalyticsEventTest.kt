@@ -10,17 +10,17 @@ class EventHorizonAnalyticsEventTest {
     @Test
     fun `when created from Trackable, then name matches analyticsName`() {
         val trackable = mock<Trackable>()
-        whenever(trackable.analyticsName).thenReturn("booking_list_view")
+        whenever(trackable.analyticsName).thenReturn("sample_event_view")
 
         val event = EventHorizonAnalyticsEvent(trackable)
 
-        assertThat(event.name).isEqualTo("booking_list_view")
+        assertThat(event.name).isEqualTo("sample_event_view")
     }
 
     @Test
     fun `when created from Trackable, then siteless is false`() {
         val trackable = mock<Trackable>()
-        whenever(trackable.analyticsName).thenReturn("booking_list_view")
+        whenever(trackable.analyticsName).thenReturn("sample_event_view")
 
         val event = EventHorizonAnalyticsEvent(trackable)
 
@@ -30,7 +30,7 @@ class EventHorizonAnalyticsEventTest {
     @Test
     fun `when created from Trackable, then isPosEvent is false`() {
         val trackable = mock<Trackable>()
-        whenever(trackable.analyticsName).thenReturn("booking_list_view")
+        whenever(trackable.analyticsName).thenReturn("sample_event_view")
 
         val event = EventHorizonAnalyticsEvent(trackable)
 

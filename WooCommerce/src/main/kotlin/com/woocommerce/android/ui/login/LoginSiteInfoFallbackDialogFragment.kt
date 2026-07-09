@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import android.app.Dialog
 import android.os.Bundle
 import android.view.ContextThemeWrapper
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
@@ -37,7 +36,7 @@ class LoginSiteInfoFallbackDialogFragment : DialogFragment() {
         private const val ARG_SITE_ADDRESS = "site_address"
 
         fun newInstance(siteAddress: String) = LoginSiteInfoFallbackDialogFragment().apply {
-            arguments = bundleOf(ARG_SITE_ADDRESS to siteAddress)
+            arguments = Bundle().apply { putString(ARG_SITE_ADDRESS, siteAddress) }
         }
     }
 }

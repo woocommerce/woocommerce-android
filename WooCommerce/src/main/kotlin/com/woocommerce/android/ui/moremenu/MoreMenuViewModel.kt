@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLA
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_BOOKINGS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
@@ -20,8 +19,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
@@ -30,7 +27,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.bookings.tab.ObserveBookingsVisibility
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -43,14 +39,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
@@ -78,21 +70,9 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    observeBookingsVisibility: ObserveBookingsVisibility,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
-    private val shouldShowBookingsInMenu = MutableStateFlow(false)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val bookingsVisibilityFlow = shouldShowBookingsInMenu.flatMapLatest { shouldShow ->
-        if (shouldShow) {
-            observeBookingsVisibility()
-        } else {
-            flowOf(false)
-        }
-    }
 
     val moreMenuViewState =
         combine(
@@ -141,8 +121,6 @@ class MoreMenuViewModel @Inject constructor(
             googleForWooState = buttonsStates[MoreMenuItemButton.Type.GoogleForWoo]!!,
             blazeState = buttonsStates[MoreMenuItemButton.Type.Blaze]!!,
             inboxState = buttonsStates[MoreMenuItemButton.Type.Inbox]!!,
-            paymentsState = buttonsStates[MoreMenuItemButton.Type.Payments]!!,
-            bookingsButtonState = buttonsStates[MoreMenuItemButton.Type.Bookings]!!,
         )
     )
 
@@ -154,10 +132,6 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    fun onWindowClassChanged(isLargeThanCompact: Boolean) {
-        shouldShowBookingsInMenu.value = isLargeThanCompact
-    }
-
     @Suppress("LongMethod")
     private fun generateGeneralSection(
         unseenReviewsCount: Int,
@@ -165,8 +139,6 @@ class MoreMenuViewModel @Inject constructor(
         googleForWooState: MoreMenuItemButton.State,
         blazeState: MoreMenuItemButton.State,
         inboxState: MoreMenuItemButton.State,
-        paymentsState: MoreMenuItemButton.State,
-        bookingsButtonState: MoreMenuItemButton.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
@@ -176,14 +148,6 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
-                state = paymentsState
-            ),
-            MoreMenuItemButton(
-                title = R.string.bookings_tab_title,
-                description = R.string.more_menu_button_bookings_description,
-                icon = R.drawable.ic_bookings_tab,
-                onClick = ::onBookingsButtonClick,
-                state = bookingsButtonState,
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_google,
@@ -340,11 +304,6 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
-    private fun onBookingsButtonClick() {
-        trackMoreMenuOptionSelected(VALUE_MORE_MENU_BOOKINGS)
-        triggerEvent(MoreMenuEvent.ViewBookingsEvent)
-    }
-
     private fun onPromoteProductsWithGoogle() {
         launch {
             val urlToOpen = determineUrlToOpen()
@@ -421,20 +380,13 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
-        val site = selectedSite.get()
-        val adminUrl = site.adminUrlOrDefault
-        if (site.isCIABSite) {
-            // CIAB hides the navigation sidebar when detecting a mobile user agent,
-            // which breaks the WC Admin experience. Open in Chrome Custom Tab instead.
-            triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(url = adminUrl))
-        } else {
-            triggerEvent(
-                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                    url = adminUrl,
-                    screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
-                )
+        val adminUrl = selectedSite.get().adminUrlOrDefault
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = adminUrl,
+                screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
             )
-        }
+        )
     }
 
     private fun onViewStoreButtonClick() {
@@ -499,25 +451,13 @@ class MoreMenuViewModel @Inject constructor(
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
         val initialState = MoreMenuItemButton.Type.entries.associateWith {
             MoreMenuItemButton.State.Loading
-        }.toMutableMap().apply {
-            this[MoreMenuItemButton.Type.Bookings] = MoreMenuItemButton.State.Hidden
-        }
+        }.toMutableMap()
 
         return listOf(
-            bookingsVisibilityFlow.map { isVisible ->
-                MoreMenuItemButton.Type.Bookings to if (isVisible) {
-                    MoreMenuItemButton.State.Visible
-                } else {
-                    MoreMenuItemButton.State.Hidden
-                }
-            },
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-            doCheckAvailability(MoreMenuItemButton.Type.Payments) {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.InPersonPayments)
-            },
         ).merge()
             .map { update ->
                 initialState[update.first] = update.second

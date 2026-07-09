@@ -38,14 +38,16 @@ class UserEligibilityErrorViewModel @Inject constructor(
     private var viewState by viewStateData
 
     init {
-        userEligibilityFetcher.getUser()?.let { user ->
-            viewState = viewState.copy(user = user)
-            analyticsTracker.track(
-                AnalyticsEvent.LOGIN_INSUFFICIENT_ROLE,
-                mapOf(
-                    ROLES_KEY to user.roles.joinToString(",") { it.value }
+        launch {
+            userEligibilityFetcher.getUser()?.let { user ->
+                viewState = viewState.copy(user = user)
+                analyticsTracker.track(
+                    AnalyticsEvent.LOGIN_INSUFFICIENT_ROLE,
+                    mapOf(
+                        ROLES_KEY to user.roles.joinToString(",") { it.value }
+                    )
                 )
-            )
+            }
         }
     }
 

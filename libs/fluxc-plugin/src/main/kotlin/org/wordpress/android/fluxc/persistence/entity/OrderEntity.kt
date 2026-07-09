@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.model.order.CouponLine
 import org.wordpress.android.fluxc.model.order.FeeLine
+import org.wordpress.android.fluxc.model.order.GiftCardLine
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.ShippingLine
@@ -77,6 +78,8 @@ data class OrderEntity(
     val taxLines: String = "",
     @ColumnInfo(name = "couponLines", defaultValue = "")
     val couponLines: String = "",
+    @ColumnInfo(name = "giftCards", defaultValue = "")
+    val giftCards: String = "",
     // this is a small subset of the metadata, see OrderMetaDataEntity for full metadata
     @field:TypeConverters(WCMetaDataConverter::class)
     val metaData: List<WCMetaData> = emptyList(),
@@ -153,6 +156,13 @@ data class OrderEntity(
      */
     suspend fun getCouponLineList(): List<CouponLine> {
         return getCachedOrParse(couponLines)
+    }
+
+    /**
+     * Deserializes the JSON contained in [giftCards] into a list of [GiftCardLine] objects.
+     */
+    suspend fun getGiftCardList(): List<GiftCardLine> {
+        return getCachedOrParse(giftCards)
     }
 
     /**

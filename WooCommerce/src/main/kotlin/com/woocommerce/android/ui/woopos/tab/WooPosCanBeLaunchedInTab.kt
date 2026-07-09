@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -9,7 +8,6 @@ import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -42,10 +40,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             ?: return WooPosLaunchability.NotLaunchable(
                 reason = WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
-
-        getCiabPlanNonLaunchabilityReason(site)?.let {
-            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
-        }
 
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
@@ -89,14 +83,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return wooCoreVersion.semverCompareTo(MINIMUM_SUPPORTED_WC_VERSION) >= 0
     }
 
-    private fun getCiabPlanNonLaunchabilityReason(
-        site: SiteModel
-    ): WooPosLaunchability.NonLaunchabilityReason? {
-        if (!site.isCIABSite) return null
-        if (CIABSiteGateKeeper.CIAB_PRO_PLAN_SLUGS.contains(site.planProductSlug)) return null
-        return WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired
-    }
-
     companion object {
         const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
     }
@@ -111,6 +97,5 @@ sealed class WooPosLaunchability {
         SiteSettingsUnavailable,
         NoSiteSelected,
         UnknownNoPositiveCache,
-        CiabPlanUpgradeRequired,
     }
 }

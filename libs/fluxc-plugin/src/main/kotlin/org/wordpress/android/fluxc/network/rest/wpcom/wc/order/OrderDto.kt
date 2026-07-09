@@ -52,6 +52,9 @@ class OrderDto : Response {
 
     // Same as shipping_lines, it's a list of objects
     val fee_lines: JsonElement? = null
+
+    // A list of objects (the gift cards redeemed on the order), stored as JSON and deserialized on demand.
+    val gift_cards: JsonElement? = null
     val id: Long? = null
 
     // This is actually a list of objects. We're storing this as JSON initially, and it will be deserialized on demand.
