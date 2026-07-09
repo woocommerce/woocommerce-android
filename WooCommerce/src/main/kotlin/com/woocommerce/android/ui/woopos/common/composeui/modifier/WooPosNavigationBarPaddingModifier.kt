@@ -20,7 +20,8 @@ import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 @Composable
 fun Modifier.gesturesOrButtonsNavigationPadding(): Modifier {
     val view = LocalView.current
-    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
+    val rootInsets = view.rootWindowInsets ?: return navigationBarsPadding()
+    val insets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
     val isGestureNavigation = insets.isGestureNavigation(view.context)
 
     return if (isGestureNavigation) {
