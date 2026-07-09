@@ -36,11 +36,6 @@ class CustomerOrderNoteEditingFragment :
         setupToolbar()
         onPrepareMenu()
 
-        if (savedInstanceState == null) {
-            binding.customerOrderNoteEditor.requestFocus()
-            ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
-        }
-
         binding.customerOrderNoteEditor.addTextChangedListener(textWatcher)
     }
 
@@ -48,6 +43,8 @@ class CustomerOrderNoteEditingFragment :
         if (pendingInitialNoteFill) {
             pendingInitialNoteFill = false
             binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
+            binding.customerOrderNoteEditor.requestFocus()
+            ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
         } else {
             updateDoneMenuItem()
         }
