@@ -92,7 +92,7 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - The module must not import app `R`, legacy app theme classes, Hilt, POS, or Store feature
   packages. App-layer rollout wiring stays outside the module.
 - Package root: `com.woocommerce.android.ui.compose.designsystem`.
-- Suggested subpackages: `foundation`, `component`, and `preview`.
+- Subpackages: `foundation`, `component`, and `preview`.
 - The component split ports production components into `:libs:store-design-system`; old app-local
   `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/compose/designsystem` component paths are
   historical only and should not be resurrected.
@@ -146,29 +146,9 @@ These remain rejected for i1:
 ## Screen Migration Candidate Criteria
 
 For first-wave screens, use [rollout-direction.md](rollout-direction.md) as the assignment source.
-The criteria below apply to future unassigned screens.
-
-A good unassigned candidate:
-
-- Is a low-risk product surface.
-- Has visible design-system value such as toolbar, text hierarchy, cells, buttons, banners,
-  empty/loading states, or forms.
-- Has bounded state and navigation.
-- Can be verified with previews and screenshots in light and dark mode.
-- Avoids RecyclerView behavior, selection tracking, `ActionMode`, complex custom Views, or major
-  accessibility redesign.
-- Has a clear before/after baseline for AI agents.
-
-High-risk unassigned screens require explicit confirmation before editing. High-risk signals include:
-
-- RecyclerView, ListAdapter, PagingDataAdapter, or adapter-heavy migration.
-- Selection tracking or `ActionMode`.
-- Complex custom Views or compound widgets.
-- Shared element transitions or complicated animation behavior.
-- Embedded WebView, camera, barcode scanner, media picker, or payment/card-reader UI.
-- Product, order, payment editing, or fulfillment flows.
-- Many navigation branches or multiple child fragments.
-- No reliable preview or screenshot baseline.
+For future unassigned screens, use the
+[Candidate Assessment](screen-migration-playbook.md#candidate-assessment) section in the migration
+playbook.
 
 ## AI-Agent Documentation
 

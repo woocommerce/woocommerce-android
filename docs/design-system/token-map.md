@@ -255,6 +255,7 @@ the Material builder from another supplied source role.
 | `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
 | `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
 | `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
+| `surfaceBright` | `WooTheme.colors.surface.default` | production | Material role projection from the source-backed default surface. |
 | `surfaceDim` | `WooTheme.colors.surface.surfaceDim` | production | Promoted source-backed Store surface role. |
 | `surfaceContainer` | `WooTheme.colors.background.section` | production | Internal surface alias for navigation bars, menus, cards, and sheets. |
 | `surfaceContainerHigh` | `WooTheme.colors.surface.default` | production | Internal surface alias for Material container hierarchy. |

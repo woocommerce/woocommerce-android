@@ -31,7 +31,7 @@ New Compose APIs live under:
 com.woocommerce.android.ui.compose.designsystem
 ```
 
-Suggested subpackages:
+Subpackages:
 
 - `foundation`: theme, color, typography, spacing, shape, elevation, and token helpers.
 - `component`: production-ready Woo Mobile Design System components.
@@ -56,6 +56,9 @@ rollout wiring should stay outside the module.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
+- Follow-up `WOOMOB-3515` tracks a detekt guardrail for files that import both the legacy
+  `com.woocommerce.android.ui.compose.theme.*` APIs and the design-system
+  `com.woocommerce.android.ui.compose.designsystem.*` APIs during migration.
 - Do not expose raw Figma variable names as public Android API.
 - Public APIs should expose only production-ready tokens and components.
 - In-progress i1 areas may be documented, tracked, or preview-only until signed off.
