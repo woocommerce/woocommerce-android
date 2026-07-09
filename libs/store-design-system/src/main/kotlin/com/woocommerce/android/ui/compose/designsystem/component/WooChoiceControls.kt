@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -64,10 +65,29 @@ fun WooCheckbox(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    isError: Boolean = false,
+) {
+    WooCheckbox(
+        state = ToggleableState(checked),
+        onClick = onCheckedChange?.let { { it(!checked) } },
+        modifier = modifier,
+        enabled = enabled,
+        isError = isError,
+    )
+}
+
+@Composable
+fun WooCheckbox(
+    state: ToggleableState,
+    onClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isError: Boolean = false,
 ) {
     val style = wooCheckboxStyle(
-        checked = checked,
+        state = state,
         enabled = enabled,
+        isError = isError,
         colors = WooTheme.colors,
         stroke = WooTheme.stroke,
     )
@@ -76,9 +96,9 @@ fun WooCheckbox(
         modifier = modifier
             .minimumInteractiveComponentSize()
             .wooCheckboxToggleable(
-                checked = checked,
+                state = state,
                 enabled = enabled,
-                onCheckedChange = onCheckedChange,
+                onClick = onClick,
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -154,11 +174,7 @@ fun WooFilterChip(
             Row(
                 modifier = Modifier
                     .height(FILTER_CHIP_HEIGHT)
-                    .border(
-                        width = style.borderWidth,
-                        color = style.borderColor,
-                        shape = shape,
-                    )
+                    .wooFilterChipBorder(style = style, shape = shape)
                     .background(
                         color = style.containerColor,
                         shape = shape,
@@ -196,22 +212,37 @@ private fun WooFilterChipIcon(content: @Composable () -> Unit) {
     }
 }
 
-private fun Modifier.wooCheckboxToggleable(
-    checked: Boolean,
-    enabled: Boolean,
-    onCheckedChange: ((Boolean) -> Unit)?,
+private fun Modifier.wooFilterChipBorder(
+    style: WooFilterChipStyle,
+    shape: RoundedCornerShape,
 ): Modifier {
-    return if (onCheckedChange != null) {
-        toggleable(
-            value = checked,
+    return if (style.borderWidth > 0.dp) {
+        border(
+            width = style.borderWidth,
+            color = style.borderColor,
+            shape = shape,
+        )
+    } else {
+        this
+    }
+}
+
+private fun Modifier.wooCheckboxToggleable(
+    state: ToggleableState,
+    enabled: Boolean,
+    onClick: (() -> Unit)?,
+): Modifier {
+    return if (onClick != null) {
+        triStateToggleable(
+            state = state,
             enabled = enabled,
             role = Role.Checkbox,
-            onValueChange = onCheckedChange,
+            onClick = onClick,
         )
     } else {
         semantics {
             role = Role.Checkbox
-            toggleableState = ToggleableState(checked)
+            toggleableState = state
             if (!enabled) {
                 disabled()
             }
@@ -263,32 +294,56 @@ private fun DrawScope.drawWooCheckbox(style: WooCheckboxStyle) {
         size = size,
         cornerRadius = CornerRadius(cornerRadius),
     )
-    drawRoundRect(
-        color = style.borderColor,
-        topLeft = Offset(halfStrokeWidth, halfStrokeWidth),
-        size = Size(
-            width = size.width - strokeWidth,
-            height = size.height - strokeWidth,
-        ),
-        cornerRadius = CornerRadius(cornerRadius - halfStrokeWidth),
-        style = Stroke(width = strokeWidth),
-    )
-    if (style.checkmarkColor != Color.Transparent) {
-        val checkmarkPath = Path().apply {
-            moveTo(size.width * CHECKMARK_START_X, size.height * CHECKMARK_START_Y)
-            lineTo(size.width * CHECKMARK_MIDDLE_X, size.height * CHECKMARK_MIDDLE_Y)
-            lineTo(size.width * CHECKMARK_END_X, size.height * CHECKMARK_END_Y)
-        }
-        drawPath(
-            path = checkmarkPath,
-            color = style.checkmarkColor,
-            style = Stroke(
-                width = CHECKMARK_STROKE_WIDTH.toPx(),
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round,
+    if (style.borderWidth > 0.dp) {
+        drawRoundRect(
+            color = style.borderColor,
+            topLeft = Offset(halfStrokeWidth, halfStrokeWidth),
+            size = Size(
+                width = size.width - strokeWidth,
+                height = size.height - strokeWidth,
             ),
+            cornerRadius = CornerRadius(cornerRadius - halfStrokeWidth),
+            style = Stroke(width = strokeWidth),
         )
     }
+    when (style.mark) {
+        WooCheckboxMark.Check -> drawWooCheckboxCheckmark(style.markColor)
+        WooCheckboxMark.Indeterminate -> drawWooCheckboxIndeterminateMark(style.markColor)
+        WooCheckboxMark.None -> Unit
+    }
+}
+
+private fun DrawScope.drawWooCheckboxCheckmark(color: Color) {
+    val checkmarkPath = Path().apply {
+        moveTo(size.width * CHECKMARK_START_X, size.height * CHECKMARK_START_Y)
+        lineTo(size.width * CHECKMARK_MIDDLE_X, size.height * CHECKMARK_MIDDLE_Y)
+        lineTo(size.width * CHECKMARK_END_X, size.height * CHECKMARK_END_Y)
+    }
+    drawPath(
+        path = checkmarkPath,
+        color = color,
+        style = Stroke(
+            width = CHECKMARK_STROKE_WIDTH.toPx(),
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round,
+        ),
+    )
+}
+
+private fun DrawScope.drawWooCheckboxIndeterminateMark(color: Color) {
+    drawLine(
+        color = color,
+        start = Offset(
+            x = size.width * INDETERMINATE_MARK_START_X,
+            y = size.height * INDETERMINATE_MARK_Y,
+        ),
+        end = Offset(
+            x = size.width * INDETERMINATE_MARK_END_X,
+            y = size.height * INDETERMINATE_MARK_Y,
+        ),
+        strokeWidth = INDETERMINATE_MARK_STROKE_WIDTH.toPx(),
+        cap = StrokeCap.Round,
+    )
 }
 
 private fun DrawScope.drawWooRadioButton(style: WooRadioButtonStyle) {
@@ -300,11 +355,13 @@ private fun DrawScope.drawWooRadioButton(style: WooRadioButtonStyle) {
         color = style.containerColor,
         radius = radius,
     )
-    drawCircle(
-        color = style.borderColor,
-        radius = radius - halfStrokeWidth,
-        style = Stroke(width = strokeWidth),
-    )
+    if (style.borderWidth > 0.dp) {
+        drawCircle(
+            color = style.borderColor,
+            radius = radius - halfStrokeWidth,
+            style = Stroke(width = strokeWidth),
+        )
+    }
     if (style.dotColor != Color.Transparent) {
         drawCircle(
             color = style.dotColor,
@@ -316,9 +373,16 @@ private fun DrawScope.drawWooRadioButton(style: WooRadioButtonStyle) {
 internal data class WooCheckboxStyle(
     val containerColor: Color,
     val borderColor: Color,
-    val checkmarkColor: Color,
+    val markColor: Color,
     val borderWidth: Dp,
+    val mark: WooCheckboxMark,
 )
+
+internal enum class WooCheckboxMark {
+    None,
+    Check,
+    Indeterminate,
+}
 
 internal data class WooRadioButtonStyle(
     val containerColor: Color,
@@ -339,22 +403,62 @@ internal fun wooCheckboxStyle(
     enabled: Boolean,
     colors: WooColors,
     stroke: WooStroke,
+    isError: Boolean = false,
+): WooCheckboxStyle = wooCheckboxStyle(
+    state = ToggleableState(checked),
+    enabled = enabled,
+    isError = isError,
+    colors = colors,
+    stroke = stroke,
+)
+
+internal fun wooCheckboxStyle(
+    state: ToggleableState,
+    enabled: Boolean,
+    isError: Boolean,
+    colors: WooColors,
+    stroke: WooStroke,
 ): WooCheckboxStyle {
-    val selectedContentColor = if (enabled) colors.primary else colors.surface.onVariantLowest
-    val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
-    return if (checked) {
-        WooCheckboxStyle(
-            containerColor = colors.surface.default,
-            borderColor = selectedContentColor,
-            checkmarkColor = selectedContentColor,
-            borderWidth = stroke.regular,
+    val selectedContainerColor = if (isError) colors.alert.red else colors.primary
+    val selectedContentColor = if (isError) colors.alert.onRed else colors.onPrimary
+    val disabledStateLayerColor = colors.background.onSection.copy(alpha = CHECKBOX_DISABLED_STATE_LAYER_ALPHA)
+    val mark = when (state) {
+        ToggleableState.On -> WooCheckboxMark.Check
+        ToggleableState.Indeterminate -> WooCheckboxMark.Indeterminate
+        ToggleableState.Off -> WooCheckboxMark.None
+    }
+
+    return when {
+        !enabled && state == ToggleableState.Off -> WooCheckboxStyle(
+            containerColor = Color.Transparent,
+            borderColor = disabledStateLayerColor,
+            markColor = Color.Transparent,
+            borderWidth = stroke.medium,
+            mark = WooCheckboxMark.None,
         )
-    } else {
-        WooCheckboxStyle(
-            containerColor = if (enabled) colors.container.secondaryContainer else disabledStateLayerColor,
-            borderColor = if (enabled) colors.container.secondaryContainer else disabledStateLayerColor,
-            checkmarkColor = Color.Transparent,
-            borderWidth = stroke.regular,
+
+        !enabled -> WooCheckboxStyle(
+            containerColor = disabledStateLayerColor,
+            borderColor = Color.Transparent,
+            markColor = colors.onPrimary,
+            borderWidth = stroke.none,
+            mark = mark,
+        )
+
+        state == ToggleableState.Off -> WooCheckboxStyle(
+            containerColor = Color.Transparent,
+            borderColor = selectedContainerColor,
+            markColor = Color.Transparent,
+            borderWidth = stroke.medium,
+            mark = WooCheckboxMark.None,
+        )
+
+        else -> WooCheckboxStyle(
+            containerColor = selectedContainerColor,
+            borderColor = Color.Transparent,
+            markColor = selectedContentColor,
+            borderWidth = stroke.none,
+            mark = mark,
         )
     }
 }
@@ -365,21 +469,34 @@ internal fun wooRadioButtonStyle(
     colors: WooColors,
     stroke: WooStroke,
 ): WooRadioButtonStyle {
-    val selectedContentColor = if (enabled) colors.primary else colors.surface.onVariantLowest
-    val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
-    return if (selected) {
-        WooRadioButtonStyle(
-            containerColor = colors.surface.default,
-            borderColor = selectedContentColor,
-            dotColor = selectedContentColor,
-            borderWidth = stroke.regular,
+    val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = RADIO_DISABLED_STATE_LAYER_ALPHA)
+    return when {
+        selected && enabled -> WooRadioButtonStyle(
+            containerColor = colors.primary,
+            borderColor = Color.Transparent,
+            dotColor = colors.onPrimary,
+            borderWidth = stroke.none,
         )
-    } else {
-        WooRadioButtonStyle(
-            containerColor = if (enabled) colors.container.secondaryContainer else disabledStateLayerColor,
-            borderColor = if (enabled) colors.container.secondaryContainer else disabledStateLayerColor,
+
+        selected -> WooRadioButtonStyle(
+            containerColor = disabledStateLayerColor,
+            borderColor = Color.Transparent,
+            dotColor = colors.onPrimary,
+            borderWidth = stroke.none,
+        )
+
+        enabled -> WooRadioButtonStyle(
+            containerColor = Color.Transparent,
+            borderColor = colors.primary,
             dotColor = Color.Transparent,
-            borderWidth = stroke.regular,
+            borderWidth = stroke.medium,
+        )
+
+        else -> WooRadioButtonStyle(
+            containerColor = Color.Transparent,
+            borderColor = disabledStateLayerColor,
+            dotColor = Color.Transparent,
+            borderWidth = stroke.medium,
         )
     }
 }
@@ -393,16 +510,16 @@ internal fun wooFilterChipStyle(
     return when {
         selected -> WooFilterChipStyle(
             containerColor = colors.container.secondaryContainer,
-            contentColor = if (enabled) colors.container.onSecondaryContainer else colors.surface.onVariantLowest,
-            borderColor = colors.container.onSecondaryContainer,
-            borderWidth = stroke.medium,
+            contentColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
+            borderColor = Color.Transparent,
+            borderWidth = stroke.none,
         )
 
         else -> WooFilterChipStyle(
             containerColor = colors.surface.default,
             contentColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
             borderColor = colors.outlineVariant,
-            borderWidth = stroke.extraThin,
+            borderWidth = stroke.regular,
         )
     }
 }
@@ -480,6 +597,14 @@ private fun ChoiceControlStateRows(
                 checked = uncheckedCheckboxChecked,
                 onCheckedChange = onUncheckedCheckboxChange,
             )
+            WooCheckbox(state = ToggleableState.Indeterminate, onClick = {})
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WooCheckbox(checked = true, onCheckedChange = {}, isError = true)
+            WooCheckbox(checked = false, onCheckedChange = {}, isError = true)
             WooCheckbox(checked = true, onCheckedChange = {}, enabled = false)
             WooCheckbox(checked = false, onCheckedChange = {}, enabled = false)
         }
@@ -570,14 +695,19 @@ internal object WooChoiceControlsDemoTags {
 private val CHOICE_CONTROL_SIZE = 24.dp
 private val CHECKBOX_CORNER_RADIUS = 8.dp
 private val CHECKMARK_STROKE_WIDTH = 2.dp
+private val INDETERMINATE_MARK_STROKE_WIDTH = 2.4f.dp
 private val RADIO_DOT_RADIUS = 4.dp
 private val FILTER_CHIP_HEIGHT = 32.dp
 private val MIN_INTERACTIVE_COMPONENT_SIZE = 48.dp
 
-private const val DISABLED_STATE_LAYER_ALPHA = 0.08f
+private const val CHECKBOX_DISABLED_STATE_LAYER_ALPHA = 0.16f
+private const val RADIO_DISABLED_STATE_LAYER_ALPHA = 0.16f
 private const val CHECKMARK_START_X = 0.29f
 private const val CHECKMARK_START_Y = 0.52f
 private const val CHECKMARK_MIDDLE_X = 0.43f
 private const val CHECKMARK_MIDDLE_Y = 0.67f
 private const val CHECKMARK_END_X = 0.72f
 private const val CHECKMARK_END_Y = 0.35f
+private const val INDETERMINATE_MARK_START_X = 0.325f
+private const val INDETERMINATE_MARK_END_X = 0.675f
+private const val INDETERMINATE_MARK_Y = 0.5f

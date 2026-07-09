@@ -107,7 +107,9 @@ private fun WooButton(
     val buttonColors = style.toButtonColors()
     val shape = RoundedCornerShape(buttonSpec.radius)
     val buttonModifier = modifier.heightIn(min = buttonSpec.visualHeight)
-    val contentPadding = PaddingValues(horizontal = WooTheme.padding.padding5)
+    val contentPadding = PaddingValues(
+        horizontal = WooTheme.padding.padding5,
+    )
     val content: @Composable () -> Unit = {
         WooButtonContent(
             text = text,
@@ -193,7 +195,7 @@ private fun WooButtonStyle.toButtonColors(): ButtonColors {
         )
         WooButtonStyle.Outlined -> ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = colors.primary,
+            contentColor = colors.container.onSecondaryContainer,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = disabledContentColor,
         )
@@ -210,7 +212,7 @@ private fun WooButtonStyle.toButtonBorder(enabled: Boolean): BorderStroke? =
                 color = if (enabled) {
                     colors.container.secondaryContainer
                 } else {
-                    colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
+                    colors.surface.onDefault.copy(alpha = DISABLED_OUTLINED_BORDER_ALPHA)
                 },
             )
         }
@@ -302,4 +304,5 @@ private data class WooButtonSpec(
 private val MEDIUM_BUTTON_VISUAL_HEIGHT = 56.dp
 private val SMALL_BUTTON_VISUAL_HEIGHT = 32.dp
 private const val DISABLED_STATE_LAYER_ALPHA = 0.08f
-private const val DISABLED_CONTENT_ALPHA = 0.30f
+private const val DISABLED_OUTLINED_BORDER_ALPHA = 0.10f
+private const val DISABLED_CONTENT_ALPHA = 0.24f

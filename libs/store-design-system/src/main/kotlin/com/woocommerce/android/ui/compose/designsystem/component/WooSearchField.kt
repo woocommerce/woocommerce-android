@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -76,7 +77,7 @@ fun WooSearchField(
     val colors = WooTheme.colors
     val textColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
     val iconColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
-    val placeholderColor = colors.surface.onVariantLowest
+    val placeholderColor = wooSearchFieldPlaceholderColor(colors)
     val clearIconColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest
     val fieldContainerColor = colors.surface.surfaceDim
     val showClearButton = onClearClick != null && value.isNotEmpty()
@@ -320,3 +321,7 @@ private val SEARCH_ACTION_TOUCH_TARGET_SIZE = 48.dp
 private val SEARCH_TRAILING_ACTION_MAX_WIDTH = 120.dp
 private val SEARCH_CLEAR_GLYPH_SIZE = 8.dp
 private val SEARCH_CLEAR_ICON_PADDING = 4.dp
+private const val SEARCH_PLACEHOLDER_ALPHA = 0.16f
+
+internal fun wooSearchFieldPlaceholderColor(colors: WooColors) =
+    colors.surface.onDefault.copy(alpha = SEARCH_PLACEHOLDER_ALPHA)

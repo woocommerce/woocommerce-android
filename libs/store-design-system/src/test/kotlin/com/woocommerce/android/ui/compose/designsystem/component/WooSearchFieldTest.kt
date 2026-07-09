@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -46,8 +48,28 @@ class WooSearchFieldTest {
         assertThat(inputBounds.right).isLessThanOrEqualTo(clearButtonBounds.left)
     }
 
+    @Test
+    fun `given resting search field, when placeholder color is resolved, then it matches Figma token`() {
+        var placeholderColor: Color? = null
+        var expectedColor: Color? = null
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                val colors = WooTheme.colors
+
+                placeholderColor = wooSearchFieldPlaceholderColor(colors)
+                expectedColor = colors.surface.onDefault.copy(alpha = PLACEHOLDER_ALPHA)
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(placeholderColor).isEqualTo(expectedColor)
+        }
+    }
+
     private companion object {
         const val SEARCH_VALUE = "Search products"
+        const val PLACEHOLDER_ALPHA = 0.16f
         val SEARCH_FIELD_WIDTH = 360.dp
     }
 }

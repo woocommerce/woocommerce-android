@@ -18,6 +18,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
@@ -45,7 +46,7 @@ fun WooBadge(
             modifier = Modifier.padding(
                 horizontal = WooTheme.padding.padding3,
             ),
-            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (leadingIcon != null) {
@@ -61,6 +62,9 @@ fun WooBadge(
             Text(
                 text = text,
                 style = WooTheme.text.bodySmall.regular,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -85,21 +89,29 @@ internal fun WooBadgeDemo(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
-            WooBadge("Error", tone = WooBadgeTone.Error, leadingIcon = { BadgeLeadingIcon() })
-            WooBadge("Caution", tone = WooBadgeTone.Caution, leadingIcon = { BadgeLeadingIcon() })
-            WooBadge("Warning", tone = WooBadgeTone.Warning, leadingIcon = { BadgeLeadingIcon() })
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
-            WooBadge("Success", tone = WooBadgeTone.Success, leadingIcon = { BadgeLeadingIcon() })
-            WooBadge("Info", tone = WooBadgeTone.Info, leadingIcon = { BadgeLeadingIcon() })
-            WooBadge("Neutral", tone = WooBadgeTone.Neutral, leadingIcon = { BadgeLeadingIcon() })
-            WooBadge(
-                "Outlined",
-                tone = WooBadgeTone.NeutralOutlined,
-                leadingIcon = { BadgeLeadingIcon() },
-            )
-        }
+        WooBadgeToneRows(leadingIcon = { BadgeLeadingIcon() })
+        WooBadgeToneRows(leadingIcon = null)
+    }
+}
+
+@Composable
+private fun WooBadgeToneRows(
+    leadingIcon: (@Composable () -> Unit)?,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
+        WooBadge("Error", tone = WooBadgeTone.Error, leadingIcon = leadingIcon)
+        WooBadge("Caution", tone = WooBadgeTone.Caution, leadingIcon = leadingIcon)
+        WooBadge("Warning", tone = WooBadgeTone.Warning, leadingIcon = leadingIcon)
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
+        WooBadge("Success", tone = WooBadgeTone.Success, leadingIcon = leadingIcon)
+        WooBadge("Info", tone = WooBadgeTone.Info, leadingIcon = leadingIcon)
+        WooBadge("Neutral", tone = WooBadgeTone.Neutral, leadingIcon = leadingIcon)
+        WooBadge(
+            "Outlined",
+            tone = WooBadgeTone.NeutralOutlined,
+            leadingIcon = leadingIcon,
+        )
     }
 }
 
@@ -119,7 +131,10 @@ private fun WooBadgeTone.toBadgeColors(): WooBadgeColors {
         WooBadgeTone.NeutralOutlined -> WooBadgeColors(
             containerColor = Color.Transparent,
             contentColor = colors.surface.onDefault,
-            border = BorderStroke(WooTheme.stroke.regular, colors.status.neutralContainer),
+            border = BorderStroke(
+                width = WooTheme.stroke.medium,
+                color = colors.surface.onDefault.copy(alpha = BADGE_OUTLINED_BORDER_ALPHA),
+            ),
         )
         WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)
         WooBadgeTone.Success -> WooBadgeColors(colors.status.successContainer, colors.status.onSuccessContainer)
@@ -135,4 +150,5 @@ private data class WooBadgeColors(
     val border: BorderStroke? = null,
 )
 
+private const val BADGE_OUTLINED_BORDER_ALPHA = 0.10f
 private val BADGE_MIN_HEIGHT = 24.dp
