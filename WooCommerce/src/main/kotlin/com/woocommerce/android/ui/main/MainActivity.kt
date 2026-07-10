@@ -226,6 +226,10 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
 
+    // Drives the collapsing toolbar's elevation shadow from its own offset (see setupAppBarElevation).
+    private var appBarVerticalOffset = 0
+    private var appBarHasShadow = true
+
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
             binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
@@ -306,17 +310,15 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    binding.appBarLayout.targetElevation = if (appBarStatus.hasShadow) {
-                        resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                    } else {
-                        0f
-                    }
+                    appBarHasShadow = appBarStatus.hasShadow
+                    updateAppBarElevation()
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
                 AppBarStatus.Hidden -> {
                     hideToolbar()
-                    binding.appBarLayout.targetElevation = 0f
+                    appBarHasShadow = false
+                    updateAppBarElevation()
                 }
             }
         }
@@ -361,6 +363,8 @@ class MainActivity :
 
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
+
+        setupAppBarElevation()
 
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
@@ -604,6 +608,30 @@ class MainActivity :
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
         binding.appBarLayout.setExpanded(expand, animate)
+    }
+
+    // The collapsing toolbar draws its elevation shadow only in the "lifted" state, which AppBarLayout derives
+    // from the scrolling child's canScrollVertically(). The dashboard's ComposeView doesn't report its internal
+    // scroll, so the shadow flickered off on layout changes. Instead we disable the automatic elevation animation
+    // and drive the shadow directly from the app bar's own vertical offset: a shadow is shown whenever the toolbar
+    // is collapsed (offset != 0) on any screen that opts into a shadow.
+    private fun setupAppBarElevation() {
+        binding.appBarLayout.isLiftOnScroll = false
+        binding.appBarLayout.stateListAnimator = null
+        binding.appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                appBarVerticalOffset = verticalOffset
+                updateAppBarElevation()
+            }
+        )
+    }
+
+    private fun updateAppBarElevation() {
+        binding.appBarLayout.elevation = if (appBarHasShadow && appBarVerticalOffset != 0) {
+            resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+        } else {
+            0f
+        }
     }
 
     fun setSubtitle(subtitle: CharSequence) {
