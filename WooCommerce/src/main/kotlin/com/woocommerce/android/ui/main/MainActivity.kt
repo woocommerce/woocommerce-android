@@ -17,6 +17,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -31,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -231,8 +233,20 @@ class MainActivity :
     private var appBarHasShadow = true
 
     private val appBarOffsetListener by lazy {
-        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
+        AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            applySubtitleFade(verticalOffset)
+        }
+    }
+
+    // Fades the toolbar subtitle out as the toolbar collapses. Guards against a zero scroll range (which would
+    // make the alpha NaN, e.g. while the toolbar is being re-shown after a Hidden screen) so the subtitle can't
+    // get stuck invisible.
+    private fun applySubtitleFade(verticalOffset: Int) {
+        val totalScrollRange = binding.appBarLayout.totalScrollRange
+        binding.toolbarSubtitle.alpha = if (totalScrollRange > 0) {
+            1f - abs(verticalOffset / totalScrollRange.toFloat())
+        } else {
+            1f
         }
     }
 
@@ -657,11 +671,28 @@ class MainActivity :
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        // Cancel any in-flight collapse animation started by removeSubtitle. When navigating to a screen that
+        // hides the shared toolbar, that collapse stalls (the view is never drawn to completion) and only
+        // finishes once the toolbar is shown again on return — hiding the subtitle right after we set it here.
+        // Clearing it keeps the store name visible.
+        binding.toolbarSubtitle.clearAnimation()
+        // removeSubtitle collapses the subtitle by shrinking its height and never restores it; the reveal below
+        // animates scaleY/visibility instead, so a left-over collapsed height would keep the view invisible even
+        // once it is shown again. Restore the natural height before re-showing.
+        binding.toolbarSubtitle.updateLayoutParams { height = ViewGroup.LayoutParams.WRAP_CONTENT }
+        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
+        // The offset listener only fires on an offset *change*, so refresh the fade for the current state to
+        // avoid a stale alpha (applySubtitleFade also guards a zero scroll range that would produce NaN).
+        applySubtitleFade(appBarVerticalOffset)
         // Check to ensure expand anim is not triggered twice for same subtitle value
         if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
+            // The subtitle is already shown (e.g. a stalled collapse was just cancelled on return), so the expand
+            // animation below is skipped — but removeSubtitle collapsed the expanded title margin, so restore it
+            // directly here, otherwise there is no space between the title and the subtitle.
+            binding.collapsingToolbar.expandedTitleMarginBottom =
+                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin_with_subtitle)
             return
         }
-        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
