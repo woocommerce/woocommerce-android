@@ -38,10 +38,10 @@ intentionally use `lightColorScheme(...)` / `darkColorScheme(...)` builder defau
 
 Do not use top-level `Semantic` or high-contrast modes for normal Material color projections.
 Container roles are first-class Store roles and can project to Material container roles. The fuller
-surface role set is first-class Store data, including `surfaceDim`, `surfaceBright`,
-`surfaceContainerHighest`, `onVariantLowest`, `inverted`, and `onInverted`. These roles should
-project from their Store source-backed roles, not older internal aliases. Background, overlay, and
-palette roles remain export-backed even when they are not validated by the Color roles frame.
+surface role set includes `surfaceDim`, `surfaceContainerHighest`, `onVariantLowest`, `inverted`,
+and `onInverted`. These roles should project from their Store source-backed roles, not older
+internal aliases. Background, overlay, and palette roles remain export-backed even when they are not
+validated by the Color roles frame.
 
 Do not generate public `WooTheme.colors` entries for Material fixed roles or source-missing aliases.
 `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
@@ -57,7 +57,7 @@ Do not generate public `WooTheme.colors` entries for Material fixed roles or sou
 | `surface`, `onSurface` | Default app surfaces and primary text/icons on neutral surfaces. |
 | `surfaceVariant`, `onSurfaceVariant` | Lower-emphasis neutral containers, secondary text/icons, and content adjacent to dividers. |
 | `surfaceContainerLowest` through `surfaceContainerHighest` | Nested neutral containers for projection. `surfaceContainerHighest` is a promoted Store role; the rest stay internal unless source-backed names are promoted. |
-| `surfaceDim`, `surfaceBright` | Source-backed Store surface roles. |
+| `surfaceDim` | Source-backed Store surface role. |
 | `background`, `onBackground` | Root/background areas when distinct from `surface`. In M3, prefer `surface` for most containers. |
 | `outline`, `outlineVariant` | Borders, dividers, and low-emphasis strokes. |
 | `inverseSurface`, `inverseOnSurface`, `inversePrimary` | Inverse surfaces such as snackbar-like UI. |
@@ -249,7 +249,7 @@ The current adapter decision is:
 - Do not expose top-level `Semantic` groups in PR 2 unless a concrete Figma component audit approves
   that token group.
 - Keep Material 3-only projection aliases internal unless the alias is itself a source-backed token.
-- Treat `surfaceDim`, `surfaceBright`, and `surfaceContainerHighest` as source-backed Store roles.
+- Treat `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
 - Keep high-contrast modes out of normal `Light` / `Dark` runtime mapping until accessibility-mode
   scope is decided.
 - Do not create a public `WooTheme.stateAlpha` float API from mode-aware state-layer color tokens.
