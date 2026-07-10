@@ -21,7 +21,7 @@
 - [*] Tapping the current bottom tab again now scrolls the screen back to the top as intended [https://github.com/woocommerce/woocommerce-android/pull/16221]
 - [*] Fixed the main toolbar showing the wrong menu after opening a feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16220]
 - [Internal] Restored dashboard scroll tracking for the used_analytics event lost in the Compose migration [https://github.com/woocommerce/woocommerce-android/pull/16229]
-- [*] Fixed the order list not scrolling to the top after creating a new order
+- [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 
 25.1
 -----
