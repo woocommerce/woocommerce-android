@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.3
+-----
+
+
 25.2
 -----
 - [*] Fixed the Contact Support form losing the subject and site address fields after rotating the device [https://github.com/woocommerce/woocommerce-android/pull/16236]
