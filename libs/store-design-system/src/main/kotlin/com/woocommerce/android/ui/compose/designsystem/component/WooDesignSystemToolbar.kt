@@ -101,7 +101,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
                 if (item.actionView === child) {
                     return@forEach
                 }
-                if (item.icon != null) {
+                if (item.icon != null && child.isIconOnlyAction()) {
                     changed = child.applyOutlinedToolbarActionStyle(item.icon, iconSize) || changed
                 }
             }
@@ -110,7 +110,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     private fun View.applyOutlinedToolbarActionStyle(icon: Drawable?, iconSize: Int): Boolean {
         var changed = applyToolbarIconTouchTarget()
-        val backgroundIcon = icon.takeIf { shouldDrawIconInBackground() }
+        val backgroundIcon = icon.takeIf { isIconOnlyAction() }
         if (getTag(R.id.woo_ds_toolbar_action_view) != true ||
             getTag(R.id.woo_ds_toolbar_action_icon) !== backgroundIcon
         ) {
@@ -131,7 +131,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         return changed
     }
 
-    private fun View.shouldDrawIconInBackground(): Boolean =
+    private fun View.isIconOnlyAction(): Boolean =
         this !is TextView || text.isNullOrEmpty()
 
     private fun applyToolbarControlEdgeInsets() {

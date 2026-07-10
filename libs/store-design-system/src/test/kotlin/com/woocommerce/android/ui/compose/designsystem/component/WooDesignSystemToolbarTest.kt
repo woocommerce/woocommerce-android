@@ -18,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class WooDesignSystemToolbarTest {
@@ -167,6 +168,25 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    @Config(qualifiers = "w600dp")
+    fun `given icon with text item on wide screen, when shown in toolbar, then item keeps natural width`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext())
+        toolbar.addIconAction(
+            showAsAction = MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_WITH_TEXT,
+            title = "Open product",
+        )
+
+        toolbar.layoutToolbar(widthDp = 600)
+        val action = toolbar.actionChild(ACTION_ID) as TextView
+        val touchTarget = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+
+        assertThat(action.text).isEqualTo("Open product")
+        assertThat(action.measuredWidth).isGreaterThan(touchTarget)
+        assertThat(action.getTag(R.id.woo_ds_toolbar_action_view)).isNull()
+        assertThat(action.compoundDrawables.filterNotNull()).hasSize(1)
+    }
+
+    @Test
     fun `given disabled icon item, when shown in toolbar, then rendered child remains disabled`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
         toolbar.addIconAction(enabled = false)
@@ -249,7 +269,8 @@ class WooDesignSystemToolbarTest {
     private fun WooDesignSystemToolbar.addIconAction(
         showAsAction: Int = MenuItem.SHOW_AS_ACTION_ALWAYS,
         enabled: Boolean = true,
-    ): MenuItem = menu.add(0, ACTION_ID, 0, "Open").apply {
+        title: String = "Open",
+    ): MenuItem = menu.add(0, ACTION_ID, 0, title).apply {
         icon = AppCompatResources.getDrawable(context, R.drawable.woo_ds_ic_regular_arrow_up_right_24dp)
         isEnabled = enabled
         setShowAsAction(showAsAction)
