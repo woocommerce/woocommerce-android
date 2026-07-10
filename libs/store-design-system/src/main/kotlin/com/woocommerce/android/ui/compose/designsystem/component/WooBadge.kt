@@ -133,7 +133,7 @@ private fun WooBadgeTone.toBadgeColors(): WooBadgeColors {
             contentColor = colors.surface.onDefault,
             border = BorderStroke(
                 width = WooTheme.stroke.medium,
-                color = colors.surface.onDefault.copy(alpha = BADGE_OUTLINED_BORDER_ALPHA),
+                color = colors.stateLayer.onSurfaceOpacity10,
             ),
         )
         WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)
@@ -150,5 +150,4 @@ private data class WooBadgeColors(
     val border: BorderStroke? = null,
 )
 
-private const val BADGE_OUTLINED_BORDER_ALPHA = 0.10f
 private val BADGE_MIN_HEIGHT = 24.dp

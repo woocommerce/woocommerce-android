@@ -43,6 +43,11 @@
     <color name="woo_ds_color_overlay_overlay20">#33000000</color>
     <color name="woo_ds_color_overlay_overlay50">#80000000</color>
 
+    <color name="woo_ds_color_state_layer_on_surface_opacity08">#141E1E1E</color>
+    <color name="woo_ds_color_state_layer_on_surface_opacity10">#1A1E1E1E</color>
+    <color name="woo_ds_color_state_layer_on_surface_opacity16">#291E1E1E</color>
+    <color name="woo_ds_color_state_layer_on_surface_opacity24">#3D1E1E1E</color>
+
     <color name="woo_ds_color_alert_red">#FC4A5B</color>
     <color name="woo_ds_color_alert_on_red">#FFFFFF</color>
     <color name="woo_ds_color_alert_orange">#FF9000</color>

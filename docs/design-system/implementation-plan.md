@@ -27,9 +27,11 @@ consume:
 - [android-adapter.md](android-adapter.md) for public/internal Android API boundaries and
   parser/mode handling.
 
-Foundation source data comes from `figma-export.json`. Runtime/public token parsing uses
-non-`Semantic` top-level sections. Top-level `Semantic` remains traceability-only. High-contrast
-color modes stay out of normal `Light` / `Dark` runtime mapping until separately scoped.
+Foundation source data comes from `figma-export.json`, except for the approved state-layer
+reconciliation: live Figma evidence overrides malformed dark entries and supplies the omitted
+`Opacity-24` token. Runtime/public token parsing otherwise uses non-`Semantic` top-level sections.
+Top-level `Semantic` remains traceability-only. High-contrast color modes stay out of normal
+`Light` / `Dark` runtime mapping until separately scoped.
 
 Expected output:
 
@@ -66,7 +68,8 @@ Expected output:
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
 - Source-backed color tokens exposed through `WooTheme.colors`, with direct core roles plus shallow
-  Store authoring groups: container, surface, status, background, overlay, alert, and palette.
+  Store authoring groups: container, surface, status, background, overlay, state layer, alert, and
+  palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
@@ -75,7 +78,16 @@ Expected output:
 - Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
   no separate `WooTheme.semanticColors`.
 - `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
-- State layers remain internal-first until semantic names and mode behavior are approved.
+- Public `WooTheme.colors.stateLayer` colors for `onSurfaceOpacity08`, `onSurfaceOpacity10`,
+  `onSurfaceOpacity16`, and `onSurfaceOpacity24`; no public state-alpha floats and no Material
+  `ColorScheme` projection.
+- Normal-mode state-layer values: light Figma `RRGGBBAA` `#1E1E1E14`, `#1E1E1E1A`,
+  `#1E1E1E29`, `#1E1E1E3D` (Android `AARRGGBB` `#141E1E1E`, `#1A1E1E1E`, `#291E1E1E`,
+  `#3D1E1E1E`); dark `#FFFFFF14`, `#FFFFFF1A`, `#FFFFFF29`, `#FFFFFF3D` (Android
+  `#14FFFFFF`, `#1AFFFFFF`, `#29FFFFFF`, `#3DFFFFFF`).
+- Live Figma component evidence maps 08 to disabled filled/tonal button containers, 10 to neutral
+  outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio and resting
+  Search placeholder, and 24 to disabled button content. High contrast remains unresolved.
 - `WooTheme.iconSize` scoped to glyph sizes only.
 - Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
   production component usage.
@@ -89,7 +101,7 @@ Implementation risks to verify when code work begins:
 - Radius projection visual changes: `large` moves from the current `8dp` projection to `12dp`, and
   `extraLarge` moves from the current `8dp` projection to `16dp`.
 - Fractional stroke width rendering for `0.5dp`, `0.75dp`, and `1.5dp`.
-- State-layer mode behavior if internal defaults are implemented.
+- High-contrast state-layer behavior, which remains outside the normal runtime mapping.
 
 Foundation work remains opt-in. Do not globally remap existing app theme resources in the foundation
 PR. Store design-system color primitives may be module-local Android resources so `WooTheme.colors`
@@ -195,6 +207,8 @@ Add new example docs only when first-wave migrations produce reusable findings.
 - No raw private Figma node IDs in public docs.
 - `figma-export.json` remains an audit/source artifact; do not hand-edit it as part of foundation
   implementation.
+- Approved live Figma state-layer evidence overrides the export's malformed dark entries and omitted
+  `Opacity-24`; do not repair those issues by editing the export.
 - Runtime/public parser logic must ignore the top-level `Semantic` section unless the contract is
   deliberately updated with approved evidence.
 - Normal runtime `Light` / `Dark` values must not use high-contrast modes.

@@ -421,7 +421,7 @@ internal fun wooCheckboxStyle(
 ): WooCheckboxStyle {
     val selectedContainerColor = if (isError) colors.alert.red else colors.primary
     val selectedContentColor = if (isError) colors.alert.onRed else colors.onPrimary
-    val disabledStateLayerColor = colors.background.onSection.copy(alpha = CHECKBOX_DISABLED_STATE_LAYER_ALPHA)
+    val disabledStateLayerColor = colors.stateLayer.onSurfaceOpacity16
     val mark = when (state) {
         ToggleableState.On -> WooCheckboxMark.Check
         ToggleableState.Indeterminate -> WooCheckboxMark.Indeterminate
@@ -469,7 +469,7 @@ internal fun wooRadioButtonStyle(
     colors: WooColors,
     stroke: WooStroke,
 ): WooRadioButtonStyle {
-    val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = RADIO_DISABLED_STATE_LAYER_ALPHA)
+    val disabledStateLayerColor = colors.stateLayer.onSurfaceOpacity16
     return when {
         selected && enabled -> WooRadioButtonStyle(
             containerColor = colors.primary,
@@ -700,8 +700,6 @@ private val RADIO_DOT_RADIUS = 4.dp
 private val FILTER_CHIP_HEIGHT = 32.dp
 private val MIN_INTERACTIVE_COMPONENT_SIZE = 48.dp
 
-private const val CHECKBOX_DISABLED_STATE_LAYER_ALPHA = 0.16f
-private const val RADIO_DISABLED_STATE_LAYER_ALPHA = 0.16f
 private const val CHECKMARK_START_X = 0.29f
 private const val CHECKMARK_START_Y = 0.52f
 private const val CHECKMARK_MIDDLE_X = 0.43f

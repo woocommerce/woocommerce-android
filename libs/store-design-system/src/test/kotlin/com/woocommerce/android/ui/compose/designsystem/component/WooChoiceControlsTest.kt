@@ -229,9 +229,7 @@ class WooChoiceControlsTest {
         }
 
         composeTestRule.runOnIdle {
-            val disabledStateLayerColor = colors.background.onSection.copy(alpha = CHECKBOX_DISABLED_ALPHA)
-
-            assertThat(style.containerColor).isEqualTo(disabledStateLayerColor)
+            assertThat(style.containerColor).isEqualTo(colors.stateLayer.onSurfaceOpacity16)
             assertThat(style.borderColor).isEqualTo(Color.Transparent)
             assertThat(style.markColor).isEqualTo(colors.onPrimary)
             assertThat(style.borderWidth).isEqualTo(stroke.none)
@@ -286,10 +284,8 @@ class WooChoiceControlsTest {
         }
 
         composeTestRule.runOnIdle {
-            val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = RADIO_DISABLED_ALPHA)
-
             assertThat(style.containerColor).isEqualTo(Color.Transparent)
-            assertThat(style.borderColor).isEqualTo(disabledStateLayerColor)
+            assertThat(style.borderColor).isEqualTo(colors.stateLayer.onSurfaceOpacity16)
             assertThat(style.dotColor).isEqualTo(Color.Transparent)
             assertThat(style.borderWidth).isEqualTo(stroke.medium)
         }
@@ -354,8 +350,6 @@ class WooChoiceControlsTest {
         const val FILTER_CHIP_LABEL = "Filter"
         const val FILTER_CHIP_TAG = "WooFilterChipMinTouchTarget"
         const val TRISTATE_CHECKBOX_TAG = "WooTriStateCheckbox"
-        const val CHECKBOX_DISABLED_ALPHA = 0.16f
-        const val RADIO_DISABLED_ALPHA = 0.16f
         val CHIP_ICON_SIZE = 14.dp
         val CONSTRAINED_CHIP_WIDTH = 96.dp
         val MIN_TOUCH_TARGET_SIZE = 48.dp

@@ -58,7 +58,7 @@ class WooSearchFieldTest {
                 val colors = WooTheme.colors
 
                 placeholderColor = wooSearchFieldPlaceholderColor(colors)
-                expectedColor = colors.surface.onDefault.copy(alpha = PLACEHOLDER_ALPHA)
+                expectedColor = colors.stateLayer.onSurfaceOpacity16
             }
         }
 
@@ -69,7 +69,6 @@ class WooSearchFieldTest {
 
     private companion object {
         const val SEARCH_VALUE = "Search products"
-        const val PLACEHOLDER_ALPHA = 0.16f
         val SEARCH_FIELD_WIDTH = 360.dp
     }
 }

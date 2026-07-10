@@ -140,6 +140,12 @@ private fun Context.loadWooColors(): WooColors {
             onBlue = color(R.color.woo_ds_color_alert_on_blue),
         ),
         palette = palette,
+        stateLayer = WooStateLayerColors(
+            onSurfaceOpacity08 = color(R.color.woo_ds_color_state_layer_on_surface_opacity08),
+            onSurfaceOpacity10 = color(R.color.woo_ds_color_state_layer_on_surface_opacity10),
+            onSurfaceOpacity16 = color(R.color.woo_ds_color_state_layer_on_surface_opacity16),
+            onSurfaceOpacity24 = color(R.color.woo_ds_color_state_layer_on_surface_opacity24),
+        ),
     )
 }
 
