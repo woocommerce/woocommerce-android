@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-16 09:57:53+0000
+Translation-Revision-Date: 2026-07-01 09:58:50+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">このサイトのセキュリティ証明書を確認できませんでした。 ホスティングサービスまたはサイト管理者に連絡して、もう一度お試しください。</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">安全な接続を確立できませんでした。 端末の日時が正しいことを確認してから、もう一度お試しください。</string>
+    <string name="woopos_refund_preview_error">返金合計を計算できませんでした。 もう一度お試しください。</string>
+    <string name="woopos_orders_details_refresh_error">注文を再読み込みできませんでした。 接続を確認して、もう一度お試しください。</string>
+    <string name="store_connection_error_dialog_contact_support">サポートに連絡</string>
+    <string name="store_connection_error_dialog_body">ストアとの接続中に問題が発生しました。 これは通常、WordPress サイトの接続の問題であり、多くの場合、セキュリティプラグイン、最近のプラグイン更新、再読み込みが必要な Jetpack 接続のいずれかが原因です。 これは、WooCommerce アプリでスマートフォンからは修正できません。</string>
+    <string name="store_connection_error_dialog_title">ストアにアクセスできません</string>
+    <string name="site_picker_unknown_blog_error">ストアにアクセスできなかったため、ログアウトしました。 続行するにはストアを選択してください。</string>
+    <string name="login_site_info_fallback_dialog_cta">サイトのログイン情報でログイン</string>
+    <string name="login_site_info_fallback_dialog_message">サイトの詳細を確認できませんでした。 代わりに、サイトのログイン情報でログインしてみてください。</string>
+    <string name="login_site_info_fallback_dialog_title">接続の問題</string>
     <string name="woopos_refund_back_to_order_button">注文に戻る</string>
     <string name="woopos_refund_notifying_store_subtitle">注文に返金を適用しています</string>
     <string name="woopos_refund_notifying_store_title">ストアに通知しています</string>
@@ -2143,8 +2154,6 @@ Language: ja_JP
     <string name="coupon_type_picker_percentage_content_description">クーポンの種類 - 割引率</string>
     <string name="coupon_type_picker_title">クーポンを作成する</string>
     <string name="coupon_list_add_coupon_content_description">クーポンを追加します</string>
-    <string name="empty_order_test_order_button">テスト注文を試す</string>
-    <string name="empty_order_test_order_message">テスト注文を実行して、WooCommerce のプロセスがシームレスなカスタマーエクスペリエンスを提供していることを確認します</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動で詳細を追加します</string>
     <string name="order_creation_customer_search_old_wc_hint">顧客を検索する</string>
     <string name="order_creation_customer_search_empty_email">メールアドレスなし</string>

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 09:58:29+0000
+Translation-Revision-Date: 2026-07-01 09:55:53+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">無法驗證此網站的安全性憑證。 請聯絡你的主機服務提供者或網站管理員，然後再試一次。</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">無法建立安全連線。 請檢查裝置日期和時間是否正確，然後再試一次。</string>
+    <string name="woopos_refund_preview_error">無法計算退款總額， 請再試一次。</string>
+    <string name="woopos_orders_details_refresh_error">無法重新整理訂單。 請檢查你的連線並再試一次。</string>
+    <string name="store_connection_error_dialog_contact_support">聯絡支援團隊</string>
+    <string name="store_connection_error_dialog_body">連線至你的商店時發生問題。 這通常是 WordPress 網站出現連線問題，常見原因包括安全性外掛程式阻擋、近期外掛程式更新，或是 Jetpack 連線需要重新整理。 WooCommerce 應用程式無法從你的手機修正此問題。</string>
+    <string name="store_connection_error_dialog_title">無法連線至你的商店</string>
+    <string name="site_picker_unknown_blog_error">我們無法存取你的商店，目前已為你登出。 請選取一間商店以繼續。</string>
+    <string name="login_site_info_fallback_dialog_cta">使用網站憑證登入</string>
+    <string name="login_site_info_fallback_dialog_message">無法驗證你的網站詳細資料。 你可以改用網站憑證來登入。</string>
+    <string name="login_site_info_fallback_dialog_title">連線問題</string>
     <string name="woopos_refund_back_to_order_button">返回訂單</string>
     <string name="woopos_refund_notifying_store_subtitle">為訂單退款</string>
     <string name="woopos_refund_notifying_store_title">通知商店</string>
@@ -2141,8 +2152,6 @@ Language: zh_TW
     <string name="coupon_type_picker_percentage_content_description">優惠券折扣：百分比折扣</string>
     <string name="coupon_type_picker_title">建立優惠券</string>
     <string name="coupon_list_add_coupon_content_description">新增優惠券</string>
-    <string name="empty_order_test_order_button">試用測試訂單</string>
-    <string name="empty_order_test_order_message">執行測試訂單，確認你的 WooCommerce 流程能提供流暢的顧客體驗</string>
     <string name="order_creation_customer_search_empty_add_details_manually">手動新增詳情</string>
     <string name="order_creation_customer_search_old_wc_hint">依條件搜尋顧客</string>
     <string name="coupon_type_picker_fixed_cart_discount_subtitle">為整個購物車建立固定總折扣</string>

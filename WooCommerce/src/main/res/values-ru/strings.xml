@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-24 09:57:44+0000
+Translation-Revision-Date: 2026-06-30 18:57:46+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Не удалось проверить сертификат безопасности этого сайта. Обратитесь к поставщику услуг хостинга или администратору сайта, а затем повторите попытку.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Не удалось установить безопасное подключение. Убедитесь в корректной настройке даты и времени на устройстве, затем повторите попытку.</string>
+    <string name="woopos_refund_preview_error">Не удалось рассчитать общую сумму возврата. Повторите попытку.</string>
+    <string name="woopos_orders_details_refresh_error">Не удалось обновить заказ. Проверьте подключение и повторите попытку.</string>
+    <string name="store_connection_error_dialog_contact_support">Обратиться в службу поддержки</string>
+    <string name="store_connection_error_dialog_body">Не удаётся подключиться к магазину. Обычно это связано с проблемой подключения на вашем сайте WordPress. Часто это вызвано плагином безопасности, недавним обновлением плагина или подключением Jetpack, которое необходимо обновить. Приложение WooCommerce не может устранить эту проблему с вашего телефона.</string>
+    <string name="store_connection_error_dialog_title">Ваш магазин недоступен</string>
+    <string name="site_picker_unknown_blog_error">Не удалось получить доступ к вашему магазину, выполнен выход. Чтобы продолжить, выберите магазин.</string>
+    <string name="login_site_info_fallback_dialog_cta">Войдите с именем пользователя и паролем для сайта</string>
+    <string name="login_site_info_fallback_dialog_message">Не удалось подтвердить сведения о вашем сайте. Вместо этого вы можете войти с именем пользователя и паролем для вашего сайта.</string>
+    <string name="login_site_info_fallback_dialog_title">Проблема с подключением</string>
     <string name="woopos_refund_back_to_order_button">Назад к заказу</string>
     <string name="woopos_refund_notifying_store_subtitle">Применение возврата к заказу</string>
     <string name="woopos_refund_notifying_store_title">Уведомление магазина</string>
@@ -883,8 +894,8 @@ Language: ru
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Найдите значок клавиатуры или панель инструментов на экране.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Нажмите здесь, чтобы проверить отображение клавиатуры</string>
     <string name="woopos_scanning_setup_software_keyboard_message_two">Если клавиатура не видна, попробуйте выполнить следующие действия.</string>
-    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
     <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
+    <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Отображать экранную клавиатуру</string>
     <string name="woopos_scanning_setup_success_message">Вы можете начинать сканировать товары. В следующий раз, когда вам потребуется сканер, просто включите его и он подключится автоматически.</string>
     <string name="woopos_cart_clear_all_button_content_description">Значок «Очистить корзину»</string>
@@ -1764,11 +1775,11 @@ Language: ru
     <string name="blaze_campaign_edit_ad_change_image_button">Изменить изображение</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Применить</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s дн.</string>
-    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Готово</string>
     <string name="blaze_campaign_budget_impressions_title">Показы</string>
     <string name="blaze_campaign_budget_update_button">Обновить</string>
     <string name="blaze_campaign_budget_edit_duration_button">Изменить</string>
+    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_reach_forecast">Приблизительный ежедневный охват пользователей</string>
     <string name="blaze_campaign_budget_days_duration">на %1$s дн.</string>
     <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
@@ -2091,8 +2102,8 @@ Language: ru
     <string name="store_onboarding_task_name_store_title">Назовите магазин</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Включите NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Посылка, небольшое количество (требуется маркировка)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">Наземное отправление, ограниченное количество: аэрозоли, дезинфицирующие спреи, аэрозольная краска, спреи для волос, пропан, бутан, чистящие средства и т. д. — Духи, лак для ногтей, жидкость для снятия лака для ногтей, растворители, антисептики для рук, медицинский спирт, продукты на основе этанола и т. д. — Другие поверхностные вещества в ограниченном количестве (косметика, бытовая химия, краски и т. д.)</string>
     <string name="shipping_label_hazmat_option_lighters">Посылка с зажигающим устройством (разрешённым к перевозке)</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Наземное отправление, ограниченное количество: аэрозоли, дезинфицирующие спреи, аэрозольная краска, спреи для волос, пропан, бутан, чистящие средства и т. д. — Духи, лак для ногтей, жидкость для снятия лака для ногтей, растворители, антисептики для рук, медицинский спирт, продукты на основе этанола и т. д. — Другие поверхностные вещества в ограниченном количестве (косметика, бытовая химия, краски и т. д.)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Посылка с допустимым количеством (например, небольшой объём воспламеняющейся жидкости, коррозионно-активные, токсичные или экологически опасные вещества — требуется маркировка)</string>
     <string name="shipping_label_hazmat_option_id8000">Посылка с потребительскими товарами ID8000 — разрешённые для авиаперевозки потребительские товары ID8000 (невоспламеняющиеся аэрозоли, воспламеняющиеся горючие жидкости, токсичные вещества, опасные материалы)</string>
     <string name="shipping_label_hazmat_option_ground_only">Опасные материалы, разрешённые только для наземной перевозки (для товаров, которые не перечислены, но их можно перевозить только по земле)</string>
@@ -2143,8 +2154,6 @@ Language: ru
     <string name="coupon_type_picker_fixed_product_content_description">Тип купона — фиксированный на товар</string>
     <string name="coupon_type_picker_fixed_cart_content_description">Тип купона — фиксированный на корзину</string>
     <string name="coupon_type_picker_percentage_content_description">Тип купона — процент скидки</string>
-    <string name="empty_order_test_order_button">Оформить тестовый заказ</string>
-    <string name="empty_order_test_order_message">Создайте тестовый заказ, чтобы убедиться, что магазин WooCommerce работает как часы</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Добавить сведения вручную</string>
     <string name="order_creation_customer_search_old_wc_hint">Поиск клиентов по</string>
     <string name="order_creation_customer_search_empty_email">Отсутствует адрес электронной почты</string>

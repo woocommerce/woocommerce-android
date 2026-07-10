@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-15 19:54:49+0000
+Translation-Revision-Date: 2026-06-29 21:55:58+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">לא הצלחנו לאמת את אישור האבטחה של אתר זה. פנה לספק האחסון שלך או למנהל האתר, ולאחר מכן נסה שוב.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">לא הצלחנו למסד חיבור מאובטח. בדוק שהתאריך והשעה במכשיר שלך נכונים, ולאחר מכן נסה שוב.</string>
+    <string name="woopos_refund_preview_error">לא ניתן היה לחשב את סך הזיכוי. נא לנסות שוב.</string>
+    <string name="woopos_orders_details_refresh_error">לא ניתן היה לרענן את ההזמנה. נא לבדוק את החיבור שלך ולנסות שוב.</string>
+    <string name="store_connection_error_dialog_contact_support">פנה לתמיכה</string>
+    <string name="store_connection_error_dialog_body">אנו נתקלים בקשיים בהתחברות לחנות שלך. זוהי בדרך כלל בעיית חיבור באתר WordPress שלך, הנגרמת לרוב עקב תוסף אבטחה, עדכון תוסף לאחרונה, או חיבור Jetpack שנדרש לרענן. אפליקציית WooCommerce אינה יכולה לתקן זאת מהטלפון שלך.</string>
+    <string name="store_connection_error_dialog_title">לא ניתן לגשת לחנות שלך</string>
+    <string name="site_picker_unknown_blog_error">לא הצלחנו לגשת לחנות שלך, ולכן בוצע ניתוק מהחשבון. נא לבחור חנות כדי להמשיך.</string>
+    <string name="login_site_info_fallback_dialog_cta">התחבר באמצעות פרטי הזיהוי של האתר</string>
+    <string name="login_site_info_fallback_dialog_message">לא הצלחנו לאמת את פרטי האתר שלך. באפשרותך לנסות להתחבר באמצעות פרטי הזיהוי של האתר שלך במקום זאת.</string>
+    <string name="login_site_info_fallback_dialog_title">בעיית חיבור</string>
     <string name="woopos_refund_back_to_order_button">חזרה להזמנה</string>
     <string name="woopos_refund_notifying_store_subtitle">מחיל החזר כספי על ההזמנה</string>
     <string name="woopos_refund_notifying_store_title">מודיע לחנות</string>
@@ -2141,8 +2152,6 @@ Language: he_IL
     <string name="coupon_type_picker_percentage_content_description">סוג הקופון – הנחה לפי אחוזים</string>
     <string name="coupon_type_picker_title">ליצור קופון</string>
     <string name="coupon_list_add_coupon_content_description">להוסיף קופון</string>
-    <string name="empty_order_test_order_button">לנסות הזמנה לבדיקה</string>
-    <string name="empty_order_test_order_message">יש לבצע הזמנה לבדיקה כדי לוודא שתהליך של WooCommerce שהגדרת מאפשר חוויית שימוש חלקה ללקוחות</string>
     <string name="order_creation_customer_search_empty_add_details_manually">להוסיף פרטים ידנית</string>
     <string name="order_creation_customer_search_old_wc_hint">לחפש לקוחות לפי</string>
     <string name="order_creation_customer_search_empty_email">כתובת אימייל לא קיימת</string>

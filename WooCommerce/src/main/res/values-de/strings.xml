@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 15:56:18+0000
+Translation-Revision-Date: 2026-06-30 14:58:27+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Wir konnten das Sicherheitszertifikat dieser Website nicht verifizieren. Kontaktiere deinen Hosting-Anbieter oder deinen Website-Administrator und versuche es dann erneut.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Wir konnten keine sichere Verbindung herstellen. Überprüfe das Datum und die Uhrzeit deines Geräts und versuche es dann erneut.</string>
+    <string name="woopos_refund_preview_error">Die Rückerstattungssumme konnte nicht berechnet werden. Bitte versuche es erneut.</string>
+    <string name="woopos_orders_details_refresh_error">Die Bestellung konnte nicht aktualisiert werden. Bitte überprüfe deine Verbindung und versuche es erneut.</string>
+    <string name="store_connection_error_dialog_contact_support">Support kontaktieren</string>
+    <string name="store_connection_error_dialog_body">Die Verbindung zu deinem Shop kann nicht hergestellt werden. Dies ist normalerweise ein Verbindungsproblem auf deiner WordPress-Website, das häufig durch ein Sicherheits-Plugin, ein kürzliches Plugin-Update oder eine Jetpack-Verbindung verursacht wird, die aktualisiert werden muss. Die WooCommerce-App kann dieses Problem nicht über dein Mobiltelefon beheben.</string>
+    <string name="store_connection_error_dialog_title">Dein Shop ist nicht erreichbar</string>
+    <string name="site_picker_unknown_blog_error">Wir konnten nicht auf deinen Shop zugreifen, daher wurde er abgemeldet. Wähle einen Shop aus, um fortzufahren.</string>
+    <string name="login_site_info_fallback_dialog_cta">Melde dich mit deinen Website-Anmeldedaten an.</string>
+    <string name="login_site_info_fallback_dialog_message">Wir konnten deine Website-Details nicht verifizieren. Du kannst stattdessen versuchen, dich mit deinen Website-Anmeldedaten anzumelden.</string>
+    <string name="login_site_info_fallback_dialog_title">Verbindungsproblem.</string>
     <string name="woopos_refund_back_to_order_button">Zurück zur Bestellung</string>
     <string name="woopos_refund_notifying_store_subtitle">Rückerstattung wird auf Bestellung angewendet</string>
     <string name="woopos_refund_notifying_store_title">Shop wird benachrichtigt</string>
@@ -2091,8 +2102,8 @@ Language: de
     <string name="store_onboarding_task_name_store_title">Benenne deinen Shop</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC aktivieren</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Paket, das unter die Regelung für kleine Mengen fällt (Small Quantity Provision Package) (Markierungen erforderlich)</string>
-    <string name="shipping_label_hazmat_option_lighters">Paket für Feuerzeuge (Lighters Package) – Autorisierte Feuerzeuge</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Paket mit begrenzter Menge, das auf dem Landweg versendet wird (LTD QTY Ground Package) – Sprays, Desinfektionssprays, Sprühfarbe, Haarspray, Propan, Butan, Reinigungsprodukte usw. – Duftstoffe, Nagellack, Nagellackentferner, Lösemittel, Händedesinfektionsmittel, Reinigungsalkohol, Ethanol Base-Produkte usw. – Andere Oberflächenmaterialien mit begrenzter Menge (Kosmetika, Reinigungsprodukte, Farben usw.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Paket für Feuerzeuge (Lighters Package) – Autorisierte Feuerzeuge</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Paket, das unter die Regelung für Ausnahmemengen fällt (Excepted Quantity Provision Package) (z. B. kleine Mengen an entzündbaren Flüssigkeiten, Beizmittel, giftige oder umweltgefährdende Materialien – Markierung erforderlich)</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 Paket mit Bedarfsartikeln (ID8000 Consumer Commodity Package) – Für den Lufttransport geeignete ID8000 Bedarfsartikel (Nicht entzündbare Sprays, entzündbare, brennbare Flüssigkeiten, giftige Substanzen, verschiedene Gefahrenstoffe)</string>
     <string name="shipping_label_hazmat_option_ground_only">Gefahrenstoffe, die nur auf dem Landweg versendet werden (Für Gegenstände, die nicht aufgeführt sind, aber nur auf dem Landweg gesendet werden dürfen)</string>
@@ -2142,8 +2153,6 @@ Language: de
     <string name="coupon_type_picker_percentage_content_description">Gutscheintyp – prozentualer Rabatt</string>
     <string name="coupon_type_picker_title">Gutschein erstellen</string>
     <string name="coupon_list_add_coupon_content_description">Gutschein hinzufügen</string>
-    <string name="empty_order_test_order_button">Testbestellung ausprobieren</string>
-    <string name="empty_order_test_order_message">Führe eine Testbestellung durch, um sicherzugehen, dass die Kunden in deinem WooCommerce-Shop ein reibungsloses Einkauferlebnis genießen</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Details manuell hinzufügen</string>
     <string name="coupon_type_picker_fixed_product_discount_title">Fester Produkt-Rabatt</string>
     <string name="order_creation_customer_search_old_wc_hint">Suche nach Kunden anhand von</string>

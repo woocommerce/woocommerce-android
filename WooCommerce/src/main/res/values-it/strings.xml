@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 09:55:57+0000
+Translation-Revision-Date: 2026-06-30 08:57:34+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Impossibile verificare il certificato di sicurezza di questo sito. Contatta il fornitore del servizio di hosting o l\'amministratore del sito, quindi riprova.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Impossibile stabilire una connessione sicura. Verifica che la data e l\'ora del dispositivo siano corrette, quindi riprova.</string>
+    <string name="woopos_refund_preview_error">Impossibile calcolare il totale del rimborso. Riprova.</string>
+    <string name="woopos_orders_details_refresh_error">Impossibile aggiornare l\'ordine. Controlla la connessione e riprova.</string>
+    <string name="store_connection_error_dialog_contact_support">Contatta il supporto</string>
+    <string name="store_connection_error_dialog_body">Stiamo avendo problemi con la connessione al tuo negozio. Di solito si tratta di un problema di connessione al sito WordPress, spesso causato da un plugin di sicurezza, da un aggiornamento recente del plugin o da una connessione Jetpack che deve essere aggiornata. L\'app WooCommerce non può risolvere questo problema dal telefono.</string>
+    <string name="store_connection_error_dialog_title">Il tuo negozio non può essere raggiunto</string>
+    <string name="site_picker_unknown_blog_error">Non siamo riusciti ad accedere al tuo negozio, quindi è stato disconnesso. Seleziona un negozio per continuare.</string>
+    <string name="login_site_info_fallback_dialog_cta">Accedi con le credenziali del sito</string>
+    <string name="login_site_info_fallback_dialog_message">Impossibile verificare i dettagli del sito. Puoi invece provare ad accedere con le tue credenziali del sito.</string>
+    <string name="login_site_info_fallback_dialog_title">Problema di connessione</string>
     <string name="woopos_refund_back_to_order_button">Torna all\'ordine</string>
     <string name="woopos_refund_notifying_store_subtitle">Applicazione del rimborso all\'ordine</string>
     <string name="woopos_refund_notifying_store_title">Notifica al negozio in corso</string>
@@ -2140,8 +2151,6 @@ Language: it
     <string name="coupon_type_picker_percentage_content_description">Tipo di codice promozionale - Sconto percentuale</string>
     <string name="coupon_type_picker_title">Crea codice promozionale</string>
     <string name="coupon_list_add_coupon_content_description">Aggiungi codice promozionale</string>
-    <string name="empty_order_test_order_button">Prova un ordine di prova</string>
-    <string name="empty_order_test_order_message">Esegui un ordine di prova per assicurarti che il processo WooCommerce offra un\'esperienza cliente fluida</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Aggiungi dettagli manualmente</string>
     <string name="order_creation_customer_search_old_wc_hint">Cerca clienti per</string>
     <string name="coupon_type_picker_fixed_product_content_description">Tipo di codice promozionale - Prodotto fisso</string>
