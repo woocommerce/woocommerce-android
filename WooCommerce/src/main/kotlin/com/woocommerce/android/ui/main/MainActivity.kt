@@ -242,30 +242,47 @@ class MainActivity :
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
-        private var lastFragment = WeakReference<Fragment>(null)
+        private var lastBottomNavFragment = WeakReference<Fragment>(null)
+        private var lastToolbarFragment = WeakReference<Fragment>(null)
 
+        // The bottom navigation is updated as soon as the destination's view is created/started so it hides/shows
+        // promptly during the navigation transition instead of looking delayed.
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            updateAppBarAndBottomNav(f)
+            updateBottomNav(f)
         }
 
         override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
-            // This logic is needed to handle this case:
-            // 1. User navigates from Fragment A to Fragment B
-            // 2. Fragment B's view gets created, and onFragmentViewCreated is called, updating the AppBar.
-            // 3. Quickly the user goes back to Fragment A
-            // 4. Fragment A's view wasn't destroyed yet, so it doesn't go through the creation lifecycle,
-            //    which means onFragmentViewCreated won't be called, and the AppBar won't be updated.
-            //
-            // In this case, lastFragment will be pointing to Fragment B, so we can compare it with the fragment being
-            // started (Fragment A), and we can update the AppBar accordingly.
-            if (lastFragment.get() != f) {
-                updateAppBarAndBottomNav(f)
+            // Handles quickly navigating A -> B -> A: A's view isn't recreated so onFragmentViewCreated isn't
+            // called, but onFragmentStarted is, and lastBottomNavFragment still points at B.
+            if (lastBottomNavFragment.get() != f) {
+                updateBottomNav(f)
             }
         }
 
-        private fun updateAppBarAndBottomNav(f: Fragment) {
+        override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+            // The shared collapsing toolbar is updated only when the destination reaches RESUMED, i.e. once the
+            // navigation is committed. During a predictive-back gesture the destination's view is created and
+            // started (and it even becomes the primary navigation fragment) to render the peek, but it only
+            // reaches RESUMED on commit — so updating here prevents the toolbar from expanding/collapsing
+            // mid-gesture, e.g. when dragging back from Order Details or the Analytics Hub.
+            if (lastToolbarFragment.get() != f) {
+                updateToolbar(f)
+            }
+        }
+
+        private fun updateBottomNav(f: Fragment) {
             if (f is DialogFragment) return
-            lastFragment = WeakReference(f)
+            lastBottomNavFragment = WeakReference(f)
+            if ((f as? TopLevelFragment)?.shouldShowBottomNavigation == true) {
+                showBottomNav()
+            } else {
+                hideBottomNav()
+            }
+        }
+
+        private fun updateToolbar(f: Fragment) {
+            if (f is DialogFragment) return
+            lastToolbarFragment = WeakReference(f)
             val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
@@ -301,12 +318,6 @@ class MainActivity :
                     hideToolbar()
                     binding.appBarLayout.targetElevation = 0f
                 }
-            }
-
-            if (shouldShowBottomNavigation) {
-                showBottomNav()
-            } else {
-                hideBottomNav()
             }
         }
     }
