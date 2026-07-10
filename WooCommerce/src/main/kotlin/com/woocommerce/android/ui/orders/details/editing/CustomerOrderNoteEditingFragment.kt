@@ -42,10 +42,12 @@ class CustomerOrderNoteEditingFragment :
     override fun onOrderLoaded() {
         if (pendingInitialNoteFill) {
             pendingInitialNoteFill = false
-            binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
-            binding.customerOrderNoteEditor.setSelection(binding.customerOrderNoteEditor.length())
-            binding.customerOrderNoteEditor.requestFocus()
-            ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
+            with(binding.customerOrderNoteEditor) {
+                setText(sharedViewModel.order.customerNote)
+                setSelection(length())
+                requestFocus()
+                ActivityUtils.showKeyboard(this)
+            }
         } else {
             updateDoneMenuItem()
         }
