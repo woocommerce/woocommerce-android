@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-15 16:54:17+0000
+Translation-Revision-Date: 2026-06-30 14:55:30+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Nous n’avons pas pu vérifier le certificat de sécurité de ce site. Contactez votre hébergeur ou l’administrateur de votre site, puis réessayez.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Nous n’avons pas pu établir de connexion sécurisée. Vérifiez que la date et l’heure de votre appareil sont correctes, puis réessayez.</string>
+    <string name="woopos_refund_preview_error">Impossible de calculer le total du remboursement. Veuillez réessayer.</string>
+    <string name="woopos_orders_details_refresh_error">Impossible d’actualiser la commande. Veuillez vérifier votre connexion et réessayer.</string>
+    <string name="store_connection_error_dialog_contact_support">Contacter l’assistance</string>
+    <string name="store_connection_error_dialog_body">Nous avons rencontré des problèmes de connexion à votre boutique. Il s’agit généralement d’un problème de connexion sur votre site WordPress. Il est souvent causé par une extension de sécurité, une mise à jour d’extension récente ou une connexion Jetpack qui doit être actualisée. L’application WooCommerce ne peut pas résoudre ce problème depuis votre téléphone.</string>
+    <string name="store_connection_error_dialog_title">Votre boutique est inaccessible</string>
+    <string name="site_picker_unknown_blog_error">Nous n’avons pas pu accéder à votre boutique, elle a donc été déconnectée. Veuillez sélectionner une boutique pour continuer.</string>
+    <string name="login_site_info_fallback_dialog_cta">Connectez-vous avec vos identifiants de site.</string>
+    <string name="login_site_info_fallback_dialog_message">Nous n’avons pas pu vérifier les détails de votre site. Vous pouvez essayer de vous connecter avec les identifiants de connexion de votre site.</string>
+    <string name="login_site_info_fallback_dialog_title">Problème de connexion</string>
     <string name="woopos_refund_back_to_order_button">Retour à la commande</string>
     <string name="woopos_refund_notifying_store_subtitle">Remboursement de la commande</string>
     <string name="woopos_refund_notifying_store_title">Notification de la boutique</string>
@@ -2022,8 +2033,6 @@ Language: fr
     <string name="coupon_type_picker_percentage_content_description">Type de code promo - remise en pourcentage</string>
     <string name="coupon_type_picker_title">Créer un code promo</string>
     <string name="coupon_list_add_coupon_content_description">Ajouter un code promo</string>
-    <string name="empty_order_test_order_button">Essayer une commande de test</string>
-    <string name="empty_order_test_order_message">Effectuez une commande de test pour vous assurer de la qualité de votre processus WooCommerce et de l’expérience de vos clients.</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ajouter des détails manuellement</string>
     <string name="order_creation_customer_search_old_wc_hint">Rechercher des clients selon</string>
     <string name="order_creation_customer_search_empty_email">Pas d’adresse e-mail</string>
