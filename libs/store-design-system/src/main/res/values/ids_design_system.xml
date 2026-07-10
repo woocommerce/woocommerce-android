@@ -2,4 +2,5 @@
 <resources>
     <item name="woo_ds_toolbar_action_view" type="id" />
     <item name="woo_ds_toolbar_action_icon" type="id" />
+    <item name="woo_ds_toolbar_action_original_state" type="id" />
 </resources>

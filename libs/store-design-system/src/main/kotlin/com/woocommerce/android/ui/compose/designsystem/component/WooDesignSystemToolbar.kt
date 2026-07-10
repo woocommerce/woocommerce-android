@@ -101,14 +101,20 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
                 if (item.actionView === child) {
                     return@forEach
                 }
-                if (item.icon != null && child.isIconOnlyAction()) {
-                    changed = child.applyOutlinedToolbarActionStyle(item.icon, iconSize) || changed
+                val icon = item.icon
+                changed = if (icon != null && child.isIconOnlyAction()) {
+                    child.applyOutlinedToolbarActionStyle(icon, iconSize) || changed
+                } else {
+                    child.clearOutlinedToolbarActionStyle(icon, iconSize) || changed
                 }
             }
         return changed
     }
 
     private fun View.applyOutlinedToolbarActionStyle(icon: Drawable?, iconSize: Int): Boolean {
+        if (getTag(R.id.woo_ds_toolbar_action_original_state) == null) {
+            setTag(R.id.woo_ds_toolbar_action_original_state, captureToolbarActionViewState())
+        }
         var changed = applyToolbarIconTouchTarget()
         val backgroundIcon = icon.takeIf { isIconOnlyAction() }
         if (getTag(R.id.woo_ds_toolbar_action_view) != true ||
@@ -129,6 +135,21 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
             changed = true
         }
         return changed
+    }
+
+    private fun View.clearOutlinedToolbarActionStyle(icon: Drawable?, iconSize: Int): Boolean {
+        if (getTag(R.id.woo_ds_toolbar_action_view) != true) {
+            return false
+        }
+
+        (getTag(R.id.woo_ds_toolbar_action_original_state) as? ToolbarActionViewState)?.restoreTo(this)
+        if (this is TextView) {
+            restoreToolbarActionIcon(icon, iconSize)
+        }
+        setTag(R.id.woo_ds_toolbar_action_view, null)
+        setTag(R.id.woo_ds_toolbar_action_icon, null)
+        setTag(R.id.woo_ds_toolbar_action_original_state, null)
+        return true
     }
 
     private fun View.isIconOnlyAction(): Boolean =
@@ -214,6 +235,55 @@ private fun View.hasUniformPadding(padding: Int): Boolean {
         paddingRight == padding &&
         paddingBottom == padding
 }
+
+private fun View.captureToolbarActionViewState(): ToolbarActionViewState =
+    ToolbarActionViewState(
+        background = background,
+        minimumSize = ToolbarActionViewSize(minimumWidth, minimumHeight),
+        layoutSize = layoutParams?.let { ToolbarActionViewSize(it.width, it.height) },
+        padding = Rect(paddingLeft, paddingTop, paddingRight, paddingBottom),
+        textState = (this as? TextView)?.let {
+            ToolbarActionTextViewState(
+                gravity = it.gravity,
+                compoundDrawablePadding = it.compoundDrawablePadding,
+            )
+        },
+    )
+
+private data class ToolbarActionViewState(
+    val background: Drawable?,
+    val minimumSize: ToolbarActionViewSize,
+    val layoutSize: ToolbarActionViewSize?,
+    val padding: Rect,
+    val textState: ToolbarActionTextViewState?,
+) {
+    fun restoreTo(view: View) {
+        view.background = background
+        view.minimumWidth = minimumSize.width
+        view.minimumHeight = minimumSize.height
+        view.layoutParams?.let { params ->
+            layoutSize?.let {
+                params.width = it.width
+                params.height = it.height
+            }
+        }
+        view.setPadding(padding.left, padding.top, padding.right, padding.bottom)
+        if (view is TextView && textState != null) {
+            view.gravity = textState.gravity
+            view.compoundDrawablePadding = textState.compoundDrawablePadding
+        }
+    }
+}
+
+private data class ToolbarActionViewSize(
+    val width: Int,
+    val height: Int,
+)
+
+private data class ToolbarActionTextViewState(
+    val gravity: Int,
+    val compoundDrawablePadding: Int,
+)
 
 private class CenteredToolbarIconButtonDrawable(
     icon: Drawable?,
@@ -387,4 +457,9 @@ private fun TextView.resizeCompoundDrawables(iconSize: Int): Boolean {
             }
         }
     return changed
+}
+
+private fun TextView.restoreToolbarActionIcon(icon: Drawable?, iconSize: Int) {
+    icon?.setBounds(0, 0, iconSize, iconSize)
+    setCompoundDrawables(icon, null, null, null)
 }

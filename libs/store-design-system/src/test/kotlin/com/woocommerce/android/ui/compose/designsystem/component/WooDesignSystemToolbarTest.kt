@@ -5,6 +5,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -150,6 +151,28 @@ class WooDesignSystemToolbarTest {
 
         assertThat(secondAction).isSameAs(firstAction)
         assertThat(secondAction.background).isSameAs(firstBackground)
+    }
+
+    @Test
+    fun `given outlined icon item, when icon is removed, then default action styling is restored`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext())
+        val item = toolbar.addIconAction()
+
+        toolbar.layoutToolbar()
+        val outlinedAction = toolbar.actionChild(ACTION_ID)
+        val outlinedBackground = outlinedAction.background
+
+        item.icon = null
+        toolbar.layoutToolbar()
+        val textAction = toolbar.actionChild(ACTION_ID) as TextView
+
+        assertThat(textAction).isSameAs(outlinedAction)
+        assertThat(textAction.text).isEqualTo("Open")
+        assertThat(textAction.background).isNotNull().isNotSameAs(outlinedBackground)
+        assertThat(textAction.layoutParams.width).isEqualTo(ViewGroup.LayoutParams.WRAP_CONTENT)
+        assertThat(textAction.getTag(R.id.woo_ds_toolbar_action_view)).isNull()
+        assertThat(textAction.getTag(R.id.woo_ds_toolbar_action_icon)).isNull()
+        assertThat(textAction.compoundDrawables.filterNotNull()).isEmpty()
     }
 
     @Test
