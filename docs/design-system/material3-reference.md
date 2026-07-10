@@ -95,21 +95,21 @@ Android default font is the accepted runtime equivalent.
 
 | Role | Default size/line | Weight | Typical use |
 | --- | --- | --- | --- |
-| `displayLarge` | 57sp/64sp | Regular | Rare, largest marketing-scale display. |
-| `displayMedium` | 45sp/52sp | Regular | Large display. |
+| `displayLarge` | 56sp/64sp | Regular | Rare, largest marketing-scale display. |
+| `displayMedium` | 48sp/52sp | Regular | Large display. |
 | `displaySmall` | 36sp/44sp | Regular | Smaller display. |
-| `headlineLarge` | 32sp/40sp | Regular | Screen-level headline. |
+| `headlineLarge` | 34sp/40sp | Regular | Screen-level headline. |
 | `headlineMedium` | 28sp/36sp | Regular | Major section headline. |
 | `headlineSmall` | 24sp/32sp | Regular | Section headline. |
-| `titleLarge` | 22sp/28sp | Regular | App bars, page titles, prominent titles. |
-| `titleMedium` | 16sp/24sp | Medium | Card/list titles and medium-emphasis labels. |
-| `titleSmall` | 14sp/20sp | Medium | Compact titles. |
-| `bodyLarge` | 16sp/24sp | Regular | Primary body copy. |
-| `bodyMedium` | 14sp/20sp | Regular | Default compact body copy. |
-| `bodySmall` | 12sp/16sp | Regular | Supporting copy. |
-| `labelLarge` | 14sp/20sp | Medium | Buttons and large labels. |
-| `labelMedium` | 12sp/16sp | Medium | Compact labels. |
-| `labelSmall` | 11sp/16sp | Medium | Small labels and metadata. |
+| `titleLarge` | 20sp/28sp | Regular | App bars, page titles, prominent titles. |
+| `titleMedium` | 17sp/20sp | Medium | Card/list titles and medium-emphasis labels. |
+| `titleSmall` | 14sp/16sp | Medium | Compact titles. |
+| `bodyLarge` | 17sp/24sp | Regular | Primary body copy. |
+| `bodyMedium` | 15sp/20sp | Regular | Default compact body copy. |
+| `bodySmall` | 13sp/16sp | Regular | Supporting copy. |
+| `labelLarge` | 16sp/24sp | Medium | Buttons and large labels. |
+| `labelMedium` | 14sp/20sp | Medium | Compact labels. |
+| `labelSmall` | 10sp/14sp | Medium | Small labels and metadata. |
 
 Material 3 currently also has emphasized token variants in AndroidX source. Treat those as Material
 implementation details; the Store design-system text variants are the ones exposed through
