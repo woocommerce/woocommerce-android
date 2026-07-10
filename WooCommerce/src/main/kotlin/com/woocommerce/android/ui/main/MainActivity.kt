@@ -45,8 +45,6 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.automattic.eventhorizon.MainTabBookingsReselectEvent
-import com.automattic.eventhorizon.MainTabBookingsSelectEvent
 import com.google.android.material.appbar.AppBarLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
@@ -57,7 +55,6 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
@@ -74,14 +71,12 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.bookings.tab.BookingsTabController
 import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.StoreConnectionErrorDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
-import com.woocommerce.android.ui.main.BottomNavigationPosition.BOOKINGS
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.MY_STORE
 import com.woocommerce.android.ui.main.BottomNavigationPosition.ORDERS
@@ -135,6 +130,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
@@ -210,12 +206,6 @@ class MainActivity :
 
     @Inject
     lateinit var posTabController: WooPosTabController
-
-    @Inject
-    lateinit var bookingsTabController: BookingsTabController
-
-    @Inject
-    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -382,7 +372,6 @@ class MainActivity :
         binding.bottomNav.init(navController, this)
 
         posTabController.initialize(this, binding, navController)
-        bookingsTabController.init(this, binding)
 
         presenter.takeView(this)
 
@@ -563,9 +552,8 @@ class MainActivity :
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
-        val tag = binding.bottomNav.currentPosition.getTag()
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        return navHostFragment.childFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+        return navHostFragment.childFragmentManager.primaryNavigationFragment as? TopLevelFragment
     }
 
     /**
@@ -796,16 +784,8 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             POS -> AnalyticsEvent.MAIN_TAB_POS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
-            BOOKINGS -> {
-                analyticsTrackerWrapper.track(
-                    MainTabBookingsSelectEvent(
-                        horizontalSizeClass = deviceTypeToAnalyticsString
-                    )
-                )
-                null
-            }
         }
-        stat?.let { AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString)) }
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -828,14 +808,6 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
             POS -> null
-            BOOKINGS -> {
-                analyticsTrackerWrapper.track(
-                    MainTabBookingsReselectEvent(
-                        horizontalSizeClass = deviceTypeToAnalyticsString
-                    )
-                )
-                null
-            }
         }
         stat?.let {
             AnalyticsTracker.track(it, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
@@ -926,7 +898,10 @@ class MainActivity :
                 ShortcutOpenPayments -> shortcutShowPayments()
                 ShortcutOpenOrderCreation -> shortcutOpenOrderCreation()
                 is MainActivityViewModel.ContactSupportForStoreConnection ->
-                    startHelpActivity(HelpOrigin.CONNECTION_ERROR)
+                    startHelpActivity(
+                        HelpOrigin.CONNECTION_ERROR,
+                        extraSupportTags = listOf(WooError.REST_INVALID_SIGNATURE_CODE)
+                    )
                 is MainActivityViewModel.ShowPrivacyPreferenceUpdatedFailed -> {
                     uiMessageResolver.getIndefiniteActionSnack(
                         R.string.privacy_banner_error_save,

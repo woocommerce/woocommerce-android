@@ -49,8 +49,7 @@ class LogEntry(
 
                 val logDate = formatter.parse(parts[0] + " " + parts[1])
                     ?: Date()
-                val tagName = migrateDeprecatedTagNames(parts[2])
-                val tag = WooLog.T.valueOf(tagName)
+                val tag = WooLog.T.valueOf(parts[2])
                 val level = WooLog.LogLevel.valueOf(parts[3])
 
                 val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
@@ -62,16 +61,6 @@ class LogEntry(
                     logDate = logDate
                 )
             }.getOrNull()
-        }
-
-        // TODO WOOMOB-2212 remove this migration code after a couple of releases,
-        //  logs are only kept for one week so the issue should fix itself by then.
-        private val deprecatedTagNames = mapOf(
-            "NOTIFS" to WooLog.T.NOTIFICATIONS.name
-        )
-
-        private fun migrateDeprecatedTagNames(tagName: String): String {
-            return deprecatedTagNames[tagName] ?: tagName
         }
     }
 }

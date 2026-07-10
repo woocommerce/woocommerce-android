@@ -3,18 +3,12 @@ package com.woocommerce.android.ui.woopos.root
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
-import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -58,18 +52,5 @@ class WooPosActivity : AppCompatActivity() {
 
     companion object {
         private var hasInitializedSession = false
-    }
-}
-
-@Composable
-private fun Modifier.gesturesOrButtonsNavigationPadding(): Modifier {
-    val view = LocalView.current
-    val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets)
-    val isGestureNavigation = insets.isGestureNavigation(view.context)
-
-    return if (isGestureNavigation) {
-        this.padding(bottom = WooPosSpacing.None.value)
-    } else {
-        this.navigationBarsPadding()
     }
 }

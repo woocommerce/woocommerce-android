@@ -15,7 +15,9 @@ We follow the official [Compose API guidelines for App development](https://gith
 
 ## Fragment Hosting
 
-Compose screens live inside Fragments in a 1:1 relationship. Use the `composeView {}` extension (from `com.woocommerce.android.ui.compose.composeView`) which handles `DisposeOnViewTreeLifecycleDestroyed` and `WooThemeWithBackground` automatically:
+Compose screens live inside Fragments in a 1:1 relationship. Legacy Store Compose screens use the
+current `composeView {}` extension from `com.woocommerce.android.ui.compose.composeView`, which
+handles `DisposeOnViewTreeLifecycleDestroyed` and the legacy Store Compose theme root automatically:
 
 ```kotlin
 @AndroidEntryPoint
@@ -50,8 +52,14 @@ class MyFeatureFragment : BaseFragment() {
 
 Key points:
 - Set `activityAppBarStatus = AppBarStatus.Hidden` when the screen has its own Compose `Toolbar`
+- For design-system migrated screens, follow the toolbar policy in
+  [design-system/rollout-direction.md](design-system/rollout-direction.md): Compose-owned screens use
+  `WooTopAppBar`, while heavy XML screens may keep a DS-looking XML toolbar when required for
+  `SearchView`, `ActionMode`, collapsing behavior, or existing ownership
+- Screen migration is explicit: migrated design-system screens opt into the DS root with the
+  rollout-approved builder, while non-migrated screens stay on the legacy root
 - Handle navigation events (`MultiLiveEvent`) in `onViewCreated`, not in composables
-- Do NOT create XML layouts — use `composeView {}` directly
+- For fully Compose-owned screens, use `composeView {}` directly instead of creating a new XML layout
 
 ## Screen Composable Pattern
 
@@ -101,9 +109,15 @@ State observation patterns (both are used in the codebase):
 
 - Use `UPPER_SNAKE_CASE` for constants (overrides the Compose guideline suggesting `PascalCase`)
 - The project nests Material 2 inside Material 3 for backward compatibility
-- `composeView {}` already wraps content in `WooThemeWithBackground` — do not double-wrap
-- For previews, wrap in `WooThemeWithBackground { ... }`
+- Legacy `composeView {}` already wraps content in the legacy root — do not double-wrap
+- For legacy Store previews, wrap in `WooThemeWithBackground { ... }`. For design-system migrated
+  screen previews, use the DS preview root in light and dark mode
 - Theme files: `ui/compose/theme/` (Theme.kt, WooColors.kt, Typography.kt, Shapes.kt)
+- Store design-system foundations and components live in `:libs:store-design-system` under
+  `com.woocommerce.android.ui.compose.designsystem.*`.
+- `WooThemeWithBackground` remains app-owned for legacy Store Compose. Current design-system rollout
+  scope, explicit root migration, and toolbar policy are documented in
+  [design-system/rollout-direction.md](design-system/rollout-direction.md).
 - Navigation uses XML nav graphs with `NavController` — Compose screens are hosted inside Fragments
 
 ## Existing Components
@@ -133,7 +147,7 @@ Also available: `annotatedStringRes()` and `clickableAnnotatedStringRes()` in `T
 
 ## Previews
 
-Use the project's custom preview annotations for consistency:
+Use the project's custom preview annotations for legacy Store Compose screens:
 
 ```kotlin
 @LightDarkThemePreviews  // Light + Dark mode
@@ -154,10 +168,16 @@ Available annotations from `ui/compose/preview/PreviewAnnotations.kt`:
 - `@FontScalePreviews` — normal and large font
 - `@LayoutDirectionPreviews` — LTR and RTL
 
+New design-system foundations, components, and migrated screen previews use
+`androidx.compose.ui.tooling.preview.PreviewLightDark`. Migrated screen previews should cover the
+design-system root in light and dark mode.
+
 ## File Structure
 
 - `ui/compose/component/` — shared components reused across features
 - `ui/compose/theme/` — themes, colors, shapes, typography
+- `:libs:store-design-system/src/main/kotlin/com/woocommerce/android/ui/compose/designsystem/` —
+  Store design-system foundations and components
 - `ui/compose/animations/` — shared reusable animations
 - `ui/compose/preview/` — preview annotations
 - `ui/compose/modifier/` and `ui/compose/modifiers/` — shared modifier extensions

@@ -68,6 +68,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -126,6 +127,8 @@ class DashboardFragment :
 
     private var wasPreviouslyStopped = false
 
+    private val scrollToTopTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(dashboardViewModel.performanceObserver)
         super.onCreate(savedInstanceState)
@@ -145,7 +148,8 @@ class DashboardFragment :
                     DashboardContainer(
                         mainActivityViewModel = mainActivityViewModel,
                         dashboardViewModel = dashboardViewModel,
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        scrollToTopTrigger = scrollToTopTrigger
                     )
                 }
             }
@@ -375,7 +379,7 @@ class DashboardFragment :
     override fun shouldExpandToolbar() = true
 
     override fun scrollToTop() {
-        return
+        scrollToTopTrigger.tryEmit(Unit)
     }
 
     @OptIn(ExperimentalBadgeUtils::class)

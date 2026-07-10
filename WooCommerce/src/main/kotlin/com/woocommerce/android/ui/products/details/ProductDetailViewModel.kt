@@ -404,7 +404,6 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         start()
-        openInWebViewIfNeeded()
     }
 
     fun start() {
@@ -424,17 +423,6 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
-    }
-
-    fun openInWebViewIfNeeded() {
-        if (navArgs.mode !is ProductDetailFragment.Mode.ShowProduct) return
-
-        launch {
-            val product = storedProductAggregate.filterNotNull().first().product
-            if (selectedSite.get().isCIABSite() && product.productType == ProductType.BOOKABLE_SERVICE) {
-                triggerEvent(OpenProductInWebView(product.remoteId))
-            }
-        }
     }
 
     private fun initializeViewState() {
@@ -472,7 +460,10 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun createDefaultProductForAddFlow(): ProductAggregate {
         val preferredSavedType = appPrefsWrapper.getSelectedProductType()
+        // A previously saved type may no longer exist (e.g. the removed "bookable-service"), in which
+        // case fromString() resolves to OTHER, whose value is empty; fall back to SIMPLE for the add flow.
         val defaultProductType = ProductType.fromString(preferredSavedType)
+            .takeIf { it != ProductType.OTHER } ?: ProductType.SIMPLE
         val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
         return ProductHelper.getDefaultProductAggregate(defaultProductType, isProductVirtual)
     }
@@ -1111,7 +1102,7 @@ class ProductDetailViewModel @Inject constructor(
      * 1. they arrive to this product details screen from the onboarding list on My Store, or
      * 2. they arrive from other sources while the store's product list is empty.
      */
-    private fun isPublishingFirstProduct(): Boolean =
+    private suspend fun isPublishingFirstProduct(): Boolean =
         navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty()
 
     /**
@@ -2734,8 +2725,6 @@ class ProductDetailViewModel @Inject constructor(
     data class ShowUpdateProductError(val message: String) : Event()
 
     data class TrashProduct(val productId: Long) : Event()
-
-    data class OpenProductInWebView(val productId: Long) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

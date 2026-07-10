@@ -146,7 +146,7 @@ class RefundStoreTest {
         val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2))
         val response = SimplifiedRefundResponse(
             refundId = 55L,
-            dateCreated = null,
+            dateCreated = "2026-06-26T08:20:53",
             amount = "110.00",
             reason = "reason",
             refundedPayment = true,

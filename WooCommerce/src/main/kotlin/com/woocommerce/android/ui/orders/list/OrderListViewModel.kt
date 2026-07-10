@@ -29,7 +29,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
-import com.woocommerce.android.ciab.CIABOrderStatusMapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filter
@@ -119,10 +118,10 @@ class OrderListViewModel @Inject constructor(
     private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
     private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate,
     private val dataSourceLazyProvider: Lazy<OrderListItemDataSource>,
-    private val ciabOrderStatusMapper: CIABOrderStatusMapper,
 ) : ScopedViewModel(savedState), LifecycleOwner {
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
+        private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
     }
 
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -189,6 +188,17 @@ class OrderListViewModel @Inject constructor(
     private var dismissListErrors = false
     var searchQuery = ""
 
+    /**
+     * The query the guest-orders filter was activated for. After a configuration change the restored
+     * search view re-submits the query as a plain text search, so [submitSearchOrFilter] uses this
+     * to keep the guest filter active as long as the query hasn't changed.
+     */
+    private var guestSearchQuery: String?
+        get() = savedState[KEY_GUEST_SEARCH_QUERY]
+        set(value) {
+            savedState[KEY_GUEST_SEARCH_QUERY] = value
+        }
+
     private var _lastUpdateOrdersList = MutableStateFlow<Long?>(null)
     val lastUpdateOrdersList: LiveData<String?> = _lastUpdateOrdersList
         .map { lastUpdateMillis ->
@@ -212,9 +222,7 @@ class OrderListViewModel @Inject constructor(
         launch {
             // Populate any cached order status options immediately since we use this
             // value in many different places in the order list view.
-            _orderStatusOptions.value = ciabOrderStatusMapper.mapOrderStatusOptionsList(
-                orderListRepository.getCachedOrderStatusOptions()
-            )
+            _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
             _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
             if (selectedSite.exists()) {
@@ -278,11 +286,26 @@ class OrderListViewModel @Inject constructor(
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
      */
-    fun submitSearchOrFilter(searchQuery: String) {
-        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+    fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+        val sanitizedQuery = sanitizeSearchQuery(searchQuery)
+        val isGuestSearch = searchGuestOrders || sanitizedQuery == guestSearchQuery
+        guestSearchQuery = sanitizedQuery.takeIf { isGuestSearch }
+        val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(
+            searchQuery = sanitizedQuery,
+            searchGuestOrders = isGuestSearch
+        )
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    /**
+     * Called from the search empty view when the query matches the Guest label shown on order rows.
+     * That label is not stored on guest orders, so a text search can't find them — re-submit the
+     * search as an explicit guest-orders filter instead.
+     */
+    fun onSearchGuestOrdersClicked() {
+        submitSearchOrFilter(searchQuery = searchQuery, searchGuestOrders = true)
     }
 
     fun changeTroubleshootingBannerVisibility(show: Boolean) {
@@ -347,9 +370,7 @@ class OrderListViewModel @Inject constructor(
         launch(dispatchers.main) {
             // Fetch and load order status options
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
-                SUCCESS -> _orderStatusOptions.value = ciabOrderStatusMapper.mapOrderStatusOptionsList(
-                    orderListRepository.getCachedOrderStatusOptions()
-                )
+                SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
                 else -> {
                     /* do nothing */
                 }
@@ -549,7 +570,14 @@ class OrderListViewModel @Inject constructor(
                         }
                     }
 
-                    isSearching && searchQuery.isNotEmpty() -> EmptyViewType.SEARCH_RESULTS
+                    isSearching && searchQuery.isNotEmpty() -> {
+                        if (isGuestLabelSearch() && activeWCOrderListDescriptor?.customerId == null) {
+                            EmptyViewType.SEARCH_RESULTS_GUEST
+                        } else {
+                            EmptyViewType.SEARCH_RESULTS
+                        }
+                    }
+
                     viewState.filterCount > 0 -> EmptyViewType.ORDER_LIST_FILTERED
                     else -> when {
                         !networkStatus.isConnected() -> EmptyViewType.NETWORK_OFFLINE
@@ -562,6 +590,12 @@ class OrderListViewModel @Inject constructor(
             _emptyViewType.postValue(newEmptyViewType)
         }
     }
+
+    private fun isGuestLabelSearch(): Boolean =
+        searchQuery.trim().equals(
+            resourceProvider.getString(R.string.orderdetail_customer_name_default),
+            ignoreCase = true
+        )
 
     private fun showOfflineSnack() {
         // Network is not connected
@@ -655,6 +689,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onSearchClosed() {
+        guestSearchQuery = null
         loadOrders()
     }
 

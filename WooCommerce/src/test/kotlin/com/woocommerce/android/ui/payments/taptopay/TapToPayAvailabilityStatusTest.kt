@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.payments.taptopay
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
@@ -33,9 +31,6 @@ class TapToPayAvailabilityStatusTest {
         on { getStoreCountryCode(siteModel) }.thenReturn("US")
     }
     private val deviceFeatures = mock<DeviceFeatures>()
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
-        on { isFeatureUnsupported(CIABAffectedFeature.InPersonPayments) }.thenReturn(false)
-    }
     private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker = mock {
         on { isSupported() }.thenReturn(true)
     }
@@ -46,7 +41,6 @@ class TapToPayAvailabilityStatusTest {
         systemVersionUtilsWrapper = systemVersionUtilsWrapper,
         cardReaderCountryConfigProvider = cardReaderCountryConfigProvider,
         wooStore = wooStore,
-        ciabSiteGateKeeper = ciabSiteGateKeeper,
         tapToPayDeviceSupportChecker = tapToPayDeviceSupportChecker,
     )
 
@@ -128,17 +122,5 @@ class TapToPayAvailabilityStatusTest {
         val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
-    }
-
-    @Test
-    fun `given CIAB blocks WooPayments, when invoking, then tpp hidden returned`() {
-        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
-        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.InPersonPayments)).thenReturn(true)
-
-        val result = availabilityStatus.invoke()
-
-        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Hidden)
     }
 }

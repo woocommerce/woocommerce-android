@@ -146,17 +146,6 @@
                 app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
                 android:defaultValue="PRODUCT" />
         </action>
-        <action
-            android:id="@+id/action_productDetailFragment_to_ProductDetailWebViewFragment"
-            app:destination="@id/productDetailWebViewFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/productDetailWebViewFragment"
-        android:name="com.woocommerce.android.ui.products.details.webview.ProductDetailWebViewFragment"
-        android:label="ProductDetailWebViewFragment">
-        <argument
-            android:name="remoteProductId"
-            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"

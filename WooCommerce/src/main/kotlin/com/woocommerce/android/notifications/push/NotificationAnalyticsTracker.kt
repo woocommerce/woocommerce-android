@@ -76,8 +76,6 @@ class NotificationAnalyticsTracker @Inject constructor(
         this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled
         this[AnalyticsTracker.IS_JETPACK_CONNECTED] = site.isJetpackConnected
         this[AnalyticsTracker.IS_JETPACK_CP_CONNECTED] = site.isJetpackCPConnected
-        this[AnalyticsTracker.IS_CIAB] = site.isCIABSite()
-        site.gardenPartner?.let { this[AnalyticsTracker.GARDEN_PARTNER] = it }
     }
 
     fun flush() {

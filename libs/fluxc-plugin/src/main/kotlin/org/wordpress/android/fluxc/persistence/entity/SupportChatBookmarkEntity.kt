@@ -14,6 +14,8 @@ data class SupportChatBookmarkEntity(
     val sessionId: String?,
     @ColumnInfo(defaultValue = "0") val hasCreatedTicket: Boolean = false,
     @ColumnInfo(defaultValue = "0") val isResolved: Boolean = false,
+    // Persisted via StringListConverter, which joins/splits on ",", so tags must not contain commas.
+    @ColumnInfo(defaultValue = "") val extraTags: List<String> = emptyList(),
     val title: String?,
     val createdAt: Long,
     val updatedAt: Long

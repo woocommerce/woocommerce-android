@@ -1,0 +1,126 @@
+package com.woocommerce.android.ui.compose.designsystem.component
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.assertHeightIsAtLeast
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+
+@RunWith(RobolectricTestRunner::class)
+class WooChoiceControlsTest {
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
+    @Test
+    fun `given constrained filter chip with two icons, when rendered, then label remains single line`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                Box(modifier = Modifier.requiredWidth(CONSTRAINED_CHIP_WIDTH)) {
+                    WooFilterChip(
+                        selected = true,
+                        onClick = {},
+                        label = CHIP_LABEL,
+                        leadingIcon = { Box(modifier = Modifier.size(CHIP_ICON_SIZE)) },
+                        trailingIcon = { Box(modifier = Modifier.size(CHIP_ICON_SIZE)) },
+                    )
+                }
+            }
+        }
+
+        val textLayoutResults = mutableListOf<TextLayoutResult>()
+        val layoutResultAction = composeTestRule
+            .onNodeWithText(CHIP_LABEL, useUnmergedTree = true)
+            .fetchSemanticsNode()
+            .config
+            .getOrNull(SemanticsActions.GetTextLayoutResult)
+            ?.action
+
+        composeTestRule.runOnIdle {
+            assertThat(layoutResultAction?.invoke(textLayoutResults)).isTrue()
+            assertThat(textLayoutResults.single().lineCount).isEqualTo(1)
+        }
+    }
+
+    @Test
+    fun `given choice controls demo, when enabled controls are clicked, then selected state updates`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooChoiceControlsDemo()
+            }
+        }
+
+        composeTestRule.onNodeWithTag(WooChoiceControlsDemoTags.CHECKED_CHECKBOX)
+            .assertIsOn()
+            .performClick()
+            .assertIsOff()
+        composeTestRule.onNodeWithTag(WooChoiceControlsDemoTags.UNSELECTED_RADIO)
+            .assertIsNotSelected()
+            .performClick()
+            .assertIsSelected()
+        composeTestRule.onAllNodesWithText(FILTER_CHIP_LABEL)
+            .onFirst()
+            .assertIsOff()
+            .performClick()
+            .assertIsOn()
+    }
+
+    @Test
+    fun `given filter chip, when rendered, then full minimum touch target is clickable`() {
+        composeTestRule.setContent {
+            var selected by mutableStateOf(false)
+
+            WooDesignSystemTheme {
+                WooFilterChip(
+                    selected = selected,
+                    onClick = { selected = !selected },
+                    label = FILTER_CHIP_LABEL,
+                    modifier = Modifier.testTag(FILTER_CHIP_TAG),
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag(FILTER_CHIP_TAG)
+            .assertHeightIsAtLeast(MIN_TOUCH_TARGET_SIZE)
+            .assertIsOff()
+            .performTouchInput {
+                click(Offset(center.x, 1f))
+            }
+            .assertIsOn()
+    }
+
+    private companion object {
+        const val CHIP_LABEL = "Selected"
+        const val FILTER_CHIP_LABEL = "Filter"
+        const val FILTER_CHIP_TAG = "WooFilterChipMinTouchTarget"
+        val CHIP_ICON_SIZE = 14.dp
+        val CONSTRAINED_CHIP_WIDTH = 96.dp
+        val MIN_TOUCH_TARGET_SIZE = 48.dp
+    }
+}

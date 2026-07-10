@@ -41,7 +41,7 @@ class LogEntryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when parsing an entry with deprecated NOTIFS tag, then it is migrated to NOTIFICATIONS`() {
+    fun `when parsing an entry with unknown tag, then null is returned`() {
         // GIVEN
         val input = "[Mar-02 14:00:00:000 NOTIFS d] Some notification"
 
@@ -49,7 +49,6 @@ class LogEntryTest : BaseUnitTest() {
         val parsed = LogEntry.fromString(input)
 
         // THEN
-        val entry = requireNotNull(parsed)
-        assertThat(entry.tag).isEqualTo(WooLog.T.NOTIFICATIONS)
+        assertThat(parsed).isNull()
     }
 }

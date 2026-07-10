@@ -515,6 +515,19 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
+    fun `given force is true, when generating catalog, then force is forwarded to rest client`() = runTest {
+        // GIVEN
+        whenever(posProductRestClient.postGenerateCatalog(testSite, true))
+            .thenReturn(WooResult(WooPosGenerateCatalogResponse(state = "scheduled")))
+
+        // WHEN
+        store.generateCatalogOrGetStatus(testSite, force = true)
+
+        // THEN
+        verify(posProductRestClient).postGenerateCatalog(testSite, true)
+    }
+
+    @Test
     fun `given successful response, when server date header is missing, then sync returns invalid response error`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))

@@ -1,11 +1,8 @@
 package com.woocommerce.android.ui.woopos.eligibility
 
-import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -33,12 +30,6 @@ sealed interface WooPosEligibilityRetryState {
         override val title: String,
         override val suggestionText: String,
     ) : Ineligible
-
-    data class CiabPlanUpgradeRequired(
-        override val title: String,
-        override val suggestionText: String,
-        val learnMoreUrl: Uri,
-    ) : Ineligible
 }
 
 @HiltViewModel
@@ -48,7 +39,6 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
@@ -58,7 +48,6 @@ class WooPosEligibilityViewModel @Inject constructor(
     val navigateToPos = _navigateToPos.receiveAsFlow()
 
     private var currentReason: WooPosLaunchability.NonLaunchabilityReason? = null
-    private var hasOpenedLearnMore = false
 
     suspend fun initialize(reason: WooPosLaunchability.NonLaunchabilityReason) {
         currentReason = reason
@@ -70,20 +59,6 @@ class WooPosEligibilityViewModel @Inject constructor(
         viewModelScope.launch {
             trackIneligibleRetryTapped()
         }
-        recheckEligibility()
-    }
-
-    fun learnMoreTapped() {
-        hasOpenedLearnMore = true
-        val reason = currentReason ?: return
-        viewModelScope.launch {
-            tracker.track(WooPosAnalyticsEvent.Event.IneligibleUILearnMoreTapped(reason))
-        }
-    }
-
-    fun onResumed() {
-        if (!hasOpenedLearnMore) return
-        hasOpenedLearnMore = false
         recheckEligibility()
     }
 
@@ -117,26 +92,10 @@ class WooPosEligibilityViewModel @Inject constructor(
     private fun buildIneligibleState(
         reason: WooPosLaunchability.NonLaunchabilityReason
     ): WooPosEligibilityRetryState.Ineligible {
-        val suggestionText = getSuggestionText(reason)
-        return when (reason) {
-            WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired -> {
-                WooPosEligibilityRetryState.CiabPlanUpgradeRequired(
-                    title = resourceProvider.getString(R.string.woopos_eligibility_ciab_title),
-                    suggestionText = suggestionText,
-                    learnMoreUrl = buildLearnMoreUrl(),
-                )
-            }
-            else -> {
-                WooPosEligibilityRetryState.RetryableIneligible(
-                    title = resourceProvider.getString(R.string.woopos_eligibility_screen_unable_to_load),
-                    suggestionText = suggestionText,
-                )
-            }
-        }
-    }
-
-    private fun buildLearnMoreUrl(): Uri {
-        return ciabSiteGateKeeper.buildPlanUpgradeUrl().toUri()
+        return WooPosEligibilityRetryState.RetryableIneligible(
+            title = resourceProvider.getString(R.string.woopos_eligibility_screen_unable_to_load),
+            suggestionText = getSuggestionText(reason),
+        )
     }
 
     private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
@@ -148,8 +107,6 @@ class WooPosEligibilityViewModel @Inject constructor(
                 )
             WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
-            WooPosLaunchability.NonLaunchabilityReason.CiabPlanUpgradeRequired ->
-                resourceProvider.getString(R.string.woopos_eligibility_reason_ciab_plan_upgrade)
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
