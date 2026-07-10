@@ -1,0 +1,2 @@
+25.1:
+Los reembolsos en Woo POS ahora se abren en pantalla completa para ofrecer una experiencia más fluida. Esta versión también hace que la aplicación sea más fiable cuando no se puede acceder a tu tienda, con alertas más claras y un acceso rápido al soporte. Los errores de inicio de sesión son más fáciles de entender, y hemos corregido pedidos recientes que faltaban, un fallo de inicio y otros pequeños errores. ¡Felices ventas!

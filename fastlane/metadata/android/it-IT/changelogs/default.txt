@@ -1,0 +1,2 @@
+25.1:
+I rimborsi in Woo POS ora si aprono a schermo intero per garantire un flusso più fluido.  Questa versione rende l'app più affidabile nei casi in cui il tuo negozio non sia raggiungibile, grazie a notifiche più chiare e a un percorso rapido per contattare l'assistenza. Gli errori relativi all'accesso sono ora più facili da capire; abbiamo risolto il problema della mancata visualizzazione degli ordini recenti, un crash all'avvio e altri piccoli glitch. Ti auguriamo di vendere con successo!

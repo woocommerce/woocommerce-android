@@ -1,0 +1,2 @@
+25.1 :
+Les remboursements dans Woo POS s’ouvrent désormais en plein écran pour un flux plus clair. Cette version rend également l’application plus fiable lorsque votre boutique n’est pas accessible, avec des alertes plus claires et un chemin d’accès rapide à l’assistance. Les erreurs de connexion sont plus faciles à comprendre, et nous avons résolu le problème de commandes récentes manquantes, de plantage au démarrage et d’autres petits bugs. Bonnes ventes !
