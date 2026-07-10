@@ -393,8 +393,11 @@ private fun Context.drawable(@DrawableRes drawableRes: Int): Drawable? {
 private fun Context.toolbarIconButtonBackground(icon: Drawable?): Drawable {
     val boxSize = resources.getDimension(R.dimen.woo_ds_toolbar_icon_button_size)
     val cornerRadius = resources.getDimension(R.dimen.woo_ds_toolbar_icon_corner_radius)
+    val rippleColor = checkNotNull(
+        AppCompatResources.getColorStateList(this, R.color.woo_ds_toolbar_icon_button_ripple),
+    )
     return RippleDrawable(
-        ColorStateList.valueOf(color(R.color.woo_ds_color_overlay_overlay20)),
+        rippleColor,
         CenteredToolbarIconButtonDrawable(
             icon = icon,
             spec = CenteredToolbarIconButtonSpec(

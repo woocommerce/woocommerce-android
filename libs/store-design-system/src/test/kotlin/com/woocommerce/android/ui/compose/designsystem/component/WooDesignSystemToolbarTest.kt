@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
 import android.graphics.Rect
+import android.graphics.drawable.RippleDrawable
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -12,6 +13,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
 import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.ui.compose.designsystem.R
@@ -20,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class WooDesignSystemToolbarTest {
@@ -115,6 +119,18 @@ class WooDesignSystemToolbarTest {
         assertThat(navigationButton.background).isNotNull()
         assertThat(navigationButton.scaleType).isEqualTo(ImageView.ScaleType.FIT_CENTER)
         assertThat(navigationClicked).isTrue()
+    }
+
+    @Test
+    @Config(qualifiers = "notnight")
+    fun `given light theme, when icon controls are rendered, then ripple matches compose pressed state`() {
+        assertToolbarIconRippleColor()
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    fun `given dark theme, when icon controls are rendered, then ripple matches compose pressed state`() {
+        assertToolbarIconRippleColor()
     }
 
     @Test
@@ -328,6 +344,34 @@ class WooDesignSystemToolbarTest {
     private fun WooDesignSystemToolbar.titleTextView(title: String): TextView =
         children.filterIsInstance<TextView>().first { it.text == title }
 
+    private fun assertToolbarIconRippleColor() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext())
+        toolbar.navigationIcon = AppCompatResources.getDrawable(
+            toolbar.context,
+            R.drawable.woo_ds_ic_regular_angle_left_24dp,
+        )
+        toolbar.navigationContentDescription = "Back"
+        toolbar.addIconAction()
+
+        toolbar.layoutToolbar()
+        val expectedColor = ColorUtils.setAlphaComponent(
+            ContextCompat.getColor(toolbar.context, R.color.woo_ds_color_surface_on_default),
+            (FULL_COLOR_ALPHA * PRESSED_STATE_ALPHA).roundToInt(),
+        )
+        val rippleColor = checkNotNull(
+            AppCompatResources.getColorStateList(toolbar.context, R.color.woo_ds_toolbar_icon_button_ripple),
+        )
+        val resourceBackground = AppCompatResources.getDrawable(
+            toolbar.context,
+            R.drawable.woo_ds_toolbar_icon_button_background,
+        )
+
+        assertThat(rippleColor.defaultColor).isEqualTo(expectedColor)
+        assertThat(toolbar.navigationButton("Back").background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(toolbar.actionChild(ACTION_ID).background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(resourceBackground).isInstanceOf(RippleDrawable::class.java)
+    }
+
     private fun exactMeasureSpec(size: Int): Int =
         View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY)
 
@@ -338,5 +382,7 @@ class WooDesignSystemToolbarTest {
         const val ACTION_ID = 1
         const val TEXT_ACTION_ID = 2
         const val SEARCH_ACTION_ID = 3
+        const val FULL_COLOR_ALPHA = 255
+        const val PRESSED_STATE_ALPHA = 0.1f
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/woo_ds_color_overlay_overlay20">
+    android:color="@color/woo_ds_toolbar_icon_button_ripple">
 
     <item>
         <inset
