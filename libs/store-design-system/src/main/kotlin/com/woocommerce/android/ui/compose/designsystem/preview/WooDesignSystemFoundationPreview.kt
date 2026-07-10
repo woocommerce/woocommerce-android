@@ -98,6 +98,7 @@ private fun ColorFoundationSection() {
         )
         ColorSwatch("surface.onVariantLowest", colors.surface.onVariantLowest, colors.surface.default)
         ColorSwatch("outlineVariant", colors.outlineVariant, colors.surface.onDefault)
+        ColorSwatch("error", colors.error, colors.onError)
         ColorSwatch(
             label = "status.successContainer",
             color = colors.status.successContainer,
@@ -107,23 +108,43 @@ private fun ColorFoundationSection() {
         ColorSwatch("alert.orange", colors.alert.orange, colors.alert.onOrange)
         ColorSwatch("overlay.overlay20", colors.overlay.overlay20, colors.surface.default)
         ColorSwatch(
-            "stateLayer.onSurfaceOpacity08",
-            colors.stateLayer.onSurfaceOpacity08,
+            "stateLayers.onSurface.opacity08",
+            colors.stateLayers.onSurface.opacity08,
             colors.surface.onDefault,
         )
         ColorSwatch(
-            "stateLayer.onSurfaceOpacity10",
-            colors.stateLayer.onSurfaceOpacity10,
+            "stateLayers.onSurface.opacity10",
+            colors.stateLayers.onSurface.opacity10,
             colors.surface.onDefault,
         )
         ColorSwatch(
-            "stateLayer.onSurfaceOpacity16",
-            colors.stateLayer.onSurfaceOpacity16,
+            "stateLayers.onSurface.opacity16",
+            colors.stateLayers.onSurface.opacity16,
             colors.surface.onDefault,
         )
         ColorSwatch(
-            "stateLayer.onSurfaceOpacity24",
-            colors.stateLayer.onSurfaceOpacity24,
+            "stateLayers.onSurface.opacity24",
+            colors.stateLayers.onSurface.opacity24,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity08",
+            colors.tintLayers.primaryContainer.opacity08,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity10",
+            colors.tintLayers.primaryContainer.opacity10,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity16",
+            colors.tintLayers.primaryContainer.opacity16,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity24",
+            colors.tintLayers.primaryContainer.opacity24,
             colors.surface.onDefault,
         )
         ColorSwatch("palette.gray.shade40", colors.palette.gray.shade40, colors.onPrimary)

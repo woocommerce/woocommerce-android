@@ -133,7 +133,7 @@ private fun WooBadgeTone.toBadgeColors(): WooBadgeColors {
             contentColor = colors.surface.onDefault,
             border = BorderStroke(
                 width = WooTheme.stroke.medium,
-                color = colors.stateLayer.onSurfaceOpacity10,
+                color = colors.stateLayers.onSurface.opacity10,
             ),
         )
         WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)

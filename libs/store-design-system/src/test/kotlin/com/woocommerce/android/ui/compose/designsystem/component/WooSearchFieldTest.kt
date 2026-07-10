@@ -58,7 +58,7 @@ class WooSearchFieldTest {
                 val colors = WooTheme.colors
 
                 placeholderColor = wooSearchFieldPlaceholderColor(colors)
-                expectedColor = colors.stateLayer.onSurfaceOpacity16
+                expectedColor = colors.stateLayers.onSurface.opacity16
             }
         }
 

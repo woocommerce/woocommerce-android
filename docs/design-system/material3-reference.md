@@ -46,8 +46,10 @@ validated by the Color roles frame.
 
 Do not generate public `WooTheme.colors` entries for Material fixed roles or source-missing aliases.
 `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
-The Store `WooTheme.colors.stateLayer` group is also public, but its complete mode-aware colors are
+The Store `WooTheme.colors.stateLayers` group is also public, but its complete mode-aware colors are
 consumed directly by Store components and do not project into `MaterialTheme.colorScheme`.
+The Store `WooTheme.colors.tintLayers` group is likewise public and component-owned; it does not
+project into `MaterialTheme.colorScheme`.
 
 | Role group | Use for i1 mapping |
 | --- | --- |
@@ -75,10 +77,10 @@ Public palette/ramp and alert tokens do not automatically approve foreground/bac
 them as source colors unless a component owns a specific semantic mapping.
 
 The Store source `Woo theme/Alerts/Error-Container` /
-`Woo theme/Alerts/On-Error-Container` pair is an error container/background pair. It should project
-to `errorContainer` / `onErrorContainer`, not to the foreground/control `error` role. The refreshed
-export now also includes `Woo theme/Error` / `Woo theme/On-Error`; leave Material `error` / `onError`
-on defaults until that pair is added to the public Store color API and projected together.
+`Woo theme/Alerts/On-Error-Container` pair is an error container/background pair and projects to
+`errorContainer` / `onErrorContainer`. The distinct `Woo theme/Error` / `Woo theme/On-Error` pair is
+the foreground/control error pair and projects through `WooTheme.colors.error` / `onError` to
+Material `error` / `onError`.
 
 ## Typography Scale
 
@@ -175,22 +177,27 @@ Material 3 state layer opacity tokens are:
 | Pressed | `0.10f` |
 | Dragged | `0.16f` |
 
-The Store runtime exposes a singular `WooTheme.colors.stateLayer` group with
-`onSurfaceOpacity08`, `onSurfaceOpacity10`, `onSurfaceOpacity16`, and `onSurfaceOpacity24`. These are
-complete mode-aware `Color` values, not public raw alpha floats and not aliases for generic Material
-hover/focus/press/drag opacity values. Do not add `WooTheme.stateAlpha`.
+The Store runtime exposes `WooTheme.colors.stateLayers.onSurface` with `opacity08`, `opacity10`,
+`opacity16`, and `opacity24`. These are complete mode-aware `Color` values, not public raw alpha
+floats and not aliases for generic Material hover/focus/press/drag opacity values. Do not add
+`WooTheme.stateAlpha`.
 
 | Store token | Light Figma `RRGGBBAA` / Android `AARRGGBB` | Dark Figma `RRGGBBAA` / Android `AARRGGBB` | Live Figma component evidence |
 | --- | --- | --- | --- |
-| `onSurfaceOpacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
-| `onSurfaceOpacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
-| `onSurfaceOpacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
-| `onSurfaceOpacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
+| `onSurface.opacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
+| `onSurface.opacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
+| `onSurface.opacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
+| `onSurface.opacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
 
 The checked-in export directly supplies all four normal-mode values. High-contrast state-layer
 values remain unresolved because those modes are not included in the current export. Keep
-`stateLayer` separate from `surface`: their light On Surface bases are `#1E1E1E` and `#000000`,
+`stateLayers` separate from `surface`: their light On Surface bases are `#1E1E1E` and `#000000`,
 respectively. State layers do not project into Material `ColorScheme`.
+
+The Store `WooTheme.colors.tintLayers.primaryContainer` group exposes `opacity08`, `opacity10`,
+`opacity16`, and `opacity24` as complete mode-aware colors. The canonical Segmented Control uses
+`primaryContainer.opacity10` for its track; no other published non-icon component currently binds
+to this tint-layer family. Tint layers do not project into Material `ColorScheme`.
 
 Material 3 `ripple()` is the default `LocalIndication` inside `MaterialTheme`. It draws ripple
 animations for press interactions and fixed state layers for other interactions. For custom Woo
@@ -259,14 +266,17 @@ The current adapter decision is:
 - Do not create Android resources for every Material role just because `ColorScheme` has that role.
 - Expose source-backed Store authoring roles through `WooTheme.colors`, grouped shallowly by source
   intent.
-- Do not create a parallel semantic-colors carrier in PR 2. Supported status, alert, overlay, and
-  palette colors live as grouped fields under `WooTheme.colors`.
+- Do not create a parallel semantic-colors carrier in PR 2. Supported status, alert, overlay,
+  state-layer, tint-layer, and palette colors live as grouped fields under `WooTheme.colors`.
 - Do not expose top-level `Semantic` groups in PR 2 unless a concrete Figma component audit approves
   that token group.
 - Keep Material 3-only projection aliases internal unless the alias is itself a source-backed token.
 - Treat `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
-- Expose approved state layers as complete colors through `WooTheme.colors.stateLayer`; keep the
-  group outside Material `ColorScheme` and separate from `surface`.
+- Expose approved state layers as complete colors through `WooTheme.colors.stateLayers.onSurface`;
+  keep the group outside Material `ColorScheme` and separate from `surface`.
+- Expose Primary Container tint layers through
+  `WooTheme.colors.tintLayers.primaryContainer`; keep the group outside Material `ColorScheme` and
+  consume it only where Figma binds the tint family.
 - Keep high-contrast modes out of normal `Light` / `Dark` runtime mapping until accessibility-mode
   scope is decided.
 - Do not create a public `WooTheme.stateAlpha` float API from mode-aware state-layer color tokens.

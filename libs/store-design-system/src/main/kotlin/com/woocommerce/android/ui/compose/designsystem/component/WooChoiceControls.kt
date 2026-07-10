@@ -419,9 +419,9 @@ internal fun wooCheckboxStyle(
     colors: WooColors,
     stroke: WooStroke,
 ): WooCheckboxStyle {
-    val selectedContainerColor = if (isError) colors.alert.red else colors.primary
-    val selectedContentColor = if (isError) colors.alert.onRed else colors.onPrimary
-    val disabledStateLayerColor = colors.stateLayer.onSurfaceOpacity16
+    val selectedContainerColor = if (isError) colors.error else colors.primary
+    val selectedContentColor = if (isError) colors.onError else colors.onPrimary
+    val disabledStateLayerColor = colors.stateLayers.onSurface.opacity16
     val mark = when (state) {
         ToggleableState.On -> WooCheckboxMark.Check
         ToggleableState.Indeterminate -> WooCheckboxMark.Indeterminate
@@ -469,7 +469,7 @@ internal fun wooRadioButtonStyle(
     colors: WooColors,
     stroke: WooStroke,
 ): WooRadioButtonStyle {
-    val disabledStateLayerColor = colors.stateLayer.onSurfaceOpacity16
+    val disabledStateLayerColor = colors.stateLayers.onSurface.opacity16
     return when {
         selected && enabled -> WooRadioButtonStyle(
             containerColor = colors.primary,

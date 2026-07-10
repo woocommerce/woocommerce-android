@@ -4,6 +4,8 @@
     <color name="woo_ds_color_on_primary">#FFFFFF</color>
     <color name="woo_ds_color_secondary">#383146</color>
     <color name="woo_ds_color_on_secondary">#F1EDFE</color>
+    <color name="woo_ds_color_error">#FC4A5B</color>
+    <color name="woo_ds_color_on_error">#FFFFFF</color>
 
     <color name="woo_ds_color_container_primary_container">#FFFFFF</color>
     <color name="woo_ds_color_container_on_primary_container">#FFFFFF</color>
@@ -47,4 +49,9 @@
     <color name="woo_ds_color_state_layer_on_surface_opacity10">#1AFFFFFF</color>
     <color name="woo_ds_color_state_layer_on_surface_opacity16">#29FFFFFF</color>
     <color name="woo_ds_color_state_layer_on_surface_opacity24">#3DFFFFFF</color>
+
+    <color name="woo_ds_color_tint_layer_primary_container_opacity08">#14FFFFFF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity10">#1AFFFFFF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity16">#29FFFFFF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity24">#3DFFFFFF</color>
 </resources>

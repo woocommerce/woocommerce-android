@@ -42,8 +42,8 @@ internal fun PreviewOnlySegmentControlSample(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(WooTheme.radius.full))
-            .background(WooTheme.colors.background.section)
-            .padding(WooTheme.padding.padding2),
+            .background(WooTheme.colors.tintLayers.primaryContainer.opacity10)
+            .padding(WooTheme.padding.padding1),
     ) {
         PreviewOnlySegmentItem(
             text = "Net sales",
@@ -166,27 +166,32 @@ private fun PreviewOnlySegmentItem(
     modifier: Modifier = Modifier,
 ) {
     val containerColor = if (selected) {
-        WooTheme.colors.secondary
+        WooTheme.colors.surface.default
     } else {
         Color.Transparent
     }
     val contentColor = if (selected) {
-        WooTheme.colors.onSecondary
-    } else {
         WooTheme.colors.surface.onDefault
+    } else {
+        WooTheme.colors.container.onPrimaryContainer
+    }
+    val textStyle = if (selected) {
+        WooTheme.text.bodySmall.emphasized
+    } else {
+        WooTheme.text.bodySmall.regular
     }
 
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(WooTheme.radius.extraLarge))
             .background(containerColor)
-            .padding(horizontal = WooTheme.padding.padding4, vertical = WooTheme.padding.padding3),
+            .padding(horizontal = WooTheme.padding.padding0, vertical = WooTheme.padding.padding4),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             color = contentColor,
-            style = WooTheme.text.bodySmall.regular,
+            style = textStyle,
         )
     }
 }

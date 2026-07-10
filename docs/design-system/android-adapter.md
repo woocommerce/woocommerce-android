@@ -53,8 +53,8 @@ rollout wiring should stay outside the module.
   such as `WooNewTheme`; future consolidation can merge wrapper/accessor naming after the legacy
   wrapper is removed.
 - Use `WooTheme` as the design-system foundation accessor object for theme-scoped values such as
-  colors, typography, spacing, padding, radius, icon size, and stroke. State layers are a public
-  group within `WooTheme.colors`, not a separate foundation accessor.
+  colors, typography, spacing, padding, radius, icon size, and stroke. State and tint layers are
+  public groups within `WooTheme.colors`, not separate foundation accessors.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
@@ -68,7 +68,7 @@ rollout wiring should stay outside the module.
 - Keep preview-only implementations private/internal to catalog or preview files under `designsystem.preview`.
 - The planned public foundation surface is:
   - `WooTheme.colors` with direct core roles plus `container`, `surface`, `status`, `background`,
-    `overlay`, `stateLayer`, `alert`, and `palette` groups.
+    `overlay`, `stateLayers`, `tintLayers`, `alert`, and `palette` groups.
   - `WooTheme.text` with `regular`, `emphasized`, and `strong` variants.
   - `WooTheme.spacing` and `WooTheme.padding` as separate APIs with identical value scales.
   - `WooTheme.radius` including Woo-only `none` and `full` plus Material projection roles.
@@ -79,12 +79,16 @@ rollout wiring should stay outside the module.
   generated Material aliases.
 - Expose `WooTheme.stroke` because production design-system components use the source-backed stroke
   scale. Fractional stroke widths still need visual verification in components that use them.
-- Expose `WooTheme.colors.stateLayer.onSurfaceOpacity08`, `onSurfaceOpacity10`,
-  `onSurfaceOpacity16`, and `onSurfaceOpacity24` as complete mode-aware `Color` values. Do not expose
-  public `WooTheme.stateAlpha` or other raw alpha floats.
-- Keep `stateLayer` separate from `surface`: the normal light state-layer base is `#1E1E1E`, while
+- Expose `WooTheme.colors.stateLayers.onSurface.opacity08`, `opacity10`, `opacity16`, and
+  `opacity24` as complete mode-aware `Color` values. Do not expose public `WooTheme.stateAlpha` or
+  other raw alpha floats.
+- Keep `stateLayers` separate from `surface`: the normal light state-layer base is `#1E1E1E`, while
   `surface.onDefault` is `#000000`.
 - State-layer colors are Store authoring tokens and do not project into Material `ColorScheme`.
+- Expose `WooTheme.colors.error` / `onError` together and project them to Material `error` /
+  `onError`.
+- Expose Primary Container tint layers as complete mode-aware colors under
+  `WooTheme.colors.tintLayers.primaryContainer`; the Segmented Control consumes `opacity10`.
 - High-contrast state-layer values remain unresolved and stay outside normal `Light` / `Dark`
   runtime mapping.
 - Do not create public `WooTheme.minimumTouchTarget` from legacy dimensions or screen-size variables.
@@ -161,7 +165,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   for example `WooTheme.colors.primary`, `WooTheme.text.titleMedium.emphasized`,
   `WooTheme.spacing.space5`, `WooTheme.padding.padding5`, `WooTheme.radius.medium`, and
   `WooTheme.stroke.regular`. State-aware components consume complete colors such as
-  `WooTheme.colors.stateLayer.onSurfaceOpacity16`.
+  `WooTheme.colors.stateLayers.onSurface.opacity16`.
 - `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
@@ -178,8 +182,8 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Use Android typography mode values from `Typescale`; `Typescale/<Role>/Font` resolves through
   `Font theme/Font/Plain`, whose Android value is `Roboto`. Android default font is the accepted
   runtime equivalent.
-- Do not create `WooTheme.semanticColors`; supported status, alert, overlay, and palette colors live
-  as grouped fields under `WooTheme.colors`.
+- Do not create `WooTheme.semanticColors`; supported status, alert, overlay, state-layer, tint-layer,
+  and palette colors live as grouped fields under `WooTheme.colors`.
 - Keep Material 3-only projection aliases internal. Do not expose generated Material aliases such as
   fixed roles or surface-container aliases unless those names are real source-backed tokens.
 - The runtime may intentionally leave unsupported Material 3 roles on builder defaults when a Store
@@ -187,7 +191,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   fields.
 - `outline` and `outlineVariant` are source-backed tokens and public under `WooTheme.colors`.
 - Preserve source intent with direct core roles plus shallow groups such as container, surface,
-  status, alert, background, overlay, state layer, and palette.
+  status, alert, background, overlay, state layer, tint layer, and palette.
 - Keep unresolved non-color Figma variables tracked in docs or internal mapping first, but
   source-backed color tokens still belong in the public foundation surface.
 - `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke` are public because they are
@@ -208,18 +212,26 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 
 ### Runtime State Layers
 
-The runtime state-layer group is singular `stateLayer`, matching `surface`, `overlay`, and `status`.
-It contains complete normal-mode colors rather than reusable alpha constants:
+The runtime `stateLayers` group follows the Figma hierarchy by nesting the `onSurface` base role
+before its opacity variants. It contains complete normal-mode colors rather than reusable alpha
+constants:
 
 | API suffix | Light Figma `RRGGBBAA` / Android `AARRGGBB` | Dark Figma `RRGGBBAA` / Android `AARRGGBB` | Verified use |
 | --- | --- | --- | --- |
-| `onSurfaceOpacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
-| `onSurfaceOpacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
-| `onSurfaceOpacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
-| `onSurfaceOpacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
+| `onSurface.opacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
+| `onSurface.opacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
+| `onSurface.opacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
+| `onSurface.opacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
 
 The checked-in export directly supplies all four normal-mode state-layer colors. High-contrast
 state-layer behavior remains unresolved because those modes are not included in the current export.
+
+### Runtime Tint Layers
+
+The runtime `tintLayers` group nests the complete Primary Container colors under
+`primaryContainer.opacity08`, `opacity10`, `opacity16`, and `opacity24`. The canonical Segmented
+Control binds its track to `primaryContainer.opacity10`; the other published components do not bind
+to this tint-layer family. Keep these as complete mode-aware colors rather than public alpha floats.
 
 ## Component Strategy
 
@@ -256,6 +268,6 @@ and keep Compose reading those same resources through `WooTheme.colors`.
 
 Do not create XML resources for non-color primitives as the primary implementation. Typography,
 spacing, padding, radius, icon size, stroke, elevation, and minimum touch target remain
-Kotlin/Compose-owned or unresolved unless a later approved plan changes that boundary. State layers
-are color primitives, so their shared module-local resources follow the same ownership rule as other
-`WooTheme.colors` values.
+Kotlin/Compose-owned or unresolved unless a later approved plan changes that boundary. State and
+tint layers are color primitives, so their shared module-local resources follow the same ownership
+rule as other `WooTheme.colors` values.

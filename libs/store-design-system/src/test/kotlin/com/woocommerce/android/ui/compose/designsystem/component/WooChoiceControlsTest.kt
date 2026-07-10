@@ -201,7 +201,7 @@ class WooChoiceControlsTest {
 
         composeTestRule.runOnIdle {
             assertThat(style.containerColor).isEqualTo(Color.Transparent)
-            assertThat(style.borderColor).isEqualTo(colors.alert.red)
+            assertThat(style.borderColor).isEqualTo(colors.error)
             assertThat(style.markColor).isEqualTo(Color.Transparent)
             assertThat(style.borderWidth).isEqualTo(stroke.medium)
             assertThat(style.mark).isEqualTo(WooCheckboxMark.None)
@@ -229,7 +229,7 @@ class WooChoiceControlsTest {
         }
 
         composeTestRule.runOnIdle {
-            assertThat(style.containerColor).isEqualTo(colors.stateLayer.onSurfaceOpacity16)
+            assertThat(style.containerColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
             assertThat(style.borderColor).isEqualTo(Color.Transparent)
             assertThat(style.markColor).isEqualTo(colors.onPrimary)
             assertThat(style.borderWidth).isEqualTo(stroke.none)
@@ -285,7 +285,7 @@ class WooChoiceControlsTest {
 
         composeTestRule.runOnIdle {
             assertThat(style.containerColor).isEqualTo(Color.Transparent)
-            assertThat(style.borderColor).isEqualTo(colors.stateLayer.onSurfaceOpacity16)
+            assertThat(style.borderColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
             assertThat(style.dotColor).isEqualTo(Color.Transparent)
             assertThat(style.borderWidth).isEqualTo(stroke.medium)
         }

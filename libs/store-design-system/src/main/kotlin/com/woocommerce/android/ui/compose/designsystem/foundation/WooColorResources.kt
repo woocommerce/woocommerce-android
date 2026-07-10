@@ -140,11 +140,25 @@ private fun Context.loadWooColors(): WooColors {
             onBlue = color(R.color.woo_ds_color_alert_on_blue),
         ),
         palette = palette,
-        stateLayer = WooStateLayerColors(
-            onSurfaceOpacity08 = color(R.color.woo_ds_color_state_layer_on_surface_opacity08),
-            onSurfaceOpacity10 = color(R.color.woo_ds_color_state_layer_on_surface_opacity10),
-            onSurfaceOpacity16 = color(R.color.woo_ds_color_state_layer_on_surface_opacity16),
-            onSurfaceOpacity24 = color(R.color.woo_ds_color_state_layer_on_surface_opacity24),
+        stateLayers = WooStateLayerColors(
+            onSurface = WooOpacityColors(
+                opacity08 = color(R.color.woo_ds_color_state_layer_on_surface_opacity08),
+                opacity10 = color(R.color.woo_ds_color_state_layer_on_surface_opacity10),
+                opacity16 = color(R.color.woo_ds_color_state_layer_on_surface_opacity16),
+                opacity24 = color(R.color.woo_ds_color_state_layer_on_surface_opacity24),
+            ),
+        ),
+        error = color(R.color.woo_ds_color_error),
+        onError = color(R.color.woo_ds_color_on_error),
+        tintLayers = WooTintLayerColors(
+            primaryContainer = WooOpacityColors(
+                opacity08 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity08),
+                opacity10 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity10),
+                opacity16 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity16),
+                opacity24 = color(
+                    R.color.woo_ds_color_tint_layer_primary_container_opacity24
+                ),
+            ),
         ),
     )
 }

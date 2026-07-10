@@ -67,19 +67,20 @@ Expected output:
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
 - Source-backed color tokens exposed through `WooTheme.colors`, with direct core roles plus shallow
-  Store authoring groups: container, surface, status, background, overlay, state layer, alert, and
-  palette.
+  Store authoring groups: container, surface, status, background, overlay, state layer, tint layer,
+  alert, and palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
 - Spacing, padding, radius, icon size, and stroke through `WooTheme.spacing`, `WooTheme.padding`,
   `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke`.
-- Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
-  no separate `WooTheme.semanticColors`.
+- Supported status, alert, overlay, state-layer, tint-layer, and palette colors as grouped fields
+  under `WooTheme.colors`; no separate `WooTheme.semanticColors`.
+- Source-backed `WooTheme.colors.error` / `onError` projected to Material `error` / `onError` and
+  consumed by Checkbox error states.
 - `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
-- Public `WooTheme.colors.stateLayer` colors for `onSurfaceOpacity08`, `onSurfaceOpacity10`,
-  `onSurfaceOpacity16`, and `onSurfaceOpacity24`; no public state-alpha floats and no Material
-  `ColorScheme` projection.
+- Public `WooTheme.colors.stateLayers.onSurface` colors for `opacity08`, `opacity10`, `opacity16`,
+  and `opacity24`; no public state-alpha floats and no Material `ColorScheme` projection.
 - Normal-mode state-layer values: light Figma `RRGGBBAA` `#1E1E1E14`, `#1E1E1E1A`,
   `#1E1E1E29`, `#1E1E1E3D` (Android `AARRGGBB` `#141E1E1E`, `#1A1E1E1E`, `#291E1E1E`,
   `#3D1E1E1E`); dark `#FFFFFF14`, `#FFFFFF1A`, `#FFFFFF29`, `#FFFFFF3D` (Android
@@ -87,6 +88,8 @@ Expected output:
 - Live Figma component evidence maps 08 to disabled filled/tonal button containers, 10 to neutral
   outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio and resting
   Search placeholder, and 24 to disabled button content. High contrast remains unresolved.
+- Public `WooTheme.colors.tintLayers.primaryContainer` colors for `opacity08`, `opacity10`,
+  `opacity16`, and `opacity24`; the Segmented Control track consumes `opacity10`.
 - `WooTheme.iconSize` scoped to glyph sizes only.
 - Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
   production component usage.

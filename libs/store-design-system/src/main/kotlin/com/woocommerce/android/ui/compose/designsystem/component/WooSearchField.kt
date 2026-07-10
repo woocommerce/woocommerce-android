@@ -322,4 +322,4 @@ private val SEARCH_TRAILING_ACTION_MAX_WIDTH = 120.dp
 private val SEARCH_CLEAR_GLYPH_SIZE = 8.dp
 private val SEARCH_CLEAR_ICON_PADDING = 4.dp
 internal fun wooSearchFieldPlaceholderColor(colors: WooColors) =
-    colors.stateLayer.onSurfaceOpacity16
+    colors.stateLayers.onSurface.opacity16

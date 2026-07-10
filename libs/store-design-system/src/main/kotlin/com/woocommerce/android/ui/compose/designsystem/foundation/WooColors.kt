@@ -20,7 +20,10 @@ data class WooColors(
     val overlay: WooOverlayColors,
     val alert: WooAlertColors,
     val palette: WooPaletteColors,
-    val stateLayer: WooStateLayerColors,
+    val stateLayers: WooStateLayerColors,
+    val error: Color,
+    val onError: Color,
+    val tintLayers: WooTintLayerColors,
 )
 
 @Immutable
@@ -77,10 +80,20 @@ data class WooOverlayColors(
 
 @Immutable
 data class WooStateLayerColors(
-    val onSurfaceOpacity08: Color,
-    val onSurfaceOpacity10: Color,
-    val onSurfaceOpacity16: Color,
-    val onSurfaceOpacity24: Color,
+    val onSurface: WooOpacityColors,
+)
+
+@Immutable
+data class WooTintLayerColors(
+    val primaryContainer: WooOpacityColors,
+)
+
+@Immutable
+data class WooOpacityColors(
+    val opacity08: Color,
+    val opacity10: Color,
+    val opacity16: Color,
+    val opacity24: Color,
 )
 
 @Immutable
