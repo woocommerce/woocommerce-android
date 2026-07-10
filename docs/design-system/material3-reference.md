@@ -32,11 +32,12 @@ implementation, confirm API availability against the repo's pinned Material 3 de
 
 Use Material 3 color roles as interop semantics, not as the public Store color API. PR 2
 `WooTheme.colors` should expose source-backed Store authoring roles from normal `Light` / `Dark`
-values in non-`Semantic` `Woo theme` sources. `MaterialTheme.colorScheme` receives projections for
+values in the current `Woo theme` export. `MaterialTheme.colorScheme` receives projections for
 Material 3 components, defaults, and helpers. Roles without approved Store semantics may
 intentionally use `lightColorScheme(...)` / `darkColorScheme(...)` builder defaults.
 
-Do not use top-level `Semantic` or high-contrast modes for normal Material color projections.
+The current export omits top-level `Semantic` and high-contrast modes. If either returns in a future
+export, do not use it for normal Material color projections without an approved contract update.
 Container roles are first-class Store roles and can project to Material container roles. The fuller
 surface role set includes `surfaceDim`, `surfaceContainerHighest`, `onVariantLowest`, `inverted`,
 and `onInverted`. These roles should project from their Store source-backed roles, not older
@@ -75,9 +76,9 @@ them as source colors unless a component owns a specific semantic mapping.
 
 The Store source `Woo theme/Alerts/Error-Container` /
 `Woo theme/Alerts/On-Error-Container` pair is an error container/background pair. It should project
-to `errorContainer` / `onErrorContainer`, not to the foreground/control `error` role. Leave
-`error` / `onError` on Material defaults until a source-backed Store foreground error pair is
-approved.
+to `errorContainer` / `onErrorContainer`, not to the foreground/control `error` role. The refreshed
+export now also includes `Woo theme/Error` / `Woo theme/On-Error`; leave Material `error` / `onError`
+on defaults until that pair is added to the public Store color API and projected together.
 
 ## Typography Scale
 
@@ -186,8 +187,8 @@ hover/focus/press/drag opacity values. Do not add `WooTheme.stateAlpha`.
 | `onSurfaceOpacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
 | `onSurfaceOpacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
 
-Live Figma evidence overrides the checked-in export for this group because its dark entries are
-malformed and it omits `Opacity-24`. High-contrast state-layer values remain unresolved. Keep
+The checked-in export directly supplies all four normal-mode values. High-contrast state-layer
+values remain unresolved because those modes are not included in the current export. Keep
 `stateLayer` separate from `surface`: their light On Surface bases are `#1E1E1E` and `#000000`,
 respectively. State layers do not project into Material `ColorScheme`.
 

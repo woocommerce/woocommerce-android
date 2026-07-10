@@ -20,10 +20,9 @@ doc defines the technical boundaries that support that rollout.
   `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
 - Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
   collecting live Figma screenshots.
-- Foundation source values come from `docs/design-system/figma-export.json`, except for the approved
-  state-layer reconciliation where live Figma evidence overrides malformed dark entries and supplies
-  the omitted `Opacity-24` token. This docs branch is allowed to lack runtime foundation code; future
-  implementation consumes these docs as the contract.
+- Foundation source values come from `docs/design-system/figma-export.json`. This docs branch is
+  allowed to lack runtime foundation code; future implementation consumes these docs as the
+  contract.
 
 ## Package
 
@@ -167,15 +166,15 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
 - `WooTheme.colors` should expose source-backed Store authoring roles from `figma-export.json` /
-  `Woo theme`, plus the approved live-Figma state-layer reconciliation, grouped shallowly by source
-  intent.
+  `Woo theme`, grouped shallowly by source intent.
 - Do not limit `WooTheme.colors` to a small curated Material 3-like subset.
-- Parse Store runtime/public foundations from non-`Semantic` top-level sections in
+- Parse Store runtime/public foundations from the current top-level foundation sections in
   `figma-export.json`.
-- Keep top-level `Semantic` in the export for traceability, but ignore it for Store runtime/public
-  mapping and Material projections unless a future component audit updates the contract.
-- Use normal `Light` / `Dark` values for runtime color modes. Keep high-contrast values out of
-  normal runtime mapping until accessibility-mode scope is decided.
+- The current export omits top-level `Semantic`. If a future export includes it, keep it for
+  traceability but ignore it for Store runtime/public mapping and Material projections unless a
+  component audit updates the contract.
+- Use normal `Light` / `Dark` values for runtime color modes. The current export omits high-contrast
+  modes; accessibility-mode mapping remains separately scoped.
 - Use Android typography mode values from `Typescale`; `Typescale/<Role>/Font` resolves through
   `Font theme/Font/Plain`, whose Android value is `Roboto`. Android default font is the accepted
   runtime equivalent.
@@ -219,9 +218,8 @@ It contains complete normal-mode colors rather than reusable alpha constants:
 | `onSurfaceOpacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
 | `onSurfaceOpacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
 
-Live Figma component and variable evidence is authoritative for this reconciliation: the checked-in
-export has malformed dark entries and omits `Opacity-24`. Do not edit the export to compensate.
-High-contrast state-layer behavior remains unresolved.
+The checked-in export directly supplies all four normal-mode state-layer colors. High-contrast
+state-layer behavior remains unresolved because those modes are not included in the current export.
 
 ## Component Strategy
 

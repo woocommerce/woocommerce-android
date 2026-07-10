@@ -27,11 +27,10 @@ consume:
 - [android-adapter.md](android-adapter.md) for public/internal Android API boundaries and
   parser/mode handling.
 
-Foundation source data comes from `figma-export.json`, except for the approved state-layer
-reconciliation: live Figma evidence overrides malformed dark entries and supplies the omitted
-`Opacity-24` token. Runtime/public token parsing otherwise uses non-`Semantic` top-level sections.
-Top-level `Semantic` remains traceability-only. High-contrast color modes stay out of normal
-`Light` / `Dark` runtime mapping until separately scoped.
+Foundation source data comes from `figma-export.json`. The current export omits the former top-level
+`Semantic` section and high-contrast modes. If either returns in a future export, `Semantic` remains
+traceability-only and high-contrast colors stay out of normal `Light` / `Dark` runtime mapping until
+separately scoped.
 
 Expected output:
 
@@ -207,11 +206,9 @@ Add new example docs only when first-wave migrations produce reusable findings.
 - No raw private Figma node IDs in public docs.
 - `figma-export.json` remains an audit/source artifact; do not hand-edit it as part of foundation
   implementation.
-- Approved live Figma state-layer evidence overrides the export's malformed dark entries and omitted
-  `Opacity-24`; do not repair those issues by editing the export.
-- Runtime/public parser logic must ignore the top-level `Semantic` section unless the contract is
-  deliberately updated with approved evidence.
-- Normal runtime `Light` / `Dark` values must not use high-contrast modes.
+- Runtime/public parser logic must ignore a future top-level `Semantic` section unless the contract
+  is deliberately updated with approved evidence.
+- Normal runtime `Light` / `Dark` values must not infer or substitute high-contrast modes.
 - No parallel Kotlin/Compose and XML resource definitions for the same token primitive values.
 - No production screen should consume preview-only components.
 - Preview-only components should not be exposed as reusable production-screen APIs.
