@@ -93,6 +93,16 @@ class DashboardViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
+    // Tracks whether the collapsing toolbar was fully expanded (vertical offset == 0) the last time the
+    // dashboard was visible, so it can be restored to the same state when returning to the tab. See
+    // DashboardFragment.shouldExpandToolbar().
+    var isToolbarExpanded: Boolean = true
+        private set
+
+    fun onToolbarOffsetChanged(verticalOffset: Int) {
+        isToolbarExpanded = verticalOffset == 0
+    }
+
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 

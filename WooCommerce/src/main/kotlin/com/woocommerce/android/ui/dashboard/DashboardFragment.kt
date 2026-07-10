@@ -127,6 +127,12 @@ class DashboardFragment :
 
     private var wasPreviouslyStopped = false
 
+    // The collapsing toolbar lives in MainActivity and is shared across tabs, so navigating away programmatically
+    // resets its offset. We keep the last offset seen while the dashboard is visible and only commit it to the
+    // ViewModel in onPause(), so the state used to restore the toolbar on return reflects the user's scroll, not
+    // the programmatic reset. See shouldExpandToolbar().
+    private var lastAppBarVerticalOffset = 0
+
     private val scrollToTopTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -294,6 +300,7 @@ class DashboardFragment :
             viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
+                        lastAppBarVerticalOffset = verticalOffset
                         binding.jetpackBenefitsBanner.root.translationY =
                             (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
                     }
@@ -311,6 +318,12 @@ class DashboardFragment :
             wasPreviouslyStopped = false
         }
         dashboardViewModel.onResume()
+    }
+
+    override fun onPause() {
+        // Remember whether the toolbar was expanded before leaving the tab, so it can be restored on return.
+        dashboardViewModel.onToolbarOffsetChanged(lastAppBarVerticalOffset)
+        super.onPause()
     }
 
     override fun onStop() {
@@ -376,7 +389,7 @@ class DashboardFragment :
         )
     }
 
-    override fun shouldExpandToolbar() = true
+    override fun shouldExpandToolbar() = dashboardViewModel.isToolbarExpanded
 
     override fun scrollToTop() {
         scrollToTopTrigger.tryEmit(Unit)
