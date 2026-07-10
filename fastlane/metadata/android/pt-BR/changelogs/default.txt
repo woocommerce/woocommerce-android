@@ -1,2 +1,0 @@
-25.1:
-Os reembolsos no Woo POS agora são abertos em tela cheia para promover um fluxo mais organizado. Esta versão também torna o aplicativo mais confiável quando sua loja não pode ser acessada, com alertas mais claros e acesso rápido ao suporte. Os erros de login são mais fáceis de entender, e corrigimos pedidos recentes ausentes, uma falha na inicialização e outras pequenas falhas. Boas vendas!

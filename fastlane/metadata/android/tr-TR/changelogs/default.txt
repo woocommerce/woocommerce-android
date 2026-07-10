@@ -1,2 +1,0 @@
-25.1:
-Woo POS'ta para iadeleri artık daha temiz bir akış için tam ekran açılıyor. Bu sürüm ayrıca, daha net uyarılar ve hızlı bir destek yolu ile mağazanıza erişilemediğinde uygulamayı daha güvenilir hale getirir. Oturum açma hatalarını anlamak daha kolaydır ve son siparişleri, başlangıç çökmesini ve diğer küçük hataları giderdik. İyi satışlar!

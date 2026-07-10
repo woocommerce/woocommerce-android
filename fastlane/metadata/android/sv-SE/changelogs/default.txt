@@ -1,2 +1,0 @@
-25.1:
-Återbetalningar i Woo POS öppnas nu i fullskärm för ett renare flöde. Den här versionen gör också appen mer tillförlitlig när din butik inte kan nås, med tydligare aviseringar och en snabb väg till support. Inloggningsfel är lättare att förstå och vi har åtgärdat saknade senaste beställningar, en startkrasch och andra små fel. Lycka till med försäljningen.
