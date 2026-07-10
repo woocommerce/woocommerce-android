@@ -43,6 +43,7 @@ class CustomerOrderNoteEditingFragment :
         if (pendingInitialNoteFill) {
             pendingInitialNoteFill = false
             binding.customerOrderNoteEditor.setText(sharedViewModel.order.customerNote)
+            binding.customerOrderNoteEditor.setSelection(binding.customerOrderNoteEditor.length())
             binding.customerOrderNoteEditor.requestFocus()
             ActivityUtils.showKeyboard(binding.customerOrderNoteEditor)
         } else {
