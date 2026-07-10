@@ -132,7 +132,7 @@ google-upload-credentials.json
 docs/superpowers
 
 # Maestro smoke-test local files and artifacts.
-.maestro/.env.local
+.env.local
 .maestro/output/
 .maestro/tmp/
 .maestro/report.xml
