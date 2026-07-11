@@ -390,7 +390,8 @@ class WCProductStoreTest {
                 site = site,
                 productId = productId,
                 pageSize = 2,
-                offset = 0
+                offset = 0,
+                context = "edit"
             )
         ).thenReturn(WooPayload(fetchedVariations))
 
@@ -426,7 +427,8 @@ class WCProductStoreTest {
                     site = site,
                     productId = productId,
                     pageSize = 2,
-                    offset = 2
+                    offset = 2,
+                    context = "edit"
                 )
             ).thenReturn(WooPayload(fetchedVariations))
 
@@ -462,7 +464,8 @@ class WCProductStoreTest {
                 excludedVariationIds = any(),
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
-                posProductsOnly = any()
+                posProductsOnly = any(),
+                context = any()
             )
         ).thenReturn(WooPayload(fetchedVariations))
 
