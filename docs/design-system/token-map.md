@@ -12,10 +12,12 @@ Source references use public-repo shorthands:
 - Figma file: `Woo Mobile Design System` (`50XIH5MmOf4xUYEkM6fAm6-fi`).
 - Full Figma variable export: `figma-export.json`.
 
-Use source shorthands in source-reference columns.
+Use source shorthands in source-reference columns. Do not use raw P2 or Figma URLs in public repo
+docs.
 
 Agent note: Figma references use the public GitHub shorthand `{fileKey}-fi`. When using Figma tools,
-strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`.
+strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`. For live Figma component
+inspection, use [figma-navigation.md](figma-navigation.md).
 
 ## Figma Export Parsing Rules
 
@@ -71,7 +73,7 @@ Group the public API shallowly by source intent; do not collapse the source into
 | --- | --- |
 | Core | Primary, on-primary, secondary, and on-secondary roles from the Color roles frame's "Primary and Secondary" section. |
 | Container | Primary container, on-primary container, secondary container, and on-secondary container. These are accent containers; status containers stay under `status`. |
-| Surface | Surface, surface dim, surface bright, surface container highest, on-default, on-variant, on-variant-lowest, inverted, and on-inverted roles. |
+| Surface | Surface, surface dim, surface container highest, on-default, on-variant, on-variant-lowest, inverted, and on-inverted roles. |
 | Outline | `outline` and `outlineVariant`. |
 | Status | Error, warning, caution, success, info, and neutral containers plus their on-container colors. |
 | Alert | Red, orange, green, and blue alert ramp colors plus their on-colors. |
@@ -90,7 +92,6 @@ Group the public API shallowly by source intent; do not collapse the source into
   source-missing aliases as public Store roles.
 - `surfaceDim` and `surfaceContainerHighest` are promoted source-backed Store roles. Do not filter
   them out as generated Material aliases.
-- `surfaceBright` is export-backed and public under `WooTheme.colors.surface`.
 - `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
 - Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
   public `WooTheme.stateAlpha` floats from mode-aware state-layer color tokens.
@@ -162,7 +163,6 @@ Every production `WooTheme.colors` field below is backed by normal `Light` / `Da
 | `WooTheme.colors.surface.onVariantLowest` | `Woo theme/Surface/On-Surface-Variant-Lowest` | `figma-export.json` | `#50575E` / 100% | `#626068` / 100% | No direct M3 role | production | Lowest variant foreground. |
 | `WooTheme.colors.surface.inverted` | `Woo theme/Surface/Inverse-Surface` | `figma-export.json` | `#000000` / 100% | `#FFFFFF` / 100% | `inverseSurface` | production | Inverse surface. |
 | `WooTheme.colors.surface.onInverted` | `Woo theme/Surface/On-Inverse-Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#000000` / 100% | `inverseOnSurface` | production | Foreground for inverse surface. |
-| `WooTheme.colors.surface.surfaceBright` | `Woo theme/Surface/Surface-Bright` | `figma-export.json` | `#FFFFFF` / 100% | `#232529` / 100% | `surfaceBright` | production | Source-backed surface role. |
 | `WooTheme.colors.status.errorContainer` | `Woo theme/Alerts/Error-Container` | `figma-export.json` | `#F6E6E3` / 100% | `#F6E6E3` / 100% | `errorContainer` | production | Error container. |
 | `WooTheme.colors.status.onErrorContainer` | `Woo theme/Alerts/On-Error-Container` | `figma-export.json` | `#470000` / 100% | `#470000` / 100% | `onErrorContainer` | production | Foreground for `errorContainer`. |
 | `WooTheme.colors.status.warningContainer` | `Woo theme/Alerts/Warning-Container` | `figma-export.json` | `#FDE6BE` / 100% | `#FDE6BE` / 100% | No direct M3 role | production | Warning container. |
@@ -214,7 +214,7 @@ Every production `WooTheme.colors` field below is backed by normal `Light` / `Da
 | `WooTheme.colors.palette.wooPurple.shade80` | `Woo theme/Add-On-Colors/Woo-Purple/80` | `figma-export.json` | `#3C087E` / 100% | `#3C087E` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooPurple.shade90` | `Woo theme/Add-On-Colors/Woo-Purple/90` | `figma-export.json` | `#2C045D` / 100% | `#2C045D` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooPurple.shade100` | `Woo theme/Add-On-Colors/Woo-Purple/100` | `figma-export.json` | `#1F0342` / 100% | `#1F0342` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.gray.0..100` | `Woo theme/Add-On-Colors/Gray/0..100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
+| `WooTheme.colors.palette.gray.shade0..shade100` | `Woo theme/Add-On-Colors/Gray/0..100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
 
 ## Material 3 Color Projection
 
@@ -255,7 +255,7 @@ the Material builder from another supplied source role.
 | `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
 | `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
 | `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
-| `surfaceBright` | `WooTheme.colors.surface.surfaceBright` | production | Direct source-backed projection. |
+| `surfaceBright` | `WooTheme.colors.surface.default` | production | Material role projection from the source-backed default surface. |
 | `surfaceDim` | `WooTheme.colors.surface.surfaceDim` | production | Promoted source-backed Store surface role. |
 | `surfaceContainer` | `WooTheme.colors.background.section` | production | Internal surface alias for navigation bars, menus, cards, and sheets. |
 | `surfaceContainerHigh` | `WooTheme.colors.surface.default` | production | Internal surface alias for Material container hierarchy. |
@@ -276,8 +276,8 @@ names are camelCase.
 
 `Typescale/<Role>/Font` resolves through `Font theme/Font/Plain`, whose Android value is `Roboto`.
 Android default font is the approved runtime equivalent. Most regular weights use `Weight`, but
-`Display-Large` and `Body-Small` use
-`Weight-Regular`. Most strong weights use `Weight-Strong`, but `Display-Large` uses
+`Display-Large` and `Body-Small` use `Weight-Regular`. Most strong weights use `Weight-Strong`, but
+`Display-Large` uses
 `Weight-Extra-Emphasized`. Displayed tracking values may be rounded in docs; implementation should
 preserve source-backed values.
 

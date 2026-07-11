@@ -18,6 +18,8 @@ doc defines the technical boundaries that support that rollout.
 - Figma is the design-intent source of truth. Android owns the runtime API contract.
 - Source references use public-repo shorthands: P2 `pe5sF9-5ox-p2`, Figma
   `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
+- Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
+  collecting live Figma screenshots.
 - Foundation source values come from `docs/design-system/figma-export.json`. This docs branch is
   allowed to lack runtime foundation code; future implementation consumes these docs as the contract.
 
@@ -54,25 +56,25 @@ rollout wiring should stay outside the module.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
-- The foundation implementation should add a detekt guardrail that reports files importing both legacy
-  `com.woocommerce.android.ui.compose.theme.*` and design-system
-  `com.woocommerce.android.ui.compose.designsystem.*` APIs.
+- Follow-up `WOOMOB-3515` tracks a detekt guardrail for files that import both the legacy
+  `com.woocommerce.android.ui.compose.theme.*` APIs and the design-system
+  `com.woocommerce.android.ui.compose.designsystem.*` APIs during migration.
 - Do not expose raw Figma variable names as public Android API.
 - Public APIs should expose only production-ready tokens and components.
 - In-progress i1 areas may be documented, tracked, or preview-only until signed off.
 - Preview-only components should not be exposed as reusable product-screen APIs.
 - Keep preview-only implementations private/internal to catalog or preview files under `designsystem.preview`.
 - The planned public foundation surface is:
-  - `WooTheme.colors` grouped as `core`, `container`, `surface`, `outline`, `status`, `alert`,
-    `background`, `overlay`, and `palette`.
+  - `WooTheme.colors` with direct core roles plus `container`, `surface`, `status`, `background`,
+    `overlay`, `alert`, and `palette` groups.
   - `WooTheme.text` with `regular`, `emphasized`, and `strong` variants.
   - `WooTheme.spacing` and `WooTheme.padding` as separate APIs with identical value scales.
   - `WooTheme.radius` including Woo-only `none` and `full` plus Material projection roles.
   - `WooTheme.iconSize` scoped to glyph sizes only.
   - `WooTheme.stroke` for source-backed border and divider widths used by production components.
 - Expose primitive palette ramps intentionally through public `WooTheme.colors.palette.*` fields.
-- Treat `surfaceBright`, `surfaceDim`, and `surfaceContainerHighest` as source-backed Store roles,
-  not generated Material aliases.
+- Treat `surfaceDim` and `surfaceContainerHighest` as source-backed public Store roles, not
+  generated Material aliases.
 - Expose `WooTheme.stroke` because production design-system components use the source-backed stroke
   scale. Fractional stroke widths still need visual verification in components that use them.
 - Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
@@ -124,7 +126,13 @@ Top app bar/chrome migration is not just a token change. Moving from the Activit
 The direction is a unified design-system visual look, not one mandatory implementation:
 
 - Compose-owned screens use `WooTopAppBar`.
+- The module `WooTopAppBar` is design-system-only and lives in `:libs:store-design-system`.
 - Heavy XML screens may keep XML toolbar ownership if the toolbar matches the design-system look.
+- XML-heavy screens that need visual parity can use `WooDesignSystemToolbar` from
+  `:libs:store-design-system` for automatic design-system chrome. The library also owns
+  `Widget.Woo.DesignSystem.Toolbar` and `ThemeOverlay.Woo.DesignSystem.Toolbar` for XML opt-ins.
+  Visible inflated icon actions are decorated in place; text actions stay borderless, and
+  expanded/custom action views remain screen-owned.
 - Migrated Compose-owned screens render `WooTopAppBar` under the design-system root.
 - Legacy-heavy screens can preserve existing toolbar ownership unless a scoped migration chooses a
   DS-looking XML toolbar or an explicit Compose chrome migration.
@@ -166,10 +174,10 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   fixed roles or surface-container aliases unless those names are real source-backed tokens.
 - The runtime may intentionally leave unsupported Material 3 roles on builder defaults when a Store
   token would be a guess. Project source-backed container and promoted surface roles from Store
-  fields, including `surfaceBright`.
+  fields.
 - `outline` and `outlineVariant` are source-backed tokens and public under `WooTheme.colors`.
-- Preserve source intent with shallow groups such as core, container, surface, outline, status,
-  alert, background, overlay, and palette.
+- Preserve source intent with direct core roles plus shallow groups such as container, surface,
+  status, alert, background, overlay, and palette.
 - Keep unresolved non-color Figma variables tracked in docs or internal mapping first, but
   source-backed color tokens still belong in the public foundation surface.
 - `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke` are public because they are

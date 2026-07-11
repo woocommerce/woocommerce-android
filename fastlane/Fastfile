@@ -550,11 +550,6 @@ platform :android do
 
     create_backmerge_pr
 
-    remove_branch_protection(
-      repository: GITHUB_REPO,
-      branch: "release/#{version}"
-    )
-
     # Close milestone
     begin
       set_milestone_frozen_marker(
