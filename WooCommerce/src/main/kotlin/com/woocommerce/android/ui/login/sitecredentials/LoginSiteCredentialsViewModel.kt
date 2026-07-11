@@ -413,8 +413,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
-    private fun UiString.toPresentableString() = when (this) {
-        is UiStringRes -> resourceProvider.getString(stringRes)
+    @Suppress("SpreadOperator")
+    private fun UiString.toPresentableString(): String = when (this) {
+        is UiStringRes -> resourceProvider.getString(
+            stringRes,
+            *params.map { it.toPresentableString() }.toTypedArray()
+        )
         is UiStringText -> text
     }
 
