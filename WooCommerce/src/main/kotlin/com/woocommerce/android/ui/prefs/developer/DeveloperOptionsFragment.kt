@@ -75,6 +75,13 @@ class DeveloperOptionsFragment : BaseFragment() {
                     )
                 }
 
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenStoreDesignSystemComponentCatalog -> {
+                    findNavController().navigate(
+                        DeveloperOptionsFragmentDirections
+                            .actionDeveloperOptionsFragmentToStoreDesignSystemComponentCatalogFragment()
+                    )
+                }
+
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowFeatureAnnouncement -> {
                     findNavController().navigate(
                         DeveloperOptionsFragmentDirections

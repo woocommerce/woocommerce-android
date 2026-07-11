@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Woo.DesignSystem.Toolbar" parent="Widget.MaterialComponents.Toolbar.Surface">
+        <item name="android:background">@drawable/woo_ds_toolbar_background</item>
+        <item name="android:minHeight">@dimen/woo_ds_toolbar_height</item>
+        <item name="minHeight">@dimen/woo_ds_toolbar_height</item>
+        <item name="titleCentered">true</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarTitle</item>
+        <item name="titleTextColor">@color/woo_ds_color_surface_on_default</item>
+        <item name="subtitleTextColor">@color/woo_ds_color_surface_on_default</item>
+        <item name="navigationIconTint">@color/woo_ds_color_surface_on_default</item>
+        <item name="contentInsetStart">@dimen/woo_ds_toolbar_edge_padding</item>
+        <item name="contentInsetEnd">@dimen/woo_ds_toolbar_edge_padding</item>
+        <item name="contentInsetStartWithNavigation">@dimen/woo_ds_toolbar_edge_padding</item>
+        <item name="contentInsetEndWithActions">@dimen/woo_ds_toolbar_edge_padding</item>
+        <item name="android:theme">@style/ThemeOverlay.Woo.DesignSystem.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.Woo.DesignSystem.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
+        <item name="toolbarStyle">@style/Widget.Woo.DesignSystem.Toolbar</item>
+        <item name="toolbarNavigationButtonStyle">@style/Widget.Woo.DesignSystem.Toolbar.NavigationButton</item>
+        <item name="actionButtonStyle">@style/Widget.Woo.DesignSystem.Toolbar.ActionButton</item>
+        <item name="actionMenuTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarTextAction</item>
+        <item name="actionMenuTextColor">@color/woo_ds_toolbar_text_action_tint</item>
+        <item name="colorControlNormal">@color/woo_ds_color_surface_on_default</item>
+    </style>
+
+    <style name="Widget.Woo.DesignSystem.Toolbar.NavigationButton" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:background">@drawable/woo_ds_toolbar_icon_button_background</item>
+        <item name="android:minWidth">@dimen/woo_ds_toolbar_icon_touch_target</item>
+        <item name="android:minHeight">@dimen/woo_ds_toolbar_icon_touch_target</item>
+        <item name="android:padding">@dimen/woo_ds_toolbar_icon_padding</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="Widget.Woo.DesignSystem.Toolbar.ActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minHeight">@dimen/woo_ds_toolbar_icon_touch_target</item>
+        <item name="android:maxWidth">@dimen/woo_ds_toolbar_text_action_max_width</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="textAllCaps">false</item>
+    </style>
+</resources>

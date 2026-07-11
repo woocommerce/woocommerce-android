@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 11:58:11+0000
+Translation-Revision-Date: 2026-07-01 09:54:59+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Kami tidak dapat membuat sambungan aman. Periksa apakah tanggal dan waktu perangkat Anda benar, lalu coba lagi.</string>
+    <string name="woopos_refund_preview_error">Tidak dapat menghitung total pengembalian dana. Coba lagi.</string>
+    <string name="woopos_orders_details_refresh_error">Tidak dapat menyegarkan pesanan. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Kami tidak dapat memverifikasi sertifikat keamanan situs ini. Hubungi penyedia hosting atau administrator situs Anda, lalu coba lagi.</string>
+    <string name="store_connection_error_dialog_contact_support">Hubungi dukungan</string>
+    <string name="store_connection_error_dialog_body">Kami mengalami masalah saat menghubungkan ke situs Anda. Biasanya ini adalah kendala koneksi di situs WordPress Anda, yang sering disebabkan oleh plugin keamanan, pembaruan plugin terkini, atau koneksi Jetpack yang perlu disegarkan. Aplikasi WooCommerce tidak dapat memperbaikinya dari ponsel Anda.</string>
+    <string name="store_connection_error_dialog_title">Toko Anda tidak dapat dijangkau</string>
+    <string name="site_picker_unknown_blog_error">Kami tidak dapat mengakses toko Anda, jadi toko telah di-logout. Pilih satu toko untuk melanjutkan.</string>
+    <string name="login_site_info_fallback_dialog_cta">Login dengan Kredensial Situs</string>
+    <string name="login_site_info_fallback_dialog_message">Kami tidak dapat memverifikasi detail situs Anda. Anda dapat mencoba login dengan kredensial situs Anda.</string>
+    <string name="login_site_info_fallback_dialog_title">Masalah Koneksi</string>
     <string name="woopos_refund_back_to_order_button">Kembali ke pesanan</string>
     <string name="woopos_refund_notifying_store_subtitle">Menerapkan pengembalian dana untuk pesanan</string>
     <string name="woopos_refund_notifying_store_title">Memberi tahu toko</string>
@@ -1642,6 +1653,7 @@ Language: id
     <string name="blaze_campaign_edit_ad_change_image_button">Ganti gambar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Terapkan</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
     <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
@@ -1651,7 +1663,6 @@ Language: id
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Tanggal mulai</string>
     <string name="product_creation_survey_button_dont_show_again">Jangan Tampilkan Lagi</string>
     <string name="product_creation_survey_button_remind_me_later">Ingatkan Saya Nanti</string>
@@ -2021,8 +2032,6 @@ Language: id
     <string name="coupon_type_picker_percentage_content_description">Jenis kupon - persentase diskon</string>
     <string name="coupon_type_picker_title">Buat Kupon</string>
     <string name="coupon_list_add_coupon_content_description">Tambah kupon</string>
-    <string name="empty_order_test_order_button">Coba pesanan uji coba</string>
-    <string name="empty_order_test_order_message">Buat pesanan uji coba untuk menjamin kelancaran pengalaman pelanggan di toko Anda di WooCommerce</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Tambahkan detail secara manual</string>
     <string name="order_creation_customer_search_old_wc_hint">Cari pelanggan berdasarkan</string>
     <string name="order_creation_customer_search_empty_email">Tidak ada alamat email</string>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/woo_ds_toolbar_icon_button_ripple">
+
+    <item>
+        <inset
+            android:insetBottom="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetLeft="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetRight="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetTop="@dimen/woo_ds_toolbar_icon_border_inset">
+            <shape android:shape="rectangle">
+                <solid android:color="@android:color/transparent" />
+                <stroke
+                    android:width="@dimen/woo_ds_toolbar_icon_border_width"
+                    android:color="@color/woo_ds_color_outline_variant" />
+                <corners android:radius="@dimen/woo_ds_toolbar_icon_corner_radius" />
+            </shape>
+        </inset>
+    </item>
+
+    <item android:id="@android:id/mask">
+        <inset
+            android:insetBottom="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetLeft="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetRight="@dimen/woo_ds_toolbar_icon_border_inset"
+            android:insetTop="@dimen/woo_ds_toolbar_icon_border_inset">
+            <shape android:shape="rectangle">
+                <solid android:color="@android:color/white" />
+                <corners android:radius="@dimen/woo_ds_toolbar_icon_corner_radius" />
+            </shape>
+        </inset>
+    </item>
+</ripple>

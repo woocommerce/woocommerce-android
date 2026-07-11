@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 15:58:04+0000
+Translation-Revision-Date: 2026-06-30 16:58:30+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Bu sitenin güvenlik sertifikasını doğrulayamadık. Barındırma sağlayıcınızla veya site yöneticinizle iletişime geçip tekrar deneyin.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Güvenli bir bağlantı kuramadık. Cihazınızın tarih ve saatinin doğru olup olmadığını kontrol edin ve tekrar deneyin.</string>
+    <string name="woopos_refund_preview_error">İade toplamı hesaplanamadı. Lütfen tekrar deneyin.</string>
+    <string name="woopos_orders_details_refresh_error">Sipariş yenilenemedi. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="store_connection_error_dialog_contact_support">Desteğe başvurun</string>
+    <string name="store_connection_error_dialog_body">Mağazanıza bağlanırken sorun yaşıyoruz. Bu genellikle WordPress sitenizdeki bir bağlantı sorunudur, genellikle bir güvenlik eklentisi, yeni bir eklenti güncellemesi veya yenilenmesi gereken bir Jetpack bağlantısından kaynaklanır. WooCommerce uygulaması bunu telefonunuzdan düzeltemez.</string>
+    <string name="store_connection_error_dialog_title">Mağazanıza erişilemiyor</string>
+    <string name="site_picker_unknown_blog_error">Mağazanıza erişemedik, bu nedenle oturum kapatıldı. Devam etmek için lütfen bir mağaza seçin.</string>
+    <string name="login_site_info_fallback_dialog_cta">Site Kimlik Bilgileriyle Oturum Açın.</string>
+    <string name="login_site_info_fallback_dialog_message">Site ayrıntılarınızı doğrulayamadık. Bunun yerine site kimlik bilgilerinizle oturum açmayı deneyebilirsiniz.</string>
+    <string name="login_site_info_fallback_dialog_title">Bağlantı Sorunu</string>
     <string name="woopos_refund_back_to_order_button">Siparişe geri dön</string>
     <string name="woopos_refund_notifying_store_subtitle">Siparişe geri ödeme uygulanıyor</string>
     <string name="woopos_refund_notifying_store_title">Mağazaya bildiriliyor</string>
@@ -1969,8 +1980,8 @@ Language: tr
     <string name="store_onboarding_task_name_store_title">Mağazanıza ad verin</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC\'yi Etkinleştir</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Küçük Miktarda Tedarik Paketi (işaretleme gerekli)</string>
-    <string name="shipping_label_hazmat_option_lighters">Çakmak Paketi - Onaylı Çakmaklar</string>
     <string name="shipping_label_hazmat_option_limited_quantity">SINIRLI MİKTARDA Kara Paketi - Aerosoller, sprey dezenfektanlar, sprey boya, saç spreyi, propan, bütan, temizlik ürünleri vb. - Parfümler, oje, oje çıkarıcı, çözücüler, el dezenfektanı, ispirto, etanol bazlı ürünler vb. - Diğer sınırlı miktardaki yüzey malzemeleri (kozmetikler, temizlik ürünleri, boyalar vb.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Çakmak Paketi - Onaylı Çakmaklar</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 Tüketici Malları Paketi - Hava Yoluna Uygun ID8000 Tüketici Malları (Yanıcı olmayan aerosoller, Alev alabilen ve yanabilen sıvılar, Toksik Madde, Çeşitli tehlikeli maddeler)</string>
     <string name="shipping_label_hazmat_option_ground_only">Yalnızca Karaya Uygun Tehlikeli Maddeler (Listede yer almayan ancak yalnızca yüzeyle sınırlı olan maddeler için)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">İstisnai Miktarda Tedarik Paketi (örneğin, küçük hacimlerde yanıcı sıvılar, aşındırıcı, toksik veya çevreye zararlı maddeler - işaretleme gereklidir)</string>
@@ -2021,8 +2032,6 @@ Language: tr
     <string name="coupon_type_picker_percentage_content_description">Kupon türü - yüzde indirimi</string>
     <string name="coupon_type_picker_title">Kupon Oluştur</string>
     <string name="coupon_list_add_coupon_content_description">Kupon ekle</string>
-    <string name="empty_order_test_order_button">Bir test siparişi deneyin</string>
-    <string name="empty_order_test_order_message">WooCommerce işleminizin kusursuz bir müşteri deneyimi sağladığından emin olmak için bir test siparişi gerçekleştirin</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Ayrıntıları el ile ekle</string>
     <string name="order_creation_customer_search_old_wc_hint">Müşterilerde şuna göre ara</string>
     <string name="order_creation_customer_search_empty_email">E-posta adresi yok</string>

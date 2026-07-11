@@ -127,6 +127,18 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val storeDesignSystemComponentCatalogFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_widgets,
+            iconTint = R.color.color_primary,
+            label = UiStringRes(R.string.dev_store_design_system_component_catalog),
+            isEnabled = true,
+            onClick = {
+                triggerEvent(DeveloperOptionsEvents.OpenStoreDesignSystemComponentCatalog)
+            }
+        )
+    )
+
     private val fetchTestAnnouncementFlow = flowOf(
         NonToggleableListItem(
             icon = R.drawable.ic_info_outline_20dp,
@@ -156,6 +168,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         apiFakerFlow,
         sendSentryReportFlow,
         featureFlagsFlow,
+        storeDesignSystemComponentCatalogFlow,
         fetchTestAnnouncementFlow,
         resetScheduledImportNoticeFlow
     ) { items ->
@@ -228,6 +241,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
         data object OpenApiFaker : DeveloperOptionsEvents()
         data object OpenFeatureFlags : DeveloperOptionsEvents()
+        data object OpenStoreDesignSystemComponentCatalog : DeveloperOptionsEvents()
         data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : DeveloperOptionsEvents()
     }
 
