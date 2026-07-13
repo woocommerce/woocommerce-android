@@ -106,16 +106,11 @@ tags:
     id: "bottom_button"
     retryTapIfNoChange: true
 
-# Verify the app shows an error that prevents proceeding to the store.
-# The configured non-Woo store can trigger one of two strings depending
-# on the account's relationship to the site:
-#   - login_not_woo_store: "It looks like %1$s is not a WooCommerce site."
-#   - login_jetpack_not_connected: "It looks like your account is not
-#     connected to %1$s's Jetpack"
-# Accept either so the test stays useful if the site-to-account mapping
-# changes.
+# Verify the configured WordPress site is rejected specifically because it
+# does not have WooCommerce. A Jetpack-account error does not prove this P2
+# check and must fail so the fixture can be repaired.
 - extendedWaitUntil:
-    visible: ".*not a WooCommerce site.*|.*not connected to.*Jetpack.*"
+    visible: ".*not a WooCommerce site.*"
     timeout: 30000
 
 - takeScreenshot: login_not_woo_store
