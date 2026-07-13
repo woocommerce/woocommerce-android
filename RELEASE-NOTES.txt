@@ -4,6 +4,7 @@
 
 25.3
 -----
+- [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 
 
 25.2
