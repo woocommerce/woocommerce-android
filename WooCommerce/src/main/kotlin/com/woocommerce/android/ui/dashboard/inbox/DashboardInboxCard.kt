@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.dashboard.inbox
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,8 +45,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError

@@ -36,8 +36,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.coupons.CouponListFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
-import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView

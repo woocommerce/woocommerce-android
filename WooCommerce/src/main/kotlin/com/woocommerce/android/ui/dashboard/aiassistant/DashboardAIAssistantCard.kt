@@ -145,6 +145,7 @@ private const val SPARKLE_SCALE_MAX = 1.0f
 private const val SPARKLE_ALPHA_MIN = 0.6f
 private const val SPARKLE_ALPHA_MAX = 1.0f
 private const val SPARKLE_PULSE_DURATION_MS = 800
+
 @PreviewLightDark
 @Composable
 private fun DashboardAIAssistantCardPreview() {
