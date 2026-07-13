@@ -7,7 +7,9 @@
 #   - Add a product from the product selector
 #   - Add a fixed-amount custom amount with a name
 #   - Add an existing customer by searching their email
-#   - Edit the added customer's last name
+#   - Prove the selected customer's identity is attached to the draft
+#   - Edit only the order-local customer copy and persist its marker
+#   - Prove the underlying store customer remains unchanged
 #   - Add a customer-facing note
 #   - All sections display the added data
 #   - Tap "Create" to submit the order — lands on order detail
@@ -385,11 +387,23 @@ tags:
     visible:
       id: "customer_list_item"
     timeout: 20000
-    label: "Wait for an existing customer"
+    label: "Require at least one existing customer"
+
+# Capture and tap the second visible email. Some stores expose an address-only
+# first customer whose list summary has an email but whose full customer fetch
+# does not; requiring another live row keeps the draft identity assertion real.
+- copyTextFrom:
+    text: ".*@.*"
+    index: 1
+- evalScript: ${output.selectedCustomerEmail = maestro.copiedText.trim()}
+- evalScript: |
+    if (!output.selectedCustomerEmail || output.selectedCustomerEmail.indexOf('@') < 1) {
+        throw new Error('Existing customer prerequisite requires at least two customers with email addresses');
+    }
 
 - tapOn:
-    id: "customer_list_item"
-    index: 0
+    text: ".*@.*"
+    index: 1
     retryTapIfNoChange: true
     label: "Select existing customer"
 
@@ -420,6 +434,10 @@ tags:
     visible: ".*Last name.*"
     timeout: 15000
 
+- assertVisible:
+    text: "${output.selectedCustomerEmail}"
+    label: "Customer editor shows the selected live identity"
+
 # Rewrite the last name with a per-suite-run-unique marker so
 # orders_refund.yaml can find THIS exact order and won't pick up an
 # already-refunded leftover from a previous suite run. SUITE_RUN_ID is
@@ -440,6 +458,29 @@ tags:
     id: "menu_done"
     label: "Save customer edit"
 
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+# The order summary currently omits the name/email block after this edit even
+# though the draft retains both values. Reopen the editor to verify the actual
+# draft model before submitting it.
+- scrollUntilVisible:
+    element: "Edit customer details"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Edit customer details"
+    retryTapIfNoChange: true
+    label: "Reopen customer editor to verify draft persistence"
+- extendedWaitUntil:
+    visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    timeout: 15000
+    label: "Edited customer marker is retained by the draft"
+- assertVisible:
+    text: "${output.selectedCustomerEmail}"
+    label: "Selected customer identity is retained by the draft"
+- back
 - extendedWaitUntil:
     visible: "New order"
     timeout: 15000
@@ -497,3 +538,89 @@ tags:
     timeout: 30000
 
 - takeScreenshot: order_create_completed
+
+# Locate the exact completed order and prove the order-local customer edit was
+# persisted by the backend, rather than only rendered in the draft.
+- tapOn:
+    id: "menu_search"
+    label: "Search for the completed smoke order"
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+- tapOn:
+    id: "search_src_text"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: SmokeTest-${SUITE_RUN_ID}
+- pressKey: Enter
+- extendedWaitUntil:
+    visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    timeout: 30000
+    label: "Require the persisted order customer marker"
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open the completed smoke order"
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 20000
+- scrollUntilVisible:
+    element: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Verify the edited marker on persisted order details"
+
+# Return to a fresh draft, reopen the customer picker, and search by the
+# captured email. The original name/email must still be present, proving the
+# arbitrary live customer account was not modified by the order edit.
+- back
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Open a fresh order for customer integrity check"
+- scrollUntilVisible:
+    element: "Add customer details"
+    direction: DOWN
+    timeout: 15000
+    label: "Reach customer picker in fresh order"
+- tapOn:
+    text: "Add customer details"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: "Search for customers"
+    timeout: 15000
+- tapOn: "Search for customers"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${output.selectedCustomerEmail}
+- hideKeyboard
+- extendedWaitUntil:
+    visible: "${output.selectedCustomerEmail}"
+    timeout: 20000
+    label: "Find the original customer after order creation"
+- copyTextFrom:
+    text: "${output.selectedCustomerEmail}"
+- evalScript: |
+    if (maestro.copiedText.trim() !== output.selectedCustomerEmail) {
+        throw new Error('Store customer email changed after editing the order-local copy');
+    }
+- assertNotVisible:
+    text: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    label: "Order-local marker was not persisted to the store customer"
+- back
+- back
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- takeScreenshot: order_create_customer_integrity_verified
