@@ -93,6 +93,31 @@ tags:
 
 - takeScreenshot: order_detail_payment
 
+# ── See receipt ───────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "See receipt"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to See receipt"
+
+- tapOn:
+    text: "See receipt"
+    retryTapIfNoChange: true
+    label: "Open receipt preview"
+
+- extendedWaitUntil:
+    visible: ".*Receipt Preview.*|.*Print.*|.*Send.*"
+    timeout: 30000
+    label: "Wait for receipt preview"
+
+- takeScreenshot: order_receipt_preview
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
 # ── Add an order note ────────────────────────────────────────────────
 # Use the addNoteContainer ID directly — more robust than matching the
 # "Add a note" text which is not tagged as clickable (the outer
