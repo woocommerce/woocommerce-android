@@ -552,9 +552,8 @@ class MainActivity :
      * Returns the current top level fragment (ie: the one showing in the bottom nav)
      */
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
-        val tag = binding.bottomNav.currentPosition.getTag()
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        return navHostFragment.childFragmentManager.findFragmentByTag(tag) as? TopLevelFragment
+        return navHostFragment.childFragmentManager.primaryNavigationFragment as? TopLevelFragment
     }
 
     /**

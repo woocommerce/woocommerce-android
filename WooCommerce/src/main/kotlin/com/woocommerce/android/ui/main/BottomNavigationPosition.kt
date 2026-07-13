@@ -24,5 +24,3 @@ fun findNavigationPositionById(id: Int): BottomNavigationPosition = when (id) {
     BottomNavigationPosition.MORE.id -> BottomNavigationPosition.MORE
     else -> BottomNavigationPosition.MY_STORE
 }
-
-fun BottomNavigationPosition.getTag(): String = id.toString()

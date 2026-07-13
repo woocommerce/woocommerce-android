@@ -19,7 +19,7 @@ design-system components and foundations without changing its hosting model or p
 - It is already Compose, so it tests design-system adoption without XML/View layout migration.
 - It is a visible Store app settings surface.
 - It is not a product, order, payment, fulfillment, or POS workflow.
-- It has useful design-system coverage: page text, section headers, cells/rows, switches, icon
+- It has useful design-system coverage: page text, cells/rows, switches, icon
   buttons, dividers, progress indicator, scrolling, and snackbar-triggering behavior.
 - Existing preview coverage includes light, dark, RTL, and smaller-screen variants.
 
@@ -40,7 +40,6 @@ The pattern consumes production-ready design-system APIs for:
 
 - `WooTheme.*` foundations under `WooDesignSystemThemeWithBackground`.
 - Page title/body typography.
-- Section header.
 - Cell or settings row.
 - Switch.
 - Icon button.
@@ -72,7 +71,7 @@ Before reusing this as an existing-Compose adoption pattern:
 - Verify policies navigation.
 - Verify snackbar behavior if touched.
 - Verify the same screen implementation renders under the selected design-system root.
-- Verify DS components do not fall back to hardcoded light defaults.
+- Verify DS components do not fall back to static light defaults.
 - Review light and dark previews/screenshots.
 - Confirm no POS APIs or patterns were introduced.
 

@@ -15,6 +15,7 @@ class PrivacySettingsRepository @Inject constructor(
 ) {
     companion object {
         private const val SETTING_TRACKS_OPT_OUT = "tracks_opt_out"
+        private const val SETTING_CRASH_REPORTING_OPT_OUT = "woomobile_crash_reporting_opt_out"
     }
 
     suspend fun updateTracksSetting(enable: Boolean): Result<Unit> {
@@ -38,6 +39,27 @@ class PrivacySettingsRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun updateCrashReportingSetting(enable: Boolean): Result<Unit> {
+        val action =
+            AccountActionBuilder.newPushSettingsAction(
+                AccountStore.PushAccountSettingsPayload().apply {
+                    params = mapOf(SETTING_CRASH_REPORTING_OPT_OUT to !enable)
+                }
+            )
+
+        val event: AccountStore.OnAccountChanged =
+            dispatcher.dispatchAndAwait<AccountStore.PushAccountSettingsPayload?, AccountStore.OnAccountChanged>(
+                action
+            )
+
+        return when {
+            event.isError -> Result.failure(OnChangedException(event.error))
+            else -> Result.success(Unit)
+        }
+    }
+
+    fun accountCrashReportingOptOut(): Boolean? = accountStore.account.crashReportingOptOut
 
     suspend fun updateAccountSettings(): Result<Unit> {
         val event: AccountStore.OnAccountChanged =

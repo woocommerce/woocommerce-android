@@ -36,6 +36,7 @@ class AccountMapperTest {
         assertThat(entity.twoStepEnabled).isEqualTo(model.twoStepEnabled)
         assertThat(entity.webAddress).isEqualTo(model.webAddress)
         assertThat(entity.tracksOptOut).isEqualTo(model.tracksOptOut)
+        assertThat(entity.crashReportingOptOut).isEqualTo(model.crashReportingOptOut)
         assertThat(entity.usernameCanBeChanged).isEqualTo(model.usernameCanBeChanged)
     }
 
@@ -66,6 +67,7 @@ class AccountMapperTest {
         assertThat(model.twoStepEnabled).isEqualTo(entity.twoStepEnabled)
         assertThat(model.webAddress).isEqualTo(entity.webAddress)
         assertThat(model.tracksOptOut).isEqualTo(entity.tracksOptOut)
+        assertThat(model.crashReportingOptOut).isEqualTo(entity.crashReportingOptOut)
         assertThat(model.usernameCanBeChanged).isEqualTo(entity.usernameCanBeChanged)
     }
 
@@ -137,6 +139,7 @@ class AccountMapperTest {
         twoStepEnabled = true
         webAddress = "https://web.address"
         tracksOptOut = false
+        crashReportingOptOut = true
         usernameCanBeChanged = true
     }
 
@@ -162,6 +165,7 @@ class AccountMapperTest {
         twoStepEnabled = true,
         webAddress = "https://web.address",
         tracksOptOut = false,
+        crashReportingOptOut = true,
         usernameCanBeChanged = true,
     )
 }

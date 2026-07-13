@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 09:58:06+0000
+Translation-Revision-Date: 2026-07-01 09:54:12+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">We konden het beveiligingscertificaat van deze site niet verifiëren. Neem contact op met je hostingprovider of sitebeheerder en probeer het opnieuw.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">We konden geen veilige verbinding tot stand brengen. Controleer of de datum en tijd van je apparaat correct zijn en probeer het opnieuw.</string>
+    <string name="woopos_refund_preview_error">Kon het restitutietotaal niet berekenen. Probeer het nog eens.</string>
+    <string name="woopos_orders_details_refresh_error">Kan bestelling niet vernieuwen. Controleer je verbinding en probeer het nogmaals.</string>
+    <string name="store_connection_error_dialog_contact_support">Neem contact op met de ondersteuning</string>
+    <string name="store_connection_error_dialog_body">We kunnen geen verbinding maken met je winkel. Dit is meestal een verbindingsprobleem op je WordPress-site, vaak veroorzaakt door een beveiligingsplugin, een recente plugin-update of een Jetpack-verbinding die moet worden vernieuwd. De WooCommerce-app kan dit niet oplossen vanaf je telefoon.</string>
+    <string name="store_connection_error_dialog_title">Je winkel is niet bereikbaar</string>
+    <string name="site_picker_unknown_blog_error">We konden geen toegang krijgen tot je winkel, dus deze is uitgelogd. Selecteer een winkel om door te gaan.</string>
+    <string name="login_site_info_fallback_dialog_cta">Inloggen met site-inloggegevens</string>
+    <string name="login_site_info_fallback_dialog_message">We konden je sitegegevens niet verifiëren. Je kunt in plaats daarvan proberen in te loggen met de inloggegevens van je site.</string>
+    <string name="login_site_info_fallback_dialog_title">Verbindingsprobleem</string>
     <string name="woopos_refund_back_to_order_button">Terug naar bestelling</string>
     <string name="woopos_refund_notifying_store_subtitle">Restitutie toepassen op bestelling</string>
     <string name="woopos_refund_notifying_store_title">Winkel op de hoogte stellen</string>
@@ -1644,11 +1655,11 @@ Language: nl
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Toepassen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagen</string>
     <string name="blaze_campaign_budget_impressions_done_button">Gereed</string>
-    <string name="blaze_campaign_budget_impressions_info">Impressies reflecteren hoe vaak je advertentie door potentiële klanten te zien is.\n\n\n        Door wisselend online verkeer en gebruikersgedrag kunnen er geen exacte getallen gegarandeerd worden maar we proberen er voor te zorgen dat de daadwerkelijke impressies van je advertentie zoveel mogelijk overeenkomen met het doelaantal.\n\n\n        Vergeet niet dat het bij impressies draait om zichtbaarheid en niet om de acties die worden ondernomen door de mensen die het zien.</string>
     <string name="blaze_campaign_budget_impressions_title">Impressies</string>
     <string name="blaze_campaign_budget_update_button">Updaten</string>
     <string name="blaze_campaign_budget_edit_duration_button">Bewerken</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschatte aantal mensen dat per dag bereikt wordt</string>
+    <string name="blaze_campaign_budget_impressions_info">Impressies reflecteren hoe vaak je advertentie door potentiële klanten te zien is.\n\n\n        Door wisselend online verkeer en gebruikersgedrag kunnen er geen exacte getallen gegarandeerd worden maar we proberen er voor te zorgen dat de daadwerkelijke impressies van je advertentie zoveel mogelijk overeenkomen met het doelaantal.\n\n\n        Vergeet niet dat het bij impressies draait om zichtbaarheid en niet om de acties die worden ondernomen door de mensen die het zien.</string>
     <string name="blaze_campaign_budget_days_duration">gedurende %1$s dagen</string>
     <string name="blaze_campaign_budget_toolbar_title">Stel je budget in</string>
     <string name="blaze_campaign_preview_target_default_value">Alles</string>
@@ -1970,8 +1981,8 @@ Language: nl
     <string name="store_onboarding_task_name_store_title">Geef je winkel een naam</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">NFC inschakelen</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Provisiepakket kleine hoeveelheid (markering vereist)</string>
-    <string name="shipping_label_hazmat_option_lighters">Aanstekerspakket - goedgekeurde aanstekers</string>
     <string name="shipping_label_hazmat_option_limited_quantity">Grondpakket LTD QTY - aerosolen, spuitontsmettingsmiddelen, spuitverf, haarspray, propaan, butaan, reinigingsproducten enz. - Parfums, nagellak, nagellakverwijderaar, oplosmiddelen, handreiniging, schoonmaakalcohol, ethanolproducten enz. - Andere oppervlaktematerialen in beperkte hoeveelheid (cosmetica, reinigingsproducten, verf enz.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Aanstekerspakket - goedgekeurde aanstekers</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000 Consumer Commodity-pakket - Air Eligible ID8000 Consumer Commodity (niet-ontvlambare aerosolen, vlambare vloeistoffen, giftige stof, verschillende gevaarlijke materialen)</string>
     <string name="shipping_label_hazmat_option_ground_only">Gevaarlijke materialen grond (voor artikelen die niet zijn vermeld, maar beperkt zijn tot alleen oppervlak)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Provisiepakket uitzonderingshoeveelheid (bv. kleine hoeveelheden vlambare vloeistoffen, schurende, giftige of milieugevaarlijke materialen - markering vereist)</string>
@@ -2022,8 +2033,6 @@ Language: nl
     <string name="coupon_type_picker_percentage_content_description">Type coupon - procentuele korting</string>
     <string name="coupon_type_picker_title">Coupon aanmaken</string>
     <string name="coupon_list_add_coupon_content_description">Coupon toevoegen</string>
-    <string name="empty_order_test_order_button">Probeer een proefbestelling</string>
-    <string name="empty_order_test_order_message">Voer een proefbestelling uit om je ervan te verzekeren dat jouw WooCommerce-proces een naadloze klantervaring levert</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Details handmatig toevoegen</string>
     <string name="order_creation_customer_search_old_wc_hint">Klanten zoeken op</string>
     <string name="order_creation_customer_search_empty_email">Geen e-mailadres</string>

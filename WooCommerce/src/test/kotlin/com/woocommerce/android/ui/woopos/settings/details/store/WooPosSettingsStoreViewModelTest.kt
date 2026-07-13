@@ -126,7 +126,7 @@ class WooPosSettingsStoreViewModelTest {
     }
 
     @Test
-    fun `when edit receipt clicked on non-CIAB site, then emits URL with wc-settings path`() = runTest {
+    fun `when edit receipt clicked, then emits URL with wc-settings path`() = runTest {
         // GIVEN
         val site = SiteModel().apply { url = "https://mystore.com" }
         whenever(selectedSite.get()).thenReturn(site)

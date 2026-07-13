@@ -371,7 +371,7 @@ class SitePickerViewModel @Inject constructor(
         repository.fetchSiteInfo(url).fold(
             onSuccess = {
                 val primaryButton = when {
-                    it.isWPCom || it.isCommerceGarden -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
+                    it.isWPCom -> AccountMismatchPrimaryButton.CONNECT_WPCOM_SITE
                     else -> AccountMismatchPrimaryButton.CONNECT_JETPACK
                 }
                 if (event.value !is NavigateToAccountMismatchScreen) {

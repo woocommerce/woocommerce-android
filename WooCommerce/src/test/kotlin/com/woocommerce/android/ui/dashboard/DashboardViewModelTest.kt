@@ -871,6 +871,19 @@ class DashboardViewModelTest : BaseUnitTest() {
             assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
         }
 
+    @Test
+    fun `when the dashboard is interacted with, then the usage tracks event emitter is notified`() =
+        testBlocking {
+            // GIVEN
+            setup {}
+
+            // WHEN
+            viewModel.onDashboardInteracted()
+
+            // THEN
+            verify(usageTracksEventEmitter).interacted(any())
+        }
+
     private companion object {
         fun dashboardWidget(
             type: DashboardWidget.Type,

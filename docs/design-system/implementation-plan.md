@@ -65,8 +65,8 @@ Expected output:
 - Manual i1 runtime tokens, with colors as the XML-safe resource-backed exception and non-color
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
-- Source-backed color tokens exposed through `WooTheme.colors`, grouped shallowly by Store authoring
-  intent: core, container, surface, outline, status, alert, background, overlay, and palette.
+- Source-backed color tokens exposed through `WooTheme.colors`, with direct core roles plus shallow
+  Store authoring groups: container, surface, status, background, overlay, alert, and palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
@@ -74,7 +74,7 @@ Expected output:
   `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke`.
 - Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
   no separate `WooTheme.semanticColors`.
-- `surfaceDim`, `surfaceBright`, and `surfaceContainerHighest` as source-backed Store roles.
+- `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
 - State layers remain internal-first until semantic names and mode behavior are approved.
 - `WooTheme.iconSize` scoped to glyph sizes only.
 - Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
@@ -83,9 +83,6 @@ Expected output:
 - Token map entries for implemented foundations.
 - Design-system module code does not import app resources, legacy app theme classes, Hilt, POS, or
   Store feature packages.
-- A detekt guardrail that reports files importing both legacy
-  `com.woocommerce.android.ui.compose.theme.*` and design-system
-  `com.woocommerce.android.ui.compose.designsystem.*` APIs.
 
 Implementation risks to verify when code work begins:
 
@@ -122,9 +119,9 @@ Expected output:
 
 Production screens should consume only production-ready components. In-progress components can remain preview-only.
 
-The initial production subset should cover top/navigation bar, page title/body/link text styles or
-wrappers, primary button, list/cell rows, section header, switch, icon button, divider, progress
-indicator, and the spacing/radius/color/typography tokens they depend on.
+The initial production subset should cover top/navigation bar, page title/body/link text-token usage,
+primary button, list/cell rows, switch, icon button, divider, progress indicator, and the
+spacing/radius/color/typography tokens they depend on.
 
 Chrome components should follow [rollout-direction.md](rollout-direction.md): unified visual look,
 not one forced implementation. Compose-owned screens use `WooTopAppBar`; heavy XML screens may keep a
