@@ -105,15 +105,15 @@ tags:
 # The More Menu header (avatar + site name + plan) is a button that
 # calls onSwitchStoreClick → StartSitePickerEvent. There's no "Switch
 # store" label on the header; the header itself is the tap target. It
-# sits just below the status bar on the More Menu, so tap by point on
-# the top header area. SitePickerActivity shows the "Select store"
-# title (site_picker_title).
+# sits just below the status bar on the More Menu. Tap its vertical center;
+# 12% lands on the lower edge of this button on the phone profile.
+# SitePickerActivity shows the "Select store" title (site_picker_title).
 #
 # If the header is disabled (isStoreSwitcherEnabled=false, e.g.
 # application-password sites), this quarantined flow should fail until
 # setup/selector handling is repaired.
 - tapOn:
-    point: "50%,12%"
+    point: "50%,8%"
     label: "Tap store header to open site picker"
 
 - extendedWaitUntil:
