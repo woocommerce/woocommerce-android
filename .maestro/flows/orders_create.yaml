@@ -1,5 +1,5 @@
 # Smoke Test: Orders - Create Order
-# p2: orders.create.products, orders.create.variable-products, orders.create.quantity, orders.create.product-discount, orders.create.custom-amount, orders.create.custom-amount-note, orders.create.shipping, orders.create.customer-add, orders.create.customer-edit, orders.create.note
+# p2: orders.create.products, orders.create.quantity, orders.create.product-discount, orders.create.custom-amount, orders.create.custom-amount-note, orders.create.shipping, orders.create.customer-add, orders.create.customer-edit, orders.create.note
 # P2 ref: Orders > Create an order (add products, custom amount, customer, customer note)
 #
 # Verifies:
@@ -62,39 +62,32 @@ tags:
 
 - takeScreenshot: order_create_product_selector
 
-# Product rows report their variation count. Find one dynamically so order
-# coverage does not depend on a product name configured outside the app.
-- scrollUntilVisible:
-    element: ".*[1-9][0-9]* variations?.*"
-    direction: DOWN
-    timeout: 30000
-    label: "Find a Variable product with variations"
-
-- tapOn:
-    text: ".*[1-9][0-9]* variations?.*"
-    retryTapIfNoChange: true
-    label: "Open discovered Variable product"
-
-# Requiring a tagged variation row prevents a simple product, the parent row,
-# or the product selector's Clear Selection label from satisfying this check.
+# Select the first product the existing Add Products UI exposes. Variable
+# product behavior is covered independently by products_variations_and_tags.
 - extendedWaitUntil:
     visible:
-      id: "product_selector_variation_item"
-    timeout: 20000
-    label: "Require purchasable variation rows"
-
-- assertNotVisible:
-    text: ".*Search Products.*"
-    label: "Product search is replaced by variation selector"
+      id: "product_selector_product_item"
+    timeout: 15000
+    label: "Require a selectable product"
 
 - tapOn:
-    id: "product_selector_variation_item"
+    id: "product_selector_product_item"
     index: 0
-    label: "Select first available variation"
+    retryTapIfNoChange: true
+    label: "Select the first available product"
 
-# Variation selection is returned to the parent selector on Back. The parent
-# Done button is tagged separately so this cannot tap a stale text match.
-- back
+# If the selected row is Variable, choose its first purchasable variation and
+# return to the parent selector. Simple products remain on the parent directly.
+- runFlow:
+    when:
+      visible:
+        id: "product_selector_variation_item"
+    commands:
+      - tapOn:
+          id: "product_selector_variation_item"
+          index: 0
+          label: "Select first available variation"
+      - back
 
 - extendedWaitUntil:
     visible:
@@ -113,7 +106,7 @@ tags:
 
 - assertVisible:
     id: "order_product_card"
-    label: "Selected variation is present in the order"
+    label: "Selected product is present in the order"
 
 - takeScreenshot: order_create_with_product
 
@@ -121,7 +114,7 @@ tags:
 - tapOn:
     id: "order_product_card"
     retryTapIfNoChange: true
-    label: "Expand selected variation"
+    label: "Expand selected product"
 
 - extendedWaitUntil:
     visible: "Order count"
