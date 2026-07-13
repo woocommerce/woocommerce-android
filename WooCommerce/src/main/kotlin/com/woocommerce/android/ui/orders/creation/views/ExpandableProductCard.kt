@@ -86,6 +86,7 @@ import java.math.BigDecimal
 const val ANIM_DURATION_MILLIS = 128
 
 internal object ExpandableProductCardTestTags {
+    const val PRODUCT_CARD = "order_product_card"
     const val DISCOUNT_AMOUNT = "order_product_discount_amount"
 }
 
@@ -116,6 +117,7 @@ fun ExpandableProductCard(
     }
     ConstraintLayout(
         modifier = Modifier
+            .testTag(ExpandableProductCardTestTags.PRODUCT_CARD)
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

@@ -60,27 +60,18 @@ tags:
 
 - takeScreenshot: order_create_product_selector
 
-# Search for the configured variable product. The runner requires this value
-# only when the flow is selected.
-- tapOn:
-    text: ".*Search Products.*"
-    label: "Focus product search"
-
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
-    timeout: 20000
-    label: "Wait for configured variable product"
+# Product rows report their variation count. Find one dynamically so order
+# coverage does not depend on a product name configured outside the app.
+- scrollUntilVisible:
+    element: ".*[1-9][0-9]* variations?.*"
+    direction: DOWN
+    timeout: 30000
+    label: "Find a Variable product with variations"
 
 - tapOn:
-    id: "product_selector_product_item"
-    index: 0
-    label: "Open variable product variations"
+    text: ".*[1-9][0-9]* variations?.*"
+    retryTapIfNoChange: true
+    label: "Open discovered Variable product"
 
 # Requiring a tagged variation row prevents a simple product, the parent row,
 # or the product selector's Clear Selection label from satisfying this check.
@@ -119,16 +110,16 @@ tags:
     timeout: 15000
 
 - assertVisible:
-    text: "${WOO_VARIABLE_PRODUCT_NAME}"
-    label: "Selected variable product is present in the order"
+    id: "order_product_card"
+    label: "Selected variation is present in the order"
 
 - takeScreenshot: order_create_with_product
 
 # ── Adjust quantity and apply a product discount ─────────────────────
 - tapOn:
-    text: "${WOO_VARIABLE_PRODUCT_NAME}"
+    id: "order_product_card"
     retryTapIfNoChange: true
-    label: "Expand selected variable product"
+    label: "Expand selected variation"
 
 - extendedWaitUntil:
     visible: "Order count"
