@@ -9,13 +9,10 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,17 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import java.util.Calendar
 import java.util.Date
@@ -50,35 +47,35 @@ fun DashboardDateRangeHeader(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(
-            start = dimensionResource(id = dimen.major_100)
+            start = WooTheme.padding.padding5,
         )
     ) {
         Text(
             text = rangeSelection.selectionType.title,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
         )
 
         val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .weight(1f)
                 .wrapContentSize(align = Alignment.CenterStart)
                 .then(if (isCustomRange) Modifier.clickable(onClick = onCustomRangeClick) else Modifier)
-                .padding(dimensionResource(id = dimen.minor_100))
+                .padding(WooTheme.padding.padding3)
         ) {
             Text(
                 text = dateFormatted,
-                style = MaterialTheme.typography.body2,
+                style = WooTheme.text.bodyMedium.regular,
                 color = if (isCustomRange) {
-                    MaterialTheme.colors.primary
+                    WooTheme.colors.container.onSecondaryContainer
                 } else {
-                    MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    WooTheme.colors.surface.onDefault
                 },
                 modifier = Modifier.weight(1f, fill = false)
             )
@@ -86,67 +83,75 @@ fun DashboardDateRangeHeader(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_edit_pencil),
                     contentDescription = null,
-                    tint = MaterialTheme.colors.primary,
-                    modifier = Modifier.size(dimensionResource(id = dimen.image_minor_40))
+                    tint = WooTheme.colors.container.onSecondaryContainer,
+                    modifier = Modifier.size(WooTheme.iconSize.size20),
                 )
             }
         }
 
         Box {
             var isMenuExpanded by remember { mutableStateOf(false) }
-            IconButton(
+            WooIconButton(
                 onClick = { isMenuExpanded = true },
-                modifier = Modifier.testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON)
+                contentDescription = stringResource(
+                    id = R.string.dashboard_stats_edit_granularity_content_description
+                ),
+                modifier = Modifier.testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON),
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_date_range_24dp),
-                    contentDescription = stringResource(
-                        id = R.string.dashboard_stats_edit_granularity_content_description
-                    ),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    contentDescription = null,
                 )
             }
 
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
+                containerColor = WooTheme.colors.surface.default,
                 modifier = Modifier
                     .defaultMinSize(minWidth = 250.dp)
                     .testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_MENU)
             ) {
                 DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB.forEach {
                     DropdownMenuItem(
+                        text = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+                            ) {
+                                Text(
+                                    text = it.title,
+                                    style = WooTheme.text.bodyLarge.regular,
+                                    color = WooTheme.colors.surface.onDefault,
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (rangeSelection.selectionType == it) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
+                                        contentDescription = stringResource(
+                                            id = androidx.compose.ui.R.string.selected
+                                        ),
+                                        tint = WooTheme.colors.primary,
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.size(WooTheme.iconSize.size24))
+                                }
+                            }
+                        },
                         onClick = {
                             onTabSelected(it)
                             isMenuExpanded = false
-                        }
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(dimen.minor_100))
-                        ) {
-                            Text(text = it.title)
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (rangeSelection.selectionType == it) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
-                                    contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
-                                    tint = MaterialTheme.colors.primary
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.size(dimensionResource(dimen.image_minor_50)))
-                            }
-                        }
-                    }
+                        },
+                    )
                 }
             }
         }
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun DashboardDateRangeHeaderPreview() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         DashboardDateRangeHeader(
             rangeSelection = SelectionType.TODAY.generateSelectionData(
                 Date(),

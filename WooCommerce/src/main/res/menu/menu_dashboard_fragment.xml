@@ -4,6 +4,7 @@
     <item
         android:id="@+id/menu_share_store"
         android:icon="@drawable/ic_share_24dp"
+        android:title="@string/share_store_button"
         android:visible="false"
         app:showAsAction="ifRoom" />
     <item

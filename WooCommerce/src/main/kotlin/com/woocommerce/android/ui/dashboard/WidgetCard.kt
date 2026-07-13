@@ -3,31 +3,25 @@ package com.woocommerce.android.ui.dashboard
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCOverflowMenu
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 
@@ -41,78 +35,77 @@ fun WidgetCard(
     isError: Boolean,
     content: @Composable () -> Unit
 ) {
-    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-    Column(
-        modifier = modifier
-            .border(
-                width = dimensionResource(id = R.dimen.minor_10),
-                color = colorResource(id = R.color.woo_gray_5),
-                shape = roundedShape
-            )
-            .clip(roundedShape)
-            .background(MaterialTheme.colors.surface)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    DashboardCardSurface(modifier = modifier) {
+        val hasLeadingIcon = isError || iconResource != null
+        Row(
+            modifier = Modifier.padding(start = WooTheme.padding.padding5),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             if (isError) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100))
-                        .size(dimensionResource(id = R.dimen.major_125)),
-                    tint = colorResource(id = R.color.color_icon)
+                    contentDescription = null,
+                    modifier = Modifier.size(WooTheme.iconSize.size24),
+                    tint = WooTheme.colors.surface.onVariant,
                 )
             } else if (iconResource != null) {
                 Image(
                     painter = painterResource(id = iconResource),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100))
-                        .size(dimensionResource(id = R.dimen.major_125))
+                    contentDescription = null,
+                    modifier = Modifier.size(WooTheme.iconSize.size24),
                 )
             }
             Text(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(dimensionResource(id = R.dimen.major_100)),
+                    .padding(
+                        start = if (hasLeadingIcon) WooTheme.padding.padding5 else WooTheme.padding.padding0,
+                        top = WooTheme.padding.padding7,
+                        end = WooTheme.padding.padding5,
+                        bottom = WooTheme.padding.padding7,
+                    ),
                 text = stringResource(id = titleResource),
-                color = colorResource(id = R.color.color_on_surface_high),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold
+                color = WooTheme.colors.surface.onDefault,
+                style = WooTheme.text.titleSmall.emphasized,
             )
 
-            WCOverflowMenu(
+            DashboardOverflowMenu(
                 items = menu.items,
                 onSelected = { item -> item.action() },
                 mapper = { it.title.getText() },
-                tint = colorResource(id = R.color.color_on_surface_high)
             )
         }
 
         content()
 
         if (button != null && !isError) {
-            WCTextButton(
+            TextButton(
+                onClick = button.action,
                 modifier = Modifier
                     .padding(
-                        start = dimensionResource(id = R.dimen.minor_100),
-                        bottom = dimensionResource(id = R.dimen.minor_25)
+                        start = WooTheme.padding.padding3,
+                        bottom = WooTheme.padding.padding1,
                     ),
-                onClick = button.action
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = WooTheme.colors.container.onSecondaryContainer
+                ),
+                shape = RoundedCornerShape(WooTheme.radius.medium),
             ) {
                 Text(
                     text = button.title.getText(),
-                    style = MaterialTheme.typography.body1
+                    style = WooTheme.text.labelLarge.emphasized,
                 )
             }
         }
     }
 }
 
-@Preview
+@PreviewLightDark
+@Preview(name = "Large font", fontScale = 2f)
+@Preview(name = "RTL", locale = "ar")
 @Composable
 fun PreviewWidgetCard() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         WidgetCard(
             titleResource = R.string.blaze_campaign_title,
             iconResource = R.drawable.ic_blaze,
@@ -135,8 +128,10 @@ fun PreviewWidgetCard() {
             isError = false
         ) {
             Text(
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                text = "Content"
+                modifier = Modifier.padding(WooTheme.padding.padding5),
+                text = "Content",
+                style = WooTheme.text.bodyLarge.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
     }

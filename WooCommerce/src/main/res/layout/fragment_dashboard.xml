@@ -5,7 +5,7 @@
     android:id="@+id/my_store_stats_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_surface"
+    android:background="@color/woo_ds_color_background_section"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
