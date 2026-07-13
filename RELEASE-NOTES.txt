@@ -4,6 +4,7 @@
 
 25.3
 -----
+- [*] Fixed several My Store toolbar glitches when navigating away and back — the toolbar no longer re-expands and pushes the content down, the drop shadow no longer flickers, and the store name stays visible [https://github.com/woocommerce/woocommerce-android/pull/16249]
 
 
 25.2
