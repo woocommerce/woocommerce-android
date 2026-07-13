@@ -70,9 +70,7 @@ fun WidgetCard(
             )
 
             DashboardOverflowMenu(
-                items = menu.items,
-                onSelected = { item -> item.action() },
-                mapper = { it.title.getText() },
+                menu = menu,
             )
         }
 

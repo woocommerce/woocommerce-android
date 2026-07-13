@@ -30,10 +30,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 
 @Composable
 internal fun DashboardCardSurface(
@@ -68,10 +70,8 @@ internal fun DashboardCardSurface(
 }
 
 @Composable
-internal fun <T> DashboardOverflowMenu(
-    items: List<T>,
-    onSelected: (T) -> Unit,
-    mapper: @Composable (T) -> String,
+internal fun DashboardOverflowMenu(
+    menu: DashboardWidgetMenu,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -87,18 +87,18 @@ internal fun <T> DashboardOverflowMenu(
             onDismissRequest = { expanded = false },
             containerColor = WooTheme.colors.surface.default,
         ) {
-            items.forEach { item ->
+            menu.items.forEach { item ->
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = mapper(item),
+                            text = item.title.getText(),
                             style = WooTheme.text.bodyLarge.regular,
                             color = WooTheme.colors.surface.onDefault,
                         )
                     },
                     onClick = {
                         expanded = false
-                        onSelected(item)
+                        item.action()
                     },
                 )
             }
@@ -112,14 +112,10 @@ internal fun DashboardSkeleton(
     height: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Spacer(
+    DashboardSkeleton(
         modifier = modifier
             .width(width)
-            .height(height)
-            .background(
-                brush = dashboardSkeletonBrush(),
-                shape = RoundedCornerShape(WooTheme.radius.small),
-            ),
+            .height(height),
     )
 }
 

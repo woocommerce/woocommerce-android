@@ -2,9 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,7 +90,7 @@ fun DashboardContainer(
             onDashboardInteracted = dashboardViewModel::onDashboardInteracted,
         ) { widget, modifier ->
             DashboardWidgetCard(
-                it = widget,
+                widget = widget,
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = dashboardViewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
@@ -115,7 +113,10 @@ private fun DashboardLayout(
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
     ) {
-        val boxWithConstraintsScope = this
+        val numberOfColumns = calculateColumnNumber(
+            availableWidthInDp = maxWidth - WooTheme.padding.padding7 * 2,
+            visibleWidgetsCount = widgets.count { widget -> widget.isVisible },
+        )
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = onPullToRefresh,
@@ -131,18 +132,13 @@ private fun DashboardLayout(
                 )
             },
         ) {
-            DashboardWidgets(
+            DashboardWidgetLayout(
                 widgetUiModels = widgets,
                 scrollToTopTrigger = scrollToTopTrigger,
                 onDashboardInteracted = onDashboardInteracted,
                 widgetContent = widgetContent,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(WooTheme.colors.background.section),
-                numberOfColumns = calculateColumnNumber(
-                    availableWidthInDp = boxWithConstraintsScope.maxWidth - WooTheme.padding.padding7 * 2,
-                    visibleWidgetsCount = widgets.count { widget -> widget.isVisible },
-                ),
+                modifier = Modifier.fillMaxSize(),
+                numberOfColumns = numberOfColumns,
             )
         }
     }
@@ -150,7 +146,7 @@ private fun DashboardLayout(
 
 @OptIn(FlowPreview::class)
 @Composable
-private fun DashboardWidgets(
+private fun DashboardWidgetLayout(
     widgetUiModels: List<DashboardWidgetUiModel>,
     scrollToTopTrigger: Flow<Unit>,
     onDashboardInteracted: () -> Unit,
@@ -160,6 +156,10 @@ private fun DashboardWidgets(
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
     val scrollState = rememberScrollState()
+    val scrollModifier = modifier
+        .nestedScroll(nestedScrollInterop)
+        .verticalScroll(scrollState)
+        .padding(WooTheme.padding.padding7)
 
     LaunchedEffect(Unit) {
         scrollToTopTrigger.collect {
@@ -176,10 +176,7 @@ private fun DashboardWidgets(
 
     if (numberOfColumns == 1) {
         Column(
-            modifier = modifier
-                .nestedScroll(nestedScrollInterop)
-                .verticalScroll(scrollState)
-                .padding(WooTheme.padding.padding7),
+            modifier = scrollModifier,
             verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
         ) {
             widgetUiModels.forEach { widget ->
@@ -195,23 +192,17 @@ private fun DashboardWidgets(
             numberOfColumns = numberOfColumns,
             visibleUiWidgets = widgetUiModels.filter { widget -> widget.isVisible },
         )
-        Box(
-            modifier = modifier
-                .nestedScroll(nestedScrollInterop)
-                .verticalScroll(scrollState)
-                .padding(WooTheme.padding.padding7),
+        Row(
+            modifier = scrollModifier,
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5)
-            ) {
-                widgetColumns.forEach { columnWidgets ->
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
-                    ) {
-                        columnWidgets.forEach { widget ->
-                            widgetContent(widget, Modifier.fillMaxWidth())
-                        }
+            widgetColumns.forEach { columnWidgets ->
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
+                ) {
+                    columnWidgets.forEach { widget ->
+                        widgetContent(widget, Modifier.fillMaxWidth())
                     }
                 }
             }
@@ -236,7 +227,7 @@ private fun calculateColumnNumber(
 private fun splitWidgetsIntoColumns(
     numberOfColumns: Int,
     visibleUiWidgets: List<DashboardWidgetUiModel>
-): MutableList<MutableList<DashboardWidgetUiModel>> {
+): List<List<DashboardWidgetUiModel>> {
     val widgetColumns = MutableList<MutableList<DashboardWidgetUiModel>>(numberOfColumns) { mutableListOf() }
     for ((index, widget) in visibleUiWidgets.withIndex()) {
         widgetColumns[index % numberOfColumns].add(widget)
@@ -253,16 +244,16 @@ private fun DashboardWidgetUiModel.stableKey(): Any = when (this) {
 
 @Composable
 private fun DashboardWidgetCard(
-    it: DashboardWidgetUiModel,
+    widget: DashboardWidgetUiModel,
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     modifier: Modifier
 ) {
-    when (it) {
+    when (widget) {
         is ConfigurableWidget -> {
             ConfigurableWidgetCard(
-                widgetUiModel = it,
+                widgetUiModel = widget,
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = dashboardViewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
@@ -272,21 +263,21 @@ private fun DashboardWidgetCard(
 
         is ShareStoreWidget -> {
             ShareStoreCard(
-                onShareClicked = it.onShareClicked,
+                onShareClicked = widget.onShareClicked,
                 modifier = modifier
             )
         }
 
         is FeedbackWidget -> {
             FeedbackCard(
-                widget = it,
+                widget = widget,
                 modifier = modifier
             )
         }
 
         is NewWidgetsCard -> {
             NewWidgetsCard(
-                state = it,
+                state = widget,
                 modifier = modifier
             )
         }

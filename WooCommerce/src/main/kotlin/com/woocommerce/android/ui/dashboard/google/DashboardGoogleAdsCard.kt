@@ -167,7 +167,6 @@ private fun GoogleAdsLoading(
                     horizontal = dimensionResource(id = R.dimen.major_100),
                     vertical = dimensionResource(id = R.dimen.major_100)
                 )
-                .background(WooTheme.colors.surface.default)
                 .fillMaxWidth()
         ) {
             Image(

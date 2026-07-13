@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -182,34 +181,32 @@ fun StoreOnboardingCardContent(
     onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(WooTheme.colors.surface.default)
+    ) {
+        @Suppress("MagicNumber")
+        OnboardingCardProgressHeader(
+            tasks = onboardingState.tasks,
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .padding(horizontal = 16.dp)
+        )
         Column(
             modifier = Modifier
+                .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
-                .background(WooTheme.colors.surface.default)
         ) {
-            @Suppress("MagicNumber")
-            OnboardingCardProgressHeader(
-                tasks = onboardingState.tasks,
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .padding(horizontal = 16.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth()
-            ) {
-                onboardingState.tasks
-                    .filter { it.isCompleted.not() }
-                    .take(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD)
-                    .forEachIndexed { index, task ->
-                        DashboardOnboardingTaskItem(task, onTaskClicked)
-                        if (index < onboardingState.tasks.size - 1) {
-                            WooDivider()
-                        }
+            onboardingState.tasks
+                .filter { it.isCompleted.not() }
+                .take(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD)
+                .forEachIndexed { index, task ->
+                    DashboardOnboardingTaskItem(task, onTaskClicked)
+                    if (index < onboardingState.tasks.size - 1) {
+                        WooDivider()
                     }
-            }
+                }
         }
     }
 }

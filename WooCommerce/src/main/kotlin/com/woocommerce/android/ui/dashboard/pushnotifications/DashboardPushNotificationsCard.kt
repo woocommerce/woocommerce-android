@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardCardSurface
@@ -66,9 +65,7 @@ fun DashboardPushNotificationsCard(
                 )
             }
             DashboardOverflowMenu(
-                items = menu.items,
-                onSelected = { item -> item.action() },
-                mapper = { it.title.getText() },
+                menu = menu,
             )
         }
     }
