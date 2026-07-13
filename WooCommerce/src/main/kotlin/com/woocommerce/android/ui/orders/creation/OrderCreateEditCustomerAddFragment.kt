@@ -78,7 +78,7 @@ class OrderCreateEditCustomerAddFragment :
                 BILLING to sharedViewModel.currentDraft.billingAddress,
                 SHIPPING to (
                     sharedViewModel.currentDraft.shippingAddress.takeIf {
-                        it != sharedViewModel.currentDraft.billingAddress
+                        !it.isSameIgnoringEmail(sharedViewModel.currentDraft.billingAddress)
                     } ?: Address.EMPTY
                     )
             )
