@@ -1,5 +1,5 @@
 # Smoke Test: Google for Woo
-# p2: hub.google-for-woo
+# P2 probe: hub.google-for-woo (not counted when the store is ineligible)
 # P2 ref: Google for Woo > Trigger campaign creation, check webview loads
 #
 # Google for Woo is a CONDITIONAL hub-menu item — only shown when BOTH:

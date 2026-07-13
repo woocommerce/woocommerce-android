@@ -1,5 +1,5 @@
 # Smoke Test: Blaze - Campaign entry point
-# p2: hub.blaze.create
+# P2 probe: hub.blaze.create (not counted when the store hides Blaze)
 # P2 ref: Hub menu > Blaze > Create Campaign
 #
 # Tapping "Blaze" in the More Menu has three possible destinations
