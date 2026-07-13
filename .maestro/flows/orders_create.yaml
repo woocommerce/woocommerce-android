@@ -324,6 +324,7 @@ tags:
 - scrollUntilVisible:
     element: "Add note"
     direction: DOWN
+    centerElement: true
     timeout: 10000
     label: "Scroll to notes button in customer section"
 
@@ -365,6 +366,7 @@ tags:
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
+    centerElement: true
     timeout: 10000
     label: "Scroll to customer section"
 
@@ -407,6 +409,7 @@ tags:
 - scrollUntilVisible:
     element: "Edit customer details"
     direction: DOWN
+    centerElement: true
     timeout: 10000
     label: "Verify the existing customer is attached"
 
@@ -416,6 +419,7 @@ tags:
 - scrollUntilVisible:
     element: "Edit customer details"
     direction: DOWN
+    centerElement: true
     timeout: 10000
     label: "Scroll to customer section"
 
@@ -461,6 +465,7 @@ tags:
 - scrollUntilVisible:
     element: "Edit customer details"
     direction: DOWN
+    centerElement: true
     timeout: 10000
 - tapOn:
     text: "Edit customer details"
@@ -582,6 +587,7 @@ tags:
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
+    centerElement: true
     timeout: 15000
     label: "Reach customer picker in fresh order"
 - tapOn:
