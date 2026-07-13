@@ -143,21 +143,20 @@ tags:
 
 - takeScreenshot: products_filtered_variable
 
-# The lab smoke store has multiple Variable products. "Sweater" is the
-# stable product used for this flow; depending on current store data it
-# either exposes an existing Variations list or the Add variations setup
-# path.
+# Target the configured product exactly. This prevents another variable
+# product, or a parent product without purchasable variations, from satisfying
+# the coverage claim.
 - assertVisible:
-    text: "Sweater"
-    label: "Stable Variable product is visible"
+    text: "${WOO_VARIABLE_PRODUCT_NAME}"
+    label: "Configured Variable product is visible"
 
 # ─────────────────────────────────────────────────────────────────────
 # 6. Open a variable product from the filtered list
 # ─────────────────────────────────────────────────────────────────────
 - tapOn:
-    text: "Sweater"
+    text: "${WOO_VARIABLE_PRODUCT_NAME}"
     retryTapIfNoChange: true
-    label: "Open stable Variable product"
+    label: "Open configured Variable product"
 
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
@@ -178,167 +177,91 @@ tags:
 - takeScreenshot: products_variable_detail
 
 # ─────────────────────────────────────────────────────────────────────
-# 7. Assert the variation-specific area on the detail screen.
-#
-# "Variations" renders as a ComplexProperty when numVariations > 0 and
-# variationEnabledAttributes is non-empty. If the product has attributes
-# but no generated variations yet, the app exposes "Add variations";
-# exercise that setup path through the generate-all confirmation.
-#
-# "Variations attributes" renders as a PropertyGroup listing the
-# attribute→term map. It's also Variable-specific.
+# 7. Open Tags, then require the existing Variations path and a real
+#    variation detail. A product that only offers "Add variations" is an
+#    invalid fixture for this release-signal flow.
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
-    element: ".*Variations.*|.*Add variations.*"
+    element: "Tags"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to variations row"
+    label: "Scroll to Tags row"
 
-- takeScreenshot: products_variable_variations_area
+- tapOn:
+    text: "Tags"
+    retryTapIfNoChange: true
+    label: "Open product tags"
 
-- runFlow:
-    when:
-      visible: "Variations"
-    commands:
-      - assertVisible: "Variations"
-      - scrollUntilVisible:
-          element: ".*Variations attributes.*|.*Attributes.*"
-          direction: DOWN
-          timeout: 15000
-          label: "Scroll to Attributes row"
-      - takeScreenshot: products_variable_detail_rows
-      - tapOn:
-          text: "Variations"
-          retryTapIfNoChange: true
-          label: "Tap Variations row"
-      - extendedWaitUntil:
-          visible:
-            id: "variationList"
-          timeout: 20000
-          label: "Wait for variations list"
-      - assertVisible:
-          id: "variationList"
-          label: "Variations list loaded"
-      - takeScreenshot: products_variations_list
-      - tapOn:
-          id: "variationList"
-          index: 0
-          retryTapIfNoChange: true
-          label: "Open first variation"
-      - extendedWaitUntil:
-          visible:
-            id: "cardsRecyclerView"
-          timeout: 20000
-          label: "Wait for variation detail"
-      - assertVisible:
-          id: "cardsRecyclerView"
-          label: "Variation detail loaded with cards list"
-      - takeScreenshot: products_variation_detail
-      - back
-      - extendedWaitUntil:
-          visible:
-            id: "variationList"
-          timeout: 10000
-      - back
-      - extendedWaitUntil:
-          visible:
-            id: "editText"
-          timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "productTagsRecycler"
+    timeout: 15000
+    label: "Wait for product tags"
 
-- runFlow:
-    when:
-      visible: "Add variations"
-    commands:
-      - tapOn:
-          text: "Add variations"
-          retryTapIfNoChange: true
-          label: "Open Add variations setup"
-      - extendedWaitUntil:
-          visible: "Add attribute"
-          timeout: 15000
-      - assertVisible:
-          id: "attributeList"
-          label: "Existing attributes list is visible"
-      - assertVisible: "Color"
-      - tapOn:
-          text: "Color"
-          retryTapIfNoChange: true
-          label: "Select Color attribute"
-      - extendedWaitUntil:
-          visible:
-            id: "assignedTermList"
-          timeout: 15000
-      - assertVisible: "Beige"
-      - assertVisible: "Green"
-      - tapOn:
-          id: "menu_next"
-          retryTapIfNoChange: true
-          label: "Continue from Color terms"
-      - extendedWaitUntil:
-          visible: "Attributes"
-          timeout: 15000
-      - assertVisible: "Color"
-      - assertVisible: "Beige, Green"
-      - tapOn:
-          text: "NEXT"
-          retryTapIfNoChange: true
-          label: "Continue from Attributes review"
-      - extendedWaitUntil:
-          visible: "Attributes created"
-          timeout: 15000
-      - assertVisible:
-          id: "generate_variation_button"
-          label: "Generate variation CTA is visible"
-      - tapOn:
-          id: "generate_variation_button"
-          retryTapIfNoChange: true
-          label: "Open variation generation options"
-      - extendedWaitUntil:
-          visible: "Generate all variations"
-          timeout: 15000
-      - assertVisible:
-          id: "all_variation"
-          label: "Generate all variations option is visible"
-      - tapOn:
-          id: "all_variation"
-          retryTapIfNoChange: true
-          label: "Select Generate all variations"
-      - extendedWaitUntil:
-          visible: "Generate all variations?"
-          timeout: 10000
-      - takeScreenshot: products_variation_generate_confirmation
-      - tapOn:
-          text: "CANCEL"
-          label: "Cancel generation confirmation"
-      - runFlow:
-          when:
-            visible: "Generate all variations"
-          commands:
-            - back
-      - runFlow:
-          when:
-            visible: "Attributes created"
-          commands:
-            - back
-      - runFlow:
-          when:
-            visible: "Attributes"
-          commands:
-            - back
-      - runFlow:
-          when:
-            visible: "Color"
-          commands:
-            - back
-      - runFlow:
-          when:
-            visible: "Add attribute"
-          commands:
-            - back
-      - extendedWaitUntil:
-          visible:
-            id: "editText"
-          timeout: 15000
+- takeScreenshot: products_variable_tags
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- scrollUntilVisible:
+    element: "Variations"
+    direction: DOWN
+    timeout: 15000
+    label: "Require existing Variations row"
+
+- scrollUntilVisible:
+    element: ".*Variations attributes.*|.*Attributes.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Require variation attributes"
+
+- takeScreenshot: products_variable_detail_rows
+
+- scrollUntilVisible:
+    element: "Variations"
+    direction: UP
+    timeout: 15000
+    label: "Return to Variations row"
+
+- tapOn:
+    text: "Variations"
+    retryTapIfNoChange: true
+    label: "Open Variations"
+
+- extendedWaitUntil:
+    visible:
+      id: "variationList"
+    timeout: 20000
+    label: "Wait for variations list"
+
+- tapOn:
+    id: "variationList"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open first available variation"
+
+- extendedWaitUntil:
+    visible:
+      id: "cardsRecyclerView"
+    timeout: 20000
+    label: "Wait for variation detail"
+
+- takeScreenshot: products_variation_detail
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "variationList"
+    timeout: 10000
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
 
 # ─────────────────────────────────────────────────────────────────────
 # 8. Back out cleanly — product detail → products list

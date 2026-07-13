@@ -15,6 +15,10 @@ The suite has two store targets:
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite.
 
+Variation and variable-order flows use `MAESTRO_WOO_VARIABLE_PRODUCT_NAME`. It must be the exact name of a product on
+the selected store with at least one tag and one purchasable variation. The runner requires it only when a selected
+flow references it.
+
 Destructive flows against the shared store are refused outside CI. In CI, the runner creates a REST-backed store lock
 before destructive shared-store runs and removes it on exit.
 
