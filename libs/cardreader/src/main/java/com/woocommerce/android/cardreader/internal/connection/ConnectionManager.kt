@@ -9,6 +9,7 @@ import com.stripe.stripeterminal.external.models.ConnectionConfiguration.Bluetoo
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration.TapToPayConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
+import com.stripe.stripeterminal.external.models.TapUseCase
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -232,7 +233,7 @@ internal class ConnectionManager(
         return terminal.connectToMobile(
             cardReader.cardReader,
             TapToPayConnectionConfiguration(
-                locationId,
+                TapUseCase.Pay(locationId),
                 autoReconnectOnUnexpectedDisconnect = true,
                 tapToPayReaderListener
             )
