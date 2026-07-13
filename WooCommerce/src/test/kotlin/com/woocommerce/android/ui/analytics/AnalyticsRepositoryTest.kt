@@ -342,8 +342,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
             // Then
             assertTrue(result is RevenueData)
-            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.NotExist)
-            assertTrue(result.revenueStat.netDelta is DeltaPercentage.NotExist)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.revenueStat.totalDelta)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.revenueStat.netDelta)
         }
 
     @Test
@@ -457,8 +457,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             assertTrue(result is OrdersData)
             assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
             assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
-            assertTrue(result.ordersStat.ordersCountDelta is DeltaPercentage.NotExist)
-            assertTrue(result.ordersStat.avgOrderDelta is DeltaPercentage.NotExist)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.ordersStat.ordersCountDelta)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.ordersStat.avgOrderDelta)
         }
 
     @Test
