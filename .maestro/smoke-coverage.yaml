@@ -61,7 +61,7 @@ items:
     flow: .maestro/flows/dashboard_view_all_analytics.yaml
   - id: dashboard.customization
     title: Dashboard card customization
-    flow: .maestro/flows/dashboard_customize.yaml
+    manual: "Current flow opens the editor but does not toggle or reorder cards."
 
   - id: orders.push.arrives
     title: New order push notification arrives
@@ -74,7 +74,7 @@ items:
     flow: .maestro/flows/orders_list_and_search.yaml
   - id: orders.pagination
     title: Orders pagination
-    flow: .maestro/flows/orders_list_and_search.yaml
+    manual: "Current flow scrolls the list but does not prove another API page loaded."
   - id: orders.search
     title: Search for an order
     flow: .maestro/flows/orders_list_and_search.yaml
@@ -147,7 +147,7 @@ items:
     flow: .maestro/flows/products_list_and_sort.yaml
   - id: products.pagination
     title: Product pagination
-    flow: .maestro/flows/products_list_and_sort.yaml
+    manual: "Current flow scrolls the list but does not prove another API page loaded."
   - id: products.sort
     title: Sort product list
     flow: .maestro/flows/products_list_and_sort.yaml
@@ -162,10 +162,10 @@ items:
     flow: .maestro/flows/products_media_upload.yaml
   - id: products.detail.price
     title: Product price settings
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.inventory
     title: Product inventory settings
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.categories
     title: Product categories settings
     flow: .maestro/flows/products_detail.yaml
@@ -177,16 +177,16 @@ items:
     flow: .maestro/flows/products_variations_and_tags.yaml
   - id: products.detail.shipping
     title: Product shipping settings
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.short-description
     title: Product short description settings
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.linked
     title: Linked products
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.downloads
     title: Downloadable files
-    flow: .maestro/flows/products_detail.yaml
+    manual: "Current flow does not open and verify this product-type-specific setting."
   - id: products.detail.variations
     title: Variations and variation detail
     flow: .maestro/flows/products_variations_and_tags.yaml
@@ -223,10 +223,10 @@ items:
     flow: .maestro/flows/hub_menu_admin_and_store.yaml
   - id: hub.blaze.create
     title: Blaze campaign creation entry point
-    flow: .maestro/flows/blaze_campaign.yaml
+    manual: "Feature-gated probe only; an ineligible store must not count as coverage."
   - id: hub.google-for-woo
     title: Google for Woo campaign webview
-    flow: .maestro/flows/google_for_woo.yaml
+    manual: "Feature-gated probe only; an ineligible store must not count as coverage."
 
   - id: payments.card-reader
     title: Collect payment using card reader
@@ -255,7 +255,7 @@ items:
     flow: .maestro/flows/pos_cash_payment.yaml
   - id: pos.email-receipts
     title: POS send and check email receipts
-    flow: .maestro/flows/pos_cash_payment.yaml
+    manual: "Requires sending and checking a real receipt email."
 
   - id: other.localization
     title: Switch device to non-English language
