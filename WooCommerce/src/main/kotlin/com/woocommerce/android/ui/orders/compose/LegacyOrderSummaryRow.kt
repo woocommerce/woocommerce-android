@@ -1,31 +1,30 @@
 package com.woocommerce.android.ui.orders.compose
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.component.WCTag
 
 @Composable
-fun OrderSummaryRow(
+fun LegacyOrderSummaryRow(
     order: OrderSummaryRowModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -47,7 +46,7 @@ fun OrderSummaryRow(
                 modifier = contentModifier,
             )
         } else {
-            ExpandedOrderSummaryRow(
+            DashboardOrderSummaryRow(
                 order = order,
                 modifier = contentModifier,
             )
@@ -56,54 +55,46 @@ fun OrderSummaryRow(
 }
 
 @Composable
-private fun ExpandedOrderSummaryRow(
+private fun DashboardOrderSummaryRow(
     order: OrderSummaryRowModel,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier) {
+        Column(modifier = Modifier.align(Alignment.TopStart)) {
+            Row {
                 Text(
                     text = order.number,
-                    style = WooTheme.text.bodyLarge.regular,
-                    color = WooTheme.colors.surface.onDefault,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = R.color.color_on_surface_medium),
                 )
+
                 Text(
                     text = order.date,
-                    style = WooTheme.text.bodyLarge.regular,
-                    color = WooTheme.colors.surface.onDefault,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = WooTheme.padding.padding5),
+                    style = MaterialTheme.typography.body1,
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             }
+
             Text(
                 text = order.customerName,
-                style = WooTheme.text.bodyLarge.regular,
-                color = WooTheme.colors.surface.onDefault,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = WooTheme.padding.padding3),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
+
         Column(
+            modifier = Modifier.align(Alignment.TopEnd),
             horizontalAlignment = Alignment.End,
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3)) {
-                OrderStatusTags(order)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OrderStatusTags(order = order)
             }
+
             Text(
                 text = order.totalPrice,
-                style = WooTheme.text.bodyLarge.regular,
-                color = WooTheme.colors.surface.onDefault,
-                modifier = Modifier.padding(top = WooTheme.padding.padding3),
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
@@ -116,39 +107,39 @@ private fun CompactOrderSummaryRow(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = order.number,
-                style = WooTheme.text.bodyLarge.regular,
-                color = WooTheme.colors.surface.onDefault,
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = R.color.color_on_surface_medium),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3)) {
-                OrderStatusTags(order)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OrderStatusTags(order = order)
             }
         }
+
         val metadata = listOf(order.customerName, order.date).filter { it.isNotBlank() }
         if (metadata.isNotEmpty()) {
             Text(
                 text = metadata.joinToString("  "),
-                style = WooTheme.text.bodyLarge.regular,
-                color = WooTheme.colors.surface.onDefault,
+                style = MaterialTheme.typography.body1,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
+
         Text(
             text = order.totalPrice,
-            style = WooTheme.text.bodyLarge.regular,
-            color = WooTheme.colors.surface.onDefault,
+            style = MaterialTheme.typography.body1,
             textAlign = TextAlign.End,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -159,38 +150,21 @@ private fun CompactOrderSummaryRow(
 
 @Composable
 private fun OrderStatusTags(order: OrderSummaryRowModel) {
-    OrderTag(
+    WCTag(
         text = order.status,
         textColor = colorResource(id = R.color.color_on_secondary),
         backgroundColor = colorResource(id = order.statusColor),
+        fontWeight = FontWeight.Normal,
     )
+
     if (order.isPosOrder) {
-        OrderTag(
+        WCTag(
             text = stringResource(id = R.string.pos_badge),
             textColor = colorResource(id = R.color.tag_text_pos),
             backgroundColor = colorResource(id = R.color.tag_bg_pos),
+            fontWeight = FontWeight.Normal,
         )
     }
-}
-
-@Composable
-private fun OrderTag(
-    text: String,
-    textColor: Color,
-    backgroundColor: Color,
-) {
-    Text(
-        text = text,
-        color = textColor,
-        style = WooTheme.text.labelSmall.regular,
-        modifier = Modifier
-            .clip(RoundedCornerShape(WooTheme.radius.small))
-            .background(backgroundColor)
-            .padding(
-                horizontal = WooTheme.padding.padding3 + WooTheme.padding.padding1,
-                vertical = WooTheme.padding.padding2,
-            ),
-    )
 }
 
 private val ROW_PADDING = 16.dp

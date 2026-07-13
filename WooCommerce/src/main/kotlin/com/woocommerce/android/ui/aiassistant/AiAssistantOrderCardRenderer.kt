@@ -9,7 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.compose.OrderSummaryRow
+import com.woocommerce.android.ui.orders.compose.LegacyOrderSummaryRow
 import com.woocommerce.android.ui.orders.compose.OrderSummaryRowModel
 import com.woocommerce.android.util.DateUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -25,7 +25,7 @@ internal class AiAssistantOrderCardRenderer(
         modifier: Modifier,
     ) {
         val context = LocalContext.current
-        OrderSummaryRow(
+        LegacyOrderSummaryRow(
             order = card.toOrderSummaryRowModel(context, currencyFormatter, dateUtils),
             onClick = { onAction(AssistantCardAction.OpenOrder(card.remoteOrderId)) },
             modifier = modifier,

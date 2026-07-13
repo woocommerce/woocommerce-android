@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,10 +31,12 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.COUPONS
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.coupons.CouponListFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -177,7 +176,7 @@ private fun DashboardCouponsCard(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Divider()
+                WooDivider()
             }
 
             when (viewState) {
@@ -250,21 +249,23 @@ private fun CouponListItem(
         ) {
             Text(
                 text = couponUiModel.code,
-                style = MaterialTheme.typography.subtitle1
+                style = WooTheme.text.titleMedium.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
             Text(
                 text = couponUiModel.uses.toString(),
-                style = MaterialTheme.typography.subtitle1
+                style = WooTheme.text.titleMedium.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
         Text(
             text = couponUiModel.description,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier)
-        Divider(modifier = Modifier.padding(start = 16.dp))
+        WooDivider(modifier = Modifier.padding(start = 16.dp))
     }
 }
 
@@ -290,16 +291,16 @@ private fun CouponsLoading(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    SkeletonView(width = 260.dp, height = 16.dp)
-                    SkeletonView(width = 40.dp, height = 16.dp)
+                    DashboardSkeleton(width = 260.dp, height = 16.dp)
+                    DashboardSkeleton(width = 40.dp, height = 16.dp)
                 }
-                SkeletonView(
+                DashboardSkeleton(
                     modifier = Modifier
                         .size(width = 120.dp, height = 16.dp)
                         .padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier)
-                Divider(Modifier.padding(start = 16.dp))
+                WooDivider(Modifier.padding(start = 16.dp))
             }
         }
     }
@@ -326,7 +327,8 @@ private fun CouponsEmptyView(
 
         Text(
             text = stringResource(id = R.string.dashboard_coupons_card_empty_view_message),
-            style = MaterialTheme.typography.body1,
+            style = WooTheme.text.bodyLarge.regular,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
         )
     }
@@ -340,13 +342,13 @@ private fun Header(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(id = R.string.dashboard_coupons_card_header_coupons),
-            style = MaterialTheme.typography.subtitle2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            style = WooTheme.text.titleSmall.emphasized,
+            color = WooTheme.colors.surface.onDefault,
         )
         Text(
             text = stringResource(id = R.string.dashboard_coupons_card_header_uses),
-            style = MaterialTheme.typography.subtitle2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            style = WooTheme.text.titleSmall.emphasized,
+            color = WooTheme.colors.surface.onDefault,
         )
     }
 }

@@ -10,24 +10,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
-import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun ProductSummaryRow(
+fun LegacyProductSummaryRow(
     title: String,
     imageUrl: String?,
     onClick: () -> Unit,
@@ -42,7 +43,7 @@ fun ProductSummaryRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = WooTheme.padding.padding5),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ProductThumbnail(
@@ -52,43 +53,43 @@ fun ProductSummaryRow(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = WooTheme.padding.padding3),
+                .padding(start = 8.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(WooTheme.spacing.space4))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
-                modifier = Modifier.padding(bottom = WooTheme.padding.padding2),
+                modifier = Modifier.padding(bottom = 4.dp),
                 verticalAlignment = Alignment.Top,
             ) {
                 Text(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = if (trailingContent == null) 0.dp else WooTheme.padding.padding3),
+                        .padding(end = if (trailingContent == null) 0.dp else 8.dp),
                     text = title,
-                    color = WooTheme.colors.surface.onDefault,
+                    color = MaterialTheme.colors.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = WooTheme.text.titleMedium.regular,
+                    style = MaterialTheme.typography.subtitle1,
                 )
                 trailingContent?.invoke(this)
             }
             supportingContent()
-            Spacer(modifier = Modifier.height(WooTheme.spacing.space4))
+            Spacer(modifier = Modifier.height(12.dp))
             if (displayDivider) {
-                WooDivider()
+                Divider()
             }
         }
     }
 }
 
 @Composable
-fun ProductSummaryRowInfo(
+fun LegacyProductSummaryRowInfo(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = WooTheme.colors.surface.onDefault,
+    color: Color = colorResource(id = R.color.color_on_surface_medium),
     maxLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Ellipsis,
-    style: TextStyle = WooTheme.text.bodyMedium.regular,
+    style: TextStyle = MaterialTheme.typography.caption,
 ) {
     Text(
         modifier = modifier,
@@ -100,17 +101,17 @@ fun ProductSummaryRowInfo(
     )
 }
 
-@PreviewLightDark
+@LightDarkThemePreviews
 @Composable
-private fun ProductSummaryRowPreview() {
-    WooDesignSystemThemeWithBackground {
-        ProductSummaryRow(
+private fun LegacyProductSummaryRowPreview() {
+    WooThemeWithBackground {
+        LegacyProductSummaryRow(
             title = "Woo socks",
             imageUrl = "https://example.com/socks.png",
             onClick = {},
         ) {
-            ProductSummaryRowInfo("In stock \u2022 \$9.99")
-            ProductSummaryRowInfo("SKU: woo-socks")
+            LegacyProductSummaryRowInfo("In stock \u2022 \$9.99")
+            LegacyProductSummaryRowInfo("SKU: woo-socks")
         }
     }
 }

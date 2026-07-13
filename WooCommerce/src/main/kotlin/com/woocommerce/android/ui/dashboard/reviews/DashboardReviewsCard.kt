@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.dashboard.reviews
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,10 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,28 +20,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.ProductReview
-import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.icons.Star
+import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
-import com.woocommerce.android.ui.reviews.ReviewListItem
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -167,7 +181,7 @@ private fun ProductReviewsCardContent(
             EmptyView(selectedFilter = viewState.selectedFilter)
         } else {
             viewState.reviews.forEach { productReview ->
-                ReviewListItem(
+                DashboardReviewListItem(
                     review = productReview,
                     onClicked = { onReviewClicked(productReview) }
                 )
@@ -189,16 +203,16 @@ private fun ReviewsLoading(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                SkeletonView(width = 24.dp, height = 24.dp)
+                DashboardSkeleton(width = 24.dp, height = 24.dp)
 
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    SkeletonView(width = 260.dp, height = 16.dp)
-                    SkeletonView(width = 120.dp, height = 16.dp)
-                    SkeletonView(width = 60.dp, height = 16.dp)
+                    DashboardSkeleton(width = 260.dp, height = 16.dp)
+                    DashboardSkeleton(width = 120.dp, height = 16.dp)
+                    DashboardSkeleton(width = 60.dp, height = 16.dp)
                     Spacer(modifier = Modifier)
-                    Divider()
+                    WooDivider()
                 }
             }
         }
@@ -220,7 +234,7 @@ private fun Header(
             mapper = { ProductReviewStatus.getLocalizedLabel(LocalContext.current, it) }
         )
 
-        Divider()
+        WooDivider()
     }
 }
 
@@ -250,7 +264,8 @@ private fun EmptyView(
                     R.string.dashboard_reviews_card_empty_title_filtered
                 }
             ),
-            style = MaterialTheme.typography.h6,
+            style = WooTheme.text.titleLarge.strong,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
         )
 
@@ -262,8 +277,99 @@ private fun EmptyView(
                     R.string.dashboard_reviews_card_empty_message_filtered
                 }
             ),
-            style = MaterialTheme.typography.body1,
+            style = WooTheme.text.bodyLarge.regular,
+            color = WooTheme.colors.surface.onDefault,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@Composable
+private fun DashboardReviewListItem(
+    review: ProductReview,
+    onClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(WooTheme.colors.surface.default)
+            .clickable(onClick = onClicked),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
+            modifier = Modifier.padding(
+                horizontal = WooTheme.padding.padding5,
+                vertical = WooTheme.padding.padding3,
+            ),
+        ) {
+            val isPending = review.status == ProductReviewStatus.HOLD.toString()
+            Icon(
+                painter = painterResource(id = R.drawable.ic_comment),
+                contentDescription = null,
+                tint = if (isPending) WooTheme.colors.secondary else WooTheme.colors.surface.onDefault,
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    WooTheme.spacing.space2 + WooTheme.spacing.space1
+                )
+            ) {
+                Text(
+                    text = if (review.product == null) {
+                        stringResource(R.string.product_review_list_item_title, review.reviewerName)
+                    } else {
+                        stringResource(
+                            R.string.review_list_item_title,
+                            review.reviewerName,
+                            review.product?.name?.fastStripHtml().orEmpty(),
+                        )
+                    },
+                    style = WooTheme.text.titleMedium.emphasized,
+                    color = WooTheme.colors.surface.onDefault,
+                )
+                val reviewText = buildAnnotatedString {
+                    if (isPending) {
+                        withStyle(SpanStyle(color = WooTheme.colors.container.onSecondaryContainer)) {
+                            append(stringResource(id = R.string.pending_review_label))
+                        }
+                        append(" \u2022 ")
+                    }
+                    append(StringUtils.getRawTextFromHtml(review.review))
+                }
+                Text(
+                    text = reviewText,
+                    style = WooTheme.text.bodyMedium.regular,
+                    color = WooTheme.colors.surface.onDefault,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (review.rating > 0) {
+                    DashboardReviewRating(rating = review.rating)
+                }
+            }
+        }
+        WooDivider(modifier = Modifier.padding(start = 56.dp))
+    }
+}
+
+@Composable
+private fun DashboardReviewRating(rating: Int) {
+    val ratingDescription = pluralStringResource(
+        R.plurals.dashboard_review_rating_content_description,
+        rating,
+        rating,
+    )
+    Row(
+        modifier = Modifier.semantics {
+            contentDescription = ratingDescription
+        },
+    ) {
+        repeat(rating) {
+            Icon(
+                imageVector = WooIcons.Solid.Star,
+                contentDescription = null,
+                modifier = Modifier.size(WooTheme.iconSize.size16),
+                tint = WooTheme.colors.container.onSecondaryContainer,
+            )
+        }
     }
 }
