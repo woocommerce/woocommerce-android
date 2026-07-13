@@ -74,7 +74,7 @@ items:
     flow: .maestro/flows/orders_list_and_search.yaml
   - id: orders.pagination
     title: Orders pagination
-    manual: "Current flow scrolls the list but does not prove another API page loaded."
+    manual: "Not automated."
   - id: orders.search
     title: Search for an order
     flow: .maestro/flows/orders_list_and_search.yaml
@@ -83,7 +83,7 @@ items:
     flow: .maestro/flows/orders_create.yaml
   - id: orders.create.variable-products
     title: Create order with variable products
-    flow: .maestro/flows/orders_create.yaml
+    manual: "The order flow selects an available product; Variable-order selection is not automated."
   - id: orders.create.quantity
     title: Increase and decrease quantity
     flow: .maestro/flows/orders_create.yaml
@@ -147,7 +147,7 @@ items:
     flow: .maestro/flows/products_list_and_sort.yaml
   - id: products.pagination
     title: Product pagination
-    manual: "Current flow scrolls the list but does not prove another API page loaded."
+    manual: "Not automated."
   - id: products.sort
     title: Sort product list
     flow: .maestro/flows/products_list_and_sort.yaml
