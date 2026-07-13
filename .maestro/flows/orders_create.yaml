@@ -60,18 +60,57 @@ tags:
 
 - takeScreenshot: order_create_product_selector
 
-# Tap the first product row - product items sit below the search field
+# Search for the configured variable product. The runner requires this value
+# only when the flow is selected.
 - tapOn:
-    point: "50%,30%"
-    label: "Tap first product row"
+    text: ".*Search Products.*"
+    label: "Focus product search"
 
-# Confirm selection (regex matches "Select 1 Product" or "Select N Products")
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
+- hideKeyboard
+
 - extendedWaitUntil:
-    visible: ".*Select \\d+ Product.*"
-    timeout: 15000
+    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
+    timeout: 20000
+    label: "Wait for configured variable product"
 
 - tapOn:
-    text: ".*Select \\d+ Product.*"
+    id: "product_selector_product_item"
+    index: 0
+    label: "Open variable product variations"
+
+# Requiring a tagged variation row prevents a simple product, the parent row,
+# or the product selector's Clear Selection label from satisfying this check.
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_variation_item"
+    timeout: 20000
+    label: "Require purchasable variation rows"
+
+- assertNotVisible:
+    text: ".*Search Products.*"
+    label: "Product search is replaced by variation selector"
+
+- tapOn:
+    id: "product_selector_variation_item"
+    index: 0
+    label: "Select first available variation"
+
+# Variation selection is returned to the parent selector on Back. The parent
+# Done button is tagged separately so this cannot tap a stale text match.
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_done_button"
+    timeout: 15000
+    label: "Wait for selected variation in parent selector"
+
+- tapOn:
+    id: "product_selector_done_button"
     label: "Confirm product selection"
 
 # Back on order creation
@@ -79,7 +118,80 @@ tags:
     visible: "New order"
     timeout: 15000
 
+- assertVisible:
+    text: "${WOO_VARIABLE_PRODUCT_NAME}"
+    label: "Selected variable product is present in the order"
+
 - takeScreenshot: order_create_with_product
+
+# ── Adjust quantity and apply a product discount ─────────────────────
+- tapOn:
+    text: "${WOO_VARIABLE_PRODUCT_NAME}"
+    retryTapIfNoChange: true
+    label: "Expand selected variable product"
+
+- extendedWaitUntil:
+    visible: "Order count"
+    timeout: 10000
+
+- tapOn:
+    text: "Increase product quantity"
+    retryTapIfNoChange: true
+    label: "Increase product quantity"
+
+- assertVisible:
+    text: ".*2 ×.*|.*2 x.*"
+    label: "Quantity increased to two"
+
+- tapOn:
+    text: "Decrease product quantity"
+    retryTapIfNoChange: true
+    label: "Decrease product quantity"
+
+- assertVisible:
+    text: ".*1 ×.*|.*1 x.*"
+    label: "Quantity decreased to one"
+
+- tapOn:
+    text: "Add discount"
+    retryTapIfNoChange: true
+    label: "Open product discount"
+
+- extendedWaitUntil:
+    visible: "Discount"
+    timeout: 15000
+
+# Use a percentage so the fixture's price cannot make the discount invalid.
+- tapOn:
+    text: "%"
+    label: "Use percentage discount"
+- eraseText: 100
+- inputText: "10"
+- hideKeyboard
+
+- assertVisible:
+    text: "Calculated Amount"
+    label: "Percentage discount is calculated"
+- assertNotVisible: "Discount cannot be greater than the price"
+
+- tapOn:
+    text: "Done"
+    retryTapIfNoChange: true
+    label: "Save product discount"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    id: "order_product_discount_amount"
+    label: "Product discount is reflected in the order"
+- copyTextFrom:
+    id: "order_product_discount_amount"
+- evalScript: |
+    if (!maestro.copiedText || maestro.copiedText.trim().charAt(0) !== '-') {
+        throw new Error('Product discount amount is missing from the order');
+    }
 
 # ── Add a custom amount (fixed, with a name) ──────────────────────────
 - scrollUntilVisible:
@@ -158,6 +270,65 @@ tags:
 
 - takeScreenshot: order_create_with_custom_amount
 
+# ── Add shipping ─────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "add_shipping_button"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add shipping"
+
+- tapOn:
+    id: "add_shipping_button"
+    retryTapIfNoChange: true
+    label: "Open Add shipping"
+
+- extendedWaitUntil:
+    visible:
+      id: "order_shipping_amount_input"
+    timeout: 15000
+
+- tapOn:
+    id: "order_shipping_amount_input"
+- inputText: "500"
+- hideKeyboard
+
+- tapOn:
+    id: "order_shipping_name_input"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: Maestro shipping ${SUITE_RUN_ID}
+- hideKeyboard
+
+- tapOn:
+    id: "order_shipping_save_button"
+    retryTapIfNoChange: true
+    label: "Save shipping line"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: "Maestro shipping ${SUITE_RUN_ID}"
+    label: "Shipping line is present in the order"
+
+- takeScreenshot: order_create_with_shipping
+
+# The first shipping line can trigger a feedback overlay that intercepts the
+# customer and note controls underneath it.
+- runFlow:
+    when:
+      visible: "Shipping added!"
+    commands:
+      - tapOn:
+          text: "Close"
+          label: "Dismiss shipping feedback"
+      - extendedWaitUntil:
+          notVisible: "Shipping added!"
+          timeout: 5000
+
 # ── Add a customer-facing note ────────────────────────────────────────
 # Added BEFORE the customer on purpose: when both customer and note are
 # empty, the "Add note" button lives in customer_section (via
@@ -203,9 +374,8 @@ tags:
     label: "Customer note visible in creation screen"
 
 # ── Add a customer ────────────────────────────────────────────────────
-# Uses the search flow to verify it works, then falls back to "Add
-# details manually" so the flow doesn't depend on the staging store
-# containing a matching customer.
+# Select an existing customer by its exact configured email. Manual customer
+# entry does not satisfy the P2 existing-customer check.
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
@@ -222,57 +392,36 @@ tags:
 
 - tapOn:
     text: "Search for customers"
-- inputText: "zzzzznomatch"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_EXISTING_CUSTOMER_EMAIL}
 - hideKeyboard
 
-# When no match, tap the "Add details manually" CTA to enter the editor
 - extendedWaitUntil:
-    visible: "Add details manually"
-    timeout: 15000
+    visible: "${WOO_EXISTING_CUSTOMER_EMAIL}"
+    timeout: 20000
+    label: "Wait for configured existing customer"
 
 - tapOn:
-    text: "Add details manually"
-    label: "Add customer details manually"
-
-# Customer edit form is now visible — fill first & last name
-- extendedWaitUntil:
-    visible: ".*First name.*|.*Last name.*|.*Email.*"
-    timeout: 15000
-
-- takeScreenshot: order_create_customer_edit_form
-
-- tapOn:
-    id: "edit_text"
-    childOf:
-      id: "first_name"
-- eraseText
-- inputText: "Maestro"
-- hideKeyboard
-
-- tapOn:
-    id: "edit_text"
-    childOf:
-      id: "last_name"
-- eraseText
-- inputText: "SmokeTest"
-- hideKeyboard
-
-- takeScreenshot: order_create_customer_edited
-
-# Save via toolbar DONE
-- tapOn:
-    id: "menu_done"
-    label: "Save customer details"
+    id: "customer_list_item"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Select existing customer"
 
 - extendedWaitUntil:
     visible: "New order"
     timeout: 15000
 
-- takeScreenshot: order_create_with_customer
+- assertVisible:
+    text: "${WOO_EXISTING_CUSTOMER_EMAIL}"
+    label: "Existing customer is attached to the order"
+
+- takeScreenshot: order_create_with_existing_customer
 
 # ── Edit the added customer ───────────────────────────────────────────
 - scrollUntilVisible:
-    element: ".*SmokeTest.*|.*Maestro.*"
+    element: "${WOO_EXISTING_CUSTOMER_EMAIL}"
     direction: DOWN
     timeout: 10000
     label: "Scroll to customer section"

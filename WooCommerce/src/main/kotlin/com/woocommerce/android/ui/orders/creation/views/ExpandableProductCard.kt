@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -83,6 +84,11 @@ import com.woocommerce.android.util.getVariationAttributesAndStockText
 import java.math.BigDecimal
 
 const val ANIM_DURATION_MILLIS = 128
+
+internal object ExpandableProductCardTestTags {
+    const val DISCOUNT_AMOUNT = "order_product_discount_amount"
+}
+
 const val MULTIPLICATION_CHAR = "×"
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
@@ -168,6 +174,7 @@ fun ExpandableProductCard(
         if (!isExpanded && product.productInfo.hasDiscount) {
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .constrainAs(discount) {
                         end.linkTo(chevron.start)
                         top.linkTo(stock.top)
@@ -414,6 +421,7 @@ fun ExtendedProductCardContent(
             }
             Text(
                 modifier = Modifier
+                    .testTag(ExpandableProductCardTestTags.DISCOUNT_AMOUNT)
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
                     .constrainAs(discountAmount) {
                         end.linkTo(parent.end)

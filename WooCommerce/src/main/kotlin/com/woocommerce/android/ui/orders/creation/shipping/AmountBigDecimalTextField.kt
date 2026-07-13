@@ -33,6 +33,7 @@ fun AmountBigDecimalTextField(
                 boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_NONE
                 val textSize = 28f
                 editText.apply {
+                    id = R.id.order_shipping_amount_input
                     background = null
                     setTextAppearance(R.style.TextAppearance_Woo_EditText)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)

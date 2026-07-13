@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -54,10 +55,12 @@ fun SelectorListItem(
     isCogwheelVisible: Boolean,
     enabled: Boolean,
     onEditConfiguration: () -> Unit,
+    testTag: String? = null,
     onItemClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
+            .then(testTag?.let { Modifier.testTag(it) } ?: Modifier)
             .clickable(
                 enabled = enabled,
                 role = Role.Button,
@@ -165,6 +168,12 @@ fun SelectorListItem(
             )
         }
     }
+}
+
+object ProductSelectorTestTags {
+    const val PRODUCT_ITEM = "product_selector_product_item"
+    const val VARIATION_ITEM = "product_selector_variation_item"
+    const val DONE_BUTTON = "product_selector_done_button"
 }
 
 @Composable
