@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.isEquivalentTo
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -104,8 +104,8 @@ class SubscriptionProductVariation(
             price = model.price.toBigDecimalOrNull(),
             regularPrice = model.regularPrice.toBigDecimalOrNull(),
             salePrice = model.salePrice.toBigDecimalOrNull(),
-            saleEndDateGmt = model.dateOnSaleToGmt.parseFromIso8601DateFormat(),
-            saleStartDateGmt = model.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
+            saleEndDateGmt = model.dateOnSaleToGmt.parseGmtDateFromIso8601DateFormat(),
+            saleStartDateGmt = model.dateOnSaleFromGmt.parseGmtDateFromIso8601DateFormat(),
             isSaleScheduled = model.dateOnSaleFromGmt.isNotEmpty() || model.dateOnSaleToGmt.isNotEmpty(),
             stockStatus = ProductStockStatus.fromString(model.stockStatus),
             backorderStatus = ProductBackorderStatus.fromString(model.backorders),
