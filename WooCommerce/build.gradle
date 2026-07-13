@@ -290,6 +290,7 @@ dependencies {
 
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
+    implementation(project(":libs:store-design-system"))
     implementation(project(":libs:ai-assistant:feature"))
 
     implementation(libs.wordpress.aztec.main) {
@@ -385,6 +386,12 @@ dependencies {
     }
     androidTestImplementation(libs.apache.http.client.android)
     constraints {
+        implementation(libs.jackson.databind) {
+            because("version shipped with Stripe Terminal Tap to Pay 5.1.1 contains security vulnerabilities")
+        }
+        implementation(libs.jackson.core) {
+            because("version shipped with Stripe Terminal Tap to Pay 5.1.1 contains security vulnerabilities")
+        }
         androidTestImplementation(libs.wiremock) {
             because("newer versions of WireMock use Java APIs not available on Android")
         }
@@ -445,7 +452,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material.main)
     implementation(libs.androidx.compose.animation.main)
-    implementation(libs.androidx.compose.ui.tooling.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling.main)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.navigation.compose)

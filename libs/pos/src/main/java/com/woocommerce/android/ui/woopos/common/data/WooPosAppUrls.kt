@@ -9,5 +9,3 @@ const val WOO_POS_LEARN_MORE_ABOUT_PAYMENTS =
     "https://woocommerce.com/document/woopayments/in-person-payments/getting-started-with-in-person-payments/"
 
 const val WOO_POS_SETTINGS_PATH = "/wp-admin/admin.php?page=wc-settings&tab=point-of-sale"
-const val WOO_POS_CIAB_SETTINGS_PATH =
-    "/wp-admin/admin.php?page=next-admin&p=%2Fwoocommerce%2Fsettings%2Fpayments%2Fpos"

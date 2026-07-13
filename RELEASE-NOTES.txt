@@ -2,9 +2,35 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.3
+-----
+
+
+25.2
+-----
+- [*] Fixed the Contact Support form losing the subject and site address fields after rotating the device [https://github.com/woocommerce/woocommerce-android/pull/16236]
+- [*] The Report Crashes privacy setting is now saved on your WordPress.com account, so it's kept across logins and devices
+- [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
+- [*] Added a shortcut to view guest orders when searching for the Guest label returns no results [https://github.com/woocommerce/woocommerce-android/pull/16189]
+- [*] Fixed saved package rows not responding to taps on the shipping label package selection screen [https://github.com/woocommerce/woocommerce-android/pull/16210]
+- [*] Refunding an order paid with a gift card is now blocked in the app with a prompt to refund from your store admin, so the gift-card balance is restored correctly [https://github.com/woocommerce/woocommerce-android/pull/16169]
+- [*] Fixed duplicated products reusing the original product slug [https://github.com/woocommerce/woocommerce-android/pull/16142]
+- [*] Fixed account-mismatch login retry requiring merchants to re-enter their store URL [https://github.com/woocommerce/woocommerce-android/pull/16162]
+- [*] Fixed This Week stats ranges using the app/device week start instead of the store's configured week start [https://github.com/woocommerce/woocommerce-android/pull/16160]
+- [*] Minor UI fixes on the POS refund flow [https://github.com/woocommerce/woocommerce-android/pull/16171]
+- [*] Blaze now shows a clear error when you pick an unsupported ad image type such as AVIF [https://github.com/woocommerce/woocommerce-android/pull/16151]
+- [Internal] Updated the app's compile SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16158]
+- [*] Variation list rows now show a chevron to indicate they open the variation editor [https://github.com/woocommerce/woocommerce-android/pull/16219]
+- [*] The customer note editor now shows a back arrow like the other order editing screens instead of an X [https://github.com/woocommerce/woocommerce-android/pull/16218]
+- [*] Tapping the current bottom tab again now scrolls the screen back to the top as intended [https://github.com/woocommerce/woocommerce-android/pull/16221]
+- [*] Fixed the main toolbar showing the wrong menu after opening a feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16220]
+- [Internal] Restored dashboard scroll tracking for the used_analytics event lost in the Compose migration [https://github.com/woocommerce/woocommerce-android/pull/16229]
+- [*] Fixed the "Add a different shipping address" switch turning back on while editing customer details during order creation [https://github.com/woocommerce/woocommerce-android/pull/16138]
+
 25.1
 -----
-- [*] Fixed the "Add a different shipping address" switch turning back on while editing customer details during order creation [https://github.com/woocommerce/woocommerce-android/pull/16138]
+- [*] Fixed a crash when the Play Store age signals service disconnected during the age eligibility check [https://github.com/woocommerce/woocommerce-android/pull/16206]
+- [Internal] Added analytics for Woo Core push token deletion results [https://github.com/woocommerce/woocommerce-android/pull/16184]
 - [*] POS: the Issue Refund flow now opens full screen from the start instead of inside the order details pane [https://github.com/woocommerce/woocommerce-android/pull/16116]
 - [*] Fixed a startup crash when WordPress.com returns malformed site details [https://github.com/woocommerce/woocommerce-android/pull/16102]
 - [*] You're now returned to the store picker with an explanation when the app can no longer access the selected store, instead of being stuck with repeated errors [https://github.com/woocommerce/woocommerce-android/pull/16117]
@@ -17,6 +43,7 @@
 - [Internal] Migrated media upload and media-list endpoints to Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/15550]
 - [*] Fixed newest orders sometimes missing from the order list until a filter was applied or the list was refreshed [https://github.com/woocommerce/woocommerce-android/pull/16088]
 - [*] Fixed Analytics Hub Customize screen showing a discard-changes dialog on back when no changes were made [https://github.com/woocommerce/woocommerce-android/pull/16092]
+- [**] Fixed push notifications that could stop arriving after a device token change or when the Woo-driven system is disabled [https://github.com/woocommerce/woocommerce-android/pull/16183]
 
 25.0
 -----

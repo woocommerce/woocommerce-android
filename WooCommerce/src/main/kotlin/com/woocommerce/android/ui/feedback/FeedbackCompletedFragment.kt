@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.feedback
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
@@ -49,24 +48,17 @@ class FeedbackCompletedFragment : BaseFragment(R.layout.fragment_feedback_comple
     }
 
     private fun setupToolbar(toolbar: MaterialToolbar) {
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.feedback_completed_title)
+        toolbar.title = getString(R.string.feedback_completed_title)
         toolbar.setNavigationIcon(R.drawable.ic_gridicons_cross_24dp)
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-        activity?.invalidateOptionsMenu()
     }
 
     override fun onResume() {
         super.onResume()
 
         trackSurveyCompletedScreenAnalytics()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        activity?.invalidateOptionsMenu()
     }
 
     private fun trackSurveyCompletedScreenAnalytics() {

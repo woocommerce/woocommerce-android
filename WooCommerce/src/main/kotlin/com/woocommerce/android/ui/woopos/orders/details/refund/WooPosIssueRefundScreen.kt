@@ -13,6 +13,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -57,6 +60,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
@@ -84,6 +89,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveComponentSize
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiveIconSize
+import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -306,6 +312,7 @@ fun WooPosIssueRefundScreen(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface)
             ) {
+                MatchDialogSystemBarsAppearanceToTheme()
                 RefundModalLayer(
                     state = modalState,
                     orderId = orderId,
@@ -315,10 +322,32 @@ fun WooPosIssueRefundScreen(
                     closeButtonEnabled = !modalIsProcessing,
                     onEvent = viewModel::onUIEvent,
                     onNavigationEvent = onNavigationEvent,
-                    contentInsetsModifier = Modifier.statusBarsPadding(),
+                    contentInsetsModifier = Modifier
+                        .statusBarsPadding()
+                        .gesturesOrButtonsNavigationPadding(),
                     disablePartialRefund = disablePartialRefund,
                 )
             }
+        }
+    }
+}
+
+/**
+ * The refund modal steps render in a separate [Dialog] window, which does not inherit the host
+ * Activity's system-bar appearance. Without this the status and navigation bar icons keep their
+ * default light-content color and become hard to read against the light surface. Match them to the
+ * current theme so they look identical to the "Select items" step rendered in the Activity window.
+ */
+@Composable
+private fun MatchDialogSystemBarsAppearanceToTheme() {
+    val view = LocalView.current
+    val useLightAppearance = !isSystemInDarkTheme()
+    val dialogWindow = (view.parent as? DialogWindowProvider)?.window
+    if (dialogWindow != null) {
+        SideEffect {
+            val controller = WindowCompat.getInsetsController(dialogWindow, view)
+            controller.isAppearanceLightStatusBars = useLightAppearance
+            controller.isAppearanceLightNavigationBars = useLightAppearance
         }
     }
 }

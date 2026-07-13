@@ -32,14 +32,6 @@ class WooPosIsTapToPayAvailableTest {
     }
 
     @Test
-    fun `given flag on but Hidden, when invoked, then returns false`() {
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TAP_TO_PAY)).thenReturn(true)
-        whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Hidden)
-
-        assertThat(sut()).isFalse()
-    }
-
-    @Test
     fun `given flag on but country not supported, when invoked, then returns false`() {
         val unavailable: TapToPayAvailabilityStatus = mock {
             on { invoke() } doReturn TapToPayAvailabilityStatus.Result.NotAvailable.CountryNotSupported

@@ -18,6 +18,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -44,6 +45,31 @@ class OrderEditingViewModelTest : BaseUnitTest() {
             networkStatus
         )
     }
+
+    @Test
+    fun `when started, then order is loaded and OrderLoaded event is emitted`() =
+        testBlocking {
+            var orderLoadedEmitted = false
+
+            sut.start()
+
+            observeEvents { event ->
+                if (event is OrderEditingViewModel.OrderLoaded) orderLoadedEmitted = true
+            }
+
+            assertThat(sut.isOrderLoaded).isTrue
+            assertThat(sut.order).isEqualTo(testOrder)
+            assertThat(orderLoadedEmitted).isTrue
+        }
+
+    @Test
+    fun `given order not loaded, when an update is requested, then nothing is dispatched`() =
+        testBlocking {
+            val dispatched = sut.updateShippingAddress(addressToUpdate)
+
+            assertThat(dispatched).isFalse
+            verify(orderEditingRepository, never()).updateOrderAddress(any(), any())
+        }
 
     @Test
     fun `should replicate billing to shipping when toggle is activated`() =

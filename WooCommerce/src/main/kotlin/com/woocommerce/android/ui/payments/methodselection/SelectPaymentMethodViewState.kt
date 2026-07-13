@@ -28,19 +28,9 @@ sealed class SelectPaymentMethodViewState {
             ) : Row()
         }
 
-        sealed interface LearnMoreIpp {
-            data class Standard(
-                val label: UiString,
-                val isVisible: Boolean,
-                val onClick: () -> Unit,
-            ) : LearnMoreIpp
-
-            data class CiabUpgrade(
-                val text: UiString,
-                val onLearnMoreClick: () -> Unit,
-            ) : LearnMoreIpp
-
-            object Hidden : LearnMoreIpp
-        }
+        data class LearnMoreIpp(
+            val label: UiString,
+            val onClick: () -> Unit,
+        )
     }
 }

@@ -28,7 +28,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -36,7 +35,6 @@ import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -531,12 +529,6 @@ class ProductListFragment :
     }
 
     private fun setupResultHandlers() {
-        // Refresh the product list when returning from a webview-based product creation flow
-        // (e.g., bookable service creation on CIAB sites)
-        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
-            productListViewModel.onRefreshRequested()
-        }
-
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,

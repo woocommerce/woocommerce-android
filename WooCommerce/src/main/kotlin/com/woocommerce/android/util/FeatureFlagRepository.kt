@@ -71,6 +71,6 @@ class FeatureFlagRepository @Inject constructor(
         val overrideValue: Boolean?
     ) {
         val effectiveValue: Boolean
-            get() = overrideValue ?: (localValue && (remoteValue ?: true))
+            get() = overrideValue ?: (remoteValue ?: localValue)
     }
 }

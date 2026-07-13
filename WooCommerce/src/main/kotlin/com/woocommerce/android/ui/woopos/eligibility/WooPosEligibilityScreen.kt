@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,11 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -51,17 +46,6 @@ fun WooPosEligibilityScreen(
         viewModel.initialize(initialReason)
     }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.onResumed()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
     var isNavigatingAway by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -78,7 +62,6 @@ fun WooPosEligibilityScreen(
         onNavigationEvent = onNavigationEvent,
         retryState = retryState,
         onRetry = { viewModel.retryEligibilityCheckTapped() },
-        onLearnMoreTapped = { viewModel.learnMoreTapped() },
     )
 }
 
@@ -87,7 +70,6 @@ fun WooPosEligibilityScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     retryState: WooPosEligibilityRetryState,
     onRetry: () -> Unit,
-    onLearnMoreTapped: () -> Unit,
 ) {
     BackHandler {
         onNavigationEvent(WooPosNavigationEvent.ExitPosClicked)
@@ -161,22 +143,6 @@ fun WooPosEligibilityScreen(
                         modifier = buttonModifier,
                     )
                 }
-
-                is WooPosEligibilityRetryState.CiabPlanUpgradeRequired -> {
-                    WooPosButton(
-                        text = stringResource(id = R.string.woopos_eligibility_learn_more_label),
-                        onClick = {
-                            onLearnMoreTapped()
-                            onNavigationEvent(
-                                WooPosNavigationEvent.OpenWebView(
-                                    url = retryState.learnMoreUrl.toString()
-                                )
-                            )
-                        },
-                        state = WooPosButtonState.ENABLED,
-                        modifier = buttonModifier,
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
@@ -204,26 +170,6 @@ fun WooPosEligibilityScreenRetryablePreview() {
                     "Please check your store currency settings or contact support for assistance.",
             ),
             onRetry = {},
-            onLearnMoreTapped = {},
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosEligibilityCiabPreview() {
-    WooPosTheme {
-        WooPosEligibilityScreen(
-            onNavigationEvent = {},
-            retryState = WooPosEligibilityRetryState.CiabPlanUpgradeRequired(
-                title = "Pro plan required",
-                suggestionText = "Accept payments in person for just 2.70% + \$0.10 per transaction. " +
-                    "Upgrade to Pro to access tap-to-pay on your phone and our full " +
-                    "point of sale system with real-time inventory and order syncing.",
-                learnMoreUrl = "https://wordpress.com/setup/woo-hosted-plans/".toUri(),
-            ),
-            onRetry = {},
-            onLearnMoreTapped = {},
         )
     }
 }

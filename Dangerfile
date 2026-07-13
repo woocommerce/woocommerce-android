@@ -35,7 +35,12 @@ view_changes_checker.check
 
 pr_size_checker.check_diff_size(
   max_size: 300,
-  file_selector: ->(path) { !path.include?('/src/test') && !path.include?('/src/main/res') }
+  file_selector: ->(path) { !path.include?('/src/test') && !path.include?('/src/main/res') },
+  # Exclude blank lines and Kotlin/Java/Gradle comment lines from the size metric
+  line_selector: lambda { |line|
+    stripped = line.strip
+    !(stripped.empty? || stripped.start_with?('//', '/*', '*', '*/'))
+  }
 )
 
 android_unit_test_checker.check_missing_tests

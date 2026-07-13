@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.dashboard.data.CouponsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.captureValues
@@ -38,6 +39,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Calendar
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -95,15 +97,18 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         on { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val calendarHelper: CalendarHelper = mock()
 
     private lateinit var viewModel: DashboardCouponsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(calendarHelper.getCalendarForSelectedSite()).thenReturn(Calendar.getInstance())
         prepareMocks()
         val getSelectedDateRange = GetSelectedRangeForCoupons(
             appPrefs = appPrefs,
             customDateRangeDataStore = customDateRangeDataStore,
-            dateUtils = dateUtils
+            dateUtils = dateUtils,
+            calendarHelper = calendarHelper
         )
 
         viewModel = DashboardCouponsViewModel(

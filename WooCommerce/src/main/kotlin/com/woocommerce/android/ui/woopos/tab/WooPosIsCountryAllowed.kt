@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.tab
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -20,12 +21,22 @@ class WooPosIsCountryAllowed @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureFlagRepository: FeatureFlagRepository,
 ) {
-    operator fun invoke(): Boolean {
+    suspend operator fun invoke(): Boolean {
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) return true
 
         val site = selectedSite.getOrNull() ?: return false
-        val countryCode = wooCommerceStore.getStoreCountryCode(site)?.uppercase() ?: return false
+        val countryCode = getStoreCountryCode(site) ?: return false
         return countryCode in SUPPORTED_COUNTRIES
+    }
+
+    private suspend fun getStoreCountryCode(site: SiteModel): String? {
+        wooCommerceStore.getStoreCountryCode(site)?.let { return it.uppercase() }
+
+        // The store's general settings (which hold the country code) aren't fetched when switching
+        // stores, so the local cache can be empty right after a switch. Fetch on demand so POS
+        // visibility is resolved without requiring an app restart.
+        wooCommerceStore.fetchSiteGeneralSettings(site)
+        return wooCommerceStore.getStoreCountryCode(site)?.uppercase()
     }
 
     private companion object {

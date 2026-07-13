@@ -41,11 +41,13 @@ import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
+import com.woocommerce.android.ui.common.RefreshWPSettings
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.CrashReportingSettingSync
 import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
 import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
@@ -127,6 +129,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
 
+    @Inject lateinit var refreshWPSettings: RefreshWPSettings
+
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
 
     @Inject lateinit var sendTelemetry: SendTelemetry
@@ -181,6 +185,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
 
+    @Inject lateinit var crashReportingSettingSync: CrashReportingSettingSync
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -206,6 +212,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }
                     wooCommerceStore.fetchSiteGeneralSettings(site)
                     wooCommerceStore.fetchSiteProductSettings(site)
+                    refreshWPSettings(site)
                 }
             }
             return true
@@ -474,6 +481,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            appCoroutineScope.launch { crashReportingSettingSync() }
         }
     }
 
