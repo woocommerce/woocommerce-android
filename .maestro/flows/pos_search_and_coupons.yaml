@@ -15,7 +15,7 @@
 #
 # Verifies (on tablet):
 #   - POS screen loads with Products + Coupons tabs visible
-#   - Search resolves the configured variable product and a variation
+#   - Search resolves a variable product discovered from the live catalog
 #   - A real coupon is added to the cart
 #   - Switching back to Products reloads the product grid
 appId: com.woocommerce.android.dev
@@ -61,48 +61,8 @@ tags:
 - assertVisible:
     id: "woo_pos_search_input"
 
-- tapOn:
-    id: "woo_pos_search_input"
-    label: "Open product search"
-
-- extendedWaitUntil:
-    visible: ".*Search products and variations.*"
-    timeout: 10000
-
-- tapOn:
-    id: "woo_pos_search_input"
-    label: "Focus product search"
 - runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
-    timeout: 20000
-    label: "Wait for configured variable product"
-
-- tapOn:
-    id: "woo_pos_product_item"
-    index: 0
-    label: "Open variable product variations"
-
-- extendedWaitUntil:
-    notVisible: ".*Search products and variations.*"
-    timeout: 10000
-    label: "Require variation selection screen"
-
-- extendedWaitUntil:
-    visible:
-      id: "woo_pos_product_item"
-    timeout: 20000
-    label: "Wait for POS variations"
-
-- tapOn:
-    id: "woo_pos_product_item"
-    index: 0
-    label: "Add first variation to cart"
+    file: ../subflows/pos_add_discovered_variable_product.yaml
 
 - runFlow:
     when:

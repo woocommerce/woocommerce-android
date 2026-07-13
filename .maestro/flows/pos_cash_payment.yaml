@@ -54,40 +54,8 @@ tags:
           text: "Clear cart"
           label: "Own an empty POS cart"
 
-- tapOn:
-    id: "woo_pos_search_input"
-    label: "Open product search"
-- extendedWaitUntil:
-    visible: ".*Search products and variations.*"
-    timeout: 10000
-- tapOn:
-    id: "woo_pos_search_input"
-    label: "Focus product search"
 - runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
-    timeout: 20000
-
-- tapOn:
-    id: "woo_pos_product_item"
-    index: 0
-    label: "Open variable product variations"
-- extendedWaitUntil:
-    notVisible: ".*Search products and variations.*"
-    timeout: 10000
-- extendedWaitUntil:
-    visible:
-      id: "woo_pos_product_item"
-    timeout: 20000
-- tapOn:
-    id: "woo_pos_product_item"
-    index: 0
-    label: "Add first variation to owned cart"
+    file: ../subflows/pos_add_discovered_variable_product.yaml
 
 - copyTextFrom:
     id: "woo_pos_cart_items_count"
