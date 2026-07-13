@@ -1,12 +1,13 @@
 # Smoke Test: Products - List and Sort
-# p2: products.list, products.pagination, products.sort, products.search
+# p2: products.list, products.sort, products.search
+# P2 probe: products.pagination (scroll-only; does not prove another API page loaded)
 # P2 ref: Products > Product list (check pagination), Sort product list
 #
 # Verifies:
 #   - Products list loads
 #   - Product cards show name, stock status, price, SKU
-#   - Pagination works (scroll to load more)
-#   - Sorting works (by name, date, etc.)
+#   - The list remains usable after scrolling toward the pagination boundary
+#   - Sorting produces different first products for A-to-Z and Z-to-A
 #   - Search for products
 #   - Product filters
 appId: com.woocommerce.android.dev
@@ -46,7 +47,8 @@ tags:
 
 - takeScreenshot: products_list
 
-# Test pagination - scroll down
+# Pagination probe only. A deterministic product beyond the first API page is
+# needed before this can be counted as pagination coverage.
 - scroll
 - scroll
 - scroll
@@ -66,28 +68,57 @@ tags:
     direction: DOWN
     duration: 500
 
-# Test sorting
-- runFlow:
-    when:
-      visible:
-        id: "btn_product_sorting"
-    commands:
-      - tapOn:
-          id: "btn_product_sorting"
-          label: "Open product sorting"
-      - extendedWaitUntil:
-          visible:
-            id: "sortingItem_name"
-          timeout: 10000
-      - takeScreenshot: products_sort_options
-      - tapOn:
-          id: "sortingItem_name"
-          index: 0
-          label: "Select first sort option"
-      - extendedWaitUntil:
-          visible:
-            id: "productsRecycler"
-          timeout: 10000
+# Test sorting with two explicit, opposing choices. Requiring different first
+# products proves the list was reordered instead of only opening the sheet.
+- assertVisible:
+    id: "btn_product_sorting"
+    label: "Require product sorting control"
+- tapOn:
+    id: "btn_product_sorting"
+    label: "Open product sorting"
+- extendedWaitUntil:
+    visible: "Title: A to Z"
+    timeout: 10000
+- takeScreenshot: products_sort_options
+- tapOn:
+    text: "Title: A to Z"
+    label: "Sort products A to Z"
+- extendedWaitUntil:
+    visible: "A to Z"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 15000
+- copyTextFrom:
+    id: "productName"
+    index: 0
+- evalScript: ${output.firstProductAscending = maestro.copiedText.trim()}
+
+- tapOn:
+    id: "btn_product_sorting"
+    label: "Reopen product sorting"
+- extendedWaitUntil:
+    visible: "Title: Z to A"
+    timeout: 10000
+- tapOn:
+    text: "Title: Z to A"
+    label: "Sort products Z to A"
+- extendedWaitUntil:
+    visible: "Z to A"
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 15000
+- copyTextFrom:
+    id: "productName"
+    index: 0
+- evalScript: |
+    var descending = maestro.copiedText.trim();
+    if (!descending || descending === output.firstProductAscending) {
+        throw new Error('Opposing product sorts returned the same first product');
+    }
 
 - takeScreenshot: products_sorted
 
