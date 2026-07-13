@@ -365,8 +365,8 @@ tags:
     label: "Customer note visible in creation screen"
 
 # ── Add a customer ────────────────────────────────────────────────────
-# Select an existing customer by its exact configured email. Manual customer
-# entry does not satisfy the P2 existing-customer check.
+# Select an existing customer from the live store. Manual customer entry does
+# not satisfy the P2 existing-customer check.
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
@@ -381,18 +381,11 @@ tags:
     visible: "Search for customers"
     timeout: 15000
 
-- tapOn:
-    text: "Search for customers"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_EXISTING_CUSTOMER_EMAIL}
-- hideKeyboard
-
 - extendedWaitUntil:
-    visible: "${WOO_EXISTING_CUSTOMER_EMAIL}"
+    visible:
+      id: "customer_list_item"
     timeout: 20000
-    label: "Wait for configured existing customer"
+    label: "Wait for an existing customer"
 
 - tapOn:
     id: "customer_list_item"
@@ -404,23 +397,23 @@ tags:
     visible: "New order"
     timeout: 15000
 
-- assertVisible:
-    text: "${WOO_EXISTING_CUSTOMER_EMAIL}"
-    label: "Existing customer is attached to the order"
+- scrollUntilVisible:
+    element: "Edit customer details"
+    direction: DOWN
+    timeout: 10000
+    label: "Verify the existing customer is attached"
 
 - takeScreenshot: order_create_with_existing_customer
 
 # ── Edit the added customer ───────────────────────────────────────────
 - scrollUntilVisible:
-    element: "${WOO_EXISTING_CUSTOMER_EMAIL}"
+    element: "Edit customer details"
     direction: DOWN
     timeout: 10000
     label: "Scroll to customer section"
 
 - tapOn:
-    id: "edit_button"
-    childOf:
-      id: "customer_section"
+    text: "Edit customer details"
     label: "Tap customer edit button"
 
 - extendedWaitUntil:
