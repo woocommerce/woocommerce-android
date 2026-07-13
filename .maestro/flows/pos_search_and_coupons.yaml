@@ -10,15 +10,13 @@
 #   - Coupons tab:  hint is R.string.woopos_search_coupons
 #     → "Search coupons"
 #
-# NOTE: POS is tablet-only. On phones the point_of_sale bottom-nav
-# item is hidden; this flow guards on that id and skips the body on
-# phones — the login+dashboard checks above already exercise the
-# main-app paths.
+# NOTE: POS is tablet-only and requires a genuinely eligible store. Missing
+# POS navigation is a setup failure, not a reason to skip this release signal.
 #
 # Verifies (on tablet):
 #   - POS screen loads with Products + Coupons tabs visible
-#   - Switching to the Coupons tab loads the coupons list
-#   - The search hint reflects the active tab (products vs coupons)
+#   - Search resolves the configured variable product and a variation
+#   - A real coupon is added to the cart
 #   - Switching back to Products reloads the product grid
 appId: com.woocommerce.android.dev
 name: "POS - Search and Coupons tab"
@@ -31,68 +29,121 @@ tags:
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Guard on the POS bottom-nav item — it's only present on tablet
-# builds with POS enabled.
+- extendedWaitUntil:
+    visible:
+      id: "point_of_sale"
+    timeout: 10000
+    label: "Require real POS eligibility"
+
+- tapOn:
+    id: "point_of_sale"
+    label: "Tap POS tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+
 - runFlow:
     when:
       visible:
-        id: "point_of_sale"
+        id: "woo_pos_clear_cart_button"
     commands:
       - tapOn:
-          id: "point_of_sale"
-          label: "Tap POS tab"
-
-      # Wait for product grid.
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_product_item"
-          timeout: 20000
-
-      # Both tabs should be visible at the top of the items screen.
-      - assertVisible: "Products"
-      - assertVisible: "Coupons"
-
-      - takeScreenshot: pos_products_tab
-
-      # Products-tab search hint.
-      - assertVisible:
-          id: "woo_pos_search_input"
-      - assertVisible:
-          text: ".*Search products and variations.*"
-
-      # Switch to the Coupons tab.
+          id: "woo_pos_clear_cart_button"
+          label: "Open clear-cart menu"
       - tapOn:
-          text: "Coupons"
-          retryTapIfNoChange: true
-          label: "Tap Coupons tab"
+          text: "Clear cart"
+          label: "Clear leftover POS cart"
 
-      # Either the coupons list loads OR the empty state appears —
-      # accept either so the assertion isn't tied to seed data on the
-      # staging store. The search hint changes as soon as the tab
-      # switches, which is our signal that the tab switch worked.
-      - extendedWaitUntil:
-          visible: ".*Search coupons.*|.*No coupons found.*|.*Unable to load coupons.*"
-          timeout: 20000
-          label: "Wait for Coupons tab content"
+- assertVisible: "Products"
+- assertVisible: "Coupons"
+- assertVisible:
+    id: "woo_pos_search_input"
 
-      - takeScreenshot: pos_coupons_tab
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Open product search"
 
-      # Coupon add-to-cart action. Optional until the flow owns seeded
-      # cart prerequisites for coupon application.
-      - assertVisible:
-          id: "woo_pos_coupon_add_to_cart_button"
+- extendedWaitUntil:
+    visible: ".*Search products and variations.*"
+    timeout: 10000
 
-      # Switch back to the Products tab to leave POS in the default
-      # state for any downstream flow that reuses it.
-      - tapOn:
-          text: "Products"
-          retryTapIfNoChange: true
-          label: "Tap Products tab"
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Focus product search"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
+- hideKeyboard
 
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_product_item"
-          timeout: 15000
-          label: "Wait for products grid to reload"
+- extendedWaitUntil:
+    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
+    timeout: 20000
+    label: "Wait for configured variable product"
 
-      - takeScreenshot: pos_products_tab_restored
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Open variable product variations"
+
+- extendedWaitUntil:
+    notVisible: ".*Search products and variations.*"
+    timeout: 10000
+    label: "Require variation selection screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+    label: "Wait for POS variations"
+
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Add first variation to cart"
+
+- runFlow:
+    when:
+      notVisible: "Coupons"
+    commands:
+      - back
+
+- extendedWaitUntil:
+    visible: "Coupons"
+    timeout: 10000
+
+- tapOn:
+    text: "Coupons"
+    retryTapIfNoChange: true
+    label: "Tap Coupons tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_coupon_add_to_cart_button"
+    timeout: 20000
+    label: "Require a usable coupon"
+
+- tapOn:
+    id: "woo_pos_coupon_add_to_cart_button"
+    index: 0
+    label: "Add coupon to cart"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_cart_coupon_item"
+    timeout: 10000
+    label: "Verify coupon in POS cart"
+
+- takeScreenshot: pos_coupon_in_cart
+
+- tapOn:
+    text: "Products"
+    retryTapIfNoChange: true
+    label: "Restore Products tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 15000

@@ -21,4 +21,6 @@ object WooPosTestTags {
     const val NEW_ORDER_BUTTON = "woo_pos_new_order_button"
     const val SUCCESS_CHECKMARK_ICON = "woo_pos_success_checkmark_icon"
     const val CART_ITEMS_COUNT = "woo_pos_cart_items_count"
+    const val CLEAR_CART_BUTTON = "woo_pos_clear_cart_button"
+    const val CART_COUPON_ITEM = "woo_pos_cart_coupon_item"
 }

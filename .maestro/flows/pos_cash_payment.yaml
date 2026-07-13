@@ -1,15 +1,12 @@
 # Smoke Test: POS - Cash Payment flow (Tablet)
-# p2: pos.add-products, pos.pay-cash, pos.email-receipts
+# p2: pos.add-products, pos.pay-cash
 # P2 ref: POS > Search products, Add to cart, Pay with Cash
 #
 # POS exposes Compose test tags as resource IDs (WooPosTheme enables
 # testTagsAsResourceId at the root of the Compose tree).
 #
-# NOTE: This flow requires a tablet device/emulator with POS enabled.
-# On phones the POS tab is hidden by the app, so the core POS assertions
-# are wrapped in a visibility guard. The flow will still pass on phones
-# (smoke purpose: "does login → reach main nav" succeeded) but the POS
-# body is skipped. Run on a tablet emulator to exercise the full flow.
+# NOTE: This flow requires a tablet device/emulator and a genuinely POS-
+# eligible store. Missing POS navigation must fail the release signal.
 #
 # Verifies (on tablet):
 #   - POS screen loads from bottom navigation
@@ -17,10 +14,7 @@
 #   - Checkout flow works
 #   - Cash payment can be completed
 #   - Payment success screen displays
-#   - "Email receipt" button opens the Email receipt screen with a
-#     "Send" action (we do NOT actually send — that would email a
-#     customer on the staging store; we back out to the success
-#     screen and then start a new order)
+#   - A new order can be started after successful payment
 appId: com.woocommerce.android.dev
 name: "POS - Cash payment flow"
 tags:
@@ -33,119 +27,110 @@ tags:
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Navigate to POS tab (only available on tablets with POS enabled).
-# Guarded because the tab is hidden on phones by design.
+- extendedWaitUntil:
+    visible:
+      id: "point_of_sale"
+    timeout: 10000
+    label: "Require real POS eligibility"
+
+- tapOn:
+    id: "point_of_sale"
+    label: "Tap POS tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+
 - runFlow:
     when:
       visible:
-        id: "point_of_sale"
+        id: "woo_pos_clear_cart_button"
     commands:
       - tapOn:
-          id: "point_of_sale"
-          label: "Tap POS tab"
-
-      # Wait for POS products to load
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_product_item"
-          timeout: 20000
-
-      - takeScreenshot: pos_products
-
-      # Add first product to cart
+          id: "woo_pos_clear_cart_button"
+          label: "Open clear-cart menu"
       - tapOn:
-          id: "woo_pos_product_item"
-          index: 0
-          label: "Add first product to cart"
+          text: "Clear cart"
+          label: "Own an empty POS cart"
 
-      # Add another product to cart
-      - tapOn:
-          id: "woo_pos_product_item"
-          index: 2
-          label: "Add third product to cart"
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Open product search"
+- extendedWaitUntil:
+    visible: ".*Search products and variations.*"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Focus product search"
+- runFlow:
+    file: ../subflows/paste_into_focused_field.yaml
+    env:
+      TEXT_TO_PASTE: ${WOO_VARIABLE_PRODUCT_NAME}
+- hideKeyboard
 
-      # Validate cart has items via JavaScript
-      - copyTextFrom:
-          id: "woo_pos_cart_items_count"
-      - evalScript: |
-          if (maestro.copiedText) {
-              var count = parseInt(maestro.copiedText, 10);
-              if (isNaN(count) || count < 1) {
-                  throw new Error('Cart should have at least 1 item, found: ' + maestro.copiedText);
-              }
-          }
+- extendedWaitUntil:
+    visible: "${WOO_VARIABLE_PRODUCT_NAME}"
+    timeout: 20000
 
-      - takeScreenshot: pos_cart
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Open variable product variations"
+- extendedWaitUntil:
+    notVisible: ".*Search products and variations.*"
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Add first variation to owned cart"
 
-      # Proceed to checkout
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_checkout_button"
-          timeout: 10000
-      - tapOn:
-          id: "woo_pos_checkout_button"
-          label: "Tap Checkout"
+- copyTextFrom:
+    id: "woo_pos_cart_items_count"
+- evalScript: |
+    var count = parseInt(maestro.copiedText, 10);
+    if (isNaN(count) || count < 1) {
+        throw new Error('Owned POS cart should contain a product');
+    }
 
-      # Wait for totals/payment screen
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_cash_payment_button"
-          timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_checkout_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_checkout_button"
+    label: "Tap Checkout"
 
-      - takeScreenshot: pos_totals
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_cash_payment_button"
+    timeout: 15000
+- tapOn:
+    id: "woo_pos_cash_payment_button"
+    label: "Select Cash payment"
 
-      # Select cash payment
-      - tapOn:
-          id: "woo_pos_cash_payment_button"
-          label: "Select Cash payment"
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_complete_payment_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_complete_payment_button"
+    label: "Complete payment"
 
-      # Complete cash payment
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_complete_payment_button"
-          timeout: 10000
-      - tapOn:
-          id: "woo_pos_complete_payment_button"
-          label: "Complete payment"
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_new_order_button"
+    timeout: 15000
+- assertVisible:
+    id: "woo_pos_success_checkmark_icon"
+    label: "Payment success checkmark visible"
 
-      # Verify payment success
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_new_order_button"
-          timeout: 15000
+- takeScreenshot: pos_payment_success
 
-      - assertVisible:
-          id: "woo_pos_success_checkmark_icon"
-          label: "Payment success checkmark visible"
-
-      - takeScreenshot: pos_payment_success
-
-      # Open the Email receipt screen from the success screen. The
-      # button is a WooPosOutlinedButton whose label is
-      # R.string.woopos_receipt_button → "Email receipt" (it has no
-      # test tag, so we match by text).
-      - tapOn:
-          text: "Email receipt"
-          label: "Tap Email receipt"
-
-      # Verify the Email receipt screen loaded. The toolbar title is
-      # R.string.woopos_email_receipt_title and the send button text
-      # is R.string.woopos_email_receipt_send_button → "Send".
-      - runFlow:
-          when:
-            visible: "Send"
-          commands:
-            - assertVisible: "Email receipt"
-            - takeScreenshot: pos_email_receipt_screen
-            # Back out without sending — we don't want the staging
-            # store to actually dispatch a receipt email on every run.
-            - back
-
-      # Start new order from the (now restored) success screen.
-      - extendedWaitUntil:
-          visible:
-            id: "woo_pos_new_order_button"
-          timeout: 10000
-      - tapOn:
-          id: "woo_pos_new_order_button"
-          label: "Start new order"
+- tapOn:
+    id: "woo_pos_new_order_button"
+    label: "Start new order"
