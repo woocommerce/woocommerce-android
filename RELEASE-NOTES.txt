@@ -4,7 +4,7 @@
 
 25.3
 -----
-
+- [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
 
 25.2
 -----
