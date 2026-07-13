@@ -12,7 +12,7 @@
 #                 └─ back on Filter list
 #                    └─ tap "Show products" (filterList_btnShowProducts)
 #                       └─ Products list now filtered to Variable
-#                           └─ tap first product (productName index 0)
+#                           └─ find a product row reporting N variations
 #                              └─ Product detail — assert "Variations" row
 #                                 └─ tap Variations → VariationListFragment
 #                                    └─ assert variationList recycler
@@ -21,7 +21,7 @@
 #
 # ⚠️  STORE PREREQUISITE: at least ONE Variable product MUST exist on
 # the store this flow is pointed at. If none exist, the assertion on
-# `productName` after the filter is applied will fail — that's
+# a positive variation count after the filter is applied will fail — that's
 # intentional. The test doesn't know whether "no variable products" is
 # a regression in the app or missing store data.
 #
@@ -143,20 +143,21 @@ tags:
 
 - takeScreenshot: products_filtered_variable
 
-# Target the configured product exactly. This prevents another variable
-# product, or a parent product without purchasable variations, from satisfying
-# the coverage claim.
-- assertVisible:
-    text: "${WOO_VARIABLE_PRODUCT_NAME}"
-    label: "Configured Variable product is visible"
+# A positive variation count is the app's own signal that this parent product
+# has variations. This avoids coupling the flow to a named store fixture.
+- scrollUntilVisible:
+    element: ".*[1-9][0-9]* variations?.*"
+    direction: DOWN
+    timeout: 20000
+    label: "Find a Variable product with variations"
 
 # ─────────────────────────────────────────────────────────────────────
 # 6. Open a variable product from the filtered list
 # ─────────────────────────────────────────────────────────────────────
 - tapOn:
-    text: "${WOO_VARIABLE_PRODUCT_NAME}"
+    text: ".*[1-9][0-9]* variations?.*"
     retryTapIfNoChange: true
-    label: "Open configured Variable product"
+    label: "Open discovered Variable product"
 
 - extendedWaitUntil:
     visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
@@ -178,19 +179,57 @@ tags:
 
 # ─────────────────────────────────────────────────────────────────────
 # 7. Open Tags, then require the existing Variations path and a real
-#    variation detail. A product that only offers "Add variations" is an
-#    invalid fixture for this release-signal flow.
+#    variation detail. Products without tags expose Tags under Add more
+#    details; products with tags expose it directly on the detail screen.
 # ─────────────────────────────────────────────────────────────────────
 - scrollUntilVisible:
-    element: "Tags"
+    element:
+      id: "productDetail_addMoreButton"
     direction: DOWN
     timeout: 15000
-    label: "Scroll to Tags row"
+    label: "Scroll to Add more details"
 
 - tapOn:
-    text: "Tags"
+    id: "productDetail_addMoreButton"
     retryTapIfNoChange: true
-    label: "Open product tags"
+    label: "Open additional product details"
+
+- extendedWaitUntil:
+    visible:
+      id: "productDetailInfo_optionsList"
+    timeout: 10000
+
+# An untagged product offers Tags in the additional-details sheet.
+- runFlow:
+    when:
+      visible: "Tags"
+    commands:
+      - tapOn:
+          text: "Tags"
+          retryTapIfNoChange: true
+          label: "Open empty product tags"
+      - extendedWaitUntil:
+          visible:
+            id: "productTagsRecycler"
+          timeout: 15000
+
+# A tagged product omits Tags from the sheet because the direct detail row
+# already exists. Return to the product and open that row instead.
+- runFlow:
+    when:
+      notVisible:
+        id: "productTagsRecycler"
+    commands:
+      - back
+      - scrollUntilVisible:
+          element: "Tags"
+          direction: DOWN
+          timeout: 15000
+          label: "Find existing Tags row"
+      - tapOn:
+          text: "Tags"
+          retryTapIfNoChange: true
+          label: "Open existing product tags"
 
 - extendedWaitUntil:
     visible:
