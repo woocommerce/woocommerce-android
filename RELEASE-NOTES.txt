@@ -4,7 +4,7 @@
 
 25.3
 -----
-- [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [PR URL]
+- [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 
 
 25.2
