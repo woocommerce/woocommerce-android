@@ -2,7 +2,6 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
 import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
@@ -114,7 +113,7 @@ fun CouponWithEmails.toAppModel() = Coupon(
     dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
     type = coupon.discountType?.let { Coupon.Type.fromDataModel(it) },
     description = coupon.description,
-    dateExpires = coupon.dateExpiresGmt.parseFromIso8601DateFormat(),
+    dateExpires = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
     usageCount = coupon.usageCount,
     isShippingFree = coupon.isShippingFree,
     productIds = coupon.includedProductIds.orEmpty(),
