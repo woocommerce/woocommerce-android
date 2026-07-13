@@ -4,6 +4,7 @@
 
 25.3
 -----
+- [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [PR URL]
 
 
 25.2
