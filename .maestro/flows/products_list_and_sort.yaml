@@ -1,12 +1,10 @@
 # Smoke Test: Products - List and Sort
 # p2: products.list, products.sort, products.search
-# P2 probe: products.pagination (scroll-only; does not prove another API page loaded)
-# P2 ref: Products > Product list (check pagination), Sort product list
+# P2 ref: Products > Product list, Sort product list
 #
 # Verifies:
 #   - Products list loads
 #   - Product cards show name, stock status, price, SKU
-#   - The list remains usable after scrolling toward the pagination boundary
 #   - Sorting produces different first products for A-to-Z and Z-to-A
 #   - Search for products
 #   - Product filters
@@ -46,27 +44,6 @@ tags:
 - evalScript: ${output.productSearchText = maestro.copiedText.trim()}
 
 - takeScreenshot: products_list
-
-# Pagination probe only. A deterministic product beyond the first API page is
-# needed before this can be counted as pagination coverage.
-- scroll
-- scroll
-- scroll
-
-- extendedWaitUntil:
-    visible:
-      id: "productName"
-    timeout: 10000
-
-- takeScreenshot: products_list_scrolled
-
-# Scroll back to top
-- swipe:
-    direction: DOWN
-    duration: 500
-- swipe:
-    direction: DOWN
-    duration: 500
 
 # Test sorting with two explicit, opposing choices. Requiring different first
 # products proves the list was reordered instead of only opening the sheet.

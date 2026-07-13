@@ -1,14 +1,12 @@
-# Smoke Test: Orders - List, Pagination, and Search
+# Smoke Test: Orders - List and Search
 # p2: orders.list, orders.search
-# P2 probe: orders.pagination (scroll-only; does not prove another API page loaded)
-# P2 ref: Orders > Order list (check pagination), Search for an order
+# P2 ref: Orders > Order list, Search for an order
 #
 # Verifies:
 #   - Orders list loads with order data
-#   - The list remains usable after scrolling toward the pagination boundary
 #   - Search for an order by number or keyword
 appId: com.woocommerce.android.dev
-name: "Orders - List, pagination, and search"
+name: "Orders - List and search"
 tags:
   - smoke_core
   - orders
@@ -43,19 +41,6 @@ tags:
 - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
 
 - takeScreenshot: orders_list
-
-# Pagination probe only. Without a known order beyond the first API page, this
-# cannot distinguish a loaded second page from scrolling the initial results.
-- scroll
-- scroll
-- scroll
-
-- extendedWaitUntil:
-    visible:
-      id: "orderNum"
-    timeout: 10000
-
-- takeScreenshot: orders_list_scrolled
 
 # Test search against the first visible order from the loaded list.
 - tapOn:
