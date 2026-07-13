@@ -62,32 +62,28 @@ tags:
     id: "stats_range_dropdown_button"
     label: "Tap date range dropdown"
 
-# The DropdownMenu is a Compose Popup — popups render in a separate
-# window, so its own testTag (stats_range_dropdown_menu) doesn't
-# reliably surface in Maestro's view hierarchy. We branch on the
-# visible menu item text instead ("This Week" is always rendered
-# once the menu is open — DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB
-# includes Today / This Week / This Month / This Year / Custom).
-- runFlow:
-    when:
-      visible: "This Week"
-    commands:
-      - tapOn: "This Week"
-      - extendedWaitUntil:
-          visible:
-            id: "dashboard_stats_card"
-          timeout: 10000
+# The DropdownMenu is a Compose Popup, so assert its stable item text rather
+# than relying on its test tag surfacing in Maestro's hierarchy. This is
+# mandatory: otherwise the flow could pass without changing the chart range.
+- extendedWaitUntil:
+    visible: "This Week"
+    timeout: 10000
+    label: "Wait for dashboard date range menu"
 
-# Safety net: if the popup didn't dismiss (e.g. the device decided to
-# keep it open, or "This Week" wasn't matched because the menu
-# rendered slightly differently), press back to close it so the
-# subsequent scrolls aren't blocked by a floating popup covering the
-# dashboard content.
-- runFlow:
-    when:
-      visible: "Custom"
-    commands:
-      - back
+- tapOn:
+    text: "This Week"
+    retryTapIfNoChange: true
+    label: "Select This Week range"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_stats_card"
+    timeout: 10000
+    label: "Wait for weekly dashboard stats"
+
+- assertNotVisible:
+    text: "Custom"
+    label: "Date range menu closes after selection"
 
 - takeScreenshot: dashboard_stats_week
 
