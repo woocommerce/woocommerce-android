@@ -116,14 +116,16 @@ tags:
     point: "50%,12%"
     label: "Tap store header to open site picker"
 
-- runFlow:
-    when:
-      visible: ".*Select store.*|.*Connected Stores.*"
-    commands:
-      - takeScreenshot: hub_change_store
-      - back
-      - extendedWaitUntil:
-          visible:
-            id: "more_menu_compose_view"
-          timeout: 15000
-          label: "Back on More Menu after site picker"
+- extendedWaitUntil:
+    visible: ".*Select store.*|.*Connected Stores.*"
+    timeout: 15000
+    label: "Require site picker after tapping store header"
+
+- takeScreenshot: hub_change_store
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu after site picker"
