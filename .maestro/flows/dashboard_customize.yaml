@@ -1,8 +1,8 @@
 # Smoke Test: Dashboard - Customize cards
-# p2: dashboard.customization
+# P2 probe: dashboard.customization (opening the editor is not toggle/reorder coverage)
 # P2 ref: Dashboard/Stats > Customization — all cards can be toggled + reordered
 #
-# Verifies:
+# Probes:
 #   - The dashboard toolbar "Customize" action (menu_edit_screen_widgets)
 #     opens the DashboardWidgetEditorScreen
 #   - The editor lists the core supported widgets (titles match
@@ -10,9 +10,10 @@
 #     "Top performers" because those two widgets are always available
 #     regardless of store configuration.
 #   - The SAVE action and close (navigation) icon both render
-#   - Closing the editor returns to the dashboard without mutating
-#     widget state (we deliberately do NOT toggle/save anything to keep
-#     the staging store's widget layout untouched across runs)
+#   - Closing the editor returns to the dashboard without mutating state
+#
+# The P2 check requires toggling and reordering cards. This flow deliberately
+# does neither, so it is a probe and is not counted as automated coverage.
 appId: com.woocommerce.android.dev
 name: "Dashboard - Customize cards"
 tags:
