@@ -90,6 +90,9 @@ Group the public API shallowly by source intent; do not collapse the source into
 - Expose approved Store authoring roles through `WooTheme`, not directly through `MaterialTheme`.
 - Preserve source-backed color intent in `WooTheme.colors` instead of generating public Material 3
   aliases.
+- Define primitive palette resources with literal values, and make semantic XML color resources
+  reference an exact matching palette resource when one exists. Keep resolved ARGB literals for
+  opacity tokens that Android color aliases cannot compose from a palette resource.
 - Keep `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` populated
   as interop projections for Material 3 components, defaults, and helpers.
 - Keep Material 3-only projection aliases internal. Do not expose generated fixed roles or

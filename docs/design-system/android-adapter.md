@@ -75,6 +75,9 @@ rollout wiring should stay outside the module.
   - `WooTheme.iconSize` scoped to glyph sizes only.
   - `WooTheme.stroke` for source-backed border and divider widths used by production components.
 - Expose primitive palette ramps intentionally through public `WooTheme.colors.palette.*` fields.
+- Keep primitive literals in palette XML resources and alias exact matching semantic XML resources
+  to those primitives. Keep resolved ARGB literals for opacity tokens that cannot be represented as
+  a normal Android color-resource alias.
 - Treat `surfaceDim` and `surfaceContainerHighest` as source-backed public Store roles, not
   generated Material aliases.
 - Expose `WooTheme.stroke` because production design-system components use the source-backed stroke

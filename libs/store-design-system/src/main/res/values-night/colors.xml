@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="woo_ds_color_primary">#873EFF</color>
+    <color name="woo_ds_color_primary">@color/woo_ds_color_palette_woo_purple_shade40</color>
     <color name="woo_ds_color_on_primary">#FFFFFF</color>
     <color name="woo_ds_color_secondary">#383146</color>
     <color name="woo_ds_color_on_secondary">#F1EDFE</color>
@@ -9,16 +9,16 @@
 
     <color name="woo_ds_color_container_primary_container">#FFFFFF</color>
     <color name="woo_ds_color_container_on_primary_container">#FFFFFF</color>
-    <color name="woo_ds_color_container_secondary_container">#3C087E</color>
-    <color name="woo_ds_color_container_on_secondary_container">#B999FF</color>
+    <color name="woo_ds_color_container_secondary_container">@color/woo_ds_color_palette_woo_purple_shade80</color>
+    <color name="woo_ds_color_container_on_secondary_container">@color/woo_ds_color_palette_woo_purple_shade20</color>
 
-    <color name="woo_ds_color_background_section">#101517</color>
+    <color name="woo_ds_color_background_section">@color/woo_ds_color_palette_gray_shade100</color>
     <color name="woo_ds_color_background_on_section">#FFFFFF</color>
-    <color name="woo_ds_color_background_section_variant">#101517</color>
+    <color name="woo_ds_color_background_section_variant">@color/woo_ds_color_palette_gray_shade100</color>
     <color name="woo_ds_color_background_on_section_variant">#8B8A8E</color>
 
     <color name="woo_ds_color_surface_default">#232529</color>
-    <color name="woo_ds_color_surface_dim">#2C3338</color>
+    <color name="woo_ds_color_surface_dim">@color/woo_ds_color_palette_gray_shade80</color>
     <color name="woo_ds_color_surface_container_highest">#232529</color>
     <color name="woo_ds_color_surface_on_default">#FFFFFF</color>
     <color name="woo_ds_color_surface_on_variant">#626068</color>
