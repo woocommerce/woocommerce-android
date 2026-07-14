@@ -172,6 +172,7 @@ fun SelectorListItem(
 
 object ProductSelectorTestTags {
     const val PRODUCT_ITEM = "product_selector_product_item"
+    const val VARIABLE_PRODUCT_ITEM = "product_selector_variable_product_item"
     const val VARIATION_ITEM = "product_selector_variation_item"
     const val DONE_BUTTON = "product_selector_done_button"
 }

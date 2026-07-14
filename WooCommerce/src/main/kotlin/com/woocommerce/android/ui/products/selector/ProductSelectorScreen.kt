@@ -326,7 +326,11 @@ private fun displayProductsSection(
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
                 enabled = state.selectionEnabled && product.enabled,
-                testTag = ProductSelectorTestTags.PRODUCT_ITEM,
+                testTag = if (product.hasVariations()) {
+                    ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
+                } else {
+                    ProductSelectorTestTags.PRODUCT_ITEM
+                },
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -449,7 +453,11 @@ private fun ProductList(
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
                     enabled = state.selectionEnabled && product.enabled,
-                    testTag = ProductSelectorTestTags.PRODUCT_ITEM,
+                    testTag = if (product.hasVariations()) {
+                        ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
+                    } else {
+                        ProductSelectorTestTags.PRODUCT_ITEM
+                    },
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }
