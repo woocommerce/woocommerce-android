@@ -125,6 +125,15 @@ data class Address(
     }
 
     /**
+     * Compares this address to the other one ignoring the email field. Shipping addresses never carry an email
+     * in the WooCommerce API, so this is the right way to check whether a shipping address is a copy of a
+     * billing address.
+     */
+    fun isSameIgnoringEmail(otherAddress: Address): Boolean {
+        return copy(email = "") == otherAddress.copy(email = "")
+    }
+
+    /**
      * Compares this address's physical location to the other one
      */
     fun isSamePhysicalAddress(otherAddress: Address): Boolean {
