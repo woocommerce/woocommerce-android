@@ -10,6 +10,7 @@
 #   WOO_NOT_A_WOO_STORE_URL
 #   WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
 #   WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
+# Optional WP.com fallback env vars (set both or neither):
 #   WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
 #   WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android.dev

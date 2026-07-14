@@ -532,12 +532,21 @@ if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && -z "${CI:-}" 
   exit 1
 fi
 
+is_optional_flow_env_ref() {
+  local flow="$1"
+  local ref="$2"
+  [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]] &&
+    [[ "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
+      "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
+}
+
 validate_referenced_env() {
   local missing=()
   local flow ref var
   for flow in "${ORDERED_FLOWS[@]}"; do
     while IFS= read -r ref; do
       [[ -z "$ref" ]] && continue
+      is_optional_flow_env_ref "$flow" "$ref" && continue
       var="MAESTRO_${ref}"
       if [[ -z "${!var:-}" ]]; then
         missing+=("$var")
@@ -551,6 +560,25 @@ validate_referenced_env() {
   fi
 }
 validate_referenced_env
+
+validate_optional_not_woo_wpcom_env() {
+  local flow selected="no"
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    if [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]]; then
+      selected="yes"
+      break
+    fi
+  done
+  [[ "$selected" == "yes" ]] || return
+
+  local email="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL:-}"
+  local password="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD:-}"
+  if [[ -n "$email" && -z "$password" ]] || [[ -z "$email" && -n "$password" ]]; then
+    echo "Missing optional WP.com fallback pair: set both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD, or leave both blank." >&2
+    exit 1
+  fi
+}
+validate_optional_not_woo_wpcom_env
 
 DEVICE_SERIALS=()
 while read -r serial state _rest; do
