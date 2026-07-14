@@ -265,7 +265,7 @@ items:
     manual: "Outside Maestro app surface."
   - id: other.quick-actions
     title: Quick Actions
-    manual: "Launcher long-press flow outside current Maestro suite."
+    flow: .maestro/flows/android_quick_actions.yaml
   - id: other.ios-push-long-press
     title: Long press iPhone push notification
     manual: "iOS-only per P2."

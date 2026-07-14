@@ -36,6 +36,7 @@
   <pre>cp .maestro/env.example .maestro/.env.local
 .maestro/scripts/run-smoke-tests.sh --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --store lab
+.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
 .maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
 
@@ -50,6 +51,7 @@
       <tr><td><code>smoke_core</code></td><td>Stable non-destructive critical paths. Default release signal.</td></tr>
       <tr><td><code>smoke_extended</code></td><td>Broader P2 coverage.</td></tr>
       <tr><td><code>pos_tablet</code></td><td>POS tablet flows.</td></tr>
+      <tr><td><code>android_system</code></td><td>Launcher/system-surface flows on an English Pixel Launcher AVD.</td></tr>
       <tr><td><code>destructive</code></td><td>Mutates store data.</td></tr>
       <tr><td><code>flaky_quarantine</code></td><td>Excluded from real runs until promotion.</td></tr>
     </tbody>

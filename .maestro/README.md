@@ -71,6 +71,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile release
 .maestro/scripts/run-smoke-tests.sh --profile burst
 .maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
+.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
@@ -83,11 +84,13 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: lab store, `smoke_core`, quarantine excluded.
-- `phone-full`: lab store, `smoke_core,smoke_extended`, `pos_tablet` excluded. This includes quarantined phone flows.
-- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine and tablet POS excluded.
+- `core`: lab store, `smoke_core`, quarantine and Android system surfaces excluded.
+- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
+- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
 - `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
+- `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
+  Wasabi app discoverable as `Woo (Dev)` in the app drawer.
 
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
 store, device, APK, repeat, and profile options.
@@ -111,6 +114,7 @@ The runner:
 - `smoke_core`: stable non-destructive release signal paths.
 - `smoke_extended`: broader P2 coverage.
 - `pos_tablet`: POS flows, tablet AVD required.
+- `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
 - `destructive`: mutates store data.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 
