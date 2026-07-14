@@ -17,3 +17,7 @@ WooPosRules:
 TestRules:
   UnitTestNamingRule:
     active: true
+
+StoreRules:
+  MixedStoreThemeImportsRule:
+    active: true
