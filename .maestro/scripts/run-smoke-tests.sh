@@ -280,6 +280,8 @@ P2_ORDERED_FLOWS=(
   orders_details_and_actions.yaml
   orders_mark_complete.yaml
   orders_cash_payment.yaml
+  orders_barcode_scanner_opens.yaml
+  orders_payment_qr_and_share.yaml
   orders_refund.yaml
   products_list_and_sort.yaml
   products_detail.yaml
