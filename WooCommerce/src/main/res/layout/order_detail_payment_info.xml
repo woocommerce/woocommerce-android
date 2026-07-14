@@ -80,6 +80,8 @@
                     android:layout_marginStart="@dimen/minor_00"
                     android:layout_marginEnd="@dimen/minor_00"
                     android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     tools:text="(sale4theday, firstTime, anyothertime, blah)"/>
 
                 <com.google.android.material.textview.MaterialTextView
