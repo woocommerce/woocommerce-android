@@ -3,13 +3,13 @@
 # P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
 #
 # Logs into a WordPress site that does NOT have WooCommerce installed
-# using the primary WP.com credentials, and verifies the app shows the
+# using its dedicated WP.com credentials, and verifies the app shows the
 # "not a WooCommerce site" error.
 #
 # Required env vars:
-#   WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD
-#                                      (selected WP.com account)
-#   WOO_NOT_A_WOO_STORE_URL          (notawoostore.wordpress.com)
+#   WOO_NOT_A_WOO_STORE_URL
+#   WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
+#   WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android.dev
 name: "Login - Not a WooCommerce store error"
 tags:
@@ -58,7 +58,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_EMAIL}
+- inputText: ${WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -91,7 +91,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_PASSWORD}
+- inputText: ${WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
