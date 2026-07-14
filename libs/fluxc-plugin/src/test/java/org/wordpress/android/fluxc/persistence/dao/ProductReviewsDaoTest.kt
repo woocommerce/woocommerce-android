@@ -88,6 +88,23 @@ class ProductReviewsDaoTest {
     }
 
     @Test
+    fun `given duplicate review id across sites, when querying one site, then no cross-site duplicates`() = runTest {
+        // Review ids are only unique per-site, so two sites can cache the same remoteProductReviewId.
+        val siteAId = 701
+        val siteBId = 432
+        val siteAReviews = getProductReviews(siteAId)
+        val siteBReviews = getProductReviews(siteBId)
+        sut.upsertProductReviews(siteAReviews + siteBReviews)
+
+        val sharedIds = siteAReviews.map { it.remoteProductReviewId }
+
+        val result = sut.getProductReviews(siteId = LocalId(siteAId), ids = sharedIds)
+
+        assertThat(result).containsExactlyInAnyOrderElementsOf(siteAReviews)
+        assertThat(result.map { it.remoteProductReviewId }).doesNotHaveDuplicates()
+    }
+
+    @Test
     fun testGetProductReviewsForProduct() = runTest {
         val productId = 18L
         val reviews = getProductReviews(site.id)
