@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.compose.designsystem.icons.Box
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.House
 import com.woocommerce.android.ui.compose.designsystem.icons.List
-import com.woocommerce.android.ui.compose.designsystem.icons.Store
+import com.woocommerce.android.ui.compose.designsystem.icons.PointOfSale
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @Composable
@@ -41,16 +41,23 @@ internal fun PreviewOnlySegmentControlSample(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .border(WooTheme.stroke.extraThin, WooTheme.colors.outlineVariant, RoundedCornerShape(8.dp)),
+            .height(SEGMENT_CONTROL_HEIGHT)
+            .clip(RoundedCornerShape(WooTheme.radius.full))
+            .background(WooTheme.colors.tintLayers.primaryContainer.opacity10)
+            .padding(WooTheme.padding.padding1),
     ) {
         PreviewOnlySegmentItem(
-            text = "Open",
+            text = "Net sales",
             selected = true,
             modifier = Modifier.weight(1f),
         )
         PreviewOnlySegmentItem(
-            text = "Closed",
+            text = "Total sales",
+            selected = false,
+            modifier = Modifier.weight(1f),
+        )
+        PreviewOnlySegmentItem(
+            text = "Gross sales",
             selected = false,
             modifier = Modifier.weight(1f),
         )
@@ -60,8 +67,11 @@ internal fun PreviewOnlySegmentControlSample(
 @Composable
 internal fun PreviewOnlySheetSample(modifier: Modifier = Modifier) {
     Surface(
-        color = WooTheme.colors.surface.default,
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        color = WooTheme.colors.background.section,
+        shape = RoundedCornerShape(
+            topStart = WooTheme.radius.extraLarge,
+            topEnd = WooTheme.radius.extraLarge,
+        ),
         border = BorderStroke(WooTheme.stroke.extraThin, WooTheme.colors.outlineVariant),
         modifier = modifier
     ) {
@@ -105,7 +115,7 @@ internal fun PreviewOnlyTabBarSample(modifier: Modifier = Modifier) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding2),
+                    .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding3),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
             ) {
@@ -123,8 +133,8 @@ internal fun PreviewOnlyTabBarSample(modifier: Modifier = Modifier) {
                     label = "Products",
                 )
                 PreviewOnlyTabBarItem(
-                    icon = WooIcons.Regular.Store,
-                    label = "Store",
+                    icon = WooIcons.Regular.PointOfSale,
+                    label = "Point of sale",
                 )
                 PreviewOnlyTabBarItem(
                     icon = WooIcons.Regular.Ellipsis,
@@ -157,29 +167,40 @@ private fun PreviewOnlySegmentItem(
     modifier: Modifier = Modifier,
 ) {
     val containerColor = if (selected) {
-        WooTheme.colors.secondary
+        WooTheme.colors.surface.default
     } else {
         Color.Transparent
     }
     val contentColor = if (selected) {
-        WooTheme.colors.onSecondary
+        WooTheme.colors.surface.onDefault
     } else {
-        WooTheme.colors.surface.onVariant
+        WooTheme.colors.container.onPrimaryContainer
+    }
+    val textStyle = if (selected) {
+        WooTheme.text.bodySmall.emphasized
+    } else {
+        WooTheme.text.bodySmall.regular
     }
 
     Box(
         modifier = modifier
-            .background(containerColor)
-            .padding(horizontal = WooTheme.padding.padding4, vertical = WooTheme.padding.padding3),
+            .height(SEGMENT_HEIGHT)
+            .clip(RoundedCornerShape(WooTheme.radius.extraLarge))
+            .background(containerColor),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             color = contentColor,
-            style = WooTheme.text.labelLarge.emphasized,
+            style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
+
+private val SEGMENT_CONTROL_HEIGHT = 36.dp
+private val SEGMENT_HEIGHT = 32.dp
 
 @Composable
 private fun PreviewOnlyTabBarItem(
@@ -206,7 +227,7 @@ private fun PreviewOnlyTabBarItem(
             }
         }
     } else {
-        val contentColor = WooTheme.colors.surface.onVariant
+        val contentColor = WooTheme.colors.surface.onVariantLowest
 
         Column(
             modifier = Modifier.size(48.dp),

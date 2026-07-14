@@ -107,7 +107,9 @@ private fun WooButton(
     val buttonColors = style.toButtonColors()
     val shape = RoundedCornerShape(buttonSpec.radius)
     val buttonModifier = modifier.heightIn(min = buttonSpec.visualHeight)
-    val contentPadding = PaddingValues(horizontal = WooTheme.padding.padding5)
+    val contentPadding = PaddingValues(
+        horizontal = WooTheme.padding.padding5,
+    )
     val content: @Composable () -> Unit = {
         WooButtonContent(
             text = text,
@@ -175,27 +177,25 @@ private fun WooButtonContent(
 @Composable
 private fun WooButtonStyle.toButtonColors(): ButtonColors {
     val colors = WooTheme.colors
-    val disabledStateLayerColor = colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
-    val disabledContentColor = colors.surface.onDefault.copy(alpha = DISABLED_CONTENT_ALPHA)
 
     return when (this) {
         WooButtonStyle.Filled -> ButtonDefaults.buttonColors(
             containerColor = colors.primary,
             contentColor = colors.onPrimary,
-            disabledContainerColor = disabledStateLayerColor,
-            disabledContentColor = disabledContentColor,
+            disabledContainerColor = colors.stateLayers.onSurface.opacity08,
+            disabledContentColor = colors.stateLayers.onSurface.opacity24,
         )
         WooButtonStyle.FilledTonal -> ButtonDefaults.filledTonalButtonColors(
             containerColor = colors.container.secondaryContainer,
             contentColor = colors.container.onSecondaryContainer,
-            disabledContainerColor = disabledStateLayerColor,
-            disabledContentColor = disabledContentColor,
+            disabledContainerColor = colors.stateLayers.onSurface.opacity08,
+            disabledContentColor = colors.stateLayers.onSurface.opacity24,
         )
         WooButtonStyle.Outlined -> ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
-            contentColor = colors.primary,
+            contentColor = colors.container.onSecondaryContainer,
             disabledContainerColor = Color.Transparent,
-            disabledContentColor = disabledContentColor,
+            disabledContentColor = colors.stateLayers.onSurface.opacity24,
         )
     }
 }
@@ -210,7 +210,7 @@ private fun WooButtonStyle.toButtonBorder(enabled: Boolean): BorderStroke? =
                 color = if (enabled) {
                     colors.container.secondaryContainer
                 } else {
-                    colors.surface.onDefault.copy(alpha = DISABLED_STATE_LAYER_ALPHA)
+                    colors.stateLayers.onSurface.opacity10
                 },
             )
         }
@@ -301,5 +301,3 @@ private data class WooButtonSpec(
 
 private val MEDIUM_BUTTON_VISUAL_HEIGHT = 56.dp
 private val SMALL_BUTTON_VISUAL_HEIGHT = 32.dp
-private const val DISABLED_STATE_LAYER_ALPHA = 0.08f
-private const val DISABLED_CONTENT_ALPHA = 0.30f

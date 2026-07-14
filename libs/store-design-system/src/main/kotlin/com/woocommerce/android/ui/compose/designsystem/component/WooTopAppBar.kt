@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -150,7 +151,7 @@ private fun WooTopAppBarLayout(
         MATERIAL_ICON_BUTTON_VISUAL_TOUCH_TARGET_PADDING
     val titleColor = WooTheme.colors.surface.onDefault
 
-    Column(modifier = modifier) {
+    Box(modifier = modifier) {
         CenterAlignedTopAppBar(
             title = {
                 CompositionLocalProvider(LocalContentColor provides titleColor) {
@@ -174,7 +175,7 @@ private fun WooTopAppBarLayout(
                 actionIconContentColor = WooTheme.colors.primary,
             ),
         )
-        WooDivider()
+        WooDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 

@@ -98,6 +98,7 @@ private fun ColorFoundationSection() {
         )
         ColorSwatch("surface.onVariantLowest", colors.surface.onVariantLowest, colors.surface.default)
         ColorSwatch("outlineVariant", colors.outlineVariant, colors.surface.onDefault)
+        ColorSwatch("error", colors.error, colors.onError)
         ColorSwatch(
             label = "status.successContainer",
             color = colors.status.successContainer,
@@ -106,6 +107,46 @@ private fun ColorFoundationSection() {
         ColorSwatch("alert.red", colors.alert.red, colors.alert.onRed)
         ColorSwatch("alert.orange", colors.alert.orange, colors.alert.onOrange)
         ColorSwatch("overlay.overlay20", colors.overlay.overlay20, colors.surface.default)
+        ColorSwatch(
+            "stateLayers.onSurface.opacity08",
+            colors.stateLayers.onSurface.opacity08,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "stateLayers.onSurface.opacity10",
+            colors.stateLayers.onSurface.opacity10,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "stateLayers.onSurface.opacity16",
+            colors.stateLayers.onSurface.opacity16,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "stateLayers.onSurface.opacity24",
+            colors.stateLayers.onSurface.opacity24,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity08",
+            colors.tintLayers.primaryContainer.opacity08,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity10",
+            colors.tintLayers.primaryContainer.opacity10,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity16",
+            colors.tintLayers.primaryContainer.opacity16,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primaryContainer.opacity24",
+            colors.tintLayers.primaryContainer.opacity24,
+            colors.surface.onDefault,
+        )
         ColorSwatch("palette.gray.shade40", colors.palette.gray.shade40, colors.onPrimary)
         ColorSwatch("palette.wooPurple.shade40", colors.palette.wooPurple.shade40, colors.onPrimary)
         MaterialProjectionSample()
@@ -387,9 +428,9 @@ private fun IconSizeFoundationSection() {
 
 @Composable
 private fun OmittedFoundationSection() {
-    FoundationSection(title = "Omitted In PR2") {
+    FoundationSection(title = "Unresolved Foundations") {
         Text(
-            text = "Elevation and minimum touch remain unsourced; state-layer color semantics remain internal.",
+            text = "Elevation and minimum touch remain unsourced.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodySmall,
         )
