@@ -41,6 +41,7 @@ internal fun PreviewOnlySegmentControlSample(
 ) {
     Row(
         modifier = modifier
+            .height(SEGMENT_CONTROL_HEIGHT)
             .clip(RoundedCornerShape(WooTheme.radius.full))
             .background(WooTheme.colors.tintLayers.primaryContainer.opacity10)
             .padding(WooTheme.padding.padding1),
@@ -183,18 +184,23 @@ private fun PreviewOnlySegmentItem(
 
     Box(
         modifier = modifier
+            .height(SEGMENT_HEIGHT)
             .clip(RoundedCornerShape(WooTheme.radius.extraLarge))
-            .background(containerColor)
-            .padding(horizontal = WooTheme.padding.padding0, vertical = WooTheme.padding.padding4),
+            .background(containerColor),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             color = contentColor,
             style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
+
+private val SEGMENT_CONTROL_HEIGHT = 36.dp
+private val SEGMENT_HEIGHT = 32.dp
 
 @Composable
 private fun PreviewOnlyTabBarItem(
