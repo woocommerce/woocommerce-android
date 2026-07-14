@@ -25,6 +25,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
@@ -112,13 +113,16 @@ class WooChoiceControlsTest {
             }
         }
 
-        composeTestRule.onNodeWithTag(FILTER_CHIP_TAG)
+        val filterChip = composeTestRule.onNodeWithTag(FILTER_CHIP_TAG)
+        val filterChipBounds = filterChip.fetchSemanticsNode().boundsInRoot
+
+        filterChip.assertIsOff()
+        composeTestRule.onRoot()
             .assertHeightIsAtLeast(MIN_TOUCH_TARGET_SIZE)
-            .assertIsOff()
             .performTouchInput {
-                click(Offset(center.x, 1f))
+                click(Offset(filterChipBounds.center.x, filterChipBounds.top - 1f))
             }
-            .assertIsOn()
+        filterChip.assertIsOn()
     }
 
     @Test

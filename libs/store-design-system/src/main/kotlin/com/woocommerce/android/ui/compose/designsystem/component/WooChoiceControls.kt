@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,10 +20,12 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -84,6 +86,7 @@ fun WooCheckbox(
     enabled: Boolean = true,
     isError: Boolean = false,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val style = wooCheckboxStyle(
         state = state,
         enabled = enabled,
@@ -99,6 +102,7 @@ fun WooCheckbox(
                 state = state,
                 enabled = enabled,
                 onClick = onClick,
+                interactionSource = interactionSource,
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -115,6 +119,7 @@ fun WooRadioButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val style = wooRadioButtonStyle(
         selected = selected,
         enabled = enabled,
@@ -129,6 +134,7 @@ fun WooRadioButton(
                 selected = selected,
                 enabled = enabled,
                 onClick = onClick,
+                interactionSource = interactionSource,
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -157,46 +163,38 @@ fun WooFilterChip(
     val shape = RoundedCornerShape(WooTheme.radius.large)
 
     CompositionLocalProvider(LocalContentColor provides style.contentColor) {
-        Box(
+        Row(
             modifier = modifier
-                .defaultMinSize(
-                    minWidth = MIN_INTERACTIVE_COMPONENT_SIZE,
-                    minHeight = MIN_INTERACTIVE_COMPONENT_SIZE,
+                .minimumInteractiveComponentSize()
+                .height(FILTER_CHIP_HEIGHT)
+                .wooFilterChipBorder(style = style, shape = shape)
+                .background(
+                    color = style.containerColor,
+                    shape = shape,
                 )
                 .clip(shape)
                 .wooFilterChipToggleable(
                     selected = selected,
                     enabled = enabled,
                     onClick = onClick,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(
-                modifier = Modifier
-                    .height(FILTER_CHIP_HEIGHT)
-                    .wooFilterChipBorder(style = style, shape = shape)
-                    .background(
-                        color = style.containerColor,
-                        shape = shape,
-                    )
-                    .padding(horizontal = WooTheme.padding.padding4),
-                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leadingIcon?.let {
-                    WooFilterChipIcon(it)
-                }
-                Text(
-                    text = label,
-                    color = style.contentColor,
-                    style = WooTheme.text.bodyMedium.emphasized,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    softWrap = false,
                 )
-                trailingIcon?.let {
-                    WooFilterChipIcon(it)
-                }
+                .padding(horizontal = WooTheme.padding.padding4),
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            leadingIcon?.let {
+                WooFilterChipIcon(it)
+            }
+            Text(
+                text = label,
+                color = style.contentColor,
+                style = WooTheme.text.bodyMedium.emphasized,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = false,
+            )
+            trailingIcon?.let {
+                WooFilterChipIcon(it)
             }
         }
     }
@@ -231,12 +229,18 @@ private fun Modifier.wooCheckboxToggleable(
     state: ToggleableState,
     enabled: Boolean,
     onClick: (() -> Unit)?,
+    interactionSource: MutableInteractionSource,
 ): Modifier {
     return if (onClick != null) {
         triStateToggleable(
             state = state,
             enabled = enabled,
             role = Role.Checkbox,
+            interactionSource = interactionSource,
+            indication = ripple(
+                bounded = false,
+                radius = CHOICE_CONTROL_STATE_LAYER_RADIUS,
+            ),
             onClick = onClick,
         )
     } else {
@@ -254,12 +258,18 @@ private fun Modifier.wooRadioSelectable(
     selected: Boolean,
     enabled: Boolean,
     onClick: (() -> Unit)?,
+    interactionSource: MutableInteractionSource,
 ): Modifier {
     return if (onClick != null) {
         selectable(
             selected = selected,
             enabled = enabled,
             role = Role.RadioButton,
+            interactionSource = interactionSource,
+            indication = ripple(
+                bounded = false,
+                radius = CHOICE_CONTROL_STATE_LAYER_RADIUS,
+            ),
             onClick = onClick,
         )
     } else {
@@ -539,9 +549,6 @@ private fun WooChoiceControlsPreview() {
 internal fun WooChoiceControlsDemo(
     modifier: Modifier = Modifier,
 ) {
-    var checkedCheckboxChecked by rememberSaveable { mutableStateOf(true) }
-    var uncheckedCheckboxChecked by rememberSaveable { mutableStateOf(false) }
-    var unselectedRadioSelected by rememberSaveable { mutableStateOf(false) }
     var baseFilterSelected by rememberSaveable { mutableStateOf(false) }
     var trailingFilterSelected by rememberSaveable { mutableStateOf(false) }
     var selectedFilterSelected by rememberSaveable { mutableStateOf(true) }
@@ -551,15 +558,7 @@ internal fun WooChoiceControlsDemo(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
     ) {
-        ChoiceControlStateRows(
-            checkedCheckboxChecked = checkedCheckboxChecked,
-            onCheckedCheckboxChange = { checkedCheckboxChecked = it },
-            uncheckedCheckboxChecked = uncheckedCheckboxChecked,
-            onUncheckedCheckboxChange = { uncheckedCheckboxChecked = it },
-            unselectedRadioSelected = unselectedRadioSelected,
-            onSelectedRadioClick = { unselectedRadioSelected = false },
-            onUnselectedRadioClick = { unselectedRadioSelected = true },
-        )
+        ChoiceControlStateRows()
         FilterChipRows(
             baseFilterSelected = baseFilterSelected,
             onBaseFilterClick = { baseFilterSelected = !baseFilterSelected },
@@ -574,15 +573,14 @@ internal fun WooChoiceControlsDemo(
 }
 
 @Composable
-private fun ChoiceControlStateRows(
-    checkedCheckboxChecked: Boolean,
-    onCheckedCheckboxChange: (Boolean) -> Unit,
-    uncheckedCheckboxChecked: Boolean,
-    onUncheckedCheckboxChange: (Boolean) -> Unit,
-    unselectedRadioSelected: Boolean,
-    onSelectedRadioClick: () -> Unit,
-    onUnselectedRadioClick: () -> Unit,
-) {
+private fun ChoiceControlStateRows() {
+    var checkedCheckboxChecked by rememberSaveable { mutableStateOf(true) }
+    var uncheckedCheckboxChecked by rememberSaveable { mutableStateOf(false) }
+    var indeterminateCheckboxState by rememberSaveable { mutableStateOf(ToggleableState.Indeterminate) }
+    var checkedErrorCheckboxChecked by rememberSaveable { mutableStateOf(true) }
+    var uncheckedErrorCheckboxChecked by rememberSaveable { mutableStateOf(false) }
+    var unselectedRadioSelected by rememberSaveable { mutableStateOf(false) }
+
     Column(verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
@@ -590,21 +588,38 @@ private fun ChoiceControlStateRows(
         ) {
             WooCheckbox(
                 checked = checkedCheckboxChecked,
-                onCheckedChange = onCheckedCheckboxChange,
+                onCheckedChange = { checkedCheckboxChecked = it },
                 modifier = Modifier.testTag(WooChoiceControlsDemoTags.CHECKED_CHECKBOX),
             )
             WooCheckbox(
                 checked = uncheckedCheckboxChecked,
-                onCheckedChange = onUncheckedCheckboxChange,
+                onCheckedChange = { uncheckedCheckboxChecked = it },
             )
-            WooCheckbox(state = ToggleableState.Indeterminate, onClick = {})
+            WooCheckbox(
+                state = indeterminateCheckboxState,
+                onClick = {
+                    indeterminateCheckboxState = when (indeterminateCheckboxState) {
+                        ToggleableState.Off -> ToggleableState.On
+                        ToggleableState.On -> ToggleableState.Indeterminate
+                        ToggleableState.Indeterminate -> ToggleableState.Off
+                    }
+                },
+            )
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            WooCheckbox(checked = true, onCheckedChange = {}, isError = true)
-            WooCheckbox(checked = false, onCheckedChange = {}, isError = true)
+            WooCheckbox(
+                checked = checkedErrorCheckboxChecked,
+                onCheckedChange = { checkedErrorCheckboxChecked = it },
+                isError = true,
+            )
+            WooCheckbox(
+                checked = uncheckedErrorCheckboxChecked,
+                onCheckedChange = { uncheckedErrorCheckboxChecked = it },
+                isError = true,
+            )
             WooCheckbox(checked = true, onCheckedChange = {}, enabled = false)
             WooCheckbox(checked = false, onCheckedChange = {}, enabled = false)
         }
@@ -612,10 +627,13 @@ private fun ChoiceControlStateRows(
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            WooRadioButton(selected = !unselectedRadioSelected, onClick = onSelectedRadioClick)
+            WooRadioButton(
+                selected = !unselectedRadioSelected,
+                onClick = { unselectedRadioSelected = false },
+            )
             WooRadioButton(
                 selected = unselectedRadioSelected,
-                onClick = onUnselectedRadioClick,
+                onClick = { unselectedRadioSelected = true },
                 modifier = Modifier.testTag(WooChoiceControlsDemoTags.UNSELECTED_RADIO),
             )
             WooRadioButton(selected = true, onClick = {}, enabled = false)
@@ -693,12 +711,12 @@ internal object WooChoiceControlsDemoTags {
 }
 
 private val CHOICE_CONTROL_SIZE = 24.dp
+private val CHOICE_CONTROL_STATE_LAYER_RADIUS = 20.dp
 private val CHECKBOX_CORNER_RADIUS = 8.dp
 private val CHECKMARK_STROKE_WIDTH = 2.dp
 private val INDETERMINATE_MARK_STROKE_WIDTH = 2.4f.dp
 private val RADIO_DOT_RADIUS = 4.dp
 private val FILTER_CHIP_HEIGHT = 32.dp
-private val MIN_INTERACTIVE_COMPONENT_SIZE = 48.dp
 
 private const val CHECKMARK_START_X = 0.29f
 private const val CHECKMARK_START_Y = 0.52f
