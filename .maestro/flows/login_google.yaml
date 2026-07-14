@@ -8,6 +8,10 @@
 #
 # Preconditions (device/emulator):
 #   - A Google account is already signed in on the device.
+#   - The installed APK was built with the private WooCommerce
+#     google-services.json, not google-services.json-example. The example
+#     OAuth client lets the picker open but Google returns RESULT_CANCELED
+#     after account selection. The smoke runner validates this before launch.
 #   - That Google identity is LINKED on WP.com to an account with access
 #     to ${WOO_JETPACK_STORE_URL}. This is a stronger requirement than "a WP.com
 #     account with the same email exists": WP.com sign-in via Google
