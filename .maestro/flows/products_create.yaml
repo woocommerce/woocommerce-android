@@ -1,5 +1,5 @@
 # Smoke Test: Products - Create and publish a full product
-# p2: products.create
+# p2: products.create, products.detail.inventory, products.detail.shipping, products.detail.linked, products.detail.downloads
 # P2 ref: Products > Create product
 #
 # Exercises the full happy-path creation flow for a Simple physical
@@ -13,17 +13,21 @@
 #      single bulk-delete by search rather than piling up timestamped
 #      orphans)
 #   3. "Add price" → enter regular price → back (auto-saves)
-#   4. Tap "Add more details" (productDetail_addMoreButton) — on a
+#   4. Configure Inventory with a unique SKU and managed stock quantity
+#   5. Add Shipping dimensions from "Add more details"
+#   6. Add an Upsell from Linked products
+#   7. Add a downloadable file by URL
+#   8. Tap "Add more details" (productDetail_addMoreButton) — on a
 #      freshly-created simple product the Short description and
 #      Categories rows don't appear on the detail screen until the
 #      user opts them in from this bottom sheet
-#   5. From the sheet pick "Short description" → Aztec visual editor
+#   9. From the sheet pick "Short description" → Aztec visual editor
 #      → type → back (auto-saves + adds the row to the detail list)
-#   6. Tap "Add more details" again → pick "Categories" → ProductCategorySelector
+#  10. Tap "Add more details" again → pick "Categories" → ProductCategorySelector
 #      → select the first category ("Uncategorized" if present) → Done
-#   7. Tap PUBLISH in the toolbar
-#   8. Return to the Products list and search for "Maestro Smoke" via
-#      menu_search + search_src_text; assert at least one matching row
+#  11. Tap PUBLISH in the toolbar
+#  12. Search by run ID, reopen the exact product, and verify the Inventory,
+#      Shipping, Linked products, and Downloadable files values persisted
 #
 # ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on
 # the staging store every run. Clean up periodically by searching
@@ -154,7 +158,289 @@ tags:
     label: "Wait for detail screen after price edit"
 
 # ─────────────────────────────────────────────────────────────────────
-# 4. Open the "Add more details" bottom sheet to unlock the Short
+# 4. Inventory — set a run-unique SKU and enable managed stock
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Inventory"
+
+- tapOn:
+    text: "Inventory"
+    retryTapIfNoChange: true
+    label: "Open Inventory settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_sku"
+    timeout: 15000
+    label: "Wait for Inventory editor"
+
+- tapOn:
+    id: "product_sku"
+    label: "Focus SKU"
+- eraseText
+- inputText: "SMOKE-${SUITE_RUN_ID}"
+- hideKeyboard
+
+- tapOn:
+    id: "manageStock_switch"
+    label: "Enable stock management"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_stock_quantity"
+    timeout: 10000
+    label: "Wait for managed stock fields"
+
+- tapOn:
+    id: "product_stock_quantity"
+    label: "Focus stock quantity"
+- eraseText
+- inputText: "7"
+- hideKeyboard
+
+- assertVisible:
+    id: "manageStock_switch"
+    checked: true
+    label: "Stock management is enabled"
+
+- takeScreenshot: product_create_inventory
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Inventory"
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Shipping — add weight and dimensions to the physical product
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Shipping"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Shipping"
+
+- extendedWaitUntil:
+    visible: "Shipping"
+    timeout: 10000
+    label: "Require Shipping option"
+
+- tapOn:
+    text: "Shipping"
+    retryTapIfNoChange: true
+    label: "Open Shipping settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_weight"
+    timeout: 15000
+    label: "Wait for Shipping editor"
+
+- tapOn: { id: "product_weight", label: "Focus weight" }
+- eraseText
+- inputText: "1.25"
+- tapOn: { id: "product_length", label: "Focus length" }
+- eraseText
+- inputText: "2.5"
+- tapOn: { id: "product_width", label: "Focus width" }
+- eraseText
+- inputText: "3.75"
+- tapOn: { id: "product_height", label: "Focus height" }
+- eraseText
+- inputText: "4.5"
+- hideKeyboard
+
+- takeScreenshot: product_create_shipping
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Shipping"
+
+- scrollUntilVisible:
+    element: "Shipping"
+    direction: DOWN
+    timeout: 10000
+    label: "Shipping row was added"
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Linked products — add one existing product as an Upsell
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Linked products"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Linked products"
+
+- scrollUntilVisible:
+    element: "Linked products"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Linked products option"
+
+- tapOn:
+    text: "Linked products"
+    retryTapIfNoChange: true
+    label: "Open Linked products"
+
+- extendedWaitUntil:
+    visible:
+      id: "add_upsell_products"
+    timeout: 15000
+    label: "Wait for Linked products editor"
+
+- tapOn:
+    id: "add_upsell_products"
+    retryTapIfNoChange: true
+    label: "Open Upsell products"
+
+- extendedWaitUntil:
+    visible: "Add product"
+    timeout: 15000
+    label: "Wait for empty Upsell list"
+
+- tapOn:
+    text: "Add product"
+    retryTapIfNoChange: true
+    label: "Choose an Upsell product"
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 20000
+    label: "Wait for product selection list"
+
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Select first existing product as Upsell"
+
+- extendedWaitUntil:
+    visible:
+      id: "menu_done"
+    timeout: 10000
+    label: "Wait for product selection action"
+
+- tapOn:
+    id: "menu_done"
+    label: "Confirm Upsell product"
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 15000
+    label: "Upsell product appears in the linked list"
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 10000
+    label: "Wait for Upsell count"
+
+- assertVisible:
+    id: "upsells_count"
+    label: "One Upsell is attached to the product draft"
+
+- takeScreenshot: product_create_linked_product
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Linked products"
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Downloadable files — attach a deterministic URL and file name
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Downloadable files"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Downloadable files"
+
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Downloadable files option"
+
+- tapOn:
+    text: "Downloadable files"
+    retryTapIfNoChange: true
+    label: "Open downloadable file sources"
+
+- extendedWaitUntil:
+    visible:
+      id: "add_downloadable_manually"
+    timeout: 10000
+    label: "Wait for downloadable file source sheet"
+
+- tapOn:
+    id: "add_downloadable_manually"
+    label: "Enter downloadable file URL"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_download_url"
+    timeout: 15000
+    label: "Wait for downloadable file editor"
+
+- tapOn: { id: "product_download_url", label: "Focus file URL" }
+- inputText: "https://example.com/maestro-${SUITE_RUN_ID}.pdf"
+- tapOn: { id: "product_download_name", label: "Focus file name" }
+- inputText: "Maestro download ${SUITE_RUN_ID}"
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      id: "menu_done"
+    timeout: 10000
+    label: "Wait for Add downloadable file action"
+
+- tapOn:
+    id: "menu_done"
+    label: "Add downloadable file"
+
+- extendedWaitUntil:
+    visible: "Downloadable files"
+    timeout: 15000
+    label: "Downloadable files row was added"
+
+- assertVisible: "1 file"
+- takeScreenshot: product_create_downloadable_file
+
+# ─────────────────────────────────────────────────────────────────────
+# 8. Open the "Add more details" bottom sheet to unlock the Short
 #    description + Categories rows. The sheet's list items are built
 #    by ProductDetailBottomSheetBuilder; their visible text comes
 #    from the same string resources used on the detail rows.
@@ -351,6 +637,157 @@ tags:
 - assertVisible: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
 
 - takeScreenshot: product_create_found_in_list
+
+# Reopen the exact run-owned product after publishing and verify the four
+# edited detail surfaces persisted through the product update.
+- tapOn:
+    text: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
+    retryTapIfNoChange: true
+    label: "Reopen the published run-owned product"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 20000
+    label: "Wait for published product detail"
+
+# Inventory persistence.
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Inventory"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "product_sku"
+    timeout: 15000
+
+- copyTextFrom:
+    id: "product_sku"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('SMOKE-${SUITE_RUN_ID}')) {
+        throw new Error('Published product did not retain its run-owned SKU');
+    }
+- assertVisible:
+    id: "manageStock_switch"
+    checked: true
+    label: "Published product retains managed stock"
+- copyTextFrom:
+    id: "product_stock_quantity"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('7')) {
+        throw new Error('Published product did not retain stock quantity 7');
+    }
+- takeScreenshot: product_persisted_inventory
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Shipping persistence.
+- scrollUntilVisible:
+    element: "Shipping"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Shipping"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "product_weight"
+    timeout: 15000
+
+- copyTextFrom: { id: "product_weight" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('1.25')) {
+        throw new Error('Published product did not retain weight 1.25');
+    }
+- copyTextFrom: { id: "product_length" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('2.5')) {
+        throw new Error('Published product did not retain length 2.5');
+    }
+- copyTextFrom: { id: "product_width" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('3.75')) {
+        throw new Error('Published product did not retain width 3.75');
+    }
+- copyTextFrom: { id: "product_height" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('4.5')) {
+        throw new Error('Published product did not retain height 4.5');
+    }
+- takeScreenshot: product_persisted_shipping
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Linked-products persistence.
+- scrollUntilVisible:
+    element: "Linked products"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Linked products"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 15000
+- copyTextFrom:
+    id: "upsells_count"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.trim().startsWith('1')) {
+        throw new Error('Published product did not retain its Upsell');
+    }
+- takeScreenshot: product_persisted_linked_product
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Downloadable-file persistence.
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Downloadable files"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "productDownloadsRecycler"
+    timeout: 15000
+- assertVisible:
+    text: "Maestro download ${SUITE_RUN_ID}"
+    label: "Published product retains downloadable file name"
+- assertVisible:
+    text: "https://example.com/maestro-${SUITE_RUN_ID}.pdf"
+    label: "Published product retains downloadable file URL"
+- takeScreenshot: product_persisted_downloadable_file
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000
+    label: "Return to filtered product results"
 
 # Close search to leave the UI clean for downstream flows.
 - back
