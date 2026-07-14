@@ -54,10 +54,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_JETPACK_STORE_URL}
+- inputText: ${WOO_JETPACK_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

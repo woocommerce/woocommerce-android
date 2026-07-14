@@ -1,9 +1,0 @@
-# Pastes text into the currently focused field using Maestro's internal clipboard.
-#
-# Required env vars:
-#   TEXT_TO_PASTE
-appId: com.woocommerce.android.dev
----
-- setClipboard: ${TEXT_TO_PASTE}
-- pasteText
-- setClipboard: ""

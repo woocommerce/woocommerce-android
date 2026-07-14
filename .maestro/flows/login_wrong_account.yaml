@@ -43,10 +43,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_WRONG_ACCOUNT_STORE_URL}
+- inputText: ${WOO_WRONG_ACCOUNT_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -58,10 +55,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_WPCOM_EMAIL}
+- inputText: ${WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -93,10 +87,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${WOO_WPCOM_PASSWORD}
+- inputText: ${WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

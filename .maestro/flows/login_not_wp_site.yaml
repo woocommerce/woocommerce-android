@@ -42,10 +42,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: "google.com"
+- inputText: "google.com"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
