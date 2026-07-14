@@ -152,11 +152,8 @@ When defining tokens:
 Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
 `figma-export.json` according to the Figma export parsing rules.
 
-State-layer values use Figma `RRGGBBAA`: light `#1E1E1E14`, `#1E1E1E1A`, `#1E1E1E29`,
-`#1E1E1E3D`; dark `#FFFFFF14`, `#FFFFFF1A`, `#FFFFFF29`, `#FFFFFF3D`. Their Android XML
-`AARRGGBB` forms are light `#141E1E1E`, `#1A1E1E1E`, `#291E1E1E`, `#3D1E1E1E`; dark
-`#14FFFFFF`, `#1AFFFFFF`, `#29FFFFFF`, `#3DFFFFFF`. High-contrast state-layer values are not
-present in the current export and are not part of normal runtime mapping.
+High-contrast state-layer values are not present in the current export and are not part of normal
+runtime mapping.
 
 | Android API | Source path | Export file | Light hex / alpha | Dark hex / alpha | M3 projection | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |

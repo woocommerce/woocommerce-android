@@ -81,10 +81,6 @@ Expected output:
 - `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
 - Public `WooTheme.colors.stateLayers.onSurface` colors for `opacity08`, `opacity10`, `opacity16`,
   and `opacity24`; no public state-alpha floats and no Material `ColorScheme` projection.
-- Normal-mode state-layer values: light Figma `RRGGBBAA` `#1E1E1E14`, `#1E1E1E1A`,
-  `#1E1E1E29`, `#1E1E1E3D` (Android `AARRGGBB` `#141E1E1E`, `#1A1E1E1E`, `#291E1E1E`,
-  `#3D1E1E1E`); dark `#FFFFFF14`, `#FFFFFF1A`, `#FFFFFF29`, `#FFFFFF3D` (Android
-  `#14FFFFFF`, `#1AFFFFFF`, `#29FFFFFF`, `#3DFFFFFF`).
 - Live Figma component evidence maps 08 to disabled filled/tonal button containers, 10 to neutral
   outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio and resting
   Search placeholder, and 24 to disabled button content. High contrast remains unresolved.

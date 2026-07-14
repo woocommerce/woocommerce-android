@@ -155,9 +155,7 @@ private fun Context.loadWooColors(): WooColors {
                 opacity08 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity08),
                 opacity10 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity10),
                 opacity16 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity16),
-                opacity24 = color(
-                    R.color.woo_ds_color_tint_layer_primary_container_opacity24
-                ),
+                opacity24 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity24),
             ),
         ),
     )
