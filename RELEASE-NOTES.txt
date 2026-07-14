@@ -5,6 +5,7 @@
 25.3
 -----
 - [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
+- [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 
 25.2
 -----

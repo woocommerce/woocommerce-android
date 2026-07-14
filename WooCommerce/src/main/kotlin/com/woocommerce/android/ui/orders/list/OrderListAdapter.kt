@@ -42,6 +42,11 @@ class OrderListAdapter(
     var tracker: SelectionTracker<Long>? = null
     var orderIdAndPosition = mutableMapOf<Long, Int>()
 
+    /**
+     * Called after a submitted list is committed to the adapter, i.e. once the async diff has been applied.
+     */
+    var onListCommitted: ((PagedList<OrderListItemUIType>?) -> Unit)? = null
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is OrderListItemUI -> VIEW_TYPE_ORDER_ITEM
@@ -130,6 +135,13 @@ class OrderListAdapter(
                 null
             }
         } ?: listOf()
+    }
+
+    override fun onCurrentListChanged(
+        previousList: PagedList<OrderListItemUIType>?,
+        currentList: PagedList<OrderListItemUIType>?
+    ) {
+        onListCommitted?.invoke(currentList)
     }
 
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
