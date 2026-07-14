@@ -92,10 +92,7 @@ tags:
 - tapOn:
     id: "edit_coupon_code_input"
 - eraseText
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: SUITE-${SUITE_RUN_ID}-UI
+- inputText: SUITE-${SUITE_RUN_ID}-UI
 - hideKeyboard
 
 - tapOn:

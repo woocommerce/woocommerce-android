@@ -281,10 +281,7 @@ tags:
 
 - tapOn:
     id: "order_shipping_name_input"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: Maestro shipping ${SUITE_RUN_ID}
+- inputText: Maestro shipping ${SUITE_RUN_ID}
 - hideKeyboard
 
 - tapOn:
@@ -548,10 +545,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "search_src_text"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: SmokeTest-${SUITE_RUN_ID}
+- inputText: SmokeTest-${SUITE_RUN_ID}
 - pressKey: Enter
 - extendedWaitUntil:
     visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
@@ -597,10 +591,7 @@ tags:
     visible: "Search for customers"
     timeout: 15000
 - tapOn: "Search for customers"
-- runFlow:
-    file: ../subflows/paste_into_focused_field.yaml
-    env:
-      TEXT_TO_PASTE: ${output.selectedCustomerEmail}
+- inputText: ${output.selectedCustomerEmail}
 - hideKeyboard
 - extendedWaitUntil:
     visible: "${output.selectedCustomerEmail}"
