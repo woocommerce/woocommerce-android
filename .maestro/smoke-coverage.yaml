@@ -83,7 +83,7 @@ items:
     flow: .maestro/flows/orders_create.yaml
   - id: orders.create.variable-products
     title: Create order with variable products
-    manual: "The order flow selects an available product; Variable-order selection is not automated."
+    flow: .maestro/flows/orders_create.yaml
   - id: orders.create.quantity
     title: Increase and decrease quantity
     flow: .maestro/flows/orders_create.yaml
