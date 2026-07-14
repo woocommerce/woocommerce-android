@@ -1835,6 +1835,19 @@ class ProductRestClient @Inject constructor(
         }
     }
 
+    suspend fun duplicateProduct(
+        site: SiteModel,
+        productId: Long
+    ): WooPayload<DuplicateProductApiResponse> {
+        val response = wooNetwork.executePostGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.products.id(productId).duplicate.pathV3,
+            body = emptyMap(),
+            clazz = DuplicateProductApiResponse::class.java
+        )
+        return response.toWooPayload()
+    }
+
     /**
      * Makes a POST request to `/wp-json/wc/v3/products` to add a product
      *
