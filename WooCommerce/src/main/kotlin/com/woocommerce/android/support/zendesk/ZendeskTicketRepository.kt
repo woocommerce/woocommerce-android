@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.woocommerce.android.applicationpasswords.IsAppPasswordsSupportedForJetpackSite
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.RequestConstants.APPLICATION_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.DIAGNOSTIC_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
@@ -70,11 +71,10 @@ class ZendeskTicketRepository @Inject constructor(
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
-        val attachmentTokens = if (diagnosticLog != null) {
-            listOfNotNull(uploadDiagnosticLog(diagnosticLog))
-        } else {
-            emptyList()
-        }
+        val attachmentTokens = listOfNotNull(
+            diagnosticLog?.let { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) },
+            uploadTextAttachment(APPLICATION_LOG_FILENAME, envDataSource.getFullDeviceLogs())
+        )
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -130,19 +130,20 @@ class ZendeskTicketRepository @Inject constructor(
         return result.model?.formatResult()
     }
 
-    private suspend fun uploadDiagnosticLog(
-        diagnosticLog: String
+    private suspend fun uploadTextAttachment(
+        fileName: String,
+        content: String
     ): String? {
         val tempFile = withContext(dispatchers.io) {
-            File.createTempFile(DIAGNOSTIC_LOG_FILENAME, null).also {
-                it.writeText(diagnosticLog)
+            File.createTempFile(fileName, null).also {
+                it.writeText(content)
             }
         }
 
         return try {
             suspendCancellableCoroutine { continuation ->
                 zendeskSettings.uploadProvider?.uploadAttachment(
-                    DIAGNOSTIC_LOG_FILENAME,
+                    fileName,
                     tempFile,
                     "text/plain",
                     object : ZendeskCallback<UploadResponse>() {
@@ -153,7 +154,7 @@ class ZendeskTicketRepository @Inject constructor(
                         }
 
                         override fun onError(error: ErrorResponse?) {
-                            wooLog.e(WooLog.T.SUPPORT, "Failed to upload diagnostic log")
+                            wooLog.e(WooLog.T.SUPPORT, "Failed to upload attachment: $fileName")
                             if (continuation.isActive) {
                                 continuation.resume(null)
                             }
@@ -362,6 +363,7 @@ private object RequestConstants {
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
     const val DIAGNOSTIC_LOG_FILENAME = "connectivitytest_log.txt"
+    const val APPLICATION_LOG_FILENAME = "application_log.txt"
 }
 
 private data class ZendeskCustomFieldsParams(

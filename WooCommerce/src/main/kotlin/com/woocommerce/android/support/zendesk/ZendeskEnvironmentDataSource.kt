@@ -48,7 +48,9 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
             "${selectedSite.hostURL} (${selectedSite.stateLogInformation})"
         } ?: unknownHostValue
 
-    suspend fun getDeviceLogs() = WooLog.getCurrentLogEntries().joinToString("\n").takeLast(maxLogfileLength)
+    suspend fun getDeviceLogs() = getFullDeviceLogs().takeLast(maxLogfileLength)
+
+    suspend fun getFullDeviceLogs() = WooLog.getCurrentLogEntries().joinToString("\n")
 
     private val SiteModel.hostURL: String
         get() = UrlUtils.removeScheme(url)

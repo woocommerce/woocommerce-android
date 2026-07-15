@@ -26,6 +26,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -40,6 +41,8 @@ import org.wordpress.android.fluxc.store.SiteStore
 import zendesk.support.CreateRequest
 import zendesk.support.Request
 import zendesk.support.RequestProvider
+import zendesk.support.UploadProvider
+import zendesk.support.UploadResponse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
@@ -728,6 +731,79 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(tags).contains(ZendeskTags.jetpackSiteUsingAppPasswords)
         }
 
+    @Test
+    fun `when createRequest is called, then the full device logs are uploaded as an attachment and its token is set`() =
+        testBlocking {
+            // given
+            val expectedToken = "attachment-token"
+            val uploadResponse = mock<UploadResponse> { on { token } doReturn expectedToken }
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+            val uploadCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val requestCaptor = argumentCaptor<CreateRequest>()
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // then
+            verify(uploadProvider).uploadAttachment(
+                eq("application_log.txt"),
+                any(),
+                eq("text/plain"),
+                uploadCaptor.capture()
+            )
+            uploadCaptor.firstValue.onSuccess(uploadResponse)
+            advanceUntilIdle()
+            verify(requestProvider).createRequest(requestCaptor.capture(), any())
+            job.cancel()
+
+            assertThat(requestCaptor.firstValue.attachments).containsExactly(expectedToken)
+        }
+
+    @Test
+    fun `given the log upload fails, when createRequest is called, then the request is still created without attachments`() =
+        testBlocking {
+            // given
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+            val uploadCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val requestCaptor = argumentCaptor<CreateRequest>()
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // then
+            verify(uploadProvider).uploadAttachment(any(), any(), any(), uploadCaptor.capture())
+            uploadCaptor.firstValue.onError(mock())
+            advanceUntilIdle()
+            verify(requestProvider).createRequest(requestCaptor.capture(), any())
+            job.cancel()
+
+            assertThat(requestCaptor.firstValue.attachments).isNullOrEmpty()
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
@@ -744,6 +820,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
         on { totalAvailableMemorySize } doReturn "100"
         on { deviceLanguage } doReturn "testLanguage"
         on { getDeviceLogs() } doReturn "logs"
+        on { getFullDeviceLogs() } doReturn "full logs"
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"
