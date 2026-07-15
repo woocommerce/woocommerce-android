@@ -16,21 +16,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TopAppBarState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
@@ -73,7 +68,7 @@ fun WooPageHeader(
                 colors = colors,
             )
         } else {
-            MediumTopAppBar(
+            scrollBehavior.RenderMediumTopAppBar(
                 title = {
                     PageHeaderTitle(
                         title = title,
@@ -81,9 +76,7 @@ fun WooPageHeader(
                     )
                 },
                 actions = { PageHeaderActions(actions) },
-                windowInsets = WindowInsets(0, 0, 0, 0),
                 colors = colors,
-                scrollBehavior = scrollBehavior.delegate,
             )
         }
         if (showDivider) {
@@ -140,34 +133,6 @@ private fun pageHeaderColors(): TopAppBarColors = TopAppBarDefaults.topAppBarCol
     titleContentColor = WooTheme.colors.background.onSection,
     actionIconContentColor = WooTheme.colors.primary,
 )
-
-/**
- * Defaults for [WooPageHeader]. Attach [WooPageHeaderScrollBehavior.nestedScrollConnection] to the caller's
- * scrolling content when using [exitUntilCollapsedScrollBehavior].
- */
-@OptIn(ExperimentalMaterial3Api::class)
-object WooPageHeaderDefaults {
-    @Composable
-    fun exitUntilCollapsedScrollBehavior(
-        canScroll: () -> Boolean = { true },
-    ): WooPageHeaderScrollBehavior {
-        val delegate = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-            state = rememberTopAppBarState(),
-            canScroll = canScroll,
-            snapAnimationSpec = null,
-        )
-        return remember(delegate) { WooPageHeaderScrollBehavior(delegate) }
-    }
-}
-
-@Stable
-@OptIn(ExperimentalMaterial3Api::class)
-class WooPageHeaderScrollBehavior internal constructor(
-    internal val delegate: TopAppBarScrollBehavior,
-) {
-    val nestedScrollConnection: NestedScrollConnection
-        get() = delegate.nestedScrollConnection
-}
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark
@@ -313,11 +278,13 @@ private fun WooPageHeaderMediumPreview(
                 initialContentOffset = 0f,
             )
         }
-        val delegate = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        val materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             state = state,
             snapAnimationSpec = null,
         )
-        val scrollBehavior = remember(delegate) { WooPageHeaderScrollBehavior(delegate) }
+        val scrollBehavior = remember(materialScrollBehavior) {
+            WooPageHeaderScrollBehavior(materialScrollBehavior)
+        }
         WooPageHeader(
             title = title,
             scrollBehavior = scrollBehavior,

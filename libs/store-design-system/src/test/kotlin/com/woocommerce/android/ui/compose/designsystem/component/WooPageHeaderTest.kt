@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -97,48 +99,94 @@ class WooPageHeaderTest {
     }
 
     @Test
-    fun `when collapsible behavior is created, then it uses exit until collapsed without snapping`() {
+    fun `when collapsible behavior is created, then real Material delegate owns scrolling without snap`() {
         // WHEN
-        val behavior = whenScrollBehaviorIsCreated()
+        val fixture = whenScrollBehaviorIsCreated()
 
         // THEN
-        assertThat(behavior.delegate.snapAnimationSpec).isNull()
-        assertThat(behavior.delegate.isPinned).isFalse()
+        assertThat(fixture.materialScrollBehavior.isPinned).isFalse()
+        assertThat(fixture.materialScrollBehavior.snapAnimationSpec).isNull()
+        assertThat(fixture.materialScrollBehavior.flingAnimationSpec).isNotNull()
     }
 
     @Test
     fun `given expanded header, when body partially scrolls up, then header remains partially collapsed`() {
         // GIVEN
-        val behavior = whenScrollBehaviorIsCreated()
-        behavior.delegate.state.heightOffsetLimit = -COLLAPSE_RANGE
+        val fixture = whenScrollBehaviorIsCreated()
+        val state = fixture.materialScrollBehavior.state
+        state.heightOffsetLimit = -COLLAPSE_RANGE
 
         // WHEN
-        val consumed = behavior.nestedScrollConnection.onPreScroll(
+        val consumed = fixture.behavior.nestedScrollConnection.onPreScroll(
             available = Offset(x = 0f, y = -PARTIAL_SCROLL_DELTA),
             source = NestedScrollSource.UserInput,
         )
 
         // THEN
         assertThat(consumed).isEqualTo(Offset(x = 0f, y = -PARTIAL_SCROLL_DELTA))
-        assertThat(behavior.delegate.state.heightOffset).isEqualTo(-PARTIAL_SCROLL_DELTA)
-        assertThat(behavior.delegate.state.collapsedFraction).isEqualTo(0.5f)
+        assertThat(state.heightOffset).isEqualTo(-PARTIAL_SCROLL_DELTA)
+        assertThat(state.collapsedFraction).isEqualTo(0.5f)
     }
 
     @Test
     fun `given scrolling is disabled, when body scrolls, then header state is unchanged`() {
         // GIVEN
-        val behavior = whenScrollBehaviorIsCreated(canScroll = { false })
-        behavior.delegate.state.heightOffsetLimit = -COLLAPSE_RANGE
+        val fixture = whenScrollBehaviorIsCreated(canScroll = { false })
+        val state = fixture.materialScrollBehavior.state
+        state.heightOffsetLimit = -COLLAPSE_RANGE
 
         // WHEN
-        val consumed = behavior.nestedScrollConnection.onPreScroll(
+        val consumed = fixture.behavior.nestedScrollConnection.onPreScroll(
             available = Offset(x = 0f, y = -PARTIAL_SCROLL_DELTA),
             source = NestedScrollSource.UserInput,
         )
 
         // THEN
         assertThat(consumed).isEqualTo(Offset.Zero)
-        assertThat(behavior.delegate.state.heightOffset).isZero()
+        assertThat(state.heightOffset).isZero()
+    }
+
+    @Test
+    fun `given collapsed header at top of body, when body scrolls down, then Material expands header`() {
+        // GIVEN
+        val fixture = whenScrollBehaviorIsCreated()
+        fixture.materialScrollBehavior.state.heightOffsetLimit = -COLLAPSE_RANGE
+        fixture.behavior.nestedScrollConnection.onPreScroll(
+            available = Offset(x = 0f, y = -COLLAPSE_RANGE),
+            source = NestedScrollSource.UserInput,
+        )
+
+        // WHEN
+        val consumed = fixture.behavior.nestedScrollConnection.onPostScroll(
+            consumed = Offset.Zero,
+            available = Offset(x = 0f, y = PARTIAL_SCROLL_DELTA),
+            source = NestedScrollSource.UserInput,
+        )
+
+        // THEN
+        assertThat(consumed).isEqualTo(Offset(x = 0f, y = PARTIAL_SCROLL_DELTA))
+        assertThat(fixture.materialScrollBehavior.state.heightOffset).isEqualTo(-PARTIAL_SCROLL_DELTA)
+    }
+
+    @Test
+    fun `given expanded header, when header is directly dragged and flung up, then Material updates its state`() {
+        // GIVEN
+        val fixture = givenDirectlyDraggableHeader()
+        val state = fixture.materialScrollBehavior.state
+
+        // WHEN
+        composeTestRule.onNodeWithTag(HEADER_TAG).performTouchInput {
+            down(center)
+            advanceEventTime(16)
+            moveBy(Offset(x = 0f, y = -PARTIAL_SCROLL_DELTA))
+            advanceEventTime(16)
+            up()
+        }
+        composeTestRule.waitForIdle()
+
+        // THEN
+        assertThat(state.heightOffset).isLessThan(0f)
+        assertThat(state.heightOffset).isGreaterThanOrEqualTo(state.heightOffsetLimit)
     }
 
     @Test
@@ -229,11 +277,16 @@ class WooPageHeaderTest {
                                 initialContentOffset = 0f,
                             )
                         }
-                        val delegate = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+                        val materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
                             state = state,
                             snapAnimationSpec = null,
+                            flingAnimationSpec = null,
                         )
-                        remember(delegate) { WooPageHeaderScrollBehavior(delegate) }
+                        remember(materialScrollBehavior) {
+                            WooPageHeaderScrollBehavior(
+                                materialScrollBehavior = materialScrollBehavior,
+                            )
+                        }
                     }
                     WooPageHeader(
                         title = title,
@@ -301,18 +354,53 @@ class WooPageHeaderTest {
 
     private fun whenScrollBehaviorIsCreated(
         canScroll: () -> Boolean = { true },
-    ): WooPageHeaderScrollBehavior {
+    ): MaterialBehaviorFixture {
         lateinit var behavior: WooPageHeaderScrollBehavior
+        lateinit var materialScrollBehavior: TopAppBarScrollBehavior
         composeTestRule.setContent {
             WooDesignSystemTheme {
-                behavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior(
+                materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
                     canScroll = canScroll,
+                    snapAnimationSpec = null,
+                )
+                behavior = remember(materialScrollBehavior) {
+                    WooPageHeaderScrollBehavior(materialScrollBehavior)
+                }
+            }
+        }
+        composeTestRule.waitForIdle()
+        return MaterialBehaviorFixture(behavior, materialScrollBehavior)
+    }
+
+    private fun givenDirectlyDraggableHeader(): MaterialBehaviorFixture {
+        lateinit var behavior: WooPageHeaderScrollBehavior
+        lateinit var materialScrollBehavior: TopAppBarScrollBehavior
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+                    snapAnimationSpec = null,
+                )
+                behavior = remember(materialScrollBehavior) {
+                    WooPageHeaderScrollBehavior(materialScrollBehavior)
+                }
+                WooPageHeader(
+                    title = TITLE,
+                    modifier = Modifier
+                        .width(HEADER_WIDTH)
+                        .testTag(HEADER_TAG),
+                    showDivider = false,
+                    scrollBehavior = behavior,
                 )
             }
         }
         composeTestRule.waitForIdle()
-        return behavior
+        return MaterialBehaviorFixture(behavior, materialScrollBehavior)
     }
+
+    private data class MaterialBehaviorFixture(
+        val behavior: WooPageHeaderScrollBehavior,
+        val materialScrollBehavior: TopAppBarScrollBehavior,
+    )
 
     private companion object {
         const val FIXED_HEIGHT_DP = 64f
