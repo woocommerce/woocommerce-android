@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.isVisible
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewMod
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -112,16 +114,23 @@ class DashboardFragment :
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
 
         _binding = FragmentDashboardBinding.bind(view)
+        val headerScrollBridge = DashboardHeaderScrollBridge()
 
         binding.dashboardHeader.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooDesignSystemThemeWithBackground {
+                    val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
+                    DisposableEffect(scrollBehavior, headerScrollBridge) {
+                        headerScrollBridge.attach(scrollBehavior)
+                        onDispose { headerScrollBridge.detach(scrollBehavior) }
+                    }
                     DashboardHeader(
                         storeName = dashboardViewModel.storeName.observeAsState().value.orEmpty(),
                         showShareStoreButton = dashboardViewModel.appbarState.observeAsState().value
                             ?.showShareStoreButton == true,
                         onShareStoreClicked = dashboardViewModel::onShareStoreClicked,
+                        scrollBehavior = scrollBehavior,
                     )
                 }
             }
@@ -136,7 +145,8 @@ class DashboardFragment :
                         mainActivityViewModel = mainActivityViewModel,
                         dashboardViewModel = dashboardViewModel,
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        scrollToTopTrigger = scrollToTopTrigger
+                        scrollToTopTrigger = scrollToTopTrigger,
+                        headerScrollBridge = headerScrollBridge,
                     )
                 }
             }
