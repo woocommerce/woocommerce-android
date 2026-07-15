@@ -27,9 +27,10 @@ consume:
 - [android-adapter.md](android-adapter.md) for public/internal Android API boundaries and
   parser/mode handling.
 
-Foundation source data comes from `figma-export.json`. Runtime/public token parsing uses
-non-`Semantic` top-level sections. Top-level `Semantic` remains traceability-only. High-contrast
-color modes stay out of normal `Light` / `Dark` runtime mapping until separately scoped.
+Foundation source data comes from `figma-export.json`. The current export omits the former top-level
+`Semantic` section and high-contrast modes. If either returns in a future export, `Semantic` remains
+traceability-only and high-contrast colors stay out of normal `Light` / `Dark` runtime mapping until
+separately scoped.
 
 Expected output:
 
@@ -66,16 +67,25 @@ Expected output:
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
 - Source-backed color tokens exposed through `WooTheme.colors`, with direct core roles plus shallow
-  Store authoring groups: container, surface, status, background, overlay, alert, and palette.
+  Store authoring groups: container, surface, status, background, overlay, state layer, tint layer,
+  alert, and palette.
 - Internal Material 3 projections for Material 3 component interop, with Material 3 treated as a
   projection rather than the source of Store foundations.
 - Full text roles through `WooTheme.text`.
 - Spacing, padding, radius, icon size, and stroke through `WooTheme.spacing`, `WooTheme.padding`,
   `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke`.
-- Supported status, alert, overlay, and palette colors as grouped fields under `WooTheme.colors`;
-  no separate `WooTheme.semanticColors`.
+- Supported status, alert, overlay, state-layer, tint-layer, and palette colors as grouped fields
+  under `WooTheme.colors`; no separate `WooTheme.semanticColors`.
+- Source-backed `WooTheme.colors.error` / `onError` projected to Material `error` / `onError` and
+  consumed by Checkbox error states.
 - `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
-- State layers remain internal-first until semantic names and mode behavior are approved.
+- Public `WooTheme.colors.stateLayers.onSurface` colors for `opacity08`, `opacity10`, `opacity16`,
+  and `opacity24`; no public state-alpha floats and no Material `ColorScheme` projection.
+- Live Figma component evidence maps 08 to disabled filled/tonal button containers, 10 to neutral
+  outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio and resting
+  Search placeholder, and 24 to disabled button content. High contrast remains unresolved.
+- Public `WooTheme.colors.tintLayers.primaryContainer` colors for `opacity08`, `opacity10`,
+  `opacity16`, and `opacity24`; the Segmented Control track consumes `opacity10`.
 - `WooTheme.iconSize` scoped to glyph sizes only.
 - Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
   production component usage.
@@ -89,7 +99,7 @@ Implementation risks to verify when code work begins:
 - Radius projection visual changes: `large` moves from the current `8dp` projection to `12dp`, and
   `extraLarge` moves from the current `8dp` projection to `16dp`.
 - Fractional stroke width rendering for `0.5dp`, `0.75dp`, and `1.5dp`.
-- State-layer mode behavior if internal defaults are implemented.
+- High-contrast state-layer behavior, which remains outside the normal runtime mapping.
 
 Foundation work remains opt-in. Do not globally remap existing app theme resources in the foundation
 PR. Store design-system color primitives may be module-local Android resources so `WooTheme.colors`
@@ -195,9 +205,9 @@ Add new example docs only when first-wave migrations produce reusable findings.
 - No raw private Figma node IDs in public docs.
 - `figma-export.json` remains an audit/source artifact; do not hand-edit it as part of foundation
   implementation.
-- Runtime/public parser logic must ignore the top-level `Semantic` section unless the contract is
-  deliberately updated with approved evidence.
-- Normal runtime `Light` / `Dark` values must not use high-contrast modes.
+- Runtime/public parser logic must ignore a future top-level `Semantic` section unless the contract
+  is deliberately updated with approved evidence.
+- Normal runtime `Light` / `Dark` values must not infer or substitute high-contrast modes.
 - No parallel Kotlin/Compose and XML resource definitions for the same token primitive values.
 - No production screen should consume preview-only components.
 - Preview-only components should not be exposed as reusable production-screen APIs.
