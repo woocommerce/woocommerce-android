@@ -804,6 +804,85 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(requestCaptor.firstValue.attachments).isNullOrEmpty()
         }
 
+    @Test
+    fun `given the log upload never returns, when createRequest is called, then it times out and creates the request`() =
+        testBlocking {
+            // given the upload provider never invokes either callback
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+            val requestCaptor = argumentCaptor<CreateRequest>()
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
+                ).first()
+            }
+
+            // then the upload times out, is treated as no attachment, and the ticket is still created
+            verify(uploadProvider).uploadAttachment(eq("application_log.txt"), any(), any(), any())
+            advanceUntilIdle()
+            verify(requestProvider).createRequest(requestCaptor.capture(), any())
+            job.cancel()
+
+            assertThat(requestCaptor.firstValue.attachments).isNullOrEmpty()
+        }
+
+    @Test
+    fun `given a diagnostic log, when createRequest is called, then both the diagnostic and full logs are attached`() =
+        testBlocking {
+            // given
+            val diagnosticResponse = mock<UploadResponse> { on { token } doReturn "diagnostic-token" }
+            val appLogResponse = mock<UploadResponse> { on { token } doReturn "app-log-token" }
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+            val uploadCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val requestCaptor = argumentCaptor<CreateRequest>()
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress",
+                    diagnosticLog = "diagnostic logs"
+                ).first()
+            }
+
+            // then
+            verify(uploadProvider).uploadAttachment(
+                eq("connectivitytest_log.txt"),
+                any(),
+                any(),
+                uploadCaptor.capture()
+            )
+            uploadCaptor.firstValue.onSuccess(diagnosticResponse)
+            verify(uploadProvider).uploadAttachment(
+                eq("application_log.txt"),
+                any(),
+                any(),
+                uploadCaptor.capture()
+            )
+            uploadCaptor.secondValue.onSuccess(appLogResponse)
+            advanceUntilIdle()
+            verify(requestProvider).createRequest(requestCaptor.capture(), any())
+            job.cancel()
+
+            assertThat(requestCaptor.firstValue.attachments).containsExactly("diagnostic-token", "app-log-token")
+        }
+
     private fun createSUT() {
         sut = ZendeskTicketRepository(
             zendeskSettings = zendeskSettings,
@@ -819,8 +898,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     private fun mockEnvDataSource() = mock<ZendeskEnvironmentDataSource> {
         on { totalAvailableMemorySize } doReturn "100"
         on { deviceLanguage } doReturn "testLanguage"
-        on { getDeviceLogs() } doReturn "logs"
         on { getFullDeviceLogs() } doReturn "full logs"
+        on { trimDeviceLogs(any()) } doReturn "logs"
         on { generateVersionName(any()) } doReturn "version"
         on { generateNetworkInformation(any()) } doReturn "networkInfo"
         on { generateCombinedLogInformationOfSites(any()) } doReturn "sitesInfo"

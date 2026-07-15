@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -71,9 +72,11 @@ class ZendeskTicketRepository @Inject constructor(
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
+        val deviceLogs = envDataSource.getFullDeviceLogs()
+
         val attachmentTokens = listOfNotNull(
             diagnosticLog?.let { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) },
-            uploadTextAttachment(APPLICATION_LOG_FILENAME, envDataSource.getFullDeviceLogs())
+            uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs)
         )
 
         val requestCallback = object : ZendeskCallback<Request>() {
@@ -103,7 +106,8 @@ class ZendeskTicketRepository @Inject constructor(
                 allSites = siteStore.sites,
                 selectedSite = selectedSite,
                 ssr = ssr,
-                siteAddress = siteAddress
+                siteAddress = siteAddress,
+                deviceLogs = deviceLogs
             )
 
             this.customFields = buildZendeskCustomFields(zendeskCustomFieldsParams)
@@ -141,27 +145,31 @@ class ZendeskTicketRepository @Inject constructor(
         }
 
         return try {
-            suspendCancellableCoroutine { continuation ->
-                zendeskSettings.uploadProvider?.uploadAttachment(
-                    fileName,
-                    tempFile,
-                    "text/plain",
-                    object : ZendeskCallback<UploadResponse>() {
-                        override fun onSuccess(result: UploadResponse?) {
-                            if (continuation.isActive) {
-                                continuation.resume(result?.token)
+            // Guard against the Zendesk SDK never invoking either callback, which would otherwise
+            // block ticket creation indefinitely. On timeout we treat it as a failed upload (null).
+            withTimeoutOrNull(RequestConstants.attachmentUploadTimeout) {
+                suspendCancellableCoroutine { continuation ->
+                    zendeskSettings.uploadProvider?.uploadAttachment(
+                        fileName,
+                        tempFile,
+                        "text/plain",
+                        object : ZendeskCallback<UploadResponse>() {
+                            override fun onSuccess(result: UploadResponse?) {
+                                if (continuation.isActive) {
+                                    continuation.resume(result?.token)
+                                }
                             }
-                        }
 
-                        override fun onError(error: ErrorResponse?) {
-                            wooLog.e(WooLog.T.SUPPORT, "Failed to upload attachment: $fileName")
-                            if (continuation.isActive) {
-                                continuation.resume(null)
+                            override fun onError(error: ErrorResponse?) {
+                                wooLog.e(WooLog.T.SUPPORT, "Failed to upload attachment: $fileName")
+                                if (continuation.isActive) {
+                                    continuation.resume(null)
+                                }
                             }
                         }
+                    ) ?: run {
+                        continuation.resume(null)
                     }
-                ) ?: run {
-                    continuation.resume(null)
                 }
             }
         } finally {
@@ -178,7 +186,7 @@ class ZendeskTicketRepository @Inject constructor(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
             CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
-            CustomField(TicketCustomField.logs, envDataSource.getDeviceLogs()),
+            CustomField(TicketCustomField.logs, envDataSource.trimDeviceLogs(params.deviceLogs)),
             CustomField(TicketCustomField.ssr, params.ssr),
             CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(params.selectedSite)),
             CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
@@ -360,6 +368,7 @@ sealed class ZendeskException(message: String) : Exception(message) {
 
 private object RequestConstants {
     const val requestCreationTimeout = 10000L
+    const val attachmentUploadTimeout = 30000L
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
     const val DIAGNOSTIC_LOG_FILENAME = "connectivitytest_log.txt"
@@ -372,5 +381,6 @@ private data class ZendeskCustomFieldsParams(
     val allSites: List<SiteModel>?,
     val selectedSite: SiteModel?,
     val ssr: String?,
-    val siteAddress: String
+    val siteAddress: String,
+    val deviceLogs: String
 )
