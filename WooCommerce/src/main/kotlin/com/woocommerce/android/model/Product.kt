@@ -6,11 +6,11 @@ import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmssGmt
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isNotSet
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -443,12 +443,12 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         reviewsAllowed = reviewsAllowed,
         virtual = isVirtual,
         dateOnSaleFromGmt = if (isSaleScheduled) {
-            saleStartDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            saleStartDateGmt?.formatToYYYYmmDDhhmmssGmt() ?: ""
         } else {
             ""
         },
         dateOnSaleToGmt = if (isSaleScheduled) {
-            saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+            saleEndDateGmt?.formatToYYYYmmDDhhmmssGmt() ?: ""
         } else {
             ""
         },
@@ -550,8 +550,8 @@ fun WCProductModel.toAppModel(): Product {
             )
         },
         attributes = this.getAttributeList().map { it.toAppModel() },
-        saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
-        saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
+        saleEndDateGmt = this.dateOnSaleToGmt.parseGmtDateFromIso8601DateFormat(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.parseGmtDateFromIso8601DateFormat(),
         isSoldIndividually = this.soldIndividually,
         taxStatus = ProductTaxStatus.fromString(this.taxStatus),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
