@@ -1,0 +1,33 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      visible:
+        id: ".*__${CARD_SLUG}_selected__.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalStates[CARD_SLUG] = 'selected'}
+
+- runFlow:
+    when:
+      visible:
+        id: ".*__${CARD_SLUG}_unselected__.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalStates[CARD_SLUG] = 'unselected'}
+
+- runFlow:
+    when:
+      visible:
+        id: ".*__${CARD_SLUG}_unavailable__.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalStates[CARD_SLUG] = 'unavailable'}
+
+- runFlow:
+    when:
+      visible:
+        id: ".*__${CARD_SLUG}_hidden__.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalStates[CARD_SLUG] = 'hidden'}
+
+- assertTrue:
+    condition: ${output.dashboardOriginalStates[CARD_SLUG] != null}
+    label: "Record ${CARD_SLUG} dashboard card state"

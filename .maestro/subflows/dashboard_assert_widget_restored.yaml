@@ -1,0 +1,5 @@
+appId: com.woocommerce.android.dev
+---
+- assertVisible:
+    id: ".*__${CARD_SLUG}_${output.dashboardOriginalStates[CARD_SLUG]}__.*"
+    label: "Restored ${CARD_SLUG} dashboard card state persists"

@@ -1,92 +1,212 @@
-# Smoke Test: Dashboard - Customize cards
-# P2 probe: dashboard.customization (opening the editor is not toggle/reorder coverage)
+# Smoke Test: Dashboard - Customize all cards
+# p2: dashboard.customization
 # P2 ref: Dashboard/Stats > Customization — all cards can be toggled + reordered
 #
-# Probes:
-#   - The dashboard toolbar "Customize" action (menu_edit_screen_widgets)
-#     opens the DashboardWidgetEditorScreen
-#   - The editor lists the core supported widgets (titles match
-#     R.string.my_store_widget_*_title). We assert on "Performance" and
-#     "Top performers" because those two widgets are always available
-#     regardless of store configuration.
-#   - The SAVE action and close (navigation) icon both render
-#   - Closing the editor returns to the dashboard without mutating state
-#
-# The P2 check requires toggling and reordering cards. This flow deliberately
-# does neither, so it is a probe and is not counted as automated coverage.
+# Verifies:
+#   - Every supported dashboard card is classified as selected, unselected,
+#     unavailable, or feature-gated hidden.
+#   - Every available card is toggled and left selected before saving.
+#   - Selection and a first-pair reorder persist across an app relaunch.
+#   - The exact original selection and order are restored and verified after
+#     a second relaunch, so this flow does not leave shared dashboard state.
 appId: com.woocommerce.android.dev
-name: "Dashboard - Customize cards"
+name: "Dashboard - Customize all cards"
 tags:
   - smoke_extended
   - flaky_quarantine
   - dashboard
 ---
-# Reuse the logged-in session — login flows run first and leave the
-# app authenticated. See subflows/ensure_logged_in.yaml.
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
-# Wait for dashboard to settle before tapping the toolbar action.
-- assertVisible:
-    id: "dashboard_container"
-    label: "Dashboard container is visible"
-
-# Open the widget editor. The menu item id comes from
-# menu_dashboard_fragment.xml; the visible title is "Customize"
-# (R.string.my_store_edit_screen_widgets).
-- tapOn:
-    id: "menu_edit_screen_widgets"
-    retryTapIfNoChange: true
-    label: "Tap Customize toolbar action"
-
-# Wait for the editor's top-app-bar title + action button to render.
-# The title is the same "Customize" string; the SAVE TextButton is
-# rendered with the label uppercased.
-- extendedWaitUntil:
-    visible: "SAVE"
-    timeout: 15000
-    label: "Wait for widget editor to load"
-
-- assertVisible: "Customize"
-- assertVisible: "SAVE"
-
-- takeScreenshot: dashboard_customize_editor
-
-# Verify the two widget rows that are always available on a stock
-# store. Supported widgets come from DashboardWidget.Type; their titles
-# are the localized strings above.
-- assertVisible: "Performance"
-- assertVisible: "Top performers"
-
-# Additional widget rows. This flow remains quarantined until fixture/store
-# state makes these assertions deterministic across bursts.
-- scrollUntilVisible:
-    element: ".*Orders.*|.*Reviews.*|.*Most active coupons.*|.*Inbox.*"
-    direction: DOWN
-    timeout: 8000
-    label: "Scroll through widget rows"
-
-- takeScreenshot: dashboard_customize_widgets
-
-# Close the editor via the navigation icon (close icon with
-# contentDescription "Back"). Since we made no changes, this should
-# return straight to the dashboard without showing the
-# DiscardChangesDialog.
-- tapOn:
-    text: "Back"
-    label: "Tap close icon"
-
-# Fallback: if the icon content description isn't exposed on this
-# device, a hardware back press works the same way via BackHandler.
 - runFlow:
-    when:
-      visible: "SAVE"
-    commands:
-      - back
+    file: ../subflows/open_dashboard_widget_editor.yaml
 
-# Verify we're back on the dashboard.
+- evalScript: ${output.dashboardWidgets = ['ai_assistant', 'push_notifications', 'store_setup', 'performance', 'top_performers', 'blaze', 'inbox', 'reviews', 'coupons', 'stock', 'orders', 'google_ads']}
+- evalScript: ${output.dashboardOriginalStates = {}}
+
+# Record the exact initial state before changing anything. Hidden cards are
+# included in the editor's state tag even though they are not rendered as rows.
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_record_widget_state.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+# Select every available card that was initially unselected. This first pass
+# guarantees more than one selected card before the deselect/reselect pass,
+# respecting the editor's invariant that the final selected card is disabled.
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_select_widget.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+# Exercise both transitions for cards that were already selected. Together,
+# the two passes toggle every available card and normalize all of them selected.
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_exercise_selected_widget.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+# Capture the first two available rows by their stable slugs, swap them, and
+# prove the editor changed without relying on localized card titles.
+- scrollUntilVisible:
+    element:
+      id: "dashboard_widget_editor_row_0_.*"
+    direction: UP
+    timeout: 10000
+    label: "Return to first dashboard card"
+
+- evalScript: ${output.dashboardOriginalOrder = {}}
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_record_widget_order.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+- evalScript: ${output.dashboardOriginalFirst = output.dashboardOriginalOrder[0]}
+- evalScript: ${output.dashboardOriginalSecond = output.dashboardOriginalOrder[1]}
+- assertTrue:
+    condition: ${output.dashboardOriginalFirst.length > 0 && output.dashboardOriginalSecond.length > 0 && output.dashboardOriginalFirst != output.dashboardOriginalSecond}
+    label: "Capture two distinct dashboard cards"
+
+- swipe:
+    from:
+      id: "dashboard_widget_editor_drag_handle_1_.*"
+    direction: UP
+    duration: 1000
+    label: "Move second dashboard card above first"
+
+- waitForAnimationToEnd
+- assertVisible:
+    id: "dashboard_widget_editor_row_0_${output.dashboardOriginalSecond}_.*"
+    label: "Verify second dashboard card moved above first"
+
+- tapOn:
+    text: "SAVE"
+    label: "Save dashboard card selection and order"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 15000
+
+# Relaunch and reopen to prove the persisted state, rather than asserting only
+# the in-memory editor model.
+- stopApp
+- launchApp
+- runFlow:
+    file: ../subflows/open_dashboard_widget_editor.yaml
+
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_assert_widget_selected.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+- assertVisible:
+    id: "dashboard_widget_editor_row_0_${output.dashboardOriginalSecond}_.*"
+    label: "Verify dashboard reorder persisted across relaunch"
+- assertVisible:
+    id: "dashboard_widget_editor_row_1_${output.dashboardOriginalFirst}_.*"
+    label: "Verify original first dashboard card persisted second"
+
+- takeScreenshot: dashboard_customize_persisted
+
+# Restore exact selection state, then swap the first pair back.
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_restore_widget.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+- scrollUntilVisible:
+    element:
+      id: "dashboard_widget_editor_row_0_.*"
+    direction: UP
+    timeout: 10000
+
+- swipe:
+    from:
+      id: "dashboard_widget_editor_drag_handle_1_.*"
+    direction: UP
+    duration: 1000
+    label: "Restore original dashboard card order"
+
+- waitForAnimationToEnd
+- assertVisible:
+    id: "dashboard_widget_editor_row_0_${output.dashboardOriginalFirst}_.*"
+    label: "Verify original dashboard card order before save"
+
+- tapOn:
+    text: "SAVE"
+    label: "Save restored dashboard state"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 15000
+
+# Verify restoration itself persisted, so a passing run leaves the shared site
+# exactly as it found it.
+- stopApp
+- launchApp
+- runFlow:
+    file: ../subflows/open_dashboard_widget_editor.yaml
+
+- evalScript: ${output.dashboardWidgetIndex = 0}
+- repeat:
+    while:
+      true: ${output.dashboardWidgetIndex < output.dashboardWidgets.length}
+    commands:
+      - runFlow:
+          file: ../subflows/dashboard_assert_widget_restored.yaml
+          env:
+            CARD_SLUG: ${output.dashboardWidgets[output.dashboardWidgetIndex]}
+      - evalScript: ${output.dashboardWidgetIndex++}
+
+- assertVisible:
+    id: "dashboard_widget_editor_row_0_${output.dashboardOriginalFirst}_.*"
+    label: "Verify restored first dashboard card persisted"
+- assertVisible:
+    id: "dashboard_widget_editor_row_1_${output.dashboardOriginalSecond}_.*"
+    label: "Verify restored second dashboard card persisted"
+
+- takeScreenshot: dashboard_customize_restored
+
+- back
 - extendedWaitUntil:
     visible:
       id: "dashboard_container"
     timeout: 10000
-    label: "Wait for dashboard to reappear"
