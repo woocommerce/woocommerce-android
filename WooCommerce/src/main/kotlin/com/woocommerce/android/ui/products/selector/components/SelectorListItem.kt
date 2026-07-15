@@ -60,7 +60,7 @@ fun SelectorListItem(
 ) {
     Row(
         modifier = Modifier
-            .then(testTag?.let { Modifier.testTag(it) } ?: Modifier)
+            .optionalTestTag(testTag)
             .clickable(
                 enabled = enabled,
                 role = Role.Button,
@@ -176,6 +176,9 @@ object ProductSelectorTestTags {
     const val VARIATION_ITEM = "product_selector_variation_item"
     const val DONE_BUTTON = "product_selector_done_button"
 }
+
+private fun Modifier.optionalTestTag(tag: String?): Modifier =
+    if (tag == null) this else testTag(tag)
 
 @Composable
 private fun SelectorListItemInfo(

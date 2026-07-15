@@ -326,11 +326,7 @@ private fun displayProductsSection(
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
                 enabled = state.selectionEnabled && product.enabled,
-                testTag = if (product.hasVariations()) {
-                    ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
-                } else {
-                    ProductSelectorTestTags.PRODUCT_ITEM
-                },
+                testTag = product.selectorTestTag,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -352,6 +348,13 @@ enum class ProductType {
     POPULAR,
     RECENT
 }
+
+private val ListItem.selectorTestTag: String
+    get() = if (hasVariations()) {
+        ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
+    } else {
+        ProductSelectorTestTags.PRODUCT_ITEM
+    }
 
 @Composable
 private fun ProductList(
@@ -453,11 +456,7 @@ private fun ProductList(
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
                     enabled = state.selectionEnabled && product.enabled,
-                    testTag = if (product.hasVariations()) {
-                        ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
-                    } else {
-                        ProductSelectorTestTags.PRODUCT_ITEM
-                    },
+                    testTag = product.selectorTestTag,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }
