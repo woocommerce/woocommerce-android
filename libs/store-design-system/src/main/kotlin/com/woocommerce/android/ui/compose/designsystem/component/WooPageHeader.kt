@@ -6,13 +6,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -26,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -195,6 +201,47 @@ internal fun WooPageHeaderDemo(
     )
 }
 
+@Composable
+internal fun WooPageHeaderInteractiveDemo(
+    modifier: Modifier = Modifier,
+) {
+    val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        color = WooTheme.colors.background.section,
+        shape = RoundedCornerShape(WooTheme.radius.medium),
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            WooPageHeader(
+                title = "Store overview",
+                scrollBehavior = scrollBehavior,
+                actions = {
+                    WooOutlinedIconButton(
+                        imageVector = WooIcons.Regular.Share,
+                        contentDescription = "Share store",
+                        onClick = {},
+                    )
+                },
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                repeat(PAGE_HEADER_DEMO_ITEM_COUNT) { index ->
+                    WooCell(
+                        title = "Store update ${index + 1}",
+                        description = "Representative content in the collapsible page body.",
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark
 @Composable
@@ -285,6 +332,7 @@ private fun WooPageHeaderMediumPreview(
     }
 }
 
+private const val PAGE_HEADER_DEMO_ITEM_COUNT = 8
 private val PAGE_HEADER_HEIGHT = 64.dp
 private val PAGE_HEADER_ACTION_HEIGHT = 40.dp
 private val PAGE_HEADER_ACTION_MAX_WIDTH = 136.dp
