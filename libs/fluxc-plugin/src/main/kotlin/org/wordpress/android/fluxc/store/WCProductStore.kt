@@ -1242,11 +1242,12 @@ class WCProductStore @Inject internal constructor(
     suspend fun fetchSingleVariation(
         site: SiteModel,
         remoteProductId: Long,
-        remoteVariationId: Long
+        remoteVariationId: Long,
+        context: String = "view"
     ): OnVariationChanged {
         return coroutineEngine.withDefaultContext(API, this, "fetchSingleVariation") {
             val result = wcProductRestClient
-                .fetchSingleVariation(site, remoteProductId, remoteVariationId)
+                .fetchSingleVariation(site, remoteProductId, remoteVariationId, context)
 
             return@withDefaultContext if (result.isError) {
                 OnVariationChanged().also {

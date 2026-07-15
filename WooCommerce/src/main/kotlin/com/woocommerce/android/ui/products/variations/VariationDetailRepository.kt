@@ -27,7 +27,10 @@ class VariationDetailRepository @Inject constructor(
         return productStore.fetchSingleVariation(
             selectedSite.get(),
             remoteProductId,
-            remoteVariationId
+            remoteVariationId,
+            // Edit context returns the variation's own image instead of the parent product's
+            // image, matching how the WooCommerce admin loads a variation for editing.
+            context = "edit"
         ).also {
             if (!it.isError) {
                 AnalyticsTracker.track(PRODUCT_VARIATION_LOADED)

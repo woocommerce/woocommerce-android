@@ -362,16 +362,17 @@ class ProductRestClient @Inject constructor(
      *
      * @param [remoteProductId] Unique server id of the product to fetch
      * @param [remoteVariationId] Unique server id of the variation to fetch
+     * @param [context] REST context to fetch with; "edit" returns the variation's own image instead
+     * of the parent product's image
      */
     suspend fun fetchSingleVariation(
         site: SiteModel,
         remoteProductId: Long,
-        remoteVariationId: Long
+        remoteVariationId: Long,
+        context: String = "view"
     ): RemoteVariationPayload {
         val url = WOOCOMMERCE.products.id(remoteProductId).variations.variation(remoteVariationId).pathV3
-        // Use the edit context so the variation's own image is returned instead of the parent
-        // product's image, matching how the WooCommerce admin loads the variation for editing.
-        val params = mapOf("context" to "edit")
+        val params = mapOf("context" to context)
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
