@@ -61,7 +61,7 @@ items:
     flow: .maestro/flows/dashboard_view_all_analytics.yaml
   - id: dashboard.customization
     title: Dashboard card customization
-    manual: "Current flow opens the editor but does not toggle or reorder cards."
+    flow: .maestro/flows/dashboard_customize.yaml
 
   - id: orders.push.arrives
     title: New order push notification arrives
