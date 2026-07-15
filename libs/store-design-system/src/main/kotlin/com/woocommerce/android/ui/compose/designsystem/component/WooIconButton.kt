@@ -110,7 +110,7 @@ internal fun WooIconButtonDemo(
     ) {
         WooIconButton(
             imageVector = WooIcons.Regular.CommentQuestion,
-            contentDescription = "",
+            contentDescription = "Help",
             onClick = {},
         )
         WooIconButton(
