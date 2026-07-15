@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.compose.designsystem.icons.Box
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.List
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
-import kotlin.math.roundToInt
 
 @Composable
 fun WooTabRow(
@@ -67,26 +66,20 @@ private fun WooTabRowLayout(
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
 ) {
-    val horizontalPadding = WooTheme.padding.padding7
-    val topPadding = WooTheme.padding.padding7
-
     SubcomposeLayout(modifier = modifier.selectableGroup()) { constraints ->
         val rowWidth = constraints.maxWidth
         val rowHeight = constraints.maxHeight
-        val topPaddingPx = topPadding.toPx().roundToInt()
-        val contentHeight = (rowHeight - topPaddingPx).coerceAtLeast(0)
         val tabConstraints = Constraints(
             minWidth = 0,
             maxWidth = rowWidth,
-            minHeight = contentHeight,
-            maxHeight = contentHeight,
+            minHeight = rowHeight,
+            maxHeight = rowHeight,
         )
         val tabPlaceables = subcompose(WooTabRowSlot.Tabs, tabs).map { measurable ->
             measurable.measure(tabConstraints)
         }
         val tabLayout = calculateWooTabRowLayout(
             rowWidth = rowWidth,
-            horizontalPadding = horizontalPadding.toPx().roundToInt(),
             tabWidths = tabPlaceables.map { it.width },
             selectedTabIndex = selectedTabIndex,
         )
@@ -103,7 +96,7 @@ private fun WooTabRowLayout(
 
         layout(rowWidth, rowHeight) {
             tabPlaceables.forEachIndexed { index, placeable ->
-                placeable.placeRelative(tabLayout.tabPositions[index], topPaddingPx)
+                placeable.placeRelative(tabLayout.tabPositions[index], 0)
             }
             dividerPlaceables.forEachIndexed { index, placeable ->
                 placeable.placeRelative(
@@ -295,7 +288,7 @@ internal fun WooTabsDemo(
 }
 
 private object WooTabsDefaults {
-    val RowHeight = 84.dp
+    val RowHeight = 60.dp
     val TabMinWidth = 134.dp
     val IconSize = 18.dp
 }
@@ -324,14 +317,11 @@ internal data class WooTabRowDividerSegment(
 
 internal fun calculateWooTabRowLayout(
     rowWidth: Int,
-    horizontalPadding: Int,
     tabWidths: List<Int>,
     selectedTabIndex: Int,
 ): WooTabRowLayoutResult {
     val totalTabWidth = tabWidths.sum()
-    val contentWidth = (rowWidth - horizontalPadding * 2).coerceAtLeast(0)
-    val centeredInset = ((contentWidth - totalTabWidth) / 2).coerceAtLeast(0)
-    val firstTabPosition = horizontalPadding + centeredInset
+    val firstTabPosition = (rowWidth - totalTabWidth) / 2
     var tabPosition = firstTabPosition
     val tabPositions = tabWidths.map { tabWidth ->
         tabPosition.also {
