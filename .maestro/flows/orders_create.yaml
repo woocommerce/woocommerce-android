@@ -33,6 +33,9 @@ tags:
 - runFlow:
     file: ../subflows/ensure_logged_in.yaml
 
+- runFlow:
+    file: ../subflows/ensure_configured_woo_store.yaml
+
 # Navigate to Orders
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
@@ -137,9 +140,63 @@ tags:
     timeout: 15000
     label: "Wait for selected variation in parent selector"
 
+# Keep the selected variation, switch the selector to Simple products, and
+# select another purchasable line item. Filtering by a different product type
+# guarantees the second item cannot be the selected variation or its parent.
+- tapOn:
+    text: "Filter.*"
+    retryTapIfNoChange: true
+    label: "Reopen product selector filters"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterList"
+    timeout: 15000
+
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Change Product type filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterOptionList"
+    timeout: 15000
+
+- tapOn:
+    text: "Simple"
+    retryTapIfNoChange: true
+    label: "Select Simple products"
+
+- tapOn:
+    id: "filterOptionList_btnShowProducts"
+    retryTapIfNoChange: true
+    label: "Confirm Simple product filter"
+
+- runFlow:
+    when:
+      visible:
+        id: "filterList_btnShowProducts"
+    commands:
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Apply Simple product filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_product_item"
+    timeout: 20000
+    label: "Require a purchasable Simple product"
+
+- tapOn:
+    id: "product_selector_product_item"
+    index: 0
+    label: "Select a distinct Simple product"
+
 - tapOn:
     id: "product_selector_done_button"
-    label: "Confirm product selection"
+    label: "Confirm both product selections"
 
 # Back on order creation
 - extendedWaitUntil:
@@ -148,15 +205,26 @@ tags:
 
 - assertVisible:
     id: "order_product_card"
-    label: "Selected product is present in the order"
+    index: 0
+    label: "First selected line item is present in the order"
+
+- assertVisible:
+    id: "order_product_card"
+    index: 1
+    label: "Second selected line item is present in the order"
+
+- assertVisible:
+    text: ".*⦁.*"
+    label: "A selected line item exposes real variation attributes"
 
 - takeScreenshot: order_create_with_product
 
 # ── Adjust quantity and apply a product discount ─────────────────────
 - tapOn:
     id: "order_product_card"
+    index: 0
     retryTapIfNoChange: true
-    label: "Expand selected product"
+    label: "Expand first selected product"
 
 - extendedWaitUntil:
     visible: "Order count"
@@ -602,6 +670,23 @@ tags:
     visible:
       id: "orderDetail_container"
     timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: "productInfo_name"
+    direction: DOWN
+    timeout: 15000
+    label: "Find persisted order line items"
+- assertVisible:
+    id: "productInfo_name"
+    index: 0
+    label: "First line item persisted on the completed order"
+- assertVisible:
+    id: "productInfo_name"
+    index: 1
+    label: "Second line item persisted on the completed order"
+- assertVisible:
+    text: ".*⦁.*"
+    label: "Persisted order retains the selected variation attributes"
 - scrollUntilVisible:
     element: ".*SmokeTest-${SUITE_RUN_ID}.*"
     direction: DOWN

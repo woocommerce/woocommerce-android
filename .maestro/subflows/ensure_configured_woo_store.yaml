@@ -1,0 +1,46 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    file: navigate_to_more_menu.yaml
+
+- copyTextFrom:
+    id: "more_menu_store_url"
+- evalScript: ${output.configuredCurrentStoreUrl = maestro.copiedText.trim()}
+
+- runFlow:
+    when:
+      true: ${String(output.configuredCurrentStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    commands:
+      - tapOn:
+          id: "more_menu_store_switcher"
+          label: "Open store picker for configured fixture"
+      - extendedWaitUntil:
+          visible:
+            id: "sites_recycler"
+          timeout: 20000
+      - scrollUntilVisible:
+          element:
+            text: ".*${String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+          direction: DOWN
+          timeout: 20000
+          label: "Find configured Woo fixture store"
+      - tapOn:
+          text: ".*${String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+          label: "Select configured Woo fixture store"
+      - tapOn:
+          id: "button_primary"
+          retryTapIfNoChange: true
+          label: "Confirm configured Woo fixture store"
+      - extendedWaitUntil:
+          visible:
+            id: "dashboard_container"
+          timeout: 30000
+
+- runFlow:
+    file: navigate_to_more_menu.yaml
+- copyTextFrom:
+    id: "more_menu_store_url"
+- evalScript: ${output.configuredSelectedStoreUrl = maestro.copiedText.trim()}
+- assertTrue:
+    condition: ${String(output.configuredSelectedStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    label: "Configured Woo fixture store is selected"
