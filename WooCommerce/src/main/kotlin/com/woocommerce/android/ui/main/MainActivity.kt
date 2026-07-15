@@ -17,6 +17,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -31,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -226,9 +228,25 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
 
+    // Drives the collapsing toolbar's elevation shadow from its own offset (see setupAppBarElevation).
+    private var appBarVerticalOffset = 0
+    private var appBarHasShadow = true
+
     private val appBarOffsetListener by lazy {
-        AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            binding.toolbarSubtitle.alpha = ((1.0f - abs((verticalOffset / appBarLayout.totalScrollRange.toFloat()))))
+        AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+            applySubtitleFade(verticalOffset)
+        }
+    }
+
+    // Fades the toolbar subtitle out as the toolbar collapses. Guards against a zero scroll range (which would
+    // make the alpha NaN, e.g. while the toolbar is being re-shown after a Hidden screen) so the subtitle can't
+    // get stuck invisible.
+    private fun applySubtitleFade(verticalOffset: Int) {
+        val totalScrollRange = binding.appBarLayout.totalScrollRange
+        binding.toolbarSubtitle.alpha = if (totalScrollRange > 0) {
+            1f - abs(verticalOffset / totalScrollRange.toFloat())
+        } else {
+            1f
         }
     }
 
@@ -242,30 +260,47 @@ class MainActivity :
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
-        private var lastFragment = WeakReference<Fragment>(null)
+        private var lastBottomNavFragment = WeakReference<Fragment>(null)
+        private var lastToolbarFragment = WeakReference<Fragment>(null)
 
+        // The bottom navigation is updated as soon as the destination's view is created/started so it hides/shows
+        // promptly during the navigation transition instead of looking delayed.
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-            updateAppBarAndBottomNav(f)
+            updateBottomNav(f)
         }
 
         override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
-            // This logic is needed to handle this case:
-            // 1. User navigates from Fragment A to Fragment B
-            // 2. Fragment B's view gets created, and onFragmentViewCreated is called, updating the AppBar.
-            // 3. Quickly the user goes back to Fragment A
-            // 4. Fragment A's view wasn't destroyed yet, so it doesn't go through the creation lifecycle,
-            //    which means onFragmentViewCreated won't be called, and the AppBar won't be updated.
-            //
-            // In this case, lastFragment will be pointing to Fragment B, so we can compare it with the fragment being
-            // started (Fragment A), and we can update the AppBar accordingly.
-            if (lastFragment.get() != f) {
-                updateAppBarAndBottomNav(f)
+            // Handles quickly navigating A -> B -> A: A's view isn't recreated so onFragmentViewCreated isn't
+            // called, but onFragmentStarted is, and lastBottomNavFragment still points at B.
+            if (lastBottomNavFragment.get() != f) {
+                updateBottomNav(f)
             }
         }
 
-        private fun updateAppBarAndBottomNav(f: Fragment) {
+        override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+            // The shared collapsing toolbar is updated only when the destination reaches RESUMED, i.e. once the
+            // navigation is committed. During a predictive-back gesture the destination's view is created and
+            // started (and it even becomes the primary navigation fragment) to render the peek, but it only
+            // reaches RESUMED on commit — so updating here prevents the toolbar from expanding/collapsing
+            // mid-gesture, e.g. when dragging back from Order Details or the Analytics Hub.
+            if (lastToolbarFragment.get() != f) {
+                updateToolbar(f)
+            }
+        }
+
+        private fun updateBottomNav(f: Fragment) {
             if (f is DialogFragment) return
-            lastFragment = WeakReference(f)
+            lastBottomNavFragment = WeakReference(f)
+            if ((f as? TopLevelFragment)?.shouldShowBottomNavigation == true) {
+                showBottomNav()
+            } else {
+                hideBottomNav()
+            }
+        }
+
+        private fun updateToolbar(f: Fragment) {
+            if (f is DialogFragment) return
+            lastToolbarFragment = WeakReference(f)
             val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
@@ -289,24 +324,16 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    binding.appBarLayout.targetElevation = if (appBarStatus.hasShadow) {
-                        resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                    } else {
-                        0f
-                    }
+                    appBarHasShadow = appBarStatus.hasShadow
+                    updateAppBarElevation()
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
                 AppBarStatus.Hidden -> {
                     hideToolbar()
-                    binding.appBarLayout.targetElevation = 0f
+                    appBarHasShadow = false
+                    updateAppBarElevation()
                 }
-            }
-
-            if (shouldShowBottomNavigation) {
-                showBottomNav()
-            } else {
-                hideBottomNav()
             }
         }
     }
@@ -350,6 +377,8 @@ class MainActivity :
 
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
+
+        setupAppBarElevation()
 
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
@@ -595,6 +624,30 @@ class MainActivity :
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
+    // The collapsing toolbar draws its elevation shadow only in the "lifted" state, which AppBarLayout derives
+    // from the scrolling child's canScrollVertically(). The dashboard's ComposeView doesn't report its internal
+    // scroll, so the shadow flickered off on layout changes. Instead we disable the automatic elevation animation
+    // and drive the shadow directly from the app bar's own vertical offset: a shadow is shown whenever the toolbar
+    // is collapsed (offset != 0) on any screen that opts into a shadow.
+    private fun setupAppBarElevation() {
+        binding.appBarLayout.isLiftOnScroll = false
+        binding.appBarLayout.stateListAnimator = null
+        binding.appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                appBarVerticalOffset = verticalOffset
+                updateAppBarElevation()
+            }
+        )
+    }
+
+    private fun updateAppBarElevation() {
+        binding.appBarLayout.elevation = if (appBarHasShadow && appBarVerticalOffset != 0) {
+            resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
+        } else {
+            0f
+        }
+    }
+
     fun setSubtitle(subtitle: CharSequence) {
         if (subtitle.isBlank()) {
             removeSubtitle()
@@ -618,11 +671,28 @@ class MainActivity :
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        // Cancel any in-flight collapse animation started by removeSubtitle. When navigating to a screen that
+        // hides the shared toolbar, that collapse stalls (the view is never drawn to completion) and only
+        // finishes once the toolbar is shown again on return — hiding the subtitle right after we set it here.
+        // Clearing it keeps the store name visible.
+        binding.toolbarSubtitle.clearAnimation()
+        // removeSubtitle collapses the subtitle by shrinking its height and never restores it; the reveal below
+        // animates scaleY/visibility instead, so a left-over collapsed height would keep the view invisible even
+        // once it is shown again. Restore the natural height before re-showing.
+        binding.toolbarSubtitle.updateLayoutParams { height = ViewGroup.LayoutParams.WRAP_CONTENT }
+        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
+        // The offset listener only fires on an offset *change*, so refresh the fade for the current state to
+        // avoid a stale alpha (applySubtitleFade also guards a zero scroll range that would produce NaN).
+        applySubtitleFade(appBarVerticalOffset)
         // Check to ensure expand anim is not triggered twice for same subtitle value
         if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
+            // The subtitle is already shown (e.g. a stalled collapse was just cancelled on return), so the expand
+            // animation below is skipped — but removeSubtitle collapsed the expanded title margin, so restore it
+            // directly here, otherwise there is no space between the title and the subtitle.
+            binding.collapsingToolbar.expandedTitleMarginBottom =
+                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin_with_subtitle)
             return
         }
-        binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
