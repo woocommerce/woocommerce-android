@@ -7,6 +7,7 @@
 - [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
 - [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 - [*] Fixed several My Store toolbar glitches when navigating away and back — the toolbar no longer re-expands and pushes the content down, the drop shadow no longer flickers, and the store name stays visible [https://github.com/woocommerce/woocommerce-android/pull/16249]
+- [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 
 25.2
 -----

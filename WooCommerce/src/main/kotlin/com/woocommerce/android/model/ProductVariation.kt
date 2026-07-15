@@ -5,11 +5,11 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmssGmt
 import com.woocommerce.android.extensions.isEquivalentTo
 import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -129,7 +129,7 @@ open class ProductVariation(
                         /* property = */
                         "date_created_gmt",
                         /* value = */
-                        variantImage.dateCreated?.formatToYYYYmmDDhhmmss() ?: ""
+                        variantImage.dateCreated?.formatToYYYYmmDDhhmmssGmt() ?: ""
                     )
                 }.toString()
             } ?: ""
@@ -137,7 +137,7 @@ open class ProductVariation(
 
         fun getDateOnSaleFromGmt(): String {
             return if (isSaleScheduled) {
-                saleStartDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+                saleStartDateGmt?.formatToYYYYmmDDhhmmssGmt() ?: ""
             } else {
                 ""
             }
@@ -145,7 +145,7 @@ open class ProductVariation(
 
         fun getDateOnSaleToGmt(): String {
             return if (isSaleScheduled) {
-                saleEndDateGmt?.formatToYYYYmmDDhhmmss() ?: ""
+                saleEndDateGmt?.formatToYYYYmmDDhhmmssGmt() ?: ""
             } else {
                 ""
             }
@@ -322,8 +322,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         price = this.price.toBigDecimalOrNull(),
         regularPrice = this.regularPrice.toBigDecimalOrNull(),
         salePrice = this.salePrice.toBigDecimalOrNull(),
-        saleEndDateGmt = this.dateOnSaleToGmt.parseFromIso8601DateFormat(),
-        saleStartDateGmt = this.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
+        saleEndDateGmt = this.dateOnSaleToGmt.parseGmtDateFromIso8601DateFormat(),
+        saleStartDateGmt = this.dateOnSaleFromGmt.parseGmtDateFromIso8601DateFormat(),
         isSaleScheduled = this.dateOnSaleFromGmt.isNotEmpty() || this.dateOnSaleToGmt.isNotEmpty(),
         stockStatus = ProductStockStatus.fromString(this.stockStatus),
         backorderStatus = ProductBackorderStatus.fromString(this.backorders),
