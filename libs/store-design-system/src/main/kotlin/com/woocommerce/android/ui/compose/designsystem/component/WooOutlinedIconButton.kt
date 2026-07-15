@@ -83,7 +83,7 @@ fun WooOutlinedIconButton(
             disabledContentColor = colors.surface.onVariantLowest,
         ),
         shape = RoundedCornerShape(WooTheme.radius.large),
-        border = BorderStroke(WooTheme.stroke.extraThin, colors.outlineVariant),
+        border = BorderStroke(WooTheme.stroke.regular, colors.outlineVariant),
     ) {
         Box(
             modifier = Modifier.clearAndSetSemantics {},

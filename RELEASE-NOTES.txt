@@ -4,11 +4,13 @@
 
 25.3
 -----
+- [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
+- [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 - [*] Fixed several My Store toolbar glitches when navigating away and back — the toolbar no longer re-expands and pushes the content down, the drop shadow no longer flickers, and the store name stays visible [https://github.com/woocommerce/woocommerce-android/pull/16249]
-
 
 25.2
 -----
+- [*****] [Internal] Update Stripe Terminal SDK from 5.1.1 to 5.6.0 [https://github.com/woocommerce/woocommerce-android/pull/16223]
 - [*] Fixed the Contact Support form losing the subject and site address fields after rotating the device [https://github.com/woocommerce/woocommerce-android/pull/16236]
 - [*] The Report Crashes privacy setting is now saved on your WordPress.com account, so it's kept across logins and devices
 - [*] Fixed a crash when a notifications sync deletes a very large number of cached notifications at once [https://github.com/woocommerce/woocommerce-android/pull/16214]
@@ -26,6 +28,7 @@
 - [*] Tapping the current bottom tab again now scrolls the screen back to the top as intended [https://github.com/woocommerce/woocommerce-android/pull/16221]
 - [*] Fixed the main toolbar showing the wrong menu after opening a feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16220]
 - [Internal] Restored dashboard scroll tracking for the used_analytics event lost in the Compose migration [https://github.com/woocommerce/woocommerce-android/pull/16229]
+- [*] Fixed the "Add a different shipping address" switch turning back on while editing customer details during order creation [https://github.com/woocommerce/woocommerce-android/pull/16138]
 
 25.1
 -----

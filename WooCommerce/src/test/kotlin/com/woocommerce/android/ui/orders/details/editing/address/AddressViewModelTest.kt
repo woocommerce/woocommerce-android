@@ -141,6 +141,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,
                     )
                 ),
+                isDifferentShippingAddressChecked = true,
             )
         )
     }
@@ -161,6 +162,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.HAVING_LOCATIONS,
                     )
                 ),
+                isDifferentShippingAddressChecked = true,
             )
         )
     }
@@ -184,6 +186,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,
                     ),
                 ),
+                isDifferentShippingAddressChecked = true,
             )
         )
     }
@@ -206,6 +209,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.HAVING_LOCATIONS,
                     )
                 ),
+                isDifferentShippingAddressChecked = true,
             )
         )
     }
@@ -226,6 +230,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.RAW_VALUE,
                     )
                 ),
+                isDifferentShippingAddressChecked = true,
             )
         )
     }
@@ -284,6 +289,84 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given shipping differs from billing, when started, then different shipping address is checked`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress,
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isTrue
+    }
+
+    @Test
+    fun `given no separate shipping address, when started, then different shipping address is unchecked`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to Address.EMPTY,
+                BILLING to shippingAddress
+            )
+        )
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isFalse
+    }
+
+    @Test
+    fun `given different shipping address disabled, when a field is edited, then it stays disabled`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress.copy(firstName = "Different shipping"),
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+        addressViewModel.onDifferentShippingAddressChecked(false)
+
+        addressViewModel.onFieldEdited(BILLING, Field.City, "New city")
+
+        assertThat(addressViewModel.isDifferentShippingAddressChecked.value).isFalse
+    }
+
+    @Test
+    fun `when different shipping address is toggled, then the choice is stored in the persisted view state`() {
+        addressViewModel.start(
+            mapOf(
+                SHIPPING to shippingAddress.copy(firstName = "Different shipping"),
+                BILLING to shippingAddress.copy(firstName = "Different billing")
+            )
+        )
+
+        addressViewModel.onDifferentShippingAddressChecked(false)
+
+        assertThat(addressViewModel.viewStateData.liveData.value?.isDifferentShippingAddressChecked).isFalse
+    }
+
+    @Test
+    fun `given switch was disabled, when recreated after process death, then the choice is preserved`() {
+        val initialState = mapOf(
+            SHIPPING to shippingAddress,
+            BILLING to shippingAddress.copy(firstName = "Different billing")
+        )
+        addressViewModel.start(initialState)
+        addressViewModel.onDifferentShippingAddressChecked(false)
+
+        // Simulate process death: a new ViewModel restores from the same SavedStateHandle, then start()
+        // runs again with the populated shipping address still present in the draft. The stored choice
+        // must win over re-deriving it from the shipping address.
+        val recreatedViewModel = AddressViewModel(
+            savedStateHandle,
+            selectedSite,
+            dataStore,
+            GetLocations(dataStore),
+            featureFlagRepository
+        )
+        recreatedViewModel.shouldEnableDoneButton.observeForever(mock())
+        recreatedViewModel.start(initialState)
+
+        assertThat(recreatedViewModel.isDifferentShippingAddressChecked.value).isFalse
+    }
+
+    @Test
     fun `when clearSelectedAddress, then initialise with empty address`() = testBlocking {
         addressViewModel.clearSelectedAddress()
 
@@ -300,6 +383,7 @@ class AddressViewModelTest : BaseUnitTest() {
                         stateSpinnerStatus = StateSpinnerStatus.DISABLED,
                     )
                 ),
+                isDifferentShippingAddressChecked = false,
             )
         )
     }
@@ -311,6 +395,7 @@ class AddressViewModelTest : BaseUnitTest() {
         email: String? = null,
         addressSelectionStates: Map<AddressViewModel.AddressType, AddressSelectionState> = emptyMap(),
         isLoading: Boolean = false,
+        isDifferentShippingAddressChecked: Boolean? = null,
     ) = ViewState(
         customerId = customerId,
         firstName = firstName,
@@ -319,6 +404,7 @@ class AddressViewModelTest : BaseUnitTest() {
         addressSelectionStates = addressSelectionStates,
         isLoading = isLoading,
         isBetterCustomerSearchEnabled = false,
+        isDifferentShippingAddressChecked = isDifferentShippingAddressChecked,
     )
 
     @Test

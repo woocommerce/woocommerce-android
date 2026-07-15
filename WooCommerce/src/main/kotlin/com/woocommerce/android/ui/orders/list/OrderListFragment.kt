@@ -226,6 +226,12 @@ class OrderListFragment :
         uiMessageResolver.anchorViewId = binding.createOrderButton.id
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
+        // An order was just created: keep the list at the top until the refreshed list shows it.
+        communicationViewModel.createdOrderIdPendingScrollToTop?.let { createdOrderId ->
+            binding.orderListView.scrollToTopWhenOrderAppears(createdOrderId) {
+                communicationViewModel.onScrollToTopAfterOrderCreationHandled()
+            }
+        }
         ViewGroupCompat.setTransitionGroup(binding.listPaneContainer, true)
         binding.listPaneContainer.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
