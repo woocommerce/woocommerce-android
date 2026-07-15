@@ -93,6 +93,8 @@ fun <T> DragAndDropSelectableItem(
     onSelectionChange: (T, Boolean) -> Unit,
     itemKey: (item: T) -> Any,
     modifier: Modifier = Modifier,
+    rowModifier: Modifier = Modifier,
+    dragHandleModifier: Modifier = Modifier,
     itemFormatter: @Composable T.() -> String = { toString() },
     isEnabled: Boolean = true,
 ) {
@@ -105,7 +107,7 @@ fun <T> DragAndDropSelectableItem(
             .padding(16.dp)
     }
     Row(
-        modifier = itemModifier,
+        modifier = rowModifier.then(itemModifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
         SelectionCheck(
@@ -123,7 +125,7 @@ fun <T> DragAndDropSelectableItem(
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_drag_handle_24dp),
             contentDescription = stringResource(id = R.string.drag_handle),
-            modifier = Modifier
+            modifier = dragHandleModifier
                 .dragContainerForDragHandle(
                     dragDropState = dragDropState,
                     key = itemKey(item),

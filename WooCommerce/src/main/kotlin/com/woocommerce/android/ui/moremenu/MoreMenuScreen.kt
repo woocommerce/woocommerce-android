@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -177,7 +178,9 @@ private fun HeaderButton(
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = headerBackgroundColors,
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
-        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+        modifier = Modifier
+            .testTag("more_menu_store_switcher")
+            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
         content = content
     )
 }
@@ -207,6 +210,7 @@ private fun HeaderContent(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
+                        .testTag("more_menu_store_title")
                         .align(Alignment.CenterVertically)
                         .weight(1f, false)
                 )
@@ -217,7 +221,9 @@ private fun HeaderContent(
             Text(
                 text = siteUrl,
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+                modifier = Modifier
+                    .testTag("more_menu_store_url")
+                    .padding(vertical = dimensionResource(id = R.dimen.minor_50))
             )
         }
     }
