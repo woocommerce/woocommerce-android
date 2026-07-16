@@ -1256,12 +1256,37 @@ class WCProductStore @Inject internal constructor(
                     it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             } else {
-                productVariationsDao.upsertProductVariation(result.variation)
+                val variation = if (context == "edit") {
+                    listOf(result.variation).mergeEditContextResponse(site, remoteProductId).first()
+                } else {
+                    result.variation
+                }
+                productVariationsDao.upsertProductVariation(variation)
                 OnVariationChanged().also {
-                    it.remoteProductId = result.variation.remoteProductId.value
-                    it.remoteVariationId = result.variation.remoteVariationId.value
+                    it.remoteProductId = variation.remoteProductId.value
+                    it.remoteVariationId = variation.remoteVariationId.value
                 }
             }
+        }
+    }
+
+    /**
+     * Edit-context responses return the variation's own image. Store it as
+     * [WCProductVariationModel.editContextImage] and keep the stored display
+     * [WCProductVariationModel.image], which view-context responses fill.
+     */
+    private suspend fun List<WCProductVariationModel>.mergeEditContextResponse(
+        site: SiteModel,
+        remoteProductId: Long
+    ): List<WCProductVariationModel> {
+        if (isEmpty()) return this
+        val storedImages = productVariationsDao.getVariations(site.localId(), RemoteId(remoteProductId))
+            .associate { it.remoteVariationId to it.image }
+        return map { variation ->
+            variation.copy(
+                editContextImage = variation.image,
+                image = storedImages[variation.remoteVariationId].orEmpty()
+            )
         }
     }
 
@@ -1348,8 +1373,12 @@ class WCProductStore @Inject internal constructor(
                     context = "edit"
                 )
             }
+            val mergedResponse = response.result
+                ?.mergeEditContextResponse(payload.site, payload.remoteProductId)
+                ?.let { WooPayload(it) }
+                ?: response
             handleFetchedProductVariations(
-                response = response,
+                response = mergedResponse,
                 context = ProductVariationsFetchContext(
                     site = payload.site,
                     remoteProductId = payload.remoteProductId,

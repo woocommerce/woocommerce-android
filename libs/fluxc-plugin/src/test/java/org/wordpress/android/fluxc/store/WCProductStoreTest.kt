@@ -404,11 +404,13 @@ class WCProductStoreTest {
             )
         )
 
+        // The edit-context fetch stores the response image as the variation's own image.
+        val mergedVariations = fetchedVariations.map { it.copy(editContextImage = it.image) }
         assertThat(result.isError).isFalse
-        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(mergedVariations)
         assertThat(requireNotNull(result.model).canLoadMore).isTrue
         assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
-            .containsExactlyInAnyOrderElementsOf(fetchedVariations)
+            .containsExactlyInAnyOrderElementsOf(mergedVariations)
     }
 
     @Test
@@ -441,11 +443,40 @@ class WCProductStoreTest {
                 )
             )
 
+            // The edit-context fetch stores the response image as the variation's own image.
+            val mergedVariations = fetchedVariations.map { it.copy(editContextImage = it.image) }
             assertThat(result.isError).isFalse
-            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(mergedVariations)
             assertThat(requireNotNull(result.model).canLoadMore).isTrue
             assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
-                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + fetchedVariations)
+                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + mergedVariations)
+        }
+
+    @Test
+    fun `given a cached parent fallback image, when variations are fetched with edit context, then the image is kept`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 0,
+                    context = "edit"
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(image = ""))))
+
+            productStore.fetchProductVariations(
+                FetchProductVariationsPayload(site = site, remoteProductId = productId, pageSize = 2, offset = 0)
+            )
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation.copy(editContextImage = ""))
         }
 
     @Test
