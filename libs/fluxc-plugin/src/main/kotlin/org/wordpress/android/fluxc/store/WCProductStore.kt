@@ -1752,7 +1752,7 @@ class WCProductStore @Inject internal constructor(
                             remoteProductId = RemoteId(payload.remoteProductId),
                             localSiteId = LocalId(payload.site.id)
                         )
-                    } ?: emptyList()
+                    }?.mergeViewContextResponse(site, remoteProductId) ?: emptyList()
                     productVariationsDao.upsertProductVariations(updatedVariations)
                     WooResult(result.result)
                 }
