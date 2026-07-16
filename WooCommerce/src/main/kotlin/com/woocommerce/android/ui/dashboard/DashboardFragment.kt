@@ -1,13 +1,25 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.isVisible
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.AndroidFragment
+import androidx.fragment.compose.rememberFragmentState
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -16,7 +28,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentDashboardBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -34,8 +45,7 @@ import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewMod
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.compose.designSystemComposeView
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
@@ -48,6 +58,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
+import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -63,12 +74,10 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DashboardFragment :
-    TopLevelFragment(R.layout.fragment_dashboard) {
+class DashboardFragment : TopLevelFragment() {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
-        private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
@@ -92,8 +101,7 @@ class DashboardFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    private var _binding: FragmentDashboardBinding? = null
-    private val binding get() = _binding!!
+    private var jitmFragment: JitmFragment? = null
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -110,53 +118,52 @@ class DashboardFragment :
         super.onCreate(savedInstanceState)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = designSystemComposeView {
+        val storeName by dashboardViewModel.storeName.observeAsState("")
+        val appbarState by dashboardViewModel.appbarState.observeAsState()
+        val jetpackBenefitsBanner by dashboardViewModel.jetpackBenefitsBannerState.observeAsState()
+        val showJetpackBenefitsBanner = jetpackBenefitsBanner?.show == true
+        var wasJetpackBenefitsBannerVisible by remember { mutableStateOf(false) }
+
+        LaunchedEffect(showJetpackBenefitsBanner) {
+            if (showJetpackBenefitsBanner && !wasJetpackBenefitsBannerVisible) {
+                trackJetpackBenefitsBannerShown()
+            }
+            wasJetpackBenefitsBannerVisible = showJetpackBenefitsBanner
+        }
+
+        DashboardScreen(
+            storeName = storeName,
+            showShareStoreButton = appbarState?.showShareStoreButton == true,
+            onShareStoreClicked = dashboardViewModel::onShareStoreClicked,
+            showJetpackBenefitsBanner = showJetpackBenefitsBanner,
+            onJetpackBenefitsBannerClicked = ::onJetpackBenefitsBannerClicked,
+            onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
+            jitmContent = { modifier -> JitmHost(modifier) },
+            dashboardContent = { modifier, headerScrollBridge ->
+                DashboardContainer(
+                    mainActivityViewModel = mainActivityViewModel,
+                    dashboardViewModel = dashboardViewModel,
+                    blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                    scrollToTopTrigger = scrollToTopTrigger,
+                    headerScrollBridge = headerScrollBridge,
+                    modifier = modifier,
+                )
+            },
+        )
+    }.apply {
+        id = R.id.dashboard_container
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
-
-        _binding = FragmentDashboardBinding.bind(view)
-        val headerScrollBridge = DashboardHeaderScrollBridge()
-
-        binding.dashboardHeader.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooDesignSystemThemeWithBackground {
-                    val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
-                    DisposableEffect(scrollBehavior, headerScrollBridge) {
-                        headerScrollBridge.attach(scrollBehavior)
-                        onDispose { headerScrollBridge.detach(scrollBehavior) }
-                    }
-                    DashboardHeader(
-                        storeName = dashboardViewModel.storeName.observeAsState().value.orEmpty(),
-                        showShareStoreButton = dashboardViewModel.appbarState.observeAsState().value
-                            ?.showShareStoreButton == true,
-                        onShareStoreClicked = dashboardViewModel::onShareStoreClicked,
-                        scrollBehavior = scrollBehavior,
-                    )
-                }
-            }
-        }
-
-        binding.dashboardContainer.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            setContent {
-                WooDesignSystemThemeWithBackground {
-                    DashboardContainer(
-                        mainActivityViewModel = mainActivityViewModel,
-                        dashboardViewModel = dashboardViewModel,
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        scrollToTopTrigger = scrollToTopTrigger,
-                        headerScrollBridge = headerScrollBridge,
-                    )
-                }
-            }
-        }
-
-        prepareJetpackBenefitsBanner()
-
         setupStateObservers()
         setupResultHandlers()
-        initJitm()
     }
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
@@ -219,9 +226,6 @@ class DashboardFragment :
                 else -> event.isHandled = false
             }
         }
-        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
-            onVisitorStatsUnavailable(jetpackBenefitsBanner)
-        }
     }
 
     private fun setupResultHandlers() {
@@ -243,35 +247,19 @@ class DashboardFragment :
         }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
-        if (jetpackBenefitsBanner == null) {
-            binding.jetpackBenefitsBanner.root.isVisible = false
-            return
-        }
-
-        if (jetpackBenefitsBanner.show) {
-            binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
-                jetpackBenefitsBanner.onDismiss()
-            }
-        }
-        if (jetpackBenefitsBanner.show && !binding.jetpackBenefitsBanner.root.isVisible) {
-            AnalyticsTracker.track(
-                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
-            )
-        }
-        binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
+    private fun trackJetpackBenefitsBannerShown() {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "shown")
+        )
     }
 
-    private fun prepareJetpackBenefitsBanner() {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.jetpackBenefitsBanner.root.setOnClickListener {
-            AnalyticsTracker.track(
-                stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
-                properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
-            )
-            findNavController().navigateSafely(DashboardFragmentDirections.actionDashboardToJetpackBenefitsDialog())
-        }
+    private fun onJetpackBenefitsBannerClicked() {
+        AnalyticsTracker.track(
+            stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
+            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "tapped")
+        )
+        findNavController().navigateSafely(DashboardFragmentDirections.actionDashboardToJetpackBenefitsDialog())
     }
 
     override fun onResume() {
@@ -291,24 +279,35 @@ class DashboardFragment :
     }
 
     override fun onDestroyView() {
+        jitmFragment = null
         super.onDestroyView()
-        _binding = null
     }
 
-    private fun initJitm() {
-        childFragmentManager.beginTransaction()
-            .replace(
-                R.id.jitmFragment,
-                JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
-                JITM_FRAGMENT_TAG
-            )
-            .commit()
+    @Composable
+    private fun JitmHost(modifier: Modifier = Modifier) {
+        val fragmentState = rememberFragmentState()
+        val arguments = remember {
+            Bundle().apply {
+                putString(JitmViewModel.JITM_MESSAGE_PATH_KEY, JitmMessagePathsProvider.MY_STORE)
+            }
+        }
+
+        DisposableEffect(Unit) {
+            onDispose { jitmFragment = null }
+        }
+        // Fragment Compose creates a MATCH_PARENT-height host. Intrinsics make it measure its content height.
+        AndroidFragment<JitmFragment>(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            fragmentState = fragmentState,
+            arguments = arguments,
+            onUpdate = { jitmFragment = it },
+        )
     }
 
     private fun refreshJitm() {
-        childFragmentManager.findFragmentByTag(JITM_FRAGMENT_TAG)?.let {
-            (it as JitmFragment).refreshJitms()
-        }
+        jitmFragment?.refreshJitms()
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)

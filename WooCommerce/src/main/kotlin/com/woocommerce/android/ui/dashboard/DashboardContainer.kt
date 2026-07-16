@@ -99,6 +99,7 @@ internal fun DashboardContainer(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     scrollToTopTrigger: Flow<Unit>,
     headerScrollBridge: DashboardHeaderScrollBridge,
+    modifier: Modifier = Modifier,
 ) {
     val hasNewWidgets = dashboardViewModel.hasNewWidgets.observeAsState(false).value
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
@@ -111,6 +112,7 @@ internal fun DashboardContainer(
             hasNewWidgets = hasNewWidgets,
             onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
             headerScrollBridge = headerScrollBridge,
+            modifier = modifier,
         ) { widget, modifier ->
             DashboardWidgetCard(
                 widget = widget,

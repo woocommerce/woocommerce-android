@@ -6,9 +6,9 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
 
 /**
- * The XML Dashboard places its JITM FragmentContainerView between separate header and body ComposeView roots, so
- * the header's remembered [WooPageHeaderScrollBehavior] cannot be shared directly. This bridge is scoped to the
- * view lifecycle and can be removed when the Dashboard moves to one Compose root.
+ * Decouples the header-owned [WooPageHeaderScrollBehavior] from the independently scrolling Dashboard body. It
+ * exposes nested-scroll and expand coordination, and guarantees scroll-to-top moves the body first and expands the
+ * header second.
  */
 internal class DashboardHeaderScrollBridge {
     private data class Attachment(
