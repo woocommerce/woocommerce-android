@@ -22,6 +22,7 @@ class SubscriptionProductVariation(
     override val sku: String,
     override val globalUniqueId: String,
     override val image: Product.Image?,
+    override val editContextImage: Product.Image? = null,
     override val price: BigDecimal?,
     override val regularPrice: BigDecimal?,
     override val salePrice: BigDecimal?,
@@ -56,6 +57,7 @@ class SubscriptionProductVariation(
     sku = sku,
     globalUniqueId = globalUniqueId,
     image = image,
+    editContextImage = editContextImage,
     price = price,
     regularPrice = regularPrice,
     salePrice = salePrice,
@@ -93,6 +95,15 @@ class SubscriptionProductVariation(
             sku = model.sku,
             globalUniqueId = model.globalUniqueId,
             image = model.getImageModel()?.let {
+                Product.Image(
+                    id = it.id,
+                    name = it.name,
+                    source = it.src,
+                    dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
+                    isCoverImage = false
+                )
+            },
+            editContextImage = model.getEditContextImageModel()?.let {
                 Product.Image(
                     id = it.id,
                     name = it.name,
@@ -142,7 +153,7 @@ class SubscriptionProductVariation(
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
                 globalUniqueId == variation.globalUniqueId &&
-                image?.id == variation.image?.id &&
+                editContextImage?.id == variation.editContextImage?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
                 isSaleScheduled == variation.isSaleScheduled &&
@@ -178,7 +189,7 @@ class SubscriptionProductVariation(
         result = 31 * result + remoteVariationId.hashCode()
         result = 31 * result + sku.hashCode()
         result = 31 * result + globalUniqueId.hashCode()
-        result = 31 * result + (image?.hashCode() ?: 0)
+        result = 31 * result + (editContextImage?.hashCode() ?: 0)
         result = 31 * result + (price?.hashCode() ?: 0)
         result = 31 * result + (regularPrice?.hashCode() ?: 0)
         result = 31 * result + (salePrice?.hashCode() ?: 0)
@@ -216,6 +227,7 @@ class SubscriptionProductVariation(
         sku: String,
         globalUniqueId: String,
         image: Product.Image?,
+        editContextImage: Product.Image?,
         price: BigDecimal?,
         regularPrice: BigDecimal?,
         salePrice: BigDecimal?,
@@ -251,6 +263,7 @@ class SubscriptionProductVariation(
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = image,
+            editContextImage = editContextImage,
             price = price,
             regularPrice = regularPrice,
             salePrice = salePrice,
@@ -290,6 +303,7 @@ class SubscriptionProductVariation(
         sku: String = this.sku,
         globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
+        editContextImage: Image? = this.editContextImage,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
         salePrice: BigDecimal? = this.salePrice,
@@ -326,6 +340,7 @@ class SubscriptionProductVariation(
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = image,
+            editContextImage = editContextImage,
             price = price,
             regularPrice = regularPrice,
             salePrice = salePrice,

@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.WCProductImageModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -31,6 +32,8 @@ open class ProductVariation(
     open val sku: String,
     open val globalUniqueId: String,
     open val image: Image?,
+    // The variation's own image; null when it has none or it was never fetched with edit context.
+    open val editContextImage: Image? = null,
     open val price: BigDecimal?,
     open val regularPrice: BigDecimal?,
     open val salePrice: BigDecimal?,
@@ -79,7 +82,7 @@ open class ProductVariation(
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
                 globalUniqueId == variation.globalUniqueId &&
-                image?.id == variation.image?.id &&
+                editContextImage?.id == variation.editContextImage?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
                 isSaleScheduled == variation.isSaleScheduled &&
@@ -120,7 +123,7 @@ open class ProductVariation(
 
     fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel {
         fun imageToJson(): String {
-            return image?.let { variantImage ->
+            return editContextImage?.let { variantImage ->
                 JsonObject().also { json ->
                     json.addProperty("id", variantImage.id)
                     json.addProperty("name", variantImage.name)
@@ -217,6 +220,7 @@ open class ProductVariation(
         sku: String = this.sku,
         globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
+        editContextImage: Image? = this.editContextImage,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
         salePrice: BigDecimal? = this.salePrice,
@@ -252,6 +256,7 @@ open class ProductVariation(
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = image,
+            editContextImage = editContextImage,
             price = price,
             regularPrice = regularPrice,
             salePrice = salePrice,
@@ -310,15 +315,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         remoteVariationId = this.remoteVariationId.value,
         sku = this.sku,
         globalUniqueId = this.globalUniqueId,
-        image = this.getImageModel()?.let {
-            Product.Image(
-                id = it.id,
-                name = it.name,
-                source = it.src,
-                dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
-                isCoverImage = false
-            )
-        },
+        image = this.toAppImage(this.getImageModel()),
+        editContextImage = this.toAppImage(this.getEditContextImageModel()),
         price = this.price.toBigDecimalOrNull(),
         regularPrice = this.regularPrice.toBigDecimalOrNull(),
         salePrice = this.salePrice.toBigDecimalOrNull(),
@@ -351,3 +349,14 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         overrideProductQuantities = this.overrideProductQuantities
     )
 }
+
+private fun WCProductVariationModel.toAppImage(imageModel: WCProductImageModel?): Product.Image? =
+    imageModel?.let {
+        Product.Image(
+            id = it.id,
+            name = it.name,
+            source = it.src,
+            dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+            isCoverImage = false
+        )
+    }
