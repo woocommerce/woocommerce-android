@@ -1257,9 +1257,9 @@ class WCProductStore @Inject internal constructor(
                 }
             } else {
                 val variation = if (context == "edit") {
-                    listOf(result.variation).mergeEditContextResponse(site, remoteProductId).first()
+                    result.variation.mergeEditContextResponse(site)
                 } else {
-                    listOf(result.variation).mergeViewContextResponse(site, remoteProductId).first()
+                    result.variation.mergeViewContextResponse(site)
                 }
                 productVariationsDao.upsertProductVariation(variation)
                 OnVariationChanged().also {
@@ -1291,6 +1291,16 @@ class WCProductStore @Inject internal constructor(
     }
 
     /**
+     * Single-variation variant of [mergeEditContextResponse] that reads only the stored row.
+     */
+    private suspend fun WCProductVariationModel.mergeEditContextResponse(
+        site: SiteModel
+    ): WCProductVariationModel {
+        val stored = productVariationsDao.getVariation(site.localId(), remoteProductId, remoteVariationId)
+        return copy(editContextImage = image, image = stored?.image.orEmpty())
+    }
+
+    /**
      * View-context responses return the display image. Keep the stored
      * [WCProductVariationModel.editContextImage], which edit-context fetches fill.
      */
@@ -1302,6 +1312,16 @@ class WCProductStore @Inject internal constructor(
         val storedEditContextImages = productVariationsDao.getVariations(site.localId(), RemoteId(remoteProductId))
             .associate { it.remoteVariationId to it.editContextImage }
         return map { it.copy(editContextImage = storedEditContextImages[it.remoteVariationId]) }
+    }
+
+    /**
+     * Single-variation variant of [mergeViewContextResponse] that reads only the stored row.
+     */
+    private suspend fun WCProductVariationModel.mergeViewContextResponse(
+        site: SiteModel
+    ): WCProductVariationModel {
+        val stored = productVariationsDao.getVariation(site.localId(), remoteProductId, remoteVariationId)
+        return copy(editContextImage = stored?.editContextImage)
     }
 
     private fun fetchProductSkuAvailability(payload: FetchProductSkuAvailabilityPayload) {
