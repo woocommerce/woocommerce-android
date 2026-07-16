@@ -17,8 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STARTED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.Address
@@ -128,7 +126,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     private val fetchShippingLabelFile: FetchShippingLabelFile,
     private val observeShippingLabelStatus: ObserveShippingLabelStatus,
     private val downloadAndPrintInvoiceUseCase: DownloadAndPrintInvoiceUseCase,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     private val navArgs: WooShippingLabelCreationFragmentArgs by savedState.navArgs()
@@ -809,9 +806,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     formattedPrice = shipmentUIList[uiState.selectedIndex].shipmentCostUI?.formattedTotalPrice,
                     onMarkOrderCompleteChange = ::onMarkOrderCompleteChange,
                     onPurchaseShippingLabel = ::onPurchaseShippingLabel
-                ),
-                isSplitShipmentsSupported = ciabSiteGateKeeper.isFeatureSupported(
-                    feature = CIABAffectedFeature.WooShippingSplitShipments
                 )
             )
         }.combine(loadTrigger.onStart { emit(Unit) }) { viewState, _ ->
@@ -1402,16 +1396,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             val uiState: UIControlsState,
             val destinationStatus: AddressStatus,
             val paymentsSectionUI: PaymentsSectionUI,
-            val purchaseSectionUI: PurchaseSectionUI,
-            val isSplitShipmentsSupported: Boolean
+            val purchaseSectionUI: PurchaseSectionUI
         ) : WooShippingViewState() {
             val shouldShowSplitShipmentButton: Boolean
                 get() {
                     val unpurchasedShipments = shipmentUIList.filterNot { it.isPurchased }
                     val hasMultipleUnfulfilledItems = unpurchasedShipments.size > 1 ||
                         (unpurchasedShipments.firstOrNull()?.totalItemQuantity ?: 0) > 1
-                    return isSplitShipmentsSupported &&
-                        shipmentUIList.none { it.isPurchaseInProgress } &&
+                    return shipmentUIList.none { it.isPurchaseInProgress } &&
                         hasMultipleUnfulfilledItems
                 }
         }

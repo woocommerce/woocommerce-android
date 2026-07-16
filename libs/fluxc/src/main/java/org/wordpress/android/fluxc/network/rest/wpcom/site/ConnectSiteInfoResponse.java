@@ -9,6 +9,5 @@ public class ConnectSiteInfoResponse implements Response {
     public boolean isJetpackActive;
     public boolean isJetpackConnected;
     public boolean isWordPressDotCom; // CHECKSTYLE IGNORE
-    public boolean isCommerceGarden;
     public String urlAfterRedirects;
 }

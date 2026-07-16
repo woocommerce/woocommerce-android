@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.2
+Managing your store just got smoother: guest orders are easier to find in orders list, shipping packages respond reliably, gift card refunds are handled safely, and weekly stats follow your store settings. We’ve also improved sign-in, navigation, product editing, and overall stability.
+
 ## 25.1
 Refunds in Woo POS now open full screen for a cleaner flow. This release also makes the app more dependable when your store can't be reached, with clearer alerts and a quick path to support. Sign-in errors are easier to understand, and we fixed missing recent orders, a startup crash, and other small glitches. Happy selling!
 

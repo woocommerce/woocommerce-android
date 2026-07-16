@@ -43,6 +43,7 @@ data class Order(
     val shippingLines: List<ShippingLine>,
     val feesLines: List<FeeLine>,
     val couponLines: List<CouponLine>,
+    val giftCards: List<GiftCardSummary> = emptyList(),
     val taxLines: List<TaxLine>,
     val chargeId: String?,
     val shippingPhone: String,
@@ -52,29 +53,10 @@ data class Order(
     val giftCardDiscountedAmount: BigDecimal?,
     val shippingTax: BigDecimal,
     val salesChannel: SalesChannel,
-    val fulfillmentStatus: FulfillmentStatus = FulfillmentStatus.NO_FULFILLMENTS,
 ) : Parcelable {
     enum class SalesChannel {
         POS,
         NON_POS
-    }
-
-    enum class FulfillmentStatus {
-        FULFILLED,
-        PARTIALLY_FULFILLED,
-        UNFULFILLED,
-        NO_FULFILLMENTS,
-        UNKNOWN;
-
-        companion object {
-            fun fromApiValue(value: String?): FulfillmentStatus = when (value) {
-                "fulfilled" -> FULFILLED
-                "partially_fulfilled" -> PARTIALLY_FULFILLED
-                "unfulfilled" -> UNFULFILLED
-                null -> NO_FULFILLMENTS
-                else -> UNKNOWN
-            }
-        }
     }
 
     @IgnoredOnParcel
@@ -138,7 +120,6 @@ data class Order(
         val configuration: ProductConfiguration? = null,
         val configurationKey: Long? = null,
         val containsMetadata: Boolean = false,
-        val bookingId: Long? = null,
         val taxes: List<LineTaxEntry> = emptyList(),
     ) : Parcelable {
         @IgnoredOnParcel
@@ -406,6 +387,7 @@ data class Order(
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 couponLines = emptyList(),
+                giftCards = emptyList(),
                 shippingPhone = "",
                 paymentUrl = "",
                 isEditable = true,
@@ -413,7 +395,6 @@ data class Order(
                 giftCardDiscountedAmount = null,
                 shippingTax = BigDecimal(0),
                 salesChannel = SalesChannel.NON_POS,
-                fulfillmentStatus = FulfillmentStatus.NO_FULFILLMENTS
             )
         }
 

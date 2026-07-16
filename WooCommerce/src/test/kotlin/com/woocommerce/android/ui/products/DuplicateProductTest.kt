@@ -40,28 +40,64 @@ class DuplicateProductTest : BaseUnitTest() {
 
     @Test
     fun `should duplicate a product and set expected properties`() = testBlocking {
-        // given
-        val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(sku = "not an empty value"))
+        // GIVEN
+        val productToDuplicate = ProductAggregate(
+            ProductTestUtils.generateProduct().copy(
+                sku = SOURCE_SKU,
+                slug = SOURCE_SLUG,
+                permalink = SOURCE_PERMALINK,
+            )
+        )
         productDetailRepository.stub {
             on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, 123)
         }
 
-        // when
+        // WHEN
         sut.invoke(productToDuplicate)
 
-        // then
+        // THEN
         val duplicationRequestCapture = argumentCaptor<ProductAggregate>()
         verify(productDetailRepository).addProduct(duplicationRequestCapture.capture())
 
         assertThat(duplicationRequestCapture.firstValue)
             .matches {
                 it.remoteId == 0L && it.product.name == "copied name" &&
-                    it.product.sku == "" && it.product.status == ProductStatus.DRAFT
+                    it.product.sku == "" && it.product.status == ProductStatus.DRAFT &&
+                    it.product.slug == "" && it.product.permalink == ""
             }
             .usingRecursiveComparison()
-            .ignoringFields("product.remoteId", "product.name", "product.sku", "product.status")
+            .ignoringFields(
+                "product.remoteId",
+                "product.name",
+                "product.sku",
+                "product.status",
+                "product.slug",
+                "product.permalink"
+            )
             .isEqualTo(productToDuplicate)
     }
+
+    @Test
+    fun `given product has slug and permalink, when duplicated, then source product slug and permalink are unchanged`() =
+        testBlocking {
+            // GIVEN
+            val productToDuplicate = ProductAggregate(
+                ProductTestUtils.generateProduct().copy(
+                    slug = SOURCE_SLUG,
+                    permalink = SOURCE_PERMALINK,
+                )
+            )
+            productDetailRepository.stub {
+                on { addProduct(any<ProductAggregate>()) } doReturn Pair(true, 123L)
+            }
+
+            // WHEN
+            sut.invoke(productToDuplicate)
+
+            // THEN
+            assertThat(productToDuplicate.product.slug).isEqualTo(SOURCE_SLUG)
+            assertThat(productToDuplicate.product.permalink).isEqualTo(SOURCE_PERMALINK)
+        }
 
     @Test
     fun `should duplicate a variable product and keep all properties of variations except sku and remoteProductId`() =
@@ -103,4 +139,10 @@ class DuplicateProductTest : BaseUnitTest() {
                 .ignoringFields("remoteProductId", "sku")
                 .isEqualTo(variationsOfProductToDuplicate)
         }
+
+    private companion object {
+        const val SOURCE_SKU = "not an empty value"
+        const val SOURCE_SLUG = "acme-water"
+        const val SOURCE_PERMALINK = "https://example.com/product/acme-water"
+    }
 }

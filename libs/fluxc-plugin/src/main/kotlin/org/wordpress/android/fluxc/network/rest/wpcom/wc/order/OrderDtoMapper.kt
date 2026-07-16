@@ -76,6 +76,7 @@ class OrderDtoMapper @Inject internal constructor(
                     lineItems = this.line_items.toString(),
                     shippingLines = this.shipping_lines.toString(),
                     feeLines = this.fee_lines.toString(),
+                    giftCards = this.gift_cards.toString(),
                     taxLines = this.tax_lines.toString(),
                     couponLines = Gson().toJson(this.coupon_lines),
                     metaData = (this.meta_data as? JsonArray)?.mapNotNull { element ->

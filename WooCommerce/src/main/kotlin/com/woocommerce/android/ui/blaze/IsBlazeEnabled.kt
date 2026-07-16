@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.blaze
 
 import androidx.annotation.VisibleForTesting
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
@@ -10,8 +8,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 class IsBlazeEnabled @Inject constructor(
-    private val selectedSite: SelectedSite,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper
+    private val selectedSite: SelectedSite
 ) {
     companion object {
         @VisibleForTesting
@@ -22,8 +19,7 @@ class IsBlazeEnabled @Inject constructor(
         val site = selectedSite.getOrNull() ?: return false
         return site.isAdmin &&
             site.hasAValidJetpackConnectionForBlaze() &&
-            site.canBlaze &&
-            ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Blaze)
+            site.canBlaze
     }
 
     /**

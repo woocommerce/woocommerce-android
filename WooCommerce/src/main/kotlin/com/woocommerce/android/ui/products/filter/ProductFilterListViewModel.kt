@@ -9,8 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
@@ -55,7 +53,6 @@ class ProductFilterListViewModel @Inject constructor(
     private val pluginRepository: PluginRepository,
     private val selectedSite: SelectedSite,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -527,8 +524,7 @@ class ProductFilterListViewModel @Inject constructor(
             ProductType.SIMPLE,
             ProductType.GROUPED,
             ProductType.EXTERNAL,
-            ProductType.VARIABLE,
-            ProductType.BOOKABLE_SERVICE -> {
+            ProductType.VARIABLE -> {
                 DefaultFilterListOptionItemUiModel(
                     resourceProvider.getString(this.stringResource),
                     filterOptionItemValue = this.value,
@@ -572,24 +568,20 @@ class ProductFilterListViewModel @Inject constructor(
             ProductType.EXTERNAL,
             ProductType.VARIABLE,
             ProductType.VARIATION,
-            ProductType.BOOKABLE_SERVICE,
             ProductType.OTHER -> ""
         }
 
     private val ProductType.isVisible: Boolean
         get() = when (this) {
             ProductType.SIMPLE,
-            ProductType.EXTERNAL -> true
+            ProductType.EXTERNAL,
+            ProductType.GROUPED,
+            ProductType.VARIABLE,
+            ProductType.SUBSCRIPTION,
+            ProductType.VARIABLE_SUBSCRIPTION,
+            ProductType.BUNDLE,
+            ProductType.COMPOSITE -> true
 
-            ProductType.GROUPED -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
-            ProductType.VARIABLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
-            ProductType.SUBSCRIPTION -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts)
-            ProductType.VARIABLE_SUBSCRIPTION ->
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts)
-
-            ProductType.BUNDLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BundleProducts)
-            ProductType.COMPOSITE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.CompositeProducts)
-            ProductType.BOOKABLE_SERVICE -> ciabSiteGateKeeper.isCurrentSiteCIAB()
             ProductType.VARIATION,
             ProductType.OTHER -> false
         }

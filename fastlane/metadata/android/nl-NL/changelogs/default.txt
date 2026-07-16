@@ -1,2 +1,0 @@
-25.1:
-Terugbetalingen in Woo POS openen nu in volledig scherm voor een betere flow. Deze release maakt de app ook betrouwbaarder wanneer je winkel niet kan worden bereikt, met duidelijkere waarschuwingen en een snel pad naar ondersteuning. Aanmeldfouten zijn eenvoudiger te begrijpen en we hebben ontbrekende recente bestellingen, een crash bij opstarten en andere kleine glitches opgelost. Veel verkoopplezier!

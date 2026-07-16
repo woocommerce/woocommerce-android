@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
@@ -81,7 +80,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
 
         setFragmentResult(
             requestKey = WEB_NAVIGATION_RESULT,
-            result = bundleOf(URL_KEY to url)
+            result = Bundle().apply { putString(URL_KEY, url) }
         )
         parentFragmentManager.popBackStack()
     }
@@ -101,10 +100,10 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
         fun newInstance(url: String, errorMessage: String) =
             ApplicationPasswordTutorialFragment().apply {
-                arguments = bundleOf(
-                    URL_KEY to url,
-                    ERROR_MESSAGE_KEY to errorMessage
-                )
+                arguments = Bundle().apply {
+                    putString(URL_KEY, url)
+                    putString(ERROR_MESSAGE_KEY, errorMessage)
+                }
             }
     }
 }

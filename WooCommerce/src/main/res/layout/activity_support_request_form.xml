@@ -151,7 +151,6 @@
                         android:imeOptions="flagNoFullscreen"
                         android:inputType="textAutoComplete"
                         android:nextFocusForward="@id/request_site_address"
-                        android:saveEnabled="false"
                         app:errorEnabled="true" />
 
                     <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
@@ -162,7 +161,6 @@
                         android:hint="@string/support_request_site_address"
                         android:imeOptions="flagNoFullscreen"
                         android:inputType="textAutoComplete"
-                        android:saveEnabled="false"
                         app:errorEnabled="true" />
 
                     <com.google.android.material.card.MaterialCardView

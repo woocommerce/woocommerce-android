@@ -370,6 +370,8 @@ open class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setCrashReportingEnabled(enabled)
     }
 
+    fun hasCrashReportingChoice(): Boolean = AppPrefs.hasCrashReportingChoice()
+
     fun setTimezoneTrackEventTriggeredFor(siteId: Long, localTimezone: String, storeTimezone: String) {
         AppPrefs.setTimezoneTrackEventTriggeredFor(siteId, localTimezone, storeTimezone)
     }

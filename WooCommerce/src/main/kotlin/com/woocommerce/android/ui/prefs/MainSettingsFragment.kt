@@ -212,8 +212,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 .navigateSafely(R.id.action_mainSettingsFragment_to_troubleshootConnectionFragment)
         }
 
-        binding.pluginsContainer.isVisible = presenter.isPluginsSectionVisible
-
         binding.optionSitePlugins.setOnClickListener {
             findNavController()
                 .navigateSafely(

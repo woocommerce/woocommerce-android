@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,6 +64,12 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.ui.main.MainActivityViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.drop
+
+private const val SCROLL_INTERACTION_DEBOUNCE_MS = 1000L
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -70,6 +77,7 @@ fun DashboardContainer(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    scrollToTopTrigger: Flow<Unit>,
 ) {
     dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
         val pullRefreshState = rememberPullRefreshState(state.isRefreshing, dashboardViewModel::onPullToRefresh)
@@ -84,6 +92,7 @@ fun DashboardContainer(
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = dashboardViewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                scrollToTopTrigger = scrollToTopTrigger,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.surface)
@@ -100,22 +109,38 @@ fun DashboardContainer(
     }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 private fun DashboardWidgets(
     widgetUiModels: List<DashboardWidgetUiModel>,
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    scrollToTopTrigger: Flow<Unit>,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1
 ) {
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        scrollToTopTrigger.collect {
+            scrollState.animateScrollTo(0)
+        }
+    }
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.value }
+            .drop(1) // Ignore the initial value emitted on composition
+            .debounce(SCROLL_INTERACTION_DEBOUNCE_MS)
+            .collect { dashboardViewModel.onDashboardInteracted() }
+    }
 
     if (numberOfColumns == 1) {
         Column(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Spacer(modifier = Modifier)
@@ -142,7 +167,7 @@ private fun DashboardWidgets(
         Box(
             modifier = modifier
                 .nestedScroll(nestedScrollInterop)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
         ) {
             Row(

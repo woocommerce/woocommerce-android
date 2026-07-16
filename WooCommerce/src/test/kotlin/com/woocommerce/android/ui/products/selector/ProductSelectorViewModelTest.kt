@@ -883,6 +883,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             val recentOrdersList = generateMockTestOrders()
             val totalOrders = ordersThatAreNotPaidYet + recentOrdersList
             whenever(orderStore.getPaidOrdersForSiteDesc(selectedSite.get())).thenReturn(totalOrders)
+            whenever(productsMapper.mapProductIdsToProduct(any())).thenReturn(ProductTestUtils.generateProductList())
             val argumentCaptor = argumentCaptor<List<Long>>()
 
             createViewModel(navArgs)

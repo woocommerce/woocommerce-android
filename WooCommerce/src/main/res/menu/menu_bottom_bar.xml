@@ -16,11 +16,6 @@
         android:title="@string/products" />
 
     <item
-        android:id="@+id/bookings"
-        android:icon="@drawable/as_menu_booking_list"
-        android:title="@string/bookings_tab_title" />
-
-    <item
         android:id="@+id/point_of_sale"
         android:icon="@drawable/as_menu_pos"
         android:title="@string/point_of_sale" />

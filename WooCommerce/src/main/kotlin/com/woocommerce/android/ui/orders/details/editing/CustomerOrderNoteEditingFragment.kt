@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.orders.details.editing
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
@@ -54,10 +53,6 @@ class CustomerOrderNoteEditingFragment :
     }
 
     private fun setupToolbarMenu() {
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-            requireActivity(),
-            R.drawable.ic_gridicons_cross_24dp
-        )
         binding.toolbar.setNavigationOnClickListener {
             navigateUp()
         }

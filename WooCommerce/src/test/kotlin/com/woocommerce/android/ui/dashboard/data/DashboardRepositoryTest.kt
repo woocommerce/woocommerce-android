@@ -25,7 +25,6 @@ class DashboardRepositoryTest {
     private val observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus = mock()
     private val observeStockWidgetStatus: ObserveStockWidgetStatus = mock()
     private val observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus = mock()
-    private val observeInboxWidgetStatus: ObserveInboxWidgetStatus = mock()
     private val observeAIAssistantWidgetStatus: ObserveAIAssistantWidgetStatus = mock()
 
     @Test
@@ -45,7 +44,6 @@ class DashboardRepositoryTest {
             observeOnboardingWidgetStatus,
             observeStockWidgetStatus,
             observeGoogleAdsWidgetStatus,
-            observeInboxWidgetStatus,
             observeAIAssistantWidgetStatus
         )
 
@@ -147,7 +145,6 @@ class DashboardRepositoryTest {
         observeOnboardingWidgetStatus,
         observeStockWidgetStatus,
         observeGoogleAdsWidgetStatus,
-        observeInboxWidgetStatus,
         observeAIAssistantWidgetStatus
     )
 

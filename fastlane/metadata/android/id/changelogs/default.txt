@@ -1,2 +1,0 @@
-25.1:
-Pengembalian dana di Woo POS sekarang membuka layar penuh agar alur kerja lebih lancar. Rilis ini juga meningkatkan keandalan aplikasi saat toko Anda tidak dapat dijangkau, dengan peringatan yang lebih jelas dan jalur cepat untuk dukungan. Kesalahan login lebih mudah dipahami, dan kami memperbaiki pesanan terakhir yang hilang, crash saat inisialisasi, dan masalah kecil lainnya. Selamat berjualan!

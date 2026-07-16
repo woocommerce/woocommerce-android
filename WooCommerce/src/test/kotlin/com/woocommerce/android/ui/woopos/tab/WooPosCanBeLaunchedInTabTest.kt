@@ -128,33 +128,10 @@ class WooPosCanBeLaunchedInTabTest {
         assertEquals(Launchable, result)
     }
 
-    // --- CIAB plan eligibility ---
+    // --- Plan eligibility ---
 
     @Test
-    fun `given CIAB site with free plan, when invoked, then return CiabPlanUpgradeRequired`() = runTest {
-        siteModel.setIsGardenSite(true)
-        siteModel.gardenName = SiteModel.CIAB_GARDEN_NAME
-        siteModel.planProductSlug = "woo_hosted_free_plan"
-
-        val result = sut()
-
-        assertEquals(NotLaunchable(NonLaunchabilityReason.CiabPlanUpgradeRequired), result)
-    }
-
-    @Test
-    fun `given CIAB site with pro monthly plan, when invoked, then return Launchable`() = runTest {
-        siteModel.setIsGardenSite(true)
-        siteModel.gardenName = SiteModel.CIAB_GARDEN_NAME
-        siteModel.planProductSlug = "woo_hosted_pro_plan_monthly"
-
-        val result = sut()
-
-        assertEquals(Launchable, result)
-    }
-
-    @Test
-    fun `given non-CIAB site with free plan, when invoked, then not blocked by CIAB check`() = runTest {
-        siteModel.setIsGardenSite(false)
+    fun `given site with free plan, when invoked, then not gated by plan`() = runTest {
         siteModel.planProductSlug = "woo_hosted_free_plan"
 
         val result = sut()

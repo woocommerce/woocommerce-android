@@ -1,2 +1,0 @@
-25.1:
-Für einen saubereren Ablauf werden Rückerstattungen in Woo POS jetzt im Vollbildmodus geöffnet. Diese Version macht die App auch zuverlässiger, wenn dein Shop nicht erreichbar ist – mit klareren Benachrichtigungen und einem schnellen Weg zum Support. Anmeldefehler sind nun leichter zu verstehen. Außerdem wurden folgende Fehler behoben: fehlende aktuelle Bestellungen, ein Absturz beim Programmstart sowie andere kleine Störungen. Viel Spaß beim Verkaufen!

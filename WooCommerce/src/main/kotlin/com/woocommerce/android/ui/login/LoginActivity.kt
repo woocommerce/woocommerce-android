@@ -5,11 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.annotation.VisibleForTesting
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -99,6 +99,32 @@ import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
 
+@VisibleForTesting
+internal sealed class LoginActivityActionDestination {
+    data class ContinueWithWPComEmail(val email: String) : LoginActivityActionDestination()
+    data class ShowSiteAddress(val siteAddress: String?) : LoginActivityActionDestination()
+    object StartWPComEmailLogin : LoginActivityActionDestination()
+}
+
+@VisibleForTesting
+internal fun resolveLoginActivityActionDestination(
+    action: String?,
+    email: String?,
+    siteAddress: String?
+): LoginActivityActionDestination? = when (action) {
+    LoginActivity.LOGIN_WITH_SITE_ADDRESS_ACTION -> {
+        LoginActivityActionDestination.ShowSiteAddress(siteAddress = siteAddress.takeUnless { it.isNullOrBlank() })
+    }
+    LoginActivity.LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+        if (email.isNullOrBlank()) {
+            LoginActivityActionDestination.StartWPComEmailLogin
+        } else {
+            LoginActivityActionDestination.ContinueWithWPComEmail(email)
+        }
+    }
+    else -> null
+}
+
 // TODO Extract logic out of LoginActivity to reduce size
 @Suppress("SameParameterValue", "LargeClass")
 @AndroidEntryPoint
@@ -127,7 +153,9 @@ class LoginActivity :
         private const val KEY_UNIFIED_TRACKER_FLOW = "KEY_UNIFIED_TRACKER_FLOW"
         private const val KEY_CONNECT_SITE_INFO = "KEY_CONNECT_SITE_INFO"
 
+        const val LOGIN_WITH_SITE_ADDRESS_ACTION = "login_with_site_address"
         const val LOGIN_WITH_WPCOM_EMAIL_ACTION = "login_with_wpcom_email"
+        const val SITE_ADDRESS_PARAMETER = "siteAddress"
         const val EMAIL_PARAMETER = "email"
 
         const val SITE_URL_PARAMETER = "siteUrl"
@@ -198,9 +226,8 @@ class LoginActivity :
         applyDefaultWindowInsets()
 
         when {
-            intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
-                val email = intent.extras!!.getString(EMAIL_PARAMETER)
-                gotWpcomEmail(email, verifyEmail = true, null)
+            intent?.action == LOGIN_WITH_SITE_ADDRESS_ACTION || intent?.action == LOGIN_WITH_WPCOM_EMAIL_ACTION -> {
+                handleLoginActivityAction(requireNotNull(intent))
             }
 
             intent?.action == Intent.ACTION_VIEW && intent.data?.authority == APP_LOGIN_AUTHORITY -> {
@@ -243,6 +270,31 @@ class LoginActivity :
         }
 
         keepTrackOfAgeEligibility()
+    }
+
+    private fun handleLoginActivityAction(intent: Intent) {
+        when (
+            val destination = resolveLoginActivityActionDestination(
+                action = intent.action,
+                email = intent.extras?.getString(EMAIL_PARAMETER),
+                siteAddress = intent.extras?.getString(SITE_ADDRESS_PARAMETER)
+            )
+        ) {
+            is LoginActivityActionDestination.ContinueWithWPComEmail -> {
+                gotWpcomEmail(destination.email, verifyEmail = true, null)
+            }
+
+            is LoginActivityActionDestination.ShowSiteAddress -> {
+                disableDynamicEdgeToEdge()
+                loginViaSiteAddress(prefilledSiteUrl = destination.siteAddress)
+            }
+
+            LoginActivityActionDestination.StartWPComEmailLogin -> {
+                startLoginViaWPCom()
+            }
+
+            null -> Unit
+        }
     }
 
     private fun applyDefaultWindowInsets() {
@@ -307,7 +359,7 @@ class LoginActivity :
 
     override fun onQrLoginFallbackClicked() {
         disableDynamicEdgeToEdge()
-        loginViaSiteAddress()
+        loginViaSiteAddress(prefilledSiteUrl = null, flow = Flow.LOGIN_QR)
     }
 
     override fun onQrLoginCompleted(localSiteId: Int) {
@@ -473,6 +525,10 @@ class LoginActivity :
     private fun startLoginViaWPCom() {
         // Clean previously saved site address, e.g: if merchants return from a store address flow.
         appPrefsWrapper.removeLoginSiteAddress()
+        startLoginViaWPComEmailScreen()
+    }
+
+    private fun startLoginViaWPComEmailScreen() {
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
@@ -541,8 +597,8 @@ class LoginActivity :
 
     override fun loginViaSiteAddress() = loginViaSiteAddress(prefilledSiteUrl = null)
 
-    private fun loginViaSiteAddress(prefilledSiteUrl: String?) {
-        unifiedLoginTracker.setFlowAndStep(LOGIN_SITE_ADDRESS, ENTER_SITE_ADDRESS)
+    private fun loginViaSiteAddress(prefilledSiteUrl: String?, flow: Flow = LOGIN_SITE_ADDRESS) {
+        unifiedLoginTracker.setFlowAndStep(flow, ENTER_SITE_ADDRESS)
         val loginSiteAddressFragment = getLoginViaSiteAddressFragment()
             ?: WooLoginSiteAddressFragment.newInstance(prefilledSiteUrl)
         changeFragment(loginSiteAddressFragment, true, LoginSiteAddressFragment.TAG)
@@ -1081,7 +1137,6 @@ class LoginActivity :
             event.info.let {
                 ConnectSiteInfo(
                     isWPCom = it.isWPCom,
-                    isCommerceGarden = it.isCommerceGarden,
                     isJetpackConnected = it.isJetpackConnected,
                     isJetpackActive = it.isJetpackActive
                 )
@@ -1194,11 +1249,10 @@ class LoginActivity :
     @Parcelize
     internal data class ConnectSiteInfo(
         val isWPCom: Boolean,
-        val isCommerceGarden: Boolean,
         val isJetpackConnected: Boolean,
         val isJetpackActive: Boolean
     ) : Parcelable {
         val shouldUseWPComAuth: Boolean
-            get() = isWPCom || isCommerceGarden
+            get() = isWPCom
     }
 }

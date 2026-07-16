@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -33,12 +32,12 @@ class LoginSiteCredentialsFragment : Fragment() {
         const val TAG = "LoginSiteCredentialsFragment"
         fun newInstance(siteAddress: String, isJetpackConnected: Boolean, username: String?, password: String?) =
             LoginSiteCredentialsFragment().apply {
-                arguments = bundleOf(
-                    LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY to siteAddress,
-                    LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY to isJetpackConnected,
-                    LoginSiteCredentialsViewModel.USERNAME_KEY to username.orEmpty(),
-                    LoginSiteCredentialsViewModel.PASSWORD_KEY to password.orEmpty()
-                )
+                arguments = Bundle().apply {
+                    putString(LoginSiteCredentialsViewModel.SITE_ADDRESS_KEY, siteAddress)
+                    putBoolean(LoginSiteCredentialsViewModel.IS_JETPACK_CONNECTED_KEY, isJetpackConnected)
+                    putString(LoginSiteCredentialsViewModel.USERNAME_KEY, username.orEmpty())
+                    putString(LoginSiteCredentialsViewModel.PASSWORD_KEY, password.orEmpty())
+                }
             }
     }
 

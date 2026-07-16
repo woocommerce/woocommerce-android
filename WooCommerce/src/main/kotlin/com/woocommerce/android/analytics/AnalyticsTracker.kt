@@ -124,8 +124,6 @@ class AnalyticsTracker private constructor(
             finalProperties.putIfAbsent(IS_JETPACK_INSTALLED, selectedSiteModel.isJetpackInstalled)
             finalProperties.putIfAbsent(IS_JETPACK_CONNECTED, selectedSiteModel.isJetpackConnected)
             finalProperties.putIfAbsent(IS_JETPACK_CP_CONNECTED, selectedSiteModel.isJetpackCPConnected)
-            finalProperties.putIfAbsent(IS_CIAB, selectedSiteModel.isCIABSite())
-            selectedSiteModel.gardenPartner?.let { finalProperties.putIfAbsent(GARDEN_PARTNER, it) }
         }
 
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -175,8 +173,6 @@ class AnalyticsTracker private constructor(
         const val IS_JETPACK_INSTALLED = "is_jetpack_installed"
         const val IS_JETPACK_CONNECTED = "is_jetpack_connected"
         const val IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_connected"
-        const val IS_CIAB = "is_ciab"
-        const val GARDEN_PARTNER = "garden_partner"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
@@ -506,7 +502,6 @@ class AnalyticsTracker private constructor(
 
         // -- More Menu (aka Hub Menu) option values
         const val VALUE_MORE_MENU_VIEW_STORE = "view_store"
-        const val VALUE_MORE_MENU_BOOKINGS = "bookings"
         const val VALUE_MORE_MENU_ADMIN_MENU = "admin_menu"
         const val VALUE_MORE_MENU_REVIEWS = "reviews"
         const val VALUE_MORE_MENU_INBOX = "inbox"
