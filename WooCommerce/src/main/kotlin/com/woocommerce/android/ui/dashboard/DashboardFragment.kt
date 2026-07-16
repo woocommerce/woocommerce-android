@@ -144,13 +144,14 @@ class DashboardFragment : TopLevelFragment() {
             onJetpackBenefitsBannerClicked = ::onJetpackBenefitsBannerClicked,
             onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
             jitmContent = { modifier -> JitmHost(modifier) },
-            dashboardContent = { modifier, headerScrollBridge ->
+            dashboardContent = { modifier, headerScrollBridge, contentBeforeWidgets ->
                 DashboardContainer(
                     mainActivityViewModel = mainActivityViewModel,
                     dashboardViewModel = dashboardViewModel,
                     blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
                     scrollToTopTrigger = scrollToTopTrigger,
                     headerScrollBridge = headerScrollBridge,
+                    contentBeforeWidgets = contentBeforeWidgets,
                     modifier = modifier,
                 )
             },

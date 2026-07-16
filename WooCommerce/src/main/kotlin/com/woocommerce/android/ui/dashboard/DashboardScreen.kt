@@ -45,7 +45,7 @@ internal fun DashboardScreen(
     showJetpackBenefitsBanner: Boolean,
     onJetpackBenefitsBannerClicked: () -> Unit,
     onJetpackBenefitsBannerDismissed: () -> Unit,
-    dashboardContent: @Composable (Modifier, DashboardHeaderScrollBridge) -> Unit,
+    dashboardContent: @Composable (Modifier, DashboardHeaderScrollBridge, @Composable () -> Unit) -> Unit,
     jitmContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -67,11 +67,12 @@ internal fun DashboardScreen(
             onShareStoreClicked = onShareStoreClicked,
             scrollBehavior = scrollBehavior,
         )
-        Box(modifier = Modifier.padding(vertical = WooTheme.padding.padding2)) {
-            jitmContent(Modifier.fillMaxWidth())
-        }
         Box(modifier = Modifier.weight(1f)) {
-            dashboardContent(Modifier.fillMaxSize(), headerScrollBridge)
+            dashboardContent(Modifier.fillMaxSize(), headerScrollBridge) {
+                Box(modifier = Modifier.padding(vertical = WooTheme.padding.padding2)) {
+                    jitmContent(Modifier.fillMaxWidth())
+                }
+            }
         }
         AnimatedVisibility(visible = showJetpackBenefitsBanner) {
             JetpackBenefitsBanner(
@@ -156,9 +157,12 @@ private fun DashboardScreenPreview() {
                     Text(text = "Its height follows content and text wrapping without a fixed size.")
                 }
             },
-            dashboardContent = { bodyModifier, _ ->
-                Box(modifier = bodyModifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = "Dashboard content")
+            dashboardContent = { bodyModifier, _, leadingContent ->
+                Column(modifier = bodyModifier) {
+                    leadingContent()
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text(text = "Dashboard content")
+                    }
                 }
             },
         )
@@ -179,7 +183,7 @@ private fun DashboardScreenEmptyBodyPreview() {
             jitmContent = { jitmModifier ->
                 Spacer(modifier = jitmModifier.height(0.dp))
             },
-            dashboardContent = { _, _ -> },
+            dashboardContent = { _, _, _ -> },
         )
     }
 }

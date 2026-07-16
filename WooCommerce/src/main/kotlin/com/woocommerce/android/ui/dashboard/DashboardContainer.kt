@@ -99,29 +99,31 @@ internal fun DashboardContainer(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     scrollToTopTrigger: Flow<Unit>,
     headerScrollBridge: DashboardHeaderScrollBridge,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hasNewWidgets = dashboardViewModel.hasNewWidgets.observeAsState(false).value
-    dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
-        DashboardLayout(
-            widgets = state.widgets,
-            isRefreshing = state.isRefreshing,
-            onPullToRefresh = dashboardViewModel::onPullToRefresh,
-            scrollToTopTrigger = scrollToTopTrigger,
-            onDashboardInteracted = dashboardViewModel::onDashboardInteracted,
-            hasNewWidgets = hasNewWidgets,
-            onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
-            headerScrollBridge = headerScrollBridge,
+    val state = dashboardViewModel.dashboardCardsState.observeAsState().value
+    DashboardLayout(
+        widgets = state?.widgets.orEmpty(),
+        isRefreshing = state?.isRefreshing == true,
+        onPullToRefresh = dashboardViewModel::onPullToRefresh,
+        scrollToTopTrigger = scrollToTopTrigger,
+        onDashboardInteracted = dashboardViewModel::onDashboardInteracted,
+        hasNewWidgets = hasNewWidgets,
+        showCustomizeButton = state != null,
+        onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
+        headerScrollBridge = headerScrollBridge,
+        contentBeforeWidgets = contentBeforeWidgets,
+        modifier = modifier,
+    ) { widget, modifier ->
+        DashboardWidgetCard(
+            widget = widget,
+            mainActivityViewModel = mainActivityViewModel,
+            dashboardViewModel = dashboardViewModel,
+            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
             modifier = modifier,
-        ) { widget, modifier ->
-            DashboardWidgetCard(
-                widget = widget,
-                mainActivityViewModel = mainActivityViewModel,
-                dashboardViewModel = dashboardViewModel,
-                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                modifier = modifier,
-            )
-        }
+        )
     }
 }
 
@@ -157,8 +159,10 @@ private fun DashboardLayout(
     scrollToTopTrigger: Flow<Unit>,
     onDashboardInteracted: () -> Unit,
     hasNewWidgets: Boolean,
+    showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
     headerScrollBridge: DashboardHeaderScrollBridge,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
 ) {
@@ -190,11 +194,13 @@ private fun DashboardLayout(
                 scrollToTopTrigger = scrollToTopTrigger,
                 onDashboardInteracted = onDashboardInteracted,
                 hasNewWidgets = hasNewWidgets,
+                showCustomizeButton = showCustomizeButton,
                 onEditWidgetsClicked = onEditWidgetsClicked,
                 widgetContent = widgetContent,
                 modifier = Modifier.fillMaxSize(),
                 numberOfColumns = numberOfColumns,
                 headerScrollBridge = headerScrollBridge,
+                contentBeforeWidgets = contentBeforeWidgets,
             )
         }
     }
@@ -207,9 +213,11 @@ private fun DashboardWidgetLayout(
     scrollToTopTrigger: Flow<Unit>,
     onDashboardInteracted: () -> Unit,
     hasNewWidgets: Boolean,
+    showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
     headerScrollBridge: DashboardHeaderScrollBridge,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1,
 ) {
@@ -217,7 +225,6 @@ private fun DashboardWidgetLayout(
     val headerNestedScrollConnection = headerScrollBridge.nestedScrollConnection
     val scrollModifier = (headerNestedScrollConnection?.let { modifier.nestedScroll(it) } ?: modifier)
         .verticalScroll(scrollState)
-        .padding(WooTheme.padding.padding7)
 
     LaunchedEffect(scrollToTopTrigger, headerScrollBridge, scrollState) {
         scrollToTopTrigger.collectLatest {
@@ -234,44 +241,49 @@ private fun DashboardWidgetLayout(
             .collect { onDashboardInteracted() }
     }
 
-    Column(
-        modifier = scrollModifier,
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
-    ) {
-        if (numberOfColumns == 1) {
-            widgetUiModels.forEach { widget ->
-                key(widget.stableKey()) {
-                    AnimatedVisibility(widget.isVisible) {
-                        widgetContent(widget, Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        } else {
-            val widgetColumns = splitWidgetsIntoColumns(
-                numberOfColumns = numberOfColumns,
-                visibleUiWidgets = widgetUiModels.filter { widget -> widget.isVisible },
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
-            ) {
-                widgetColumns.forEach { columnWidgets ->
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
-                    ) {
-                        columnWidgets.forEach { widget ->
+    Column(modifier = scrollModifier) {
+        contentBeforeWidgets()
+        Column(
+            modifier = Modifier.padding(WooTheme.padding.padding7),
+            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
+        ) {
+            if (numberOfColumns == 1) {
+                widgetUiModels.forEach { widget ->
+                    key(widget.stableKey()) {
+                        AnimatedVisibility(widget.isVisible) {
                             widgetContent(widget, Modifier.fillMaxWidth())
                         }
                     }
                 }
+            } else {
+                val widgetColumns = splitWidgetsIntoColumns(
+                    numberOfColumns = numberOfColumns,
+                    visibleUiWidgets = widgetUiModels.filter { widget -> widget.isVisible },
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
+                ) {
+                    widgetColumns.forEach { columnWidgets ->
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
+                        ) {
+                            columnWidgets.forEach { widget ->
+                                widgetContent(widget, Modifier.fillMaxWidth())
+                            }
+                        }
+                    }
+                }
+            }
+            if (showCustomizeButton) {
+                DashboardCustomizeButton(
+                    hasNewWidgets = hasNewWidgets,
+                    onClick = onEditWidgetsClicked,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
             }
         }
-        DashboardCustomizeButton(
-            hasNewWidgets = hasNewWidgets,
-            onClick = onEditWidgetsClicked,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        )
     }
 }
 
@@ -616,8 +628,10 @@ private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
                 scrollToTopTrigger = emptyFlow(),
                 onDashboardInteracted = {},
                 hasNewWidgets = true,
+                showCustomizeButton = true,
                 onEditWidgetsClicked = {},
                 headerScrollBridge = headerScrollBridge,
+                contentBeforeWidgets = {},
                 modifier = Modifier.weight(1f),
             ) { widget, modifier ->
                 DashboardPreviewCardContent(widget = widget, modifier = modifier)
