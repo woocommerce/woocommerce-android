@@ -6,6 +6,11 @@
 -----
 
 
+25.1.1
+-----
+- [**] Fixed product and order edits (stock, price, description, notes, etc.) being discarded when leaving a screen with the system/gesture back button [https://github.com/woocommerce/woocommerce-android/pull/16267]
+
+
 25.1
 -----
 - [*] Fixed a crash when the Play Store age signals service disconnected during the age eligibility check [https://github.com/woocommerce/woocommerce-android/pull/16206]
