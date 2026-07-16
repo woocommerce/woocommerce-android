@@ -480,6 +480,37 @@ class WCProductStoreTest {
         }
 
     @Test
+    fun `given a cached edit context image, when variations are fetched with view context, then it is preserved`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = any(),
+                    productId = any(),
+                    pageSize = any(),
+                    offset = any(),
+                    includedVariationIds = any(),
+                    searchQuery = anyOrNull(),
+                    excludedVariationIds = any(),
+                    filterOptions = anyOrNull(),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                    context = any()
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(editContextImage = null))))
+
+            productStore.fetchProductVariations(site, productId)
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation)
+        }
+
+    @Test
     fun `when product variations sync fetch succeeds, then page and more flag are returned`() = runTest {
         val site = SiteModel().apply { id = 42 }
         val productId = 100L

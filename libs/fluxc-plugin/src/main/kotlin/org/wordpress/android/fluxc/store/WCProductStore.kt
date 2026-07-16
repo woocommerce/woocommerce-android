@@ -1259,7 +1259,7 @@ class WCProductStore @Inject internal constructor(
                 val variation = if (context == "edit") {
                     listOf(result.variation).mergeEditContextResponse(site, remoteProductId).first()
                 } else {
-                    result.variation
+                    listOf(result.variation).mergeViewContextResponse(site, remoteProductId).first()
                 }
                 productVariationsDao.upsertProductVariation(variation)
                 OnVariationChanged().also {
@@ -1288,6 +1288,20 @@ class WCProductStore @Inject internal constructor(
                 image = storedImages[variation.remoteVariationId].orEmpty()
             )
         }
+    }
+
+    /**
+     * View-context responses return the display image. Keep the stored
+     * [WCProductVariationModel.editContextImage], which edit-context fetches fill.
+     */
+    private suspend fun List<WCProductVariationModel>.mergeViewContextResponse(
+        site: SiteModel,
+        remoteProductId: Long
+    ): List<WCProductVariationModel> {
+        if (isEmpty()) return this
+        val storedEditContextImages = productVariationsDao.getVariations(site.localId(), RemoteId(remoteProductId))
+            .associate { it.remoteVariationId to it.editContextImage }
+        return map { it.copy(editContextImage = storedEditContextImages[it.remoteVariationId]) }
     }
 
     private fun fetchProductSkuAvailability(payload: FetchProductSkuAvailabilityPayload) {
@@ -2012,8 +2026,12 @@ class WCProductStore @Inject internal constructor(
                 filterOptions = filterOptions,
                 orderCurrency = orderCurrency
             )
+            val mergedResponse = response.result
+                ?.mergeViewContextResponse(site, productId)
+                ?.let { WooPayload(it) }
+                ?: response
             handleFetchedProductVariations(
-                response = response,
+                response = mergedResponse,
                 context = ProductVariationsFetchContext(
                     site = site,
                     remoteProductId = productId,
