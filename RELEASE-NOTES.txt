@@ -32,6 +32,10 @@
 - [Internal] Restored dashboard scroll tracking for the used_analytics event lost in the Compose migration [https://github.com/woocommerce/woocommerce-android/pull/16229]
 - [*] Fixed the "Add a different shipping address" switch turning back on while editing customer details during order creation [https://github.com/woocommerce/woocommerce-android/pull/16138]
 
+25.1.1
+-----
+- [**] Fixed product and order edits (stock, price, description, notes, etc.) being discarded when leaving a screen with the system/gesture back button [https://github.com/woocommerce/woocommerce-android/pull/16267]
+
 25.1
 -----
 - [*] Fixed a crash when the Play Store age signals service disconnected during the age eligibility check [https://github.com/woocommerce/woocommerce-android/pull/16206]

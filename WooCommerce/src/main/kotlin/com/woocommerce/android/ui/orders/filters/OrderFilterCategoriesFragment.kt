@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
@@ -51,10 +53,22 @@ class OrderFilterCategoriesFragment :
 
     private lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
+    // A DialogFragment receives back on its own dialog's OnBackPressedDispatcher, so intercept it here.
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (onRequestAllowBackPress()) {
+                dismiss()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
+
+        (requireDialog() as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher
+            ?.addCallback(viewLifecycleOwner, backPressedCallback)
 
         binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
         setupToolbar(binding)
