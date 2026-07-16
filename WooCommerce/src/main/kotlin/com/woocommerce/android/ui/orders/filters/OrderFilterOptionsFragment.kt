@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
@@ -35,6 +37,13 @@ class OrderFilterOptionsFragment :
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
+    // A DialogFragment receives back on its own dialog's OnBackPressedDispatcher, so intercept it here.
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            onRequestAllowBackPress()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
@@ -44,6 +53,9 @@ class OrderFilterOptionsFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
+
+        (requireDialog() as? OnBackPressedDispatcherOwner)?.onBackPressedDispatcher
+            ?.addCallback(viewLifecycleOwner, backPressedCallback)
         binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
         setupToolbar(binding)
         setUpObservers(viewModel)
