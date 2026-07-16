@@ -21,7 +21,8 @@ doc defines the technical boundaries that support that rollout.
 - Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
   collecting live Figma screenshots.
 - Foundation source values come from `docs/design-system/figma-export.json`. This docs branch is
-  allowed to lack runtime foundation code; future implementation consumes these docs as the contract.
+  allowed to lack runtime foundation code; future implementation consumes these docs as the
+  contract.
 
 ## Package
 
@@ -52,7 +53,8 @@ rollout wiring should stay outside the module.
   such as `WooNewTheme`; future consolidation can merge wrapper/accessor naming after the legacy
   wrapper is removed.
 - Use `WooTheme` as the design-system foundation accessor object for theme-scoped values such as
-  colors, typography, spacing, padding, radius, icon size, and stroke.
+  colors, typography, spacing, padding, radius, icon size, and stroke. State and tint layers are
+  public groups within `WooTheme.colors`, not separate foundation accessors.
 - The new `WooTheme` accessor lives under `com.woocommerce.android.ui.compose.designsystem`.
   The existing `com.woocommerce.android.ui.compose.theme.WooTheme` composable remains the legacy Store
   wrapper until deliberately removed; new design-system code should not import it.
@@ -66,19 +68,32 @@ rollout wiring should stay outside the module.
 - Keep preview-only implementations private/internal to catalog or preview files under `designsystem.preview`.
 - The planned public foundation surface is:
   - `WooTheme.colors` with direct core roles plus `container`, `surface`, `status`, `background`,
-    `overlay`, `alert`, and `palette` groups.
+    `overlay`, `stateLayers`, `tintLayers`, `alert`, and `palette` groups.
   - `WooTheme.text` with `regular`, `emphasized`, and `strong` variants.
   - `WooTheme.spacing` and `WooTheme.padding` as separate APIs with identical value scales.
   - `WooTheme.radius` including Woo-only `none` and `full` plus Material projection roles.
   - `WooTheme.iconSize` scoped to glyph sizes only.
   - `WooTheme.stroke` for source-backed border and divider widths used by production components.
 - Expose primitive palette ramps intentionally through public `WooTheme.colors.palette.*` fields.
+- Keep primitive literals in palette XML resources and alias exact matching semantic XML resources
+  to those primitives. Keep resolved ARGB literals for opacity tokens that cannot be represented as
+  a normal Android color-resource alias.
 - Treat `surfaceDim` and `surfaceContainerHighest` as source-backed public Store roles, not
   generated Material aliases.
 - Expose `WooTheme.stroke` because production design-system components use the source-backed stroke
   scale. Fractional stroke widths still need visual verification in components that use them.
-- Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
-  public `WooTheme.stateAlpha` floats from mode-aware state-layer color tokens.
+- Expose `WooTheme.colors.stateLayers.onSurface.opacity08`, `opacity10`, `opacity16`, and
+  `opacity24` as complete mode-aware `Color` values. Do not expose public `WooTheme.stateAlpha` or
+  other raw alpha floats.
+- Keep `stateLayers` separate from `surface`: the normal light state-layer base is `#1E1E1E`, while
+  `surface.onDefault` is `#000000`.
+- State-layer colors are Store authoring tokens and do not project into Material `ColorScheme`.
+- Expose `WooTheme.colors.error` / `onError` together and project them to Material `error` /
+  `onError`.
+- Expose Primary Container tint layers as complete mode-aware colors under
+  `WooTheme.colors.tintLayers.primaryContainer`; the Segmented Control consumes `opacity10`.
+- High-contrast state-layer values remain unresolved and stay outside normal `Light` / `Dark`
+  runtime mapping.
 - Do not create public `WooTheme.minimumTouchTarget` from legacy dimensions or screen-size variables.
 
 ## Theme Root Strategy
@@ -152,24 +167,26 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Product-screen and design-system component code should read approved foundations from `WooTheme`,
   for example `WooTheme.colors.primary`, `WooTheme.text.titleMedium.emphasized`,
   `WooTheme.spacing.space5`, `WooTheme.padding.padding5`, `WooTheme.radius.medium`, and
-  `WooTheme.stroke.regular`.
+  `WooTheme.stroke.regular`. State-aware components consume complete colors such as
+  `WooTheme.colors.stateLayers.onSurface.opacity16`.
 - `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` are interop
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
 - `WooTheme.colors` should expose source-backed Store authoring roles from `figma-export.json` /
   `Woo theme`, grouped shallowly by source intent.
 - Do not limit `WooTheme.colors` to a small curated Material 3-like subset.
-- Parse Store runtime/public foundations from non-`Semantic` top-level sections in
+- Parse Store runtime/public foundations from the current top-level foundation sections in
   `figma-export.json`.
-- Keep top-level `Semantic` in the export for traceability, but ignore it for Store runtime/public
-  mapping and Material projections unless a future component audit updates the contract.
-- Use normal `Light` / `Dark` values for runtime color modes. Keep high-contrast values out of
-  normal runtime mapping until accessibility-mode scope is decided.
+- The current export omits top-level `Semantic`. If a future export includes it, keep it for
+  traceability but ignore it for Store runtime/public mapping and Material projections unless a
+  component audit updates the contract.
+- Use normal `Light` / `Dark` values for runtime color modes. The current export omits high-contrast
+  modes; accessibility-mode mapping remains separately scoped.
 - Use Android typography mode values from `Typescale`; `Typescale/<Role>/Font` resolves through
   `Font theme/Font/Plain`, whose Android value is `Roboto`. Android default font is the accepted
   runtime equivalent.
-- Do not create `WooTheme.semanticColors`; supported status, alert, overlay, and palette colors live
-  as grouped fields under `WooTheme.colors`.
+- Do not create `WooTheme.semanticColors`; supported status, alert, overlay, state-layer, tint-layer,
+  and palette colors live as grouped fields under `WooTheme.colors`.
 - Keep Material 3-only projection aliases internal. Do not expose generated Material aliases such as
   fixed roles or surface-container aliases unless those names are real source-backed tokens.
 - The runtime may intentionally leave unsupported Material 3 roles on builder defaults when a Store
@@ -177,7 +194,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   fields.
 - `outline` and `outlineVariant` are source-backed tokens and public under `WooTheme.colors`.
 - Preserve source intent with direct core roles plus shallow groups such as container, surface,
-  status, alert, background, overlay, and palette.
+  status, alert, background, overlay, state layer, tint layer, and palette.
 - Keep unresolved non-color Figma variables tracked in docs or internal mapping first, but
   source-backed color tokens still belong in the public foundation surface.
 - `WooTheme.radius`, `WooTheme.iconSize`, and `WooTheme.stroke` are public because they are
@@ -195,6 +212,29 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Non-color foundations remain Kotlin/Compose-owned: typography, spacing, padding, radius, icon
   size, and stroke do not move to Android resources as part of this adapter layer.
 - Do not keep parallel Kotlin/Compose and XML resource definitions for the same token primitive value.
+
+### Runtime State Layers
+
+The runtime `stateLayers` group follows the Figma hierarchy by nesting the `onSurface` base role
+before its opacity variants. It contains complete normal-mode colors rather than reusable alpha
+constants:
+
+| API suffix | Light Figma `RRGGBBAA` / Android `AARRGGBB` | Dark Figma `RRGGBBAA` / Android `AARRGGBB` | Verified use |
+| --- | --- | --- | --- |
+| `onSurface.opacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
+| `onSurface.opacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
+| `onSurface.opacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
+| `onSurface.opacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
+
+The checked-in export directly supplies all four normal-mode state-layer colors. High-contrast
+state-layer behavior remains unresolved because those modes are not included in the current export.
+
+### Runtime Tint Layers
+
+The runtime `tintLayers` group nests the complete Primary Container colors under
+`primaryContainer.opacity08`, `opacity10`, `opacity16`, and `opacity24`. The canonical Segmented
+Control binds its track to `primaryContainer.opacity10`; the other published components do not bind
+to this tint-layer family. Keep these as complete mode-aware colors rather than public alpha floats.
 
 ## Component Strategy
 
@@ -230,5 +270,7 @@ When XML/View screens need design-system styling, consume only the required shar
 and keep Compose reading those same resources through `WooTheme.colors`.
 
 Do not create XML resources for non-color primitives as the primary implementation. Typography,
-spacing, padding, radius, icon size, stroke, state layers, elevation, and minimum touch target remain
-Kotlin/Compose-owned or unresolved unless a later approved plan changes that boundary.
+spacing, padding, radius, icon size, stroke, elevation, and minimum touch target remain
+Kotlin/Compose-owned or unresolved unless a later approved plan changes that boundary. State and
+tint layers are color primitives, so their shared module-local resources follow the same ownership
+rule as other `WooTheme.colors` values.

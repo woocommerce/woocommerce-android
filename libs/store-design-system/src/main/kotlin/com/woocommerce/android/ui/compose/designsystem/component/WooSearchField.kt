@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -76,7 +76,7 @@ fun WooSearchField(
     val colors = WooTheme.colors
     val textColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
     val iconColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
-    val placeholderColor = colors.surface.onVariantLowest
+    val placeholderColor = colors.stateLayers.onSurface.opacity16
     val clearIconColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest
     val fieldContainerColor = colors.surface.surfaceDim
     val showClearButton = onClearClick != null && value.isNotEmpty()
@@ -116,7 +116,6 @@ fun WooSearchField(
                     value = value,
                     onValueChange = onValueChange,
                     modifier = Modifier
-                        .testTag(WooSearchFieldTestTags.INPUT)
                         .padding(start = WooTheme.spacing.space4)
                         .weight(1f),
                     enabled = enabled,
@@ -142,7 +141,7 @@ fun WooSearchField(
                 )
 
                 if (showClearButton) {
-                    Spacer(modifier = Modifier.width(SEARCH_ACTION_TOUCH_TARGET_SIZE))
+                    Spacer(modifier = Modifier.width(SEARCH_CLEAR_RESERVED_WIDTH))
                 }
             }
 
@@ -153,9 +152,7 @@ fun WooSearchField(
                     contentDescription = clearContentDescription.orEmpty(),
                     color = clearIconColor,
                     iconColor = fieldContainerColor,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .testTag(WooSearchFieldTestTags.CLEAR_BUTTON),
+                    modifier = Modifier.align(Alignment.CenterEnd),
                 )
             }
         }
@@ -211,11 +208,6 @@ private fun WooSearchClearButton(
     }
 }
 
-internal object WooSearchFieldTestTags {
-    const val INPUT = "WooSearchFieldInput"
-    const val CLEAR_BUTTON = "WooSearchFieldClearButton"
-}
-
 @Composable
 private fun WooSearchTrailingAction(
     text: String,
@@ -223,23 +215,13 @@ private fun WooSearchTrailingAction(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .height(SEARCH_ACTION_TOUCH_TARGET_SIZE)
-            .widthIn(
-                min = SEARCH_ACTION_TOUCH_TARGET_SIZE,
-                max = SEARCH_TRAILING_ACTION_MAX_WIDTH,
-            )
-            .clickable(
-                enabled = enabled,
-                role = Role.Button,
-                onClick = onClick,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.widthIn(max = SEARCH_TRAILING_ACTION_MAX_WIDTH),
+        enabled = enabled,
     ) {
         Text(
             text = text,
-            color = if (enabled) WooTheme.colors.primary else WooTheme.colors.surface.onVariantLowest,
             style = WooTheme.text.labelLarge.emphasized,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -320,3 +302,4 @@ private val SEARCH_ACTION_TOUCH_TARGET_SIZE = 48.dp
 private val SEARCH_TRAILING_ACTION_MAX_WIDTH = 120.dp
 private val SEARCH_CLEAR_GLYPH_SIZE = 8.dp
 private val SEARCH_CLEAR_ICON_PADDING = 4.dp
+private val SEARCH_CLEAR_RESERVED_WIDTH = 28.dp

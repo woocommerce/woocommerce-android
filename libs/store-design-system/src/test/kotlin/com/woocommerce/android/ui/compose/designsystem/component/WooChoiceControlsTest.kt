@@ -8,9 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsOff
@@ -22,11 +25,15 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooStroke
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -106,19 +113,247 @@ class WooChoiceControlsTest {
             }
         }
 
-        composeTestRule.onNodeWithTag(FILTER_CHIP_TAG)
+        val filterChip = composeTestRule.onNodeWithTag(FILTER_CHIP_TAG)
+        val filterChipBounds = filterChip.fetchSemanticsNode().boundsInRoot
+
+        filterChip.assertIsOff()
+        composeTestRule.onRoot()
             .assertHeightIsAtLeast(MIN_TOUCH_TARGET_SIZE)
-            .assertIsOff()
             .performTouchInput {
-                click(Offset(center.x, 1f))
+                click(Offset(filterChipBounds.center.x, filterChipBounds.top - 1f))
             }
-            .assertIsOn()
+        filterChip.assertIsOn()
+    }
+
+    @Test
+    fun `given indeterminate checkbox, when rendered and clicked, then tri-state semantics and click work`() {
+        var clicked = false
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooCheckbox(
+                    state = ToggleableState.Indeterminate,
+                    onClick = { clicked = true },
+                    modifier = Modifier.testTag(TRISTATE_CHECKBOX_TAG),
+                )
+            }
+        }
+
+        val toggleableState = composeTestRule.onNodeWithTag(TRISTATE_CHECKBOX_TAG)
+            .fetchSemanticsNode()
+            .config
+            .getOrNull(SemanticsProperties.ToggleableState)
+
+        assertThat(toggleableState).isEqualTo(ToggleableState.Indeterminate)
+
+        composeTestRule.onNodeWithTag(TRISTATE_CHECKBOX_TAG)
+            .performClick()
+
+        composeTestRule.runOnIdle {
+            assertThat(clicked).isTrue()
+        }
+    }
+
+    @Test
+    fun `given indeterminate checkbox style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooCheckboxStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooCheckboxStyle(
+                    state = ToggleableState.Indeterminate,
+                    enabled = true,
+                    isError = false,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.primary)
+            assertThat(style.borderColor).isEqualTo(Color.Transparent)
+            assertThat(style.markColor).isEqualTo(colors.onPrimary)
+            assertThat(style.borderWidth).isEqualTo(stroke.none)
+            assertThat(style.mark).isEqualTo(WooCheckboxMark.Indeterminate)
+        }
+    }
+
+    @Test
+    fun `given error unselected checkbox style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooCheckboxStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooCheckboxStyle(
+                    state = ToggleableState.Off,
+                    enabled = true,
+                    isError = true,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(Color.Transparent)
+            assertThat(style.borderColor).isEqualTo(colors.error)
+            assertThat(style.markColor).isEqualTo(Color.Transparent)
+            assertThat(style.borderWidth).isEqualTo(stroke.medium)
+            assertThat(style.mark).isEqualTo(WooCheckboxMark.None)
+        }
+    }
+
+    @Test
+    fun `given disabled error indeterminate checkbox style, when resolved, then disabled state wins`() {
+        lateinit var style: WooCheckboxStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooCheckboxStyle(
+                    state = ToggleableState.Indeterminate,
+                    enabled = false,
+                    isError = true,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
+            assertThat(style.borderColor).isEqualTo(Color.Transparent)
+            assertThat(style.markColor).isEqualTo(colors.onPrimary)
+            assertThat(style.borderWidth).isEqualTo(stroke.none)
+            assertThat(style.mark).isEqualTo(WooCheckboxMark.Indeterminate)
+        }
+    }
+
+    @Test
+    fun `given selected radio style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooRadioButtonStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooRadioButtonStyle(
+                    selected = true,
+                    enabled = true,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.primary)
+            assertThat(style.borderColor).isEqualTo(Color.Transparent)
+            assertThat(style.dotColor).isEqualTo(colors.onPrimary)
+            assertThat(style.borderWidth).isEqualTo(stroke.none)
+        }
+    }
+
+    @Test
+    fun `given disabled unselected radio style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooRadioButtonStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooRadioButtonStyle(
+                    selected = false,
+                    enabled = false,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(Color.Transparent)
+            assertThat(style.borderColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
+            assertThat(style.dotColor).isEqualTo(Color.Transparent)
+            assertThat(style.borderWidth).isEqualTo(stroke.medium)
+        }
+    }
+
+    @Test
+    fun `given selected filter chip style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooFilterChipStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooFilterChipStyle(
+                    selected = true,
+                    enabled = true,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.container.secondaryContainer)
+            assertThat(style.contentColor).isEqualTo(colors.surface.onDefault)
+            assertThat(style.borderColor).isEqualTo(Color.Transparent)
+            assertThat(style.borderWidth).isEqualTo(stroke.none)
+        }
+    }
+
+    @Test
+    fun `given unselected filter chip style, when resolved, then it matches Figma tokens`() {
+        lateinit var style: WooFilterChipStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooFilterChipStyle(
+                    selected = false,
+                    enabled = true,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.surface.default)
+            assertThat(style.contentColor).isEqualTo(colors.surface.onDefault)
+            assertThat(style.borderColor).isEqualTo(colors.outlineVariant)
+            assertThat(style.borderWidth).isEqualTo(stroke.regular)
+        }
     }
 
     private companion object {
         const val CHIP_LABEL = "Selected"
         const val FILTER_CHIP_LABEL = "Filter"
         const val FILTER_CHIP_TAG = "WooFilterChipMinTouchTarget"
+        const val TRISTATE_CHECKBOX_TAG = "WooTriStateCheckbox"
         val CHIP_ICON_SIZE = 14.dp
         val CONSTRAINED_CHIP_WIDTH = 96.dp
         val MIN_TOUCH_TARGET_SIZE = 48.dp
