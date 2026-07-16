@@ -183,7 +183,11 @@ private fun DashboardScreenEmptyBodyPreview() {
             jitmContent = { jitmModifier ->
                 Spacer(modifier = jitmModifier.height(0.dp))
             },
-            dashboardContent = { _, _, _ -> },
+            dashboardContent = { bodyModifier, _, leadingContent ->
+                Box(modifier = bodyModifier) {
+                    leadingContent()
+                }
+            },
         )
     }
 }
