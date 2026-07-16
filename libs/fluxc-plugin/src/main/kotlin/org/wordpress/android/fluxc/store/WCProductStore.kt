@@ -942,8 +942,8 @@ class WCProductStore @Inject internal constructor(
     suspend fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         productReviewsDao.getProductReviews(site.localId())
 
-    suspend fun getProductReviewsByReviewId(reviewIds: List<Long>): List<WCProductReviewModel> =
-        productReviewsDao.getProductReviews(ids = reviewIds.map { RemoteId(it) })
+    suspend fun getProductReviewsByReviewId(site: SiteModel, reviewIds: List<Long>): List<WCProductReviewModel> =
+        productReviewsDao.getProductReviews(siteId = site.localId(), ids = reviewIds.map { RemoteId(it) })
 
     suspend fun getProductReviewsForProductAndSiteId(site: SiteModel, remoteProductId: Long): List<WCProductReviewModel> =
         productReviewsDao.getProductReviews(siteId = site.localId(), RemoteId(remoteProductId))
