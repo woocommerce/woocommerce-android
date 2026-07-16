@@ -171,7 +171,13 @@ open class ProductVariation(
             remoteVariationId = RemoteId(remoteVariationId),
             sku = sku,
             globalUniqueId = globalUniqueId,
-            image = imageToJson(),
+            // Null keeps the image out of the update: the row was never fetched with edit context
+            // and the draft carries no own image, so a blank would read as a removal.
+            editContextImage = if (cachedVariation?.editContextImage == null && editContextImage == null) {
+                null
+            } else {
+                imageToJson()
+            },
             regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString(),
             salePrice = if (salePrice.isNotSet()) "" else salePrice.toString(),
             dateOnSaleFromGmt = getDateOnSaleFromGmt(),
