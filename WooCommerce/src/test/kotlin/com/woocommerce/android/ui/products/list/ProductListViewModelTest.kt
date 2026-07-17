@@ -11,7 +11,9 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStockChangedSignal
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -26,12 +28,17 @@ import org.junit.Test
 import org.mockito.internal.verification.AtLeast
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.atLeastOnce
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -47,6 +54,8 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val getProductsByIds: GetProductsByIds = mock()
+    private val productStockChangedSignal = ProductStockChangedSignal()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -71,6 +80,8 @@ class ProductListViewModelTest : BaseUnitTest() {
                 selectedSite,
                 wooCommerceStore,
                 isWindowClassLargeThanCompact,
+                getProductsByIds,
+                productStockChangedSignal,
             )
         )
     }
@@ -88,6 +99,108 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
         assertThat(products).isEqualTo(productList)
+    }
+
+    @Test
+    fun `given a product stock changed signal, when emitted, then the affected products are refreshed and reloaded`() =
+        testBlocking {
+            doReturn(Result.success(emptyList<Product>()))
+                .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+            whenever(getProductsByIds.invoke(any()))
+                .thenReturn(listOf(ProductTestUtils.generateProduct(productId = 11L)))
+            val changedIds = listOf(11L, 22L)
+
+            createViewModel()
+            advanceUntilIdle()
+            clearInvocations(productRepository)
+
+            productStockChangedSignal.notifyStockChanged(changedIds)
+            advanceUntilIdle()
+
+            // Targeted fetch of just the changed products (upsert in place, no cache wipe)...
+            verifyBlocking(getProductsByIds) { invoke(argThat { toSet() == setOf(11L, 22L) }) }
+            // ...then reloadProductsFromDb re-reads the cache to reflect them in the visible list.
+            verifyBlocking(productRepository, atLeastOnce()) { getProductList(any(), any(), anyOrNull()) }
+        }
+
+    @Test
+    fun `given searching, when a stock changed signal is emitted, then the cache is refreshed but not reloaded`() =
+        testBlocking {
+            doReturn(Result.success(emptyList<Product>()))
+                .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+            whenever(getProductsByIds.invoke(any()))
+                .thenReturn(listOf(ProductTestUtils.generateProduct(productId = 11L)))
+
+            createViewModel()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            advanceUntilIdle()
+            clearInvocations(productRepository)
+
+            productStockChangedSignal.notifyStockChanged(listOf(11L))
+            advanceUntilIdle()
+
+            // The affected products are still fetched into the cache (fresh for when search closes)...
+            verifyBlocking(getProductsByIds) { invoke(argThat { toSet() == setOf(11L) }) }
+            // ...but reloadProductsFromDb is skipped so the active search results aren't clobbered.
+            verifyBlocking(productRepository, never()) { getProductList(any(), any(), anyOrNull()) }
+        }
+
+    @Test
+    fun `given offline, when a product stock changed signal is emitted, then products are not refreshed`() =
+        testBlocking {
+            doReturn(false).whenever(networkStatus).isConnected()
+
+            createViewModel()
+            advanceUntilIdle()
+
+            productStockChangedSignal.notifyStockChanged(listOf(11L))
+            advanceUntilIdle()
+
+            verifyBlocking(getProductsByIds, never()) { invoke(any()) }
+        }
+
+    @Test
+    fun `given ids refreshed, when done, then they are cleared from pending`() = testBlocking {
+        doReturn(Result.success(emptyList<Product>()))
+            .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+        whenever(getProductsByIds.invoke(any()))
+            .thenReturn(listOf(ProductTestUtils.generateProduct(productId = 11L)))
+
+        createViewModel()
+        advanceUntilIdle()
+
+        productStockChangedSignal.notifyStockChanged(listOf(11L))
+        advanceUntilIdle()
+
+        assertThat(productStockChangedSignal.pendingProductIds.value).isEmpty()
+    }
+
+    @Test
+    fun `given the list is not collecting when ids are emitted, when it starts collecting, then all pending ids are refreshed`() =
+        testBlocking {
+            doReturn(Result.success(emptyList<Product>()))
+                .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+            // Accumulate ids before the view model exists (i.e. while nothing is collecting the signal).
+            productStockChangedSignal.notifyStockChanged(listOf(11L, 22L))
+
+            createViewModel()
+            advanceUntilIdle()
+
+            verifyBlocking(getProductsByIds) { invoke(argThat { toSet() == setOf(11L, 22L) }) }
+        }
+
+    @Test
+    fun `given offline, when a signal is emitted, then the id stays pending`() = testBlocking {
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        createViewModel()
+        advanceUntilIdle()
+
+        productStockChangedSignal.notifyStockChanged(listOf(11L))
+        advanceUntilIdle()
+
+        assertThat(productStockChangedSignal.pendingProductIds.value).contains(11L)
     }
 
     @Test
