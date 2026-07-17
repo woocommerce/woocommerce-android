@@ -9,12 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -123,38 +118,14 @@ class DashboardFragment : TopLevelFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = designSystemComposeView {
-        val storeName by dashboardViewModel.storeName.observeAsState("")
-        val appbarState by dashboardViewModel.appbarState.observeAsState()
-        val jetpackBenefitsBanner by dashboardViewModel.jetpackBenefitsBannerState.observeAsState()
-        val showJetpackBenefitsBanner = jetpackBenefitsBanner?.show == true
-        var wasJetpackBenefitsBannerVisible by remember { mutableStateOf(false) }
-
-        LaunchedEffect(showJetpackBenefitsBanner) {
-            if (showJetpackBenefitsBanner && !wasJetpackBenefitsBannerVisible) {
-                trackJetpackBenefitsBannerShown()
-            }
-            wasJetpackBenefitsBannerVisible = showJetpackBenefitsBanner
-        }
-
         DashboardScreen(
-            storeName = storeName,
-            showShareStoreButton = appbarState?.showShareStoreButton == true,
-            onShareStoreClicked = dashboardViewModel::onShareStoreClicked,
-            showJetpackBenefitsBanner = showJetpackBenefitsBanner,
+            viewModel = dashboardViewModel,
+            mainActivityViewModel = mainActivityViewModel,
+            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            scrollToTopTrigger = scrollToTopTrigger,
+            onJetpackBenefitsBannerShown = ::trackJetpackBenefitsBannerShown,
             onJetpackBenefitsBannerClicked = ::onJetpackBenefitsBannerClicked,
-            onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
-            jitmContent = { modifier -> JitmHost(modifier) },
-            dashboardContent = { modifier, headerScrollBridge, contentBeforeWidgets ->
-                DashboardContainer(
-                    mainActivityViewModel = mainActivityViewModel,
-                    dashboardViewModel = dashboardViewModel,
-                    blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                    scrollToTopTrigger = scrollToTopTrigger,
-                    headerScrollBridge = headerScrollBridge,
-                    contentBeforeWidgets = contentBeforeWidgets,
-                    modifier = modifier,
-                )
-            },
+            jitmContent = { modifier -> JitmHost(modifier) }
         )
     }.apply {
         id = R.id.dashboard_container

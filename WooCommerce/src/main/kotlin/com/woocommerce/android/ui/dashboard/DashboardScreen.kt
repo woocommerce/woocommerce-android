@@ -20,7 +20,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -31,11 +36,65 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
+import com.woocommerce.android.ui.main.MainActivityViewModel
+import kotlinx.coroutines.flow.Flow
+
+@Composable
+internal fun DashboardScreen(
+    viewModel: DashboardViewModel,
+    mainActivityViewModel: MainActivityViewModel,
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    scrollToTopTrigger: Flow<Unit>,
+    onJetpackBenefitsBannerShown: () -> Unit,
+    onJetpackBenefitsBannerClicked: () -> Unit,
+    jitmContent: @Composable (Modifier) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val storeName by viewModel.storeName.observeAsState("")
+    val appbarState by viewModel.appbarState.observeAsState()
+    val jetpackBenefitsBanner by viewModel.jetpackBenefitsBannerState.observeAsState()
+    val showJetpackBenefitsBanner = jetpackBenefitsBanner?.show == true
+    var wasJetpackBenefitsBannerVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showJetpackBenefitsBanner) {
+        if (showJetpackBenefitsBanner && !wasJetpackBenefitsBannerVisible) {
+            onJetpackBenefitsBannerShown()
+        }
+        wasJetpackBenefitsBannerVisible = showJetpackBenefitsBanner
+    }
+
+    DashboardScreen(
+        storeName = storeName,
+        showShareStoreButton = appbarState?.showShareStoreButton == true,
+        onShareStoreClicked = viewModel::onShareStoreClicked,
+        showJetpackBenefitsBanner = showJetpackBenefitsBanner,
+        onJetpackBenefitsBannerClicked = onJetpackBenefitsBannerClicked,
+        onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
+        dashboardContent = { modifier, headerScrollBridge, contentBeforeWidgets ->
+            DashboardContainer(
+                mainActivityViewModel = mainActivityViewModel,
+                dashboardViewModel = viewModel,
+                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                scrollToTopTrigger = scrollToTopTrigger,
+                headerScrollBridge = headerScrollBridge,
+                contentBeforeWidgets = contentBeforeWidgets,
+                modifier = modifier,
+            )
+        },
+        jitmContent = jitmContent,
+        modifier = modifier,
+    )
+}
 
 @Composable
 internal fun DashboardScreen(
@@ -81,6 +140,30 @@ internal fun DashboardScreen(
             )
         }
     }
+}
+
+@Composable
+internal fun DashboardHeader(
+    storeName: String,
+    showShareStoreButton: Boolean,
+    onShareStoreClicked: () -> Unit,
+    scrollBehavior: WooPageHeaderScrollBehavior,
+    modifier: Modifier = Modifier,
+) {
+    WooPageHeader(
+        title = storeName,
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        actions = {
+            if (showShareStoreButton) {
+                WooOutlinedIconButton(
+                    imageVector = WooIcons.Regular.Share,
+                    contentDescription = stringResource(R.string.share_store_button),
+                    onClick = onShareStoreClicked,
+                )
+            }
+        },
+    )
 }
 
 @Composable
