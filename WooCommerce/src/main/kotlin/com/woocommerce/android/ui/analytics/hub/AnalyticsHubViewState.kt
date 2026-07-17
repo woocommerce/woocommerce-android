@@ -7,14 +7,12 @@ data class AnalyticsViewState(
     val refreshIndicator: RefreshIndicator,
     val analyticsDateRangeSelectorState: AnalyticsHubDateRangeSelectorViewState,
     val cards: AnalyticsHubCardViewState,
-    val showFeedBackBanner: Boolean,
     val lastUpdateTimestamp: String
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     data class OpenDatePicker(val fromMillis: Long, val toMillis: Long) : MultiLiveEvent.Event()
     object OpenDateRangeSelector : AnalyticsViewEvent()
-    object SendFeedback : AnalyticsViewEvent()
     object OpenSettings : AnalyticsViewEvent()
     data class OpenGoogleAdsCreation(
         val url: String,

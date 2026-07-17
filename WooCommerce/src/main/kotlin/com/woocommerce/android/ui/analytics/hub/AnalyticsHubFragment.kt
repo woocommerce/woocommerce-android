@@ -6,7 +6,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -27,7 +26,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.MarginBottomItemDecoration
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment.Companion.WEBVIEW_RESULT
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.EntryPointSource.ANALYTICS_HUB
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
@@ -108,8 +106,6 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
 
-            is AnalyticsViewEvent.SendFeedback -> sendFeedback()
-
             is AnalyticsViewEvent.OpenSettings -> findNavController()
                 .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
 
@@ -166,7 +162,6 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
-        displayFeedbackBanner(viewState.showFeedBackBanner)
 
         binding.cards.adapter
             .run { this as? AnalyticsHubCardsAdapter }
@@ -174,21 +169,6 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
-
-    private fun displayFeedbackBanner(isVisible: Boolean) {
-        binding.analyticsHubFeedbackBanner.isVisible = isVisible
-        if (!isVisible) return
-        binding.analyticsHubFeedbackBanner.run {
-            onSendFeedbackListener = { viewModel.onSendFeedbackClicked() }
-            onDismissClickListener = { viewModel.onDismissBannerClicked() }
-        }
-    }
-
-    private fun sendFeedback() {
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.ANALYTICS_HUB)
-            .apply { findNavController().navigateSafely(this) }
-    }
 
     private fun setupMenu() {
         requireActivity().addMenuProvider(

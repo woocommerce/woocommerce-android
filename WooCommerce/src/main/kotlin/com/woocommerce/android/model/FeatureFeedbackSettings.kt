@@ -25,7 +25,6 @@ data class FeatureFeedbackSettings(
 
     enum class Feature {
         PRODUCT_ADDONS,
-        ANALYTICS_HUB,
         ORDER_SHIPPING_LINES
     }
 
