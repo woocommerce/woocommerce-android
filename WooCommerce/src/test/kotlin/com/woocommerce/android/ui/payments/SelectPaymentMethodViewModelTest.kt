@@ -34,17 +34,20 @@ import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.ProductStockChangedSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -113,6 +116,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
+    private val productStockChangedSignal: ProductStockChangedSignal = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -467,6 +471,27 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 eq(DEFAULT_PAYMENT_METHOD_TITLE),
                 eq(null)
             )
+        }
+
+    @Test
+    fun `given cash payment succeeds, when cash payment confirmed, then stock change is signalled with product ids`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(101L, 102L)
+            whenever(order.getProductIds()).thenReturn(productIds)
+            whenever(
+                orderStore.updateOrderStatusAndPaymentDetails(any(), any(), any(), any(), any(), anyOrNull())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+            advanceUntilIdle()
+
+            // THEN
+            verify(productStockChangedSignal).notifyStockChanged(productIds)
         }
 
     @Test
@@ -1209,7 +1234,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
-            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings
+            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
+            productStockChangedSignal = productStockChangedSignal,
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
         )
     }
 

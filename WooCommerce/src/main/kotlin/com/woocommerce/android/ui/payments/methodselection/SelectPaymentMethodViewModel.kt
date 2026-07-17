@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
@@ -39,12 +40,14 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.ProductStockChangedSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +80,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
-    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
+    private val productStockChangedSignal: ProductStockChangedSignal,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -264,7 +269,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
      */
     private fun onCashPaymentConfirmed() {
         if (networkStatus.isConnected()) {
-            launch {
+            // App scope so the server-confirmed result is still handled after this screen navigates away.
+            appCoroutineScope.launch {
                 trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
 
                 markAsCompletedAndUpdatePaymentMethod()
@@ -437,10 +443,14 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
         collect { result ->
             when (result) {
-                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
+                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult ->
+                    withContext(dispatchers.main) { exitFlow() }
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
-                        handleUpdateOrderStatusError()
+                        withContext(dispatchers.main) { handleUpdateOrderStatusError() }
+                    } else {
+                        // Emit only after the server confirms so the products' fetch sees the reduced stock.
+                        productStockChangedSignal.notifyStockChanged(order.first().getProductIds())
                     }
                 }
             }
