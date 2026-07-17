@@ -356,7 +356,6 @@ class AnalyticsTracker private constructor(
         const val KEY_FEEDBACK_ACTION = "action"
         const val KEY_FEEDBACK_CONTEXT = "context"
         const val VALUE_FEEDBACK_GENERAL_CONTEXT = "general"
-        const val VALUE_FEEDBACK_STORE_SETUP_CONTEXT = "store_setup"
         const val VALUE_FEEDBACK_SHOWN = "shown"
         const val VALUE_FEEDBACK_LIKED = "liked"
         const val VALUE_FEEDBACK_NOT_LIKED = "didnt_like"

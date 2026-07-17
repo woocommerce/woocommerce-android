@@ -38,7 +38,6 @@ class SurveyTypeTest {
         assertThat(SurveyType.entries.associateWith { it.feedbackContext })
             .contains(
                 entry(SurveyType.MAIN, AnalyticsTracker.VALUE_FEEDBACK_GENERAL_CONTEXT),
-                entry(SurveyType.STORE_ONBOARDING, AnalyticsTracker.VALUE_FEEDBACK_STORE_SETUP_CONTEXT),
                 entry(SurveyType.ADDONS, AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK),
                 entry(SurveyType.ANALYTICS_HUB, AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK),
                 entry(SurveyType.ORDER_SHIPPING_LINES, AnalyticsTracker.VALUE_ORDER_SHIPPING_LINES_FEEDBACK),

@@ -3205,7 +3205,6 @@
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
-    <string name="store_onboarding_menu_share_feedback">Share feedback</string>
     <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
