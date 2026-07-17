@@ -33,7 +33,6 @@ object AppUrls {
     const val PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING =
         "https://woocommerce.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
-    const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
 
     const val CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER = "https://automattic.survey.fm/pos-survey-potential-users"
     const val CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER = "https://automattic.survey.fm/pos-survey-existing-users"
