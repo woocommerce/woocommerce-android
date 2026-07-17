@@ -43,13 +43,6 @@ object AppUrls {
 
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
 
-    val CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY =
-        if (BuildConfig.DEBUG) {
-            "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
-        } else {
-            "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
-        }
-
     val CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY = if (BuildConfig.DEBUG) {
         "https://automattic.survey.fm/order-creation-shipping-lines-survey-testing"
     } else {

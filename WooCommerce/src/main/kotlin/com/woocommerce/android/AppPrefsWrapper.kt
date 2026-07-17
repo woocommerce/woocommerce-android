@@ -28,10 +28,6 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
 
-    var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
-
-    var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
-
     var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
 
     var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
