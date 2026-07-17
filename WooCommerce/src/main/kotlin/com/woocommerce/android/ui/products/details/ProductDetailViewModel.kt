@@ -1041,9 +1041,11 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
+        val afterGeneratedWithAi =
+            (navArgs.mode as? ProductDetailFragment.Mode.ShowProduct)?.afterGeneratedWithAi == true
         tracker.track(
             stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
+            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to afterGeneratedWithAi)
         )
         viewState.productAggregateDraft?.let {
             val product = if (isPublish) it.copy(product = it.product.copy(status = ProductStatus.PUBLISH)) else it
