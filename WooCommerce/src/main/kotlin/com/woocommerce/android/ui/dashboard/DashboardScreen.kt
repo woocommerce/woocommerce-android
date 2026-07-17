@@ -81,7 +81,7 @@ internal fun DashboardScreen(
         onJetpackBenefitsBannerClicked = onJetpackBenefitsBannerClicked,
         onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
         dashboardContent = { modifier, headerScrollBridge, contentBeforeWidgets ->
-            DashboardContainer(
+            DashboardWidgets(
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = viewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,

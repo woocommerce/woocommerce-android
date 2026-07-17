@@ -50,13 +50,9 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.Pen
-import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -93,7 +89,7 @@ import kotlinx.coroutines.flow.emptyFlow
 private const val SCROLL_INTERACTION_DEBOUNCE_MS = 1000L
 
 @Composable
-internal fun DashboardContainer(
+internal fun DashboardWidgets(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
@@ -125,30 +121,6 @@ internal fun DashboardContainer(
             modifier = modifier,
         )
     }
-}
-
-@Composable
-internal fun DashboardHeader(
-    storeName: String,
-    showShareStoreButton: Boolean,
-    onShareStoreClicked: () -> Unit,
-    scrollBehavior: WooPageHeaderScrollBehavior,
-    modifier: Modifier = Modifier,
-) {
-    WooPageHeader(
-        title = storeName,
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-        actions = {
-            if (showShareStoreButton) {
-                WooOutlinedIconButton(
-                    imageVector = WooIcons.Regular.Share,
-                    contentDescription = stringResource(R.string.share_store_button),
-                    onClick = onShareStoreClicked,
-                )
-            }
-        },
-    )
 }
 
 @Composable
