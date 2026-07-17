@@ -90,6 +90,7 @@ private fun ColorFoundationSection() {
             contentColor = colors.container.onPrimaryContainer,
         )
         ColorSwatch("surface.default", colors.surface.default, colors.surface.onDefault)
+        ColorSwatch("surface.bright", colors.surface.bright, colors.surface.onDefault)
         ColorSwatch("surface.surfaceDim", colors.surface.surfaceDim, colors.surface.onDefault)
         ColorSwatch(
             label = "surface.surfaceContainerHighest",
@@ -97,6 +98,7 @@ private fun ColorFoundationSection() {
             contentColor = colors.surface.onDefault,
         )
         ColorSwatch("surface.onVariantLowest", colors.surface.onVariantLowest, colors.surface.default)
+        ColorSwatch("surface.onVariantHighest", colors.surface.onVariantHighest, colors.surface.default)
         ColorSwatch("outlineVariant", colors.outlineVariant, colors.surface.onDefault)
         ColorSwatch("error", colors.error, colors.onError)
         ColorSwatch(
@@ -147,8 +149,50 @@ private fun ColorFoundationSection() {
             colors.tintLayers.primaryContainer.opacity24,
             colors.surface.onDefault,
         )
+        ColorSwatch(
+            "tintLayers.onSurface.opacity08",
+            colors.tintLayers.onSurface.opacity08,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.onSurface.opacity10",
+            colors.tintLayers.onSurface.opacity10,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.onSurface.opacity16",
+            colors.tintLayers.onSurface.opacity16,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.onSurface.opacity24",
+            colors.tintLayers.onSurface.opacity24,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primary.opacity08",
+            colors.tintLayers.primary.opacity08,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primary.opacity10",
+            colors.tintLayers.primary.opacity10,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primary.opacity16",
+            colors.tintLayers.primary.opacity16,
+            colors.surface.onDefault,
+        )
+        ColorSwatch(
+            "tintLayers.primary.opacity24",
+            colors.tintLayers.primary.opacity24,
+            colors.surface.onDefault,
+        )
         ColorSwatch("palette.gray.shade40", colors.palette.gray.shade40, colors.onPrimary)
         ColorSwatch("palette.wooPurple.shade40", colors.palette.wooPurple.shade40, colors.onPrimary)
+        ColorSwatch("palette.white", colors.palette.white, colors.surface.onDefault)
+        ColorSwatch("palette.black", colors.palette.black, colors.onPrimary)
         MaterialProjectionSample()
     }
 }
