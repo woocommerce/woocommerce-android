@@ -7,7 +7,9 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.ProductStockChangedSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -56,10 +58,11 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         }
     }
     private val paymentChargeRepository: PaymentChargeRepository = mock()
+    private val productStockChangedSignal: ProductStockChangedSignal = mock()
 
     private lateinit var viewModel: RefundSummaryViewModel
 
-    private fun initViewModel() {
+    private fun initViewModel(refundItems: Array<RefundItem> = emptyArray()) {
         whenever(selectedSite.get()).thenReturn(SiteModel())
         whenever(currencyFormatter.buildBigDecimalFormatter(any())).thenReturn { "" }
 
@@ -67,7 +70,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             savedStateHandle = RefundSummaryFragmentArgs(
                 orderId = ORDER_ID,
                 refundAmount = "10",
-                refundItems = emptyArray()
+                refundItems = refundItems
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             orderDetailRepository = orderDetailRepository,
@@ -78,7 +81,8 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             currencyFormatter = currencyFormatter,
             gatewayStore = gatewayStore,
             refundStore = refundStore,
-            coroutineDispatchers = coroutinesTestRule.testDispatchers
+            coroutineDispatchers = coroutinesTestRule.testDispatchers,
+            productStockChangedSignal = productStockChangedSignal
         )
     }
 
@@ -754,6 +758,53 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_ID to 1L
                 )
             )
+        }
+    }
+
+    @Test
+    fun `given refunded products, when refund succeeds, then only refunded product stock change is signalled`() {
+        testBlocking {
+            val refundedProductId = 101L
+            val notRefundedProductId = 202L
+            val refundedItem = ProductRefundListItem(
+                orderItem = OrderTestUtils.generateTestOrderItems(productId = refundedProductId).first(),
+                quantity = 1
+            )
+            val notRefundedItem = ProductRefundListItem(
+                orderItem = OrderTestUtils.generateTestOrderItems(productId = notRefundedProductId).first(),
+                quantity = 0
+            )
+            val order = createTestOrder(paymentMethod = "cod")
+            whenever(orderDetailRepository.getOrderById(ORDER_ID)).thenReturn(order)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = anyOrNull(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    model = WCRefundModel(
+                        id = 1L,
+                        dateCreated = Date(),
+                        amount = BigDecimal.ZERO,
+                        reason = "",
+                        automaticGatewayRefund = false,
+                        items = listOf(),
+                        shippingLineItems = listOf(),
+                        feeLineItems = listOf()
+                    )
+                )
+            )
+
+            initViewModel(refundItems = arrayOf(refundedItem, notRefundedItem))
+            viewModel.refund()
+
+            verify(productStockChangedSignal).notifyStockChanged(listOf(refundedProductId))
         }
     }
 
