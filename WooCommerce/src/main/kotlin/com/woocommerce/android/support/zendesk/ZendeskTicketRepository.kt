@@ -138,11 +138,15 @@ class ZendeskTicketRepository @Inject constructor(
         fileName: String,
         content: String
     ): String? {
+        // Preparing the file is best-effort: an I/O failure (e.g. low disk space) must not block
+        // ticket creation, so we log it and continue without the attachment.
         val tempFile = withContext(dispatchers.io) {
-            File.createTempFile(fileName, null).also {
-                it.writeText(content)
-            }
-        }
+            runCatching {
+                File.createTempFile(fileName, null).also { it.writeText(content) }
+            }.onFailure {
+                wooLog.e(WooLog.T.SUPPORT, "Failed to prepare attachment file: $fileName")
+            }.getOrNull()
+        } ?: return null
 
         return try {
             // Guard against the Zendesk SDK never invoking either callback, which would otherwise
