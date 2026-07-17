@@ -486,7 +486,7 @@ class OrderCreateEditViewModel @Inject constructor(
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
         }
-        if (isTwoPane) {
+        if (isTwoPane && !viewState.isTwoPaneLayout) {
             // ensure that any items added in single pane mode are displayed in dual pane mode
             // in the product selector pane after switching to dual pane layout
             _pendingSelectedItems.value = _orderDraft.value.selectedItems()

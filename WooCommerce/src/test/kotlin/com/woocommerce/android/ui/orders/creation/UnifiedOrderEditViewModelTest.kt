@@ -1704,6 +1704,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given pending products in two pane mode when configuration changes then preserve pending products`() {
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+        val pendingItems = listOf(ProductSelectorViewModel.SelectedItem.Product(123))
+        sut.onItemsSelectionChanged(pendingItems)
+
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+
+        assertThat(sut.pendingSelectedItems.value).isEqualTo(pendingItems)
+    }
+
+    @Test
     fun `given configurable item expanded, then track configuration CTA shown`() {
         testBlocking {
             createSut()

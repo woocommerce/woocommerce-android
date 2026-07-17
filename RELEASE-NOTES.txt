@@ -11,6 +11,7 @@
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
+- [*] Fixed system Back not leaving order creation when opened from the app shortcut [https://github.com/woocommerce/woocommerce-android/pull/16274]
 
 25.2
 -----
