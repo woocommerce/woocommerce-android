@@ -4,7 +4,7 @@
 
 25.4
 -----
-
+- [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
 
 25.3
 -----
