@@ -9,7 +9,6 @@ import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
@@ -119,7 +118,7 @@ fun CouponWithEmails.toAppModel() = Coupon(
     dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
     type = coupon.discountType?.let { Coupon.Type.fromDataModel(it) },
     description = coupon.description,
-    dateExpiresGmt = coupon.dateExpiresGmt.toGmtDateOrNull(),
+    dateExpiresGmt = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
     dateExpiresLocal = coupon.dateExpires.toLocalDateOrNull(),
     usageCount = coupon.usageCount,
     isShippingFree = coupon.isShippingFree,
@@ -142,11 +141,5 @@ fun CouponWithEmails.toAppModel() = Coupon(
 private fun String?.toLocalDateOrNull(): LocalDate? = this?.let {
     runCatching {
         LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate()
-    }.getOrNull()
-}
-
-private fun String?.toGmtDateOrNull(): Date? = this?.let {
-    runCatching {
-        Date.from(LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC))
     }.getOrNull()
 }
