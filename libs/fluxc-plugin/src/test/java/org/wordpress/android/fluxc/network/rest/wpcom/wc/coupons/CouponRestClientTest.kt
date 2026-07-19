@@ -49,7 +49,7 @@ class CouponRestClientTest {
                 body = any(),
                 params = any()
             )
-        ).thenReturn(WPAPIResponse.Success(mock<CouponDto>(), emptyList()))
+        ).thenReturn(WPAPIResponse.Success(null, emptyList()))
 
         client.updateCoupon(site, COUPON_ID, UpdateCouponRequest(expiryDate = expiryDate))
 
