@@ -67,5 +67,4 @@ dependencies {
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
-    testFixturesImplementation(project(":libs:fluxc-plugin"))
 }
