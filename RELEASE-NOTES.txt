@@ -10,7 +10,7 @@
 - [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
-- [*] Fixed the product selector showing store-currency prices when adding products to an order in a different currency
+- [*] Fixed the product selector showing store-currency prices when adding products to an order in a different currency [https://github.com/woocommerce/woocommerce-android/pull/16281]
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
 - [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
 
