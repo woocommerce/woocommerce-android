@@ -1201,7 +1201,8 @@ class OrderCreateEditViewModel @Inject constructor(
                     ProductRestriction.NonPublishedProducts,
                     ProductRestriction.VariableProductsWithNoVariations
                 ),
-                args.mode
+                args.mode,
+                args.orderCurrency
             )
         )
     }
