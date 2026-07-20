@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
@@ -378,6 +379,40 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(event).isInstanceOf(LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen::class.java)
             assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
                 .isEqualTo(urlAuthFull)
+        }
+
+    @Test
+    fun `given login fails with a status code error, when the tutorial screen is shown, then the error message resolves its params`() =
+        testBlocking {
+            val statusCode = "403"
+            val formattedError = "Login failed with status code $statusCode"
+            val httpError = CookieNonceAuthenticationException(
+                errorMessage = UiStringRes(
+                    stringRes = R.string.login_site_credentials_http_error,
+                    params = listOf(UiStringText(statusCode))
+                ),
+                errorType = Nonce.CookieNonceErrorType.GENERIC_ERROR,
+                networkStatusCode = statusCode.toInt()
+            )
+
+            setup {
+                whenever(resourceProvider.getString(R.string.login_site_credentials_http_error, statusCode))
+                    .thenReturn(formattedError)
+                whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                    .thenReturn(Result.failure(httpError))
+                whenever(wpApiSiteRepository.fetchSite(siteAddress))
+                    .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }))
+            }
+
+            val event = viewModel.event.runAndCaptureValues {
+                viewModel.onUsernameChanged(testUsername)
+                viewModel.onPasswordChanged(testPassword)
+                viewModel.viewState.getOrAwaitValue()
+                viewModel.onContinueClick()
+            }.last()
+
+            assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).errorMessage)
+                .isEqualTo(formattedError)
         }
 
     @Test

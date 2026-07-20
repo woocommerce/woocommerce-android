@@ -4,36 +4,28 @@
       "Section-Background": {
         "$value": {
           "Light": "#f2f2f8",
-          "Dark": "#101517",
-          "Light High Contrast": "#f2f2f8",
-          "Dark High Contrast": "#101517"
+          "Dark": "#101517"
         },
         "$type": "color"
       },
       "On-Section-Background": {
         "$value": {
           "Light": "#1e1e1e",
-          "Dark": "#ffffff",
-          "Light High Contrast": "#1e1e1e",
-          "Dark High Contrast": "#ffffff"
+          "Dark": "#ffffff"
         },
         "$type": "color"
       },
       "Section-Background-Variant": {
         "$value": {
           "Light": "#f0f0f0",
-          "Dark": "#101517",
-          "Light High Contrast": "#f0f0f0",
-          "Dark High Contrast": "#101517"
+          "Dark": "#101517"
         },
         "$type": "color"
       },
       "On-Section-Background-Variant": {
         "$value": {
           "Light": "#1c1c1e",
-          "Dark": "#8b8a8e",
-          "Light High Contrast": "#1c1c1e",
-          "Dark High Contrast": "#8b8a8e"
+          "Dark": "#8b8a8e"
         },
         "$type": "color"
       }
@@ -41,72 +33,56 @@
     "Primary": {
       "$value": {
         "Light": "#873eff",
-        "Dark": "#873eff",
-        "Light High Contrast": "#873eff",
-        "Dark High Contrast": "#873eff"
+        "Dark": "#873eff"
       },
       "$type": "color"
     },
     "On-Primary": {
       "$value": {
         "Light": "#ffffff",
-        "Dark": "#ffffff",
-        "Light High Contrast": "#ffffff",
-        "Dark High Contrast": "#ffffff"
+        "Dark": "#ffffff"
       },
       "$type": "color"
     },
     "Secondary": {
       "$value": {
         "Light": "#6108ce",
-        "Dark": "#383146",
-        "Light High Contrast": "#eae2fe",
-        "Dark High Contrast": "#383146"
+        "Dark": "#383146"
       },
       "$type": "color"
     },
     "On-Secondary": {
       "$value": {
         "Light": "#ffffff",
-        "Dark": "#f1edfe",
-        "Light High Contrast": "#873eff",
-        "Dark High Contrast": "#f1edfe"
+        "Dark": "#f1edfe"
       },
       "$type": "color"
     },
     "Primary-Container": {
       "$value": {
         "Light": "#b999ff",
-        "Dark": "#ffffff",
-        "Light High Contrast": "#ffffff",
-        "Dark High Contrast": "#ffffff"
+        "Dark": "#ffffff"
       },
       "$type": "color"
     },
     "On-Primary-Container": {
       "$value": {
         "Light": "#2c045d",
-        "Dark": "#ffffff",
-        "Light High Contrast": "#ffffff",
-        "Dark High Contrast": "#ffffff"
+        "Dark": "#ffffff"
       },
       "$type": "color"
     },
     "Secondary-Container": {
       "$value": {
         "Light": "#f2edff",
-        "Dark": "#ffffff",
-        "Light High Contrast": "#ffffff",
-        "Dark High Contrast": "#ffffff"
+        "Dark": "{Woo theme.Add-On Colors.Woo Purple.80}"
       },
       "$type": "color"
     },
     "On-Secondary-Container": {
       "$value": {
         "Light": "#873eff",
-        "Dark": "#ffffff",
-        "Light High Contrast": "#ffffff",
-        "Dark High Contrast": "#ffffff"
+        "Dark": "{Woo theme.Add-On Colors.Woo Purple.20}"
       },
       "$type": "color"
     },
@@ -114,180 +90,140 @@
       "Error-Container": {
         "$value": {
           "Light": "#f6e6e3",
-          "Dark": "#f6e6e3",
-          "Light High Contrast": "#f6e6e3",
-          "Dark High Contrast": "rgba(246, 230, 227, 0.9)"
+          "Dark": "#f6e6e3"
         },
         "$type": "color"
       },
       "On-Error-Container": {
         "$value": {
           "Light": "#470000",
-          "Dark": "#470000",
-          "Light High Contrast": "#470000",
-          "Dark High Contrast": "#470000"
+          "Dark": "#470000"
         },
         "$type": "color"
       },
       "Warning-Container": {
         "$value": {
           "Light": "#fde6be",
-          "Dark": "#fde6be",
-          "Light High Contrast": "#fde6be",
-          "Dark High Contrast": "rgba(253, 230, 190, 0.9)"
+          "Dark": "#fde6be"
         },
         "$type": "color"
       },
       "On-Warning-Container": {
         "$value": {
           "Light": "#2e1900",
-          "Dark": "#2e1900",
-          "Light High Contrast": "#2e1900",
-          "Dark High Contrast": "#2e1900"
+          "Dark": "#2e1900"
         },
         "$type": "color"
       },
       "Caution-Container": {
         "$value": {
           "Light": "#fee995",
-          "Dark": "#fee995",
-          "Light High Contrast": "#fee995",
-          "Dark High Contrast": "rgba(254, 233, 149, 0.9)"
+          "Dark": "#fee995"
         },
         "$type": "color"
       },
       "On-Caution-Container": {
         "$value": {
           "Light": "#281d00",
-          "Dark": "#281d00",
-          "Light High Contrast": "#281d00",
-          "Dark High Contrast": "#281d00"
+          "Dark": "#281d00"
         },
         "$type": "color"
       },
       "Success-Container": {
         "$value": {
           "Light": "#c6f7cd",
-          "Dark": "#c6f7cd",
-          "Light High Contrast": "#c6f7cd",
-          "Dark High Contrast": "rgba(198, 247, 205, 0.9)"
+          "Dark": "#c6f7cd"
         },
         "$type": "color"
       },
       "On-Success-Container": {
         "$value": {
           "Light": "#002900",
-          "Dark": "#002900",
-          "Light High Contrast": "#002900",
-          "Dark High Contrast": "#002900"
+          "Dark": "#002900"
         },
         "$type": "color"
       },
       "Info-Container": {
         "$value": {
           "Light": "#deebfa",
-          "Dark": "#deebfa",
-          "Light High Contrast": "#deebfa",
-          "Dark High Contrast": "rgba(222, 235, 250, 0.9)"
+          "Dark": "#deebfa"
         },
         "$type": "color"
       },
       "On-Info-Container": {
         "$value": {
           "Light": "#001b4f",
-          "Dark": "#001b4f",
-          "Light High Contrast": "#001b4f",
-          "Dark High Contrast": "#001b4f"
+          "Dark": "#001b4f"
         },
         "$type": "color"
       },
       "Neutral-Container": {
         "$value": {
           "Light": "#f4f4f4",
-          "Dark": "#f4f4f4",
-          "Light High Contrast": "#f4f4f4",
-          "Dark High Contrast": "rgba(244, 244, 244, 0.9)"
+          "Dark": "#f4f4f4"
         },
         "$type": "color"
       },
       "On-Neutral-Container": {
         "$value": {
           "Light": "#1e1e1e",
-          "Dark": "#1e1e1e",
-          "Light High Contrast": "#1e1e1e",
-          "Dark High Contrast": "#1e1e1e"
+          "Dark": "#1e1e1e"
         },
         "$type": "color"
       },
       "Red": {
         "$value": {
           "Light": "#fc4a5b",
-          "Dark": "#dc3545",
-          "Light High Contrast": "#fc4a5b",
-          "Dark High Contrast": "#dc3545"
+          "Dark": "#dc3545"
         },
         "$type": "color"
       },
       "On-Red": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#dc3545",
-          "Light High Contrast": "#fc4a5b",
-          "Dark High Contrast": "#dc3545"
+          "Dark": "#dc3545"
         },
         "$type": "color"
       },
       "Orange": {
         "$value": {
           "Light": "#ff9000",
-          "Dark": "#eaab2d",
-          "Light High Contrast": "#eaab2d",
-          "Dark High Contrast": "#eaab2d"
+          "Dark": "#eaab2d"
         },
         "$type": "color"
       },
       "On-Orange": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#eaab2d",
-          "Light High Contrast": "#eaab2d",
-          "Dark High Contrast": "#eaab2d"
+          "Dark": "#eaab2d"
         },
         "$type": "color"
       },
       "Green": {
         "$value": {
           "Light": "#27ae32",
-          "Dark": "#69b66f",
-          "Light High Contrast": "#27ae32",
-          "Dark High Contrast": "#69b66f"
+          "Dark": "#69b66f"
         },
         "$type": "color"
       },
       "On-Green": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#69b66f",
-          "Light High Contrast": "#27ae32",
-          "Dark High Contrast": "#69b66f"
+          "Dark": "#69b66f"
         },
         "$type": "color"
       },
       "Blue": {
         "$value": {
           "Light": "#1e94d0",
-          "Dark": "#1e94d0",
-          "Light High Contrast": "#1e94d0",
-          "Dark High Contrast": "#1e94d0"
+          "Dark": "#1e94d0"
         },
         "$type": "color"
       },
       "On-Blue": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#1e94d0",
-          "Light High Contrast": "#1e94d0",
-          "Dark High Contrast": "#1e94d0"
+          "Dark": "#1e94d0"
         },
         "$type": "color"
       }
@@ -296,18 +232,14 @@
       "Outline": {
         "$value": {
           "Light": "#787c82",
-          "Dark": "#454549",
-          "Light High Contrast": "#787c82",
-          "Dark High Contrast": "#454549"
+          "Dark": "#454549"
         },
         "$type": "color"
       },
       "Outline-Variant": {
         "$value": {
           "Light": "#dcdcde",
-          "Dark": "#5e5e63",
-          "Light High Contrast": "#d2d2d8",
-          "Dark High Contrast": "#5e5e63"
+          "Dark": "#5e5e63"
         },
         "$type": "color"
       }
@@ -316,81 +248,63 @@
       "Surface-Dim": {
         "$value": {
           "Light": "#f6f7f7",
-          "Dark": "#232529",
-          "Light High Contrast": "#ffffff",
-          "Dark High Contrast": "#232529"
+          "Dark": "#2c3338"
         },
         "$type": "color"
       },
       "Surface-Bright": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#232529",
-          "Light High Contrast": "#ffffff",
-          "Dark High Contrast": "#232529"
+          "Dark": "#232529"
         },
         "$type": "color"
       },
       "Surface": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#232529",
-          "Light High Contrast": "#ffffff",
-          "Dark High Contrast": "#232529"
+          "Dark": "#232529"
         },
         "$type": "color"
       },
       "Surface-Container-Highest": {
         "$value": {
           "Light": "#dcdcde",
-          "Dark": "#232529",
-          "Light High Contrast": "#ffffff",
-          "Dark High Contrast": "#232529"
+          "Dark": "#232529"
         },
         "$type": "color"
       },
       "On-Surface": {
         "$value": {
           "Light": "#000000",
-          "Dark": "#ffffff",
-          "Light High Contrast": "#1e1e1e",
-          "Dark High Contrast": "#ffffff"
+          "Dark": "#ffffff"
         },
         "$type": "color"
       },
       "On-Surface-Variant": {
         "$value": {
           "Light": "#2c3338",
-          "Dark": "#626068",
-          "Light High Contrast": "#50575e",
-          "Dark High Contrast": "#626068"
+          "Dark": "#626068"
         },
         "$type": "color"
       },
       "On-Surface-Variant-Lowest": {
         "$value": {
           "Light": "#50575e",
-          "Dark": "#626068",
-          "Light High Contrast": "#50575e",
-          "Dark High Contrast": "#626068"
+          "Dark": "#626068"
         },
         "$type": "color"
       },
       "Inverse-Surface": {
         "$value": {
           "Light": "#000000",
-          "Dark": "#ffffff",
-          "Light High Contrast": "#1c1c1e",
-          "Dark High Contrast": "#ffffff"
+          "Dark": "#ffffff"
         },
         "$type": "color"
       },
       "On-Inverse-Surface": {
         "$value": {
           "Light": "#ffffff",
-          "Dark": "#000000",
-          "Light High Contrast": "#ffffff",
-          "Dark High Contrast": "#1e1e1e"
+          "Dark": "#000000"
         },
         "$type": "color"
       }
@@ -399,18 +313,14 @@
       "Opacity-20": {
         "$value": {
           "Light": "rgba(0, 0, 0, 0.2)",
-          "Dark": "rgba(0, 0, 0, 0.2)",
-          "Light High Contrast": "rgba(0, 0, 0, 0.2)",
-          "Dark High Contrast": "rgba(0, 0, 0, 0.2)"
+          "Dark": "rgba(0, 0, 0, 0.2)"
         },
         "$type": "color"
       },
       "Opacity-50": {
         "$value": {
           "Light": "rgba(0, 0, 0, 0.5)",
-          "Dark": "rgba(0, 0, 0, 0.75)",
-          "Light High Contrast": "rgba(0, 0, 0, 0.5)",
-          "Dark High Contrast": "rgba(0, 0, 0, 0.75)"
+          "Dark": "rgba(0, 0, 0, 0.75)"
         },
         "$type": "color"
       }
@@ -420,27 +330,21 @@
         "20": {
           "$value": {
             "Light": "#75ffff",
-            "Dark": "#75ffff",
-            "Light High Contrast": "#75ffff",
-            "Dark High Contrast": "#75ffff"
+            "Dark": "#75ffff"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#1ad0fd",
-            "Dark": "#1ad0fd",
-            "Light High Contrast": "#1ad0fd",
-            "Dark High Contrast": "#1ad0fd"
+            "Dark": "#1ad0fd"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#05096c",
-            "Dark": "#05096c",
-            "Light High Contrast": "#05096c",
-            "Dark High Contrast": "#05096c"
+            "Dark": "#05096c"
           },
           "$type": "color"
         }
@@ -449,27 +353,21 @@
         "20": {
           "$value": {
             "Light": "#d5ff4a",
-            "Dark": "#d5ff4a",
-            "Light High Contrast": "#d5ff4a",
-            "Dark High Contrast": "#d5ff4a"
+            "Dark": "#d5ff4a"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#06e782",
-            "Dark": "#06e782",
-            "Light High Contrast": "#06e782",
-            "Dark High Contrast": "#06e782"
+            "Dark": "#06e782"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#083d2d",
-            "Dark": "#083d2d",
-            "Light High Contrast": "#083d2d",
-            "Dark High Contrast": "#083d2d"
+            "Dark": "#083d2d"
           },
           "$type": "color"
         }
@@ -478,27 +376,21 @@
         "20": {
           "$value": {
             "Light": "#ffe500",
-            "Dark": "#ffe500",
-            "Light High Contrast": "#ffe500",
-            "Dark High Contrast": "#ffe500"
+            "Dark": "#ffe500"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#ff9000",
-            "Dark": "#ff9000",
-            "Light High Contrast": "#ff9000",
-            "Dark High Contrast": "#ff9000"
+            "Dark": "#ff9000"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#ff4800",
-            "Dark": "#ff4800",
-            "Light High Contrast": "#ff4800",
-            "Dark High Contrast": "#ff4800"
+            "Dark": "#ff4800"
           },
           "$type": "color"
         }
@@ -507,27 +399,21 @@
         "20": {
           "$value": {
             "Light": "#fca8ff",
-            "Dark": "#fca8ff",
-            "Light High Contrast": "#fca8ff",
-            "Dark High Contrast": "#fca8ff"
+            "Dark": "#fca8ff"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#ff45e3",
-            "Dark": "#ff45e3",
-            "Light High Contrast": "#ff45e3",
-            "Dark High Contrast": "#ff45e3"
+            "Dark": "#ff45e3"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#4e0061",
-            "Dark": "#4e0061",
-            "Light High Contrast": "#4e0061",
-            "Dark High Contrast": "#4e0061"
+            "Dark": "#4e0061"
           },
           "$type": "color"
         }
@@ -536,108 +422,84 @@
         "0": {
           "$value": {
             "Light": "#f2edff",
-            "Dark": "#f2edff",
-            "Light High Contrast": "#f2edff",
-            "Dark High Contrast": "#f2edff"
+            "Dark": "#f2edff"
           },
           "$type": "color"
         },
         "5": {
           "$value": {
             "Light": "#e1d7ff",
-            "Dark": "#e1d7ff",
-            "Light High Contrast": "#e1d7ff",
-            "Dark High Contrast": "#e1d7ff"
+            "Dark": "#e1d7ff"
           },
           "$type": "color"
         },
         "10": {
           "$value": {
             "Light": "#d1c1ff",
-            "Dark": "#d1c1ff",
-            "Light High Contrast": "#d1c1ff",
-            "Dark High Contrast": "#d1c1ff"
+            "Dark": "#d1c1ff"
           },
           "$type": "color"
         },
         "20": {
           "$value": {
             "Light": "#b999ff",
-            "Dark": "#b999ff",
-            "Light High Contrast": "#b999ff",
-            "Dark High Contrast": "#b999ff"
+            "Dark": "#b999ff"
           },
           "$type": "color"
         },
         "30": {
           "$value": {
             "Light": "#a77eff",
-            "Dark": "#a77eff",
-            "Light High Contrast": "#a77eff",
-            "Dark High Contrast": "#a77eff"
+            "Dark": "#a77eff"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#873eff",
-            "Dark": "#873eff",
-            "Light High Contrast": "#873eff",
-            "Dark High Contrast": "#873eff"
+            "Dark": "#873eff"
           },
           "$type": "color"
         },
         "50": {
           "$value": {
             "Light": "#720eec",
-            "Dark": "#720eec",
-            "Light High Contrast": "#720eec",
-            "Dark High Contrast": "#720eec"
+            "Dark": "#720eec"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#6108ce",
-            "Dark": "#6108ce",
-            "Light High Contrast": "#6108ce",
-            "Dark High Contrast": "#6108ce"
+            "Dark": "#6108ce"
           },
           "$type": "color"
         },
         "70": {
           "$value": {
             "Light": "#5007aa",
-            "Dark": "#5007aa",
-            "Light High Contrast": "#5007aa",
-            "Dark High Contrast": "#5007aa"
+            "Dark": "#5007aa"
           },
           "$type": "color"
         },
         "80": {
           "$value": {
             "Light": "#3c087e",
-            "Dark": "#3c087e",
-            "Light High Contrast": "#3c087e",
-            "Dark High Contrast": "#3c087e"
+            "Dark": "#3c087e"
           },
           "$type": "color"
         },
         "90": {
           "$value": {
             "Light": "#2c045d",
-            "Dark": "#2c045d",
-            "Light High Contrast": "#2c045d",
-            "Dark High Contrast": "#2c045d"
+            "Dark": "#2c045d"
           },
           "$type": "color"
         },
         "100": {
           "$value": {
             "Light": "#1f0342",
-            "Dark": "#1f0342",
-            "Light High Contrast": "#1f0342",
-            "Dark High Contrast": "#1f0342"
+            "Dark": "#1f0342"
           },
           "$type": "color"
         }
@@ -646,45 +508,35 @@
         "5": {
           "$value": {
             "Light": "#fbf9f6",
-            "Dark": "#fbf9f6",
-            "Light High Contrast": "#fbf9f6",
-            "Dark High Contrast": "#fbf9f6"
+            "Dark": "#fbf9f6"
           },
           "$type": "color"
         },
         "10": {
           "$value": {
             "Light": "#f1eeeb",
-            "Dark": "#f1eeeb",
-            "Light High Contrast": "#f1eeeb",
-            "Dark High Contrast": "#f1eeeb"
+            "Dark": "#f1eeeb"
           },
           "$type": "color"
         },
         "20": {
           "$value": {
             "Light": "#e6e2de",
-            "Dark": "#e6e2de",
-            "Light High Contrast": "#e6e2de",
-            "Dark High Contrast": "#e6e2de"
+            "Dark": "#e6e2de"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#c5c2bf",
-            "Dark": "#c5c2bf",
-            "Light High Contrast": "#c5c2bf",
-            "Dark High Contrast": "#c5c2bf"
+            "Dark": "#c5c2bf"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#8b8a89",
-            "Dark": "#8b8a89",
-            "Light High Contrast": "#8b8a89",
-            "Dark High Contrast": "#8b8a89"
+            "Dark": "#8b8a89"
           },
           "$type": "color"
         }
@@ -693,108 +545,84 @@
         "0": {
           "$value": {
             "Light": "#f6f7f7",
-            "Dark": "#f6f7f7",
-            "Light High Contrast": "#f6f7f7",
-            "Dark High Contrast": "#f6f7f7"
+            "Dark": "#f6f7f7"
           },
           "$type": "color"
         },
         "5": {
           "$value": {
             "Light": "#dcdcde",
-            "Dark": "#dcdcde",
-            "Light High Contrast": "#dcdcde",
-            "Dark High Contrast": "#dcdcde"
+            "Dark": "#dcdcde"
           },
           "$type": "color"
         },
         "10": {
           "$value": {
             "Light": "#c3c4c7",
-            "Dark": "#c3c4c7",
-            "Light High Contrast": "#c3c4c7",
-            "Dark High Contrast": "#c3c4c7"
+            "Dark": "#c3c4c7"
           },
           "$type": "color"
         },
         "20": {
           "$value": {
             "Light": "#a7aaad",
-            "Dark": "#a7aaad",
-            "Light High Contrast": "#a7aaad",
-            "Dark High Contrast": "#a7aaad"
+            "Dark": "#a7aaad"
           },
           "$type": "color"
         },
         "30": {
           "$value": {
             "Light": "#8c8f94",
-            "Dark": "#8c8f94",
-            "Light High Contrast": "#8c8f94",
-            "Dark High Contrast": "#8c8f94"
+            "Dark": "#8c8f94"
           },
           "$type": "color"
         },
         "40": {
           "$value": {
             "Light": "#787c82",
-            "Dark": "#787c82",
-            "Light High Contrast": "#787c82",
-            "Dark High Contrast": "#787c82"
+            "Dark": "#787c82"
           },
           "$type": "color"
         },
         "50": {
           "$value": {
             "Light": "#646970",
-            "Dark": "#646970",
-            "Light High Contrast": "#646970",
-            "Dark High Contrast": "#646970"
+            "Dark": "#646970"
           },
           "$type": "color"
         },
         "60": {
           "$value": {
             "Light": "#50575e",
-            "Dark": "#50575e",
-            "Light High Contrast": "#50575e",
-            "Dark High Contrast": "#50575e"
+            "Dark": "#50575e"
           },
           "$type": "color"
         },
         "70": {
           "$value": {
             "Light": "#3c434a",
-            "Dark": "#3c434a",
-            "Light High Contrast": "#3c434a",
-            "Dark High Contrast": "#3c434a"
+            "Dark": "#3c434a"
           },
           "$type": "color"
         },
         "80": {
           "$value": {
             "Light": "#2c3338",
-            "Dark": "#2c3338",
-            "Light High Contrast": "#2c3338",
-            "Dark High Contrast": "#2c3338"
+            "Dark": "#2c3338"
           },
           "$type": "color"
         },
         "90": {
           "$value": {
             "Light": "#1d2327",
-            "Dark": "#1d2327",
-            "Light High Contrast": "#1d2327",
-            "Dark High Contrast": "#1d2327"
+            "Dark": "#1d2327"
           },
           "$type": "color"
         },
         "100": {
           "$value": {
             "Light": "#101517",
-            "Dark": "#101517",
-            "Light High Contrast": "#101517",
-            "Dark High Contrast": "#101517"
+            "Dark": "#101517"
           },
           "$type": "color"
         }
@@ -805,202 +633,77 @@
         "Opacity-08": {
           "$value": {
             "Light": "rgba(30, 30, 30, 0.08)",
-            "Dark": "#1e1e1e",
-            "Light High Contrast": "#ffffff",
-            "Dark High Contrast": "#ffffff"
+            "Dark": "rgba(255, 255, 255, 0.08)"
           },
           "$type": "color"
         },
         "Opacity-10": {
           "$value": {
             "Light": "rgba(30, 30, 30, 0.1)",
-            "Dark": "#ffffff",
-            "Light High Contrast": "#ffffff",
-            "Dark High Contrast": "#ffffff"
+            "Dark": "rgba(255, 255, 255, 0.1)"
           },
           "$type": "color"
         },
         "Opacity-16": {
           "$value": {
             "Light": "rgba(30, 30, 30, 0.16)",
-            "Dark": "#ffffff",
-            "Light High Contrast": "#ffffff",
-            "Dark High Contrast": "#ffffff"
+            "Dark": "rgba(255, 255, 255, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(30, 30, 30, 0.24)",
+            "Dark": "rgba(255, 255, 255, 0.24)"
           },
           "$type": "color"
         }
       }
-    }
-  },
-  "Semantic": {
-    "interactive": {
-      "primary": {
-        "$value": {
-          "Light": "{Woo theme.Add-On Colors.Woo Purple.40}",
-          "Dark": "{Woo theme.Add-On Colors.Woo Purple.30}"
-        },
-        "$type": "color"
-      },
-      "destructive": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Sandstone.40}",
-          "Dark": "{Woo theme.Puprle.Sandstone.40}"
-        },
-        "$type": "color"
-      }
     },
-    "primary": {
-      "pressed": {
-        "$value": {
-          "Light": "{Woo theme.Add-On Colors.Woo Purple.70}",
-          "Dark": "{Woo theme.Add-On Colors.Woo Purple.20}"
-        },
-        "$type": "color"
-      }
+    "Error": {
+      "$value": {
+        "Light": "#fc4a5b",
+        "Dark": "#fc4a5b"
+      },
+      "$type": "color"
     },
-    "text": {
-      "primary": {
-        "$value": {
-          "Light": "#000000",
-          "Dark": "#ffffff"
-        },
-        "$type": "color"
+    "On-Error": {
+      "$value": {
+        "Light": "#ffffff",
+        "Dark": "#ffffff"
       },
-      "secondary": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.40}",
-          "Dark": "{Woo theme.Puprle.Gray.20}"
-        },
-        "$type": "color"
-      },
-      "tertiary": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.20}",
-          "Dark": "{Woo theme.Puprle.Gray.40}"
-        },
-        "$type": "color"
-      },
-      "disabled": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.60}",
-          "Dark": "{Woo theme.Puprle.Gray.60}"
-        },
-        "$type": "color"
-      },
-      "on-primary": {
-        "$value": {
-          "Light": "#ffffff",
-          "Dark": "#000000"
-        },
-        "$type": "color"
-      }
+      "$type": "color"
     },
-    "icon": {
-      "primary": {
-        "$value": {
-          "Light": "#000000",
-          "Dark": "{Woo theme.Puprle.Gray.0}"
+    "Tint-Layers": {
+      "Primary-Container": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(185, 153, 255, 0.08)",
+            "Dark": "rgba(255, 255, 255, 0.08)"
+          },
+          "$type": "color"
         },
-        "$type": "color"
-      }
-    },
-    "surface": {
-      "primary": {
-        "$value": {
-          "Light": "#ffffff",
-          "Dark": "{Woo theme.Puprle.Gray.90}"
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(185, 153, 255, 0.1)",
+            "Dark": "rgba(255, 255, 255, 0.1)"
+          },
+          "$type": "color"
         },
-        "$type": "color"
-      },
-      "secondary": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.40}",
-          "Dark": "{Woo theme.Puprle.Gray.80}"
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(185, 153, 255, 0.16)",
+            "Dark": "rgba(255, 255, 255, 0.16)"
+          },
+          "$type": "color"
         },
-        "$type": "color"
-      },
-      "overlay": {
-        "$value": {
-          "Light": "{Woo theme.ios.fill.secondary}",
-          "Dark": "{Woo theme.ios.fill.secondary}"
-        },
-        "$type": "color"
-      }
-    },
-    "border": {
-      "default": {
-        "$value": {
-          "Light": "{Woo theme.ios.separator}",
-          "Dark": "{Woo theme.ios.separator}"
-        },
-        "$type": "color"
-      },
-      "focused": {
-        "$value": {
-          "Light": "{Woo theme.Add-On Colors.Woo Purple.40}",
-          "Dark": "{Woo theme.Add-On Colors.Woo Purple.30}"
-        },
-        "$type": "color"
-      }
-    },
-    "status": {
-      "success": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Green.40}",
-          "Dark": "{Woo theme.Puprle.Green.60}"
-        },
-        "$type": "color"
-      },
-      "error": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Sandstone.40}",
-          "Dark": "{Woo theme.Puprle.Sandstone.60}"
-        },
-        "$type": "color"
-      },
-      "warning": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.orange.40}",
-          "Dark": "{Woo theme.Puprle.orange.60}"
-        },
-        "$type": "color"
-      }
-    },
-    "label": {
-      "primary": {
-        "$value": {
-          "Light": "#000000",
-          "Dark": "#ffffff"
-        },
-        "$type": "color"
-      },
-      "secondary": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.40}",
-          "Dark": "{Woo theme.Puprle.Gray.20}"
-        },
-        "$type": "color"
-      },
-      "tertiary": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.20}",
-          "Dark": "{Woo theme.Puprle.Gray.40}"
-        },
-        "$type": "color"
-      },
-      "disabled": {
-        "$value": {
-          "Light": "{Woo theme.Puprle.Gray.60}",
-          "Dark": "{Woo theme.Puprle.Gray.60}"
-        },
-        "$type": "color"
-      },
-      "on-primary": {
-        "$value": {
-          "Light": "#ffffff",
-          "Dark": "#000000"
-        },
-        "$type": "color"
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(185, 153, 255, 0.24)",
+            "Dark": "rgba(255, 255, 255, 0.24)"
+          },
+          "$type": "color"
+        }
       }
     }
   },

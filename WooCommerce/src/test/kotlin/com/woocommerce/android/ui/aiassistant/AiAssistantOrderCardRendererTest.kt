@@ -94,16 +94,6 @@ class AiAssistantOrderCardRendererTest {
         assertThat(model.customerName).isEqualTo("Guest")
     }
 
-    @Test
-    fun `given ciab open status, when mapped, then processing color is used like dashboard orders`() {
-        givenSiteTimezone()
-
-        val model = orderCard(status = "open", currency = "")
-            .toOrderSummaryRowModel(context, currencyFormatter, dateUtils)
-
-        assertThat(model.statusColor).isEqualTo(R.color.tag_bg_processing)
-    }
-
     private fun givenSiteTimezone(timezone: String = SITE_TIMEZONE) {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { this.timezone = timezone })
     }

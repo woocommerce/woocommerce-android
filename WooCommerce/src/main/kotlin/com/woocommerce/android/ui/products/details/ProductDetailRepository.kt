@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.AppConstants
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -18,7 +17,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toMetaData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -26,7 +24,6 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
-import com.woocommerce.android.util.dispatchAndAwait
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +39,6 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.metadata.MetadataChanges
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
@@ -192,27 +188,6 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun addProduct(product: Product): Pair<Boolean, Long> = addProduct(ProductAggregate(product, null))
-
-    suspend fun createAutoDraftProduct(type: ProductType): Result<Long> {
-        val model = WCProductModel().copy(
-            type = type.value,
-            status = "auto-draft"
-        )
-        val payload = WCProductStore.AddProductPayload(
-            site = selectedSite.get(),
-            product = model
-        )
-
-        val result: OnProductCreated = dispatcher.dispatchAndAwait(
-            WCProductActionBuilder.newAddProductAction(payload)
-        )
-
-        return if (result.isError) {
-            Result.failure(OnChangedException(result.error, result.error.message))
-        } else {
-            Result.success(result.remoteProductId)
-        }
-    }
 
     /**
      * Fires the request to update the product password

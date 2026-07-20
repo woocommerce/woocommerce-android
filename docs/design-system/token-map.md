@@ -10,30 +10,34 @@ Source references use public-repo shorthands:
 
 - P2: `Woo Mobile Design System, i1`, May 27, 2026 (`pe5sF9-5ox-p2`).
 - Figma file: `Woo Mobile Design System` (`50XIH5MmOf4xUYEkM6fAm6-fi`).
-- Full Figma variable export: `figma-export.json`.
+- Figma variable export: `figma-export.json`.
 
-Use source shorthands in source-reference columns.
+Use source shorthands in source-reference columns. Do not use raw P2 or Figma URLs in public repo
+docs.
 
 Agent note: Figma references use the public GitHub shorthand `{fileKey}-fi`. When using Figma tools,
-strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`.
+strip the `-fi` suffix and pass only `{fileKey}` as the Figma `fileKey`. For live Figma component
+inspection, use [figma-navigation.md](figma-navigation.md).
 
 ## Figma Export Parsing Rules
 
-`figma-export.json` is the committed full export of Figma variables used for foundation
-reconciliation. Refreshing the export should preserve this parser contract:
+`figma-export.json` is the committed export of Figma variables used for foundation reconciliation.
+Refreshing the export should preserve this parser contract:
 
-- Parse Store runtime/public foundations from non-`Semantic` top-level export sections only.
-- Keep the top-level `Semantic` section in the export for traceability, but ignore it when generating
-  or updating Store runtime tokens, public token-map rows, `WooTheme.colors`,
-  `WooTheme.semanticColors`, or Material 3 projections.
-- Use normal `Light` / `Dark` values for runtime color modes. High-contrast modes remain
-  export-backed traceability data until an accessibility-mode foundation is separately scoped.
+- Parse Store runtime/public foundations from the current top-level foundation sections. The current
+  export does not include the former top-level `Semantic` section.
+- If a future export includes top-level `Semantic`, keep it for traceability but ignore it when
+  generating or updating Store runtime tokens, public token-map rows, `WooTheme.colors`,
+  `WooTheme.semanticColors`, or Material 3 projections unless an approved component audit changes
+  the contract.
+- Use normal `Light` / `Dark` values for runtime color modes. The current export does not include
+  high-contrast modes; accessibility-mode foundations remain separately scoped.
 - Use the Android mode for Android typography values.
 - If a future component audit proves a `Semantic` variable is the intended source, update this
   token map with the component evidence and approved mapping before consuming that section.
 
-Use the committed full export for row-level source paths and values. Keep unresolved notes in this
-token map. Do not use older split token exports as current foundation sources.
+Use the committed export for row-level source paths and values. Keep unresolved notes in this token
+map. Do not use older split token exports as current foundation sources.
 
 The Figma `Color roles` frame validates the role inventory and light-mode values for Primary and
 Secondary, Container, Surface, Outline, and Error/alert/success. Background, Overlay, and Palette are
@@ -69,14 +73,16 @@ Group the public API shallowly by source intent; do not collapse the source into
 
 | Public group | Source-backed coverage |
 | --- | --- |
-| Core | Primary, on-primary, secondary, and on-secondary roles from the Color roles frame's "Primary and Secondary" section. |
+| Core | Primary, on-primary, secondary, on-secondary, error, and on-error roles. |
 | Container | Primary container, on-primary container, secondary container, and on-secondary container. These are accent containers; status containers stay under `status`. |
-| Surface | Surface, surface dim, surface bright, surface container highest, on-default, on-variant, on-variant-lowest, inverted, and on-inverted roles. |
+| Surface | Surface, surface dim, surface container highest, on-default, on-variant, on-variant-lowest, inverted, and on-inverted roles. |
 | Outline | `outline` and `outlineVariant`. |
 | Status | Error, warning, caution, success, info, and neutral containers plus their on-container colors. |
 | Alert | Red, orange, green, and blue alert ramp colors plus their on-colors. |
 | Background | Export-backed background roles; not validated by the Color roles frame. |
 | Overlay | Export-backed overlay roles; not validated by the Color roles frame. |
+| State layer | Export-backed, mode-aware On Surface `Opacity-08`, `Opacity-10`, `Opacity-16`, and `Opacity-24` colors under `WooTheme.colors.stateLayers.onSurface`. |
+| Tint layer | Export-backed Primary Container `Opacity-08`, `Opacity-10`, `Opacity-16`, and `Opacity-24` colors under `WooTheme.colors.tintLayers.primaryContainer`; the Segmented Control binds to `Opacity-10`. |
 | Palette | Export-backed primitive/ramp data exposed as public `WooTheme.colors.palette.*` tokens. |
 
 ## Mapping Rules
@@ -84,16 +90,24 @@ Group the public API shallowly by source intent; do not collapse the source into
 - Expose approved Store authoring roles through `WooTheme`, not directly through `MaterialTheme`.
 - Preserve source-backed color intent in `WooTheme.colors` instead of generating public Material 3
   aliases.
+- Define primitive palette resources with literal values, and make semantic XML color resources
+  reference an exact matching palette resource when one exists. Keep resolved ARGB literals for
+  opacity tokens that Android color aliases cannot compose from a palette resource.
 - Keep `MaterialTheme.colorScheme`, `MaterialTheme.typography`, and `MaterialTheme.shapes` populated
   as interop projections for Material 3 components, defaults, and helpers.
 - Keep Material 3-only projection aliases internal. Do not expose generated fixed roles or
   source-missing aliases as public Store roles.
 - `surfaceDim` and `surfaceContainerHighest` are promoted source-backed Store roles. Do not filter
   them out as generated Material aliases.
-- `surfaceBright` is export-backed and public under `WooTheme.colors.surface`.
 - `outline` and `outlineVariant` are source-backed and public under `WooTheme.colors`.
-- Keep state layers internal-first until semantic names and mode behavior are approved. Do not create
-  public `WooTheme.stateAlpha` floats from mode-aware state-layer color tokens.
+- Expose approved state layers as complete mode-aware `Color` values under
+  `WooTheme.colors.stateLayers.onSurface`. Do not create public `WooTheme.stateAlpha` or other raw
+  alpha floats.
+- Keep state layers out of `MaterialTheme.colorScheme`; components consume the Store tokens directly.
+- Keep `stateLayers` separate from `surface`. Their light On Surface bases intentionally differ:
+  state layers use `#1E1E1E`, while `surface.onDefault` uses `#000000`.
+- Expose Primary Container tint layers as complete mode-aware `Color` values under
+  `WooTheme.colors.tintLayers.primaryContainer`. Do not replace them with reusable alpha floats.
 - Do not create a separate `WooTheme.semanticColors` group in PR 2.
 - If a non-color Figma variable has no clean Material 3 role, add it as an internal adapter token
   first.
@@ -138,16 +152,21 @@ When defining tokens:
 Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
 `figma-export.json` according to the Figma export parsing rules.
 
+High-contrast state-layer values are not present in the current export and are not part of normal
+runtime mapping.
+
 | Android API | Source path | Export file | Light hex / alpha | Dark hex / alpha | M3 projection | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `WooTheme.colors.primary` | `Woo theme/Primary` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | `primary` | production | Core primary. |
 | `WooTheme.colors.onPrimary` | `Woo theme/On-Primary` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onPrimary` | production | Foreground for `primary`. |
 | `WooTheme.colors.secondary` | `Woo theme/Secondary` | `figma-export.json` | `#6108CE` / 100% | `#383146` / 100% | `secondary` | production | Core secondary. |
 | `WooTheme.colors.onSecondary` | `Woo theme/On-Secondary` | `figma-export.json` | `#FFFFFF` / 100% | `#F1EDFE` / 100% | `onSecondary` | production | Foreground for `secondary`. |
+| `WooTheme.colors.error` | `Woo theme/Error` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | `error` | production | Foreground/control error role; used by Checkbox error states. |
+| `WooTheme.colors.onError` | `Woo theme/On-Error` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onError` | production | Foreground paired with `error`. |
 | `WooTheme.colors.container.primaryContainer` | `Woo theme/Primary-Container` | `figma-export.json` | `#B999FF` / 100% | `#FFFFFF` / 100% | `primaryContainer` | production | Accent container role. |
 | `WooTheme.colors.container.onPrimaryContainer` | `Woo theme/On-Primary-Container` | `figma-export.json` | `#2C045D` / 100% | `#FFFFFF` / 100% | `onPrimaryContainer` | production | Foreground for `primaryContainer`. |
-| `WooTheme.colors.container.secondaryContainer` | `Woo theme/Secondary-Container` | `figma-export.json` | `#F2EDFF` / 100% | `#FFFFFF` / 100% | `secondaryContainer` | production | Accent container role. |
-| `WooTheme.colors.container.onSecondaryContainer` | `Woo theme/On-Secondary-Container` | `figma-export.json` | `#873EFF` / 100% | `#FFFFFF` / 100% | `onSecondaryContainer` | production | Foreground for `secondaryContainer`. |
+| `WooTheme.colors.container.secondaryContainer` | `Woo theme/Secondary-Container` | `figma-export.json` | `#F2EDFF` / 100% | `#3C087E` / 100% | `secondaryContainer` | production | Accent container role; dark resolves to Woo Purple 80. |
+| `WooTheme.colors.container.onSecondaryContainer` | `Woo theme/On-Secondary-Container` | `figma-export.json` | `#873EFF` / 100% | `#B999FF` / 100% | `onSecondaryContainer` | production | Foreground for `secondaryContainer`; dark resolves to Woo Purple 20. |
 | `WooTheme.colors.outline` | `Woo theme/Outline/Outline` | `figma-export.json` | `#787C82` / 100% | `#454549` / 100% | `outline` | production | Boundary token. |
 | `WooTheme.colors.outlineVariant` | `Woo theme/Outline/Outline-Variant` | `figma-export.json` | `#DCDCDE` / 100% | `#5E5E63` / 100% | `outlineVariant` | production | Subtle boundary token. |
 | `WooTheme.colors.background.section` | `Woo theme/Background/Section-Background` | `figma-export.json` | `#F2F2F8` / 100% | `#101517` / 100% | `background` | production | Section background. |
@@ -155,14 +174,13 @@ Every production `WooTheme.colors` field below is backed by normal `Light` / `Da
 | `WooTheme.colors.background.sectionVariant` | `Woo theme/Background/Section-Background-Variant` | `figma-export.json` | `#F0F0F0` / 100% | `#101517` / 100% | `surfaceVariant` | production | Variant section background. |
 | `WooTheme.colors.background.onSectionVariant` | `Woo theme/Background/On-Section-Background-Variant` | `figma-export.json` | `#1C1C1E` / 100% | `#8B8A8E` / 100% | No direct M3 role | production | Foreground for `sectionVariant`. |
 | `WooTheme.colors.surface.default` | `Woo theme/Surface/Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#232529` / 100% | `surface` | production | Default surface. |
-| `WooTheme.colors.surface.surfaceDim` | `Woo theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#232529` / 100% | `surfaceDim` | production | Promoted source-backed surface role. |
+| `WooTheme.colors.surface.surfaceDim` | `Woo theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#2C3338` / 100% | `surfaceDim` | production | Promoted source-backed surface role. |
 | `WooTheme.colors.surface.surfaceContainerHighest` | `Woo theme/Surface/Surface-Container-Highest` | `figma-export.json` | `#DCDCDE` / 100% | `#232529` / 100% | `surfaceContainerHighest` | production | Promoted source-backed surface role. |
 | `WooTheme.colors.surface.onDefault` | `Woo theme/Surface/On-Surface` | `figma-export.json` | `#000000` / 100% | `#FFFFFF` / 100% | `onSurface` | production | Foreground for default surface. |
 | `WooTheme.colors.surface.onVariant` | `Woo theme/Surface/On-Surface-Variant` | `figma-export.json` | `#2C3338` / 100% | `#626068` / 100% | `onSurfaceVariant` | production | Variant foreground. |
 | `WooTheme.colors.surface.onVariantLowest` | `Woo theme/Surface/On-Surface-Variant-Lowest` | `figma-export.json` | `#50575E` / 100% | `#626068` / 100% | No direct M3 role | production | Lowest variant foreground. |
 | `WooTheme.colors.surface.inverted` | `Woo theme/Surface/Inverse-Surface` | `figma-export.json` | `#000000` / 100% | `#FFFFFF` / 100% | `inverseSurface` | production | Inverse surface. |
 | `WooTheme.colors.surface.onInverted` | `Woo theme/Surface/On-Inverse-Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#000000` / 100% | `inverseOnSurface` | production | Foreground for inverse surface. |
-| `WooTheme.colors.surface.surfaceBright` | `Woo theme/Surface/Surface-Bright` | `figma-export.json` | `#FFFFFF` / 100% | `#232529` / 100% | `surfaceBright` | production | Source-backed surface role. |
 | `WooTheme.colors.status.errorContainer` | `Woo theme/Alerts/Error-Container` | `figma-export.json` | `#F6E6E3` / 100% | `#F6E6E3` / 100% | `errorContainer` | production | Error container. |
 | `WooTheme.colors.status.onErrorContainer` | `Woo theme/Alerts/On-Error-Container` | `figma-export.json` | `#470000` / 100% | `#470000` / 100% | `onErrorContainer` | production | Foreground for `errorContainer`. |
 | `WooTheme.colors.status.warningContainer` | `Woo theme/Alerts/Warning-Container` | `figma-export.json` | `#FDE6BE` / 100% | `#FDE6BE` / 100% | No direct M3 role | production | Warning container. |
@@ -177,6 +195,14 @@ Every production `WooTheme.colors` field below is backed by normal `Light` / `Da
 | `WooTheme.colors.status.onNeutralContainer` | `Woo theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
 | `WooTheme.colors.overlay.overlay20` | `Woo theme/Overlay/Opacity-20` | `figma-export.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Overlay color. |
 | `WooTheme.colors.overlay.overlay50` | `Woo theme/Overlay/Opacity-50` | `figma-export.json` | `#000000` / 50% | `#000000` / 75% | `scrim` | production | Overlay color. |
+| `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#1E1E1E14` | `#FFFFFF14` | No M3 projection | production | Disabled filled/tonal button container. |
+| `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1E1E1E1A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
+| `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#1E1E1E29` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio and resting Search placeholder. |
+| `WooTheme.colors.stateLayers.onSurface.opacity24` | `Woo theme/State-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1E1E1E3D` | `#FFFFFF3D` | No M3 projection | production | Disabled button content. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#FFFFFF14` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#FFFFFF1A` | No M3 projection | production | Canonical Segmented Control track. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#FFFFFF29` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#FFFFFF3D` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
 | `WooTheme.colors.alert.red` | `Woo theme/Alerts/Red` | `figma-export.json` | `#FC4A5B` / 100% | `#DC3545` / 100% | No direct M3 role | production | Alert ramp color. |
 | `WooTheme.colors.alert.onRed` | `Woo theme/Alerts/On-Red` | `figma-export.json` | `#FFFFFF` / 100% | `#DC3545` / 100% | No direct M3 role | production | Foreground for `red`. |
 | `WooTheme.colors.alert.orange` | `Woo theme/Alerts/Orange` | `figma-export.json` | `#FF9000` / 100% | `#EAAB2D` / 100% | No direct M3 role | production | Alert ramp color. |
@@ -214,7 +240,7 @@ Every production `WooTheme.colors` field below is backed by normal `Light` / `Da
 | `WooTheme.colors.palette.wooPurple.shade80` | `Woo theme/Add-On-Colors/Woo-Purple/80` | `figma-export.json` | `#3C087E` / 100% | `#3C087E` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooPurple.shade90` | `Woo theme/Add-On-Colors/Woo-Purple/90` | `figma-export.json` | `#2C045D` / 100% | `#2C045D` / 100% | No direct M3 role | production | Public palette ramp token. |
 | `WooTheme.colors.palette.wooPurple.shade100` | `Woo theme/Add-On-Colors/Woo-Purple/100` | `figma-export.json` | `#1F0342` / 100% | `#1F0342` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.gray.0..100` | `Woo theme/Add-On-Colors/Gray/0..100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
+| `WooTheme.colors.palette.gray.shade0..shade100` | `Woo theme/Add-On-Colors/Gray/0..100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
 
 ## Material 3 Color Projection
 
@@ -224,7 +250,8 @@ Alias rows are internal projection decisions only and are not additional public 
 fields. Omitted rows intentionally use Material 3 defaults until a source-backed Store token is
 approved. Projection inputs follow the Figma export parsing rules. In this projection table only,
 `defaulted` means omitted from the builder to use Material defaults, and `implicit` means resolved by
-the Material builder from another supplied source role.
+the Material builder from another supplied source role. `WooTheme.colors.stateLayers.*` does not
+project into `ColorScheme`; components consume those mode-aware colors directly.
 
 | Material role | Projection source | Status | Notes |
 | --- | --- | --- | --- |
@@ -248,14 +275,14 @@ the Material builder from another supplied source role.
 | `onSurfaceVariant` | `WooTheme.colors.surface.onVariant` | production | Direct source-backed projection. |
 | `inverseSurface` | `WooTheme.colors.surface.inverted` | production | Direct source-backed projection. |
 | `inverseOnSurface` | `WooTheme.colors.surface.onInverted` | production | Direct source-backed projection. |
-| `error` | Material 3 default | defaulted | Intentionally not projected. Source `Error` is a container/background; foreground/control error tokens are pending design. |
-| `onError` | Material 3 default | defaulted | Intentionally paired with Material 3 default `error`; do not use `alert.red` as a global control-error token without design approval. |
+| `error` | `WooTheme.colors.error` | production | Direct source-backed projection. |
+| `onError` | `WooTheme.colors.onError` | production | Direct source-backed projection. |
 | `errorContainer` | `WooTheme.colors.status.errorContainer` | production | Direct source-backed projection. |
 | `onErrorContainer` | `WooTheme.colors.status.onErrorContainer` | production | Direct source-backed projection. |
 | `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
 | `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
 | `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
-| `surfaceBright` | `WooTheme.colors.surface.surfaceBright` | production | Direct source-backed projection. |
+| `surfaceBright` | `WooTheme.colors.surface.default` | production | Material role projection from the source-backed default surface. |
 | `surfaceDim` | `WooTheme.colors.surface.surfaceDim` | production | Promoted source-backed Store surface role. |
 | `surfaceContainer` | `WooTheme.colors.background.section` | production | Internal surface alias for navigation bars, menus, cards, and sheets. |
 | `surfaceContainerHigh` | `WooTheme.colors.surface.default` | production | Internal surface alias for Material container hierarchy. |
@@ -276,8 +303,8 @@ names are camelCase.
 
 `Typescale/<Role>/Font` resolves through `Font theme/Font/Plain`, whose Android value is `Roboto`.
 Android default font is the approved runtime equivalent. Most regular weights use `Weight`, but
-`Display-Large` and `Body-Small` use
-`Weight-Regular`. Most strong weights use `Weight-Strong`, but `Display-Large` uses
+`Display-Large` and `Body-Small` use `Weight-Regular`. Most strong weights use `Weight-Strong`, but
+`Display-Large` uses
 `Weight-Extra-Emphasized`. Displayed tracking values may be rounded in docs; implementation should
 preserve source-backed values.
 
@@ -338,8 +365,7 @@ they encode different design intent.
 Radius is source-backed and public through `WooTheme.radius`. Icon size is source-backed and public
 through `WooTheme.iconSize`, scoped to glyph sizes only. Stroke is source-backed and public through
 `WooTheme.stroke` because production design-system components consume the stroke scale. Do not add
-public elevation, state-layer, or minimum-touch-target accessors on the Store design-system theme
-namespace.
+public elevation or minimum-touch-target accessors on the Store design-system theme namespace.
 
 | Token | Source path | Value | Material projection | Status | Notes |
 | --- | --- | ---: | --- | --- | --- |
@@ -370,6 +396,5 @@ namespace.
 | Group | Source status | Android status | Public API | Notes |
 | --- | --- | --- | --- | --- |
 | Elevation | No non-`Semantic` elevation, shadow, effect, z-depth, or tonal-elevation source found in `figma-export.json` | needs_design | None | Do not promote legacy app elevation resources or hardcoded shadows to Store Design System tokens without design source. |
-| State layers | `Woo theme/State-Layers/On-Surface/Opacity-08`, `Opacity-10`, and `Opacity-16` exist as mode-aware color tokens | needs_android_mapping | None | State semantics and dark/high-contrast behavior need design/API approval; do not create public `WooTheme.stateAlpha` floats. |
 | Minimum touch target | No non-`Semantic` minimum-touch-target source found in `figma-export.json` | needs_design | None | Preserve accessible component behavior and legacy `48dp` guidance, but do not create a public token from legacy dimensions or screen-size variables. |
-| High-contrast color modes | Present for color tokens | needs_android_mapping | None | Exclude from normal `Light` / `Dark` runtime mapping until separately scoped. |
+| High-contrast color modes | Not included in the current export | needs_android_mapping | None | Keep accessibility-mode foundations separately scoped; do not infer values from normal Light/Dark modes. |

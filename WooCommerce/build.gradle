@@ -132,6 +132,7 @@ android {
         buildConfig = true
         compose = true
         viewBinding = true
+        resValues = true
     }
 
     compileOptions {
@@ -173,7 +174,7 @@ android {
             // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
             // but we don't obfuscate the bytecode.
             minifyEnabled = true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
@@ -290,6 +291,7 @@ dependencies {
 
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
+    implementation(project(":libs:store-design-system"))
     implementation(project(":libs:ai-assistant:feature"))
 
     implementation(libs.wordpress.aztec.main) {
@@ -451,6 +453,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material.main)
     implementation(libs.androidx.compose.animation.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling.main)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.ui.text.google.fonts)

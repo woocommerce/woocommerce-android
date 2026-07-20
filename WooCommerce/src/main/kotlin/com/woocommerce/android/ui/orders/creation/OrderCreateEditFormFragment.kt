@@ -37,8 +37,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.ciab.CIABAffectedFeature
-import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
@@ -65,6 +63,7 @@ import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
@@ -91,7 +90,6 @@ import com.woocommerce.android.ui.orders.creation.views.ExpandableProductCard
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView
 import com.woocommerce.android.ui.orders.creation.views.OrderCreateEditSectionView.AddButton
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.Companion.KEY_ORDER_STATUS_RESULT
-import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentArgs
 import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewModel
@@ -123,6 +121,7 @@ class OrderCreateEditFormFragment :
 
     private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -132,9 +131,6 @@ class OrderCreateEditFormFragment :
 
     @Inject
     lateinit var uiHelper: OrderCreateEditFormAddInfoButtonsStatusHelper
-
-    @Inject
-    lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
 
     private var createOrderMenuItem: MenuItem? = null
     private var progressDialog: CustomProgressDialog? = null
@@ -316,13 +312,7 @@ class OrderCreateEditFormFragment :
             }
 
             is Edit -> {
-                val statusMode = if (ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.OrderStatusEditing)) {
-                    OrderDetailOrderStatusView.Mode.OrderEdit
-                } else {
-                    OrderDetailOrderStatusView.Mode.ReadOnly
-                }
                 orderStatusView.initView(
-                    mode = statusMode,
                     editOrderStatusClickListener = {
                         viewModel.orderStatusData.value?.let {
                             viewModel.onEditOrderStatusClicked(it)
@@ -1215,6 +1205,10 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleNavigation(event: OrderCreateEditNavigationTarget) {
+        if (event is OrderCreateEditNavigationTarget.ShowCreatedOrder) {
+            // Let the order list scroll to the top once it shows the newly created order.
+            communicationViewModel.onOrderCreated(event.orderId)
+        }
         OrderCreateEditNavigator.navigate(this, event)
     }
 

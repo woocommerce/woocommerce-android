@@ -12,6 +12,7 @@ import com.stripe.stripeterminal.external.models.ConfirmPaymentIntentConfigurati
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
+import com.stripe.stripeterminal.external.models.LocaleConfig
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
@@ -54,7 +55,14 @@ internal class TerminalWrapper {
         logLevel: LogLevel,
         tokenProvider: ConnectionTokenProvider,
         listener: TerminalListener
-    ) = Terminal.init(application, logLevel, tokenProvider, listener, null)
+    ) = Terminal.init(
+        application,
+        logLevel,
+        tokenProvider,
+        listener,
+        null,
+        LocaleConfig.CardLanguagePreferenceIfAvailable
+    )
 
     @RequiresPermission(
         anyOf = [

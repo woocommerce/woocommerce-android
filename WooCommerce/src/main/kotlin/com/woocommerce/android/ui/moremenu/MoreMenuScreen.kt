@@ -38,6 +38,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,13 +66,16 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
-fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
+fun MoreMenuScreen(viewModel: MoreMenuViewModel, scrollToTopTrigger: Flow<Unit>) {
     viewModel.moreMenuViewState.observeAsState().value?.let { moreMenuState ->
         MoreMenuScreen(
             moreMenuState,
-            viewModel::onSwitchStoreClick
+            viewModel::onSwitchStoreClick,
+            scrollToTopTrigger
         )
     }
 }
@@ -79,11 +83,20 @@ fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
 @Composable
 fun MoreMenuScreen(
     state: MoreMenuViewState,
-    onSwitchStore: () -> Unit
+    onSwitchStore: () -> Unit,
+    scrollToTopTrigger: Flow<Unit> = emptyFlow()
 ) {
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        scrollToTopTrigger.collect {
+            scrollState.animateScrollTo(0)
+        }
+    }
+
     Column(
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))

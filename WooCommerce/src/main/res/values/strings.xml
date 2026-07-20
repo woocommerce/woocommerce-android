@@ -949,7 +949,6 @@
     <string name="order_mark_complete">Mark order complete</string>
     <string name="order_fulfill_completed">🎉 Order completed!</string>
     <string name="order_status_updated">Order status updated</string>
-    <string name="ciab_order_status_open">Open</string>
     <string name="order_error_fetch_notes_generic">Error fetching notes</string>
     <string name="order_error_update_general">Error changing order</string>
     <string name="order_error_update_empty_mail">Unable to update address with empty email. Make sure you are running the latest version of WooCommerce.</string>
@@ -2345,6 +2344,7 @@
     <string name="settings_tracking_analytics_description">Allow us to optimize performance by collecting information on how users interact with our mobile apps.</string>
     <string name="settings_tracking_analytics_error_fetch">There was an error fetching your privacy settings</string>
     <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
+    <string name="settings_crash_reporting_error_update">There was an error updating your crash reporting setting</string>
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_web_options">Web Options</string>
     <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
@@ -2437,6 +2437,7 @@
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
     <string name="dev_feature_flags">Feature Flags</string>
+    <string name="dev_store_design_system_component_catalog" translatable="false">Store Design System Component Catalog</string>
     <string name="restart">Restart</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
@@ -4249,10 +4250,6 @@
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
-    <string name="woopos_eligibility_ciab_title">Pro plan required</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accept payments in person for just 2.70% + $0.10 per transaction. Upgrade to Pro to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accept payments in person for just 2.70% + $0.10 per transaction. &lt;b&gt;Upgrade to Pro&lt;/b&gt; to access tap-to-pay on your phone and our full point of sale system with real-time inventory and order syncing.</string>
-    <string name="woopos_eligibility_learn_more_label">Learn More</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>
     <string name="woopos_scanning_setup_barcode_content_description">Barcode</string>

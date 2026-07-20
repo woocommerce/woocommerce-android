@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.prefs.CrashReportingSettingSync
 import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
 import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
@@ -183,6 +184,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var wooPosSurveysNotificationScheduler: Lazy<WooPosSurveysNotificationScheduler>
 
     @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
+
+    @Inject lateinit var crashReportingSettingSync: CrashReportingSettingSync
 
     private var connectionReceiverRegistered = false
 
@@ -478,6 +481,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun onAccountChanged(event: OnAccountChanged) {
         if (event.causeOfChange == AccountAction.FETCH_SETTINGS) {
             analyticsTracker.sendUsageStats = !accountStore.account.tracksOptOut
+            appCoroutineScope.launch { crashReportingSettingSync() }
         }
     }
 

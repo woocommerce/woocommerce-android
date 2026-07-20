@@ -676,6 +676,9 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.ENABLE_CRASH_REPORTING, enabled)
     }
 
+    fun hasCrashReportingChoice(): Boolean =
+        getPreferences().contains(UndeletablePrefKey.ENABLE_CRASH_REPORTING.name)
+
     fun getSelectedShipmentTrackingProviderName(): String =
         getString(DeletablePrefKey.SELECTED_SHIPMENT_TRACKING_PROVIDER_NAME)
 

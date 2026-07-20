@@ -68,6 +68,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -126,6 +127,14 @@ class DashboardFragment :
 
     private var wasPreviouslyStopped = false
 
+    // The collapsing toolbar lives in MainActivity and is shared across tabs, so navigating away programmatically
+    // resets its offset. We keep the last offset seen while the dashboard is visible and only commit it to the
+    // ViewModel in onPause(), so the state used to restore the toolbar on return reflects the user's scroll, not
+    // the programmatic reset. See shouldExpandToolbar().
+    private var lastAppBarVerticalOffset = 0
+
+    private val scrollToTopTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(dashboardViewModel.performanceObserver)
         super.onCreate(savedInstanceState)
@@ -145,7 +154,8 @@ class DashboardFragment :
                     DashboardContainer(
                         mainActivityViewModel = mainActivityViewModel,
                         dashboardViewModel = dashboardViewModel,
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        scrollToTopTrigger = scrollToTopTrigger
                     )
                 }
             }
@@ -221,7 +231,13 @@ class DashboardFragment :
             }
         }
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            ((activity) as MainActivity).setSubtitle(storeName)
+            // Only drive the shared toolbar subtitle while the dashboard is actually the visible screen. When it's
+            // in the back stack (e.g. a review opened from a notification is on top) its view lifecycle is still
+            // STARTED, so a late storeName emission would otherwise paint the store name onto that screen's toolbar.
+            // On return to the dashboard, BaseFragment.onResume restores the subtitle via getFragmentSubtitle().
+            if (isResumed) {
+                (activity as MainActivity).setSubtitle(storeName)
+            }
         }
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)
@@ -290,6 +306,7 @@ class DashboardFragment :
             viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
+                        lastAppBarVerticalOffset = verticalOffset
                         binding.jetpackBenefitsBanner.root.translationY =
                             (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
                     }
@@ -307,6 +324,12 @@ class DashboardFragment :
             wasPreviouslyStopped = false
         }
         dashboardViewModel.onResume()
+    }
+
+    override fun onPause() {
+        // Remember whether the toolbar was expanded before leaving the tab, so it can be restored on return.
+        dashboardViewModel.onToolbarOffsetChanged(lastAppBarVerticalOffset)
+        super.onPause()
     }
 
     override fun onStop() {
@@ -372,10 +395,10 @@ class DashboardFragment :
         )
     }
 
-    override fun shouldExpandToolbar() = true
+    override fun shouldExpandToolbar() = dashboardViewModel.isToolbarExpanded
 
     override fun scrollToTop() {
-        return
+        scrollToTopTrigger.tryEmit(Unit)
     }
 
     @OptIn(ExperimentalBadgeUtils::class)

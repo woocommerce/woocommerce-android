@@ -8,7 +8,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.appbar.MaterialToolbar
@@ -71,14 +70,11 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     }
 
     private fun setupToolbar(toolbar: MaterialToolbar) {
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title =
-            getString(R.string.feedback_survey_request_title)
+        toolbar.title = getString(R.string.feedback_survey_request_title)
         toolbar.setNavigationIcon(R.drawable.ic_gridicons_cross_24dp)
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
-        activity?.invalidateOptionsMenu()
     }
 
     private fun setupBackPressHandling() {
@@ -128,11 +124,6 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
                 KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
             )
         )
-    }
-
-    override fun onStop() {
-        super.onStop()
-        activity?.invalidateOptionsMenu()
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
