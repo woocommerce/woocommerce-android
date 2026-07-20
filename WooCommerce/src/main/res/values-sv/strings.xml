@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-17 09:54:28+0000
+Translation-Revision-Date: 2026-07-01 09:58:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Vi kunde inte verifiera denna webbplats säkerhetscertifikat. Kontakta ditt webbhotell eller din webbplatsadministratör och försök sedan igen.</string>
+    <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Vi kunde inte etablera en säker anslutning. Kontrollera att datum och tid på din enhet är rätt och försök sedan igen.</string>
+    <string name="woopos_refund_preview_error">Det gick inte att beräkna återbetalningsbeloppet. Försök igen.</string>
+    <string name="woopos_orders_details_refresh_error">Kunde inte uppdatera beställningen. Kontrollera din anslutning och försök igen.</string>
+    <string name="store_connection_error_dialog_contact_support">Kontakta support</string>
+    <string name="store_connection_error_dialog_body">Vi har problem med att ansluta till din butik. Detta är vanligtvis ett anslutningsproblem på din WordPress-webbplats, ofta orsakat av ett säkerhetstillägg, en nyligen genomförd tilläggsuppdatering eller en Jetpack-anslutning som behöver uppdateras. WooCommerce-appen kan inte åtgärda detta från din telefon.</string>
+    <string name="store_connection_error_dialog_title">Din butik kan inte nås</string>
+    <string name="site_picker_unknown_blog_error">Vi kunde inte komma åt din butik, så den har blivit utloggad. Välj en butik för att fortsätta.</string>
+    <string name="login_site_info_fallback_dialog_cta">Logga in med webbplatsens autentiseringsuppgifter</string>
+    <string name="login_site_info_fallback_dialog_message">Vi kunde inte verifiera din webbplatsinformation. Du kan prova att logga in med dina autentiseringsuppgifter för webbplatsen istället.</string>
+    <string name="login_site_info_fallback_dialog_title">Anslutningsproblem</string>
     <string name="woopos_refund_back_to_order_button">Tillbaka till beställning</string>
     <string name="woopos_refund_notifying_store_subtitle">Tillämpar återbetalning för beställning</string>
     <string name="woopos_refund_notifying_store_title">Aviserar butik</string>
@@ -2022,8 +2033,6 @@ Language: sv_SE
     <string name="coupon_type_picker_percentage_content_description">Kupongtyp – procentuell rabatt</string>
     <string name="coupon_type_picker_title">Skapa rabattkod</string>
     <string name="coupon_list_add_coupon_content_description">Lägg till rabattkod</string>
-    <string name="empty_order_test_order_button">Prova en testbeställning</string>
-    <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
     <string name="order_creation_customer_search_empty_add_details_manually">Lägg till detaljer manuellt</string>
     <string name="order_creation_customer_search_old_wc_hint">Sök efter kunder efter</string>
     <string name="order_creation_customer_search_empty_email">Ingen e-postadress</string>

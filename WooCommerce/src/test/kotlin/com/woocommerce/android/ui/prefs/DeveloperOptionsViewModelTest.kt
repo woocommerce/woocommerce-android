@@ -6,6 +6,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -146,6 +147,31 @@ class DeveloperOptionsViewModelTest : BaseUnitTest() {
             .noneMatch {
                 it.label == UiString.UiStringRes(R.string.enable_eftpos_payment)
             }
+    }
+
+    @Test
+    fun `when dev options screen accessed, then store design system component catalog row is displayed`() {
+        val storeDesignSystemCatalogRow = captureViewState()?.rows?.find {
+            it.label == UiString.UiStringRes(R.string.dev_store_design_system_component_catalog)
+        }
+
+        assertThat(storeDesignSystemCatalogRow).isNotNull
+    }
+
+    @Test
+    fun `when store design system component catalog row clicked, then open catalog event is emitted`() {
+        testBlocking {
+            val storeDesignSystemCatalogRow = captureViewState()?.rows?.find {
+                it.label == UiString.UiStringRes(R.string.dev_store_design_system_component_catalog)
+            } as DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
+
+            val events = viewModel.event.runAndCaptureValues {
+                storeDesignSystemCatalogRow.onClick()
+            }
+
+            assertThat(events.last())
+                .isEqualTo(DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenStoreDesignSystemComponentCatalog)
+        }
     }
 
     private fun initViewModel() {

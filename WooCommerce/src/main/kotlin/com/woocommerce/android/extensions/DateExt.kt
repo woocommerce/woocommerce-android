@@ -10,6 +10,7 @@ import java.time.format.FormatStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -100,6 +101,14 @@ fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateForma
  */
 fun Date.formatToYYYYmmDDhhmmss(locale: Locale = Locale.ROOT): String =
     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale).format(this)
+
+/**
+ * Same as [formatToYYYYmmDDhhmmss] but using the UTC timezone, for GMT API fields.
+ */
+fun Date.formatToYYYYmmDDhhmmssGmt(locale: Locale = Locale.ROOT): String =
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }.format(this)
 
 val Date.pastTimeDeltaFromNowInDays
     get() = Calendar.getInstance().time

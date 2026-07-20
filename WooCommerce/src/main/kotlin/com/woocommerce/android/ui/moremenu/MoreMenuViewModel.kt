@@ -380,20 +380,13 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
-        val site = selectedSite.get()
-        val adminUrl = site.adminUrlOrDefault
-        if (site.isCIABSite) {
-            // CIAB hides the navigation sidebar when detecting a mobile user agent,
-            // which breaks the WC Admin experience. Open in Chrome Custom Tab instead.
-            triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(url = adminUrl))
-        } else {
-            triggerEvent(
-                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
-                    url = adminUrl,
-                    screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
-                )
+        val adminUrl = selectedSite.get().adminUrlOrDefault
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = adminUrl,
+                screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
             )
-        }
+        )
     }
 
     private fun onViewStoreButtonClick() {

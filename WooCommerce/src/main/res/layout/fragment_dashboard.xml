@@ -5,7 +5,6 @@
     android:id="@+id/my_store_stats_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:background="@color/color_surface"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"

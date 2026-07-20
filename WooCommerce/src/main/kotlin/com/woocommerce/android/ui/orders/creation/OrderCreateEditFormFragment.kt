@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
@@ -120,6 +121,7 @@ class OrderCreateEditFormFragment :
 
     private val viewModel by hiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
@@ -1203,6 +1205,10 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleNavigation(event: OrderCreateEditNavigationTarget) {
+        if (event is OrderCreateEditNavigationTarget.ShowCreatedOrder) {
+            // Let the order list scroll to the top once it shows the newly created order.
+            communicationViewModel.onOrderCreated(event.orderId)
+        }
         OrderCreateEditNavigator.navigate(this, event)
     }
 

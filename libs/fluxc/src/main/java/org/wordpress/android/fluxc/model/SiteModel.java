@@ -42,8 +42,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public static final long VIP_PLAN_ID = 31337;
 
-    public static final String CIAB_GARDEN_NAME = "commerce";
-
     @PrimaryKey
     @Column
     private int mId;
@@ -133,14 +131,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     // Comma-separated list of active features in the site's plan
     @Column
     private String mPlanActiveFeatures;
-    @Column
-    private boolean mIsGardenSite;
-    @Column
-    @Nullable
-    private String mGardenName;
-    @Column
-    @Nullable
-    private String mGardenPartner;
 
     @Override
     public int getId() {
@@ -460,36 +450,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
         this.mPlanActiveFeatures = planActiveFeatures;
     }
 
-    public boolean isGardenSite() {
-        return mIsGardenSite;
-    }
-
-    public boolean isCIABSite() {
-        return mIsGardenSite && CIAB_GARDEN_NAME.equals(mGardenName);
-    }
-
-    public void setIsGardenSite(boolean mIsGardenSite) {
-        this.mIsGardenSite = mIsGardenSite;
-    }
-
-    @Nullable
-    public String getGardenName() {
-        return mGardenName;
-    }
-
-    public void setGardenName(@Nullable String mGardenName) {
-        this.mGardenName = mGardenName;
-    }
-
-    @Nullable
-    public String getGardenPartner() {
-        return mGardenPartner;
-    }
-
-    public void setGardenPartner(@Nullable String mGardenPartner) {
-        this.mGardenPartner = mGardenPartner;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof SiteModel)) return false;
@@ -528,10 +488,7 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 Objects.equals(mJetpackModules, siteModel.mJetpackModules) &&
                 Objects.equals(mApplicationPasswordsAuthorizeUrl, siteModel.mApplicationPasswordsAuthorizeUrl) &&
                 Objects.equals(mCanBlaze, siteModel.mCanBlaze) &&
-                Objects.equals(mPlanActiveFeatures, siteModel.mPlanActiveFeatures) &&
-                mIsGardenSite == siteModel.mIsGardenSite &&
-                Objects.equals(mGardenName, siteModel.mGardenName) &&
-                Objects.equals(mGardenPartner, siteModel.mGardenPartner);
+                Objects.equals(mPlanActiveFeatures, siteModel.mPlanActiveFeatures);
     }
 
     @Override
@@ -570,9 +527,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mJetpackModules,
                 mApplicationPasswordsAuthorizeUrl,
                 mCanBlaze,
-                mPlanActiveFeatures,
-                mIsGardenSite,
-                mGardenName,
-                mGardenPartner);
+                mPlanActiveFeatures);
     }
 }

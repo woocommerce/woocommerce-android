@@ -99,6 +99,26 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the toolbar is collapsed, then isToolbarExpanded is false`() = testBlocking {
+        setup { }
+
+        viewModel.onToolbarOffsetChanged(verticalOffset = -120)
+
+        assertThat(viewModel.isToolbarExpanded).isFalse()
+    }
+
+    @Test
+    fun `given the toolbar was collapsed, when it fully expands again, then isToolbarExpanded is true`() =
+        testBlocking {
+            setup { }
+            viewModel.onToolbarOffsetChanged(verticalOffset = -120)
+
+            viewModel.onToolbarOffsetChanged(verticalOffset = 0)
+
+            assertThat(viewModel.isToolbarExpanded).isTrue()
+        }
+
+    @Test
     fun `given ai assistant is missing, when dashboard starts, then repository inserts ai assistant at top`() =
         testBlocking {
             // GIVEN
@@ -869,6 +889,19 @@ class DashboardViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(events).doesNotContain(DashboardViewModel.DashboardEvent.ShowScheduledImportNotice)
+        }
+
+    @Test
+    fun `when the dashboard is interacted with, then the usage tracks event emitter is notified`() =
+        testBlocking {
+            // GIVEN
+            setup {}
+
+            // WHEN
+            viewModel.onDashboardInteracted()
+
+            // THEN
+            verify(usageTracksEventEmitter).interacted(any())
         }
 
     private companion object {

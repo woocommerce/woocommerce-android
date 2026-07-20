@@ -79,8 +79,8 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - Use Material 3 wrappers as the default implementation strategy; build custom components only when Material 3 is too different.
 - Component PR scope is full i1 catalog with previews, but production APIs only for first-wave needs and low-risk primitives.
 - Unsettled components stay private/internal preview catalog implementations.
-- Initial production subset covers top/navigation bar, page title/body/link text styles or wrappers,
-  primary button, list/cell rows, section header, switch, icon button, divider, progress indicator,
+- Initial production subset covers top/navigation bar, page title/body/link text-token usage,
+  primary button, list/cell rows, switch, icon button, divider, progress indicator,
   and the tokens they depend on.
 - Progress indicator is not listed as an i1 Figma component, but should still be wrapped as a thin
   Material 3 adapter for future custom design replacement.
@@ -93,6 +93,11 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   packages. App-layer rollout wiring stays outside the module.
 - Package root: `com.woocommerce.android.ui.compose.designsystem`.
 - Subpackages: `foundation`, `component`, and `preview`.
+- The component split ports production components into `:libs:store-design-system`; old app-local
+  `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/compose/designsystem` component paths are
+  historical only and should not be resurrected.
+- Module component previews may use module-local vector drawables for catalog coverage. App drawables,
+  app preview annotations, and app screenshot harnesses stay outside the library boundary.
 - Use a separate opt-in `WooDesignSystemTheme`, Material 3-only.
 - `WooDesignSystemTheme` is the migration-era wrapper name while the legacy
   `com.woocommerce.android.ui.compose.theme.WooTheme` wrapper exists. Do not introduce `WooNewTheme`.
@@ -104,6 +109,13 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 - The legacy Store theme root remains app-owned until the controlled rename boundary in
   [rollout-direction.md](rollout-direction.md).
 - The design-system module does not read app resources directly.
+- `WooTopAppBar` in the module is design-system-only. The old root-provided legacy-compatible
+  appearance from the broad branch is intentionally not part of the library.
+- XML toolbar convergence lives in `:libs:store-design-system` through `WooDesignSystemToolbar` and
+  the library-owned `Widget.Woo.DesignSystem.Toolbar` / `ThemeOverlay.Woo.DesignSystem.Toolbar`
+  styles. Prefer the subclass when inflated toolbar icon actions need design-system outlines; it
+  decorates visible rendered actions in place while preserving `SearchView`, custom action views, and
+  overflow ownership. Product-screen toolbar adoption belongs to migration work.
 - Migrated first-wave screens should cover the design-system root in light and dark mode.
 - New design-system foundations, components, preview catalog entries, and first-wave screen updates
   should use `androidx.compose.ui.tooling.preview.PreviewLightDark` for light/dark previews.
@@ -146,6 +158,7 @@ Design-system docs:
 - `docs/design-system/android-adapter.md`
 - `docs/design-system/token-map.md`
 - `docs/design-system/component-catalog.md`
+- `docs/design-system/figma-navigation.md`
 - `docs/design-system/material3-reference.md`
 - `docs/design-system/screen-migration-playbook.md`
 - `docs/design-system/implementation-plan.md`

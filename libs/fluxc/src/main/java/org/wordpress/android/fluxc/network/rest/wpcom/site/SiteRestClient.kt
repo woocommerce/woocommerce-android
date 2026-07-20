@@ -389,7 +389,6 @@ class SiteRestClient @Inject constructor(
                 isJetpackActive,
                 isJetpackConnected,
                 isWordPressDotCom, // CHECKSTYLE IGNORE
-                isCommerceGarden,
                 urlAfterRedirects
             )
         }
@@ -651,22 +650,13 @@ class SiteRestClient @Inject constructor(
         site.origin = SiteModel.ORIGIN_WPCOM_REST
         site.planActiveFeatures = (from.plan?.features?.active?.joinToString(",")).orEmpty()
 
-        site.setIsGardenSite(from.is_garden)
-        site.gardenName = from.garden_name
-        site.gardenPartner = from.garden_partner
-
-        // CIAB sites always have WooCommerce, even if the API reports otherwise
-        if (from.is_garden && from.garden_name == SiteModel.CIAB_GARDEN_NAME) {
-            site.hasWooCommerce = true
-        }
-
         return site
     }
 
     companion object {
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
-            "options,plan,capabilities,meta,jetpack_modules,is_garden,garden_name,garden_partner"
+            "options,plan,capabilities,meta,jetpack_modules"
         private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"

@@ -3,13 +3,13 @@ package com.woocommerce.android.ui.coupons
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmssGmt
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,6 @@ import javax.inject.Inject
 class CouponRepository @Inject constructor(
     private val store: CouponStore,
     private val selectedSite: SelectedSite,
-    private val dateUtils: DateUtils,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val posTrackingEventProvider: WooPosCouponCreationFlowTrackerEventProvider,
     private val storeManagementTrackingEventProvider: StoreManagementCouponCreationFlowTrackerEventProvider,
@@ -202,7 +201,7 @@ class CouponRepository @Inject constructor(
             amount = amount?.toPlainString(),
             discountType = type?.value,
             isShippingFree = isShippingFree,
-            expiryDate = dateExpires?.time?.let { dateUtils.toIso8601Format(it) } ?: "",
+            expiryDate = dateExpires?.formatToYYYYmmDDhhmmssGmt() ?: "",
             productIds = productIds,
             productCategoryIds = categoryIds,
             usageLimit = restrictions.usageLimit,
