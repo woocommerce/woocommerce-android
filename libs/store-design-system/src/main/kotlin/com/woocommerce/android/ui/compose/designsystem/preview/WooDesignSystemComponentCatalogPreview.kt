@@ -431,9 +431,7 @@ private fun ProductionPageHeaderCatalogLeaf() {
         WooPageHeaderDemo()
         CatalogBodyText(
             text = "Collapsible — scroll inside the sample to collapse the header, then scroll back to expand it. " +
-                "Call scrollBehavior.expand() from a UI coroutine for tab reselection. Newer calls supersede older " +
-                "animations; nested user input and fling boundaries cancel the active animation before Material " +
-                "handles them. Direct header drag or an already-running settle can briefly overlap expansion.",
+                "Call scrollBehavior.expand() for programmatic expansion.",
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
         )
         WooPageHeaderInteractiveDemo(
