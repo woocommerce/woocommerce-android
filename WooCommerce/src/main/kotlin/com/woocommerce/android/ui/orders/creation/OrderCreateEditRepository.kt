@@ -67,13 +67,15 @@ class OrderCreateEditRepository @Inject constructor(
             orderUpdateStore.createOrder(
                 site = selectedSite.get(),
                 createOrderRequest = request,
-                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE
+                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE,
+                orderCurrency = order.currency
             )
         } else {
             orderUpdateStore.updateOrder(
                 site = selectedSite.get(),
                 orderId = order.id,
-                updateRequest = request
+                updateRequest = request,
+                orderCurrency = order.currency
             )
         }
 
