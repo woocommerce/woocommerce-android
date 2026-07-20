@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -109,18 +108,17 @@ private fun PageHeaderTitle(
 private fun PageHeaderActions(
     actions: @Composable RowScope.() -> Unit,
 ) {
-    Box(modifier = Modifier.padding(end = WooTheme.padding.padding5)) {
-        Row(
-            modifier = Modifier
-                .height(PAGE_HEADER_ACTION_HEIGHT),
-            horizontalArrangement = Arrangement.spacedBy(
-                WooTheme.spacing.space1,
-                Alignment.End,
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-            content = actions,
-        )
-    }
+    Row(
+        modifier = Modifier
+            .padding(end = WooTheme.padding.padding5)
+            .height(PAGE_HEADER_ACTION_HEIGHT),
+        horizontalArrangement = Arrangement.spacedBy(
+            WooTheme.spacing.space1,
+            Alignment.End,
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        content = actions,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
