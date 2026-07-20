@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
@@ -320,7 +321,7 @@ class WooPageHeaderTest {
         assertThat(headings).hasSize(1)
     }
 
-    private fun assertTitleTypography(fontSize: androidx.compose.ui.unit.TextUnit) {
+    private fun assertTitleTypography(fontSize: TextUnit) {
         val style = titleLayoutResult().layoutInput.style
 
         assertThat(style.fontSize).isEqualTo(fontSize)
