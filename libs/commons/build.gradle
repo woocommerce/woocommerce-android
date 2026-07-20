@@ -58,7 +58,7 @@ dependencies {
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.androidx.arch.core.testing)
+    testRuntimeOnly(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
 
     testFixturesImplementation(platform(libs.androidx.compose.bom))
