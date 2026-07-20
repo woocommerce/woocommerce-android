@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -113,8 +112,7 @@ private fun PageHeaderActions(
     Box(modifier = Modifier.padding(end = WooTheme.padding.padding5)) {
         Row(
             modifier = Modifier
-                .height(PAGE_HEADER_ACTION_HEIGHT)
-                .widthIn(max = PAGE_HEADER_ACTION_MAX_WIDTH),
+                .height(PAGE_HEADER_ACTION_HEIGHT),
             horizontalArrangement = Arrangement.spacedBy(
                 WooTheme.spacing.space1,
                 Alignment.End,
@@ -302,4 +300,3 @@ private fun WooPageHeaderMediumPreview(
 private const val PAGE_HEADER_DEMO_ITEM_COUNT = 8
 private val PAGE_HEADER_HEIGHT = 64.dp
 private val PAGE_HEADER_ACTION_HEIGHT = 40.dp
-private val PAGE_HEADER_ACTION_MAX_WIDTH = 136.dp
