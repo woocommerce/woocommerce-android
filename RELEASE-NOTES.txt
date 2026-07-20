@@ -11,6 +11,7 @@
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
+- [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
 
 25.2
 -----
