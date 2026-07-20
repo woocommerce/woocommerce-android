@@ -236,10 +236,11 @@ class OrderUpdateStore @Inject internal constructor(
     suspend fun createOrder(
         site: SiteModel,
         createOrderRequest: UpdateOrderRequest,
-        attributionSourceType: String? = null
+        attributionSourceType: String? = null,
+        orderCurrency: String? = null
     ): WooResult<OrderEntity> {
         return coroutineEngine.withDefaultContext(T.API, this, "createOrder") {
-            val result = wcOrderRestClient.createOrder(site, createOrderRequest, attributionSourceType)
+            val result = wcOrderRestClient.createOrder(site, createOrderRequest, attributionSourceType, orderCurrency)
 
             return@withDefaultContext if (result.isError) {
                 WooResult(result.error)
@@ -254,10 +255,11 @@ class OrderUpdateStore @Inject internal constructor(
     suspend fun updateOrder(
         site: SiteModel,
         orderId: Long,
-        updateRequest: UpdateOrderRequest
+        updateRequest: UpdateOrderRequest,
+        orderCurrency: String? = null
     ): WooResult<OrderEntity> {
         return coroutineEngine.withDefaultContext(T.API, this, "updateOrder") {
-            val result = wcOrderRestClient.updateOrder(site, orderId, updateRequest)
+            val result = wcOrderRestClient.updateOrder(site, orderId, updateRequest, orderCurrency)
 
             return@withDefaultContext if (result.isError) {
                 WooResult(result.error)

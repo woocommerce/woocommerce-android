@@ -849,9 +849,10 @@ class OrderRestClient @Inject constructor(
     suspend fun createOrder(
         site: SiteModel,
         request: UpdateOrderRequest,
-        attributionSourceType: String?
+        attributionSourceType: String?,
+        orderCurrency: String? = null
     ): WooPayload<OrderEntity> {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV3.withCurrency(orderCurrency)
         val metaData = mapOf(
             "meta_data" to listOfNotNull(
                 attributionSourceType?.let {
@@ -880,9 +881,10 @@ class OrderRestClient @Inject constructor(
     suspend fun updateOrder(
         site: SiteModel,
         orderId: Long,
-        request: UpdateOrderRequest
+        request: UpdateOrderRequest,
+        orderCurrency: String? = null
     ): WooPayload<OrderEntity> {
-        val url = WOOCOMMERCE.orders.id(orderId).pathV3
+        val url = WOOCOMMERCE.orders.id(orderId).pathV3.withCurrency(orderCurrency)
         val body = request.toNetworkRequest()
 
         val response = wooNetwork.executePutGsonRequest(
@@ -1206,6 +1208,14 @@ class OrderRestClient @Inject constructor(
 
         return providers
     }
+
+    /**
+     * WooPayments Multi-Currency reads the currency from the query string. Without it, it forces the store's
+     * base currency for REST requests and disables price conversion, so line items added without an explicit
+     * price would be priced in the store currency rather than the order's.
+     */
+    private fun String.withCurrency(currency: String?): String =
+        currency?.takeIf { it.isNotBlank() }?.let { "$this?currency=$it" } ?: this
 
     companion object {
         private val ORDER_FIELDS = arrayOf(
