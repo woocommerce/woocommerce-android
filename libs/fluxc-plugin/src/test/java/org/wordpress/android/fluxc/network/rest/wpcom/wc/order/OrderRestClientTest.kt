@@ -18,10 +18,12 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderListDescriptor
+import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.OrderErrorType
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -465,5 +467,59 @@ class OrderRestClientTest {
             assertThat(actionCaptor.firstValue.payload.error?.type).isEqualTo(OrderErrorType.GENERIC_ERROR)
         }
 
+    @Test
+    fun `given an order currency, when updateOrder is called, then currency is appended to the request path`() =
+        runTest {
+            // Given
+            val orderId = 123L
+            val expectedPath = "${WOOCOMMERCE.orders.id(orderId).pathV3}?currency=EUR"
+            stubUpdateOrderResponse()
+
+            // When
+            orderRestClient.updateOrder(testSite, orderId, UpdateOrderRequest(), orderCurrency = "EUR")
+
+            // Then
+            verify(wooNetwork).executePutGsonRequest(
+                site = eq(testSite),
+                path = eq(expectedPath),
+                clazz = eq(OrderDto::class.java),
+                body = any()
+            )
+        }
+
+    @Test
+    fun `given no order currency, when updateOrder is called, then the request path is left untouched`() = runTest {
+        // Given
+        val orderId = 123L
+        val expectedPath = WOOCOMMERCE.orders.id(orderId).pathV3
+        stubUpdateOrderResponse()
+
+        // When
+        orderRestClient.updateOrder(testSite, orderId, UpdateOrderRequest())
+
+        // Then
+        verify(wooNetwork).executePutGsonRequest(
+            site = eq(testSite),
+            path = eq(expectedPath),
+            clazz = eq(OrderDto::class.java),
+            body = any()
+        )
+    }
+
     /* HELPER */
+
+    private suspend fun stubUpdateOrderResponse() {
+        val orderDto = OrderDto()
+        whenever(
+            wooNetwork.executePutGsonRequest(
+                site = any(),
+                path = any(),
+                clazz = eq(OrderDto::class.java),
+                body = any()
+            )
+        ).thenReturn(WPAPIResponse.Success(orderDto, emptyList()))
+        whenever(orderDtoMapper.toDatabaseEntity(eq(orderDto), any())).thenReturn(
+            OrderEntity(localSiteId = testSite.localId(), orderId = 123L) to emptyList()
+        )
+    }
 }

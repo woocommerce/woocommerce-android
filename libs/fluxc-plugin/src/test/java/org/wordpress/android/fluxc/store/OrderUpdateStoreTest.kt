@@ -431,7 +431,7 @@ class OrderUpdateStoreTest {
         setUp {
             orderRestClient = mock {
                 on {
-                    createOrder(any(), any(), anyOrNull())
+                    createOrder(any(), any(), anyOrNull(), anyOrNull())
                 }.doReturn(
                     WooPayload(newOrder)
                 )
@@ -473,7 +473,7 @@ class OrderUpdateStoreTest {
         setUp {
             orderRestClient = mock {
                 on {
-                    updateOrder(any(), any(), any())
+                    updateOrder(any(), any(), any(), anyOrNull())
                 }.doReturn(
                     WooPayload(updatedOrder)
                 )

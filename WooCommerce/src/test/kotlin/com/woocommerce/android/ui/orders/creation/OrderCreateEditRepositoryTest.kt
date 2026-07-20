@@ -129,7 +129,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     fun `when AUTO_DRAFT is not supported then status is changed to PENDING`() = testBlocking {
         // Given a site using a version that doesn't support AUTO_DRAFT
         whenever(getWooVersion()).thenReturn("6.2.0")
-        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -152,14 +152,19 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+        verify(orderUpdateStore).createOrder(
+            defaultSiteModel,
+            request,
+            OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE,
+            order.currency
+        )
     }
 
     @Test
     fun `when AUTO_DRAFT is supported then status is keep as AUTO_DRAFT`() = testBlocking {
         // Given a site using a version that support AUTO_DRAFT
         whenever(getWooVersion()).thenReturn(OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION)
-        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -182,13 +187,18 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+        verify(orderUpdateStore).createOrder(
+            defaultSiteModel,
+            request,
+            OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE,
+            order.currency
+        )
     }
 
     @Test
     fun `given the order is updated, when source is store management then createdVia value is null`() = testBlocking {
         // GIVEN
-        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -211,12 +221,17 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             createdVia = null,
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+        verify(orderUpdateStore).createOrder(
+            defaultSiteModel,
+            request,
+            OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE,
+            order.currency
+        )
     }
 
     @Test
     fun `when source is point of sale then createdVia value is pos-rest-api`() = testBlocking {
-        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -239,7 +254,12 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             createdVia = "pos-rest-api",
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
+        verify(orderUpdateStore).createOrder(
+            defaultSiteModel,
+            request,
+            OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE,
+            order.currency
+        )
     }
 
     @Test
