@@ -16,6 +16,7 @@ import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.GoogleAdsStatUIData
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -94,6 +96,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val updateStats: UpdateAnalyticsHubStats,
     private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
+    private val feedbackRepository: FeedbackRepository,
     private val tracker: AnalyticsTrackerWrapper,
     private val dateUtils: DateUtils,
     private val selectedSite: SelectedSite,
@@ -117,6 +120,7 @@ class AnalyticsHubViewModel @Inject constructor(
             refreshIndicator = NotShowIndicator,
             analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
             cards = AnalyticsHubCardViewState.LoadingCardsConfiguration,
+            showFeedBackBanner = false,
             lastUpdateTimestamp = ""
         )
     )
@@ -160,7 +164,19 @@ class AnalyticsHubViewModel @Inject constructor(
         observeConfigurationChanges()
         observeRangeSelectionChanges()
         observeLastUpdateTimestamp()
+        shouldAskForFeedback()
         combineSelectionAndConfiguration()
+    }
+
+    private fun shouldAskForFeedback() {
+        viewModelScope.launch {
+            val feedbackStatus = feedbackRepository.getFeatureFeedbackState(
+                FeatureFeedbackSettings.Feature.ANALYTICS_HUB
+            )
+            mutableState.update { viewState ->
+                viewState.copy(showFeedBackBanner = feedbackStatus == FeatureFeedbackSettings.FeedbackState.UNANSWERED)
+            }
+        }
     }
 
     fun onNewRangeSelection(selectionType: SelectionType) {
@@ -778,6 +794,37 @@ class AnalyticsHubViewModel @Inject constructor(
         calendar = calendarHelper.getCalendarForSelectedSite(),
         locale = localeProvider.provideLocale() ?: Locale.getDefault()
     )
+
+    fun onSendFeedbackClicked() {
+        tracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+        feedbackRepository.saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        )
+        triggerEvent(AnalyticsViewEvent.SendFeedback)
+        shouldAskForFeedback()
+    }
+
+    fun onDismissBannerClicked() {
+        tracker.track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+        feedbackRepository.saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        )
+        shouldAskForFeedback()
+    }
 
     private fun cancelCardsObservation() {
         revenueObservationJob?.cancel()

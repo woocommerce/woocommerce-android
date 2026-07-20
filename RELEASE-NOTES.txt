@@ -10,7 +10,7 @@
 - [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
-- [*] Removed the outdated feedback surveys for store setup and the Analytics Hub [https://github.com/woocommerce/woocommerce-android/pull/16273]
+- [*] Removed the outdated store setup feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16273]
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
 
 25.2

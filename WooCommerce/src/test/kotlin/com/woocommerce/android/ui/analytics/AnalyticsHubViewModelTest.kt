@@ -9,6 +9,7 @@ import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.DeltaPercentage.NotExist
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -43,6 +44,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -76,6 +78,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -97,6 +100,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val observeLastUpdate: ObserveLastUpdate = mock()
     private lateinit var savedState: SavedStateHandle
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
+    private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
@@ -167,6 +171,10 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             with(sut.viewState.value.refreshIndicator) {
                 assertTrue(this is NotShowIndicator)
+            }
+
+            with(sut.viewState.value.showFeedBackBanner) {
+                assertFalse(this)
             }
         }
 
@@ -653,6 +661,91 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the analytics feedback is on state UNANSWERED then show the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.UNANSWERED)
+
+        sut = givenAViewModel()
+
+        assertTrue { sut.viewState.value.showFeedBackBanner }
+    }
+
+    @Test
+    fun `when the analytics feedback is on state GIVEN then hide the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.GIVEN)
+
+        sut = givenAViewModel()
+
+        assertFalse { sut.viewState.value.showFeedBackBanner }
+    }
+
+    @Test
+    fun `when the analytics feedback is on state DISMISSED then hide the feedback banner`() = testBlocking {
+        whenever(feedbackRepository.getFeatureFeedbackState(FeatureFeedbackSettings.Feature.ANALYTICS_HUB))
+            .thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
+
+        sut = givenAViewModel()
+
+        assertFalse { sut.viewState.value.showFeedBackBanner }
+    }
+
+    @Test
+    fun `when send feedback is pressed then feedback status is saved as GIVEN`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onSendFeedbackClicked()
+
+        verify(feedbackRepository).saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.GIVEN
+        )
+        assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.SendFeedback::class.java)
+    }
+
+    @Test
+    fun `when dismiss feedback is pressed then feedback status is saved as DISMISSED`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onDismissBannerClicked()
+
+        verify(feedbackRepository).saveFeatureFeedback(
+            FeatureFeedbackSettings.Feature.ANALYTICS_HUB,
+            FeatureFeedbackSettings.FeedbackState.DISMISSED
+        )
+    }
+
+    @Test
+    fun `when send feedback is pressed then send feedback event is tracked`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onSendFeedbackClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
+            )
+        )
+    }
+
+    @Test
+    fun `when dismiss feedback is pressed then dismiss feedback event is tracked`() = testBlocking {
+        sut = givenAViewModel()
+
+        sut.onDismissBannerClicked()
+
+        verify(tracker).track(
+            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
+            mapOf(
+                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK,
+                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
+            )
+        )
+    }
+
+    @Test
     fun `when a new range selection is selected, then the new selection is tracked`() = testBlocking {
         configureSuccessfulStatsResponse()
         sut = givenAViewModel()
@@ -985,6 +1078,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             updateStats,
             observeLastUpdate,
             localeProvider,
+            feedbackRepository,
             tracker,
             dateUtils,
             selectedSite,

@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 enum class SurveyType(private val untaggedUrl: String) {
     MAIN(AppUrls.CROWDSIGNAL_MAIN_SURVEY),
     ADDONS(AppUrls.ADDONS_SURVEY),
+    ANALYTICS_HUB(AppUrls.CROWDSIGNAL_ANALYTICS_HUB_SURVEY),
     ORDER_SHIPPING_LINES(AppUrls.CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY),
     WOO_POS_POTENTIAL_USER(AppUrls.CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER),
     WOO_POS_CURRENT_USER(AppUrls.CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER),
@@ -19,6 +20,7 @@ enum class SurveyType(private val untaggedUrl: String) {
         get() = when (this) {
             MAIN -> AnalyticsTracker.VALUE_FEEDBACK_GENERAL_CONTEXT
             ADDONS -> AnalyticsTracker.VALUE_PRODUCT_ADDONS_FEEDBACK
+            ANALYTICS_HUB -> AnalyticsTracker.VALUE_ANALYTICS_HUB_FEEDBACK
             ORDER_SHIPPING_LINES -> AnalyticsTracker.VALUE_ORDER_SHIPPING_LINES_FEEDBACK
             WOO_POS_POTENTIAL_USER -> AnalyticsTracker.VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK
             WOO_POS_CURRENT_USER -> AnalyticsTracker.VALUE_WOO_POS_CURRENT_USER_FEEDBACK

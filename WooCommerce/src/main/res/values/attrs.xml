@@ -230,4 +230,9 @@
         <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="FeedbackBanner">
+        <attr name="title" />
+        <attr name="message" />
+    </declare-styleable>
+
 </resources>

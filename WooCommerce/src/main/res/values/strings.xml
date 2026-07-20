@@ -601,6 +601,8 @@
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
 
 
+    <string name="analytics_banner_title">Enjoying analytics?</string>
+    <string name="analytics_banner_message">Please rate your analytics experience</string>
     <!--
         Order List View
     -->
