@@ -48,19 +48,8 @@ object WooPageHeaderDefaults {
  * Adds programmatic expansion to Material 3's exit-until-collapsed behavior for a collapsible [WooPageHeader].
  *
  * Attach [nestedScrollConnection] to the container that owns the scrolling body. Material 3 remains responsible for
- * ordinary nested scrolling, direct header dragging, and decay settling. Call [expand] from a coroutine, such as when
- * reselecting the active tab; callers do not need to synthesize nested-scroll callbacks.
- *
- * [expand] animates from the current height to fully expanded and resets the accumulated content offset. Each call
- * owns a child animation job, so a newer call supersedes the older animation without canceling the older caller's
- * surrounding job. Meaningful nested user input and both fling boundaries cancel the active expansion before the
- * event is delegated to Material 3.
- *
- * This behavior and [expand] are confined to the main/UI dispatcher; the underlying state and expansion ownership
- * are intentionally not thread-safe. Material 3's direct header drag does not pass through [nestedScrollConnection],
- * and a private Material settle that has already started can overlap an expansion. In those rare overlaps the state
- * remains within Material's valid bounds, but a later interaction or [expand] call may be needed to correct the
- * visual state.
+ * ordinary nested scrolling, direct header dragging, and decay settling. Meaningful nested user input and both fling
+ * boundaries cancel an active expansion before the event is delegated to Material 3.
  */
 @Stable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,11 +80,17 @@ class WooPageHeaderScrollBehavior internal constructor(
     }
 
     /**
-     * Expands the header and resets its accumulated content offset. Call from a main/UI-confined coroutine, such as
-     * one launched from `rememberCoroutineScope()` or `viewLifecycleOwner.lifecycleScope`.
+     * Animates the header from its current height to fully expanded and resets its accumulated content offset. Call
+     * from a main/UI-confined coroutine, such as one launched from `rememberCoroutineScope()` or
+     * `viewLifecycleOwner.lifecycleScope`; the underlying state and expansion ownership are not thread-safe.
      *
-     * Calls follow a deliberate newest-wins policy. A newer call supersedes the active expansion; the superseded
-     * [expand] call returns normally, while the newest invocation owns subsequent writes and the final state reset.
+     * Calls follow a deliberate newest-wins policy. Each call owns a child animation job, so a newer call supersedes
+     * the active expansion without canceling the older caller's surrounding job. The superseded [expand] call returns
+     * normally, while the newest invocation owns subsequent writes and the final state reset.
+     *
+     * Material 3's direct header drag does not pass through [nestedScrollConnection], and a private Material settle
+     * that has already started can overlap an expansion. In those rare overlaps the state remains within Material's
+     * valid bounds, but a later interaction or [expand] call may be needed to correct the visual state.
      */
     suspend fun expand() = coroutineScope {
         lateinit var expansion: Job
