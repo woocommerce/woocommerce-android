@@ -68,3 +68,12 @@ dependencies {
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is required by the Hilt Gradle plugin, otherwise the build fails to configure.
+            exclude(libs.google.dagger.hilt.android.main.get().module.toString())
+        }
+    }
+}
