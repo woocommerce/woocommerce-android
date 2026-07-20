@@ -44,6 +44,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     override val sku: String = "123"
     override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_EDITING
+    override val orderCurrency: String = "EUR"
 
     override fun initMocksForAnalyticsWithOrder(order: Order) {
         createUpdateOrderUseCase = mock {
@@ -748,5 +749,19 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         )
 
         assertThat(orderDraft!!.items[0].quantity).isEqualTo(100_000f)
+    }
+
+    @Test
+    fun `given an order in a non-default currency, when adding a product, then SelectItems carries that currency`() {
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onAddProductClicked()
+
+        assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
+        val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
+        assertThat(event.orderCurrency).isEqualTo("EUR")
     }
 }

@@ -120,13 +120,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val mode: OrderCreateEditViewModel.Mode
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
+    protected open val orderCurrency: String? = null
 
     @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.getEmptyOrder(Date(), Date())
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
+        savedState = spy(
+            OrderCreateEditFormFragmentArgs(
+                mode = mode,
+                sku = sku,
+                barcodeFormat = barcodeFormat,
+                orderCurrency = orderCurrency
+            ).toSavedStateHandle()
+        ) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on {
                 getLiveData(
