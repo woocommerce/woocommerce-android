@@ -158,14 +158,14 @@ private fun GoogleAdsLoading(
             verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
+                    width = WooTheme.stroke.regular,
                     color = WooTheme.colors.outlineVariant,
                     shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
                 .fillMaxWidth()
         ) {
@@ -176,7 +176,7 @@ private fun GoogleAdsLoading(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f)
             ) {
                 DashboardSkeleton(width = 200.dp, height = 24.dp)
@@ -191,14 +191,14 @@ private fun GoogleAdsLoading(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
+                width = WooTheme.stroke.regular,
                 color = WooTheme.colors.outlineVariant,
                 shape = roundedShape,
             )
             .clip(roundedShape)
             .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
+                horizontal = WooTheme.padding.padding5,
+                vertical = WooTheme.padding.padding5
             )
             .background(WooTheme.colors.surface.default)
             .fillMaxWidth()
@@ -220,14 +220,14 @@ private fun GoogleAdsNoCampaigns(
             verticalAlignment = Alignment.Top,
             modifier = modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
+                    width = WooTheme.stroke.regular,
                     color = WooTheme.colors.outlineVariant,
                     shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
                 .background(WooTheme.colors.surface.default)
         ) {
@@ -238,7 +238,7 @@ private fun GoogleAdsNoCampaigns(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f),
             ) {
                 Text(
@@ -274,14 +274,14 @@ private fun GoogleAdsHasCampaigns(
             verticalAlignment = Alignment.Top,
             modifier = modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
+                    width = WooTheme.stroke.regular,
                     color = WooTheme.colors.outlineVariant,
                     shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
                 .background(WooTheme.colors.surface.default)
         ) {
@@ -292,7 +292,7 @@ private fun GoogleAdsHasCampaigns(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f),
             ) {
                 Row(

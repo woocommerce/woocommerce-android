@@ -213,13 +213,13 @@ private fun DashboardCouponsList(
     onCouponClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(vertical = 8.dp)) {
+    Column(modifier.padding(vertical = WooTheme.padding.padding3)) {
         Header(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = WooTheme.padding.padding5)
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(WooTheme.spacing.space3))
         state.coupons.forEach { couponUiModel ->
             CouponListItem(
                 couponUiModel = couponUiModel,
@@ -239,13 +239,13 @@ private fun CouponListItem(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(top = 8.dp)
+            .padding(top = WooTheme.padding.padding3)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = WooTheme.padding.padding5)
         ) {
             Text(
                 text = couponUiModel.code,
@@ -262,10 +262,10 @@ private fun CouponListItem(
             text = couponUiModel.description,
             style = WooTheme.text.bodyMedium.regular,
             color = WooTheme.colors.surface.onDefault,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5)
         )
         Spacer(modifier = Modifier)
-        WooDivider(modifier = Modifier.padding(start = 16.dp))
+        WooDivider(modifier = Modifier.padding(start = WooTheme.padding.padding5))
     }
 }
 
@@ -273,23 +273,23 @@ private fun CouponListItem(
 private fun CouponsLoading(
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(vertical = 8.dp)) {
+    Column(modifier.padding(vertical = WooTheme.padding.padding3)) {
         Header(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = WooTheme.padding.padding5)
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(WooTheme.spacing.space3))
         repeat(3) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = WooTheme.padding.padding3)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = WooTheme.padding.padding5)
                 ) {
                     DashboardSkeleton(width = 260.dp, height = 16.dp)
                     DashboardSkeleton(width = 40.dp, height = 16.dp)
@@ -297,10 +297,10 @@ private fun CouponsLoading(
                 DashboardSkeleton(
                     modifier = Modifier
                         .size(width = 120.dp, height = 16.dp)
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = WooTheme.padding.padding5)
                 )
                 Spacer(modifier = Modifier)
-                WooDivider(Modifier.padding(start = 16.dp))
+                WooDivider(Modifier.padding(start = WooTheme.padding.padding5))
             }
         }
     }
@@ -311,18 +311,18 @@ private fun CouponsEmptyView(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(WooTheme.padding.padding5)
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_empty_coupon_list),
             contentDescription = null,
             modifier = Modifier
                 .sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
-                .padding(vertical = 16.dp)
+                .padding(vertical = WooTheme.padding.padding5)
         )
 
         Text(

@@ -242,13 +242,13 @@ fun BlazeProductItem(
     Box(
         modifier = modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
+                width = WooTheme.stroke.regular,
                 color = WooTheme.colors.outlineVariant,
                 shape = RoundedCornerShape(WooTheme.radius.medium),
             )
             .clip(shape = RoundedCornerShape(WooTheme.radius.medium))
             .clickable { onProductSelected() }
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(WooTheme.padding.padding5)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProductThumbnail(imageUrl = product.imgUrl)
@@ -286,12 +286,12 @@ private fun BlazeCampaignLoading(
     Box(
         modifier = modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
+                width = WooTheme.stroke.regular,
                 color = WooTheme.colors.outlineVariant,
                 shape = RoundedCornerShape(WooTheme.radius.medium),
             )
             .clip(shape = RoundedCornerShape(WooTheme.radius.medium))
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(WooTheme.padding.padding5)
     ) {
         Column {
             Row(
