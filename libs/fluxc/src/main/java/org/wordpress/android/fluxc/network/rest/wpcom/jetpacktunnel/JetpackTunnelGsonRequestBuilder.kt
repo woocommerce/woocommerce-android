@@ -159,12 +159,14 @@ class JetpackTunnelGsonRequestBuilder @Inject constructor() {
         site: SiteModel,
         url: String,
         body: Map<String, Any>,
-        clazz: Class<T>
+        clazz: Class<T>,
+        params: Map<String, String> = emptyMap()
     ) = suspendCancellableCoroutine<JetpackResponse<T>> { cont ->
         val request = JetpackTunnelGsonRequest.buildPutRequest<T>(
             url, site.siteId, body, clazz,
             listener = { data, headers -> cont.resume(JetpackSuccess(data, headers)) },
-            errorListener = { cont.resume(JetpackError(it)) }
+            errorListener = { cont.resume(JetpackError(it)) },
+            params = params
         )
         cont.invokeOnCancellation {
             request?.cancel()
