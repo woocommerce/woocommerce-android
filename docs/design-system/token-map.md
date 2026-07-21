@@ -36,8 +36,9 @@ Refreshing the export should preserve this parser contract:
 - If a future component audit proves a `Semantic` variable is the intended source, update this
   token map with the component evidence and approved mapping before consuming that section.
 
-Use the committed export for row-level source paths and values. Keep unresolved notes in this token
-map. Do not use older split token exports as current foundation sources.
+Use the committed export for row-level source paths and values except where an approved override is
+recorded in this token map. Keep unresolved notes in this token map. Do not hand-edit the export to
+apply an override or use older split token exports as current foundation sources.
 
 The Figma `Color roles` frame validates the role inventory and light-mode values for Primary and
 Secondary, Container, Surface, Outline, and Error/alert/success. Background, Overlay, and Palette are
@@ -150,7 +151,10 @@ When defining tokens:
 ## Public Color Source Reconciliation
 
 Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
-`figma-export.json` according to the Figma export parsing rules.
+`figma-export.json` according to the Figma export parsing rules, except for explicitly approved
+Android overrides. WOOMOB-3552 approves `#6D469C` as the dark Primary Container tint RGB base for
+08/10/16/24; the checked-in export remains unchanged as an audit/source artifact until refreshed by
+the export workflow.
 
 High-contrast state-layer values are not present in the current export and are not part of normal
 runtime mapping.
@@ -201,10 +205,10 @@ runtime mapping.
 | `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo Theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1015171A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
 | `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo Theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#10151729` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio containers. |
 | `WooTheme.colors.stateLayers.onSurface.opacity24` | `Woo Theme/State-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1015173D` | `#FFFFFF3D` | No M3 projection | production | Disabled button content, Search placeholder, and disabled choice-control marks/dots. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#FFFFFF14` | No M3 projection | production | Source-backed tint-layer family. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#FFFFFF1A` | No M3 projection | production | Source-backed tint-layer family. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#FFFFFF29` | No M3 projection | production | Canonical Segmented Control track; also the supplied light Secondary Container source. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#6D469C3D` | No M3 projection | production | Dark mode intentionally uses a distinct RGB base. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#6D469C14` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#146D469C`. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#6D469C1A` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#1A6D469C`. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#6D469C29` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#296D469C`. Canonical Segmented Control track and supplied light Secondary Container source. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#6D469C3D` | No M3 projection | production | WOOMOB-3552-confirmed dark base; Android `#3D6D469C`. |
 | `WooTheme.colors.tintLayers.onSurface.opacity08..opacity16` | `Woo Theme/Tint-Layers/On-Surface/Opacity-08..Opacity-16` | `figma-export.json` | `#10151714..#10151729` | White at matching alpha | No M3 projection | production | Explicit source values; not aliases to State Layers. |
 | `WooTheme.colors.tintLayers.onSurface.opacity24` | `Woo Theme/Tint-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1E1E1E3D` | `#FFFFFF3D` | No M3 projection | production | Light mode intentionally differs from the State Layer base. |
 | `WooTheme.colors.tintLayers.primary.opacity08..opacity24` | `Woo Theme/Tint-Layers/Primary/Opacity-08..Opacity-24` | `figma-export.json` | Primary at matching alpha | Primary at matching alpha | No M3 projection | production | Dark opacity16 is the supplied Secondary Container source. |
