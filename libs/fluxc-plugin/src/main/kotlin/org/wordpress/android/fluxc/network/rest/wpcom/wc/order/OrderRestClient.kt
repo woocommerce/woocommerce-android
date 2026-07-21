@@ -877,10 +877,16 @@ class OrderRestClient @Inject constructor(
         }
     }
 
+    /**
+     * [orderCurrency] is sent as a query parameter because WooPayments Multi-Currency reads it from there. Without
+     * it, it forces the store's base currency for REST requests and disables price conversion, so line items sent
+     * without an explicit price would be priced in the store's currency rather than the order's.
+     */
     suspend fun updateOrder(
         site: SiteModel,
         orderId: Long,
-        request: UpdateOrderRequest
+        request: UpdateOrderRequest,
+        orderCurrency: String? = null
     ): WooPayload<OrderEntity> {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
         val body = request.toNetworkRequest()
@@ -889,7 +895,10 @@ class OrderRestClient @Inject constructor(
             site = site,
             path = url,
             clazz = OrderDto::class.java,
-            body = body
+            body = body,
+            params = orderCurrency?.takeIf { it.isNotBlank() }
+                ?.let { mapOf("currency" to it) }
+                .orEmpty()
         )
 
         return response.toWooPayload { orderDto ->
