@@ -323,9 +323,10 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
     }
 
     @NonNull
-    static String resolveFailureMessage(@NonNull LoginState loginState, @NonNull String fallbackMessage) {
+    private String resolveFailureMessage(@NonNull LoginState loginState) {
         String failureMessage = loginState.getFailureMessage();
-        return failureMessage == null || failureMessage.trim().isEmpty() ? fallbackMessage : failureMessage;
+        return failureMessage == null || failureMessage.trim().isEmpty() ?
+                getString(R.string.error_generic) : failureMessage;
     }
 
     @Override
@@ -419,8 +420,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 break;
             case FAILURE:
                 onLoginFinished(false);
-                String genericError = getString(R.string.error_generic);
-                showError(resolveFailureMessage(loginState, genericError));
+                showError(resolveFailureMessage(loginState));
                 break;
             case SUCCESS:
                 onLoginFinished(true);
