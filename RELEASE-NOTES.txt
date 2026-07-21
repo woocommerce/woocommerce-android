@@ -12,6 +12,7 @@
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
 - [*] Fixed the product selector showing store-currency prices when adding products to an order in a different currency [https://github.com/woocommerce/woocommerce-android/pull/16281]
 - [*] Removed the outdated store setup feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16273]
+- [*] Fixed products added to an order in a non-default currency being priced in the store's base currency
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
 - [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
 - [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
