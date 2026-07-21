@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +50,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.Pen
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -80,11 +80,13 @@ import com.woocommerce.android.ui.dashboard.topperformers.TopPerformerSkeletonIt
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 private const val SCROLL_INTERACTION_DEBOUNCE_MS = 1000L
 
@@ -94,7 +96,7 @@ internal fun DashboardWidgets(
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     scrollToTopTrigger: Flow<Unit>,
-    headerScrollBridge: DashboardHeaderScrollBridge,
+    scrollBehavior: WooPageHeaderScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,7 +111,7 @@ internal fun DashboardWidgets(
         hasNewWidgets = hasNewWidgets,
         showCustomizeButton = state != null,
         onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
-        headerScrollBridge = headerScrollBridge,
+        scrollBehavior = scrollBehavior,
         contentBeforeWidgets = contentBeforeWidgets,
         modifier = modifier,
     ) { widget, modifier ->
@@ -133,7 +135,7 @@ private fun DashboardLayout(
     hasNewWidgets: Boolean,
     showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
-    headerScrollBridge: DashboardHeaderScrollBridge,
+    scrollBehavior: WooPageHeaderScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
@@ -171,7 +173,7 @@ private fun DashboardLayout(
                 widgetContent = widgetContent,
                 modifier = Modifier.fillMaxSize(),
                 numberOfColumns = numberOfColumns,
-                headerScrollBridge = headerScrollBridge,
+                scrollBehavior = scrollBehavior,
                 contentBeforeWidgets = contentBeforeWidgets,
             )
         }
@@ -188,20 +190,21 @@ private fun DashboardWidgetLayout(
     showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
-    headerScrollBridge: DashboardHeaderScrollBridge,
+    scrollBehavior: WooPageHeaderScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1,
 ) {
     val scrollState = rememberScrollState()
-    val headerNestedScrollConnection = headerScrollBridge.nestedScrollConnection
-    val scrollModifier = (headerNestedScrollConnection?.let { modifier.nestedScroll(it) } ?: modifier)
+    val scrollModifier = modifier
+        .nestedScroll(scrollBehavior.nestedScrollConnection)
         .verticalScroll(scrollState)
 
-    LaunchedEffect(scrollToTopTrigger, headerScrollBridge, scrollState) {
+    LaunchedEffect(scrollToTopTrigger, scrollBehavior, scrollState) {
         scrollToTopTrigger.collectLatest {
-            headerScrollBridge.scrollToTop {
-                scrollState.animateScrollTo(0)
+            coroutineScope {
+                launch { scrollState.animateScrollTo(0) }
+                launch { scrollBehavior.expand() }
             }
         }
     }
@@ -583,9 +586,6 @@ private fun DashboardWideLayoutPreview() {
 private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
     WooDesignSystemThemeWithBackground {
         val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
-        val headerScrollBridge = remember(scrollBehavior) {
-            DashboardHeaderScrollBridge().apply { attach(scrollBehavior) }
-        }
         Column {
             DashboardHeader(
                 storeName = "Example Store",
@@ -602,7 +602,7 @@ private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
                 hasNewWidgets = true,
                 showCustomizeButton = true,
                 onEditWidgetsClicked = {},
-                headerScrollBridge = headerScrollBridge,
+                scrollBehavior = scrollBehavior,
                 contentBeforeWidgets = {},
                 modifier = Modifier.weight(1f),
             ) { widget, modifier ->

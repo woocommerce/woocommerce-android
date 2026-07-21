@@ -19,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -80,13 +79,13 @@ internal fun DashboardScreen(
         showJetpackBenefitsBanner = showJetpackBenefitsBanner,
         onJetpackBenefitsBannerClicked = onJetpackBenefitsBannerClicked,
         onJetpackBenefitsBannerDismissed = { jetpackBenefitsBanner?.onDismiss?.invoke() },
-        dashboardContent = { modifier, headerScrollBridge, contentBeforeWidgets ->
+        dashboardContent = { modifier, scrollBehavior, contentBeforeWidgets ->
             DashboardWidgets(
                 mainActivityViewModel = mainActivityViewModel,
                 dashboardViewModel = viewModel,
                 blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
                 scrollToTopTrigger = scrollToTopTrigger,
-                headerScrollBridge = headerScrollBridge,
+                scrollBehavior = scrollBehavior,
                 contentBeforeWidgets = contentBeforeWidgets,
                 modifier = modifier,
             )
@@ -104,16 +103,11 @@ private fun DashboardScreen(
     showJetpackBenefitsBanner: Boolean,
     onJetpackBenefitsBannerClicked: () -> Unit,
     onJetpackBenefitsBannerDismissed: () -> Unit,
-    dashboardContent: @Composable (Modifier, DashboardHeaderScrollBridge, @Composable () -> Unit) -> Unit,
+    dashboardContent: @Composable (Modifier, WooPageHeaderScrollBehavior, @Composable () -> Unit) -> Unit,
     jitmContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
-    val headerScrollBridge = remember { DashboardHeaderScrollBridge() }
-    DisposableEffect(scrollBehavior, headerScrollBridge) {
-        headerScrollBridge.attach(scrollBehavior)
-        onDispose { headerScrollBridge.detach(scrollBehavior) }
-    }
 
     Column(
         modifier = modifier
@@ -127,7 +121,7 @@ private fun DashboardScreen(
             scrollBehavior = scrollBehavior,
         )
         Box(modifier = Modifier.weight(1f)) {
-            dashboardContent(Modifier.fillMaxSize(), headerScrollBridge) {
+            dashboardContent(Modifier.fillMaxSize(), scrollBehavior) {
                 Box(modifier = Modifier.padding(vertical = WooTheme.padding.padding2)) {
                     jitmContent(Modifier.fillMaxWidth())
                 }
