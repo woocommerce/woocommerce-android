@@ -97,7 +97,7 @@ internal fun DashboardScreen(
 }
 
 @Composable
-internal fun DashboardScreen(
+private fun DashboardScreen(
     storeName: String,
     showShareStoreButton: Boolean,
     onShareStoreClicked: () -> Unit,
@@ -167,7 +167,7 @@ internal fun DashboardHeader(
 }
 
 @Composable
-fun JetpackBenefitsBanner(
+private fun JetpackBenefitsBanner(
     onClick: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
