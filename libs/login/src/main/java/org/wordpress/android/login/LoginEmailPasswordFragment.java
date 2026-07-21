@@ -318,8 +318,18 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
     }
 
     private void showError(String error) {
-        mAnalyticsListener.trackFailure(error);
-        mPasswordInput.setError(error);
+        showError(error, error);
+    }
+
+    private void showError(String displayError, String analyticsError) {
+        mAnalyticsListener.trackFailure(analyticsError);
+        mPasswordInput.setError(displayError);
+    }
+
+    @NonNull
+    static String resolveFailureMessage(@NonNull LoginState loginState, @NonNull String fallbackMessage) {
+        String failureMessage = loginState.getFailureMessage();
+        return failureMessage == null || failureMessage.trim().isEmpty() ? fallbackMessage : failureMessage;
     }
 
     @Override
@@ -413,7 +423,8 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 break;
             case FAILURE:
                 onLoginFinished(false);
-                showError(getString(R.string.error_generic));
+                String genericError = getString(R.string.error_generic);
+                showError(resolveFailureMessage(loginState, genericError), genericError);
                 break;
             case SUCCESS:
                 onLoginFinished(true);

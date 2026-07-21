@@ -80,13 +80,28 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
 
     public static class LoginState implements AutoForeground.ServiceState {
         private final LoginStep mStep;
+        @Nullable private final String mFailureMessage;
 
         LoginState(@NonNull LoginStep step) {
+            this(step, null);
+        }
+
+        private LoginState(@NonNull LoginStep step, @Nullable String failureMessage) {
             this.mStep = step;
+            this.mFailureMessage = failureMessage;
+        }
+
+        static LoginState failure(@Nullable String failureMessage) {
+            return new LoginState(LoginStep.FAILURE, failureMessage);
         }
 
         public LoginStep getStep() {
             return mStep;
+        }
+
+        @Nullable
+        public String getFailureMessage() {
+            return mFailureMessage;
         }
 
         @Override
@@ -341,7 +356,9 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
                 setState(LoginStep.FAILURE_USE_WPCOM_USERNAME_INSTEAD_OF_EMAIL);
                 break;
             case INVALID_REQUEST:
-                // TODO: FluxC: could be specific?
+                setState(LoginState.failure(errorMessage));
+                AppLog.e(T.NUX, "Server response: " + errorMessage);
+                break;
             default:
                 setState(LoginStep.FAILURE);
                 AppLog.e(T.NUX, "Server response: " + errorMessage);
