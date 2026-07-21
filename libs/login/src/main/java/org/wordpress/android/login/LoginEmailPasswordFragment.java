@@ -318,12 +318,8 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
     }
 
     private void showError(String error) {
-        showError(error, error);
-    }
-
-    private void showError(@NonNull String displayError, @NonNull String analyticsError) {
-        mAnalyticsListener.trackFailure(analyticsError);
-        mPasswordInput.setError(displayError);
+        mAnalyticsListener.trackFailure(error);
+        mPasswordInput.setError(error);
     }
 
     @NonNull
@@ -424,7 +420,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
             case FAILURE:
                 onLoginFinished(false);
                 String genericError = getString(R.string.error_generic);
-                showError(resolveFailureMessage(loginState, genericError), genericError);
+                showError(resolveFailureMessage(loginState, genericError));
                 break;
             case SUCCESS:
                 onLoginFinished(true);
