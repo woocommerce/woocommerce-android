@@ -23,10 +23,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +48,7 @@ fun LoginErrorScreen(
     title: String?,
     text: CharSequence,
     @DrawableRes illustration: Int,
+    onNavigationButtonClick: (() -> Unit)?,
     onHelpButtonClick: () -> Unit,
     inlineButtons: List<LoginErrorButton>,
     primaryButton: LoginErrorButton?,
@@ -56,7 +59,10 @@ fun LoginErrorScreen(
         topBar = {
             ToolbarWithHelpButton(
                 title = title.orEmpty(),
-                navigationIcon = null,
+                onNavigationButtonClick = onNavigationButtonClick,
+                navigationIcon = onNavigationButtonClick?.let {
+                    ImageVector.vectorResource(R.drawable.ic_back_24dp)
+                },
                 onHelpButtonClick = onHelpButtonClick,
                 modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
             )
@@ -175,6 +181,7 @@ private fun LoginErrorScreenPreview() {
             title = stringResource(id = string.login_no_wpcom_account_found_title),
             text = stringResource(id = string.login_error_generic),
             illustration = drawable.img_woo_generic_error,
+            onNavigationButtonClick = {},
             onHelpButtonClick = { },
             inlineButtons = listOf(LoginErrorButton(string.login_try_another_account, {})),
             primaryButton = LoginErrorButton(string.login_try_another_account, {}),

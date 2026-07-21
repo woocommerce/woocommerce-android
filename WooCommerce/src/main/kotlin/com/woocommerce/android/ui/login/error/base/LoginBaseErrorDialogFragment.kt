@@ -27,6 +27,7 @@ abstract class LoginBaseErrorDialogFragment : DialogFragment() {
     protected open val title: String? = null
     protected abstract val text: CharSequence
     protected open val illustration: Int = R.drawable.img_woo_generic_error
+    protected open val onNavigationButtonClick: (() -> Unit)? = null
     protected abstract val helpOrigin: HelpOrigin
     protected open val inlineButtons: List<LoginErrorButton> = emptyList()
     protected open val primaryButton: LoginErrorButton? = null
@@ -64,6 +65,7 @@ abstract class LoginBaseErrorDialogFragment : DialogFragment() {
                         title = title,
                         text = text,
                         illustration = illustration,
+                        onNavigationButtonClick = onNavigationButtonClick,
                         onHelpButtonClick = ::openHelpScreen,
                         inlineButtons = inlineButtons,
                         primaryButton = primaryButton,

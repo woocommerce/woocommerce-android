@@ -34,6 +34,9 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
     override val illustration: Int
         get() = R.drawable.img_woo_generic_error
 
+    override val onNavigationButtonClick: () -> Unit
+        get() = { dismiss() }
+
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_EMAIL
 
