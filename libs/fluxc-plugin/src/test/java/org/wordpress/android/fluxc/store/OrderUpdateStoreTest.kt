@@ -473,7 +473,7 @@ class OrderUpdateStoreTest {
         setUp {
             orderRestClient = mock {
                 on {
-                    updateOrder(any(), any(), any())
+                    updateOrder(any(), any(), any(), anyOrNull())
                 }.doReturn(
                     WooPayload(updatedOrder)
                 )
