@@ -40,7 +40,7 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_EMAIL
 
-    override val secondaryButton: LoginErrorButton
+    override val primaryButton: LoginErrorButton
         get() = LoginErrorButton(
             title = R.string.login_try_another_account,
             onClick = {
@@ -50,6 +50,8 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
                 dismiss()
             }
         )
+
+    override val secondaryButton: LoginErrorButton? = null
 
     override val inlineButtons: List<LoginErrorButton>
         get() = listOf(
