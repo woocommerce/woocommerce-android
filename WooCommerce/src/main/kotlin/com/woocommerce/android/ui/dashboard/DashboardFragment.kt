@@ -4,17 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.fragment.compose.AndroidFragment
-import androidx.fragment.compose.rememberFragmentState
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -52,8 +43,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
-import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
-import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -125,7 +114,12 @@ class DashboardFragment : TopLevelFragment() {
             scrollToTopTrigger = scrollToTopTrigger,
             onJetpackBenefitsBannerShown = ::trackJetpackBenefitsBannerShown,
             onJetpackBenefitsBannerClicked = ::onJetpackBenefitsBannerClicked,
-            jitmContent = { modifier -> JitmHost(modifier) }
+            jitmContent = { modifier ->
+                DashboardJitmHost(
+                    onJitmFragmentChanged = { jitmFragment = it },
+                    modifier = modifier,
+                )
+            }
         )
     }.apply {
         id = R.id.dashboard_container
@@ -253,29 +247,6 @@ class DashboardFragment : TopLevelFragment() {
     override fun onDestroyView() {
         jitmFragment = null
         super.onDestroyView()
-    }
-
-    @Composable
-    private fun JitmHost(modifier: Modifier = Modifier) {
-        val fragmentState = rememberFragmentState()
-        val arguments = remember {
-            Bundle().apply {
-                putString(JitmViewModel.JITM_MESSAGE_PATH_KEY, JitmMessagePathsProvider.MY_STORE)
-            }
-        }
-
-        DisposableEffect(Unit) {
-            onDispose { jitmFragment = null }
-        }
-        // Fragment Compose creates a MATCH_PARENT-height host. Intrinsics make it measure its content height.
-        AndroidFragment<JitmFragment>(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min),
-            fragmentState = fragmentState,
-            arguments = arguments,
-            onUpdate = { jitmFragment = it },
-        )
     }
 
     private fun refreshJitm() {
