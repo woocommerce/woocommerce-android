@@ -27,10 +27,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -58,6 +55,7 @@ fun LoginErrorScreen(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             ToolbarWithHelpButton(
+                title = title.orEmpty(),
                 navigationIcon = null,
                 onHelpButtonClick = onHelpButtonClick,
                 modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
@@ -91,16 +89,6 @@ fun LoginErrorScreen(
                     modifier = illustrationModifier
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                title?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.semantics { heading() }
-                    )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                }
                 when (text) {
                     is String -> Text(
                         text = text,

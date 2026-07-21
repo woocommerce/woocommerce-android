@@ -32,7 +32,7 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
         get() = getString(R.string.login_no_wpcom_account_found_message)
 
     override val illustration: Int
-        get() = R.drawable.img_wpcom_error
+        get() = R.drawable.img_woo_generic_error
 
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_EMAIL
