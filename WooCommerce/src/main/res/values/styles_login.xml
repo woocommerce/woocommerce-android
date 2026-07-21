@@ -24,6 +24,7 @@
         <item name="colorControlNormal">@color/color_primary</item>
         <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="android:textColorLink">@color/color_primary</item>
+        <item name="android:progressBarStyle">@style/Widget.LoginFlow.ProgressBar</item>
 
         <item name="android:alertDialogTheme">@style/Theme.LoginFlow.Dialog</item>
         <item name="alertDialogTheme">@style/Theme.LoginFlow.Dialog</item>
