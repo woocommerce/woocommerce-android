@@ -316,7 +316,8 @@
     <string name="login_discovery_error_options">Here are a few other things you can try:</string>
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
-    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found_title">We couldn\'t sign you in</string>
+    <string name="login_no_wpcom_account_found_message">Check the email address and try again, or log in with another account.</string>
     <string name="user_role_access_error_user_roles_null">This app supports only Administrator and Shop Manager user roles. We were unable to fetch user roles for your account. Please contact support.</string>
     <string name="user_role_access_error_fetch_failed">We couldn\'t verify your role on this store. Please try again. If the problem persists, contact support.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>

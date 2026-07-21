@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -42,6 +46,7 @@ import com.woocommerce.android.ui.login.error.base.LoginBaseErrorDialogFragment.
 
 @Composable
 fun LoginErrorScreen(
+    title: String?,
     text: CharSequence,
     @DrawableRes illustration: Int,
     onHelpButtonClick: () -> Unit,
@@ -62,6 +67,7 @@ fun LoginErrorScreen(
     ) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(it)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
@@ -73,8 +79,28 @@ fun LoginErrorScreen(
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
-                Image(painter = painterResource(id = illustration), contentDescription = null)
+                val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val illustrationModifier = if (isLandscape) {
+                    Modifier.height(dimensionResource(id = R.dimen.image_major_100))
+                } else {
+                    Modifier
+                }
+                Image(
+                    painter = painterResource(id = illustration),
+                    contentDescription = null,
+                    modifier = illustrationModifier
+                )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                title?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.h5,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.semantics { heading() }
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                }
                 when (text) {
                     is String -> Text(
                         text = text,
@@ -105,7 +131,8 @@ fun LoginErrorScreen(
 
             ButtonBar(
                 primaryButton,
-                secondaryButton
+                secondaryButton,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -157,6 +184,7 @@ private fun ButtonBar(
 private fun LoginErrorScreenPreview() {
     WooThemeWithBackground {
         LoginErrorScreen(
+            title = stringResource(id = string.login_no_wpcom_account_found_title),
             text = stringResource(id = string.login_error_generic),
             illustration = drawable.img_woo_generic_error,
             onHelpButtonClick = { },

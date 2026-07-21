@@ -24,6 +24,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 abstract class LoginBaseErrorDialogFragment : DialogFragment() {
+    protected open val title: String? = null
     protected abstract val text: CharSequence
     protected open val illustration: Int = R.drawable.img_woo_generic_error
     protected abstract val helpOrigin: HelpOrigin
@@ -60,6 +61,7 @@ abstract class LoginBaseErrorDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     LoginErrorScreen(
+                        title = title,
                         text = text,
                         illustration = illustration,
                         onHelpButtonClick = ::openHelpScreen,
