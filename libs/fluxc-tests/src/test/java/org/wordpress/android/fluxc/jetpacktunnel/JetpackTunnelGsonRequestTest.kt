@@ -101,6 +101,22 @@ class JetpackTunnelGsonRequestTest {
     }
 
     @Test
+    fun `given params, when creating a put request, then they are appended to the path with an ampersand`() {
+        val url = "/wc/v3/orders/7997"
+
+        val request = JetpackTunnelGsonRequest.buildPutRequest(url, DUMMY_SITE_ID, mapOf(),
+            Any::class.java,
+            { _: Any?, _: Any? -> },
+            { _ -> },
+            params = mapOf("currency" to "EUR")
+        )
+
+        val body = String(request?.body!!)
+        val generatedBody = gson.fromJson(body, HashMap<String, String>()::class.java)
+        assertEquals("/wc/v3/orders/7997&currency=EUR&_method=put", generatedBody["path"])
+    }
+
+    @Test
     fun testCreatePatchRequest() {
         val url = "/wp/v2/settings/"
 
