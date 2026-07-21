@@ -321,7 +321,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
         showError(error, error);
     }
 
-    private void showError(String displayError, String analyticsError) {
+    private void showError(@NonNull String displayError, @NonNull String analyticsError) {
         mAnalyticsListener.trackFailure(analyticsError);
         mPasswordInput.setError(displayError);
     }

@@ -91,6 +91,7 @@ public class LoginWpcomService extends AutoForeground<LoginState> {
             this.mFailureMessage = failureMessage;
         }
 
+        @NonNull
         static LoginState failure(@Nullable String failureMessage) {
             return new LoginState(LoginStep.FAILURE, failureMessage);
         }
