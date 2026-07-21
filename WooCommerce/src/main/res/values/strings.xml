@@ -500,6 +500,10 @@
     <string name="dynamic_dashboard_widget_menu_item_hide">Hide %s</string>
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">%1$d-star rating</item>
+        <item quantity="other">%1$d-star rating</item>
+    </plurals>
 
     <string name="dashboard_reviews_card_header_title">Status</string>
     <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>

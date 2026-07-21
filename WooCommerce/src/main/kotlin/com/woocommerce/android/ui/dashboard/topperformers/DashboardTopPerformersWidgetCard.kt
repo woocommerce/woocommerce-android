@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -21,11 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
@@ -36,12 +33,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
@@ -139,7 +138,7 @@ fun DashboardTopPerformersContent(
                 onTabSelected = onTabSelected
             )
         }
-        Divider(modifier = Modifier.padding(bottom = 16.dp))
+        WooDivider(modifier = Modifier.padding(bottom = 16.dp))
 
         when {
             topPerformersState?.isLoading == true -> TopPerformersLoading(
@@ -204,15 +203,13 @@ private fun TopPerformersContent(
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.product),
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector),
-                fontWeight = FontWeight.SemiBold,
+                style = WooTheme.text.bodyMedium.emphasized,
+                color = WooTheme.colors.surface.onDefault,
             )
             Text(
                 text = stringResource(id = R.string.dashboard_top_performers_items_sold),
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector),
-                fontWeight = FontWeight.SemiBold,
+                style = WooTheme.text.bodyMedium.emphasized,
+                color = WooTheme.colors.surface.onDefault,
             )
         }
         when {
@@ -255,7 +252,7 @@ private fun TopPerformersLoading(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
         repeat(5) {
             TopPerformerSkeletonItem()
-            Divider()
+            WooDivider()
         }
     }
 }
@@ -268,7 +265,7 @@ fun TopPerformerSkeletonItem() {
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(42.dp)
                 .width(42.dp)
@@ -279,19 +276,19 @@ fun TopPerformerSkeletonItem() {
                 .padding(start = 16.dp)
                 .weight(1f)
         ) {
-            SkeletonView(
+            DashboardSkeleton(
                 modifier = Modifier
                     .height(14.dp)
                     .width(180.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
-            SkeletonView(
+            DashboardSkeleton(
                 modifier = Modifier
                     .height(12.dp)
                     .width(150.dp)
             )
         }
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(14.dp)
                 .width(30.dp)
@@ -321,22 +318,24 @@ private fun TopPerformerProductItem(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = topPerformer.name,
-                    style = MaterialTheme.typography.subtitle1,
+                    style = WooTheme.text.titleMedium.regular,
+                    color = WooTheme.colors.surface.onDefault,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = topPerformer.timesOrdered,
-                    style = MaterialTheme.typography.subtitle1,
+                    style = WooTheme.text.titleMedium.regular,
+                    color = WooTheme.colors.surface.onDefault,
                 )
             }
             Text(
                 text = topPerformer.netSales,
-                style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector)
+                style = WooTheme.text.bodyMedium.regular,
+                color = WooTheme.colors.surface.onDefault,
             )
             if (displayDivider) {
-                Divider(modifier = Modifier.padding(top = 8.dp))
+                WooDivider(modifier = Modifier.padding(top = 8.dp))
             }
         }
     }
@@ -352,12 +351,13 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_not_found),
-            contentDescription = "",
+            contentDescription = null,
         )
         Text(
             modifier = Modifier.padding(top = 24.dp),
             text = stringResource(id = R.string.dashboard_top_performers_empty),
-            style = MaterialTheme.typography.body2,
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
         )
     }
 }
@@ -384,9 +384,13 @@ private fun TopPerformersErrorView(
     }
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
-private fun TopPerformersWidgetCardPreview() {
+private fun TopPerformersWidgetCardPreview() =
+    WooDesignSystemThemeWithBackground { TopPerformersPreviewContent() }
+
+@Composable
+private fun TopPerformersPreviewContent() {
     val selectedDateRange = TopPerformersDateRange(
         SelectionType.TODAY.generateSelectionData(
             referenceStartDate = Date(),
@@ -452,7 +456,9 @@ private fun TopPerformersWidgetCardPreview() {
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
-            topPerformersState = topPerformersState.copy(error = DashboardTopPerformersViewModel.ErrorType.Generic),
+            topPerformersState = topPerformersState.copy(
+                error = DashboardTopPerformersViewModel.ErrorType.Generic
+            ),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             showDelayedFooter = false,
