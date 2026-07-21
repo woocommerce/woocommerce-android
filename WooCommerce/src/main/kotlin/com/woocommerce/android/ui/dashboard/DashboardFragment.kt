@@ -1,24 +1,15 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.annotation.OptIn
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.NavGraphMainDirections
@@ -26,13 +17,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
-import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
-import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -45,6 +34,7 @@ import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewMod
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -59,7 +49,6 @@ import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
@@ -69,17 +58,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
-import kotlin.math.abs
 
 @AndroidEntryPoint
 class DashboardFragment :
-    TopLevelFragment(R.layout.fragment_dashboard),
-    MenuProvider {
+    TopLevelFragment(R.layout.fragment_dashboard) {
     companion object {
         val TAG: String = DashboardFragment::class.java.simpleName
         fun newInstance() = DashboardFragment()
@@ -110,28 +95,13 @@ class DashboardFragment :
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private val editButtonBadge by lazy {
-        BadgeDrawable.create(requireContext()).apply {
-            backgroundColor = requireContext().getColorCompat(R.color.color_primary)
-        }
-    }
-
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            navigationIcon = null,
-            hasShadow = true,
-        )
+        get() = AppBarStatus.Hidden
 
     private var wasPreviouslyStopped = false
-
-    // The collapsing toolbar lives in MainActivity and is shared across tabs, so navigating away programmatically
-    // resets its offset. We keep the last offset seen while the dashboard is visible and only commit it to the
-    // ViewModel in onPause(), so the state used to restore the toolbar on return reflects the user's scroll, not
-    // the programmatic reset. See shouldExpandToolbar().
-    private var lastAppBarVerticalOffset = 0
 
     private val scrollToTopTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
@@ -141,10 +111,30 @@ class DashboardFragment :
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
 
         _binding = FragmentDashboardBinding.bind(view)
+        val headerScrollBridge = DashboardHeaderScrollBridge()
+
+        binding.dashboardHeader.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooDesignSystemThemeWithBackground {
+                    val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
+                    DisposableEffect(scrollBehavior, headerScrollBridge) {
+                        headerScrollBridge.attach(scrollBehavior)
+                        onDispose { headerScrollBridge.detach(scrollBehavior) }
+                    }
+                    DashboardHeader(
+                        storeName = dashboardViewModel.storeName.observeAsState().value.orEmpty(),
+                        showShareStoreButton = dashboardViewModel.appbarState.observeAsState().value
+                            ?.showShareStoreButton == true,
+                        onShareStoreClicked = dashboardViewModel::onShareStoreClicked,
+                        scrollBehavior = scrollBehavior,
+                    )
+                }
+            }
+        }
 
         binding.dashboardContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -155,7 +145,8 @@ class DashboardFragment :
                         mainActivityViewModel = mainActivityViewModel,
                         dashboardViewModel = dashboardViewModel,
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        scrollToTopTrigger = scrollToTopTrigger
+                        scrollToTopTrigger = scrollToTopTrigger,
+                        headerScrollBridge = headerScrollBridge,
                     )
                 }
             }
@@ -170,8 +161,6 @@ class DashboardFragment :
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
-        dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
-
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowPrivacyBanner ->
@@ -230,20 +219,8 @@ class DashboardFragment :
                 else -> event.isHandled = false
             }
         }
-        dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            // Only drive the shared toolbar subtitle while the dashboard is actually the visible screen. When it's
-            // in the back stack (e.g. a review opened from a notification is on top) its view lifecycle is still
-            // STARTED, so a late storeName emission would otherwise paint the store name onto that screen's toolbar.
-            // On return to the dashboard, BaseFragment.onResume restores the subtitle via getFragmentSubtitle().
-            if (isResumed) {
-                (activity as MainActivity).setSubtitle(storeName)
-            }
-        }
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)
-        }
-        dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
-            editButtonBadge.isVisible = hasNewWidgets
         }
     }
 
@@ -295,24 +272,6 @@ class DashboardFragment :
             )
             findNavController().navigateSafely(DashboardFragmentDirections.actionDashboardToJetpackBenefitsDialog())
         }
-        // For the banner to be above the bottom navigation view when the toolbar is expanded
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
-            // we are using `withCreated` here, since if this view doesn't reach the created state,
-            // the scope will not get cancelled.
-            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
-            // (no update as of Oct 2023)
-            val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            viewLifecycleOwner.withCreated {
-                appBarLayout?.verticalOffsetChanges()
-                    ?.onEach { verticalOffset ->
-                        lastAppBarVerticalOffset = verticalOffset
-                        binding.jetpackBenefitsBanner.root.translationY =
-                            (abs(verticalOffset) - appBarLayout.totalScrollRange).toFloat()
-                    }
-                    ?.launchIn(this)
-            }
-        }
     }
 
     override fun onResume() {
@@ -324,12 +283,6 @@ class DashboardFragment :
             wasPreviouslyStopped = false
         }
         dashboardViewModel.onResume()
-    }
-
-    override fun onPause() {
-        // Remember whether the toolbar was expanded before leaving the tab, so it can be restored on return.
-        dashboardViewModel.onToolbarOffsetChanged(lastAppBarVerticalOffset)
-        super.onPause()
     }
 
     override fun onStop() {
@@ -359,8 +312,6 @@ class DashboardFragment :
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)
-
-    override fun getFragmentSubtitle(): String = dashboardViewModel.storeName.value ?: ""
 
     private fun handleFeedbackRequestPositiveClick() {
         // Request a ReviewInfo object from the Google Reviews API. If this fails
@@ -395,47 +346,9 @@ class DashboardFragment :
         )
     }
 
-    override fun shouldExpandToolbar() = dashboardViewModel.isToolbarExpanded
+    override fun shouldExpandToolbar() = false
 
     override fun scrollToTop() {
         scrollToTopTrigger.tryEmit(Unit)
-    }
-
-    @OptIn(ExperimentalBadgeUtils::class)
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_dashboard_fragment, menu)
-
-        // Attach the badge to the top-left corner of the edit widgets button
-        editButtonBadge.badgeGravity = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
-            BadgeDrawable.TOP_END
-        } else {
-            BadgeDrawable.TOP_START
-        }
-        BadgeUtils.attachBadgeDrawable(
-            editButtonBadge,
-            requireActivity().findViewById(R.id.toolbar),
-            R.id.menu_edit_screen_widgets
-        )
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.menu_edit_screen_widgets -> {
-                dashboardViewModel.onEditWidgetsClicked()
-                true
-            }
-
-            R.id.menu_share_store -> {
-                dashboardViewModel.onShareStoreClicked()
-                true
-            }
-
-            else -> false
-        }
-    }
-
-    override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.menu_share_store).isVisible =
-            dashboardViewModel.appbarState.value?.showShareStoreButton ?: false
     }
 }

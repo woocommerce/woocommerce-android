@@ -10,11 +10,16 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:layout_marginVertical="@dimen/minor_50"
-        android:id="@+id/jitmFragment"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/dashboard_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/jitmFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/minor_50" />
 
     <!-- Dynamic dashboard container -->
     <androidx.compose.ui.platform.ComposeView
