@@ -94,6 +94,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.common.CurrencyCode
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -213,6 +214,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
+    private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -445,12 +447,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
             is Mode.Edit -> {
                 viewModelScope.launch {
+                    val currencyMismatch = currencyMismatchBlockingEditing()
+                    isEditingBlockedByCurrency = currencyMismatch != null
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
                         _orderDraft.value = order
                         viewState = viewState.copy(
                             isUpdatingOrderDraft = false,
                             showOrderUpdateSnackbar = false,
-                            isEditable = order.isEditable
+                            isEditable = order.isEditable && !isEditingBlockedByCurrency,
+                            currencyMismatch = currencyMismatch
                         )
                         monitorOrderChanges()
                         updateCouponAndDiscountButtonsState(order)
@@ -463,6 +468,21 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Below the fix version the store prices any line item we add in its own currency, so editing an order in
+     * another currency would silently corrupt its totals. See [IsCurrencyQueryParamSupported].
+     */
+    private suspend fun currencyMismatchBlockingEditing(): CurrencyMismatch? {
+        val orderCurrency = args.orderCurrency ?: return null
+        val currencyMatch = isStoreCurrencyMatch(orderCurrency)
+        val storeCurrency = currencyMatch.storeCurrency
+        if (currencyMatch.isMatch || storeCurrency == null || isCurrencyQueryParamSupported()) return null
+
+        return CurrencyMismatch(orderCurrency = orderCurrency, storeCurrency = storeCurrency)
+    }
+
+    private var isEditingBlockedByCurrency = false
 
     private var _isFirstShippingLineChange = true
 
@@ -1543,7 +1563,7 @@ class OrderCreateEditViewModel @Inject constructor(
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
 
     private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
-        updateStatus.order.isEditable || mode is Mode.Creation
+        (updateStatus.order.isEditable || mode is Mode.Creation) && !isEditingBlockedByCurrency
 
     private fun trackOrderCreationFailure(it: Throwable) {
         tracker.track(
@@ -2060,6 +2080,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     @Parcelize
+    data class CurrencyMismatch(
+        val orderCurrency: String,
+        val storeCurrency: String
+    ) : Parcelable
+
+    @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
         val willUpdateOrderDraft: Boolean = false,
@@ -2080,6 +2106,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isTwoPaneLayout: Boolean = false,
         val isRecalculateNeeded: Boolean = false,
         val showShippingFeedback: Boolean = false,
+        val currencyMismatch: CurrencyMismatch? = null,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =

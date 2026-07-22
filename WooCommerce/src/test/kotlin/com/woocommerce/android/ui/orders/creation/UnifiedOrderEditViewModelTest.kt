@@ -22,6 +22,8 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.orders.CurrencyMatchResult
+import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -68,6 +70,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -109,6 +112,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
     protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
+    protected lateinit var isStoreCurrencyMatch: IsStoreCurrencyMatch
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -232,6 +236,14 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
         isCurrencyQueryParamSupported = mock()
+        isStoreCurrencyMatch = mock()
+        // Only consulted when the screen was opened with an order currency, so stubbing it otherwise
+        // would trip the strict stubbing check.
+        if (orderCurrency != null) {
+            isStoreCurrencyMatch.stub {
+                on { invoke(any()) } doReturn CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+            }
+        }
     }
 
     protected abstract val tracksFlow: String
@@ -2190,6 +2202,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            isStoreCurrencyMatch = isStoreCurrencyMatch,
         )
     }
 
