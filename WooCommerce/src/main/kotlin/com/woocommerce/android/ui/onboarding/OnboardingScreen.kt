@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -99,7 +98,6 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
 fun StoreOnboardingCollapsed(
     onboardingState: OnboardingState,
     onViewAllClicked: () -> Unit,
-    onShareFeedbackClicked: () -> Unit,
     onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
     onHideOnboardingClicked: () -> Unit,
@@ -160,14 +158,13 @@ fun StoreOnboardingCollapsed(
                 .align(Alignment.TopEnd)
                 .padding(top = dimensionResource(id = dimen.minor_100))
         ) {
-            OnboardingMoreMenu(onShareFeedbackClicked, onHideOnboardingClicked)
+            OnboardingMoreMenu(onHideOnboardingClicked)
         }
     }
 }
 
 @Composable
 private fun OnboardingMoreMenu(
-    onShareFeedbackClicked: () -> Unit,
     onHideOnboardingClicked: () -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -185,17 +182,6 @@ private fun OnboardingMoreMenu(
         expanded = showMenu,
         onDismissRequest = { showMenu = false }
     ) {
-        DropdownMenuItem(
-            modifier = Modifier
-                .height(dimensionResource(id = dimen.major_175)),
-            onClick = {
-                showMenu = false
-                onShareFeedbackClicked()
-            }
-        ) {
-            Text(stringResource(id = string.store_onboarding_menu_share_feedback))
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
         DropdownMenuItem(
             modifier = Modifier
                 .height(dimensionResource(id = dimen.major_175)),
@@ -389,7 +375,6 @@ private fun OnboardingPreview() {
             )
         ),
         onViewAllClicked = {},
-        onShareFeedbackClicked = {},
         onHideOnboardingClicked = {},
         onTaskClicked = {}
     )

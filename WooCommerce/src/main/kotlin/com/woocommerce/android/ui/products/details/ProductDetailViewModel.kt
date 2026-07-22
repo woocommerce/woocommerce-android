@@ -430,9 +430,6 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailFragment.Mode.AddNewProduct -> startAddNewProduct()
             is ProductDetailFragment.Mode.ShowProduct -> {
                 loadRemoteProduct(mode.remoteProductId)
-                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed) {
-                    triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
-                }
             }
 
             is ProductDetailFragment.Mode.Loading -> {
@@ -2717,8 +2714,6 @@ class ProductDetailViewModel @Inject constructor(
         val productTitle: String,
         val productDescription: String?
     ) : Event()
-
-    object ShowAiProductCreationSurveyBottomSheet : Event()
 
     object ProductUpdated : Event()
 
