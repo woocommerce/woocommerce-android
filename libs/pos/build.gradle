@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
@@ -18,13 +17,6 @@ android {
         minSdkVersion gradle.ext.minSdkVersion
         targetSdkVersion gradle.ext.targetSdkVersion
         compileSdk = gradle.ext.compileSdkVersion
-    }
-
-    lint {
-        // Disabled due to kotlinx-metadata-jvm version incompatibility
-        // The lint detector expects metadata version 2.0.0 but the project uses 2.1.0
-        // This can be re-enabled once the compose lint library supports newer metadata versions
-        disable "FlowOperatorInvokedInComposition"
     }
 }
 

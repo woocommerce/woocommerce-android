@@ -1,5 +1,5 @@
 [versions]
-agp = '8.13.2'
+agp = '9.2.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
@@ -52,7 +52,7 @@ bumptech-glide = '5.0.9'
 cashapp-turbine = '1.2.1'
 coil = '2.7.0'
 commons-fileupload = '1.6.0'
-dependency-analysis = '3.14.1'
+dependency-analysis = '3.15.0'
 detekt = '1.23.8'
 eventbus = "3.3.1"
 facebook-shimmer = '0.5.0'
@@ -60,7 +60,7 @@ fastlane-screengrab = '2.1.1'
 fladle = '0.21.0'
 glassfish-javax-annotation = "10.0-b28"
 google-autoService = "1.1.1"
-google-dagger = "2.58"
+google-dagger = "2.60.1"
 google-firebase-bom = '34.5.0'
 google-gson = '2.14.0'
 google-guava = '33.6.0-android'
@@ -81,6 +81,7 @@ google-protobuf-library = '4.35.1'
 google-services = '4.4.4'
 google-zxing = '3.5.4'
 gravatar = '2.5.1'
+hamcrest = '2.2'
 jackson = '2.18.8'
 java = '11'
 jetty = '9.4.57.v20241219'
@@ -250,6 +251,8 @@ google-protobuf-kotlinlite = { group = "com.google.protobuf", name = "protobuf-k
 google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "google-protobuf-library" }
 google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
+hamcrest-core = { group = "org.hamcrest", name = "hamcrest-core", version.ref = "hamcrest" }
+hamcrest-library = { group = "org.hamcrest", name = "hamcrest-library", version.ref = "hamcrest" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jetty-webapp = { group = "org.eclipse.jetty", name = "jetty-webapp", version.ref = "jetty" }
@@ -304,10 +307,9 @@ google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "goo
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }

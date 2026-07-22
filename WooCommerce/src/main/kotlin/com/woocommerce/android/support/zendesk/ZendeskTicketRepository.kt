@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.woocommerce.android.applicationpasswords.IsAppPasswordsSupportedForJetpackSite
 import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.zendesk.RequestConstants.APPLICATION_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.DIAGNOSTIC_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
@@ -70,11 +72,12 @@ class ZendeskTicketRepository @Inject constructor(
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
-        val attachmentTokens = if (diagnosticLog != null) {
-            listOfNotNull(uploadDiagnosticLog(diagnosticLog))
-        } else {
-            emptyList()
-        }
+        val deviceLogs = envDataSource.getFullDeviceLogs()
+
+        val attachmentTokens = listOfNotNull(
+            diagnosticLog?.let { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) },
+            uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs)
+        )
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -103,7 +106,8 @@ class ZendeskTicketRepository @Inject constructor(
                 allSites = siteStore.sites,
                 selectedSite = selectedSite,
                 ssr = ssr,
-                siteAddress = siteAddress
+                siteAddress = siteAddress,
+                deviceLogs = deviceLogs
             )
 
             this.customFields = buildZendeskCustomFields(zendeskCustomFieldsParams)
@@ -130,37 +134,46 @@ class ZendeskTicketRepository @Inject constructor(
         return result.model?.formatResult()
     }
 
-    private suspend fun uploadDiagnosticLog(
-        diagnosticLog: String
+    private suspend fun uploadTextAttachment(
+        fileName: String,
+        content: String
     ): String? {
+        // Preparing the file is best-effort: an I/O failure (e.g. low disk space) must not block
+        // ticket creation, so we log it and continue without the attachment.
         val tempFile = withContext(dispatchers.io) {
-            File.createTempFile(DIAGNOSTIC_LOG_FILENAME, null).also {
-                it.writeText(diagnosticLog)
-            }
-        }
+            runCatching {
+                File.createTempFile(fileName, null).also { it.writeText(content) }
+            }.onFailure {
+                wooLog.e(WooLog.T.SUPPORT, "Failed to prepare attachment file: $fileName")
+            }.getOrNull()
+        } ?: return null
 
         return try {
-            suspendCancellableCoroutine { continuation ->
-                zendeskSettings.uploadProvider?.uploadAttachment(
-                    DIAGNOSTIC_LOG_FILENAME,
-                    tempFile,
-                    "text/plain",
-                    object : ZendeskCallback<UploadResponse>() {
-                        override fun onSuccess(result: UploadResponse?) {
-                            if (continuation.isActive) {
-                                continuation.resume(result?.token)
+            // Guard against the Zendesk SDK never invoking either callback, which would otherwise
+            // block ticket creation indefinitely. On timeout we treat it as a failed upload (null).
+            withTimeoutOrNull(RequestConstants.attachmentUploadTimeout) {
+                suspendCancellableCoroutine { continuation ->
+                    zendeskSettings.uploadProvider?.uploadAttachment(
+                        fileName,
+                        tempFile,
+                        "text/plain",
+                        object : ZendeskCallback<UploadResponse>() {
+                            override fun onSuccess(result: UploadResponse?) {
+                                if (continuation.isActive) {
+                                    continuation.resume(result?.token)
+                                }
                             }
-                        }
 
-                        override fun onError(error: ErrorResponse?) {
-                            wooLog.e(WooLog.T.SUPPORT, "Failed to upload diagnostic log")
-                            if (continuation.isActive) {
-                                continuation.resume(null)
+                            override fun onError(error: ErrorResponse?) {
+                                wooLog.e(WooLog.T.SUPPORT, "Failed to upload attachment: $fileName")
+                                if (continuation.isActive) {
+                                    continuation.resume(null)
+                                }
                             }
                         }
+                    ) ?: run {
+                        continuation.resume(null)
                     }
-                ) ?: run {
-                    continuation.resume(null)
                 }
             }
         } finally {
@@ -177,7 +190,7 @@ class ZendeskTicketRepository @Inject constructor(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
             CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
-            CustomField(TicketCustomField.logs, envDataSource.getDeviceLogs()),
+            CustomField(TicketCustomField.logs, envDataSource.trimDeviceLogs(params.deviceLogs)),
             CustomField(TicketCustomField.ssr, params.ssr),
             CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(params.selectedSite)),
             CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
@@ -359,9 +372,11 @@ sealed class ZendeskException(message: String) : Exception(message) {
 
 private object RequestConstants {
     const val requestCreationTimeout = 10000L
+    const val attachmentUploadTimeout = 30000L
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
     const val DIAGNOSTIC_LOG_FILENAME = "connectivitytest_log.txt"
+    const val APPLICATION_LOG_FILENAME = "application_log.txt"
 }
 
 private data class ZendeskCustomFieldsParams(
@@ -370,5 +385,6 @@ private data class ZendeskCustomFieldsParams(
     val allSites: List<SiteModel>?,
     val selectedSite: SiteModel?,
     val ssr: String?,
-    val siteAddress: String
+    val siteAddress: String,
+    val deviceLogs: String
 )
