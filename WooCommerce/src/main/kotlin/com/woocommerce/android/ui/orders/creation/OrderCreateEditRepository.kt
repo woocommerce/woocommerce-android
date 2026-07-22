@@ -48,6 +48,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val listItemMapper: ListItemMapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
+    private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
 ) {
     suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
@@ -74,7 +75,7 @@ class OrderCreateEditRepository @Inject constructor(
                 site = selectedSite.get(),
                 orderId = order.id,
                 updateRequest = request,
-                orderCurrency = order.currency
+                orderCurrency = order.currency.takeIf { isCurrencyQueryParamSupported() }
             )
         }
 
