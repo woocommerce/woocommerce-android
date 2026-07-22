@@ -51,6 +51,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariatio
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.getCompositeProducts
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils.observeBundledProducts
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
+import org.wordpress.android.fluxc.persistence.TransactionExecutor
 import org.wordpress.android.fluxc.persistence.dao.AddonsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductCategoriesDao
 import org.wordpress.android.fluxc.persistence.dao.ProductReviewsDao
@@ -88,6 +89,7 @@ class WCProductStore @Inject internal constructor(
     private val productTagsDao: ProductTagsDao,
     private val productShippingClassesDao: ProductShippingClassesDao,
     private val productReviewsDao: ProductReviewsDao,
+    private val database: TransactionExecutor,
 ) : Store(dispatcher) {
     companion object {
         const val NUM_REVIEWS_PER_FETCH = 25
@@ -1256,12 +1258,15 @@ class WCProductStore @Inject internal constructor(
                     it.remoteVariationId = result.variation.remoteVariationId.value
                 }
             } else {
-                val variation = if (context == "edit") {
-                    result.variation.mergeEditContextResponse(site)
-                } else {
-                    result.variation.mergeViewContextResponse(site)
+                val variation = database.executeInTransaction {
+                    val merged = if (context == "edit") {
+                        result.variation.mergeEditContextResponse(site)
+                    } else {
+                        result.variation.mergeViewContextResponse(site)
+                    }
+                    productVariationsDao.upsertProductVariation(merged)
+                    merged
                 }
-                productVariationsDao.upsertProductVariation(variation)
                 OnVariationChanged().also {
                     it.remoteProductId = variation.remoteProductId.value
                     it.remoteVariationId = variation.remoteVariationId.value
@@ -1407,20 +1412,22 @@ class WCProductStore @Inject internal constructor(
                     context = "edit"
                 )
             }
-            val mergedResponse = response.result
-                ?.mergeEditContextResponse(payload.site, payload.remoteProductId)
-                ?.let { WooPayload(it) }
-                ?: response
-            handleFetchedProductVariations(
-                response = mergedResponse,
-                context = ProductVariationsFetchContext(
-                    site = payload.site,
-                    remoteProductId = payload.remoteProductId,
-                    offset = payload.offset,
-                    pageSize = payload.pageSize,
-                    replaceExistingOnFirstPage = true,
-                ),
-            )
+            database.executeInTransaction {
+                val mergedResponse = response.result
+                    ?.mergeEditContextResponse(payload.site, payload.remoteProductId)
+                    ?.let { WooPayload(it) }
+                    ?: response
+                handleFetchedProductVariations(
+                    response = mergedResponse,
+                    context = ProductVariationsFetchContext(
+                        site = payload.site,
+                        remoteProductId = payload.remoteProductId,
+                        offset = payload.offset,
+                        pageSize = payload.pageSize,
+                        replaceExistingOnFirstPage = true,
+                    ),
+                )
+            }
         }
     }
 
@@ -1618,9 +1625,11 @@ class WCProductStore @Inject internal constructor(
                 } else {
                     // The update response is rendered in view context; the request carries the
                     // variation's own image.
-                    productVariationsDao.upsertProductVariation(
-                        result.variation.copy(editContextImage = variation.editContextImage)
-                    )
+                    database.executeInTransaction {
+                        productVariationsDao.upsertProductVariation(
+                            result.variation.copy(editContextImage = variation.editContextImage)
+                        )
+                    }
                     OnVariationUpdated(
                         result.variation.remoteProductId.value,
                         result.variation.remoteVariationId.value
@@ -1767,13 +1776,15 @@ class WCProductStore @Inject internal constructor(
                 return@withDefaultContext if (result.isError) {
                     WooResult(result.error)
                 } else {
-                    val updatedVariations = result.result?.updatedVariations?.map { response ->
-                        response.asProductVariationModel().copy(
-                            remoteProductId = RemoteId(payload.remoteProductId),
-                            localSiteId = LocalId(payload.site.id)
-                        )
-                    }?.mergeViewContextResponse(site, remoteProductId) ?: emptyList()
-                    productVariationsDao.upsertProductVariations(updatedVariations)
+                    database.executeInTransaction {
+                        val updatedVariations = result.result?.updatedVariations?.map { response ->
+                            response.asProductVariationModel().copy(
+                                remoteProductId = RemoteId(payload.remoteProductId),
+                                localSiteId = LocalId(payload.site.id)
+                            )
+                        }?.mergeViewContextResponse(site, remoteProductId) ?: emptyList()
+                        productVariationsDao.upsertProductVariations(updatedVariations)
+                    }
                     WooResult(result.result)
                 }
             }
@@ -2046,20 +2057,22 @@ class WCProductStore @Inject internal constructor(
                 filterOptions = filterOptions,
                 orderCurrency = orderCurrency
             )
-            val mergedResponse = response.result
-                ?.mergeViewContextResponse(site, productId)
-                ?.let { WooPayload(it) }
-                ?: response
-            handleFetchedProductVariations(
-                response = mergedResponse,
-                context = ProductVariationsFetchContext(
-                    site = site,
-                    remoteProductId = productId,
-                    offset = offset,
-                    pageSize = pageSize,
-                    replaceExistingOnFirstPage = includedVariationIds.isEmpty() && excludedVariationIds.isEmpty(),
-                ),
-            )
+            database.executeInTransaction {
+                val mergedResponse = response.result
+                    ?.mergeViewContextResponse(site, productId)
+                    ?.let { WooPayload(it) }
+                    ?: response
+                handleFetchedProductVariations(
+                    response = mergedResponse,
+                    context = ProductVariationsFetchContext(
+                        site = site,
+                        remoteProductId = productId,
+                        offset = offset,
+                        pageSize = pageSize,
+                        replaceExistingOnFirstPage = includedVariationIds.isEmpty() && excludedVariationIds.isEmpty(),
+                    ),
+                )
+            }
         }
     }
 

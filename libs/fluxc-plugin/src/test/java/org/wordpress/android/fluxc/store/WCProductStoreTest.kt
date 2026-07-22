@@ -115,6 +115,7 @@ class WCProductStoreTest {
             productTagsDao = wcDatabaseRule.db.productTagsDao,
             productShippingClassesDao = wcDatabaseRule.db.productShippingClassesDao,
             productReviewsDao = wcDatabaseRule.db.productReviewsDao,
+            database = wcDatabaseRule.db,
         )
     }
 
