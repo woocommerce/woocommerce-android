@@ -1624,11 +1624,10 @@ class WCProductStore @Inject internal constructor(
                         result.variation.remoteVariationId.value
                     ).also { it.error = result.error }
                 } else {
-                    // The update response is rendered in view context; the request carries the
-                    // variation's own image.
+                    // Update responses are rendered in edit context, like a single edit fetch.
                     database.executeInTransaction {
                         productVariationsDao.upsertProductVariation(
-                            result.variation.copy(editContextImage = variation.editContextImage)
+                            result.variation.mergeEditContextResponse(site)
                         )
                     }
                     OnVariationUpdated(

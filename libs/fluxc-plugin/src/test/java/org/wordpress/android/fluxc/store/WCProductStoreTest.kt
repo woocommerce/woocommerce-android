@@ -509,6 +509,44 @@ class WCProductStoreTest {
         }
 
     @Test
+    fun `given a variation without its own image, when the update response is stored, then the view value is kept`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            val updated = cachedVariation.copy(regularPrice = "12", editContextImage = "")
+            whenever(productRestClient.updateVariation(eq(site), anyOrNull(), any()))
+                .thenReturn(RemoteUpdateVariationPayload(site, updated.copy(image = "", editContextImage = null)))
+
+            productStore.updateVariation(UpdateVariationPayload(site, updated))
+
+            assertThat(productsVariationsDao.getVariation(site.localId(), RemoteId(productId), RemoteId(1L)))
+                .isEqualTo(updated)
+        }
+
+    @Test
+    fun `given the variation has its own image, when the update response is stored, then both columns hold it`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val ownImage = """{"id":7,"src":"https://example.com/own.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(productRestClient.updateVariation(eq(site), anyOrNull(), any()))
+                .thenReturn(
+                    RemoteUpdateVariationPayload(site, cachedVariation.copy(image = ownImage, editContextImage = null))
+                )
+
+            productStore.updateVariation(UpdateVariationPayload(site, cachedVariation))
+
+            assertThat(productsVariationsDao.getVariation(site.localId(), RemoteId(productId), RemoteId(1L)))
+                .isEqualTo(cachedVariation.copy(image = ownImage, editContextImage = ownImage))
+        }
+
+    @Test
     fun `given a cached edit context image, when variations are fetched with view context, then it is preserved`() =
         runTest {
             val site = SiteModel().apply { id = 42 }
