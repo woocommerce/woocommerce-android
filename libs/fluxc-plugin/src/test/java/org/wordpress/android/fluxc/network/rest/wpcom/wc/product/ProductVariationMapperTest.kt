@@ -32,6 +32,20 @@ class ProductVariationMapperTest {
     }
 
     @Test
+    fun `given the same image id in different json formats, when building the update body, then image is not sent`() {
+        val stored = WCProductVariationModel(
+            editContextImage = """{"id":123,"name":"img","src":"https://example.com/img.jpg","alt":""}"""
+        )
+        val updated = stored.copy(
+            editContextImage = """{"id":123,"name":"img","src":"https://example.com/img.jpg","date_created_gmt":""}"""
+        )
+
+        val body = ProductVariationMapper.variantModelToProductJsonBody(stored, updated)
+
+        assertThat(body).doesNotContainKey("image")
+    }
+
+    @Test
     fun `given the updated model carries no edit context image, when building the update body, then image is not sent`() {
         val stored = WCProductVariationModel(image = """{"id":123,"src":"https://example.com/img.jpg"}""")
         val updated = stored.copy(sku = "new-sku")
