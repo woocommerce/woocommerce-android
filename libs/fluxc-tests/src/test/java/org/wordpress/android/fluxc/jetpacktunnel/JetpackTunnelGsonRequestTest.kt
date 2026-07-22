@@ -117,6 +117,22 @@ class JetpackTunnelGsonRequestTest {
     }
 
     @Test
+    fun `given params with reserved characters, when creating a put request, then they are encoded`() {
+        val url = "/wc/v3/orders/7997"
+
+        val request = JetpackTunnelGsonRequest.buildPutRequest(url, DUMMY_SITE_ID, mapOf(),
+            Any::class.java,
+            { _: Any?, _: Any? -> },
+            { _ -> },
+            params = mapOf("search" to "a b&c")
+        )
+
+        val body = String(request?.body!!)
+        val generatedBody = gson.fromJson(body, HashMap<String, String>()::class.java)
+        assertEquals("/wc/v3/orders/7997&search=a%20b%26c&_method=put", generatedBody["path"])
+    }
+
+    @Test
     fun testCreatePatchRequest() {
         val url = "/wp/v2/settings/"
 

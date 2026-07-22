@@ -52,7 +52,7 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         body: Map<String, Any> = emptyMap(),
         clazz: Class<T>,
         nonce: String? = null,
-        params: Map<String, String>? = null
+        params: Map<String, String> = emptyMap()
     ) = suspendCancellableCoroutine<WPAPIResponse<T>> { cont ->
         callMethod(Method.PUT, url, params, body, clazz, cont, false, 0, nonce, restClient)
     }
