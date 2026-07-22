@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
 }
 
@@ -44,7 +43,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.preference.main)
     implementation(libs.eventbus.android)
-    implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.google.dagger.hilt.core)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.wordpress.utils)
@@ -67,13 +66,4 @@ dependencies {
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
-}
-
-dependencyAnalysis {
-    issues {
-        onUnusedDependencies {
-            // This dependency is required by the Hilt Gradle plugin, otherwise the build fails to configure.
-            exclude(libs.google.dagger.hilt.android.main.get().module.toString())
-        }
-    }
 }
