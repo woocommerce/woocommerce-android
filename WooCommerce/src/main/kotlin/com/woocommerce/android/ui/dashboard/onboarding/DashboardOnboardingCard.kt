@@ -33,7 +33,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -46,7 +45,6 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
 import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
@@ -54,7 +52,6 @@ import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
 import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
-import com.woocommerce.android.ui.onboarding.NavigateToSurvey
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.TaskItem
@@ -111,11 +108,6 @@ private fun HandleEvents(
     DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
-                is NavigateToSurvey ->
-                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
-                        navController.navigateSafely(this)
-                    }
-
                 is NavigateToLaunchStore ->
                     navController.navigateSafely(
                         directions = DashboardFragmentDirections.actionDashboardToLaunchStoreFragment()

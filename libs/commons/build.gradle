@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
@@ -28,12 +27,6 @@ android {
     }
 
     lintOptions {
-        // Workaround for kotlinx-metadata version incompatibility:
-        // Kotlin 2.2.21 generates metadata v2.2.0, but AGP 8.13.2's Compose lint detector
-        // only supports up to v2.0.0, causing crashes when analyzing Kotlin files.
-        // This can be removed when AGP updates its bundled kotlinx-metadata-jvm dependency.
-        disable "StateFlowValueCalledInComposition"
-
         baseline file("lint-baseline.xml")
     }
 
@@ -68,6 +61,7 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
 
+    testFixturesImplementation(platform(libs.androidx.compose.bom))
     testFixturesImplementation(libs.androidx.compose.ui.main)
     testFixturesCompileOnly(libs.kotlinx.coroutines.test)
     testFixturesCompileOnly(libs.junit)

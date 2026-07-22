@@ -251,7 +251,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     onPrimaryActionClicked = {
                         handleErrorCtaClick(CardReaderOnboardingCTAErrorType.STRIPE_ACCOUNT_OVERDUE_REQUIREMENTS)
                     },
-                    onSecondaryActionClicked = ::refreshState
+                    onSkipActionClicked = { onSkipOverdueRequirementsClicked(state) }
                 )
             is StripeAccountRejected ->
                 viewState.value = StripeAccountRejectedState(
@@ -441,6 +441,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
     }
 
     private fun onSkipPendingRequirementsClicked() {
+        continueFlow()
+    }
+
+    private fun onSkipOverdueRequirementsClicked(state: CardReaderOnboardingState) {
+        paymentsFlowTracker.trackOnboardingSkippedState(state)
         continueFlow()
     }
 

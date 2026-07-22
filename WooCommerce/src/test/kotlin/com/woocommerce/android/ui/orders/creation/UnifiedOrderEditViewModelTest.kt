@@ -108,6 +108,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
+    protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -120,13 +121,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val mode: OrderCreateEditViewModel.Mode
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
+    protected open val orderCurrency: String? = null
 
     @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.getEmptyOrder(Date(), Date())
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
+        savedState = spy(
+            OrderCreateEditFormFragmentArgs(
+                mode = mode,
+                sku = sku,
+                barcodeFormat = barcodeFormat,
+                orderCurrency = orderCurrency
+            ).toSavedStateHandle()
+        ) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on {
                 getLiveData(
@@ -222,6 +231,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
+        isCurrencyQueryParamSupported = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2190,6 +2200,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
+            isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
         )
     }
 

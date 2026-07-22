@@ -177,31 +177,7 @@ class TroubleshootConnectionViewModel @Inject constructor(
         )
     }
 
-    private fun generateDiagnosticLog(): String? {
-        val completedChecks = checksFlow.value.filter {
-            it.status is Success || it.status is Failure
-        }
-
-        if (completedChecks.isEmpty()) return null
-
-        return buildString {
-            completedChecks.forEachIndexed { index, check ->
-                appendLine("## ${index + 1}. ${check.type.operationName}")
-                appendLine("Took: ${check.status.durationMs}ms")
-                val resultStr = when (val status = check.status) {
-                    is Success -> "Success"
-                    is Failure -> {
-                        val errorName = status.error?.name ?: "Failed"
-                        val details = status.technicalDetails?.let { "\n$it" } ?: ""
-                        errorName + details
-                    }
-                    else -> "Unknown"
-                }
-                appendLine("Result: $resultStr")
-                appendLine()
-            }
-        }.trimEnd()
-    }
+    private fun generateDiagnosticLog(): String? = checksFlow.value.toConnectivityDiagnosticLog()
 
     private fun isAiSupportChatAvailable(): Boolean =
         featureFlagRepository.isEnabled(FeatureFlag.AI_SUPPORT_CHAT)

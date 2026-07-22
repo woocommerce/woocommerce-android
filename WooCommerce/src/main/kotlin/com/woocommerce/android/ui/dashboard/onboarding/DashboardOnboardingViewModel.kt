@@ -23,7 +23,6 @@ import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
 import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
-import com.woocommerce.android.ui.onboarding.NavigateToSurvey
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.SetupPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.SetupWooPaymentsTaskRes
@@ -64,10 +63,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         tasks = emptyList(),
         menu = DashboardWidgetMenu(
             items = listOf(
-                DashboardWidgetAction(
-                    titleResource = R.string.store_onboarding_menu_share_feedback,
-                    action = ::onShareFeedbackClicked
-                ),
                 DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
                     parentViewModel.onHideWidgetClicked(DashboardWidget.Type.ONBOARDING)
                 }
@@ -109,11 +104,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     private fun viewAllClicked() {
         parentViewModel.trackCardInteracted(DashboardWidget.Type.ONBOARDING.trackingIdentifier)
         triggerEvent(NavigateToOnboardingFullScreen)
-    }
-
-    private fun onShareFeedbackClicked() {
-        parentViewModel.trackCardInteracted(DashboardWidget.Type.ONBOARDING.trackingIdentifier)
-        triggerEvent(NavigateToSurvey)
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
