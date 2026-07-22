@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.logging.FakeCrashLogging
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -61,11 +62,11 @@ class SiteStoreUnitTest {
             Dispatcher(),
             mock(),
             mock(),
-            mock(),
             mSiteSqlUtils,
             SiteStorePersistence(accountStorePersistence),
             mock(),
-            initCoroutineEngine()
+            initCoroutineEngine(),
+            FakeCrashLogging
         )
     }
 

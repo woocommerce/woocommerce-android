@@ -12,6 +12,7 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
+import org.wordpress.android.fluxc.logging.FakeCrashLogging
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
 import org.wordpress.android.fluxc.model.asDomainModel
@@ -25,7 +26,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.Domain
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainsResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.PlansResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
-import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
@@ -45,7 +45,6 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 class SiteStoreTest {
     private val dispatcher: Dispatcher = mock()
     private val siteRestClient: SiteRestClient = mock()
-    private val siteXMLRPCClient: SiteXMLRPCClient = mock()
     private val siteWPAPIClient: SiteWPAPIRestClient = mock()
     private val siteSqlUtils: SiteSqlUtils = mock()
     private val domainsDao: DomainDao = mock()
@@ -64,12 +63,12 @@ class SiteStoreTest {
         siteStore = SiteStore(
             dispatcher,
             siteRestClient,
-            siteXMLRPCClient,
             siteWPAPIClient,
             siteSqlUtils,
             siteStorePersistence,
             domainsDao,
-            initCoroutineEngine()
+            initCoroutineEngine(),
+            FakeCrashLogging
         )
     }
 
@@ -97,22 +96,9 @@ class SiteStoreTest {
     }
 
     @Test
-    fun `fetchSite from XMLRPC endpoint and stores it to DB`() = test {
+    fun `fetchSite for site without a REST origin returns error`() = test {
         val site = SiteModel()
         site.setIsWPCom(false)
-        val updatedSite = SiteModel()
-        whenever(siteXMLRPCClient.fetchSite(site)).thenReturn(updatedSite)
-
-        assertSiteFetched(updatedSite, site)
-    }
-
-    @Test
-    fun `fetchSite error from XMLRPC endpoint returns error`() = test {
-        val site = SiteModel()
-        site.setIsWPCom(false)
-        val errorSite = SiteModel()
-        errorSite.error = BaseNetworkError(PARSE_ERROR)
-        whenever(siteXMLRPCClient.fetchSite(site)).thenReturn(errorSite)
 
         assertSiteFetchError(site)
     }
