@@ -878,9 +878,7 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-     * [orderCurrency] is sent as a query parameter because WooPayments Multi-Currency reads it from there. Without
-     * it, it forces the store's base currency for REST requests and disables price conversion, so line items sent
-     * without an explicit price would be priced in the store's currency rather than the order's.
+     * [orderCurrency] has to go in the query string, not the body — that's where WooPayments Multi-Currency reads it.
      */
     suspend fun updateOrder(
         site: SiteModel,
