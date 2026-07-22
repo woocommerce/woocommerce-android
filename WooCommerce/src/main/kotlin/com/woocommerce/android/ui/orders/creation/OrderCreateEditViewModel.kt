@@ -212,6 +212,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
+    private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1194,16 +1195,19 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }.orEmpty()
-        triggerEvent(
-            SelectItems(
-                selectedItems,
-                listOf(
-                    ProductRestriction.NonPublishedProducts,
-                    ProductRestriction.VariableProductsWithNoVariations
-                ),
-                args.mode
+        launch {
+            triggerEvent(
+                SelectItems(
+                    selectedItems,
+                    listOf(
+                        ProductRestriction.NonPublishedProducts,
+                        ProductRestriction.VariableProductsWithNoVariations
+                    ),
+                    args.mode,
+                    args.orderCurrency?.takeIf { isCurrencyQueryParamSupported() }
+                )
             )
-        )
+        }
     }
 
     fun onRetryClicked() {
