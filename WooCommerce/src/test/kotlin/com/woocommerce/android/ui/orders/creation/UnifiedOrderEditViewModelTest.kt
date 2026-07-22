@@ -108,6 +108,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
+    protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -230,6 +231,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
+        isCurrencyQueryParamSupported = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2187,6 +2189,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
+            isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
         )
     }
 

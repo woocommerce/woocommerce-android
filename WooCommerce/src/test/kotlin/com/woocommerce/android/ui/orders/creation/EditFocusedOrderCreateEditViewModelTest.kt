@@ -753,6 +753,9 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `given an order in a non-default currency, when adding a product, then SelectItems carries that currency`() {
+        isCurrencyQueryParamSupported.stub {
+            on { invoke() } doReturn true
+        }
         var lastReceivedEvent: Event? = null
         sut.event.observeForever {
             lastReceivedEvent = it
@@ -763,5 +766,22 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
         val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
         assertThat(event.orderCurrency).isEqualTo("EUR")
+    }
+
+    @Test
+    fun `given the store can't take the currency query param, when adding a product, then SelectItems drops it`() {
+        isCurrencyQueryParamSupported.stub {
+            on { invoke() } doReturn false
+        }
+        var lastReceivedEvent: Event? = null
+        sut.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        sut.onAddProductClicked()
+
+        assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
+        val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
+        assertThat(event.orderCurrency).isNull()
     }
 }
