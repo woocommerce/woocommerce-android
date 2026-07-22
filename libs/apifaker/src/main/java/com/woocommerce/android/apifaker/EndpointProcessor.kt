@@ -132,7 +132,7 @@ internal class EndpointProcessor @Inject constructor(
         val query = jsonObjectProvider.parseString(readBody()).getString("path")
             .split("&")
             .drop(1)
-            .filterNot { it.startsWith("_method") }
+            .filterNot { it.startsWith("_method=") }
             .joinToString(separator = "&")
 
         // Parsed as a URL so that percent-encoded values are decoded the same way as on the direct path
