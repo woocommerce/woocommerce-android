@@ -547,6 +547,35 @@ class WCProductStoreTest {
         }
 
     @Test
+    fun `given a variation without its own image, when a batch update response is stored, then the view value is kept`() =
+        runTest {
+            val product = ProductTestUtils.generateSampleProduct(200L)
+            productsDao.upsertProduct(product)
+            val site = insertTestAccountAndSiteIntoDb()
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(200L, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            val payload = BatchUpdateVariationsPayload.Builder(site, 200L, listOf(1L))
+                .regularPrice("12")
+                .build()
+            val backendVariation = ProductVariationApiResponse().apply {
+                id = 1L
+                regular_price = "12"
+            }
+            whenever(
+                productRestClient.batchUpdateVariations(any(), any(), anyOrNull(), any(), anyOrNull())
+            ).thenReturn(WooPayload(BatchProductVariationsApiResponse(updatedVariations = listOf(backendVariation))))
+
+            productStore.batchUpdateVariations(payload)
+
+            val stored = productsVariationsDao.getVariation(site.localId(), RemoteId(200L), RemoteId(1L))
+            assertThat(stored?.image).isEqualTo(parentImage)
+            assertThat(stored?.editContextImage).isEqualTo("")
+            assertThat(stored?.regularPrice).isEqualTo("12")
+        }
+
+    @Test
     fun `given a cached edit context image, when variations are fetched with view context, then it is preserved`() =
         runTest {
             val site = SiteModel().apply { id = 42 }
