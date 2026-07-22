@@ -481,6 +481,34 @@ class WCProductStoreTest {
         }
 
     @Test
+    fun `given the variation has its own image, when variations are fetched with edit context, then it becomes the view value`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val ownImage = """{"id":7,"src":"https://example.com/own.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 0,
+                    context = "edit"
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(image = ownImage))))
+
+            productStore.fetchProductVariations(
+                FetchProductVariationsPayload(site = site, remoteProductId = productId, pageSize = 2, offset = 0)
+            )
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation.copy(image = ownImage, editContextImage = ownImage))
+        }
+
+    @Test
     fun `given a cached edit context image, when variations are fetched with view context, then it is preserved`() =
         runTest {
             val site = SiteModel().apply { id = 42 }

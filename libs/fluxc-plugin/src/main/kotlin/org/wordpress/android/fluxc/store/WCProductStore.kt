@@ -1277,8 +1277,9 @@ class WCProductStore @Inject internal constructor(
 
     /**
      * Edit-context responses return the variation's own image. Store it as
-     * [WCProductVariationModel.editContextImage] and keep the stored display
-     * [WCProductVariationModel.image], which view-context responses fill.
+     * [WCProductVariationModel.editContextImage]; a non-empty own image is also what view context
+     * returns, so it becomes [WCProductVariationModel.image] too, otherwise the stored view value
+     * is kept.
      */
     private suspend fun List<WCProductVariationModel>.mergeEditContextResponse(
         site: SiteModel,
@@ -1290,7 +1291,7 @@ class WCProductStore @Inject internal constructor(
         return map { variation ->
             variation.copy(
                 editContextImage = variation.image,
-                image = storedImages[variation.remoteVariationId].orEmpty()
+                image = variation.image.ifEmpty { storedImages[variation.remoteVariationId].orEmpty() }
             )
         }
     }
@@ -1302,7 +1303,7 @@ class WCProductStore @Inject internal constructor(
         site: SiteModel
     ): WCProductVariationModel {
         val stored = productVariationsDao.getVariation(site.localId(), remoteProductId, remoteVariationId)
-        return copy(editContextImage = image, image = stored?.image.orEmpty())
+        return copy(editContextImage = image, image = image.ifEmpty { stored?.image.orEmpty() })
     }
 
     /**
