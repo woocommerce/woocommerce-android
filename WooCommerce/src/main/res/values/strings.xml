@@ -1797,9 +1797,8 @@
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
-    <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Overdue requirements on your account</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement. You can skip and keep taking payments, but if the requirement is blocking your account, some transactions may be declined until you resolve it.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolve now</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
