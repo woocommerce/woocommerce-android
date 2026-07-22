@@ -2028,6 +2028,9 @@
     <string name="product_duplicate_progress_title">Duplicating your product…</string>
     <string name="product_duplicate_progress_body">Please wait while we save a copy of this product to your store</string>
     <string name="product_duplicate_copied_product_name">%1$s Copy</string>
+    <string name="product_duplicate_discard_changes_title">Discard changes and duplicate?</string>
+    <string name="product_duplicate_discard_changes_message">Your unsaved changes will be lost. The duplicate will use the last saved version.</string>
+    <string name="product_duplicate_discard_changes_action">Discard &amp; duplicate</string>
     <string name="product_trash">Trash product</string>
     <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
     <string name="product_trash_yes">Move to trash</string>

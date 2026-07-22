@@ -40,6 +40,7 @@
     <item
         android:id="@+id/menu_duplicate"
         android:title="@string/product_duplicate"
+        android:visible="false"
         app:showAsAction="withText" />
 
     <item
