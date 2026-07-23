@@ -1597,6 +1597,74 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given coupon discount fully covered by item discounts, when order created, then flags items-only discount`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(
+                CouponLine(
+                    id = 1L,
+                    code = "TEST",
+                    discount = "1.00",
+                )
+            )
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 1L,
+                    subtotal = BigDecimal("3.00"),
+                    total = BigDecimal("2.00"),
+                )
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines, orderItems = orderItems)
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isTrue()
+        }
+
+    @Test
+    fun `given item discounts not matching coupon discount, when order created, then does not flag items-only discount`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(
+                CouponLine(
+                    id = 1L,
+                    code = "TEST",
+                    discount = "1.00",
+                )
+            )
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 1L,
+                    subtotal = BigDecimal("3.00"),
+                    total = BigDecimal("3.00"),
+                )
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines, orderItems = orderItems)
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isFalse()
+        }
+
+    @Test
+    fun `given no coupons in order, when order created, then does not flag items-only discount`() =
+        runTest {
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = emptyList())
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isFalse()
+        }
+
+    @Test
     fun `when GoBackToCheckoutAfterFailedCouponValidation clicked, then should send BackFromCheckoutToCartClicked event`() =
         runTest {
             // GIVEN
@@ -2589,6 +2657,20 @@ class WooPosTotalsViewModelTest {
             MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData)),
         discountTotal: BigDecimal = BigDecimal.ZERO,
         couponLines: List<CouponLine> = emptyList(),
+        orderItems: List<Order.Item> = listOf(
+            Order.Item.EMPTY.copy(
+                productId = 1L,
+                subtotal = BigDecimal("1.00"),
+            ),
+            Order.Item.EMPTY.copy(
+                productId = 2L,
+                subtotal = BigDecimal("1.00"),
+            ),
+            Order.Item.EMPTY.copy(
+                productId = 3L,
+                subtotal = BigDecimal("1.00"),
+            )
+        ),
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -2621,20 +2703,7 @@ class WooPosTotalsViewModelTest {
         ).copy(
             id = orderId,
             totalTax = BigDecimal("2.00"),
-            items = listOf(
-                Order.Item.EMPTY.copy(
-                    productId = 1L,
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    productId = 2L,
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    productId = 3L,
-                    subtotal = BigDecimal("1.00"),
-                )
-            ),
+            items = orderItems,
             productsTotal = BigDecimal("3.00"),
             discountTotal = discountTotal,
             total = BigDecimal("5.00"),

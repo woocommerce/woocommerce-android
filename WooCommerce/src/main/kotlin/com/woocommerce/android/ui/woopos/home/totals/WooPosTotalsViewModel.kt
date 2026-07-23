@@ -1032,15 +1032,30 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun notifyCartAboutOrderCreation(order: Order) {
         viewModelScope.launch {
+            val updatedCoupons = mapCouponLines(order)
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
                     WooPosOrderCreatedData(
                         updatedProducts = mapItemLines(order),
-                        updatedCoupons = mapCouponLines(order)
+                        updatedCoupons = updatedCoupons,
+                        couponDiscountAppliedToItemsOnly = isCouponDiscountAppliedToItemsOnly(order, updatedCoupons),
                     )
                 )
             )
         }
+    }
+
+    // The API has no per-fee discount field, so this is inferred: when the sum of per-item
+    // discounts (subtotal - total) accounts for the entire coupon discount, nothing was
+    // applied to fee lines (custom amounts).
+    private fun isCouponDiscountAppliedToItemsOnly(
+        order: Order,
+        updatedCoupons: List<CouponInfo>,
+    ): Boolean {
+        val couponsDiscount = updatedCoupons.sumOf { it.discountAmount }
+        if (couponsDiscount <= BigDecimal.ZERO) return false
+        val itemsDiscount = order.items.sumOf { it.discount }
+        return itemsDiscount.compareTo(couponsDiscount) == 0
     }
 
     private fun mapItemLines(order: Order) = order.items.map {

@@ -126,7 +126,10 @@ class WooPosCartViewModel @Inject constructor(
                 if (currentState.cartStatus == EDITABLE) {
                     return
                 }
-                _state.value = currentState.copy(cartStatus = EDITABLE)
+                _state.value = currentState.copy(
+                    cartStatus = EDITABLE,
+                    isCustomAmountDiscountNotAppliedNoteVisible = false,
+                )
 
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 viewModelScope.launch {
@@ -310,13 +313,15 @@ class WooPosCartViewModel @Inject constructor(
             updatedProducts = event.data.updatedProducts,
             updatedCoupons = event.data.updatedCoupons,
         )
-        if (result.productsChanged || result.couponsChanged) {
-            _state.value = _state.value.copy(
-                body = body.copy(
-                    itemsInCart = result.updatedItems,
-                ),
-            )
+        val updatedBody = if (result.productsChanged || result.couponsChanged) {
+            body.copy(itemsInCart = result.updatedItems)
+        } else {
+            body
         }
+        _state.value = _state.value.copy(
+            body = updatedBody,
+            isCustomAmountDiscountNotAppliedNoteVisible = event.data.couponDiscountAppliedToItemsOnly,
+        )
         if (result.productsChanged) {
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.ToastMessageDisplayed(
@@ -394,11 +399,15 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.WithItems -> {
                 _state.value = currentState.copy(
                     cartStatus = newCartStatus,
-                    body = body.copy(itemsInCart = removeFormattedDiscountFromCoupons(body))
+                    body = body.copy(itemsInCart = removeFormattedDiscountFromCoupons(body)),
+                    isCustomAmountDiscountNotAppliedNoteVisible = false,
                 )
             }
 
-            else -> _state.value = currentState.copy(cartStatus = newCartStatus)
+            else -> _state.value = currentState.copy(
+                cartStatus = newCartStatus,
+                isCustomAmountDiscountNotAppliedNoteVisible = false,
+            )
         }
     }
 
@@ -670,12 +679,17 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.WithItems -> newState
         }
 
+    // The stored flag comes from the order creation response; showing it is additionally
+    // gated on the live cart so the note disappears the moment the user leaves checkout
+    // or removes the coupons, without waiting for another order update.
     private fun updateCustomAmountDiscountNotAppliedNote(newState: WooPosCartState): WooPosCartState {
         val cartContainsCoupons = (newState.body as? WooPosCartState.Body.WithItems)
             ?.itemsInCart
             ?.any { it is WooPosCartItemViewState.Coupon } == true
         return newState.copy(
-            isCustomAmountDiscountNotAppliedNoteVisible = newState.cartStatus == CHECKOUT && cartContainsCoupons
+            isCustomAmountDiscountNotAppliedNoteVisible = newState.isCustomAmountDiscountNotAppliedNoteVisible &&
+                newState.cartStatus == CHECKOUT &&
+                cartContainsCoupons
         )
     }
 

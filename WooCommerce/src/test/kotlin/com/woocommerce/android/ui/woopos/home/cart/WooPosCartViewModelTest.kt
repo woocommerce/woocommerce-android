@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosSoundHelper
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -1962,7 +1963,7 @@ class WooPosCartViewModelTest {
     }
 
     @Test
-    fun `given coupon and custom amount in cart, when checkout clicked, then discount not applied note is visible`() =
+    fun `given coupon and custom amount in cart, when checkout clicked, then note is not visible until order created`() =
         runTest {
             // GIVEN
             whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
@@ -1977,7 +1978,51 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
 
             // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
+        }
+
+    @Test
+    fun `given checkout with coupon and custom amount, when order created with items-only discount, then note is visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            stubCartItemsUpdater()
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            advanceUntilIdle()
+
+            // THEN
             assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isTrue()
+        }
+
+    @Test
+    fun `given checkout with coupon and custom amount, when order created without coupon discount, then note is not visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            stubCartItemsUpdater()
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            simulateOrderCreated(couponDiscountAppliedToItemsOnly = false)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
         }
 
     @Test
@@ -1998,17 +2043,20 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given custom amount without coupon in cart, when checkout clicked, then discount not applied note is not visible`() =
+    fun `given custom amount without coupon in cart, when order created with items-only discount, then note is not visible`() =
         runTest {
             // GIVEN
             whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            stubCartItemsUpdater()
             val sut = createSut()
             val states = sut.state.captureValues()
             simulateCustomAmountSubmitted()
             advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
 
             // WHEN
-            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
             advanceUntilIdle()
 
             // THEN
@@ -2020,12 +2068,15 @@ class WooPosCartViewModelTest {
         runTest {
             // GIVEN
             whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            stubCartItemsUpdater()
             val sut = createSut()
             val states = sut.state.captureValues()
             simulateCouponClicked()
             simulateCustomAmountSubmitted()
             advanceUntilIdle()
             sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
             advanceUntilIdle()
             assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isTrue()
 
@@ -2044,6 +2095,28 @@ class WooPosCartViewModelTest {
                 amount = BigDecimal("7.50"),
                 isTaxable = false,
                 editingItemNumber = null,
+            )
+        )
+    }
+
+    private suspend fun simulateOrderCreated(couponDiscountAppliedToItemsOnly: Boolean) {
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.OrderCreated(
+                WooPosOrderCreatedData(
+                    updatedProducts = emptyList(),
+                    updatedCoupons = emptyList(),
+                    couponDiscountAppliedToItemsOnly = couponDiscountAppliedToItemsOnly,
+                )
+            )
+        )
+    }
+
+    private suspend fun stubCartItemsUpdater() {
+        whenever(cartItemsUpdater(any(), any(), any())).thenReturn(
+            WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                updatedItems = emptyList(),
+                productsChanged = false,
+                couponsChanged = false,
             )
         )
     }
