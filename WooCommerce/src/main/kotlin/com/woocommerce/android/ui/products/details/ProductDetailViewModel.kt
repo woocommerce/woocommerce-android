@@ -363,6 +363,7 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
+                duplicateOption = isProductStoredAtSite,
                 trashOption = !isProductUnderCreation && isTrashEnabled
             )
         }.asLiveData()
@@ -430,9 +431,6 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailFragment.Mode.AddNewProduct -> startAddNewProduct()
             is ProductDetailFragment.Mode.ShowProduct -> {
                 loadRemoteProduct(mode.remoteProductId)
-                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed) {
-                    triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
-                }
             }
 
             is ProductDetailFragment.Mode.Loading -> {
@@ -2539,20 +2537,37 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onDuplicateProduct() {
+        val storedProduct = storedProductAggregate.value
+            ?.takeIf { it.remoteId > DEFAULT_ADD_NEW_PRODUCT_ID }
+            ?: return
+
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+        if (viewState.productAggregateDraft?.isSame(storedProduct) == false) {
+            triggerEvent(
+                ShowDialog(
+                    titleId = R.string.product_duplicate_discard_changes_title,
+                    messageId = R.string.product_duplicate_discard_changes_message,
+                    positiveButtonId = R.string.product_duplicate_discard_changes_action,
+                    negativeButtonId = R.string.cancel,
+                    positiveBtnAction = { _, _ -> duplicateStoredProduct(storedProduct) }
+                )
+            )
+        } else {
+            duplicateStoredProduct(storedProduct)
+        }
+    }
+
+    private fun duplicateStoredProduct(storedProduct: ProductAggregate) {
         launch {
-            tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
-            viewState.productAggregateDraft?.let { product ->
+            triggerEvent(ShowDuplicateProductInProgress)
+            val result = duplicateProduct(storedProduct)
 
-                triggerEvent(ShowDuplicateProductInProgress)
-                val result = duplicateProduct(product)
-
-                if (result.isSuccess) {
-                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
-                    triggerEvent(OpenProductDetails(result.getOrThrow()))
-                } else {
-                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
-                    triggerEvent(ShowDuplicateProductError)
-                }
+            if (result.isSuccess) {
+                tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+                triggerEvent(OpenProductDetails(result.getOrThrow()))
+            } else {
+                tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+                triggerEvent(ShowDuplicateProductError)
             }
         }
     }
@@ -2720,8 +2735,6 @@ class ProductDetailViewModel @Inject constructor(
         val productDescription: String?
     ) : Event()
 
-    object ShowAiProductCreationSurveyBottomSheet : Event()
-
     object ProductUpdated : Event()
 
     data class ShowUpdateProductError(val message: String) : Event()
@@ -2840,6 +2853,7 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
+        val duplicateOption: Boolean,
         val trashOption: Boolean
     )
 }

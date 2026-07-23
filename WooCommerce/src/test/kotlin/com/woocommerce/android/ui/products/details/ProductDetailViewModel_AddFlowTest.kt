@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.details
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -12,6 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -43,6 +45,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -102,6 +105,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
+    private val duplicateProduct: DuplicateProduct = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val prefs: AppPrefsWrapper = mock {
@@ -182,7 +186,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 appPrefsWrapper = prefs,
                 addonRepository = addonRepository,
                 generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
+                duplicateProduct = duplicateProduct,
                 tracker = tracker,
                 selectedSite = selectedSite,
                 getBundledProductsCount = mock(),
@@ -208,7 +212,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
-            productTagsRepository
+            productTagsRepository,
+            duplicateProduct
         )
     }
 
@@ -494,6 +499,33 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.updateProductDraft(title = "name")
 
         Assertions.assertThat(menuButtonsState?.saveOption).isFalse()
+    }
+
+    @Test
+    fun `given a never-saved product, when menu state loads, then duplicate option is hidden`() = testBlocking {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isFalse()
+    }
+
+    @Test
+    fun `given a never-saved product, when duplicate handler is called, then duplication is ignored`() = testBlocking {
+        // GIVEN
+        viewModel.start()
+
+        // WHEN
+        viewModel.onDuplicateProduct()
+
+        // THEN
+        verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+        verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
     }
 
     @Test

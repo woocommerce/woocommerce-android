@@ -45,6 +45,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers
+import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -1905,6 +1906,54 @@ class CardReaderOnboardingViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value).isInstanceOf(
                 StripeAccountError.StripeAccountOverdueRequirementsState::class.java
             )
+        }
+
+    @Test
+    fun `given account overdue requirements and payment, when skip clicked, then continues to connection`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS))
+            val viewModel = createVM(
+                CardReaderOnboardingFragmentArgs(
+                    cardReaderOnboardingParam = CardReaderOnboardingParams.Check(
+                        CardReaderFlowParam.PaymentOrRefund.Payment(1L, ORDER)
+                    ),
+                    cardReaderType = CardReaderType.EXTERNAL
+                ).toSavedStateHandle()
+            )
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .onSkipActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToConnection::class.java)
+        }
+
+    @Test
+    fun `given account overdue requirements and hub, when skip clicked, then continues to hub`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .onSkipActionClicked.invoke()
+
+            assertThat(viewModel.event.value)
+                .isInstanceOf(CardReaderOnboardingEvent.ContinueToHub::class.java)
+        }
+
+    @Test
+    fun `given account overdue requirements, when skip clicked, then skipped state is tracked`() =
+        testBlocking {
+            whenever(onboardingChecker.getOnboardingState())
+                .thenReturn(StripeAccountOverdueRequirement(WOOCOMMERCE_PAYMENTS))
+            val viewModel = createVM()
+
+            (viewModel.viewStateData.value as StripeAccountError.StripeAccountOverdueRequirementsState)
+                .onSkipActionClicked.invoke()
+
+            verify(tracker).trackOnboardingSkippedState(any<StripeAccountOverdueRequirement>())
         }
 
     @Test

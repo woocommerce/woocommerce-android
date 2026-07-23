@@ -28,6 +28,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -151,27 +152,47 @@ class OrderCreateEditFormFragment :
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
-    override fun onStart() {
-        super.onStart()
-        val navController =
-            childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
-        val args = ProductSelectorFragmentArgs(
+    private fun setupProductSelectorNavHost() {
+        val existingFragment = childFragmentManager.findFragmentById(R.id.product_selector_nav_container)
+        if (!requireContext().isTwoPanesShouldBeUsed) {
+            existingFragment?.let {
+                childFragmentManager.beginTransaction().remove(it).commitNow()
+            }
+            return
+        }
+
+        val productSelectorArgs = ProductSelectorFragmentArgs(
             selectionHandling = ProductSelectorViewModel.SelectionHandling.NORMAL,
             selectedItems = viewModel.selectedItems.value.toTypedArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             selectionMode = ProductSelectorViewModel.SelectionMode.LIVE,
             orderCurrency = args.orderCurrency
         )
-        navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
-    }
 
-    override fun onResume() {
-        super.onResume()
-        // Register in onResume to ensure our callback has higher priority than nested NavHostFragment's (LIFO order)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        val existingNavHost = existingFragment as? NavHostFragment
+        when {
+            existingNavHost == null -> {
+                val navHost = NavHostFragment.create(
+                    R.navigation.nav_graph_product_selector,
+                    productSelectorArgs.toBundle()
+                )
+                childFragmentManager.beginTransaction()
+                    .replace(R.id.product_selector_nav_container, navHost)
+                    .commitNow()
+            }
+
+            existingNavHost.navController.currentDestination == null -> {
+                existingNavHost.navController.setGraph(
+                    R.navigation.nav_graph_product_selector,
+                    productSelectorArgs.toBundle()
+                )
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        setupProductSelectorNavHost()
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
             setupHandleResults()

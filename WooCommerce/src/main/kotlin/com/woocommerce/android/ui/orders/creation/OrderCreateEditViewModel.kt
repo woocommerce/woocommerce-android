@@ -212,6 +212,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
+    private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -481,12 +482,15 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onDeviceConfigurationChanged(isTwoPane: Boolean) {
+        val wasTwoPane = viewState.isTwoPaneLayout
+        val enteredTwoPane = isTwoPane && !wasTwoPane
+
         if (viewState.isRecalculateNeeded && !isTwoPane) {
             // enforce items recalculation after switching to single pane mode from dual pane mode
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
         }
-        if (isTwoPane) {
+        if (enteredTwoPane) {
             // ensure that any items added in single pane mode are displayed in dual pane mode
             // in the product selector pane after switching to dual pane layout
             _pendingSelectedItems.value = _orderDraft.value.selectedItems()
@@ -1194,16 +1198,19 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }.orEmpty()
-        triggerEvent(
-            SelectItems(
-                selectedItems,
-                listOf(
-                    ProductRestriction.NonPublishedProducts,
-                    ProductRestriction.VariableProductsWithNoVariations
-                ),
-                args.mode
+        launch {
+            triggerEvent(
+                SelectItems(
+                    selectedItems,
+                    listOf(
+                        ProductRestriction.NonPublishedProducts,
+                        ProductRestriction.VariableProductsWithNoVariations
+                    ),
+                    args.mode,
+                    args.orderCurrency?.takeIf { isCurrencyQueryParamSupported() }
+                )
             )
-        )
+        }
     }
 
     fun onRetryClicked() {

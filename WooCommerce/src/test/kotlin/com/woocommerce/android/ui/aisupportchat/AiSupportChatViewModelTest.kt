@@ -1398,6 +1398,42 @@ class AiSupportChatViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given connectivity launch mode, when contact support is clicked, then event carries the diagnostic log`() =
+        testBlocking {
+            val checks = listOf(
+                ConnectivityCheckCardData(ConnectivityCheckType.INTERNET, ConnectivityCheckStatus.Success()),
+                ConnectivityCheckCardData(ConnectivityCheckType.WP_COM, ConnectivityCheckStatus.Failure())
+            )
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever { events.add(it) }
+            viewModel.onLaunchModeLoaded(AiSupportChatLaunchMode.ConnectivityTool(checks))
+
+            viewModel.onContactSupportClicked(
+                source = HumanSupportContactSource.TOOLBAR,
+                canCreateTicketDirectly = false
+            )
+
+            val event = events.filterIsInstance<ContactHumanSupport>().last()
+            assertThat(event.diagnosticLog).isNotNull()
+            assertThat(event.diagnosticLog).contains("Result: Success")
+            assertThat(event.diagnosticLog).contains("Result: Failed")
+        }
+
+    @Test
+    fun `given non-connectivity launch mode, when contact support is clicked, then event has no diagnostic log`() {
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+
+        viewModel.onContactSupportClicked(
+            source = HumanSupportContactSource.TOOLBAR,
+            canCreateTicketDirectly = false
+        )
+
+        val event = events.filterIsInstance<ContactHumanSupport>().last()
+        assertThat(event.diagnosticLog).isNull()
+    }
+
+    @Test
     fun `given launch mode was already loaded, when loaded again, then chat is not started twice`() =
         testBlocking {
             val checks = listOf(

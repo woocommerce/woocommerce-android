@@ -86,3 +86,34 @@ enum class FailureType(val message: Int) : Parcelable {
     JETPACK(R.string.orderlist_connectivity_tool_jetpack_error_suggestion),
     GENERIC(R.string.orderlist_connectivity_tool_generic_error_suggestion)
 }
+
+/**
+ * Builds a human-readable diagnostic log from the completed connectivity checks. This is the text
+ * attached as `connectivitytest_log.txt` to Zendesk support requests. Returns null when no check
+ * has completed yet.
+ */
+fun List<ConnectivityCheckCardData>.toConnectivityDiagnosticLog(): String? {
+    val completedChecks = filter {
+        it.status is ConnectivityCheckStatus.Success || it.status is ConnectivityCheckStatus.Failure
+    }
+
+    if (completedChecks.isEmpty()) return null
+
+    return buildString {
+        completedChecks.forEachIndexed { index, check ->
+            appendLine("## ${index + 1}. ${check.type.operationName}")
+            appendLine("Took: ${check.status.durationMs}ms")
+            val resultStr = when (val status = check.status) {
+                is ConnectivityCheckStatus.Success -> "Success"
+                is ConnectivityCheckStatus.Failure -> {
+                    val errorName = status.error?.name ?: "Failed"
+                    val details = status.technicalDetails?.let { "\n$it" } ?: ""
+                    errorName + details
+                }
+                else -> "Unknown"
+            }
+            appendLine("Result: $resultStr")
+            appendLine()
+        }
+    }.trimEnd()
+}

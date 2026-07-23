@@ -9,6 +9,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,13 +36,17 @@ import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.model.WCProductVariationModel.ProductVariantOption
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductUpdateResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.BatchProductVariationsApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.DuplicateProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
@@ -117,6 +122,59 @@ class WCProductStoreTest {
             productReviewsDao = wcDatabaseRule.db.productReviewsDao,
         )
     }
+
+    @Test
+    fun `given core duplication succeeds, when duplicating product, then duplicated product ID is returned`() = runTest {
+        // GIVEN
+        val site = SiteModel()
+        whenever(productRestClient.duplicateProduct(site, 42L))
+            .thenReturn(WooPayload(DuplicateProductApiResponse(84L)))
+
+        // WHEN
+        val result = productStore.duplicateProduct(site, 42L)
+
+        // THEN
+        assertThat(result.model).isEqualTo(84L)
+    }
+
+    @Test
+    fun `given core duplication response has missing or invalid ID, when duplicating product, then invalid response is returned`() =
+        runTest {
+            // GIVEN
+            val site = SiteModel()
+            listOf(null, 0L, -1L).forEach { responseId ->
+                whenever(productRestClient.duplicateProduct(site, 42L))
+                    .thenReturn(WooPayload(DuplicateProductApiResponse(responseId)))
+
+                // WHEN
+                val result = productStore.duplicateProduct(site, 42L)
+
+                // THEN
+                assertThat(result.error.type).isEqualTo(INVALID_RESPONSE)
+            }
+        }
+
+    @Test
+    fun `given core duplication returns an error, when duplicating product, then full error is forwarded unchanged`() =
+        runTest {
+            // GIVEN
+            val site = SiteModel()
+            val expectedError = WooError(
+                type = API_NOT_FOUND,
+                original = NOT_FOUND,
+                message = "No route was found matching the URL and request method",
+                apiErrorCode = "rest_no_route",
+                errorData = JSONObject().put("status", 404)
+            )
+            whenever(productRestClient.duplicateProduct(site, 42L))
+                .thenReturn(WooPayload(expectedError))
+
+            // WHEN
+            val result = productStore.duplicateProduct(site, 42L)
+
+            // THEN
+            assertThat(result.error).isEqualTo(expectedError)
+        }
 
     @Test
     fun testSimpleInsertionAndRetrieval() = runTest {

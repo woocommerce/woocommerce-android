@@ -299,7 +299,8 @@ class OrderRestClientTest {
                 site = any(),
                 path = any(),
                 clazz = eq(Unit::class.java),
-                body = any()
+                body = any(),
+                params = any()
             )
         ).thenReturn(mockResponse)
 
@@ -312,7 +313,8 @@ class OrderRestClientTest {
             site = eq(testSite),
             path = eq(expectedPath),
             clazz = eq(Unit::class.java),
-            body = bodyCaptor.capture()
+            body = bodyCaptor.capture(),
+            params = any()
         )
 
         assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)

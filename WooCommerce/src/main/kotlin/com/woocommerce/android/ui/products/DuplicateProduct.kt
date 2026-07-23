@@ -10,6 +10,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import javax.inject.Inject
 
@@ -20,6 +21,21 @@ class DuplicateProduct @Inject constructor(
 ) {
 
     suspend operator fun invoke(productAggregate: ProductAggregate): Result<Long> {
+        val coreResult = productDetailRepository.duplicateProduct(productAggregate.remoteId)
+        if (coreResult.isSuccess) return coreResult
+
+        val error = (coreResult.exceptionOrNull() as? WooException)?.error
+        val shouldUseLegacyFlow = error?.run {
+            type == API_NOT_FOUND && apiErrorCode == REST_NO_ROUTE_ERROR_CODE
+        } == true
+        return if (shouldUseLegacyFlow) {
+            duplicateProductWithLegacyFlow(productAggregate)
+        } else {
+            coreResult
+        }
+    }
+
+    private suspend fun duplicateProductWithLegacyFlow(productAggregate: ProductAggregate): Result<Long> {
         val newProduct = productAggregate.copy(
             product = productAggregate.product.copy(
                 remoteId = 0,
@@ -91,5 +107,9 @@ class DuplicateProduct @Inject constructor(
                 Result.failure(it)
             }
         )
+    }
+
+    private companion object {
+        const val REST_NO_ROUTE_ERROR_CODE = "rest_no_route"
     }
 }

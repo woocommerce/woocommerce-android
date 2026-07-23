@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus
@@ -77,6 +78,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
+        private const val DUPLICATED_PRODUCT_REMOTE_ID = 3L
         private val SALE_END_DATE = Date.from(
             LocalDateTime.of(2020, 4, 1, 8, 0)
                 .toInstant(ZoneOffset.UTC)
@@ -129,6 +131,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
+    private val duplicateProduct: DuplicateProduct = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val prefsWrapper: AppPrefsWrapper = mock()
@@ -278,7 +281,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 appPrefsWrapper = prefsWrapper,
                 addonRepository = addonRepository,
                 generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
+                duplicateProduct = duplicateProduct,
                 tracker = tracker,
                 selectedSite = selectedSite,
                 getBundledProductsCount = mock(),
@@ -302,7 +305,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
-            productTagsRepository
+            productTagsRepository,
+            duplicateProduct
         )
     }
 
@@ -1416,6 +1420,150 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     screenTitle = UiStringText(productAggregate.product.name)
                 )
             )
+        }
+
+    @Test
+    fun `given a persisted product, when it is edited, then duplicate option remains visible`() = testBlocking {
+        // GIVEN
+        given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isTrue()
+
+        // WHEN
+        viewModel.onProductTitleChanged("Unsaved title")
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isTrue()
+    }
+
+    @Test
+    fun `given an unchanged persisted product, when duplicate is tapped, then duplicate immediately succeeds`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.success(DUPLICATED_PRODUCT_REMOTE_ID)).whenever(duplicateProduct).invoke(productAggregate)
+            viewModel.start()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever(events::add)
+
+            // WHEN
+            viewModel.onDuplicateProduct()
+
+            // THEN
+            Assertions.assertThat(events).containsExactly(
+                ProductDetailViewModel.ShowDuplicateProductInProgress,
+                ProductDetailViewModel.OpenProductDetails(DUPLICATED_PRODUCT_REMOTE_ID)
+            )
+            verify(duplicateProduct).invoke(productAggregate)
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate is tapped, then confirmation is shown before duplication`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+
+            // WHEN
+            viewModel.onDuplicateProduct()
+
+            // THEN
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            Assertions.assertThat(dialog.titleId).isEqualTo(R.string.product_duplicate_discard_changes_title)
+            Assertions.assertThat(dialog.messageId).isEqualTo(R.string.product_duplicate_discard_changes_message)
+            Assertions.assertThat(dialog.positiveButtonId)
+                .isEqualTo(R.string.product_duplicate_discard_changes_action)
+            Assertions.assertThat(dialog.negativeButtonId).isEqualTo(R.string.cancel)
+            verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate is confirmed, then stored product is duplicated`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.success(DUPLICATED_PRODUCT_REMOTE_ID)).whenever(duplicateProduct)
+                .invoke(any<ProductAggregate>())
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                requireNotNull(dialog.positiveBtnAction).onClick(null, 0)
+            }
+
+            // THEN
+            Assertions.assertThat(events.filterNot { it is MultiLiveEvent.Event.ShowDialog }).containsExactly(
+                ProductDetailViewModel.ShowDuplicateProductInProgress,
+                ProductDetailViewModel.OpenProductDetails(DUPLICATED_PRODUCT_REMOTE_ID)
+            )
+            verify(duplicateProduct).invoke(productAggregate)
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, times(1)).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate confirmation is cancelled, then product is not duplicated`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            val negativeAction = dialog.negativeBtnAction
+
+            // THEN
+            Assertions.assertThat(negativeAction).isNull()
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when confirmed duplication fails, then draft and failure UX are preserved`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.failure<Long>(IllegalStateException("Duplication failed"))).whenever(duplicateProduct)
+                .invoke(any<ProductAggregate>())
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            dialog.positiveBtnAction?.onClick(null, 0)
+
+            // THEN
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ShowDuplicateProductError)
+            verify(duplicateProduct).invoke(productAggregate)
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
         }
 
     @Test

@@ -341,7 +341,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val stockStatus = getStockText(resourceProvider)
-        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
+        val price = formatPrice()
         val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
 
         return ListItem.ProductListItem(
