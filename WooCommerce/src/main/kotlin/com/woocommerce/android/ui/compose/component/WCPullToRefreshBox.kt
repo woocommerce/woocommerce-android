@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -17,22 +18,27 @@ fun WCPullToRefreshBox(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     state: PullToRefreshState = rememberPullToRefreshState(),
     content: @Composable BoxScope.() -> Unit
 ) {
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = onRefresh,
-        state = state,
-        indicator = {
-            Indicator(
-                modifier = Modifier.align(Alignment.TopCenter),
-                state = state,
-                isRefreshing = isRefreshing,
-                color = MaterialTheme.colorScheme.primary
-            )
-        },
-        modifier = modifier,
-        content = content
-    )
+    if (enabled) {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            state = state,
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    state = state,
+                    isRefreshing = isRefreshing,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            modifier = modifier,
+            content = content
+        )
+    } else {
+        Box(modifier = modifier, content = content)
+    }
 }
