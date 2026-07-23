@@ -2103,6 +2103,8 @@
     <string name="product_selection_menu_update_price">Update price</string>
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
+    <string name="product_list_select_product">Select %s</string>
+    <string name="product_list_deselect_product">Deselect %s</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
