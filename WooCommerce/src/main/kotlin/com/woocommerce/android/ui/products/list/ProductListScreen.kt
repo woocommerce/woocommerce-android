@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowDownArrowUp
 import com.woocommerce.android.ui.compose.designsystem.icons.BarcodeScan
@@ -53,7 +54,6 @@ import com.woocommerce.android.ui.compose.designsystem.icons.BarsFilter
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.Plus
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
-import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
