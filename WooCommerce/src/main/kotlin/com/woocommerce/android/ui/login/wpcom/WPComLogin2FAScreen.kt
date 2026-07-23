@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -41,7 +43,7 @@ fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
         WPComLogin2FAScreen(
             viewState = it,
             onCloseClick = viewModel::onCloseClick,
-            onSMSLinkClick = viewModel::onSMSLinkClick,
+            onSmsButtonClick = viewModel::onSmsButtonClick,
             onContinueClick = viewModel::onContinueClick,
             onOTPChanged = viewModel::onOTPChanged,
             onSecurityKeyClick = viewModel::onSecurityKeyClick
@@ -53,7 +55,7 @@ fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
 fun WPComLogin2FAScreen(
     viewState: WPComLogin2FAViewModel.ViewState,
     onCloseClick: () -> Unit = {},
-    onSMSLinkClick: () -> Unit = {},
+    onSmsButtonClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
     onOTPChanged: (String) -> Unit = {},
     onSecurityKeyClick: () -> Unit = {}
@@ -94,7 +96,13 @@ fun WPComLogin2FAScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = stringResource(id = R.string.enter_verification_code)
+                    text = stringResource(
+                        id = if (viewState.hasRequestedSms) {
+                            R.string.enter_verification_code_sms_generic
+                        } else {
+                            R.string.enter_verification_code
+                        }
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 WCOutlinedTextField(
@@ -115,11 +123,31 @@ fun WPComLogin2FAScreen(
                     ),
                     singleLine = true
                 )
-                WCTextButton(onClick = onSMSLinkClick) {
-                    Text(text = stringResource(id = R.string.login_text_otp))
-                }
+                Spacer(modifier = Modifier.height(16.dp))
+                WCOutlinedButton(
+                    onClick = onSmsButtonClick,
+                    text = stringResource(
+                        id = if (viewState.hasRequestedSms) {
+                            R.string.login_text_otp_another
+                        } else {
+                            R.string.login_text_otp
+                        }
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_comment),
+                            contentDescription = null
+                        )
+                    },
+                    enabled = viewState.canUseAlternateMethods,
+                    loading = viewState.isRequestingSms
+                )
                 if (viewState.isSecurityKeySupported) {
-                    WCTextButton(onClick = onSecurityKeyClick) {
+                    WCTextButton(
+                        onClick = onSecurityKeyClick,
+                        enabled = viewState.canUseAlternateMethods
+                    ) {
                         Text(text = stringResource(id = R.string.login_text_security_key))
                     }
                 }
@@ -162,4 +190,3 @@ private fun JetpackModePreview() {
         )
     }
 }
-

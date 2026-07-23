@@ -191,8 +191,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
 
     @Override
     protected void setupLabel(@NonNull TextView label) {
-        label.setText(mSentSmsCode ? getString(R.string.enter_verification_code_sms, mPhoneNumber)
-                : getString(R.string.enter_verification_code));
+        label.setText(mSentSmsCode ? getSmsInstructions() : getString(R.string.enter_verification_code));
         mLabel = label;
     }
 
@@ -441,12 +440,18 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void handleAuthError(AuthenticationErrorType error, String errorMessage) {
+        handleAuthError(error, errorMessage, false);
+    }
+
+    private void handleAuthError(AuthenticationErrorType error, String errorMessage, boolean wasRequestingSms) {
         switch (error) {
             case INVALID_OTP:
                 show2FaError(getString(R.string.invalid_verification_code));
                 break;
             case NEEDS_2FA:
-                // we get this error when requesting a verification code sent via SMS so, just ignore it.
+                if (wasRequestingSms) {
+                    setTextForSms();
+                }
                 break;
             case INVALID_REQUEST:
                 // TODO: FluxC: could be specific?
@@ -479,6 +484,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAuthenticationChanged(OnAuthenticationChanged event) {
         if (event.isError()) {
+            boolean wasRequestingSms = mInProgressMessageId == R.string.requesting_otp;
             endProgress();
 
             AppLog.e(T.API, "onAuthenticationChanged has error: " + event.error.type + " - " + event.error.message);
@@ -491,7 +497,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
             }
 
             if (isAdded()) {
-                handleAuthError(event.error.type, event.error.message);
+                handleAuthError(event.error.type, event.error.message, wasRequestingSms);
             }
 
             return;
@@ -582,9 +588,15 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
     }
 
     private void setTextForSms() {
-        mLabel.setText(getString(R.string.enter_verification_code_sms, mPhoneNumber));
+        mLabel.setText(getSmsInstructions());
         mOtpButton.setText(getString(R.string.login_text_otp_another));
         mSentSmsCode = true;
+    }
+
+    private CharSequence getSmsInstructions() {
+        return TextUtils.isEmpty(mPhoneNumber)
+                ? getString(R.string.enter_verification_code_sms_generic)
+                : getString(R.string.enter_verification_code_sms, mPhoneNumber);
     }
 
     private void doAuthWithSecurityKeyAction() {
