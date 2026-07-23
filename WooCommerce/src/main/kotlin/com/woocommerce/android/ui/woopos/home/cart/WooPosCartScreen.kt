@@ -97,6 +97,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+import java.math.BigDecimal
 
 @Composable
 fun WooPosCartScreen(
@@ -163,6 +164,7 @@ fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
+                    isCustomAmountDiscountNotAppliedNoteVisible = state.isCustomAmountDiscountNotAppliedNoteVisible,
                     onUIEvent = onUIEvent
                 )
             }
@@ -269,6 +271,7 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartItemViewState>,
     areItemsRemovable: Boolean,
+    isCustomAmountDiscountNotAppliedNoteVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -310,6 +313,7 @@ private fun CartBodyWithItems(
                     modifier = Modifier.animateItem(),
                     item = item,
                     canRemoveItems = areItemsRemovable,
+                    isDiscountNotAppliedNoteVisible = isCustomAmountDiscountNotAppliedNoteVisible,
                     onUIEvent = onUIEvent,
                 )
 
@@ -740,6 +744,7 @@ private fun CustomAmountItem(
     modifier: Modifier = Modifier,
     item: WooPosCartItemViewState.CustomAmount,
     canRemoveItems: Boolean,
+    isDiscountNotAppliedNoteVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val itemContentDescription = stringResource(
@@ -803,6 +808,17 @@ private fun CustomAmountItem(
                         style = WooPosTypography.BodySmall,
                         color = WooPosTheme.colors.onSurfaceVariantLowest,
                         maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clearAndSetSemantics { },
+                    )
+                }
+                if (isDiscountNotAppliedNoteVisible) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_custom_amount_discount_not_applied),
+                        style = WooPosTypography.BodySmall,
+                        color = WooPosTheme.colors.alert,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clearAndSetSemantics { },
                     )
@@ -1125,11 +1141,19 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             description = null,
                             price = "€250,000",
                             productDoesNotExist = true,
+                        ),
+                        WooPosCartItemViewState.CustomAmount(
+                            itemNumber = 6,
+                            name = "Gift wrapping",
+                            amount = BigDecimal("5.00"),
+                            formattedAmount = "$5.00",
+                            isTaxable = true,
                         )
                     )
                 ),
                 areItemsRemovable = false,
-                checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled
+                checkoutButtonState = WooPosCartState.CheckoutButtonState.Enabled,
+                isCustomAmountDiscountNotAppliedNoteVisible = true,
             ),
             onUIEvent = {},
             checkoutSlot = WooPosCartCheckoutButtonSlot.Inline,

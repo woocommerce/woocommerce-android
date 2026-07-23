@@ -1960,4 +1960,91 @@ class WooPosCartViewModelTest {
             ChildToParentEvent.CustomAmountDialogRequested(editing = customAmountItem)
         )
     }
+
+    @Test
+    fun `given coupon and custom amount in cart, when checkout clicked, then discount not applied note is visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isTrue()
+        }
+
+    @Test
+    fun `given coupon and custom amount in cart, when cart is editable, then discount not applied note is not visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
+        }
+
+    @Test
+    fun `given custom amount without coupon in cart, when checkout clicked, then discount not applied note is not visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
+        }
+
+    @Test
+    fun `given discount not applied note visible, when back from checkout to cart, then note is not visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isTrue()
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
+        }
+
+    private suspend fun simulateCustomAmountSubmitted() {
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.CustomAmountSubmitted(
+                name = "Service",
+                amount = BigDecimal("7.50"),
+                isTaxable = false,
+                editingItemNumber = null,
+            )
+        )
+    }
 }

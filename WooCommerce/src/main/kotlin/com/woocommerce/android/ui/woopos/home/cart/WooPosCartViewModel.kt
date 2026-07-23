@@ -91,6 +91,7 @@ class WooPosCartViewModel @Inject constructor(
         .map { updateCartStatusDependingOnItems(it).also { newState -> updateAnalyticsData(newState) } }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
+        .map { updateCustomAmountDiscountNotAppliedNote(it) }
 
     private val itemNumberProvider = AtomicInteger(getInitialValueOrHighestUsedItemNumberAfterProcessDeath())
 
@@ -668,6 +669,15 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartState.Body.Empty -> newState.copy(cartStatus = EMPTY)
             is WooPosCartState.Body.WithItems -> newState
         }
+
+    private fun updateCustomAmountDiscountNotAppliedNote(newState: WooPosCartState): WooPosCartState {
+        val cartContainsCoupons = (newState.body as? WooPosCartState.Body.WithItems)
+            ?.itemsInCart
+            ?.any { it is WooPosCartItemViewState.Coupon } == true
+        return newState.copy(
+            isCustomAmountDiscountNotAppliedNoteVisible = newState.cartStatus == CHECKOUT && cartContainsCoupons
+        )
+    }
 
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
