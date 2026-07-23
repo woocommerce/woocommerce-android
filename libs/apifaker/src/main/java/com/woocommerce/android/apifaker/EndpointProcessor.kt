@@ -8,12 +8,14 @@ import com.woocommerce.android.apifaker.models.QueryParameter
 import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Request
 import okio.Buffer
 import javax.inject.Inject
 
 private const val WPCOM_HOST = "public-api.wordpress.com"
 private const val JETPACK_TUNNEL_REGEX = "/rest/v1.1/jetpack-blogs/\\d+/rest-api"
+private const val QUERY_PARSING_BASE_URL = "https://example.com/"
 
 internal class EndpointProcessor @Inject constructor(
     private val endpointDao: EndpointDao,
@@ -29,7 +31,7 @@ internal class EndpointProcessor @Inject constructor(
         return with(endpointData) {
             endpointDao.queryEndpoint(apiType, httpMethod, path.trimEnd('/'), body.orEmpty())
         }.filter {
-            request.url.checkQueryParameters(it.request.queryParameters)
+            request.checkQueryParameters(it.request.queryParameters)
         }.also {
             if (it.size > 1) {
                 Log.w(
@@ -105,23 +107,38 @@ internal class EndpointProcessor @Inject constructor(
         )
     }
 
-    private fun HttpUrl.checkQueryParameters(mockedQueryParameters: List<QueryParameter>): Boolean {
+    private fun Request.checkQueryParameters(mockedQueryParameters: List<QueryParameter>): Boolean {
         if (mockedQueryParameters.isEmpty()) return true
 
-        val requestQueryParameters = if (isJetpackTunnelRequest) {
-            queryParameter("query")?.let {
+        val requestQueryParameters = when {
+            !url.isJetpackTunnelRequest -> url.queryParameterNames.associateWith { url.queryParameter(it) }
+            method == "GET" -> url.queryParameter("query")?.let {
                 val json = jsonObjectProvider.parseString(it)
                 json.keys().asSequence().map { key ->
                     key to json.getString(key)
                 }.toMap()
             } ?: emptyMap()
-        } else {
-            queryParameterNames.associateWith { queryParameter(it) }
+            // Other methods carry the endpoint's query parameters in the body, appended to the path with `&`,
+            // e.g. "/wc/v3/orders/1&currency=EUR&_method=put"
+            else -> tunneledBodyQueryParameters()
         }
 
         return mockedQueryParameters.all { queryParameter ->
             requestQueryParameters[queryParameter.name] == queryParameter.value
         }
+    }
+
+    private fun Request.tunneledBodyQueryParameters(): Map<String, String?> {
+        val query = jsonObjectProvider.parseString(readBody()).getString("path")
+            .split("&")
+            .drop(1)
+            .filterNot { it.startsWith("_method=") }
+            .joinToString(separator = "&")
+
+        // Parsed as a URL so that percent-encoded values are decoded the same way as on the direct path
+        return "$QUERY_PARSING_BASE_URL?$query".toHttpUrlOrNull()
+            ?.let { url -> url.queryParameterNames.associateWith { url.queryParameter(it) } }
+            .orEmpty()
     }
 
     private fun Request.readBody(): String {

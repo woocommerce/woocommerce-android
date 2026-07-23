@@ -61,7 +61,8 @@ class CookieNonceWPAPINetwork @Inject constructor(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any>
+        body: Map<String, Any>,
+        params: Map<String, String>
     ): WPAPIResponse<T> {
         return cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest(site) { nonce ->
             wpApiGsonRequestBuilder.syncPutRequest(
@@ -69,7 +70,8 @@ class CookieNonceWPAPINetwork @Inject constructor(
                 url = site.buildUrl(path),
                 body = body,
                 clazz = clazz,
-                nonce = nonce.value
+                nonce = nonce.value,
+                params = params
             )
         }
     }

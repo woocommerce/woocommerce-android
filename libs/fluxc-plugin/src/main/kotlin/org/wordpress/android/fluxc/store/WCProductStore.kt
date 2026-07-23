@@ -1139,6 +1139,25 @@ class WCProductStore @Inject internal constructor(
         return productsDao.getCompositeProducts(site, remoteProductId)
     }
 
+    suspend fun duplicateProduct(site: SiteModel, productId: Long): WooResult<Long> =
+        coroutineEngine.withDefaultContext(API, this, "duplicateProduct") {
+            val result = wcProductRestClient.duplicateProduct(site, productId)
+            if (result.isError) {
+                return@withDefaultContext WooResult(result.error)
+            }
+
+            val duplicatedProductId = result.result?.id?.takeIf { it > 0 }
+                ?: return@withDefaultContext WooResult(
+                    WooError(
+                        type = INVALID_RESPONSE,
+                        original = GenericErrorType.INVALID_RESPONSE,
+                        message = "Success response with missing or invalid product ID"
+                    )
+                )
+
+            WooResult(duplicatedProductId)
+        }
+
     suspend fun submitProductAttributeChanges(
         site: SiteModel,
         productId: Long,

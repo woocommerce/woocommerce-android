@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -124,7 +125,8 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
                 eq(site),
                 urlCaptor.capture(),
                 eq(PluginResponseModel::class.java),
-                bodyCaptor.capture()
+                bodyCaptor.capture(),
+                any()
             )
         ).thenReturn(response)
         return response

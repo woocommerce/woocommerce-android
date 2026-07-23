@@ -27,7 +27,8 @@ interface WPAPINetwork {
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any> = emptyMap()
+        body: Map<String, Any> = emptyMap(),
+        params: Map<String, String> = emptyMap()
     ): WPAPIResponse<T>
 
     suspend fun <T : Any> executeDeleteGsonRequest(
