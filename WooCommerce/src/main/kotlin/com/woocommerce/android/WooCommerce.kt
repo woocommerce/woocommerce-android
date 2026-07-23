@@ -1,6 +1,8 @@
 package com.woocommerce.android
 
 import android.app.Application
+import androidx.activity.ActivityFlags
+import androidx.activity.ExperimentalActivityApi
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.android.volley.VolleyLog
@@ -28,8 +30,15 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
             .setWorkerFactory(workerFactory)
             .build()
 
+    @OptIn(ExperimentalActivityApi::class)
     override fun onCreate() {
         super.onCreate()
+
+        // Hotfix for WOOMOB-3609: androidx.activity 1.12 changed OnBackPressedDispatcher so a hosting
+        // NavHostFragment's back callback out-prioritizes MainActivity's, which stopped BackPressListener
+        // screens from saving/confirming on system back. Opt back into the previous dispatch order.
+        // Proper follow-up (drop this flag, adopt per-screen callbacks) is tracked in WOOMOB-3614.
+        ActivityFlags.isOnBackPressedLifecycleOrderMaintained = false
 
         // Stripe Tap to Pay library starts it's own process. That causes the crash:
         //  > Caused by: java.lang.IllegalStateException: Default FirebaseApp is not initialized in this process

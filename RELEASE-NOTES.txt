@@ -4,12 +4,22 @@
 
 25.3
 -----
-- [*] Fixed variation updates copying the parent product image onto the variation [https://github.com/woocommerce/woocommerce-android/pull/16272]
+- [*] Improved product duplication to preserve product details managed by WooCommerce [https://github.com/woocommerce/woocommerce-android/pull/16262]
 - [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
 - [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 - [*] Fixed several My Store toolbar glitches when navigating away and back — the toolbar no longer re-expands and pushes the content down, the drop shadow no longer flickers, and the store name stays visible [https://github.com/woocommerce/woocommerce-android/pull/16249]
 - [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
+- [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
+- [*] Fixed the product selector showing store-currency prices when adding products to an order in a different currency [https://github.com/woocommerce/woocommerce-android/pull/16281]
+- [*] Removed the outdated store setup feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16273]
+- [*] Fixed products added to an order in a non-default currency being priced in the store's base currency [https://github.com/woocommerce/woocommerce-android/pull/16285]
+- [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
+- [*] Fixed system Back not leaving order creation when opened from the app shortcut [https://github.com/woocommerce/woocommerce-android/pull/16274]
+- [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
+- [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
+- [Internal] Fixed the is_ai_content property in the product update tracking event [https://github.com/woocommerce/woocommerce-android/pull/16275]
+- [*] Fixed variation updates copying the parent product image onto the variation [https://github.com/woocommerce/woocommerce-android/pull/16272]
 - [*] Fixed removing a variation's image not being saved to the store [https://github.com/woocommerce/woocommerce-android/pull/16245]
 
 25.2
@@ -33,6 +43,10 @@
 - [*] Fixed the main toolbar showing the wrong menu after opening a feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16220]
 - [Internal] Restored dashboard scroll tracking for the used_analytics event lost in the Compose migration [https://github.com/woocommerce/woocommerce-android/pull/16229]
 - [*] Fixed the "Add a different shipping address" switch turning back on while editing customer details during order creation [https://github.com/woocommerce/woocommerce-android/pull/16138]
+
+25.1.1
+-----
+- [**] Fixed product and order edits (stock, price, description, notes, etc.) being discarded when leaving a screen with the system/gesture back button [https://github.com/woocommerce/woocommerce-android/pull/16267]
 
 25.1
 -----

@@ -188,7 +188,7 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             override val onContactSupportActionClicked: () -> Unit,
             override val onLearnMoreActionClicked: () -> Unit,
             val onPrimaryActionClicked: (() -> Unit),
-            val onSecondaryActionClicked: (() -> Unit),
+            val onSkipActionClicked: (() -> Unit),
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_header),
             hintLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_overdue_requirements_hint),
@@ -200,10 +200,8 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
                 action = onPrimaryActionClicked
             ),
             actionButtonSecondary = ActionButton(
-                label = UiString.UiStringRes(
-                    R.string.card_reader_onboarding_account_overdue_requirements_refresh_button
-                ),
-                action = onSecondaryActionClicked
+                label = UiString.UiStringRes(R.string.skip),
+                action = onSkipActionClicked
             )
         )
 

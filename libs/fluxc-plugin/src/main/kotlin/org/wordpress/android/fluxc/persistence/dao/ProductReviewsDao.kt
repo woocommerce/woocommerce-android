@@ -41,11 +41,12 @@ internal abstract class ProductReviewsDao {
     @Query(
         """
             SELECT * FROM ProductReviewEntity
-            WHERE remoteProductReviewId IN (:ids)
+            WHERE localSiteId = :siteId
+            AND remoteProductReviewId IN (:ids)
             ORDER BY dateCreated DESC
         """
     )
-    abstract suspend fun getProductReviews(ids: List<RemoteId>): List<WCProductReviewModel>
+    abstract suspend fun getProductReviews(siteId: LocalId, ids: List<RemoteId>): List<WCProductReviewModel>
 
     @Query(
         """

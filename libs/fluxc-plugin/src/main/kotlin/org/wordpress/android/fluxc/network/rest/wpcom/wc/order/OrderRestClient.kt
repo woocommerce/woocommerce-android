@@ -877,10 +877,14 @@ class OrderRestClient @Inject constructor(
         }
     }
 
+    /**
+     * [orderCurrency] has to go in the query string, not the body — that's where WooPayments Multi-Currency reads it.
+     */
     suspend fun updateOrder(
         site: SiteModel,
         orderId: Long,
-        request: UpdateOrderRequest
+        request: UpdateOrderRequest,
+        orderCurrency: String? = null
     ): WooPayload<OrderEntity> {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
         val body = request.toNetworkRequest()
@@ -889,7 +893,10 @@ class OrderRestClient @Inject constructor(
             site = site,
             path = url,
             clazz = OrderDto::class.java,
-            body = body
+            body = body,
+            params = orderCurrency?.takeIf { it.isNotBlank() }
+                ?.let { mapOf("currency" to it) }
+                .orEmpty()
         )
 
         return response.toWooPayload { orderDto ->

@@ -165,7 +165,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 subject = requireNotNull(event.subject),
                 description = event.description,
                 extraTags = event.extraTags,
-                siteAddress = event.siteAddress
+                siteAddress = event.siteAddress,
+                diagnosticLog = event.diagnosticLog
             ).collect { result ->
                 hideProgressDialog()
                 result
@@ -204,7 +205,8 @@ class AiSupportChatFragment : Fragment(), MenuProvider {
                 prefilledSubject = event.subject,
                 prefilledMessage = event.description.takeIf { includeTranscript },
                 prefilledSiteAddress = event.siteAddress,
-                aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext
+                aiSupportChatTicketAnalyticsContext = event.ticketAnalyticsContext,
+                diagnosticLog = event.diagnosticLog
             )
         )
     }

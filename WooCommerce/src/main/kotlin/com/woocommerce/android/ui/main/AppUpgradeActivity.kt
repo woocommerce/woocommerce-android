@@ -31,7 +31,10 @@ abstract class AppUpgradeActivity :
      * The type of in app update to display:
      * [AppUpdateType.FLEXIBLE] OR [AppUpdateType.IMMEDIATE]
      */
-    private val inAppUpdateType = BuildConfig.IN_APP_UPDATE_TYPE.toInt()
+    private val inAppUpdateType = when (BuildConfig.IN_APP_UPDATE_TYPE.toInt()) {
+        AppUpdateType.IMMEDIATE -> AppUpdateType.IMMEDIATE
+        else -> AppUpdateType.FLEXIBLE
+    }
 
     /**
      * The latest app version code that is available for download

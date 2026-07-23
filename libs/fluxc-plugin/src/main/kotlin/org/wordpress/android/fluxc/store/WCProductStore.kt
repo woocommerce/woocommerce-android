@@ -944,8 +944,8 @@ class WCProductStore @Inject internal constructor(
     suspend fun getProductReviewsForSite(site: SiteModel): List<WCProductReviewModel> =
         productReviewsDao.getProductReviews(site.localId())
 
-    suspend fun getProductReviewsByReviewId(reviewIds: List<Long>): List<WCProductReviewModel> =
-        productReviewsDao.getProductReviews(ids = reviewIds.map { RemoteId(it) })
+    suspend fun getProductReviewsByReviewId(site: SiteModel, reviewIds: List<Long>): List<WCProductReviewModel> =
+        productReviewsDao.getProductReviews(siteId = site.localId(), ids = reviewIds.map { RemoteId(it) })
 
     suspend fun getProductReviewsForProductAndSiteId(site: SiteModel, remoteProductId: Long): List<WCProductReviewModel> =
         productReviewsDao.getProductReviews(siteId = site.localId(), RemoteId(remoteProductId))
@@ -1140,6 +1140,25 @@ class WCProductStore @Inject internal constructor(
     suspend fun getCompositeProducts(site: SiteModel, remoteProductId: Long): List<WCProductComponent> {
         return productsDao.getCompositeProducts(site, remoteProductId)
     }
+
+    suspend fun duplicateProduct(site: SiteModel, productId: Long): WooResult<Long> =
+        coroutineEngine.withDefaultContext(API, this, "duplicateProduct") {
+            val result = wcProductRestClient.duplicateProduct(site, productId)
+            if (result.isError) {
+                return@withDefaultContext WooResult(result.error)
+            }
+
+            val duplicatedProductId = result.result?.id?.takeIf { it > 0 }
+                ?: return@withDefaultContext WooResult(
+                    WooError(
+                        type = INVALID_RESPONSE,
+                        original = GenericErrorType.INVALID_RESPONSE,
+                        message = "Success response with missing or invalid product ID"
+                    )
+                )
+
+            WooResult(duplicatedProductId)
+        }
 
     suspend fun submitProductAttributeChanges(
         site: SiteModel,
