@@ -17,6 +17,7 @@
 - [*] Fixed system Back not leaving order creation when opened from the app shortcut [https://github.com/woocommerce/woocommerce-android/pull/16274]
 - [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
 - [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
+- [*] POS: custom amounts in the cart now show a "Discount not applied" note at checkout when a coupon is applied, since coupons don't discount custom amounts [https://github.com/woocommerce/woocommerce-android/pull/16299]
 
 25.2
 -----
