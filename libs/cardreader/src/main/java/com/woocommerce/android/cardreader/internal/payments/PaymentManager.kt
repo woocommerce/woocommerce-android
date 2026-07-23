@@ -271,7 +271,36 @@ internal class PaymentManager(
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
-            is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+            is CapturePaymentResponse.Error -> {
+                if (wasCapturedDespiteError(paymentIntent, captureResponse)) {
+                    emit(PaymentCompleted(receiptUrl))
+                } else {
+                    emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+                }
+            }
+        }
+    }
+
+    /* Ambiguous capture errors don't reveal whether the backend actually captured the payment. Refreshing the
+    intent and finding it SUCCEEDED means the funds were captured, so the payment is reported as completed to
+    prevent a retry leading to a double charge. Intents that are already SUCCEEDED before the capture call
+    (single-step terminal payments) are excluded as their status can't confirm the backend call went through. */
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun wasCapturedDespiteError(
+        paymentIntent: PaymentIntent,
+        error: CapturePaymentResponse.Error,
+    ): Boolean {
+        val isAmbiguousError = error is CapturePaymentResponse.Error.GenericError ||
+            error is CapturePaymentResponse.Error.ServerError ||
+            error is CapturePaymentResponse.Error.NetworkError
+        if (!isAmbiguousError || paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) return false
+        val clientSecret = paymentIntent.clientSecret ?: return false
+        return try {
+            terminalWrapper.retrievePaymentIntent(clientSecret).status == PaymentIntentStatus.SUCCEEDED
+        } catch (cancel: CancellationException) {
+            throw cancel
+        } catch (ignored: Exception) {
+            false
         }
     }
 

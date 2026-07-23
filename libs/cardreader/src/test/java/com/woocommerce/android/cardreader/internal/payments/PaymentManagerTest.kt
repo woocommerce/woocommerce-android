@@ -566,6 +566,100 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given ambiguous capture error and refreshed intent succeeded, when capturing payment, then PaymentCompleted emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+            val refreshedIntent = createPaymentIntent(SUCCEEDED)
+            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentCompleted::class.java)
+            verify(paymentErrorMapper, never()).mapCapturePaymentError(anyOrNull(), anyOrNull())
+        }
+
+    @Test
+    fun `given ambiguous capture error and refreshed intent not succeeded, when capturing payment, then error emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.NetworkError(""))
+            val refreshedIntent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(terminalWrapper.retrievePaymentIntent("secret")).thenReturn(refreshedIntent)
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+        }
+
+    @Test
+    fun `given ambiguous capture error and refreshing intent fails, when capturing payment, then error emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(intent.clientSecret).thenReturn("secret")
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+            whenever(terminalWrapper.retrievePaymentIntent("secret"))
+                .thenAnswer { throw IllegalStateException() }
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+        }
+
+    @Test
+    fun `given non-ambiguous capture error, when capturing payment, then intent not refreshed and error emitted`() =
+        testBlocking {
+            val intent = createPaymentIntent(REQUIRES_CAPTURE)
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.MissingOrder(""))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
+        }
+
+    @Test
+    fun `given capture error and missing client secret, when capturing payment, then intent not refreshed`() =
+        testBlocking {
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
+        }
+
+    @Test
+    fun `given succeeded interac intent and capture error, when capturing payment, then intent not refreshed`() =
+        testBlocking {
+            val intent = createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(ProcessPaymentIntentStatus.Success(intent))
+            whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
+                .thenReturn(CapturePaymentResponse.Error.ServerError(""))
+
+            val result = manager.acceptPayment(createPaymentInfo()).toList()
+
+            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
+            verify(terminalWrapper, never()).retrievePaymentIntent(anyString())
+        }
+
+    @Test
     fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when retrying payment, then flow resumes on processPayment`() =
         testBlocking {
             val paymentIntent = mock<PaymentIntent>().also {
