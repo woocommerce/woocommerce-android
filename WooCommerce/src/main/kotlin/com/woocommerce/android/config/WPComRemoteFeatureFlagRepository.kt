@@ -1,14 +1,17 @@
 package com.woocommerce.android.config
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WPComRemoteFeatureFlagRepository @Inject constructor(
-    private val featureFlagsStore: FeatureFlagsStore
+    private val featureFlagsStore: FeatureFlagsStore,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     companion object {
         private const val PLATFORM_NAME = "android"
@@ -24,7 +27,7 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
             buildNumber = "",
-            deviceId = "",
+            deviceId = getOrGenerateDeviceId(),
             identifier = "",
             marketingVersion = appVersion,
             platform = PLATFORM_NAME
@@ -38,4 +41,9 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
             Result.success(Unit)
         }
     }
+
+    private fun getOrGenerateDeviceId(): String =
+        appPrefsWrapper.remoteFeatureFlagsDeviceId.ifEmpty {
+            UUID.randomUUID().toString().also { appPrefsWrapper.remoteFeatureFlagsDeviceId = it }
+        }
 }
