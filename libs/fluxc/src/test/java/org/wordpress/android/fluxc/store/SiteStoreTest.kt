@@ -67,9 +67,8 @@ class SiteStoreTest {
             siteSqlUtils,
             siteStorePersistence,
             domainsDao,
-            initCoroutineEngine(),
-            FakeCrashLogging
-        )
+            initCoroutineEngine()
+        ) { FakeCrashLogging }
     }
 
     @Test

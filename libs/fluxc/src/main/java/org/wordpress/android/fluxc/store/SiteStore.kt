@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
 import com.wellsql.generated.SiteModelTable
+import dagger.Lazy
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.wordpress.android.fluxc.Dispatcher
@@ -75,7 +76,7 @@ open class SiteStore @Inject constructor(
     private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
     private val coroutineEngine: CoroutineEngine,
-    private val crashLogger: FluxCCrashLogger
+    private val crashLogger: Lazy<FluxCCrashLogger>
 ) : Store(dispatcher) {
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
 
@@ -719,7 +720,7 @@ open class SiteStore @Inject constructor(
     }
 
     private fun reportXmlrpcTry() {
-        crashLogger.sendReport(
+        crashLogger.get().sendReport(
             null,
             emptyMap(),
             "Requested SiteStore XMLRPC connection. This should not happen."
