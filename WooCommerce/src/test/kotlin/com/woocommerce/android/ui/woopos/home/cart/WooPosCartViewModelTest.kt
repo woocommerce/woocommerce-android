@@ -2088,6 +2088,32 @@ class WooPosCartViewModelTest {
             assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
         }
 
+    @Test
+    fun `given order response arriving after back to cart, when checkout clicked again, then stale note is not visible`() =
+        runTest {
+            // GIVEN
+            whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
+            stubCartItemsUpdater()
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            simulateCouponClicked()
+            simulateCustomAmountSubmitted()
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            advanceUntilIdle()
+            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            advanceUntilIdle()
+
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
+        }
+
     private suspend fun simulateCustomAmountSubmitted() {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.CustomAmountSubmitted(

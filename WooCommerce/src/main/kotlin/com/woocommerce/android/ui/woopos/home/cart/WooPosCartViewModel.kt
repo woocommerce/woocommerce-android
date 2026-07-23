@@ -181,7 +181,10 @@ class WooPosCartViewModel @Inject constructor(
     private fun goToTotals() {
         val itemClickedDataList = getCartItemsDataList()
         sendEventToParent(ChildToParentEvent.CheckoutClicked(itemClickedDataList))
-        _state.value = _state.value.copy(cartStatus = CHECKOUT)
+        _state.value = _state.value.copy(
+            cartStatus = CHECKOUT,
+            isCustomAmountDiscountNotAppliedNoteVisible = false,
+        )
         trackCheckoutTapped(
             itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>().size,
             itemClickedDataList.filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>().size
@@ -320,7 +323,10 @@ class WooPosCartViewModel @Inject constructor(
         }
         _state.value = _state.value.copy(
             body = updatedBody,
-            isCustomAmountDiscountNotAppliedNoteVisible = event.data.couponDiscountAppliedToItemsOnly,
+            // Responses that arrive after the user already left checkout must not be stored,
+            // or they would resurface as a stale verdict on the next checkout.
+            isCustomAmountDiscountNotAppliedNoteVisible = _state.value.cartStatus == CHECKOUT &&
+                event.data.couponDiscountAppliedToItemsOnly,
         )
         if (result.productsChanged) {
             childrenToParentEventSender.sendToParent(

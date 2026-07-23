@@ -747,11 +747,16 @@ private fun CustomAmountItem(
     isDiscountNotAppliedNoteVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    val itemContentDescription = stringResource(
+    val baseContentDescription = stringResource(
         id = R.string.woopos_cart_item_custom_amount_content_description,
         item.name,
         item.formattedAmount,
     )
+    val itemContentDescription = if (isDiscountNotAppliedNoteVisible) {
+        "$baseContentDescription, ${stringResource(R.string.woopos_cart_custom_amount_discount_not_applied)}"
+    } else {
+        baseContentDescription
+    }
 
     WooPosCard(
         modifier = modifier
