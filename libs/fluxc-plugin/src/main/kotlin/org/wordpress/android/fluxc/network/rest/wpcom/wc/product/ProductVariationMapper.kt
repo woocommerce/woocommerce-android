@@ -102,13 +102,21 @@ object ProductVariationMapper {
         if (storedVariationModel.shippingClass != updatedVariationModel.shippingClass) {
             body["shipping_class"] = updatedVariationModel.shippingClass
         }
-        if (storedVariationModel.image != updatedVariationModel.image) {
-            body["image"] = if (updatedVariationModel.image.isNotBlank()) {
-                updatedVariationModel.getImageModel()?.toJson() ?: ""
-            } else {
-                // A blank image means it was removed. WooCommerce deletes the variation image
+        // The variation's own image lives in editContextImage; stored rows never fetched with
+        // edit context only have the display image. An updated model without edit-context
+        // knowledge (null) never touches the image. Ids are compared because the stored json
+        // comes from the server while the draft rebuilds a smaller one for the same image.
+        val storedImageId = if (storedVariationModel.editContextImage != null) {
+            storedVariationModel.getEditContextImageModel()?.id
+        } else {
+            storedVariationModel.getImageModel()?.id
+        }
+        if (updatedVariationModel.editContextImage != null) {
+            val updatedImageModel = updatedVariationModel.getEditContextImageModel()
+            if (storedImageId != updatedImageModel?.id) {
+                // A missing image means it was removed. WooCommerce deletes the variation image
                 // when the image id is 0 (supported since WooCommerce 4.7).
-                WCProductImageModel(id = 0L).toJson()
+                body["image"] = (updatedImageModel ?: WCProductImageModel(id = 0L)).toJson()
             }
         }
         if (storedVariationModel.menuOrder != updatedVariationModel.menuOrder) {

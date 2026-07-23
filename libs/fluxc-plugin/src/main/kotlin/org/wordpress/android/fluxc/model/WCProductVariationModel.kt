@@ -58,6 +58,8 @@ data class WCProductVariationModel(
     val stockQuantity: Double = 0.0,
     val stockStatus: String = "",
     val image: String = "",
+    // The variation's own image as returned by edit-context fetches; blank when it has none.
+    val editContextImage: String? = null,
     val weight: String = "",
     val length: String = "",
     val width: String = "",
@@ -82,13 +84,17 @@ data class WCProductVariationModel(
     val attributeList
         get() = gson.fromJson(attributes, Array<ProductVariantOption>::class.java)
 
+    fun getImageModel(): WCProductImageModel? = parseImageModel(image)
+
+    fun getEditContextImageModel(): WCProductImageModel? = editContextImage?.let { parseImageModel(it) }
+
     /**
-     * Parses the images json array into a list of product images
+     * Parses the image json into a product image
      */
-    fun getImageModel(): WCProductImageModel? {
-        if (image.isNotBlank()) {
+    private fun parseImageModel(json: String): WCProductImageModel? {
+        if (json.isNotBlank()) {
             try {
-                with(gson.fromJson(image, JsonElement::class.java).asJsonObject) {
+                with(gson.fromJson(json, JsonElement::class.java).asJsonObject) {
                     WCProductImageModel(this.getLong("id")).also {
                         it.name = this.getString("name") ?: ""
                         it.src = this.getString("src") ?: ""

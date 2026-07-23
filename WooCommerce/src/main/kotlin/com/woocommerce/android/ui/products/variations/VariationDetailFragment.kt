@@ -337,7 +337,7 @@ class VariationDetailFragment :
     }
 
     private fun showVariationDetails(variation: ProductVariation) {
-        if (variation.image == null && !viewModel.isUploadingImages()) {
+        if (variation.editContextImage == null && !viewModel.isUploadingImages()) {
             binding.imageGallery.hide()
             binding.addImageContainer.show()
             binding.addImageContainer.setOnClickListener {
@@ -347,7 +347,7 @@ class VariationDetailFragment :
         } else {
             binding.addImageContainer.hide()
             binding.imageGallery.show()
-            variation.image?.let {
+            variation.editContextImage?.let {
                 binding.imageGallery.showProductImage(it, this)
             }
         }

@@ -195,7 +195,7 @@ class VariationDetailViewModel @Inject constructor(
 
     fun onAddImageButtonClicked() {
         AnalyticsTracker.track(PRODUCT_VARIATION_IMAGE_TAPPED)
-        val images = viewState.variation?.image?.let { listOf(it) } ?: emptyList()
+        val images = viewState.variation?.editContextImage?.let { listOf(it) } ?: emptyList()
         triggerEvent(ViewImageGallery(navArgs.remoteVariationId, images, showChooser = true))
     }
 
@@ -245,7 +245,7 @@ class VariationDetailViewModel @Inject constructor(
                     remoteVariationId = remoteVariationId ?: variation.remoteVariationId,
                     sku = sku ?: variation.sku,
                     globalUniqueId = globalUniqueId ?: variation.globalUniqueId,
-                    image = if (image != null) image.value else variation.image,
+                    editContextImage = if (image != null) image.value else variation.editContextImage,
                     regularPrice = regularPrice,
                     salePrice = salePrice,
                     saleEndDateGmt = saleEndDate,
@@ -324,7 +324,10 @@ class VariationDetailViewModel @Inject constructor(
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_product_success))
-            } else if (variation.image == null && result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID) {
+            } else if (
+                variation.editContextImage == null &&
+                result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
+            ) {
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
             } else if (result.error.canDisplayMessage) {
                 triggerEvent(ShowUpdateVariationError(result.error.message))
@@ -450,7 +453,7 @@ class VariationDetailViewModel @Inject constructor(
         mediaFileUploadHandler.observeSuccessfulUploads(navArgs.remoteVariationId)
             .onEach { media ->
                 viewState.variation?.let {
-                    val variation = it.copy(image = media.toAppModel())
+                    val variation = it.copy(editContextImage = media.toAppModel())
                     showVariation(variation)
                 }
             }
