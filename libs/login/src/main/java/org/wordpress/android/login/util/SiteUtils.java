@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SiteUtils {
-    public static ArrayList<Integer> getCurrentSiteIds(SiteStore siteStore) {
+    @NonNull
+    public static ArrayList<Integer> getCurrentSiteIds(@NonNull SiteStore siteStore) {
         ArrayList<Integer> siteIDs = new ArrayList<>();
         for (SiteModel site : siteStore.getSites()) {
             siteIDs.add(site.getId());
