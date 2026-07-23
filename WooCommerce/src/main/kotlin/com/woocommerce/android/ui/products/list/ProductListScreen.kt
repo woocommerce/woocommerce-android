@@ -338,7 +338,7 @@ private val previewItems = listOf(
 )
 
 @Suppress("MagicNumber")
-private val figmaParityPreviewItems = listOf(
+private val populatedBrowsingPreviewItems = listOf(
     previewProduct(
         remoteId = 11,
         name = "Keep Cups",
@@ -418,12 +418,12 @@ private fun ProductListBrowsingPreview() {
 }
 
 @Suppress("MagicNumber")
-@Preview(name = "Figma parity", widthDp = 430, heightDp = 850, locale = "en", showBackground = true)
+@Preview(name = "Populated browsing", widthDp = 430, heightDp = 850, locale = "en", showBackground = true)
 @Composable
-private fun ProductListFigmaParityPreview() {
+private fun ProductListPopulatedBrowsingPreview() {
     ProductListPreview(
         ProductListScreenState(
-            products = figmaParityPreviewItems,
+            products = populatedBrowsingPreviewItems,
             sortingTitle = "Sort by",
             showBrowsingControls = true,
             isBarcodeScanningAvailable = true,
