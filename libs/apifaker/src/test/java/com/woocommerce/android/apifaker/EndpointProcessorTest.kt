@@ -261,6 +261,46 @@ class EndpointProcessorTest {
     }
 
     @Test
+    fun `when processing a PUT jetpack tunnel endpoint with query parameters, then check query parameters`() {
+        val mockEndpoint = mockedTunnelPutEndpoint(QueryParameter("currency", "EUR"))
+        val request = tunnelPutRequest(path = "/wc/v3/orders/1&currency=EUR&_method=put")
+
+        val response = endpointProcessor.fakeRequestIfNeeded(request)
+
+        assert(response?.statusCode == mockEndpoint.response.statusCode)
+    }
+
+    @Test
+    fun `given query parameters don't match, when processing a PUT jetpack tunnel endpoint, then don't fake it`() {
+        mockedTunnelPutEndpoint(QueryParameter("currency", "EUR"))
+        val request = tunnelPutRequest(path = "/wc/v3/orders/1&currency=USD&_method=put")
+
+        val response = endpointProcessor.fakeRequestIfNeeded(request)
+
+        assert(response == null)
+    }
+
+    @Test
+    fun `when processing a PUT jetpack tunnel endpoint with encoded query parameters, then decode them`() {
+        val mockEndpoint = mockedTunnelPutEndpoint(QueryParameter("search", "a b&c"))
+        val request = tunnelPutRequest(path = "/wc/v3/orders/1&search=a%20b%26c&_method=put")
+
+        val response = endpointProcessor.fakeRequestIfNeeded(request)
+
+        assert(response?.statusCode == mockEndpoint.response.statusCode)
+    }
+
+    @Test
+    fun `given the tunneled path has no query parameters, when processing a PUT, then still match the endpoint`() {
+        val mockEndpoint = mockedTunnelPutEndpoint()
+        val request = tunnelPutRequest(path = "/wc/v3/orders/1&_method=put&")
+
+        val response = endpointProcessor.fakeRequestIfNeeded(request)
+
+        assert(response?.statusCode == mockEndpoint.response.statusCode)
+    }
+
+    @Test
     fun `when processing a regular endpoint with query parameters, then check query parameters`() {
         val mockEndpoint = MockedEndpoint(
             request = Request(
@@ -294,5 +334,45 @@ class EndpointProcessorTest {
 
         val response = endpointProcessor.fakeRequestIfNeeded(request)
         assert(response?.statusCode == 200)
+    }
+
+    private fun mockedTunnelPutEndpoint(vararg queryParameters: QueryParameter): MockedEndpoint {
+        val mockEndpoint = MockedEndpoint(
+            request = Request(
+                id = 0,
+                type = ApiType.WPApi,
+                httpMethod = HttpMethod.PUT,
+                path = "/wc/v3/orders/1",
+                queryParameters = queryParameters.toList(),
+                body = null
+            ),
+            response = Response(
+                endpointId = 0,
+                statusCode = 200
+            )
+        )
+        whenever(
+            endpointDaoMock.queryEndpoint(
+                type = mockEndpoint.request.type,
+                httpMethod = mockEndpoint.request.httpMethod!!,
+                path = mockEndpoint.request.path,
+                body = ""
+            )
+        ).thenReturn(listOf(mockEndpoint))
+        return mockEndpoint
+    }
+
+    private fun tunnelPutRequest(path: String): OkHttpRequest {
+        val body = """{"path": "$path", "json": "true"}"""
+        val jsonObject = mock<JSONObject> {
+            on { getString("path") } doReturn path
+            on { optString("body") } doReturn ""
+        }
+        whenever(jsonObjectProvider.parseString(body)).thenReturn(jsonObject)
+
+        return OkHttpRequest.Builder()
+            .method("POST", body.toRequestBody())
+            .url("https://public-api.wordpress.com/rest/v1.1/jetpack-blogs/161477129/rest-api")
+            .build()
     }
 }

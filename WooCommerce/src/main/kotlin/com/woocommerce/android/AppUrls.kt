@@ -33,7 +33,6 @@ object AppUrls {
     const val PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING =
         "https://woocommerce.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
-    const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
 
     const val CROWDSIGNAL_WOO_POS_SURVEY_POTENTIAL_USER = "https://automattic.survey.fm/pos-survey-potential-users"
     const val CROWDSIGNAL_WOO_POS_SURVEY_CURRENT_USER = "https://automattic.survey.fm/pos-survey-existing-users"
@@ -43,16 +42,6 @@ object AppUrls {
     const val CROWDSIGNAL_AI_ASSISTANT_SURVEY = "https://automattic.survey.fm/woo-mobile-ai-assistant"
 
     const val ADDONS_SURVEY = "https://automattic.survey.fm/woo-app-addons-production"
-
-    const val CROWDSIGNAL_STORE_SETUP_SURVEY =
-        "https://automattic.survey.fm/woo-mobile-%E2%80%93-store-setup-survey-2022"
-
-    val CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY =
-        if (BuildConfig.DEBUG) {
-            "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
-        } else {
-            "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
-        }
 
     val CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY = if (BuildConfig.DEBUG) {
         "https://automattic.survey.fm/order-creation-shipping-lines-survey-testing"

@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckCardData
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckType
+import com.woocommerce.android.ui.troubleshooting.toConnectivityDiagnosticLog
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -411,6 +412,7 @@ class AiSupportChatViewModel @Inject constructor(
                 messages = listOf(greetingMessage()),
                 selectedIssueType = SupportIssueType.OTHER,
                 diagnosticResult = result,
+                connectivityDiagnosticLog = checks.toConnectivityDiagnosticLog(),
                 hasProceededToChat = true,
                 canPersistChatHistory = accountRepository.isUserLoggedIn(),
                 showSendError = false
@@ -946,7 +948,8 @@ class AiSupportChatViewModel @Inject constructor(
             extraTags = supportArea.extraTags(_viewState.value.hasReceivedBotResponse),
             siteAddress = siteAddress,
             hasReceivedBotResponse = _viewState.value.hasReceivedBotResponse,
-            ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint)
+            ticketAnalyticsContext = supportArea.toTicketAnalyticsContext(_viewState.value.entryPoint),
+            diagnosticLog = _viewState.value.connectivityDiagnosticLog
         )
     }
 
@@ -1052,6 +1055,7 @@ data class AiSupportChatViewState(
     val selectedIssueLabel: String? = null,
     val launchExtraTags: List<String> = emptyList(),
     val diagnosticResult: DiagnosticResult? = null,
+    val connectivityDiagnosticLog: String? = null,
     val diagnosticSuggestedActionOverride: SuggestedFixAction? = null,
     val isRunningDiagnostics: Boolean = false,
     val isLoadingHistory: Boolean = false,
@@ -1153,7 +1157,8 @@ data class ContactHumanSupport(
     val extraTags: List<String>,
     val siteAddress: String,
     val hasReceivedBotResponse: Boolean,
-    val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext
+    val ticketAnalyticsContext: AiSupportChatTicketAnalyticsContext,
+    val diagnosticLog: String?
 ) : Event()
 
 data object OpenAppNotificationSettings : Event()

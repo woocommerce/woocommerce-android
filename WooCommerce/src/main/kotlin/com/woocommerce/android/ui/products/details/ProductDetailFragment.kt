@@ -63,7 +63,6 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.Produc
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductUpdated
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowBlazeCreationScreen
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductInProgress
@@ -433,7 +432,6 @@ class ProductDetailFragment :
                     event.productDescription
                 )
 
-                is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
                 is ProductUpdated -> productsCommunicationViewModel.pushEvent(
                     ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
                 )
@@ -442,12 +440,6 @@ class ProductDetailFragment :
                 else -> event.isHandled = false
             }
         }
-    }
-
-    private fun openAIProductCreationSurveyBottomSheet() {
-        findNavController().navigateSafely(
-            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductCreationSurveyBottomSheet()
-        )
     }
 
     private fun showAIProductDescriptionBottomSheet(title: String, description: String?) {

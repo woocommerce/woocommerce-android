@@ -11,6 +11,7 @@
 
 /products/<id>/
 /products/<id>/availability/
+/products/<id>/duplicate
 /products/<id>/variations/
 /products/<id>/variations/<variation_id>
 /products/<id>/variations/batch
