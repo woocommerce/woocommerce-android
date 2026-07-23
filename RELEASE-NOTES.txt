@@ -19,6 +19,8 @@
 - [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
 - [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
 - [Internal] Fixed the is_ai_content property in the product update tracking event [https://github.com/woocommerce/woocommerce-android/pull/16275]
+- [*] Fixed variation updates copying the parent product image onto the variation [https://github.com/woocommerce/woocommerce-android/pull/16272]
+- [*] Fixed removing a variation's image not being saved to the store [https://github.com/woocommerce/woocommerce-android/pull/16245]
 
 25.2
 -----
