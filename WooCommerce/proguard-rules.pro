@@ -9,11 +9,8 @@
 -keepattributes *Annotation*
 ###### OkHttp - end
 
-###### Event Bus 3
+###### Event Bus 3 (the @Subscribe rule comes from the library's consumer rules)
 -keepattributes *Annotation*
--keepclassmembers class ** {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
 # Only required if you use AsyncExecutor
