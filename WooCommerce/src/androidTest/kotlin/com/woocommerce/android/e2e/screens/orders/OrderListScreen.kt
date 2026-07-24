@@ -1,34 +1,32 @@
 package com.woocommerce.android.e2e.screens.orders
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import com.google.android.material.card.MaterialCardView
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.Condition
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiScrollable
+import androidx.test.uiautomator.UiSelector
 import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.util.CustomMatchers
 import com.woocommerce.android.e2e.helpers.util.OrderData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.Matchers
+import com.woocommerce.android.ui.orders.list.OrderListTestTags
+import java.util.regex.Pattern
 
-class OrderListScreen : Screen(R.id.ordersList) {
+class OrderListScreen : Screen(R.id.order_list_compose_container) {
+    private val device = UiDevice.getInstance(getInstrumentation())
+
     fun selectOrder(index: Int): SingleOrderScreen {
-        selectItemAtIndexInRecyclerView(index, R.id.ordersList, R.id.linearLayout)
+        waitForOrderRows(minimumCount = index + 1)[index].click()
         return SingleOrderScreen()
     }
 
     fun selectOrderById(orderId: Int): SingleOrderScreen {
-        val orderToOpen = Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.orderNum),
-                ViewMatchers.withText("#$orderId")
-            )
-        )
-
-        waitForElementToBeDisplayed(orderToOpen)
-        orderToOpen.perform(ViewActions.click())
+        scrollToOrder(orderId)
+        waitFor(By.res(OrderListTestTags.orderRow(orderId.toLong())), "order $orderId").click()
         return SingleOrderScreen()
     }
 
@@ -41,17 +39,13 @@ class OrderListScreen : Screen(R.id.ordersList) {
 
     fun enterSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // If we expect for results, we wait for the list header
-        waitForElementToBeDisplayed(R.id.orderListHeader)
+        waitForOrderRows(minimumCount = 1)
         return this
     }
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // We don't expect results, so we wait for "no results" situation
-        waitForElementToBeDisplayed(
-            Espresso.onView(ViewMatchers.withText(containsString("couldn't find")))
-        )
+        waitFor(By.res(OrderListTestTags.EMPTY), "empty Orders state")
         return this
     }
 
@@ -82,77 +76,81 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun assertOrderCard(order: OrderData): OrderListScreen {
-        // Wait for the order card to appear first. This is sometimes
-        // flaky on Firebase because of low emulator performance.
-        waitForElementToBeDisplayed(
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.orderNum),
-                    ViewMatchers.withText("#${order.id}")
-                )
-            )
-        )
-
-        // Using quite a complex matcher to make sure that all expected
-        // order details belong to the same order card.
-        Espresso.onView(
-            Matchers.allOf(
-                // We "start" with making sure that there's and order ID on screen
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.orderNum),
-                    ViewMatchers.withText("#${order.id}")
-                ),
-                // And that this ID has a sibling with expected Customer Name
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderName),
-                        ViewMatchers.withText(order.customerName)
-                    )
-                ),
-                // And that this ID has a sibling with expected price
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderTotal),
-                        ViewMatchers.withText(order.total)
-                    )
-                ),
-                // And that this ID has a sibling with a child containing expected status
-                ViewMatchers.hasSibling(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderTags),
-                        ViewMatchers.withChild(ViewMatchers.withText(order.status))
-                    )
-                ),
-                // And that all of them are children of Orders List
-                ViewMatchers.isDescendantOfA(ViewMatchers.withId(R.id.ordersList)),
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        scrollToOrder(order.id)
+        val row = waitFor(By.res(OrderListTestTags.orderRow(order.id.toLong())), "order ${order.id}")
+        val rowText = row.allText().joinToString(" ")
+        check(rowText.contains("#${order.id}")) { "Order row did not contain '#${order.id}': $rowText" }
+        check(rowText.contains(order.customerName)) {
+            "Order row did not contain customer '${order.customerName}': $rowText"
+        }
+        check(rowText.contains(order.total)) { "Order row did not contain total '${order.total}': $rowText" }
+        check(rowText.contains(order.status)) { "Order row did not contain status '${order.status}': $rowText" }
 
         return this
     }
 
     fun assertOrdersCount(count: Int): OrderListScreen {
-        Espresso.onView(ViewMatchers.withId(R.id.ordersList))
-            .check(
-                ViewAssertions.matches(
-                    CustomMatchers()
-                        .withViewCount(Matchers.instanceOf(MaterialCardView::class.java), count)
-                )
-            )
+        waitUntil(
+            condition = { orderRows().size == count },
+            failureMessage = { "Expected $count order rows, found ${orderRows().size}" },
+        )
 
         return this
     }
 
     fun assertSearchResultsAbsent(term: String): OrderListScreen {
         val expectedString = "We're sorry, we couldn't find results for \"${term}\""
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.empty_view_title),
-                ViewMatchers.withText(containsString(expectedString))
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        waitFor(By.textContains(expectedString), "empty search result for $term")
         return this
+    }
+
+    private fun scrollToOrder(orderId: Int) {
+        waitFor(By.res(OrderListTestTags.LIST), "Orders list")
+        UiScrollable(UiSelector().resourceId(OrderListTestTags.LIST)).apply {
+            setAsVerticalList()
+            scrollTextIntoView("#$orderId")
+        }
+    }
+
+    private fun waitForOrderRows(minimumCount: Int): List<UiObject2> {
+        waitUntil(
+            condition = { orderRows().size >= minimumCount },
+            failureMessage = {
+                "Expected at least $minimumCount order rows, found ${orderRows().size}"
+            },
+        )
+        return orderRows()
+    }
+
+    private fun orderRows(): List<UiObject2> = device.findObjects(ORDER_ROW_SELECTOR)
+
+    private fun waitFor(selector: BySelector, description: String): UiObject2 {
+        waitUntil(
+            condition = { device.findObject(selector) != null },
+            failureMessage = { "$description was not found" },
+        )
+        return requireNotNull(device.findObject(selector)) { "$description was not found" }
+    }
+
+    private fun waitUntil(
+        condition: () -> Boolean,
+        failureMessage: () -> String,
+    ) {
+        check(device.wait(Condition<UiDevice, Boolean> { condition() }, NODE_TIMEOUT_MS)) {
+            failureMessage()
+        }
+    }
+
+    private fun UiObject2.allText(): List<String> = buildList {
+        text?.takeIf(String::isNotEmpty)?.let(::add)
+        contentDescription?.takeIf(String::isNotEmpty)?.let(::add)
+        children.forEach { addAll(it.allText()) }
+    }
+
+    private companion object {
+        const val NODE_TIMEOUT_MS = 10_000L
+        val ORDER_ROW_SELECTOR: BySelector = By.res(
+            Pattern.compile("${OrderListTestTags.ORDER_ROW_PREFIX}[0-9]+")
+        )
     }
 }

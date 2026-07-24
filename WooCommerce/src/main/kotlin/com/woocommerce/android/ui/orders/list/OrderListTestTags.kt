@@ -20,6 +20,7 @@ internal object OrderListTestTags {
     const val SELECTION_OVERFLOW = "order_list_selection_overflow"
     const val SELECTION_MENU = "order_list_selection_menu"
     const val SELECTION_UPDATE_STATUS = "order_list_selection_update_status"
+    const val ORDER_ROW_PREFIX = "order_list_order_"
     const val LIST = "order_list"
     const val INITIAL_LOADING = "order_list_initial_loading"
     const val EMPTY = "order_list_empty"
@@ -33,7 +34,7 @@ internal object OrderListTestTags {
     const val SKELETON_BADGE = "order_list_skeleton_badge"
     const val SKELETON_DIVIDER = "order_list_skeleton_divider"
 
-    fun orderRow(orderId: Long) = "order_list_order_$orderId"
+    fun orderRow(orderId: Long) = "$ORDER_ROW_PREFIX$orderId"
     fun orderDivider(orderId: Long) = "order_list_divider_$orderId"
     fun selectionSlot(orderId: Long) = "order_list_selection_slot_$orderId"
     fun selectionIndicator(orderId: Long) = "order_list_selection_indicator_$orderId"
