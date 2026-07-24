@@ -17,6 +17,7 @@ interface MainNavigationRouter {
 
     fun showOrderDetail(
         orderId: Long,
+        allOrderIds: List<Long> = listOf(orderId),
         navHostFragment: NavHostFragment? = null,
         launchedFromNotification: Boolean = false,
         startPaymentsFlow: Boolean = false,

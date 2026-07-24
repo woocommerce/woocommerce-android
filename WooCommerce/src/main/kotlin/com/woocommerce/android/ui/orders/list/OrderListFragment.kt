@@ -1012,7 +1012,11 @@ class OrderListFragment :
             selectedOrder.selectOrder(orderId)
             viewModel.updateOrderSelectedStatus(orderId, requireContext().isTwoPanesShouldBeUsed)
             navHostFragment?.let {
-                showOrderDetail(orderId, it, startPaymentsFlow = startPaymentsFlow)
+                showOrderDetail(
+                    orderId = orderId,
+                    navHostFragment = it,
+                    startPaymentsFlow = startPaymentsFlow,
+                )
             } ?: run {
                 // Phone layout
                 if (sharedView != null) {
