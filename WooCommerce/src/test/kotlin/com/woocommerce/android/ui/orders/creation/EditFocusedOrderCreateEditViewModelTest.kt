@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.CurrencyMatchResult
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode
@@ -766,6 +767,48 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
         val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
         assertThat(event.orderCurrency).isEqualTo("EUR")
+    }
+
+    @Test
+    fun `given currency mismatch and store below the fix version, when editing, then the order is not editable`() {
+        val order = defaultOrderValue.copy(isEditable = true)
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        isStoreCurrencyMatch.stub {
+            on { invoke(any()) } doReturn CurrencyMatchResult(isMatch = false, storeCurrency = "USD")
+        }
+        isCurrencyQueryParamSupported.stub {
+            on { invoke() } doReturn false
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever { lastReceivedState = it }
+
+        assertThat(lastReceivedState?.isEditable).isEqualTo(false)
+        assertThat(lastReceivedState?.currencyMismatch).isEqualTo(
+            OrderCreateEditViewModel.CurrencyMismatch(orderCurrency = "EUR", storeCurrency = "USD")
+        )
+    }
+
+    @Test
+    fun `given currency mismatch and store on the fix version, when editing, then the order stays editable`() {
+        val order = defaultOrderValue.copy(isEditable = true)
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        isStoreCurrencyMatch.stub {
+            on { invoke(any()) } doReturn CurrencyMatchResult(isMatch = false, storeCurrency = "USD")
+        }
+        isCurrencyQueryParamSupported.stub {
+            on { invoke() } doReturn true
+        }
+        createSut()
+        var lastReceivedState: OrderCreateEditViewModel.ViewState? = null
+        sut.viewStateData.liveData.observeForever { lastReceivedState = it }
+
+        assertThat(lastReceivedState?.isEditable).isEqualTo(true)
+        assertThat(lastReceivedState?.currencyMismatch).isNull()
     }
 
     @Test

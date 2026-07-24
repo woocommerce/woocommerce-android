@@ -827,6 +827,8 @@
     -->
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_currency_mismatch_title">This order can\'t be edited in the app</string>
+    <string name="order_editing_currency_mismatch_message">Sorry, you can only edit this order on the web, as it uses %1$s, and your site\'s currency is %2$s.</string>
     <string name="order_editing_locked_content_description">locked</string>
     <string name="order_editing_barcode_content_description">Scan barcode</string>
     <string name="order_editing_add_content_description">Add product</string>
