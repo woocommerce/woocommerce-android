@@ -99,6 +99,9 @@ internal fun ProductListContent(
             )
             else -> ProductLazyList(
                 products = state.products,
+                selectedProductIds = state.selectedProductIds,
+                uploadingProductIds = state.uploadingProductIds,
+                highlightedProductId = state.highlightedProductId,
                 isLoadInProgress = state.isLoading,
                 isLoadingMore = state.isLoadingMore,
                 canLoadMore = state.canLoadMore,
@@ -120,6 +123,9 @@ internal fun ProductListContent(
 @Composable
 private fun ProductLazyList(
     products: List<ProductListItemUiModel>,
+    selectedProductIds: Set<Long>,
+    uploadingProductIds: Set<Long>,
+    highlightedProductId: Long?,
     isLoadInProgress: Boolean,
     isLoadingMore: Boolean,
     canLoadMore: Boolean,
@@ -139,8 +145,14 @@ private fun ProductLazyList(
         contentPadding = PaddingValues(bottom = bottomContentPadding),
     ) {
         items(items = products, key = ProductListItemUiModel::remoteId) { product ->
+            val isSelected = product.remoteId in selectedProductIds
+            val isUploadingMedia = product.remoteId in uploadingProductIds
+            val isHighlighted = product.remoteId == highlightedProductId
             ProductListItem(
                 product = product,
+                isSelected = isSelected,
+                isUploadingMedia = isUploadingMedia,
+                isHighlighted = isHighlighted,
                 onClick = { onProductTapped(product.remoteId) },
                 onLongClick = { onProductLongPressed(product.remoteId) },
                 onToggleSelection = { onProductSelectionToggled(product.remoteId) },
@@ -178,18 +190,21 @@ private fun ProductLazyList(
 @Composable
 private fun ProductListItem(
     product: ProductListItemUiModel,
+    isSelected: Boolean,
+    isUploadingMedia: Boolean,
+    isHighlighted: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onToggleSelection: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
-    val selectionAction = if (product.isSelected) {
+    val selectionAction = if (isSelected) {
         stringResource(R.string.product_list_deselect_product, product.name)
     } else {
         stringResource(R.string.product_list_select_product, product.name)
     }
     val background = when {
-        product.isSelected || product.isHighlighted -> colorResource(R.color.color_item_selected)
+        isSelected || isHighlighted -> colorResource(R.color.color_item_selected)
         else -> WooTheme.colors.surface.default
     }
 
@@ -217,7 +232,7 @@ private fun ProductListItem(
             }
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .semantics(mergeDescendants = true) {
-                selected = product.isSelected
+                selected = isSelected
                 role = Role.Button
                 requestFocus {
                     focusRequester.requestFocus()
@@ -233,7 +248,11 @@ private fun ProductListItem(
             .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ProductListThumbnail(product)
+        ProductListThumbnail(
+            product = product,
+            isSelected = isSelected,
+            isUploadingMedia = isUploadingMedia,
+        )
         Spacer(modifier = Modifier.width(WooTheme.spacing.space5))
         Column(
             modifier = Modifier
@@ -284,7 +303,11 @@ private fun ProductListMetadata(product: ProductListItemUiModel) {
 }
 
 @Composable
-private fun ProductListThumbnail(product: ProductListItemUiModel) {
+private fun ProductListThumbnail(
+    product: ProductListItemUiModel,
+    isSelected: Boolean,
+    isUploadingMedia: Boolean,
+) {
     Box(
         modifier = Modifier
             .size(PRODUCT_THUMBNAIL_SIZE)
@@ -297,11 +320,11 @@ private fun ProductListThumbnail(product: ProductListItemUiModel) {
             contentDescription = stringResource(R.string.product_image_content_description),
             cornerRadius = WooTheme.radius.medium,
             modifier = Modifier.alpha(
-                if (product.isUploadingMedia && !product.isSelected) UPLOADING_THUMBNAIL_ALPHA else 1f
+                if (isUploadingMedia && !isSelected) UPLOADING_THUMBNAIL_ALPHA else 1f
             ),
         )
         when {
-            product.isSelected -> Box(
+            isSelected -> Box(
                 modifier = Modifier
                     .matchParentSize()
                     .testTag(ProductListTestTags.selectionIndicator(product.remoteId))
@@ -318,7 +341,7 @@ private fun ProductListThumbnail(product: ProductListItemUiModel) {
                     modifier = Modifier.size(SELECTION_CHECK_SIZE),
                 )
             }
-            product.isUploadingMedia -> WooCircularProgressIndicator(
+            isUploadingMedia -> WooCircularProgressIndicator(
                 modifier = Modifier.size(APPEND_PROGRESS_SIZE)
             )
         }

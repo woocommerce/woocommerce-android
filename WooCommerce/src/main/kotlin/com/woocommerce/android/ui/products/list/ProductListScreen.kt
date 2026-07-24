@@ -319,9 +319,6 @@ private val previewItems = listOf(
         isStatusPending = false,
         stockAndPrice = "In stock • $18.00",
         sku = "SKU: woo-beanie",
-        isSelected = false,
-        isUploadingMedia = false,
-        isHighlighted = false,
     ),
     ProductListItemUiModel(
         remoteId = 2,
@@ -331,9 +328,6 @@ private val previewItems = listOf(
         isStatusPending = false,
         stockAndPrice = "Out of stock • $32.00",
         sku = null,
-        isSelected = true,
-        isUploadingMedia = true,
-        isHighlighted = false,
     ),
 )
 
@@ -373,9 +367,6 @@ private fun previewProduct(
     isStatusPending = false,
     stockAndPrice = stockAndPrice,
     sku = sku,
-    isSelected = false,
-    isUploadingMedia = false,
-    isHighlighted = false,
 )
 
 @Composable
@@ -448,10 +439,9 @@ private fun ProductListSearchPreview() {
 private fun ProductListSelectionAndUploadPreview() {
     ProductListPreview(
         ProductListScreenState(
-            products = previewItems.mapIndexed { index, item ->
-                item.copy(isSelected = index == 0, isUploadingMedia = index == 1)
-            },
-            isSelecting = true,
+            products = previewItems,
+            selectedProductIds = setOf(previewItems[0].remoteId),
+            uploadingProductIds = setOf(previewItems[1].remoteId),
         )
     )
 }
@@ -533,7 +523,8 @@ private fun ProductListFilteredEmptyPreview() {
 private fun ProductListTabletHighlightPreview() {
     ProductListPreview(
         ProductListScreenState(
-            products = previewItems.mapIndexed { index, item -> item.copy(isHighlighted = index == 0) },
+            products = previewItems,
+            highlightedProductId = previewItems[0].remoteId,
         )
     )
 }
