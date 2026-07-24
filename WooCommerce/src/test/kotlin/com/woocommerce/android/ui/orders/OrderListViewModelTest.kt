@@ -218,6 +218,32 @@ class OrderListViewModelTest : BaseUnitTest() {
         verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
     }
 
+    @Test
+    fun `when the list presentation is cleared, then the active list is no longer exposed`() {
+        val pagedList = mock<PagedList<OrderListItemUIType>>()
+        whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
+        viewModel.pagedListData.observeForever { }
+        viewModel.loadOrders()
+
+        viewModel.clearOrderListPresentation()
+
+        assertThat(viewModel.pagedListData.value).isNull()
+        assertThat(viewModel.emptyViewType.value).isNull()
+    }
+
+    @Test
+    fun `given an unchanged descriptor, when orders reload after presentation clear, then cached list is restored`() {
+        val pagedList = mock<PagedList<OrderListItemUIType>>()
+        whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
+        viewModel.pagedListData.observeForever { }
+        viewModel.loadOrders()
+        viewModel.clearOrderListPresentation()
+
+        viewModel.loadOrders()
+
+        assertThat(viewModel.pagedListData.value).isSameAs(pagedList)
+    }
+
     /**
      * Test for proper handling of a request to fetch orders and order status options
      * when the device is offline. This scenario should result in an "offline" snackbar
@@ -708,8 +734,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         assertThat(targetOrder.status).isEqualTo(originalStatus)
         assertThat(viewModel.orderListContentRevision.value).isEqualTo(2L)
-        assertThat(events.filterIsInstance<OrderListEvent.NotifyOrderChanged>().map { it.orderId })
-            .containsExactly(targetOrder.orderId, targetOrder.orderId)
     }
 
     @Test
@@ -1080,8 +1104,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when selection count changes to greater than 0, then enter selection mode`() = testBlocking {
-        viewModel.onSelectionChanged(2)
+    fun `when orders are selected, then enter selection mode`() = testBlocking {
+        selectOrders(2)
 
         assertThat(viewModel.isSelecting()).isTrue()
         assertThat(viewModel.viewState.selectionCount).isEqualTo(2)
@@ -1090,12 +1114,12 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when selection count changes to 0, then exit selection mode`() = testBlocking {
+    fun `when selection is cleared, then exit selection mode`() = testBlocking {
         // First enter selection mode
-        viewModel.onSelectionChanged(2)
+        selectOrders(2)
 
         // Then exit
-        viewModel.onSelectionChanged(0)
+        viewModel.clearOrderSelection()
 
         assertThat(viewModel.isSelecting()).isFalse()
         assertThat(viewModel.viewState.selectionCount).isNull()
@@ -1104,13 +1128,13 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when in selection mode and count changes but stays above 0, then update count only`() = testBlocking {
+    fun `when another order is selected, then update count without leaving selection mode`() = testBlocking {
         // Enter selection mode
-        viewModel.onSelectionChanged(2)
+        selectOrders(2)
         val initialState = viewModel.viewState.orderListState
 
         // Change count
-        viewModel.onSelectionChanged(3)
+        viewModel.onOrderLongPressed(3L)
 
         assertThat(viewModel.viewState.selectionCount).isEqualTo(3)
         assertThat(viewModel.viewState.orderListState).isEqualTo(initialState)
@@ -1162,6 +1186,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel(savedState)
 
         assertThat(viewModel.selectedOrderIds.value).containsExactly(21L, 22L)
+        assertThat(viewModel.isSelecting()).isTrue()
+        assertThat(viewModel.viewState.selectionCount).isEqualTo(2)
         assertThat(viewModel.event.value).isNull()
     }
 
@@ -1196,12 +1222,13 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(networkStatus.isConnected()).thenReturn(false)
 
         // First enter selection mode
-        viewModel.onSelectionChanged(2)
+        selectOrders(2)
         viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
 
         assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
         assertThat((viewModel.event.value as Event.ShowSnackbar).message).isEqualTo(R.string.offline_error)
         assertThat(viewModel.isSelecting()).isFalse()
+        assertThat(viewModel.selectedOrderIds.value).isEmpty()
     }
 
     @Test
@@ -1211,7 +1238,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             .thenReturn(BulkUpdateOrderResult.Error(Exception()))
 
         // First enter selection mode
-        viewModel.onSelectionChanged(1)
+        selectOrders(1)
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
@@ -1226,7 +1253,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
             .thenReturn(BulkUpdateOrderResult.NoOrdersUpdated)
 
-        viewModel.onSelectionChanged(1)
+        selectOrders(1)
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
@@ -1243,7 +1270,7 @@ class OrderListViewModelTest : BaseUnitTest() {
             .thenReturn(BulkUpdateOrderResult.AllFailed)
 
         // First enter selection mode
-        viewModel.onSelectionChanged(1)
+        selectOrders(1)
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
@@ -1264,7 +1291,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // First load order to initialize orderPagedListWrapper, then enter selection mode
         viewModel.loadOrders()
-        viewModel.onSelectionChanged(2)
+        selectOrders(2)
 
         // When
         viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
@@ -1293,7 +1320,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // First load order to initialize orderPagedListWrapper, then enter selection mode
         viewModel.loadOrders()
-        viewModel.onSelectionChanged(5)
+        selectOrders(5)
 
         // When
         viewModel.onBulkOrderStatusChanged(listOf(1L, 2L, 3L, 4L, 5L), Order.Status.Completed)
@@ -1306,9 +1333,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when selection count reaches limit, then show error message`() {
+    fun `when selection reaches limit, then show error message`() {
         // when
-        viewModel.onSelectionChanged(BULK_UPDATE_COUNT_LIMIT)
+        selectOrders(BULK_UPDATE_COUNT_LIMIT)
 
         // then
         assertEquals(BULK_UPDATE_COUNT_LIMIT, viewModel.viewState.selectionCount)
@@ -1322,6 +1349,12 @@ class OrderListViewModelTest : BaseUnitTest() {
                     BULK_UPDATE_COUNT_LIMIT
                 )
             )
+        }
+    }
+
+    private fun selectOrders(count: Int) {
+        repeat(count) { index ->
+            viewModel.onOrderLongPressed(index.toLong() + 1L)
         }
     }
 

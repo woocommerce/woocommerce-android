@@ -158,8 +158,8 @@ class OrderListViewModel @Inject constructor(
     )
     val selectedOrderIds: StateFlow<Set<Long>> = savedSelectedOrderIds
 
-    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    private val _pagedListData = MediatorLiveData<PagedOrdersList?>()
+    val pagedListData: LiveData<PagedOrdersList?> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -177,8 +177,6 @@ class OrderListViewModel @Inject constructor(
     val isEmpty: LiveData<Boolean> = _isEmpty
 
     val orderId: LiveData<Long> = savedState.getLiveData<Long>("orderId")
-
-    var orderIdAndPositionBackup = mutableMapOf<Long, Int>()
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData(
@@ -264,6 +262,12 @@ class OrderListViewModel @Inject constructor(
         // When filters haven't changed (e.g. returning from order detail), avoid recreating the
         // PagedListWrapper — clearing/re-binding its LiveData sources causes the list to flash.
         if (listDescriptor == activeWCOrderListDescriptor && ordersPagedListWrapper != null) {
+            if (_pagedListData.value == null) {
+                ordersPagedListWrapper?.let { wrapper ->
+                    wrapper.data.value?.let { _pagedListData.value = it }
+                    createAndPostEmptyViewType(wrapper)
+                }
+            }
             launch {
                 if (shouldUpdateOrdersList(listDescriptor)) {
                     fetchOrdersAndOrderDependencies()
@@ -272,13 +276,14 @@ class OrderListViewModel @Inject constructor(
             return
         }
         activeWCOrderListDescriptor = listDescriptor
-        ordersPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        ordersPagedListWrapper = pagedListWrapper
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
         )
         activatePagedListWrapper(
-            pagedListWrapper = ordersPagedListWrapper!!,
+            pagedListWrapper = pagedListWrapper,
             shouldRetry = true
         )
         val listId = listDescriptor.uniqueIdentifier.value
@@ -300,6 +305,7 @@ class OrderListViewModel @Inject constructor(
      * by the search component portion of the order list view.
      */
     fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+        clearOrderListPresentation()
         val sanitizedQuery = sanitizeSearchQuery(searchQuery)
         val isGuestSearch = searchGuestOrders || sanitizedQuery == guestSearchQuery
         guestSearchQuery = sanitizedQuery.takeIf { isGuestSearch }
@@ -310,6 +316,11 @@ class OrderListViewModel @Inject constructor(
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    fun clearOrderListPresentation() {
+        _pagedListData.value = null
+        _emptyViewType.value = null
     }
 
     /**
@@ -714,26 +725,6 @@ class OrderListViewModel @Inject constructor(
             ?: return
         order.status = status
         _orderListContentRevision.value += 1
-        triggerEvent(OrderListEvent.NotifyOrderChanged(orderId))
-    }
-
-    fun updateOrderSelectedStatus(orderId: Long, isTablet: Boolean = true) {
-        val pagedList = _pagedListData.value ?: return
-        if (isTablet) {
-            pagedList.map { orderItem ->
-                if (orderItem is OrderListItemUIType.OrderListItemUI) {
-                    orderItem.isSelected = orderItem.orderId == orderId
-                }
-            }
-        } else {
-            pagedList.map { orderItem ->
-                if (orderItem is OrderListItemUIType.OrderListItemUI) {
-                    orderItem.isSelected = false
-                }
-            }
-        }
-        _orderListContentRevision.value += 1
-        triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
     }
 
     fun clearOrderId() {
@@ -800,7 +791,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
-        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderId))
         triggerEvent(
             OrderListEvent.ShowRetryErrorSnack(
                 message = resourceProvider.getString(
@@ -821,7 +811,6 @@ class OrderListViewModel @Inject constructor(
                 updateOrderDisplayedStatus(gestureSource.orderId, gestureSource.oldStatus)
             },
             onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderId))
                 triggerEvent(
                     OrderListEvent.ShowRetryErrorSnack(
                         message = resourceProvider.getString(
@@ -993,19 +982,6 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onSelectionChanged(count: Int) {
-        when {
-            count == 0 -> exitSelectionMode()
-            count >= BULK_UPDATE_COUNT_LIMIT -> {
-                viewState = viewState.copy(selectionCount = count)
-                showMaximumBulkSelectionNotice()
-            }
-
-            count > 0 && !isSelecting() -> enterSelectionMode(count)
-            count > 0 -> viewState = viewState.copy(selectionCount = count)
-        }
-    }
-
     private fun showMaximumBulkSelectionNotice() {
         val message = resourceProvider.getString(
             R.string.orderlist_bulk_update_maximum_reached,
@@ -1087,7 +1063,7 @@ class OrderListViewModel @Inject constructor(
             trackBulkOrderUpdateFailure()
             triggerEvent(Event.ShowSnackbar(R.string.offline_error))
         }
-        exitSelectionMode()
+        clearOrderSelection()
     }
 
     private fun handleBulkUpdateResult(result: BulkUpdateOrderResult) {
@@ -1177,10 +1153,6 @@ class OrderListViewModel @Inject constructor(
             val message: String,
             val retry: View.OnClickListener
         ) : OrderListEvent()
-
-        data class NotifyOrderChanged(val orderId: Long) : OrderListEvent()
-
-        object NotifyOrderSelectionChanged : OrderListEvent()
 
         object OpenBarcodeScanningFragment : OrderListEvent()
 
