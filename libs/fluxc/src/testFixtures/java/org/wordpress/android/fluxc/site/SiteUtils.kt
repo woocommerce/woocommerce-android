@@ -1,3 +1,4 @@
+@file:Suppress("MagicNumber")
 package org.wordpress.android.fluxc.site
 
 import org.wordpress.android.fluxc.model.SiteModel
