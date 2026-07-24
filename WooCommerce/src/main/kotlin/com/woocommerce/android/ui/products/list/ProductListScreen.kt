@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.list
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,12 +25,15 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -37,7 +41,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
@@ -54,8 +61,115 @@ import com.woocommerce.android.ui.compose.designsystem.icons.BarsFilter
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.Plus
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.getStockText
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
+
+@Composable
+@Suppress("LongParameterList")
+internal fun ProductListScreen(
+    viewModel: ProductListViewModel,
+    currencyFormatter: CurrencyFormatter,
+    activeUploadProductIds: Flow<Set<Long>>,
+    isPullToRefreshEnabled: StateFlow<Boolean>,
+    scrollToTopRequests: Flow<Unit>,
+    isTwoPaneLayout: Boolean,
+    onEmptyAddProductClicked: () -> Unit,
+    onListAtTopChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val viewState by viewModel.viewStateLiveData.liveData.observeAsState(ProductListViewState())
+    val products by viewModel.productList.observeAsState(emptyList())
+    val selectedProductIds by viewModel.selectedProductIds.collectAsStateWithLifecycle()
+    val highlightedProductId by viewModel.selectedProductIdOnBigScreen.collectAsStateWithLifecycle()
+    val uploadProductIds by activeUploadProductIds.collectAsStateWithLifecycle(initialValue = emptySet())
+    val pullToRefreshEnabled by isPullToRefreshEnabled.collectAsStateWithLifecycle()
+    val isBarcodeScanningAvailable = remember(viewModel) { !viewModel.isSquarePluginActive() }
+    val context = LocalContext.current
+    val itemModels = remember(
+        products,
+        context,
+        currencyFormatter,
+    ) {
+        products.map { product ->
+            product.toListItemUiModel(
+                context = context,
+                currencyFormatter = currencyFormatter,
+            )
+        }
+    }
+    val sortingTitle = viewState.sortingTitleResource?.let { context.getString(it) }.orEmpty()
+
+    ProductListScreen(
+        state = ProductListScreenState(
+            products = itemModels,
+            selectedProductIds = selectedProductIds,
+            uploadingProductIds = uploadProductIds,
+            highlightedProductId = highlightedProductId.takeIf { isTwoPaneLayout },
+            isSearchActive = viewState.isSearchActive == true,
+            searchQuery = viewState.query.orEmpty(),
+            isSkuSearch = viewState.isSkuSearch,
+            filterCount = viewState.filterCount ?: 0,
+            sortingTitle = sortingTitle,
+            showBrowsingControls = viewState.displaySortAndFilterCard == true,
+            isAddProductAvailable = viewState.isAddProductButtonVisible == true,
+            isBarcodeScanningAvailable = isBarcodeScanningAvailable,
+            isSkeletonShown = viewState.isSkeletonShown == true,
+            isLoading = viewState.isLoading == true,
+            isRefreshing = viewState.isRefreshing == true,
+            isLoadingMore = viewState.isLoadingMore == true,
+            canLoadMore = viewState.canLoadMore == true,
+            isEmptyViewVisible = viewState.isEmptyViewVisible == true,
+            isPullToRefreshEnabled = pullToRefreshEnabled,
+        ),
+        scrollToTopRequests = scrollToTopRequests,
+        onSearchClicked = viewModel::onSearchButtonClicked,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        onSearchSubmitted = viewModel::onSearchRequested,
+        onSearchClosed = viewModel::onSearchClosed,
+        onSearchTypeChanged = viewModel::onSearchTypeChanged,
+        onBarcodeClicked = viewModel::onBarcodeScannerClicked,
+        onAddProductClicked = viewModel::onAddProductButtonClicked,
+        onEmptyAddProductClicked = onEmptyAddProductClicked,
+        onSortClicked = viewModel::onSortButtonTapped,
+        onFiltersClicked = viewModel::onFiltersButtonTapped,
+        onRefresh = viewModel::onRefreshRequested,
+        onLoadMore = viewModel::onLoadMoreRequested,
+        onProductTapped = viewModel::onProductTapped,
+        onProductLongPressed = viewModel::onProductLongPressed,
+        onProductSelectionToggled = viewModel::toggleProductSelection,
+        onListAtTopChanged = onListAtTopChanged,
+        modifier = modifier,
+    )
+}
+
+private fun Product.toListItemUiModel(
+    context: Context,
+    currencyFormatter: CurrencyFormatter,
+): ProductListItemUiModel {
+    val productName = name.takeIf(String::isNotEmpty)?.fastStripHtml() ?: context.getString(R.string.untitled)
+    val statusText = status?.takeUnless { it == ProductStatus.PUBLISH }?.let {
+        context.getString(it.stringResource)
+    }
+    val stockAndPrice = buildList {
+        add(getStockText(context))
+        price?.let { add(currencyFormatter.formatCurrency(it)) }
+    }.joinToString(BULLET_SEPARATOR)
+    return ProductListItemUiModel(
+        remoteId = remoteId,
+        name = productName,
+        imageUrl = firstImageUrl.orEmpty(),
+        status = statusText,
+        isStatusPending = status == ProductStatus.PENDING,
+        stockAndPrice = stockAndPrice,
+        sku = sku.takeIf(String::isNotEmpty)?.let {
+            context.getString(R.string.orderdetail_product_lineitem_sku_value, it)
+        },
+    )
+}
 
 @Composable
 @Suppress("LongParameterList")
@@ -316,6 +430,8 @@ private fun ProductBrowsingControlIcon(imageVector: ImageVector) {
 }
 
 private val CONTROL_RAIL_HEIGHT = 64.dp
+private const val BULLET_SEPARATOR = " • "
+
 private val previewItems = listOf(
     ProductListItemUiModel(
         remoteId = 1,

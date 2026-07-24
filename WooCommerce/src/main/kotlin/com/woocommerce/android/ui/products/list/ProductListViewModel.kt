@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products.list
 
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -21,7 +19,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
@@ -31,11 +28,14 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -58,18 +58,9 @@ class ProductListViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
-    companion object {
-        private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
-        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        private const val KEY_PRODUCT_SELECTED_ON_BIG_SCREEN = "key_product_selected_on_big_screen"
-    }
-
     var productHasChanges: Boolean = false
     private val _productList = MutableLiveData<List<Product>>()
-    val productList: LiveData<List<Product>> = _productList.map {
-        openFirstLoadedProductOnTablet(it)
-        it
-    }
+    val productList: LiveData<List<Product>> = _productList
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -90,9 +81,19 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
-    private var selectedProductIdOnBigScreen: Long?
-        get() = savedState[KEY_PRODUCT_SELECTED_ON_BIG_SCREEN]
-        set(value) = savedState.set(KEY_PRODUCT_SELECTED_ON_BIG_SCREEN, value)
+    private val savedSelectedProductIds = savedState.getStateFlow(
+        scope = this,
+        initialValue = linkedSetOf<Long>(),
+        key = KEY_SELECTED_PRODUCT_IDS
+    )
+    val selectedProductIds: StateFlow<Set<Long>> = savedSelectedProductIds
+    private var hasReconciledSelectionAfterAuthoritativeLoad = false
+    val selectedProductIdOnBigScreen = savedState.getNullableStateFlow(
+        scope = this,
+        initialValue = null,
+        clazz = Long::class.java,
+        key = KEY_PRODUCT_SELECTED_ON_BIG_SCREEN
+    )
 
     private val isLoading
         get() = viewState.isLoading == true
@@ -123,7 +124,7 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
-    fun isSelecting() = viewState.productListState == ProductListViewState.ProductListState.Selecting
+    fun isSelecting() = selectedProductIds.value.isNotEmpty()
 
     fun isSkuSearch() = isSearching() && viewState.isSkuSearch
 
@@ -145,7 +146,7 @@ class ProductListViewModel @Inject constructor(
             launch {
                 searchJob?.cancelAndJoin()
 
-                _productList.value = emptyList()
+                updateProductList(emptyList())
                 viewState = viewState.copy(isEmptyViewVisible = false)
             }
         }
@@ -187,7 +188,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onFiltersButtonTapped() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(
             ShowProductFilterScreen(
                 productFilterOptions[WCProductStore.ProductFilterOption.STOCK_STATUS],
@@ -200,12 +201,12 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSortButtonTapped() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_SORTING_OPTIONS_TAPPED)
         triggerEvent(ShowProductSortingBottomSheet)
     }
 
     fun onRefreshRequested() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PULLED_TO_REFRESH)
         refreshProducts()
     }
 
@@ -223,13 +224,18 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
+    fun onSearchButtonClicked() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_MENU_SEARCH_TAPPED)
+        onSearchOpened()
+    }
+
     fun onSearchOpened() {
         viewState = viewState.copy(
             isSearchActive = true,
             displaySortAndFilterCard = false,
             isAddProductButtonVisible = false
         )
-        _productList.value = emptyList()
+        updateProductList(emptyList())
     }
 
     fun onSearchClosed() {
@@ -260,19 +266,14 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchRequested() {
-        val searchFilter = if (viewState.isSkuSearch) {
-            AnalyticsTracker.VALUE_SEARCH_SKU
-        } else {
-            AnalyticsTracker.VALUE_SEARCH_ALL
+        if (viewState.query.orEmpty().length > 2) {
+            refreshProducts(shouldTrackSearch = true)
         }
-        AnalyticsTracker.track(
-            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
-            mapOf(
-                AnalyticsTracker.KEY_SEARCH to viewState.query,
-                AnalyticsTracker.KEY_SEARCH_FILTER to searchFilter
-            )
-        )
-        refreshProducts()
+    }
+
+    fun onBarcodeScannerClicked() {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
+        triggerEvent(ProductListEvent.ShowBarcodeScanner)
     }
 
     fun reloadProductsFromDb(excludeProductId: Long? = null) {
@@ -284,27 +285,27 @@ class ProductListViewModel @Inject constructor(
 
             resetOpenProductIfNotInList(products)
 
-            _productList.value = products
+            updateProductList(products)
 
             viewState = viewState.copy(
                 isEmptyViewVisible = products.isEmpty() && viewState.isSkeletonShown != true,
                 /* if there are no products, hide Add Product button and use the empty view's button instead. */
-                isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
+                isAddProductButtonVisible = products.isNotEmpty(),
                 displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
             )
         }
     }
 
     private fun resetOpenProductIfNotInList(products: List<Product>) {
-        val isOpenProductInTheList = products.firstOrNull { selectedProductIdOnBigScreen == it.remoteId } != null
-        if (!isOpenProductInTheList) selectedProductIdOnBigScreen = null
+        val isOpenProductInTheList = products.any { selectedProductIdOnBigScreen.value == it.remoteId }
+        if (!isOpenProductInTheList) selectedProductIdOnBigScreen.value = null
     }
 
-    @Suppress("LongMethod")
     fun loadProducts(
         loadMore: Boolean = false,
         scrollToTop: Boolean = false,
-        isRefreshing: Boolean = false
+        isRefreshing: Boolean = false,
+        shouldTrackSearch: Boolean = false,
     ) {
         if (isLoading) {
             WooLog.d(WooLog.T.PRODUCTS, "already loading products")
@@ -318,61 +319,78 @@ class ProductListViewModel @Inject constructor(
         }
 
         if (isSearching()) {
-            // cancel any existing search, then start a new one after a brief delay so we don't actually perform
-            // the fetch until the user stops typing
-            searchJob?.cancel()
-            searchJob = launch {
-                delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-                if (checkConnection()) {
-                    viewState = viewState.copy(
-                        isLoading = true,
-                        isLoadingMore = loadMore,
-                        isSkeletonShown = !loadMore,
-                        isEmptyViewVisible = false,
-                        displaySortAndFilterCard = false,
-                        isAddProductButtonVisible = false,
-                    )
-                    fetchProductList(
-                        viewState.query,
-                        skuSearchOptions = if (viewState.isSkuSearch) {
-                            WCProductStore.SkuSearchOptions.PartialMatch
-                        } else {
-                            WCProductStore.SkuSearchOptions.Disabled
-                        },
-                        loadMore = loadMore
-                    )
+            loadSearchProducts(loadMore, shouldTrackSearch)
+        } else {
+            loadBrowsingProducts(loadMore, scrollToTop, isRefreshing)
+        }
+    }
+
+    private fun loadSearchProducts(loadMore: Boolean, shouldTrackSearch: Boolean) {
+        val searchQuery = viewState.query
+        val isSkuSearch = viewState.isSkuSearch
+        // cancel any existing search, then start a new one after a brief delay so we don't actually perform
+        // the fetch until the user stops typing
+        searchJob?.cancel()
+        searchJob = launch {
+            delay(AppConstants.SEARCH_TYPING_DELAY_MS)
+            if (checkConnection()) {
+                viewState = viewState.copy(
+                    isLoading = true,
+                    isLoadingMore = loadMore,
+                    isSkeletonShown = !loadMore,
+                    isEmptyViewVisible = false,
+                    displaySortAndFilterCard = false,
+                    isAddProductButtonVisible = false,
+                )
+                if (shouldTrackSearch && !loadMore) {
+                    trackSearch(searchQuery.orEmpty(), isSkuSearch)
+                }
+                fetchProductList(
+                    searchQuery,
+                    skuSearchOptions = if (isSkuSearch) {
+                        WCProductStore.SkuSearchOptions.PartialMatch
+                    } else {
+                        WCProductStore.SkuSearchOptions.Disabled
+                    },
+                    loadMore = loadMore
+                )
+            } else {
+                resetViewState()
+            }
+        }
+    }
+
+    private fun loadBrowsingProducts(loadMore: Boolean, scrollToTop: Boolean, isRefreshing: Boolean) {
+        // if a fetch is already active, wait for it to finish before we start another one
+        waitForExistingLoad()
+
+        loadJob = launch {
+            val showSkeleton: Boolean
+            if (loadMore || isTrashing) {
+                showSkeleton = false
+            } else {
+                // if this is the initial load, first get the products from the db and show them immediately
+                val productsInDb = productRepository.getProductList(productFilterOptions)
+                if (productsInDb.isEmpty()) {
+                    showSkeleton = true
+                } else {
+                    updateProductList(productsInDb)
+                    showSkeleton = false
                 }
             }
-        } else {
-            // if a fetch is already active, wait for it to finish before we start another one
-            waitForExistingLoad()
-
-            loadJob = launch {
-                val showSkeleton: Boolean
-                if (loadMore || isTrashing) {
-                    showSkeleton = false
-                } else {
-                    // if this is the initial load, first get the products from the db and show them immediately
-                    val productsInDb = productRepository.getProductList(productFilterOptions)
-                    if (productsInDb.isEmpty()) {
-                        showSkeleton = true
-                    } else {
-                        _productList.value = productsInDb
-                        showSkeleton = false
-                    }
-                }
-                if (checkConnection()) {
-                    viewState = viewState.copy(
-                        isLoading = true,
-                        isLoadingMore = loadMore,
-                        isSkeletonShown = showSkeleton,
-                        isEmptyViewVisible = false,
-                        isRefreshing = isRefreshing,
-                        displaySortAndFilterCard = !showSkeleton,
-                        isAddProductButtonVisible = false
-                    )
-                    fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
-                }
+            if (checkConnection()) {
+                viewState = viewState.copy(
+                    isLoading = true,
+                    isLoadingMore = loadMore,
+                    isSkeletonShown = showSkeleton,
+                    isEmptyViewVisible = false,
+                    isRefreshing = isRefreshing,
+                    displaySortAndFilterCard = !showSkeleton,
+                    isAddProductButtonVisible = false
+                )
+                fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
+            } else {
+                resetViewState()
             }
         }
     }
@@ -395,7 +413,7 @@ class ProductListViewModel @Inject constructor(
                     else -> false
                 }
             } else {
-                !isSearching() && !isSelecting()
+                !isSearching()
             }
 
         val shouldShowEmptyView = if (isSearching()) {
@@ -432,24 +450,36 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun onSelectionChanged(count: Int) {
-        when {
-            count == 0 -> exitSelectionMode()
-            count > 0 && !isSelecting() -> enterSelectionMode(count)
-            count > 0 -> viewState = viewState.copy(selectionCount = count)
+    fun onProductTapped(productId: Long) {
+        if (isSelecting()) {
+            toggleProductSelection(productId)
+        } else {
+            onOpenProduct(productId)
         }
     }
 
-    fun onRestoreSelection(selectedProductsIds: List<Long>) {
-        triggerEvent(SelectProducts(selectedProductsIds))
+    fun onProductLongPressed(productId: Long) {
+        if (productId !in selectedProductIds.value) {
+            updateSelection(selectedProductIds.value + productId)
+        }
+    }
+
+    fun toggleProductSelection(productId: Long) {
+        val updatedIds = if (productId in selectedProductIds.value) {
+            selectedProductIds.value - productId
+        } else {
+            selectedProductIds.value + productId
+        }
+        updateSelection(updatedIds)
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
         if (isWindowClassLargeThanCompact()) {
             if (products.isNotEmpty()) {
-                if (selectedProductIdOnBigScreen == null) {
-                    selectedProductIdOnBigScreen = products.first().remoteId
-                    onOpenProduct(selectedProductIdOnBigScreen!!, null)
+                if (selectedProductIdOnBigScreen.value == null) {
+                    val firstProductId = products.first().remoteId
+                    selectedProductIdOnBigScreen.value = firstProductId
+                    onOpenProduct(firstProductId)
                 }
             } else {
                 // Opening an empty product causes the search input to lose focus
@@ -460,7 +490,7 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun onOpenProduct(productId: Long, sharedView: View?) {
+    fun onOpenProduct(productId: Long) {
         if (productHasChanges && isWindowClassLargeThanCompact()) {
             triggerEvent(
                 ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
@@ -480,50 +510,31 @@ class ProductListViewModel @Inject constructor(
             )
         )
 
-        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == selectedProductIdOnBigScreen } ?: 0
         if (isWindowClassLargeThanCompact()) {
-            selectedProductIdOnBigScreen = productId
+            selectedProductIdOnBigScreen.value = productId
         }
-        val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
-        triggerEvent(
-            ProductListEvent.OpenProduct(
-                productId = productId,
-                oldPosition = oldPositionInList,
-                newPosition = newPositionInList,
-                sharedView = sharedView,
-            )
-        )
+        triggerEvent(ProductListEvent.OpenProduct(productId))
     }
-
-    fun isProductHighlighted(productId: Long) =
-        if (isWindowClassLargeThanCompact()) productId == selectedProductIdOnBigScreen else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
-        productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
-            triggerEvent(SelectProducts(allLoadedProductsIds))
-        }
-    }
-
-    private fun enterSelectionMode(count: Int) {
-        viewState = viewState.copy(
-            productListState = ProductListViewState.ProductListState.Selecting,
-            isAddProductButtonVisible = false,
-            selectionCount = count
-        )
+        updateSelection(_productList.value.orEmpty().map { it.remoteId })
     }
 
     fun exitSelectionMode() {
-        viewState = viewState.copy(
-            productListState = ProductListViewState.ProductListState.Browsing,
-            isAddProductButtonVisible = true,
-            selectionCount = null
-        )
+        updateSelection(emptyList())
     }
 
-    private fun refreshProducts(scrollToTop: Boolean = false) {
+    private fun refreshProducts(
+        scrollToTop: Boolean = false,
+        shouldTrackSearch: Boolean = false,
+    ) {
         if (checkConnection()) {
-            loadProducts(scrollToTop = scrollToTop, isRefreshing = true)
+            loadProducts(
+                scrollToTop = scrollToTop,
+                isRefreshing = true,
+                shouldTrackSearch = shouldTrackSearch,
+            )
         } else {
             resetViewState()
         }
@@ -543,8 +554,11 @@ class ProductListViewModel @Inject constructor(
             // don't update the product list if a search was initiated while fetching
             if (isSearching()) {
                 WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
-            } else {
-                productList?.let { _productList.value = it }
+            } else if (productList != null) {
+                updateProductList(productList)
+                if (!loadMore) {
+                    reconcileSelectionAfterAuthoritativeLoad(productList)
+                }
             }
         } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(
@@ -558,9 +572,9 @@ class ProductListViewModel @Inject constructor(
                     skuSearchOptions == productRepository.lastIsSkuSearch
                 ) {
                     if (loadMore) {
-                        _productList.value = _productList.value.orEmpty() + products
+                        updateProductList(_productList.value.orEmpty() + products)
                     } else {
-                        _productList.value = products
+                        updateProductList(products)
                     }
                 } else {
                     WooLog.d(WooLog.T.PRODUCTS, "Search query changed")
@@ -626,15 +640,16 @@ class ProductListViewModel @Inject constructor(
         selectedProductsRemoteIds: List<Long>,
         newStatus: ProductStatus,
     ) {
+        val productIdsSnapshot = selectedProductsRemoteIds.toList()
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to productIdsSnapshot.size
             )
         )
         bulkUpdateProducts(
-            update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
+            update = { productRepository.bulkUpdateProductsStatus(productIdsSnapshot, newStatus) },
             onSuccess = {
                 analyticsTracker.track(
                     AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
@@ -655,15 +670,16 @@ class ProductListViewModel @Inject constructor(
         selectedProductsRemoteIds: List<Long>,
         newPrice: String,
     ) {
+        val productIdsSnapshot = selectedProductsRemoteIds.toList()
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
-                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to productIdsSnapshot.size
             )
         )
         bulkUpdateProducts(
-            update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
+            update = { productRepository.bulkUpdateProductsPrice(productIdsSnapshot, newPrice) },
             onSuccess = {
                 analyticsTracker.track(
                     AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
@@ -713,36 +729,39 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
+        val productIdsSnapshot = selectedProductsRemoteIds.toList()
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
-                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to productIdsSnapshot.size
             )
         )
-        triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
+        triggerEvent(ShowUpdateDialog.Price(productIdsSnapshot))
     }
 
     fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        val productIdsSnapshot = selectedProductsRemoteIds.toList()
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to productIdsSnapshot.size
             )
         )
-        triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
+        triggerEvent(ShowUpdateDialog.Status(productIdsSnapshot))
     }
 
     fun onBulkUpdateStockStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        val productIdsSnapshot = selectedProductsRemoteIds.toList()
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STOCK_STATUS,
-                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to productIdsSnapshot.size
             )
         )
-        triggerEvent(ProductListEvent.ShowProductUpdateStockStatusScreen(selectedProductsRemoteIds))
+        triggerEvent(ProductListEvent.ShowProductUpdateStockStatusScreen(productIdsSnapshot))
     }
 
     fun isSquarePluginActive(): Boolean {
@@ -753,5 +772,44 @@ class ProductListViewModel @Inject constructor(
         return plugin != null
     }
 
+    private fun updateSelection(productIds: Collection<Long>) {
+        savedSelectedProductIds.value = LinkedHashSet(productIds)
+    }
+
+    private fun updateProductList(products: List<Product>) {
+        _productList.value = products
+        openFirstLoadedProductOnTablet(products)
+    }
+
+    private fun reconcileSelectionAfterAuthoritativeLoad(products: List<Product>) {
+        if (hasReconciledSelectionAfterAuthoritativeLoad) return
+
+        hasReconciledSelectionAfterAuthoritativeLoad = true
+        val loadedProductIds = products.mapTo(mutableSetOf()) { it.remoteId }
+        updateSelection(selectedProductIds.value.filterTo(linkedSetOf()) { it in loadedProductIds })
+    }
+
+    private fun trackSearch(query: String, isSkuSearch: Boolean) {
+        val searchFilter = if (isSkuSearch) {
+            AnalyticsTracker.VALUE_SEARCH_SKU
+        } else {
+            AnalyticsTracker.VALUE_SEARCH_ALL
+        }
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to query,
+                AnalyticsTracker.KEY_SEARCH_FILTER to searchFilter
+            )
+        )
+    }
+
     object OnProductSortingChanged
+
+    companion object {
+        private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
+        private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
+        private const val KEY_PRODUCT_SELECTED_ON_BIG_SCREEN = "key_product_selected_on_big_screen"
+        private const val KEY_SELECTED_PRODUCT_IDS = "key_selected_product_ids"
+    }
 }
