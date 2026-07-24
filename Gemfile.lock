@@ -263,7 +263,7 @@ GEM
       mutex_m
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    i18n-context-generator (0.5.0)
+    i18n-context-generator (0.5.1)
       concurrent-ruby (~> 1.2)
       csv (~> 3.3)
       dotstrings (~> 0.6)
