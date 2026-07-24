@@ -21,8 +21,8 @@ doc defines the technical boundaries that support that rollout.
 - Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
   collecting live Figma screenshots.
 - Foundation source values come from `docs/design-system/figma-export.json`. Approved Android
-  overrides are documented in this adapter and [token-map.md](token-map.md); the export remains an
-  audit/source artifact and must not be hand-edited to apply them.
+  override values are documented in [token-map.md](token-map.md); the export remains an audit/source
+  artifact and must not be hand-edited to apply them.
 
 ## Package
 
@@ -239,9 +239,9 @@ The runtime `tintLayers` group exposes complete mode-aware colors under `primary
 - Segmented Control binds its track to `primaryContainer.opacity16`.
 - Dividers and subtle component boundaries bind to `onSurface.opacity16`.
 - Light `onSurface.opacity24` intentionally uses `#1E1E1E` as its RGB base, unlike the State Layer.
-- WOOMOB-3552 approves `#6D469C` as the dark Primary Container tint base for the complete family:
-  Android `#146D469C`, `#1A6D469C`, `#296D469C`, and `#3D6D469C` for 08/10/16/24. The checked-in
-  export is stale for 08/10/16 and remains unchanged as the audit/source artifact.
+- The approved WOOMOB-3552 dark Primary Container tint override is documented in
+  [token-map.md](token-map.md). `figma-export.json` remains unchanged as the audit/source artifact
+  until refreshed through the export workflow.
 - Primary tint layers use `#873EFF` at the matching alpha in both modes.
 
 Keep these as complete mode-aware colors rather than public alpha floats. The committed export keeps
