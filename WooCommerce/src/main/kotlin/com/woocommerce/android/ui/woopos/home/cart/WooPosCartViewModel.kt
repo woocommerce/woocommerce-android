@@ -326,7 +326,7 @@ class WooPosCartViewModel @Inject constructor(
             // Responses that arrive after the user already left checkout must not be stored,
             // or they would resurface as a stale verdict on the next checkout.
             isCustomAmountDiscountNotAppliedNoteVisible = _state.value.cartStatus == CHECKOUT &&
-                event.data.couponDiscountAppliedToItemsOnly,
+                event.data.wholeCartCouponDiscountApplied,
         )
         if (result.productsChanged) {
             childrenToParentEventSender.sendToParent(

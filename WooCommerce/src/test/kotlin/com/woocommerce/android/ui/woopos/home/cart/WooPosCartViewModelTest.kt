@@ -1982,7 +1982,7 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given checkout with coupon and custom amount, when order created with items-only discount, then note is visible`() =
+    fun `given checkout with coupon and custom amount, when order created with whole-cart coupon discount, then note is visible`() =
         runTest {
             // GIVEN
             whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
@@ -1996,7 +1996,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
 
             // WHEN
-            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            simulateOrderCreated(wholeCartCouponDiscountApplied = true)
             advanceUntilIdle()
 
             // THEN
@@ -2018,7 +2018,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
 
             // WHEN
-            simulateOrderCreated(couponDiscountAppliedToItemsOnly = false)
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
             advanceUntilIdle()
 
             // THEN
@@ -2043,7 +2043,7 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given custom amount without coupon in cart, when order created with items-only discount, then note is not visible`() =
+    fun `given custom amount without coupon in cart, when order created with whole-cart coupon discount, then note is not visible`() =
         runTest {
             // GIVEN
             whenever(formatPrice(BigDecimal("7.50"))).thenReturn("$7.50")
@@ -2056,7 +2056,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
 
             // WHEN
-            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            simulateOrderCreated(wholeCartCouponDiscountApplied = true)
             advanceUntilIdle()
 
             // THEN
@@ -2076,7 +2076,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
             sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
             advanceUntilIdle()
-            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            simulateOrderCreated(wholeCartCouponDiscountApplied = true)
             advanceUntilIdle()
             assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isTrue()
 
@@ -2103,7 +2103,7 @@ class WooPosCartViewModelTest {
             advanceUntilIdle()
             sut.onUIEvent(WooPosCartUIEvent.BackClicked)
             advanceUntilIdle()
-            simulateOrderCreated(couponDiscountAppliedToItemsOnly = true)
+            simulateOrderCreated(wholeCartCouponDiscountApplied = true)
             advanceUntilIdle()
 
             // WHEN
@@ -2125,13 +2125,13 @@ class WooPosCartViewModelTest {
         )
     }
 
-    private suspend fun simulateOrderCreated(couponDiscountAppliedToItemsOnly: Boolean) {
+    private suspend fun simulateOrderCreated(wholeCartCouponDiscountApplied: Boolean) {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.OrderCreated(
                 WooPosOrderCreatedData(
                     updatedProducts = emptyList(),
                     updatedCoupons = emptyList(),
-                    couponDiscountAppliedToItemsOnly = couponDiscountAppliedToItemsOnly,
+                    wholeCartCouponDiscountApplied = wholeCartCouponDiscountApplied,
                 )
             )
         )

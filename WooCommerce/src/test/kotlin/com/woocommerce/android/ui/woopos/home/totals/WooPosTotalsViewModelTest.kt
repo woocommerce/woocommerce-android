@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.CouponLine
 import com.woocommerce.android.tools.SelectedSite
@@ -186,8 +187,16 @@ class WooPosTotalsViewModelTest {
     }
     private val remoteReaderPaymentFlow: WooPosRemoteReaderPaymentFlow = mock()
 
+    private fun cartWithCoupon() = listOf(
+        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+        WooPosItemsViewModel.ItemClickedData.Coupon(id = COUPON_ID, couponCode = "TEST"),
+    )
+
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
+        private const val COUPON_ID = 10L
     }
 
     @Before
@@ -1597,63 +1606,115 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given coupon discount fully covered by item discounts, when order created, then flags items-only discount`() =
+    fun `given whole-cart coupon with discount, when order created, then flags whole-cart coupon discount`() =
         runTest {
             // GIVEN
-            val couponLines = listOf(
-                CouponLine(
-                    id = 1L,
-                    code = "TEST",
-                    discount = "1.00",
-                )
-            )
-            val orderItems = listOf(
-                Order.Item.EMPTY.copy(
-                    productId = 1L,
-                    subtotal = BigDecimal("3.00"),
-                    total = BigDecimal("2.00"),
-                )
-            )
+            val couponLines = listOf(CouponLine(id = 1L, code = "TEST", discount = "1.00"))
 
             // WHEN
-            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines, orderItems = orderItems)
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = cartWithCoupon(),
+                couponLines = couponLines,
+                couponsByIds = listOf(
+                    Coupon.EMPTY.copy(id = COUPON_ID, code = "TEST", type = Coupon.Type.Percent)
+                ),
+            )
 
             // THEN
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
-            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isTrue()
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isTrue()
         }
 
     @Test
-    fun `given item discounts not matching coupon discount, when order created, then does not flag items-only discount`() =
+    fun `given product-restricted coupon with discount, when order created, then does not flag whole-cart discount`() =
         runTest {
             // GIVEN
-            val couponLines = listOf(
-                CouponLine(
-                    id = 1L,
-                    code = "TEST",
-                    discount = "1.00",
-                )
-            )
-            val orderItems = listOf(
-                Order.Item.EMPTY.copy(
-                    productId = 1L,
-                    subtotal = BigDecimal("3.00"),
-                    total = BigDecimal("3.00"),
-                )
-            )
+            val couponLines = listOf(CouponLine(id = 1L, code = "TEST", discount = "1.00"))
 
             // WHEN
-            createViewModelAndSetupForSuccessfulOrderCreation(couponLines = couponLines, orderItems = orderItems)
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = cartWithCoupon(),
+                couponLines = couponLines,
+                couponsByIds = listOf(
+                    Coupon.EMPTY.copy(
+                        id = COUPON_ID,
+                        code = "TEST",
+                        type = Coupon.Type.Percent,
+                        productIds = listOf(5L)
+                    )
+                ),
+            )
 
             // THEN
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
-            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isFalse()
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isFalse()
         }
 
     @Test
-    fun `given no coupons in order, when order created, then does not flag items-only discount`() =
+    fun `given fixed-product coupon with discount, when order created, then does not flag whole-cart discount`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(CouponLine(id = 1L, code = "TEST", discount = "1.00"))
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = cartWithCoupon(),
+                couponLines = couponLines,
+                couponsByIds = listOf(
+                    Coupon.EMPTY.copy(id = COUPON_ID, code = "TEST", type = Coupon.Type.FixedProduct)
+                ),
+            )
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isFalse()
+        }
+
+    @Test
+    fun `given whole-cart coupon with zero discount, when order created, then does not flag whole-cart discount`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(CouponLine(id = 1L, code = "TEST", discount = "0.00"))
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = cartWithCoupon(),
+                couponLines = couponLines,
+                couponsByIds = listOf(
+                    Coupon.EMPTY.copy(id = COUPON_ID, code = "TEST", type = Coupon.Type.FixedCart)
+                ),
+            )
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isFalse()
+        }
+
+    @Test
+    fun `given coupon metadata not cached locally, when order created, then does not flag whole-cart discount`() =
+        runTest {
+            // GIVEN
+            val couponLines = listOf(CouponLine(id = 1L, code = "TEST", discount = "1.00"))
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = cartWithCoupon(),
+                couponLines = couponLines,
+                couponsByIds = emptyList(),
+            )
+
+            // THEN
+            val eventCaptor = argumentCaptor<OrderCreated>()
+            verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isFalse()
+        }
+
+    @Test
+    fun `given no coupons in order, when order created, then does not flag whole-cart discount`() =
         runTest {
             // WHEN
             createViewModelAndSetupForSuccessfulOrderCreation(couponLines = emptyList())
@@ -1661,7 +1722,7 @@ class WooPosTotalsViewModelTest {
             // THEN
             val eventCaptor = argumentCaptor<OrderCreated>()
             verify(childrenToParentEventSender).sendToParent(eventCaptor.capture())
-            assertThat(eventCaptor.firstValue.data.couponDiscountAppliedToItemsOnly).isFalse()
+            assertThat(eventCaptor.firstValue.data.wholeCartCouponDiscountApplied).isFalse()
         }
 
     @Test
@@ -2657,6 +2718,7 @@ class WooPosTotalsViewModelTest {
             MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData)),
         discountTotal: BigDecimal = BigDecimal.ZERO,
         couponLines: List<CouponLine> = emptyList(),
+        couponsByIds: List<Coupon> = emptyList(),
         orderItems: List<Order.Item> = listOf(
             Order.Item.EMPTY.copy(
                 productId = 1L,
@@ -2724,6 +2786,7 @@ class WooPosTotalsViewModelTest {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
         whenever(totalsRepository.getOrderById(orderId)).thenReturn(order)
+        whenever(totalsRepository.getCouponsByIds(any())).thenReturn(couponsByIds)
         return createViewModel(
             totalsRepository = totalsRepository,
             priceFormat = priceFormat,

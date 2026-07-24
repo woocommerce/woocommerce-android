@@ -5,7 +5,7 @@ import java.math.BigDecimal
 data class WooPosOrderCreatedData(
     val updatedProducts: List<ProductInfo>,
     val updatedCoupons: List<CouponInfo>,
-    val couponDiscountAppliedToItemsOnly: Boolean = false,
+    val wholeCartCouponDiscountApplied: Boolean = false,
 ) {
     sealed class ProductInfo(
         open val id: Long,

@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -1038,25 +1039,33 @@ class WooPosTotalsViewModel @Inject constructor(
                     WooPosOrderCreatedData(
                         updatedProducts = mapItemLines(order),
                         updatedCoupons = updatedCoupons,
-                        couponDiscountAppliedToItemsOnly = isCouponDiscountAppliedToItemsOnly(order, updatedCoupons),
+                        wholeCartCouponDiscountApplied = isWholeCartCouponDiscountApplied(updatedCoupons),
                     )
                 )
             )
         }
     }
 
-    // The API has no per-fee discount field, so this is inferred: when the sum of per-item
-    // discounts (subtotal - total) accounts for the entire coupon discount, nothing was
-    // applied to fee lines (custom amounts).
-    private fun isCouponDiscountAppliedToItemsOnly(
-        order: Order,
-        updatedCoupons: List<CouponInfo>,
-    ): Boolean {
-        val couponsDiscount = updatedCoupons.sumOf { it.discountAmount }
-        if (couponsDiscount <= BigDecimal.ZERO) return false
-        val itemsDiscount = order.items.sumOf { it.discount }
-        return itemsDiscount.compareTo(couponsDiscount) == 0
+    // Coupons never discount fee lines (custom amounts), so the cart warns about it — but only
+    // for whole-cart coupons ("x% off" / "$x off cart"), where a merchant could expect the
+    // custom amount to be included, and only once the order response shows the coupon actually
+    // produced a discount.
+    private suspend fun isWholeCartCouponDiscountApplied(updatedCoupons: List<CouponInfo>): Boolean {
+        val discountingCoupons = updatedCoupons.filter { it.discountAmount > BigDecimal.ZERO }
+        if (discountingCoupons.isEmpty()) return false
+        val appliedCouponIds = dataState.value.itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
+            .map { it.id }
+        if (appliedCouponIds.isEmpty()) return false
+        return totalsRepository.getCouponsByIds(appliedCouponIds)
+            .filter { coupon -> discountingCoupons.any { it.code.equals(coupon.code, ignoreCase = true) } }
+            .any { it.appliesToWholeCart() }
     }
+
+    private fun Coupon.appliesToWholeCart(): Boolean =
+        (type is Coupon.Type.Percent || type is Coupon.Type.FixedCart) &&
+            productIds.isEmpty() &&
+            categoryIds.isEmpty()
 
     private fun mapItemLines(order: Order) = order.items.map {
         val basePrice = if (order.pricesIncludeTax) {
