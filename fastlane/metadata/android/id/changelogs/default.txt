@@ -1,2 +1,0 @@
-25.2:
-Pengelolaan toko Anda kini makin lancar: pesanan tamu makin mudah ditemukan di daftar pesanan, respons sistem pengiriman paket makin andal, pengembalian dana kartu hadiah ditangani dengan aman, dan statistik mingguan mengikuti pengaturan toko Anda. Kami juga telah memperbaiki proses masuk, navigasi, pengeditan produk, dan stabilitas keseluruhan.

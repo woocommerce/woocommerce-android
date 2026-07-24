@@ -1,2 +1,0 @@
-25.2 :
-La gestion de votre boutique a gagné en fluidité : les commandes invités sont plus faciles à trouver dans la liste des commandes, les colis d’expédition sont plus fiables, les remboursements de carte-cadeau sont gérés en toute sécurité et les statistiques hebdomadaires suivent les réglages de votre boutique. Nous avons également amélioré la connexion, la navigation, la modification de produits et la stabilité globale.
