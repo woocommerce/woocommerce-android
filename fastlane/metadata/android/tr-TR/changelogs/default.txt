@@ -1,2 +1,0 @@
-25.2:
-Mağazanızı yönetmek artık daha sorunsuz: Sipariş listesinde misafir siparişlerini bulmak daha kolaydır, gönderim paketleri güvenilir şekilde yanıt verir, hediye kartı para iadeleri güvenli bir şekilde gerçekleştirilir ve haftalık istatistikler mağaza ayarlarınıza uyar. Oturum açma, gezinme, ürün düzenleme ve genel kararlılığı da iyileştirdik.
