@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
@@ -149,8 +150,10 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
     }
 
-    private fun createViewModel() = OrderListViewModel(
-        savedState = OrderListFragmentArgs().toSavedStateHandle(),
+    private fun createViewModel(
+        savedState: SavedStateHandle = OrderListFragmentArgs().toSavedStateHandle()
+    ) = OrderListViewModel(
+        savedState = savedState,
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
@@ -1060,6 +1063,64 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewState.selectionCount).isEqualTo(3)
         assertThat(viewModel.viewState.orderListState).isEqualTo(initialState)
         assertThat(viewModel.isSelecting()).isTrue()
+    }
+
+    @Test
+    fun `when an order is long pressed, then its ID starts the selection`() {
+        val accepted = viewModel.onOrderLongPressed(11L)
+
+        assertThat(accepted).isTrue()
+        assertThat(viewModel.selectedOrderIds.value).containsExactly(11L)
+    }
+
+    @Test
+    fun `given selected orders, when their selection is toggled, then IDs remain insertion ordered`() {
+        viewModel.onOrderLongPressed(11L)
+        viewModel.onOrderLongPressed(12L)
+
+        assertThat(viewModel.toggleOrderSelection(11L)).isTrue()
+        assertThat(viewModel.toggleOrderSelection(13L)).isTrue()
+
+        assertThat(viewModel.selectedOrderIds.value).containsExactly(12L, 13L)
+    }
+
+    @Test
+    fun `given the selection limit, when another order is selected, then it is rejected truthfully`() {
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever(events::add)
+
+        repeat(BULK_UPDATE_COUNT_LIMIT) { index ->
+            assertThat(viewModel.toggleOrderSelection(index.toLong())).isTrue()
+        }
+
+        assertThat(viewModel.selectedOrderIds.value).hasSize(BULK_UPDATE_COUNT_LIMIT)
+        assertThat(viewModel.toggleOrderSelection(BULK_UPDATE_COUNT_LIMIT.toLong())).isFalse()
+        assertThat(viewModel.selectedOrderIds.value).hasSize(BULK_UPDATE_COUNT_LIMIT)
+        assertThat(events.filterIsInstance<OrderListEvent.ShowSnackbarString>()).hasSize(1)
+    }
+
+    @Test
+    fun `given selected order IDs, when the ViewModel is recreated, then selection is restored`() = testBlocking {
+        val savedState = OrderListFragmentArgs().toSavedStateHandle()
+        viewModel = createViewModel(savedState)
+        viewModel.onOrderLongPressed(21L)
+        viewModel.onOrderLongPressed(22L)
+        advanceUntilIdle()
+
+        viewModel = createViewModel(savedState)
+
+        assertThat(viewModel.selectedOrderIds.value).containsExactly(21L, 22L)
+        assertThat(viewModel.event.value).isNull()
+    }
+
+    @Test
+    fun `when selection is cleared, then all selected IDs are removed`() {
+        viewModel.onOrderLongPressed(11L)
+        viewModel.onOrderLongPressed(12L)
+
+        viewModel.clearOrderSelection()
+
+        assertThat(viewModel.selectedOrderIds.value).isEmpty()
     }
 
     @Test

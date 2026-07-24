@@ -63,10 +63,12 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
@@ -122,6 +124,7 @@ class OrderListViewModel @Inject constructor(
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
         private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
+        private const val KEY_SELECTED_ORDER_IDS = "selected_order_ids"
     }
 
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -147,6 +150,13 @@ class OrderListViewModel @Inject constructor(
     @Suppress("OPT_IN_USAGE")
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
+
+    private val savedSelectedOrderIds = savedState.getStateFlow(
+        scope = this,
+        initialValue = linkedSetOf<Long>(),
+        key = KEY_SELECTED_ORDER_IDS
+    )
+    val selectedOrderIds: StateFlow<Set<Long>> = savedSelectedOrderIds
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList>()
     val pagedListData: LiveData<PagedOrdersList> = _pagedListData
@@ -913,6 +923,50 @@ class OrderListViewModel @Inject constructor(
                 }
             )
         )
+    }
+
+    fun onOrderLongPressed(orderId: Long): Boolean {
+        if (orderId in selectedOrderIds.value) return true
+
+        return selectOrder(orderId)
+    }
+
+    fun toggleOrderSelection(orderId: Long): Boolean {
+        if (orderId !in selectedOrderIds.value) {
+            return selectOrder(orderId)
+        }
+
+        updateSelectedOrderIds(selectedOrderIds.value - orderId)
+        return true
+    }
+
+    fun clearOrderSelection() {
+        updateSelectedOrderIds(emptySet())
+    }
+
+    private fun selectOrder(orderId: Long): Boolean {
+        if (selectedOrderIds.value.size >= BULK_UPDATE_COUNT_LIMIT) return false
+
+        val updatedOrderIds = LinkedHashSet(selectedOrderIds.value).apply {
+            add(orderId)
+        }
+        updateSelectedOrderIds(updatedOrderIds)
+        if (updatedOrderIds.size == BULK_UPDATE_COUNT_LIMIT) {
+            showMaximumBulkSelectionNotice()
+        }
+        return true
+    }
+
+    private fun updateSelectedOrderIds(orderIds: Collection<Long>) {
+        val updatedOrderIds = LinkedHashSet(orderIds)
+        if (updatedOrderIds == selectedOrderIds.value) return
+
+        savedSelectedOrderIds.value = updatedOrderIds
+        when {
+            updatedOrderIds.isEmpty() -> exitSelectionMode()
+            !isSelecting() -> enterSelectionMode(updatedOrderIds.size)
+            else -> viewState = viewState.copy(selectionCount = updatedOrderIds.size)
+        }
     }
 
     fun onSelectionChanged(count: Int) {
