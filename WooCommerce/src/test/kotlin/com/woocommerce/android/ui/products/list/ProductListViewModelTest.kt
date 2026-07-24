@@ -1057,6 +1057,27 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given mutable selected IDs, when stock status is requested, then analytics and event use one snapshot`() {
+        createViewModel()
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever(events::add)
+        val selectedIds = mutableListOf(71L, 72L)
+
+        viewModel.onBulkUpdateStockStatusClicked(selectedIds)
+        selectedIds.clear()
+
+        verify(analyticsTracker, times(1)).track(
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STOCK_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to 2,
+            )
+        )
+        assertThat(events.filterIsInstance<ProductListEvent.ShowProductUpdateStockStatusScreen>().single().productIds)
+            .containsExactly(71L, 72L)
+    }
+
+    @Test
     fun `when search and barcode actions are tapped, then each analytics event is tracked exactly once`() {
         createViewModel()
 

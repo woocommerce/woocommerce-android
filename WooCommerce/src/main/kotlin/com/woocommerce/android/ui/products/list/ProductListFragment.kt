@@ -1,14 +1,9 @@
 package com.woocommerce.android.ui.products.list
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
-import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
@@ -59,7 +54,6 @@ import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductUpda
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
-import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,7 +66,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductListFragment :
     TopLevelFragment(R.layout.fragment_product_list),
-    ActionMode.Callback,
     TabletLayoutSetupHelper.Screen {
 
     @Inject
@@ -96,10 +89,8 @@ class ProductListFragment :
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
     private val productListViewModel: ProductListViewModel by viewModels()
 
-    private var actionMode: ActionMode? = null
     private var trashProductUndoSnack: Snackbar? = null
     private var pendingTrashProductId: Long? = null
-    private var isDestroyingView = false
     private var isListAtTop = true
     private var isAddProductFabAvailable = false
     private val isPullToRefreshEnabled = MutableStateFlow(true)
@@ -141,7 +132,6 @@ class ProductListFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-        isDestroyingView = false
         _binding = FragmentProductListBinding.bind(view)
         uiMessageResolver.anchorViewId = null
         ViewGroupCompat.setTransitionGroup(binding.productsComposeContainer, true)
@@ -169,9 +159,6 @@ class ProductListFragment :
     }
 
     override fun onDestroyView() {
-        isDestroyingView = true
-        actionMode?.finish()
-        actionMode = null
         uiMessageResolver.anchorViewId = null
         super.onDestroyView()
         _binding = null
@@ -210,7 +197,6 @@ class ProductListFragment :
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 productListViewModel.selectedProductIds.collect { selectedIds ->
                     updateSnackbarAnchor(isAddProductFabAvailable && selectedIds.isEmpty())
-                    updateSelectionPresentation(selectedIds.size)
                     updateBottomNavVisibility(
                         isSearchActive = productListViewModel.isSearching(),
                         isSelecting = selectedIds.isNotEmpty(),
@@ -292,23 +278,6 @@ class ProductListFragment :
             displayListPaneOnly()
         } else {
             findNavController().navigateUp()
-        }
-    }
-
-    private fun updateSelectionPresentation(selectionCount: Int) {
-        if (selectionCount > 0) {
-            if (actionMode == null) {
-                actionMode = (requireActivity() as AppCompatActivity).startSupportActionMode(this)
-            }
-            actionMode?.title = StringUtils.getQuantityString(
-                context = requireContext(),
-                quantity = selectionCount,
-                default = R.string.product_selection_count,
-                one = R.string.product_selection_count_single,
-            )
-        } else {
-            actionMode?.finish()
-            actionMode = null
         }
     }
 
@@ -499,42 +468,6 @@ class ProductListFragment :
 
     override fun shouldExpandToolbar(): Boolean =
         isListAtTop && !productListViewModel.isSearching() && !productListViewModel.isSelecting()
-
-    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-        mode.menuInflater.inflate(R.menu.menu_action_mode_products_list, menu)
-        MenuCompat.setGroupDividerEnabled(menu, true)
-        return true
-    }
-
-    override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
-
-    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-        val selectedProductIds = productListViewModel.selectedProductIds.value.toList()
-        return when (item.itemId) {
-            R.id.menu_update_status -> {
-                productListViewModel.onBulkUpdateStatusClicked(selectedProductIds)
-                true
-            }
-            R.id.menu_update_price -> {
-                productListViewModel.onBulkUpdatePriceClicked(selectedProductIds)
-                true
-            }
-            R.id.menu_select_all -> {
-                productListViewModel.onSelectAllProductsClicked()
-                true
-            }
-            R.id.menu_update_stock_status -> {
-                productListViewModel.onBulkUpdateStockStatusClicked(selectedProductIds)
-                true
-            }
-            else -> false
-        }
-    }
-
-    override fun onDestroyActionMode(mode: ActionMode) {
-        actionMode = null
-        if (!isDestroyingView) productListViewModel.exitSelectionMode()
-    }
 
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
