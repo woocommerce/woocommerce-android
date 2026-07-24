@@ -34,7 +34,6 @@ translation_context_checker.check_context_suggestions(
   source_paths: ['WooCommerce/src/main/kotlin/'],
   translation_paths: 'WooCommerce/src/main/res/values/strings.xml',
   inline_mode: :translation_suggestion,
-  summary: true,
   report_type: :warning
 )
 
