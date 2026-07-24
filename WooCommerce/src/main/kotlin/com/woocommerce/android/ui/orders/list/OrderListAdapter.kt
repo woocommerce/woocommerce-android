@@ -144,6 +144,15 @@ class OrderListAdapter(
         onListCommitted?.invoke(currentList)
     }
 
+    fun notifyOrderChanged(orderId: Long) {
+        val position = getCurrentList()?.indexOfFirst { item ->
+            item is OrderListItemUI && item.orderId == orderId
+        } ?: RecyclerView.NO_POSITION
+        if (position != RecyclerView.NO_POSITION) {
+            notifyItemChanged(position)
+        }
+    }
+
     fun setOrderStatusOptions(orderStatusOptions: Map<String, WCOrderStatusModel>) {
         if (orderStatusOptions.keys != activeOrderStatusMap.keys) {
             this.activeOrderStatusMap = orderStatusOptions

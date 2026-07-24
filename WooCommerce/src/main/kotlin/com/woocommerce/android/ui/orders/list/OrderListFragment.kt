@@ -618,7 +618,8 @@ class OrderListFragment :
                 }
 
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
-                    binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
+                    (binding.orderListView.ordersList.adapter as? OrderListAdapter)
+                        ?.notifyOrderChanged(event.orderId)
                 }
 
                 OrderListViewModel.OrderListEvent.NotifyOrderSelectionChanged -> {

@@ -77,8 +77,7 @@ class SwipeToComplete(
             }
             val gestureSource = OrderStatusUpdateSource.SwipeToCompleteGesture(
                 orderId = orderId,
-                oldStatus = oldStatus,
-                orderPosition = pos
+                oldStatus = oldStatus
             )
             listener.onSwiped(gestureSource)
         } else {

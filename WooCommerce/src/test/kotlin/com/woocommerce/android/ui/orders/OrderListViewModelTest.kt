@@ -630,8 +630,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when the order is swiped then the status is changed optimistically`() = testBlocking {
         // Given that updateOrderStatus will success
         val order = OrderTestUtils.generateOrder()
-        val position = 1
-        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, order.status)
         val result = WCOrderStore.OnOrderChanged()
 
         val updateFlow = flow {
@@ -660,11 +659,63 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a swiped order moves, when completion and Undo resolve, then the same order is updated`() = testBlocking {
+        val originalStatus = CoreOrderStatus.PROCESSING.value
+        val targetOrder = OrderListItemUIType.OrderListItemUI(
+            orderId = 11L,
+            orderNumber = "11",
+            orderName = "First customer",
+            orderTotal = "10",
+            status = originalStatus,
+            dateCreated = null,
+            currencyCode = "USD"
+        )
+        val otherOrder = targetOrder.copy(orderId = 12L, orderNumber = "12")
+        val displayedItems = mutableListOf<OrderListItemUIType>(targetOrder, otherOrder)
+        val pagedList = mock<PagedList<OrderListItemUIType>> {
+            on { iterator() } doAnswer { displayedItems.iterator() }
+        }
+        whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
+        viewModel.pagedListData.observeForever { }
+        viewModel.loadOrders()
+        whenever(
+            orderDetailRepository.updateOrderStatus(targetOrder.orderId, CoreOrderStatus.COMPLETED.value)
+        ).thenReturn(
+            flow {
+                displayedItems.reverse()
+                emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            }
+        )
+        whenever(orderDetailRepository.updateOrderStatus(targetOrder.orderId, originalStatus)).thenReturn(
+            flow {
+                displayedItems.reverse()
+                emit(WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(WCOrderStore.OnOrderChanged()))
+            }
+        )
+        val events = mutableListOf<Event>()
+        viewModel.event.observeForever(events::add)
+
+        viewModel.onSwipeStatusUpdate(
+            OrderStatusUpdateSource.SwipeToCompleteGesture(targetOrder.orderId, originalStatus)
+        )
+        advanceUntilIdle()
+
+        assertThat(targetOrder.status).isEqualTo(CoreOrderStatus.COMPLETED.value)
+        val undoEvent = events.filterIsInstance<ShowUndoSnackbar>().single()
+
+        undoEvent.undoAction.onClick(null)
+        advanceUntilIdle()
+
+        assertThat(targetOrder.status).isEqualTo(originalStatus)
+        assertThat(events.filterIsInstance<OrderListEvent.NotifyOrderChanged>().map { it.orderId })
+            .containsExactly(targetOrder.orderId, targetOrder.orderId)
+    }
+
+    @Test
     fun `when the order is swiped but the change fails, then a retry message is shown`() = testBlocking {
         // Given that updateOrderStatus will fail
         val order = OrderTestUtils.generateOrder()
-        val position = 1
-        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, position, order.status)
+        val gesture = OrderStatusUpdateSource.SwipeToCompleteGesture(order.orderId, order.status)
         val result = WCOrderStore.OnOrderChanged(orderError = WCOrderStore.OrderError())
 
         val updateFlow = flow {

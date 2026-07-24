@@ -703,10 +703,14 @@ class OrderListViewModel @Inject constructor(
         loadOrders()
     }
 
-    private fun updateOrderDisplayedStatus(position: Int, status: String) {
-        val pagedList = _pagedListData.value ?: return
-        (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
-        triggerEvent(OrderListEvent.NotifyOrderChanged(position))
+    private fun updateOrderDisplayedStatus(orderId: Long, status: String) {
+        val order = _pagedListData.value
+            ?.firstOrNull { item ->
+                item is OrderListItemUIType.OrderListItemUI && item.orderId == orderId
+            } as? OrderListItemUIType.OrderListItemUI
+            ?: return
+        order.status = status
+        triggerEvent(OrderListEvent.NotifyOrderChanged(orderId))
     }
 
     fun updateOrderSelectedStatus(orderId: Long, isTablet: Boolean = true) {
@@ -762,7 +766,7 @@ class OrderListViewModel @Inject constructor(
             }
         }
 
-        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        updateOrderDisplayedStatus(gestureSource.orderId, gestureSource.newStatus)
         triggerEvent(
             Event.ShowUndoSnackbar(
                 message = resourceProvider.getString(
@@ -776,7 +780,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
-        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderId))
         triggerEvent(
             OrderListEvent.ShowRetryErrorSnack(
                 message = resourceProvider.getString(
@@ -794,10 +798,10 @@ class OrderListViewModel @Inject constructor(
             orderId = gestureSource.orderId,
             status = gestureSource.oldStatus,
             onOptimisticSuccess = {
-                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.oldStatus)
+                updateOrderDisplayedStatus(gestureSource.orderId, gestureSource.oldStatus)
             },
             onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
+                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderId))
                 triggerEvent(
                     OrderListEvent.ShowRetryErrorSnack(
                         message = resourceProvider.getString(
@@ -1154,7 +1158,7 @@ class OrderListViewModel @Inject constructor(
             val retry: View.OnClickListener
         ) : OrderListEvent()
 
-        data class NotifyOrderChanged(val position: Int) : OrderListEvent()
+        data class NotifyOrderChanged(val orderId: Long) : OrderListEvent()
 
         object NotifyOrderSelectionChanged : OrderListEvent()
 
