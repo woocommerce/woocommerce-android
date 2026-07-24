@@ -49,7 +49,7 @@ fun WooTabRow(
         modifier = modifier
             .fillMaxWidth()
             .height(WooTabsDefaults.RowHeight),
-        color = WooTheme.colors.surface.default,
+        color = WooTheme.colors.surface.bright,
         contentColor = WooTheme.colors.surface.onDefault,
     ) {
         WooTabRowLayout(
@@ -192,7 +192,7 @@ private fun WooTabRowDivider(
     Box(
         modifier = modifier
             .height(WooTheme.stroke.extraThin)
-            .background(WooTheme.colors.outlineVariant),
+            .background(WooTheme.colors.tintLayers.onSurface.opacity16),
     )
 }
 

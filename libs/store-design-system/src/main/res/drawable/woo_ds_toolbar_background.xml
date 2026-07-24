@@ -2,14 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/woo_ds_color_surface_default" />
+            <solid android:color="@color/woo_ds_color_surface_bright" />
         </shape>
     </item>
     <item
         android:gravity="bottom"
         android:height="@dimen/woo_ds_toolbar_divider_height">
         <shape android:shape="rectangle">
-            <solid android:color="@color/woo_ds_color_outline_variant" />
+            <solid android:color="@color/woo_ds_color_tint_layer_on_surface_opacity16" />
         </shape>
     </item>
 </layer-list>

@@ -235,7 +235,7 @@ class WooChoiceControlsTest {
         composeTestRule.runOnIdle {
             assertThat(style.containerColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
             assertThat(style.borderColor).isEqualTo(Color.Transparent)
-            assertThat(style.markColor).isEqualTo(colors.onPrimary)
+            assertThat(style.markColor).isEqualTo(colors.stateLayers.onSurface.opacity24)
             assertThat(style.borderWidth).isEqualTo(stroke.none)
             assertThat(style.mark).isEqualTo(WooCheckboxMark.Indeterminate)
         }
@@ -296,6 +296,33 @@ class WooChoiceControlsTest {
     }
 
     @Test
+    fun `given disabled selected radio style, when resolved, then root and dot use state tokens`() {
+        lateinit var style: WooRadioButtonStyle
+        lateinit var colors: WooColors
+        lateinit var stroke: WooStroke
+
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                colors = WooTheme.colors
+                stroke = WooTheme.stroke
+                style = wooRadioButtonStyle(
+                    selected = true,
+                    enabled = false,
+                    colors = colors,
+                    stroke = stroke,
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            assertThat(style.containerColor).isEqualTo(colors.stateLayers.onSurface.opacity16)
+            assertThat(style.borderColor).isEqualTo(Color.Transparent)
+            assertThat(style.dotColor).isEqualTo(colors.stateLayers.onSurface.opacity24)
+            assertThat(style.borderWidth).isEqualTo(stroke.none)
+        }
+    }
+
+    @Test
     fun `given selected filter chip style, when resolved, then it matches Figma tokens`() {
         lateinit var style: WooFilterChipStyle
         lateinit var colors: WooColors
@@ -316,7 +343,7 @@ class WooChoiceControlsTest {
 
         composeTestRule.runOnIdle {
             assertThat(style.containerColor).isEqualTo(colors.container.secondaryContainer)
-            assertThat(style.contentColor).isEqualTo(colors.surface.onDefault)
+            assertThat(style.contentColor).isEqualTo(colors.container.onSecondaryContainer)
             assertThat(style.borderColor).isEqualTo(Color.Transparent)
             assertThat(style.borderWidth).isEqualTo(stroke.none)
         }
@@ -342,9 +369,9 @@ class WooChoiceControlsTest {
         }
 
         composeTestRule.runOnIdle {
-            assertThat(style.containerColor).isEqualTo(colors.surface.default)
+            assertThat(style.containerColor).isEqualTo(colors.surface.bright)
             assertThat(style.contentColor).isEqualTo(colors.surface.onDefault)
-            assertThat(style.borderColor).isEqualTo(colors.outlineVariant)
+            assertThat(style.borderColor).isEqualTo(colors.tintLayers.onSurface.opacity16)
             assertThat(style.borderWidth).isEqualTo(stroke.regular)
         }
     }
