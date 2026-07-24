@@ -118,10 +118,12 @@ internal fun OrderListRoute(
     }
 
     val itemKey = remember(presenter, presentation) {
-        { index: Int -> checkNotNull(presenter.keyAt(presentation, index)) }
+        fun keyAt(index: Int): Any = checkNotNull(presenter.keyAt(presentation, index))
+        ::keyAt
     }
     val itemContentType = remember(presenter, presentation) {
-        { index: Int -> presenter.contentTypeAt(presentation, index) }
+        fun contentTypeAt(index: Int): Any? = presenter.contentTypeAt(presentation, index)
+        ::contentTypeAt
     }
     val itemAt = remember(
         presenter,
@@ -130,8 +132,8 @@ internal fun OrderListRoute(
         currencyFormatter,
         context,
     ) {
-        { index: Int ->
-            presenter.itemAt(presentation, index)?.toUiModel(
+        fun itemAt(index: Int): OrderListItemUiModel? {
+            return presenter.itemAt(presentation, index)?.toUiModel(
                 orderStatusOptions = orderStatusOptions,
                 formatCurrency = { rawValue, currencyCode ->
                     currencyFormatter.formatCurrency(rawValue, currencyCode)
@@ -139,6 +141,7 @@ internal fun OrderListRoute(
                 resolveString = context::getString,
             )
         }
+        ::itemAt
     }
     val contentState = emptyViewType.toOrderListContentState(
         query = viewModel.searchQuery,

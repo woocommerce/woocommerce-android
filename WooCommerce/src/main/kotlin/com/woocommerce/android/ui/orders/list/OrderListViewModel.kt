@@ -262,12 +262,7 @@ class OrderListViewModel @Inject constructor(
         // When filters haven't changed (e.g. returning from order detail), avoid recreating the
         // PagedListWrapper — clearing/re-binding its LiveData sources causes the list to flash.
         if (listDescriptor == activeWCOrderListDescriptor && ordersPagedListWrapper != null) {
-            if (_pagedListData.value == null) {
-                ordersPagedListWrapper?.let { wrapper ->
-                    wrapper.data.value?.let { _pagedListData.value = it }
-                    createAndPostEmptyViewType(wrapper)
-                }
-            }
+            restoreClearedOrderListPresentation()
             launch {
                 if (shouldUpdateOrdersList(listDescriptor)) {
                     fetchOrdersAndOrderDependencies()
@@ -297,6 +292,15 @@ class OrderListViewModel @Inject constructor(
             observeOrdersListLastUpdate(listId).collect {
                 _lastUpdateOrdersList.value = it
             }
+        }
+    }
+
+    private fun restoreClearedOrderListPresentation() {
+        if (_pagedListData.value != null) return
+
+        ordersPagedListWrapper?.let { wrapper ->
+            wrapper.data.value?.let { _pagedListData.value = it }
+            createAndPostEmptyViewType(wrapper)
         }
     }
 

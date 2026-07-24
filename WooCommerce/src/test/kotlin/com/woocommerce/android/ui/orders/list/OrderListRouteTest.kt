@@ -6,7 +6,7 @@ import org.junit.Test
 
 class OrderListRouteTest {
     @Test
-    fun `empty view types map to their Compose content states`() {
+    fun `when empty view types are mapped, then Compose content states are returned`() {
         assertThat(contentState(EmptyViewType.ORDER_LIST_LOADING))
             .isEqualTo(OrderListContentState.InitialLoading)
         assertThat(contentState(EmptyViewType.ORDER_LIST))
@@ -24,7 +24,7 @@ class OrderListRouteTest {
     }
 
     @Test
-    fun `no empty state maps to content with append and revision state`() {
+    fun `when no empty state is mapped, then content retains append and revision state`() {
         assertThat(contentState(null))
             .isEqualTo(
                 OrderListContentState.Content(
