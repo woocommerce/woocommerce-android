@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'danger-dangermattic', '~> 1.4'
+gem 'danger-dangermattic', git: 'https://github.com/Automattic/dangermattic.git', branch: 'iangmaia/add-translation-context-plugin'
 gem 'fastlane', '~> 2.237'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 1.0'
 gem 'rubocop', '~> 1.88'
