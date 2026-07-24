@@ -675,6 +675,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         val pagedList = mock<PagedList<OrderListItemUIType>> {
             on { iterator() } doAnswer { displayedItems.iterator() }
         }
+        whenever(pagedList.snapshot()).thenReturn(pagedList)
         whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
         viewModel.pagedListData.observeForever { }
         viewModel.loadOrders()
@@ -695,18 +696,18 @@ class OrderListViewModelTest : BaseUnitTest() {
         val events = mutableListOf<Event>()
         viewModel.event.observeForever(events::add)
 
-        viewModel.onSwipeStatusUpdate(
-            OrderStatusUpdateSource.SwipeToCompleteGesture(targetOrder.orderId, originalStatus)
-        )
+        viewModel.onSwipeToComplete(targetOrder.orderId)
         advanceUntilIdle()
 
         assertThat(targetOrder.status).isEqualTo(CoreOrderStatus.COMPLETED.value)
+        assertThat(viewModel.orderListContentRevision.value).isEqualTo(1L)
         val undoEvent = events.filterIsInstance<ShowUndoSnackbar>().single()
 
         undoEvent.undoAction.onClick(null)
         advanceUntilIdle()
 
         assertThat(targetOrder.status).isEqualTo(originalStatus)
+        assertThat(viewModel.orderListContentRevision.value).isEqualTo(2L)
         assertThat(events.filterIsInstance<OrderListEvent.NotifyOrderChanged>().map { it.orderId })
             .containsExactly(targetOrder.orderId, targetOrder.orderId)
     }

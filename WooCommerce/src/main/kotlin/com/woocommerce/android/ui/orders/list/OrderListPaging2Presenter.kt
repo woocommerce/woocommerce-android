@@ -55,6 +55,15 @@ internal class OrderListPaging2Presenter : AutoCloseable {
         return capturedState.items[index].stableKey(capturedState.generation, index)
     }
 
+    fun contentTypeAt(capturedState: State, index: Int): ItemContentType? {
+        if (index !in 0 until capturedState.itemCount) return null
+        return when (capturedState.items[index]) {
+            is SectionHeader -> ItemContentType.Section
+            is OrderListItemUI -> ItemContentType.Order
+            is LoadingItem, null -> ItemContentType.Loading
+        }
+    }
+
     fun indexOfOrder(capturedState: State, orderId: Long): Int? {
         return (0 until capturedState.itemCount).firstOrNull { index ->
             val item = capturedState.items[index]
@@ -144,6 +153,12 @@ internal class OrderListPaging2Presenter : AutoCloseable {
     ) {
         val itemCount: Int
             get() = items.size
+    }
+
+    enum class ItemContentType {
+        Section,
+        Order,
+        Loading,
     }
 
     private companion object {

@@ -56,6 +56,7 @@ internal fun OrderListContent(
     itemCount: Int,
     itemKey: (index: Int) -> Any,
     itemAt: (index: Int) -> OrderListItemUiModel?,
+    itemContentType: (index: Int) -> Any? = { null },
     onOrderTapped: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
@@ -79,6 +80,7 @@ internal fun OrderListContent(
             itemCount = itemCount,
             itemKey = itemKey,
             itemAt = itemAt,
+            itemContentType = itemContentType,
             rowState = rowState,
             isAppending = state.isAppending,
             contentRevision = state.contentRevision,
@@ -98,6 +100,7 @@ private fun OrderLazyList(
     itemCount: Int,
     itemKey: (index: Int) -> Any,
     itemAt: (index: Int) -> OrderListItemUiModel?,
+    itemContentType: (index: Int) -> Any?,
     rowState: OrderListRowState,
     isAppending: Boolean,
     contentRevision: Long,
@@ -118,6 +121,7 @@ private fun OrderLazyList(
         items(
             count = itemCount,
             key = itemKey,
+            contentType = itemContentType,
         ) { index ->
             // itemAt is memoized per index. Advance contentRevision when mapped content changes
             // without replacing the accessor.

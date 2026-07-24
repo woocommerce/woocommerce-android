@@ -170,6 +170,9 @@ class OrderListViewModel @Inject constructor(
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
+    private val _orderListContentRevision = MutableStateFlow(0L)
+    val orderListContentRevision: StateFlow<Long> = _orderListContentRevision
+
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
@@ -710,6 +713,7 @@ class OrderListViewModel @Inject constructor(
             } as? OrderListItemUIType.OrderListItemUI
             ?: return
         order.status = status
+        _orderListContentRevision.value += 1
         triggerEvent(OrderListEvent.NotifyOrderChanged(orderId))
     }
 
@@ -728,11 +732,27 @@ class OrderListViewModel @Inject constructor(
                 }
             }
         }
+        _orderListContentRevision.value += 1
         triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
     }
 
     fun clearOrderId() {
         savedState["orderId"] = -1L
+    }
+
+    fun onSwipeToComplete(orderId: Long) {
+        val order = _pagedListData.value
+            ?.snapshot()
+            ?.filterIsInstance<OrderListItemUIType.OrderListItemUI>()
+            ?.firstOrNull { it.orderId == orderId }
+            ?: return
+
+        onSwipeStatusUpdate(
+            OrderStatusUpdateSource.SwipeToCompleteGesture(
+                orderId = order.orderId,
+                oldStatus = order.status,
+            )
+        )
     }
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
