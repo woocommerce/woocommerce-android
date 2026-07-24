@@ -1,5 +1,4 @@
 -dontobfuscate
--dontoptimize
 
 ###### OkHttp - begin
 -dontwarn okio.**
