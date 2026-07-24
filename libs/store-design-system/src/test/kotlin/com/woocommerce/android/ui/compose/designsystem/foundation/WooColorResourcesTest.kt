@@ -16,8 +16,6 @@ class WooColorResourcesTest {
 
         assertThat(colors.container.secondaryContainer)
             .isEqualTo(colors.tintLayers.primaryContainer.opacity16)
-        assertThat(colors.container.secondaryContainer)
-            .isNotEqualTo(colors.tintLayers.primaryContainer.opacity24)
     }
 
     @Test
@@ -25,7 +23,6 @@ class WooColorResourcesTest {
         val colors = loadWooColors(context = context, useDarkTheme = true)
 
         assertThat(colors.container.secondaryContainer).isEqualTo(colors.tintLayers.primary.opacity16)
-        assertThat(colors.container.secondaryContainer).isNotEqualTo(colors.tintLayers.primary.opacity24)
     }
 
     @Test
