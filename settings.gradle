@@ -95,7 +95,7 @@ buildCache {
         } else if (file("${rootDir}/developer.properties").exists()) {
             // The developer explicitly opted in to the remote build cache via their own
             // developer.properties file, so they are expected to have secrets applied.
-            assertSecretsApplied()
+            throwSecretsNotApplied()
         } else {
             // The flag is only true via the developer.properties-example fallback (a fresh
             // clone) — skip the remote build cache instead of failing.
@@ -113,9 +113,11 @@ def checkForRemoteBuildCacheOptimizedExperience() {
 }
 
 def assertSecretsApplied() {
-    if (!secretsApplied()) {
-        throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
-    }
+    if (!secretsApplied()) throwSecretsNotApplied()
+}
+
+static def throwSecretsNotApplied() {
+    throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
 }
 
 def secretsApplied() {
