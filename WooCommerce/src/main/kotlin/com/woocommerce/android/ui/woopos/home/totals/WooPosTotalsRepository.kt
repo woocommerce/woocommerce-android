@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -32,6 +34,7 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderMapper: OrderMapper,
     private val resourceProvider: ResourceProvider,
     private val variationMapper: WooPosVariationMapper,
+    private val couponRepository: CouponRepository,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -159,6 +162,8 @@ class WooPosTotalsRepository @Inject constructor(
             name = variationResult.getName(variationMapper, productResult),
         )
     }
+
+    suspend fun getCouponsByIds(couponIds: List<Long>): List<Coupon> = couponRepository.getCoupons(couponIds)
 
     suspend fun getOrderById(orderId: Long) = withContext(IO) {
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {

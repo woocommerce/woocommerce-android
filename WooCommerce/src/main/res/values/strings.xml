@@ -3875,6 +3875,7 @@
     <string name="woopos_cart_item_custom_amount_content_description">Custom amount %1$s, %2$s</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
+    <string name="woopos_cart_custom_amount_discount_not_applied">Discount not applied</string>
     <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
     <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>
