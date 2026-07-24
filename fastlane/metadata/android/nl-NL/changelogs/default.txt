@@ -1,0 +1,2 @@
+25.2:
+Je winkel beheren is nu eenvoudiger geworden: bestellingen van gasten zijn eenvoudiger te vinden in de bestellijst, verzendpakketten reageren betrouwbaar, terugbetalingen van cadeaubonnen worden veilig afgehandeld en wekelijkse statistieken volgen je winkelinstellingen. We hebben ook de aanmelding, navigatie, productbewerking en algemene stabiliteit verbeterd.

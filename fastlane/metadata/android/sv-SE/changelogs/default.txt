@@ -1,0 +1,2 @@
+25.2:
+Hanteringen av din butik blev just smidigare: gästbeställningar är lättare att hitta i beställningslistan, och fraktpaket hanteras på ett tillförlitligt sätt, presentkortsåterbetalningar hanteras säkert och veckostatistik följer dina butiksinställningar. Vi har också förbättrat inloggningen, navigeringen, produktredigeringen och den övergripande stabiliteten.

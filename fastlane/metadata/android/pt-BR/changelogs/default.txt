@@ -1,0 +1,2 @@
+25.2:
+O gerenciamento da sua loja ficou ainda mais tranquilo: pedidos de visitantes estão mais fáceis de encontrar na lista de pedidos, os pacotes de envio funcionam como o esperado, os reembolsos de vales-presentes são processados com segurança, e as estatísticas semanais seguem as configurações da sua loja. Também melhoramos o login, a navegação, a edição de produtos e a estabilidade geral.
