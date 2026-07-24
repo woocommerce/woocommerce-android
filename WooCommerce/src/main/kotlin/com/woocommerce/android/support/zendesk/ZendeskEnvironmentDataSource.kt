@@ -56,7 +56,7 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
         get() = UrlUtils.removeScheme(url)
             .let { StringUtils.removeTrailingSlash(it) }
             .takeUnless { TextUtils.isEmpty(it) }
-            ?: UrlUtils.getHost(xmlRpcUrl)
+            .orEmpty()
 
     /**
      * This is a helper function which returns information about the network state of the app to be sent to Zendesk, which
