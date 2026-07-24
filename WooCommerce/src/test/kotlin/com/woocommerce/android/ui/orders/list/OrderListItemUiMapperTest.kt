@@ -44,6 +44,7 @@ class OrderListItemUiMapperTest {
                     OrderListBadgeUiModel("Processing order", WooBadgeTone.Success),
                     OrderListBadgeUiModel("POS", WooBadgeTone.NeutralOutlined),
                 ),
+                isCompleted = false,
                 showDivider = true,
             )
         )
@@ -66,6 +67,7 @@ class OrderListItemUiMapperTest {
 
         // THEN
         assertThat(result.showDivider).isFalse()
+        assertThat(result.isCompleted).isTrue()
         assertThat(result.badges).containsExactly(
             OrderListBadgeUiModel(Order.Status.Completed.value, WooBadgeTone.Info)
         )

@@ -36,6 +36,7 @@ internal sealed interface OrderListItemUiModel {
         val dateCreated: String?,
         val total: String,
         val badges: List<OrderListBadgeUiModel>,
+        val isCompleted: Boolean = false,
         val showDivider: Boolean = true,
     ) : OrderListItemUiModel
 

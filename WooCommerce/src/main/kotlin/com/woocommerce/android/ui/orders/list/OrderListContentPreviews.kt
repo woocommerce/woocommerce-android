@@ -123,6 +123,7 @@ private fun OrderListContentPreview(
             onOrderTapped = {},
             onOrderLongPressed = {},
             onOrderSelectionToggled = { true },
+            onMarkOrderCompleted = {},
             onLearnMoreClicked = {},
             onShowGuestOrdersClicked = {},
             onRetryClicked = {},

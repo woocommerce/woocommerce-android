@@ -38,6 +38,7 @@ internal fun OrderListItemUIType.toUiModel(
                 )
             }
         },
+        isCompleted = status == Order.Status.Completed.value,
         showDivider = !isLastItemInSection,
     )
 }

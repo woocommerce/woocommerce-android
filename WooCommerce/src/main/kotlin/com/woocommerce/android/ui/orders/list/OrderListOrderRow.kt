@@ -58,6 +58,7 @@ internal fun OrderListOrderRow(
     onTap: () -> Unit,
     onLongPress: () -> Unit,
     onSelectionToggle: () -> Boolean,
+    onMarkCompleted: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -65,6 +66,7 @@ internal fun OrderListOrderRow(
         if (isBulkSelected) R.string.orderlist_deselect_order else R.string.orderlist_select_order,
         order.number,
     )
+    val markCompletedAction = stringResource(R.string.orderlist_mark_completed)
     val activate: () -> Unit = if (isBulkSelectionActive) {
         { onSelectionToggle() }
     } else {
@@ -76,57 +78,76 @@ internal fun OrderListOrderRow(
         WooTheme.colors.surface.default
     }
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = ORDER_ROW_MIN_HEIGHT)
-            .testTag(OrderListTestTags.orderRow(order.orderId))
-            .background(background)
-            .focusRequester(focusRequester)
-            .focusable()
-            .onPreviewKeyEvent { event ->
-                if (event.type != KeyEventType.KeyUp) return@onPreviewKeyEvent false
-                when (event.key) {
-                    Key.Enter, Key.DirectionCenter -> {
-                        activate()
-                        true
+    OrderListSwipeToComplete(
+        orderId = order.orderId,
+        isCompleted = order.isCompleted,
+        isEnabled = !isBulkSelectionActive,
+        onMarkCompleted = onMarkCompleted,
+        modifier = modifier.fillMaxWidth(),
+    ) { swipeModifier ->
+        Row(
+            modifier = swipeModifier
+                .fillMaxWidth()
+                .heightIn(min = ORDER_ROW_MIN_HEIGHT)
+                .testTag(OrderListTestTags.orderRow(order.orderId))
+                .background(background)
+                .focusRequester(focusRequester)
+                .focusable()
+                .onPreviewKeyEvent { event ->
+                    if (event.type != KeyEventType.KeyUp) return@onPreviewKeyEvent false
+                    when (event.key) {
+                        Key.Enter, Key.DirectionCenter -> {
+                            activate()
+                            true
+                        }
+                        Key.Spacebar -> {
+                            onSelectionToggle()
+                            true
+                        }
+                        else -> false
                     }
-                    Key.Spacebar -> {
-                        onSelectionToggle()
-                        true
-                    }
-                    else -> false
                 }
-            }
-            .combinedClickable(
-                onClick = activate,
-                onLongClick = onLongPress,
-            )
-            .semantics(mergeDescendants = true) {
-                selected = isBulkSelected
-                role = Role.Button
-                requestFocus {
-                    focusRequester.requestFocus()
-                    true
-                }
-                customActions = listOf(
-                    CustomAccessibilityAction(selectionAction, onSelectionToggle)
+                .combinedClickable(
+                    onClick = activate,
+                    onLongClick = onLongPress,
                 )
+                .semantics(mergeDescendants = true) {
+                    selected = isBulkSelected
+                    role = Role.Button
+                    requestFocus {
+                        focusRequester.requestFocus()
+                        true
+                    }
+                    customActions = buildList {
+                        add(CustomAccessibilityAction(selectionAction, onSelectionToggle))
+                        if (!order.isCompleted && !isBulkSelectionActive) {
+                            add(
+                                CustomAccessibilityAction(
+                                    label = markCompletedAction,
+                                    action = {
+                                        onMarkCompleted()
+                                        true
+                                    },
+                                )
+                            )
+                        }
+                    }
+                }
+                .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (isBulkSelectionActive) {
+                BulkSelectionIndicator(
+                    isSelected = isBulkSelected,
+                    orderId = order.orderId,
+                )
+                Spacer(modifier = Modifier.width(WooTheme.spacing.space4))
             }
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        if (isBulkSelectionActive) {
-            BulkSelectionIndicator(
-                isSelected = isBulkSelected,
-                orderId = order.orderId,
+            OrderContent(
+                order = order,
+                modifier = Modifier.weight(1f),
             )
-            Spacer(modifier = Modifier.width(WooTheme.spacing.space4))
         }
-        OrderContent(
-            order = order,
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 

@@ -49,6 +49,7 @@ internal fun OrderListContent(
     onOrderTapped: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
+    onMarkOrderCompleted: (orderId: Long) -> Unit,
     onLearnMoreClicked: () -> Unit,
     onShowGuestOrdersClicked: () -> Unit,
     onRetryClicked: () -> Unit,
@@ -74,6 +75,7 @@ internal fun OrderListContent(
             onOrderTapped = onOrderTapped,
             onOrderLongPressed = onOrderLongPressed,
             onOrderSelectionToggled = onOrderSelectionToggled,
+            onMarkOrderCompleted = onMarkOrderCompleted,
             modifier = modifier,
             listState = listState,
         )
@@ -92,6 +94,7 @@ private fun OrderLazyList(
     onOrderTapped: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
+    onMarkOrderCompleted: (orderId: Long) -> Unit,
     modifier: Modifier,
     listState: LazyListState,
 ) {
@@ -119,6 +122,7 @@ private fun OrderLazyList(
                         onTap = { onOrderTapped(orderId) },
                         onLongPress = { onOrderLongPressed(orderId) },
                         onSelectionToggle = { onOrderSelectionToggled(orderId) },
+                        onMarkCompleted = { onMarkOrderCompleted(orderId) },
                     )
                     if (item.showDivider) {
                         WooDivider(

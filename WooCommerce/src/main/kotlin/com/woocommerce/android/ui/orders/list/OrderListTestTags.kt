@@ -19,4 +19,5 @@ internal object OrderListTestTags {
     fun selectionSlot(orderId: Long) = "order_list_selection_slot_$orderId"
     fun selectionIndicator(orderId: Long) = "order_list_selection_indicator_$orderId"
     fun loadingItem(orderId: Long) = "order_list_loading_$orderId"
+    fun swipeReveal(orderId: Long) = "order_list_swipe_reveal_$orderId"
 }
