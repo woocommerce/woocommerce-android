@@ -37,8 +37,11 @@
 }
 ###### Event Bus 2 - end
 
-##### WooCommerce (this is needed for Json deserializers, but generally, we should keep our own classes) - begin
--keep class com.woocommerce.** { *; }
+##### WooCommerce - begin
+# Gson populates fields reflectively, so keep fields and enum constants of our classes
+# (we don't obfuscate, so names are stable). Methods stay eligible for R8 optimization.
+-keepclassmembers class com.woocommerce.** { <fields>; }
+-keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
 
 ###### FluxC (was needed for Json deserializers) - begin
