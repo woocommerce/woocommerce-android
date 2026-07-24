@@ -1,69 +1,54 @@
-package org.wordpress.android.fluxc.site;
+package org.wordpress.android.fluxc.site
 
-import org.wordpress.android.fluxc.model.SiteModel;
+import org.wordpress.android.fluxc.model.SiteModel
 
-public class SiteUtils {
-    public static SiteModel generateWPComSite() {
-        return generateTestSite(556, "", true);
-    }
+object SiteUtils {
+    fun generateWPComSite(): SiteModel = generateTestSite(556, "", true)
 
-    public static SiteModel generateTestSite(long remoteId, String url, boolean isWPCom) {
-        SiteModel example = new SiteModel();
-        example.setUrl(url);
-        example.setSiteId(remoteId);
-        example.setIsWPCom(isWPCom);
-        if (isWPCom) {
-            example.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        } else {
-            example.setOrigin(SiteModel.ORIGIN_XMLRPC);
+    fun generateTestSite(remoteId: Long, url: String, isWPCom: Boolean): SiteModel =
+        SiteModel().apply {
+            setUrl(url)
+            siteId = remoteId
+            setIsWPCom(isWPCom)
+            origin = if (isWPCom) SiteModel.ORIGIN_WPCOM_REST else SiteModel.ORIGIN_XMLRPC
         }
-        return example;
+
+    fun generateSelfHostedNonJPSite(): SiteModel = SiteModel().apply {
+        selfHostedSiteId = 6
+        setIsWPCom(false)
+        setIsJetpackInstalled(false)
+        setIsJetpackConnected(false)
+        setUrl("http://some.url")
+        origin = SiteModel.ORIGIN_XMLRPC
     }
 
-    public static SiteModel generateSelfHostedNonJPSite() {
-        SiteModel example = new SiteModel();
-        example.setSelfHostedSiteId(6);
-        example.setIsWPCom(false);
-        example.setIsJetpackInstalled(false);
-        example.setIsJetpackConnected(false);
-        example.setUrl("http://some.url");
-        example.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        return example;
+    fun generateJetpackSiteOverXMLRPC(): SiteModel = SiteModel().apply {
+        siteId = 982
+        selfHostedSiteId = 8
+        setIsWPCom(false)
+        setIsJetpackInstalled(true)
+        setIsJetpackConnected(true)
+        username = "ponyuser"
+        password = "ponypass"
+        setUrl("http://jetpack.url")
+        origin = SiteModel.ORIGIN_XMLRPC
     }
 
-    public static SiteModel generateJetpackSiteOverXMLRPC() {
-        SiteModel example = new SiteModel();
-        example.setSiteId(982);
-        example.setSelfHostedSiteId(8);
-        example.setIsWPCom(false);
-        example.setIsJetpackInstalled(true);
-        example.setIsJetpackConnected(true);
-        example.setUsername("ponyuser");
-        example.setPassword("ponypass");
-        example.setUrl("http://jetpack.url");
-        example.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        return example;
+    fun generateJetpackSiteOverRestOnly(): SiteModel = SiteModel().apply {
+        siteId = 5623
+        setIsWPCom(false)
+        setIsJetpackInstalled(true)
+        setIsJetpackConnected(true)
+        setUrl("http://jetpack2.url")
+        origin = SiteModel.ORIGIN_WPCOM_REST
     }
 
-    public static SiteModel generateJetpackSiteOverRestOnly() {
-        SiteModel example = new SiteModel();
-        example.setSiteId(5623);
-        example.setIsWPCom(false);
-        example.setIsJetpackInstalled(true);
-        example.setIsJetpackConnected(true);
-        example.setUrl("http://jetpack2.url");
-        example.setOrigin(SiteModel.ORIGIN_WPCOM_REST);
-        return example;
-    }
-
-    public static SiteModel generateSelfHostedSiteFutureJetpack() {
-        SiteModel example = new SiteModel();
-        example.setSelfHostedSiteId(8);
-        example.setIsWPCom(false);
-        example.setIsJetpackInstalled(false);
-        example.setIsJetpackConnected(false);
-        example.setUrl("http://jetpack2.url");
-        example.setOrigin(SiteModel.ORIGIN_XMLRPC);
-        return example;
+    fun generateSelfHostedSiteFutureJetpack(): SiteModel = SiteModel().apply {
+        selfHostedSiteId = 8
+        setIsWPCom(false)
+        setIsJetpackInstalled(false)
+        setIsJetpackConnected(false)
+        setUrl("http://jetpack2.url")
+        origin = SiteModel.ORIGIN_XMLRPC
     }
 }
