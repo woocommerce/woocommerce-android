@@ -107,11 +107,9 @@ class ProductVariationApiResponse : Response {
             length = dimensions?.getString("length") ?: "",
             width = dimensions?.getString("width") ?: "",
             height = dimensions?.getString("height") ?: "",
-            image = response.image?.toString() ?: "",
+            image = response.image?.takeUnless { it.isJsonNull }?.toString() ?: "",
             minAllowedQuantity = response.min_quantity?.toInt() ?: -1,
-            maxAllowedQuantity = response.max_quantity?.let {
-                if (it.isEmpty()) "0" else it
-            }?.toInt() ?: -1,
+            maxAllowedQuantity = response.max_quantity?.ifEmpty { "0" }?.toInt() ?: -1,
             groupOfQuantity = response.group_of_quantity?.toInt() ?: -1,
             overrideProductQuantities = response.variation_quantity_rules?.let {
                 it == "yes"

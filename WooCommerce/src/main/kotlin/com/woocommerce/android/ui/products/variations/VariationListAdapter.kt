@@ -117,7 +117,7 @@ class VariationListAdapter(
 
             viewBinding.variationOptionImage.clipToOutline = true
 
-            variation.image?.let {
+            variation.editContextImage?.let {
                 glideRequest.loadPhotonUrlWithFallback(it.source, imageSize, imageSize)
                     .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
                     .placeholder(R.drawable.ic_product)

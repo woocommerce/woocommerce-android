@@ -120,6 +120,7 @@ class WCProductStoreTest {
             productTagsDao = wcDatabaseRule.db.productTagsDao,
             productShippingClassesDao = wcDatabaseRule.db.productShippingClassesDao,
             productReviewsDao = wcDatabaseRule.db.productReviewsDao,
+            database = wcDatabaseRule.db,
         )
     }
 
@@ -448,7 +449,8 @@ class WCProductStoreTest {
                 site = site,
                 productId = productId,
                 pageSize = 2,
-                offset = 0
+                offset = 0,
+                context = "edit"
             )
         ).thenReturn(WooPayload(fetchedVariations))
 
@@ -461,11 +463,13 @@ class WCProductStoreTest {
             )
         )
 
+        // The edit-context fetch stores the response image as the variation's own image.
+        val mergedVariations = fetchedVariations.map { it.copy(editContextImage = it.image) }
         assertThat(result.isError).isFalse
-        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+        assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(mergedVariations)
         assertThat(requireNotNull(result.model).canLoadMore).isTrue
         assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
-            .containsExactlyInAnyOrderElementsOf(fetchedVariations)
+            .containsExactlyInAnyOrderElementsOf(mergedVariations)
     }
 
     @Test
@@ -484,7 +488,8 @@ class WCProductStoreTest {
                     site = site,
                     productId = productId,
                     pageSize = 2,
-                    offset = 2
+                    offset = 2,
+                    context = "edit"
                 )
             ).thenReturn(WooPayload(fetchedVariations))
 
@@ -497,11 +502,166 @@ class WCProductStoreTest {
                 )
             )
 
+            // The edit-context fetch stores the response image as the variation's own image.
+            val mergedVariations = fetchedVariations.map { it.copy(editContextImage = it.image) }
             assertThat(result.isError).isFalse
-            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(fetchedVariations)
+            assertThat(requireNotNull(result.model).variations).containsExactlyElementsOf(mergedVariations)
             assertThat(requireNotNull(result.model).canLoadMore).isTrue
             assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
-                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + fetchedVariations)
+                .containsExactlyInAnyOrderElementsOf(listOf(cachedVariation) + mergedVariations)
+        }
+
+    @Test
+    fun `given a cached parent fallback image, when variations are fetched with edit context, then the image is kept`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 0,
+                    context = "edit"
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(image = ""))))
+
+            productStore.fetchProductVariations(
+                FetchProductVariationsPayload(site = site, remoteProductId = productId, pageSize = 2, offset = 0)
+            )
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation.copy(editContextImage = ""))
+        }
+
+    @Test
+    fun `given the variation has its own image, when variations are fetched with edit context, then it becomes the view value`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val ownImage = """{"id":7,"src":"https://example.com/own.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = site,
+                    productId = productId,
+                    pageSize = 2,
+                    offset = 0,
+                    context = "edit"
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(image = ownImage))))
+
+            productStore.fetchProductVariations(
+                FetchProductVariationsPayload(site = site, remoteProductId = productId, pageSize = 2, offset = 0)
+            )
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation.copy(image = ownImage, editContextImage = ownImage))
+        }
+
+    @Test
+    fun `given a variation without its own image, when the update response is stored, then the view value is kept`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            val updated = cachedVariation.copy(regularPrice = "12", editContextImage = "")
+            whenever(productRestClient.updateVariation(eq(site), anyOrNull(), any()))
+                .thenReturn(RemoteUpdateVariationPayload(site, updated.copy(image = "", editContextImage = null)))
+
+            productStore.updateVariation(UpdateVariationPayload(site, updated))
+
+            assertThat(productsVariationsDao.getVariation(site.localId(), RemoteId(productId), RemoteId(1L)))
+                .isEqualTo(updated)
+        }
+
+    @Test
+    fun `given the variation has its own image, when the update response is stored, then both columns hold it`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val ownImage = """{"id":7,"src":"https://example.com/own.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(productRestClient.updateVariation(eq(site), anyOrNull(), any()))
+                .thenReturn(
+                    RemoteUpdateVariationPayload(site, cachedVariation.copy(image = ownImage, editContextImage = null))
+                )
+
+            productStore.updateVariation(UpdateVariationPayload(site, cachedVariation))
+
+            assertThat(productsVariationsDao.getVariation(site.localId(), RemoteId(productId), RemoteId(1L)))
+                .isEqualTo(cachedVariation.copy(image = ownImage, editContextImage = ownImage))
+        }
+
+    @Test
+    fun `given a variation without its own image, when a batch update response is stored, then the view value is kept`() =
+        runTest {
+            val product = ProductTestUtils.generateSampleProduct(200L)
+            productsDao.upsertProduct(product)
+            val site = insertTestAccountAndSiteIntoDb()
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(200L, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            val payload = BatchUpdateVariationsPayload.Builder(site, 200L, listOf(1L))
+                .regularPrice("12")
+                .build()
+            val backendVariation = ProductVariationApiResponse().apply {
+                id = 1L
+                regular_price = "12"
+            }
+            whenever(
+                productRestClient.batchUpdateVariations(any(), any(), anyOrNull(), any(), anyOrNull())
+            ).thenReturn(WooPayload(BatchProductVariationsApiResponse(updatedVariations = listOf(backendVariation))))
+
+            productStore.batchUpdateVariations(payload)
+
+            val stored = productsVariationsDao.getVariation(site.localId(), RemoteId(200L), RemoteId(1L))
+            assertThat(stored?.image).isEqualTo(parentImage)
+            assertThat(stored?.editContextImage).isEqualTo("")
+            assertThat(stored?.regularPrice).isEqualTo("12")
+        }
+
+    @Test
+    fun `given a cached edit context image, when variations are fetched with view context, then it is preserved`() =
+        runTest {
+            val site = SiteModel().apply { id = 42 }
+            val productId = 100L
+            val parentImage = """{"id":5,"src":"https://example.com/parent.jpg"}"""
+            val cachedVariation = ProductTestUtils.generateSampleVariation(productId, 1L, site.id)
+                .copy(image = parentImage, editContextImage = "")
+            productsVariationsDao.upsertProductVariation(cachedVariation)
+            whenever(
+                productRestClient.fetchProductVariationsWithSyncRequest(
+                    site = any(),
+                    productId = any(),
+                    pageSize = any(),
+                    offset = any(),
+                    includedVariationIds = any(),
+                    searchQuery = anyOrNull(),
+                    excludedVariationIds = any(),
+                    filterOptions = anyOrNull(),
+                    orderCurrency = anyOrNull(),
+                    posProductsOnly = any(),
+                    context = any()
+                )
+            ).thenReturn(WooPayload(listOf(cachedVariation.copy(editContextImage = null))))
+
+            productStore.fetchProductVariations(site, productId)
+
+            assertThat(productsVariationsDao.getVariations(site.localId(), RemoteId(productId)))
+                .containsExactly(cachedVariation)
         }
 
     @Test
@@ -520,7 +680,8 @@ class WCProductStoreTest {
                 excludedVariationIds = any(),
                 filterOptions = anyOrNull(),
                 orderCurrency = anyOrNull(),
-                posProductsOnly = any()
+                posProductsOnly = any(),
+                context = any()
             )
         ).thenReturn(WooPayload(fetchedVariations))
 

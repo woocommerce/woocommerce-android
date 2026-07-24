@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
@@ -1671,5 +1672,40 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // THEN: once the product is stored, trash option should be visible
             Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
+        }
+
+    @Test
+    fun `given product opened after AI generation, when save button is clicked, then is_ai_content is tracked as true`() =
+        testBlocking {
+            // GIVEN
+            savedState = ProductDetailFragmentArgs(
+                ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID, afterGeneratedWithAi = true)
+            ).toSavedStateHandle()
+            setup()
+
+            // WHEN
+            viewModel.onSaveButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to true)
+            )
+        }
+
+    @Test
+    fun `given product opened without AI generation, when save button is clicked, then is_ai_content is tracked as false`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            viewModel.onSaveButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to false)
+            )
         }
 }
