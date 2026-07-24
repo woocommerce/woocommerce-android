@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-29 21:55:58+0000
+Translation-Revision-Date: 2026-07-14 09:55:45+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">סוג תמונה זה אינו נתמך. יש לבחור תמונת PNG, ‏JPEG, ‏WebP, ‏GIF, ‏BMP, ‏HEIC או HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">לא ניתן להגיע לחנות שלי. האפליקציה זיהתה שגיאת התחברות בניסיון להגיע לחנות שלי. כיצד ניתן לתקן זאת?</string>
+    <string name="settings_crash_reporting_error_update">אירעה שגיאה בעת עדכון ההגדרה של דיווח על קריסות</string>
+    <string name="empty_search_guest_orders_button">הצגת הזמנות של אורחים</string>
+    <string name="empty_message_with_search_guest">רוצה לראות הזמנות שבוצעו על ידי לקוחות אורחים?</string>
+    <string name="order_refunds_gift_card_unsupported_message">הזמנה זו שולמה באמצעות כרטיס מתנה. הנפקת החזר הכספי כאן לא תשחזר את יתרת כרטיס המתנה. כדי להנפיק החזר כספי בצורה תקינה, יש לעבד את התשלום ממנהל החנות שלך ברשת.</string>
+    <string name="order_refunds_gift_card_unsupported_title">הנפקת החזר כספי ממנהל החנות שלך</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">לא הצלחנו לאמת את אישור האבטחה של אתר זה. פנה לספק האחסון שלך או למנהל האתר, ולאחר מכן נסה שוב.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">לא הצלחנו למסד חיבור מאובטח. בדוק שהתאריך והשעה במכשיר שלך נכונים, ולאחר מכן נסה שוב.</string>
     <string name="woopos_refund_preview_error">לא ניתן היה לחשב את סך הזיכוי. נא לנסות שוב.</string>
@@ -500,11 +507,6 @@ Language: he_IL
     <string name="connectivity_tool_view_technical_details">הצגת פרטים טכניים</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">מביא מוצרים בחנות שלך</string>
     <string name="user_role_access_error_fetch_failed">לא הצלחנו לאמת את התפקיד שלך בחנות זו. יש לנסות שוב. אם הבעיה נמשכת, יש לפנות לתמיכה.</string>
-    <string name="woopos_eligibility_learn_more_label">למידע נוסף</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. &lt;b&gt;יש לשדרג לתוכנית Pro&lt;/b&gt; כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. יש לשדרג לתוכנית Pro כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
-    <string name="woopos_eligibility_ciab_title">נדרשת תוכנית Pro</string>
-    <string name="ciab_order_status_open">פתיחה</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">לא ניתן לרכוש את תווית המשלוח. יש להשלים את כתובת המוצא.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">כתובת המוצא חסרה או לא תקפה</string>
     <string name="woopos_orders_details_refund_details_background">רקע דיאלוג פרטי ההחזר הכספי</string>
