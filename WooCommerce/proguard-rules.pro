@@ -1,13 +1,9 @@
 -dontobfuscate
 
-###### OkHttp - begin
+###### OkHttp (the library ships its own consumer rules) - begin
 -dontwarn okio.**
 -dontwarn okhttp3.**
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
 -dontwarn com.squareup.okhttp.**
--keep class com.squareup.okhttp.** { *; }
--keep interface com.squareup.okhttp.** { *; }
 
 -keepattributes Signature
 -keepattributes *Annotation*
