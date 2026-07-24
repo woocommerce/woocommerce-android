@@ -50,7 +50,6 @@
 -dontwarn com.google.errorprone.annotations.*
 ###### Dagger - end
 
--keep class com.google.common.** { *; }
 -dontwarn com.google.common.**
 
 ###### Zendesk - begin
