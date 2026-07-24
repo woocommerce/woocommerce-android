@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.4
+-----
+
+
 25.3
 -----
 - [Internal] Send a persistent device id in remote feature flag requests so logins without a WordPress.com account are included in progressive rollouts [https://github.com/woocommerce/woocommerce-android/pull/16300]
