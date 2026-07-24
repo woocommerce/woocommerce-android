@@ -1,0 +1,2 @@
+25.2:
+La gestión de tu tienda se ha vuelto más sencilla: los pedidos de los invitados son más fáciles de encontrar en la lista de pedidos, los paquetes de envío responden de forma fiable, los reembolsos con tarjetas regalo se gestionan de forma segura y las estadísticas semanales siguen los ajustes de tu tienda. También hemos mejorado el inicio de sesión, la navegación, la edición de productos y la estabilidad general.

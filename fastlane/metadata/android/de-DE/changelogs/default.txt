@@ -1,0 +1,2 @@
+25.2:
+Die Verwaltung deines Shops ist jetzt noch reibungsloser: Gastbestellungen sind in der Bestellliste leichter zu finden, Pakete lassen sich zuverlässig versenden, Geschenkkartenrückerstattungen werden sicher verarbeitet und wöchentliche Statistiken erfolgen in Übereinstimmung mit deinen Shop-Einstellungen. Außerdem haben wir die Anmeldung, die Navigation, die Produktbearbeitung und die allgemeine Stabilität verbessert.
