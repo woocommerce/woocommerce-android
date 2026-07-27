@@ -22,6 +22,9 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -75,6 +78,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
@@ -115,6 +119,7 @@ class OrderListFragment :
     internal lateinit var customerListRepository: CustomerListRepository
 
     private var actionMode: ActionMode? = null
+    private var isDestroyingView = false
     private val viewModel: OrderListViewModel by viewModels()
     private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
@@ -213,6 +218,7 @@ class OrderListFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isDestroyingView = false
         postponeEnterTransition()
         setupToolbar()
         view.doOnPreDraw { startPostponedEnterTransition() }
@@ -246,6 +252,7 @@ class OrderListFragment :
         )
 
         initObservers()
+        initSelectionObserver()
         initializeResultHandlers()
         adjustUiForDeviceType(savedInstanceState)
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
@@ -382,12 +389,14 @@ class OrderListFragment :
     }
 
     override fun onDestroyView() {
+        isDestroyingView = true
+        actionMode?.finish()
+        actionMode = null
         disableSearchListeners()
         handler.removeCallbacksAndMessages(null)
         searchView = null
         orderListMenu = null
         searchMenuItem = null
-        actionMode = null
         super.onDestroyView()
         _binding = null
     }
@@ -624,26 +633,20 @@ class OrderListFragment :
             new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
                 displayTimeoutErrorCard(it)
             }
-            new.orderListState?.takeIfNotEqualTo(old?.orderListState) {
-                handleListState(it)
-            }
-            new.selectionCount?.takeIfNotEqualTo(old?.selectionCount) { count ->
-                actionMode?.title = StringUtils.getQuantityString(
-                    context = requireContext(),
-                    quantity = count,
-                    default = R.string.orderlist_selection_count,
-                    one = R.string.orderlist_selection_count_single
-                )
-            }
-            new.isBottomNavBarVisible.takeIfNotEqualTo(old?.isBottomNavBarVisible) { isBottomNavBarVisible ->
-                showBottomNavBar(isVisible = isBottomNavBarVisible)
-            }
-            new.isAddOrderButtonVisible.takeIfNotEqualTo(old?.isAddOrderButtonVisible) { isVisible ->
-                showAddOrderButton(show = isVisible)
+            new.isSearching.takeIfNotEqualTo(old?.isSearching) {
+                updateBottomNavVisibility()
             }
         }
         viewModel.lastUpdateOrdersList.observe(viewLifecycleOwner) { lastUpdate ->
             binding.orderFiltersCard.updateLastUpdate(lastUpdate)
+        }
+    }
+
+    private fun initSelectionObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedOrderIds.collect(::renderSelection)
+            }
         }
     }
 
@@ -660,19 +663,28 @@ class OrderListFragment :
         )
     }
 
-    private fun handleListState(orderListState: OrderListViewModel.ViewState.OrderListState) {
-        when (orderListState) {
-            OrderListViewModel.ViewState.OrderListState.Selecting -> {
+    private fun renderSelection(selectedOrderIds: Set<Long>) {
+        if (selectedOrderIds.isNotEmpty()) {
+            if (actionMode == null) {
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@OrderListFragment)
-                enableFiltersCard(false)
             }
-
-            OrderListViewModel.ViewState.OrderListState.Browsing -> {
-                actionMode?.finish()
-                enableFiltersCard(true)
-            }
+            actionMode?.title = StringUtils.getQuantityString(
+                context = requireContext(),
+                quantity = selectedOrderIds.size,
+                default = R.string.orderlist_selection_count,
+                one = R.string.orderlist_selection_count_single
+            )
+        } else {
+            actionMode?.finish()
         }
+        enableFiltersCard(selectedOrderIds.isEmpty())
+        showAddOrderButton(show = selectedOrderIds.isEmpty())
+        updateBottomNavVisibility()
+    }
+
+    private fun updateBottomNavVisibility() {
+        showBottomNavBar(isVisible = !viewModel.isSearching && !viewModel.isSelecting())
     }
 
     private fun enableFiltersCard(enable: Boolean) {
@@ -781,10 +793,7 @@ class OrderListFragment :
             key = OrderStatusSelectorDialog.KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orders,
         ) {
-            viewModel.onBulkOrderStatusChanged(
-                orderIds = viewModel.selectedOrderIds.value.toList(),
-                newStatus = Order.Status.fromValue(it.newStatus)
-            )
+            viewModel.onBulkOrderStatusChanged(Order.Status.fromValue(it.newStatus))
         }
     }
 
@@ -1075,7 +1084,9 @@ class OrderListFragment :
     }
 
     override fun onDestroyActionMode(mode: ActionMode) {
-        viewModel.clearOrderSelection()
+        if (!isDestroyingView) {
+            viewModel.clearOrderSelection()
+        }
         actionMode = null
     }
 }

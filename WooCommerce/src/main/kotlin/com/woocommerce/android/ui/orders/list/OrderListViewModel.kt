@@ -124,6 +124,7 @@ class OrderListViewModel @Inject constructor(
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
         private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
+        private const val KEY_PENDING_BULK_UPDATE_ORDER_IDS = "pending_bulk_update_order_ids"
         private const val KEY_SELECTED_ORDER_IDS = "selected_order_ids"
     }
 
@@ -157,6 +158,12 @@ class OrderListViewModel @Inject constructor(
         key = KEY_SELECTED_ORDER_IDS
     )
     val selectedOrderIds: StateFlow<Set<Long>> = savedSelectedOrderIds
+
+    private val pendingBulkUpdateOrderIds = savedState.getStateFlow(
+        scope = this,
+        initialValue = linkedSetOf<Long>(),
+        key = KEY_PENDING_BULK_UPDATE_ORDER_IDS
+    )
 
     private val _pagedListData = MediatorLiveData<PagedOrdersList?>()
     val pagedListData: LiveData<PagedOrdersList?> = _pagedListData
@@ -221,7 +228,7 @@ class OrderListViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    fun isSelecting() = viewState.orderListState == ViewState.OrderListState.Selecting
+    fun isSelecting() = selectedOrderIds.value.isNotEmpty()
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -976,13 +983,12 @@ class OrderListViewModel @Inject constructor(
 
     private fun updateSelectedOrderIds(orderIds: Collection<Long>) {
         val updatedOrderIds = LinkedHashSet(orderIds)
+        val wasSelecting = isSelecting()
         if (updatedOrderIds == selectedOrderIds.value) return
 
         savedSelectedOrderIds.value = updatedOrderIds
-        when {
-            updatedOrderIds.isEmpty() -> exitSelectionMode()
-            !isSelecting() -> enterSelectionMode(updatedOrderIds.size)
-            else -> viewState = viewState.copy(selectionCount = updatedOrderIds.size)
+        if (!wasSelecting && updatedOrderIds.isNotEmpty()) {
+            analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SELECTION_ENABLED)
         }
     }
 
@@ -994,29 +1000,16 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.ShowSnackbarString(message))
     }
 
-    private fun enterSelectionMode(count: Int) {
-        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SELECTION_ENABLED)
-        viewState = viewState.copy(
-            orderListState = ViewState.OrderListState.Selecting,
-            selectionCount = count,
-            isAddOrderButtonVisible = false
-        )
-    }
-
-    private fun exitSelectionMode() {
-        viewState = viewState.copy(
-            orderListState = ViewState.OrderListState.Browsing,
-            selectionCount = null,
-            isAddOrderButtonVisible = true
-        )
-    }
-
     fun onBulkUpdateStatusClicked() {
+        val orderIds = selectedOrderIds.value
+        if (orderIds.isEmpty()) return
+
+        pendingBulkUpdateOrderIds.value = LinkedHashSet(orderIds)
         analyticsTracker.track(
             AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+                AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to orderIds.size
             )
         )
 
@@ -1034,7 +1027,9 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onBulkOrderStatusChanged(orderIds: List<Long>, newStatus: Order.Status) {
+    fun onBulkOrderStatusChanged(newStatus: Order.Status) {
+        val orderIds = pendingBulkUpdateOrderIds.value.toList()
+        pendingBulkUpdateOrderIds.value = linkedSetOf()
         if (networkStatus.isConnected()) {
             if (orderIds.isEmpty()) {
                 val errorMessage = "Trying to bulk update order status but order Ids list is empty"
@@ -1049,7 +1044,7 @@ class OrderListViewModel @Inject constructor(
                     AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_CONFIRMED,
                     mapOf(
                         AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                        AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+                        AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to orderIds.size
                     )
                 )
 
@@ -1206,18 +1201,10 @@ class OrderListViewModel @Inject constructor(
         val jitmEnabled: Boolean = false,
         val isErrorFetchingDataBannerVisible: Boolean = false,
         val shouldDisplayTroubleshootingBanner: Boolean = false,
-        val orderListState: OrderListState? = null,
         val isSearching: Boolean = false,
         val isBulkUpdating: Boolean = false,
-        val selectionCount: Int? = null,
-        val isAddOrderButtonVisible: Boolean = true
     ) : Parcelable {
         @IgnoredOnParcel
-        val isBottomNavBarVisible = !isSearching && orderListState != OrderListState.Selecting
-
-        @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
-
-        enum class OrderListState { Selecting, Browsing }
     }
 }
