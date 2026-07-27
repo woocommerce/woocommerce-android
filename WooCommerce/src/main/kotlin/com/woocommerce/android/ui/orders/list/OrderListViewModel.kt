@@ -230,6 +230,15 @@ class OrderListViewModel @Inject constructor(
 
     fun isSelecting() = selectedOrderIds.value.isNotEmpty()
 
+    internal fun onOrderActivated(orderId: Long): OrderActivation {
+        return if (isSelecting()) {
+            toggleOrderSelection(orderId)
+            OrderActivation.SELECTION_CHANGED
+        } else {
+            OrderActivation.OPEN_DETAIL
+        }
+    }
+
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -743,6 +752,8 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onSwipeToComplete(orderId: Long) {
+        if (isSelecting()) return
+
         val order = _pagedListData.value
             ?.snapshot()
             ?.filterIsInstance<OrderListItemUIType.OrderListItemUI>()
@@ -1191,6 +1202,11 @@ class OrderListViewModel @Inject constructor(
                 return result
             }
         }
+    }
+
+    internal enum class OrderActivation {
+        OPEN_DETAIL,
+        SELECTION_CHANGED,
     }
 
     @Parcelize

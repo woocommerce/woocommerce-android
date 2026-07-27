@@ -839,13 +839,25 @@ class OrderListFragment :
         target: OrderListNavigationTarget,
         startPaymentsFlow: Boolean = false,
     ) {
+        val isTwoPanes = requireContext().isTwoPanesShouldBeUsed
+        if (
+            !shouldOpenOrderDetail(
+                isOrdersDestination = findNavController().currentDestination?.id == R.id.orders,
+                isTwoPanes = isTwoPanes,
+                selectedOrderId = selectedOrder.selectedOrderId.value,
+                targetOrderId = target.orderId,
+            )
+        ) {
+            return
+        }
+
         viewModel.trackOrderClickEvent(
             target.orderId,
             target.status,
-            requireContext().isTwoPanesShouldBeUsed
+            isTwoPanes
         )
 
-        if (requireContext().isTwoPanesShouldBeUsed) {
+        if (isTwoPanes) {
             _binding?.createOrderButton?.show()
         } else {
             _binding?.createOrderButton?.hide()
@@ -861,7 +873,7 @@ class OrderListFragment :
             viewModel.isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-            val navHostFragment = if (requireContext().isTwoPanesShouldBeUsed) {
+            val navHostFragment = if (isTwoPanes) {
                 childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
                 null
@@ -1089,4 +1101,13 @@ class OrderListFragment :
         }
         actionMode = null
     }
+}
+
+internal fun shouldOpenOrderDetail(
+    isOrdersDestination: Boolean,
+    isTwoPanes: Boolean,
+    selectedOrderId: Long?,
+    targetOrderId: Long,
+): Boolean {
+    return isOrdersDestination && (!isTwoPanes || selectedOrderId != targetOrderId)
 }

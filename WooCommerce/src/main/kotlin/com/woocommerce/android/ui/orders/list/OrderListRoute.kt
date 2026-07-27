@@ -165,8 +165,10 @@ internal fun OrderListRoute(
             itemKey = itemKey,
             itemAt = itemAt,
             itemContentType = itemContentType,
-            onOrderTapped = { orderId ->
-                presenter.navigationTarget(presentation, orderId)?.let(onOrderTapped)
+            onOrderActivated = { orderId ->
+                if (viewModel.onOrderActivated(orderId) == OrderListViewModel.OrderActivation.OPEN_DETAIL) {
+                    presenter.navigationTarget(presentation, orderId)?.let(onOrderTapped)
+                }
             },
             onOrderLongPressed = { orderId ->
                 viewModel.onOrderLongPressed(orderId)

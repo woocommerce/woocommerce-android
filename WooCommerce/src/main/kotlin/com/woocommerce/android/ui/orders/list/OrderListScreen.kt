@@ -376,7 +376,7 @@ private fun OrderListScreenPreview(
                     itemCount = items.size,
                     itemKey = { index -> previewOrderListItemKey(index, items[index]) },
                     itemAt = items::get,
-                    onOrderTapped = {},
+                    onOrderActivated = {},
                     onOrderLongPressed = {},
                     onOrderSelectionToggled = { true },
                     onMarkOrderCompleted = {},
