@@ -234,7 +234,10 @@ object AppPrefs {
 
         IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
 
-        QR_LOGIN_ROLLOUT_BUCKET
+        QR_LOGIN_ROLLOUT_BUCKET,
+
+        // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
+        REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
 
     fun init(context: Context) {
@@ -362,6 +365,10 @@ object AppPrefs {
     var wooCorePushDeviceUUID: String
         get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
         set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
+
+    var remoteFeatureFlagsDeviceId: String
+        get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
+        set(value) = setString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, value)
 
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)

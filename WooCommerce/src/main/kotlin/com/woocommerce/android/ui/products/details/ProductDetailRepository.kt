@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -41,6 +42,8 @@ import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWOR
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.metadata.MetadataChanges
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -54,6 +57,7 @@ import org.wordpress.android.fluxc.store.WCTaxStore
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_RESPONSE as INVALID_RESPONSE_ORIGINAL
 
 class ProductDetailRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -188,6 +192,24 @@ class ProductDetailRepository @Inject constructor(
      * @return the result of the action as a [Boolean]
      */
     suspend fun addProduct(product: Product): Pair<Boolean, Long> = addProduct(ProductAggregate(product, null))
+
+    suspend fun duplicateProduct(remoteProductId: Long): Result<Long> {
+        val result = productStore.duplicateProduct(selectedSite.get(), remoteProductId)
+        val duplicatedProductId = result.model
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            duplicatedProductId != null -> Result.success(duplicatedProductId)
+            else -> Result.failure(
+                WooException(
+                    WooError(
+                        type = INVALID_RESPONSE,
+                        original = INVALID_RESPONSE_ORIGINAL,
+                        message = "Product duplication returned no product ID"
+                    )
+                )
+            )
+        }
+    }
 
     /**
      * Fires the request to update the product password

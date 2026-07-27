@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 14:55:43+0000
+Translation-Revision-Date: 2026-07-14 21:56:16+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Este tipo de imagem não é compatível. Selecione uma imagem PNG, JPEG, WebP, GIF, BMP, HEIC ou HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Não é possível acessar minha loja. O aplicativo detectou um erro de conexão ao tentar acessá-la. Como posso corrigir isso?</string>
+    <string name="settings_crash_reporting_error_update">Ocorreu um erro ao atualizar suas configurações em \"Reportar travamentos\"</string>
+    <string name="empty_search_guest_orders_button">Mostrar pedidos de visitantes</string>
+    <string name="empty_message_with_search_guest">Procurando pedidos feitos por visitantes?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Este pedido foi pago com um vale-presente. O reembolso feito aqui não restaurará o saldo desse vale. Para processar o reembolso corretamente, faça isso na central de administração da sua loja na Web.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Reembolso pela administração da sua loja</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Não foi possível verificar o certificado de segurança deste site. Entre em contato com seu provedor de hospedagem ou administrador do site e tente novamente.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Não foi possível estabelecer uma conexão segura. Verifique se a data e hora do seu dispositivo estão corretas e tente novamente.</string>
     <string name="woopos_refund_preview_error">Não foi possível calcular o total de reembolso. Tente novamente.</string>
@@ -502,11 +509,6 @@ Language: pt_BR
     <string name="connectivity_tool_view_technical_details">Ver detalhes técnicos</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Buscando produtos em sua loja</string>
     <string name="user_role_access_error_fetch_failed">Não foi possível verificar sua função nesta loja. Tente novamente. Se o problema persistir, entre em contato com o suporte.</string>
-    <string name="woopos_eligibility_learn_more_label">Saiba mais</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Aceite pagamentos presenciais por apenas 2,70% + US$ 0,10 por transação. &lt;b&gt;Faça upgrade para o Pro&lt;/b&gt; para acessar o pagamento por aproximação no seu telefone e nosso sistema de ponto de venda completo com sincronização de pedidos e inventário em tempo real.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Aceite pagamentos presenciais por apenas 2,70% + US$ 0,10 por transação. Faça upgrade para o Pro para acessar o pagamento por aproximação no seu telefone e nosso sistema de ponto de venda completo com sincronização de pedidos e inventário em tempo real.</string>
-    <string name="woopos_eligibility_ciab_title">É necessário ter o plano Pro</string>
-    <string name="ciab_order_status_open">Em aberto</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Não foi possível comprar a etiqueta de envio. Preencha o endereço de origem.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Endereço de origem ausente ou inválido</string>
     <string name="woopos_orders_details_refund_details_background">Plano de fundo da caixa de diálogo com detalhes do reembolso</string>

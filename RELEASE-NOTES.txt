@@ -2,19 +2,32 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
-25.3
+25.4
 -----
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
+
+25.3
+-----
+- [Internal] Send a persistent device id in remote feature flag requests so logins without a WordPress.com account are included in progressive rollouts [https://github.com/woocommerce/woocommerce-android/pull/16300]
+- [*] Improved product duplication to preserve product details managed by WooCommerce [https://github.com/woocommerce/woocommerce-android/pull/16262]
 - [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]
 - [*] Fixed the order list not scrolling to the top after creating a new order [https://github.com/woocommerce/woocommerce-android/pull/16240]
 - [*] Fixed several My Store toolbar glitches when navigating away and back — the toolbar no longer re-expands and pushes the content down, the drop shadow no longer flickers, and the store name stays visible [https://github.com/woocommerce/woocommerce-android/pull/16249]
 - [*] Fixed product sale dates and coupon expiry dates being read in the device timezone instead of GMT [https://github.com/woocommerce/woocommerce-android/pull/16252]
 - [*] Analytics Hub now shows a 0% change when the previous period has no data instead of hiding the comparison [https://github.com/woocommerce/woocommerce-android/pull/16251]
 - [*] Fixed a crash when toggling the "Unread reviews only" filter with more than one store connected [https://github.com/woocommerce/woocommerce-android/pull/16260]
+- [*] Fixed the product selector showing store-currency prices when adding products to an order in a different currency [https://github.com/woocommerce/woocommerce-android/pull/16281]
 - [*] Removed the outdated store setup feedback survey [https://github.com/woocommerce/woocommerce-android/pull/16273]
+- [*] Fixed products added to an order in a non-default currency being priced in the store's base currency [https://github.com/woocommerce/woocommerce-android/pull/16285]
+- [*] Orders in a currency other than the store's are now read-only in the app on WooCommerce below 11.1, where their totals can't be calculated correctly [https://github.com/woocommerce/woocommerce-android/pull/16290]
 - [*] Fixed the store name incorrectly appearing in the toolbar when opening a review from a notification [https://github.com/woocommerce/woocommerce-android/pull/16264]
+- [*] Fixed system Back not leaving order creation when opened from the app shortcut [https://github.com/woocommerce/woocommerce-android/pull/16274]
 - [*] In-Person Payments onboarding no longer hard-blocks when your Stripe account has overdue requirements; you can skip and continue taking payments [https://github.com/woocommerce/woocommerce-android/pull/16208]
 - [*****] [Internal] Updated the Android Gradle Plugin to 9.2.1 and migrated to Kotlin support built into it [https://github.com/woocommerce/woocommerce-android/pull/16228]
+- [*] POS: custom amounts in the cart now show a "Discount not applied" note at checkout when a coupon is applied, since coupons don't discount custom amounts [https://github.com/woocommerce/woocommerce-android/pull/16299]
+- [Internal] Fixed the is_ai_content property in the product update tracking event [https://github.com/woocommerce/woocommerce-android/pull/16275]
+- [*] Fixed variation updates copying the parent product image onto the variation [https://github.com/woocommerce/woocommerce-android/pull/16272]
+- [*] Fixed removing a variation's image not being saved to the store [https://github.com/woocommerce/woocommerce-android/pull/16245]
 
 25.2
 -----

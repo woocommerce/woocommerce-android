@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.3
+This update delivers accurate multi-currency pricing, improved product duplication, and reliable variation image handling. The My Store toolbar is now glitch-free, Analytics Hub shows clearer data comparisons, and In-Person Payments onboarding is more flexible. Plus, several crashes and UI bugs are fixed.
+
 ## 25.2
 Managing your store just got smoother: guest orders are easier to find in orders list, shipping packages respond reliably, gift card refunds are handled safely, and weekly stats follow your store settings. We’ve also improved sign-in, navigation, product editing, and overall stability.
 

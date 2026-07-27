@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.product
 
+import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -17,8 +18,13 @@ import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NOT_FOUND
+import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.utils.initCoroutineEngine
@@ -41,6 +47,98 @@ class ProductRestClientTest {
     @Before fun setUp() {
         sut = ProductRestClient(mock(), wooNetwork, wpComNetwork, initCoroutineEngine(), mock(), mock())
     }
+
+    @Test
+    fun `when duplicating a product, then exact endpoint and empty body are used and duplicated ID is parsed`() =
+        runTest {
+            // GIVEN
+            val response = Gson().fromJson(
+                """
+                    {
+                      "id": 123,
+                      "name": "Coffee (Copy)",
+                      "slug": "coffee-copy",
+                      "date_created": {"date": "2026-07-14 12:00:00", "timezone_type": 3, "timezone": "UTC"},
+                      "category_ids": [12],
+                      "image_id": 8,
+                      "gallery_image_ids": [9],
+                      "meta_data": [{"id": 9, "key": "_subscription_price", "value": "10"}],
+                      "downloads": []
+                    }
+                """.trimIndent(),
+                DuplicateProductApiResponse::class.java
+            )
+            whenever(
+                wooNetwork.executePostGsonRequest(
+                    site = any(),
+                    path = any(),
+                    clazz = eq(DuplicateProductApiResponse::class.java),
+                    body = any()
+                )
+            ).thenReturn(WPAPIResponse.Success(response, emptyList()))
+
+            // WHEN
+            val result = sut.duplicateProduct(site, productId)
+
+            // THEN
+            verify(wooNetwork).executePostGsonRequest(
+                site = eq(site),
+                path = eq(WOOCOMMERCE.products.id(productId).duplicate.pathV3),
+                clazz = eq(DuplicateProductApiResponse::class.java),
+                body = eq(emptyMap())
+            )
+            assertThat(result.result?.id).isEqualTo(123L)
+        }
+
+    @Test
+    fun `given duplicate route is missing, when duplicating a product, then rest no route error is preserved`() =
+        runTest {
+            // GIVEN
+            val networkError = WPAPINetworkError(
+                BaseNetworkError(NOT_FOUND, "No route"),
+                errorCode = "rest_no_route"
+            )
+            whenever(
+                wooNetwork.executePostGsonRequest(
+                    site = any(),
+                    path = any(),
+                    clazz = eq(DuplicateProductApiResponse::class.java),
+                    body = any()
+                )
+            ).thenReturn(WPAPIResponse.Error(networkError))
+
+            // WHEN
+            val result = sut.duplicateProduct(site, productId)
+
+            // THEN
+            assertThat(result.error?.type).isEqualTo(API_NOT_FOUND)
+            assertThat(result.error?.apiErrorCode).isEqualTo("rest_no_route")
+        }
+
+    @Test
+    fun `given source product is invalid, when duplicating a product, then invalid ID error is not treated as missing route`() =
+        runTest {
+            // GIVEN
+            val networkError = WPAPINetworkError(
+                BaseNetworkError(NOT_FOUND, "Invalid product ID"),
+                errorCode = "woocommerce_rest_product_invalid_id"
+            )
+            whenever(
+                wooNetwork.executePostGsonRequest(
+                    site = any(),
+                    path = any(),
+                    clazz = eq(DuplicateProductApiResponse::class.java),
+                    body = any()
+                )
+            ).thenReturn(WPAPIResponse.Error(networkError))
+
+            // WHEN
+            val result = sut.duplicateProduct(site, productId)
+
+            // THEN
+            assertThat(result.error?.type).isEqualTo(INVALID_ID)
+            assertThat(result.error?.apiErrorCode).isEqualTo("woocommerce_rest_product_invalid_id")
+        }
 
     @Test
     fun `send only updated parameters with id if products differ`() = runTest {

@@ -19,6 +19,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -51,6 +52,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var selectedSite: SelectedSite
     private lateinit var wooCommerceStore: WooCommerceStore
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -81,6 +83,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             analyticsTrackerWrapper = trackerWrapper,
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
+            isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
         )
     }
 
@@ -241,6 +244,38 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
+
+    @Test
+    fun `given the store takes the currency query param, when an order is updated, then the currency is sent`() =
+        testBlocking {
+            // GIVEN
+            whenever(isCurrencyQueryParamSupported()).thenReturn(true)
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, currency = "EUR")
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(orderUpdateStore).updateOrder(eq(defaultSiteModel), eq(123L), any(), eq("EUR"))
+        }
+
+    @Test
+    fun `given the store can't take the currency query param, when an order is updated, then it isn't sent`() =
+        testBlocking {
+            // GIVEN
+            whenever(isCurrencyQueryParamSupported()).thenReturn(false)
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, currency = "EUR")
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(orderUpdateStore).updateOrder(eq(defaultSiteModel), eq(123L), any(), isNull())
+        }
 
     @Test
     fun `when tax based on store address fetched, then it should be parsed correctly`() = testBlocking {

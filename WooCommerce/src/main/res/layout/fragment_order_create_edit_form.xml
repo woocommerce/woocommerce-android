@@ -17,10 +17,8 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/product_selector_nav_container"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:defaultNavHost="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
         app:layout_constraintStart_toStartOf="parent"

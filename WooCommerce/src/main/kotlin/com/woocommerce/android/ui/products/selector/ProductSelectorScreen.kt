@@ -85,7 +85,10 @@ fun ProductSelectorScreen(
     handleInsets: Boolean,
 ) {
     val viewState by viewModel.viewState.observeAsState()
-    BackHandler(onBack = viewModel::onNavigateBack)
+    BackHandler(
+        enabled = viewModel.selectionMode != SelectionMode.LIVE || viewState?.searchState?.isActive == true,
+        onBack = viewModel::onNavigateBack
+    )
     viewState?.let { state ->
         val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {

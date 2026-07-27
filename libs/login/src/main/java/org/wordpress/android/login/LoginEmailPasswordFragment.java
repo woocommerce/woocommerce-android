@@ -322,6 +322,13 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
         mPasswordInput.setError(error);
     }
 
+    @NonNull
+    private String resolveFailureMessage(@NonNull LoginState loginState) {
+        String failureMessage = loginState.getFailureMessage();
+        return failureMessage == null || failureMessage.trim().isEmpty() ?
+                getString(R.string.error_generic) : failureMessage;
+    }
+
     @Override
     protected void onLoginFinished() {
         mAnalyticsListener.trackAnalyticsSignIn(true);
@@ -413,7 +420,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 break;
             case FAILURE:
                 onLoginFinished(false);
-                showError(getString(R.string.error_generic));
+                showError(resolveFailureMessage(loginState));
                 break;
             case SUCCESS:
                 onLoginFinished(true);
