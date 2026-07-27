@@ -29,6 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
@@ -55,6 +57,7 @@ fun WooSearchField(
     clearContentDescription: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    focusRequester: FocusRequester? = null,
     trailingActionText: String? = null,
     onTrailingActionClick: (() -> Unit)? = null,
     trailingActionEnabled: Boolean = enabled,
@@ -117,6 +120,13 @@ fun WooSearchField(
                     onValueChange = onValueChange,
                     modifier = Modifier
                         .padding(start = WooTheme.spacing.space4)
+                        .then(
+                            if (focusRequester != null) {
+                                Modifier.focusRequester(focusRequester)
+                            } else {
+                                Modifier
+                            }
+                        )
                         .weight(1f),
                     enabled = enabled,
                     singleLine = true,

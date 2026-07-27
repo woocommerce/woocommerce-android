@@ -1,0 +1,28 @@
+package com.woocommerce.android.ui.products.list
+
+object ProductListTestTags {
+    const val SCREEN = "product_list_screen"
+    const val SEARCH_FIELD = "product_list_search_field"
+    const val SEARCH_ACTION = "product_list_search_action"
+    const val BARCODE_ACTION = "product_list_barcode_action"
+    const val ADD_ACTION = "product_list_add_action"
+    const val ADD_FAB = "product_list_add_fab"
+    const val SEARCH_ALL = "product_list_search_all"
+    const val SEARCH_SKU = "product_list_search_sku"
+    const val SORT = "product_list_sort"
+    const val FILTERS = "product_list_filters"
+    const val CONTROL_RAIL = "product_list_control_rail"
+    const val LIST = "product_list"
+    const val EMPTY = "product_list_empty"
+    const val SKELETON = "product_list_skeleton"
+    const val APPEND_PROGRESS = "product_list_append_progress"
+    const val PRODUCT_ROW_PREFIX = "product_list_row_"
+
+    fun productRow(remoteId: Long) = "$PRODUCT_ROW_PREFIX$remoteId"
+    fun productThumbnail(remoteId: Long) = "product_list_thumbnail_$remoteId"
+    fun productContent(remoteId: Long) = "product_list_content_$remoteId"
+    fun productTitle(remoteId: Long) = "product_list_title_$remoteId"
+    fun productMetadata(remoteId: Long) = "product_list_metadata_$remoteId"
+    fun productDivider(remoteId: Long) = "product_list_divider_$remoteId"
+    fun selectionIndicator(remoteId: Long) = "product_list_selection_indicator_$remoteId"
+}

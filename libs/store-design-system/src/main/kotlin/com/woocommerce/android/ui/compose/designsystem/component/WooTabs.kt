@@ -4,18 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,11 +23,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
@@ -45,71 +40,26 @@ fun WooTabRow(
     modifier: Modifier = Modifier,
     tabs: @Composable () -> Unit,
 ) {
-    Surface(
+    PrimaryTabRow(
+        selectedTabIndex = selectedTabIndex,
         modifier = modifier
             .fillMaxWidth()
             .height(WooTabsDefaults.RowHeight),
-        color = WooTheme.colors.surface.default,
+        containerColor = WooTheme.colors.surface.default,
         contentColor = WooTheme.colors.surface.onDefault,
-    ) {
-        WooTabRowLayout(
-            selectedTabIndex = selectedTabIndex,
-            modifier = Modifier.fillMaxSize(),
-            tabs = tabs,
-        )
-    }
-}
-
-@Composable
-private fun WooTabRowLayout(
-    selectedTabIndex: Int,
-    modifier: Modifier = Modifier,
-    tabs: @Composable () -> Unit,
-) {
-    SubcomposeLayout(modifier = modifier.selectableGroup()) { constraints ->
-        val rowWidth = constraints.maxWidth
-        val rowHeight = constraints.maxHeight
-        val tabConstraints = Constraints(
-            minWidth = 0,
-            maxWidth = rowWidth,
-            minHeight = rowHeight,
-            maxHeight = rowHeight,
-        )
-        val tabPlaceables = subcompose(WooTabRowSlot.Tabs, tabs).map { measurable ->
-            measurable.measure(tabConstraints)
-        }
-        val tabLayout = calculateWooTabRowLayout(
-            rowWidth = rowWidth,
-            tabWidths = tabPlaceables.map { it.width },
-            selectedTabIndex = selectedTabIndex,
-        )
-        val dividerPlaceables = tabLayout.dividerSegments.mapIndexed { index, segment ->
-            subcompose("${WooTabRowSlot.Divider}-$index") {
-                WooTabRowDivider()
-            }.single().measure(Constraints.fixedWidth(segment.width))
-        }
-        val indicatorPlaceable = tabLayout.selectedIndicatorWidth?.let { indicatorWidth ->
-            subcompose(WooTabRowSlot.Indicator) {
-                WooTabIndicator(modifier = Modifier.fillMaxWidth())
-            }.single().measure(Constraints.fixedWidth(indicatorWidth))
-        }
-
-        layout(rowWidth, rowHeight) {
-            tabPlaceables.forEachIndexed { index, placeable ->
-                placeable.placeRelative(tabLayout.tabPositions[index], 0)
-            }
-            dividerPlaceables.forEachIndexed { index, placeable ->
-                placeable.placeRelative(
-                    x = tabLayout.dividerSegments[index].position,
-                    y = rowHeight - placeable.height,
-                )
-            }
-            indicatorPlaceable?.placeRelative(
-                x = checkNotNull(tabLayout.selectedIndicatorPosition),
-                y = rowHeight - indicatorPlaceable.height,
+        indicator = {
+            WooTabIndicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(
+                        selectedTabIndex = selectedTabIndex,
+                        matchContentSize = false,
+                    )
+                    .fillMaxWidth(),
             )
-        }
-    }
+        },
+        divider = { WooTabRowDivider() },
+        tabs = tabs,
+    )
 }
 
 @Composable
@@ -128,8 +78,7 @@ fun WooTab(
 
     Box(
         modifier = modifier
-            .fillMaxHeight()
-            .defaultMinSize(minWidth = WooTabsDefaults.TabMinWidth)
+            .height(WooTabsDefaults.RowHeight)
             .selectable(
                 selected = selected,
                 enabled = enabled,
@@ -191,6 +140,7 @@ private fun WooTabRowDivider(
 ) {
     Box(
         modifier = modifier
+            .fillMaxWidth()
             .height(WooTheme.stroke.extraThin)
             .background(WooTheme.colors.outlineVariant),
     )
@@ -289,73 +239,9 @@ internal fun WooTabsDemo(
 
 private object WooTabsDefaults {
     val RowHeight = 60.dp
-    val TabMinWidth = 134.dp
     val IconSize = 18.dp
 }
 
 private const val TAB_PRODUCTS_INDEX = 0
 private const val TAB_ORDERS_INDEX = 1
 private const val TAB_MORE_INDEX = 2
-
-private enum class WooTabRowSlot {
-    Tabs,
-    Divider,
-    Indicator,
-}
-
-internal data class WooTabRowLayoutResult(
-    val tabPositions: List<Int>,
-    val selectedIndicatorPosition: Int?,
-    val selectedIndicatorWidth: Int?,
-    val dividerSegments: List<WooTabRowDividerSegment>,
-)
-
-internal data class WooTabRowDividerSegment(
-    val position: Int,
-    val width: Int,
-)
-
-internal fun calculateWooTabRowLayout(
-    rowWidth: Int,
-    tabWidths: List<Int>,
-    selectedTabIndex: Int,
-): WooTabRowLayoutResult {
-    val totalTabWidth = tabWidths.sum()
-    val firstTabPosition = (rowWidth - totalTabWidth) / 2
-    var tabPosition = firstTabPosition
-    val tabPositions = tabWidths.map { tabWidth ->
-        tabPosition.also {
-            tabPosition += tabWidth
-        }
-    }
-    val selectedIndicatorPosition = tabPositions.getOrNull(selectedTabIndex)
-    val selectedIndicatorWidth = tabWidths.getOrNull(selectedTabIndex)
-
-    return WooTabRowLayoutResult(
-        tabPositions = tabPositions,
-        selectedIndicatorPosition = selectedIndicatorPosition,
-        selectedIndicatorWidth = selectedIndicatorWidth,
-        dividerSegments = calculateDividerSegments(
-            rowWidth = rowWidth,
-            selectedIndicatorPosition = selectedIndicatorPosition,
-            selectedIndicatorWidth = selectedIndicatorWidth,
-        ),
-    )
-}
-
-private fun calculateDividerSegments(
-    rowWidth: Int,
-    selectedIndicatorPosition: Int?,
-    selectedIndicatorWidth: Int?,
-): List<WooTabRowDividerSegment> {
-    if (selectedIndicatorPosition == null || selectedIndicatorWidth == null) {
-        return listOf(WooTabRowDividerSegment(position = 0, width = rowWidth))
-    }
-
-    val selectedIndicatorStart = selectedIndicatorPosition.coerceIn(0, rowWidth)
-    val selectedIndicatorEnd = (selectedIndicatorPosition + selectedIndicatorWidth).coerceIn(0, rowWidth)
-    return listOf(
-        WooTabRowDividerSegment(position = 0, width = selectedIndicatorStart),
-        WooTabRowDividerSegment(position = selectedIndicatorEnd, width = rowWidth - selectedIndicatorEnd),
-    ).filter { it.width > 0 }
-}
