@@ -82,6 +82,7 @@ internal fun ProductListScreen(
 ) {
     val listState = rememberLazyListState()
     val showAddProductFab = state.isAddProductAvailable && !state.isSelecting
+    val showBrowsingControls = state.showBrowsingControls && !state.isSearchActive && !state.isSelecting
 
     LaunchedEffect(scrollToTopRequests, listState) {
         scrollToTopRequests.collect { listState.animateScrollToItem(0) }
@@ -112,12 +113,13 @@ internal fun ProductListScreen(
                 ProductListHeader(
                     showActions = !state.isSelecting,
                     showBarcode = state.isBarcodeScanningAvailable,
+                    showDivider = !showBrowsingControls,
                     onSearchClicked = onSearchClicked,
                     onBarcodeClicked = onBarcodeClicked,
                 )
             }
 
-            if (state.showBrowsingControls && !state.isSearchActive && !state.isSelecting) {
+            if (showBrowsingControls) {
                 ProductBrowsingControls(
                     sortingTitle = state.sortingTitle,
                     filterCount = state.filterCount,
@@ -168,11 +170,13 @@ internal fun ProductListScreen(
 private fun ProductListHeader(
     showActions: Boolean,
     showBarcode: Boolean,
+    showDivider: Boolean,
     onSearchClicked: () -> Unit,
     onBarcodeClicked: () -> Unit,
 ) {
     WooPageHeader(
         title = stringResource(R.string.products),
+        showDivider = showDivider,
         actions = {
             if (showActions) {
                 WooOutlinedIconButton(
@@ -259,45 +263,47 @@ private fun ProductBrowsingControls(
     onSortClicked: () -> Unit,
     onFiltersClicked: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(CONTROL_RAIL_HEIGHT)
-            .background(WooTheme.colors.surface.default)
-            .testTag(ProductListTestTags.CONTROL_RAIL)
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding3),
-        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        WooActionChip(
-            label = sortingTitle,
-            onClick = onSortClicked,
-            modifier = Modifier.testTag(ProductListTestTags.SORT),
-            leadingIcon = {
-                ProductBrowsingControlIcon(WooIcons.Regular.ArrowDownArrowUp)
-            },
-            trailingIcon = {
-                ProductBrowsingControlIcon(WooIcons.Regular.AngleDown)
-            },
-        )
-        WooActionChip(
-            label = if (filterCount > 0) {
-                stringResource(R.string.product_list_filters_count, filterCount)
-            } else {
-                stringResource(R.string.product_list_filters)
-            },
-            onClick = onFiltersClicked,
-            modifier = Modifier.testTag(ProductListTestTags.FILTERS),
-            leadingIcon = {
-                ProductBrowsingControlIcon(WooIcons.Regular.BarsFilter)
-            },
-            trailingIcon = {
-                ProductBrowsingControlIcon(WooIcons.Regular.AngleDown)
-            },
-        )
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(CONTROL_RAIL_HEIGHT)
+                .background(WooTheme.colors.surface.default)
+                .testTag(ProductListTestTags.CONTROL_RAIL)
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding3),
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            WooActionChip(
+                label = sortingTitle,
+                onClick = onSortClicked,
+                modifier = Modifier.testTag(ProductListTestTags.SORT),
+                leadingIcon = {
+                    ProductBrowsingControlIcon(WooIcons.Regular.ArrowDownArrowUp)
+                },
+                trailingIcon = {
+                    ProductBrowsingControlIcon(WooIcons.Regular.AngleDown)
+                },
+            )
+            WooActionChip(
+                label = if (filterCount > 0) {
+                    stringResource(R.string.product_list_filters_count, filterCount)
+                } else {
+                    stringResource(R.string.product_list_filters)
+                },
+                onClick = onFiltersClicked,
+                modifier = Modifier.testTag(ProductListTestTags.FILTERS),
+                leadingIcon = {
+                    ProductBrowsingControlIcon(WooIcons.Regular.BarsFilter)
+                },
+                trailingIcon = {
+                    ProductBrowsingControlIcon(WooIcons.Regular.AngleDown)
+                },
+            )
+        }
+        WooDivider()
     }
-    WooDivider()
 }
 
 @Composable
