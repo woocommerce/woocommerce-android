@@ -188,6 +188,7 @@ android {
         release.java.srcDirs += 'src/release/kotlin'
         debug.java.srcDirs += 'src/debug/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+        testDebug.java.srcDirs += 'src/testDebug/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
 
         if (isLeakCanaryEnabled()) {
