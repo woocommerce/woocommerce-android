@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,23 +22,20 @@ fun WCPullToRefreshBox(
     state: PullToRefreshState = rememberPullToRefreshState(),
     content: @Composable BoxScope.() -> Unit
 ) {
-    if (enabled) {
-        PullToRefreshBox(
+    Box(
+        modifier = modifier.pullToRefresh(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
             state = state,
-            indicator = {
-                Indicator(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    state = state,
-                    isRefreshing = isRefreshing,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            },
-            modifier = modifier,
-            content = content
+            enabled = enabled,
+        ),
+    ) {
+        content()
+        Indicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = state,
+            isRefreshing = isRefreshing,
+            color = MaterialTheme.colorScheme.primary
         )
-    } else {
-        Box(modifier = modifier, content = content)
     }
 }
