@@ -65,7 +65,7 @@ class CustomerOrderNoteEditingFragment :
 
     private fun setupToolbarMenu() {
         binding.toolbar.setNavigationOnClickListener {
-            navigateUp()
+            onExitRequested()
         }
     }
 
