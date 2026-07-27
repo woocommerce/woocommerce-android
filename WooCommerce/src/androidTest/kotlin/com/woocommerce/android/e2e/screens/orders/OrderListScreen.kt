@@ -75,6 +75,17 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         return UnifiedOrderScreen()
     }
 
+    fun waitForOrders(): OrderListScreen {
+        waitFor(By.res(OrderListTestTags.LIST), "Orders list")
+        waitForOrderRows(minimumCount = 1)
+        return this
+    }
+
+    fun waitForEmptyState(): OrderListScreen {
+        waitFor(By.res(OrderListTestTags.EMPTY), "empty Orders state")
+        return this
+    }
+
     fun assertOrderCard(order: OrderData): OrderListScreen {
         scrollToOrder(order.id)
         val row = waitFor(By.res(OrderListTestTags.orderRow(order.id.toLong())), "order ${order.id}")
