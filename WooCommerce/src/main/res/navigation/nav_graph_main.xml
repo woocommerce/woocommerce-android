@@ -25,8 +25,7 @@
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
-        android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_dashboard">
+        android:label="fragment_dashboard">
         <action
             android:id="@+id/action_dashboard_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />

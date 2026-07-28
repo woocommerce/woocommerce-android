@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,13 +49,10 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.Pen
-import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -84,67 +80,49 @@ import com.woocommerce.android.ui.dashboard.topperformers.TopPerformerSkeletonIt
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 private const val SCROLL_INTERACTION_DEBOUNCE_MS = 1000L
 
 @Composable
-internal fun DashboardContainer(
+internal fun DashboardWidgets(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     scrollToTopTrigger: Flow<Unit>,
-    headerScrollBridge: DashboardHeaderScrollBridge,
-) {
-    val hasNewWidgets = dashboardViewModel.hasNewWidgets.observeAsState(false).value
-    dashboardViewModel.dashboardCardsState.observeAsState().value?.let { state ->
-        DashboardLayout(
-            widgets = state.widgets,
-            isRefreshing = state.isRefreshing,
-            onPullToRefresh = dashboardViewModel::onPullToRefresh,
-            scrollToTopTrigger = scrollToTopTrigger,
-            onDashboardInteracted = dashboardViewModel::onDashboardInteracted,
-            hasNewWidgets = hasNewWidgets,
-            onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
-            headerScrollBridge = headerScrollBridge,
-        ) { widget, modifier ->
-            DashboardWidgetCard(
-                widget = widget,
-                mainActivityViewModel = mainActivityViewModel,
-                dashboardViewModel = dashboardViewModel,
-                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                modifier = modifier,
-            )
-        }
-    }
-}
-
-@Composable
-internal fun DashboardHeader(
-    storeName: String,
-    showShareStoreButton: Boolean,
-    onShareStoreClicked: () -> Unit,
     scrollBehavior: WooPageHeaderScrollBehavior,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    WooPageHeader(
-        title = storeName,
-        modifier = modifier,
+    val hasNewWidgets = dashboardViewModel.hasNewWidgets.observeAsState(false).value
+    val state = dashboardViewModel.dashboardCardsState.observeAsState().value
+    DashboardLayout(
+        widgets = state?.widgets.orEmpty(),
+        isRefreshing = state?.isRefreshing == true,
+        onPullToRefresh = dashboardViewModel::onPullToRefresh,
+        scrollToTopTrigger = scrollToTopTrigger,
+        onDashboardInteracted = dashboardViewModel::onDashboardInteracted,
+        hasNewWidgets = hasNewWidgets,
+        showCustomizeButton = state != null,
+        onEditWidgetsClicked = dashboardViewModel::onEditWidgetsClicked,
         scrollBehavior = scrollBehavior,
-        actions = {
-            if (showShareStoreButton) {
-                WooOutlinedIconButton(
-                    imageVector = WooIcons.Regular.Share,
-                    contentDescription = stringResource(R.string.share_store_button),
-                    onClick = onShareStoreClicked,
-                )
-            }
-        },
-    )
+        contentBeforeWidgets = contentBeforeWidgets,
+        modifier = modifier,
+    ) { widget, modifier ->
+        DashboardWidgetCard(
+            widget = widget,
+            mainActivityViewModel = mainActivityViewModel,
+            dashboardViewModel = dashboardViewModel,
+            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            modifier = modifier,
+        )
+    }
 }
 
 @Composable
@@ -155,8 +133,10 @@ private fun DashboardLayout(
     scrollToTopTrigger: Flow<Unit>,
     onDashboardInteracted: () -> Unit,
     hasNewWidgets: Boolean,
+    showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
-    headerScrollBridge: DashboardHeaderScrollBridge,
+    scrollBehavior: WooPageHeaderScrollBehavior,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
 ) {
@@ -188,11 +168,13 @@ private fun DashboardLayout(
                 scrollToTopTrigger = scrollToTopTrigger,
                 onDashboardInteracted = onDashboardInteracted,
                 hasNewWidgets = hasNewWidgets,
+                showCustomizeButton = showCustomizeButton,
                 onEditWidgetsClicked = onEditWidgetsClicked,
                 widgetContent = widgetContent,
                 modifier = Modifier.fillMaxSize(),
                 numberOfColumns = numberOfColumns,
-                headerScrollBridge = headerScrollBridge,
+                scrollBehavior = scrollBehavior,
+                contentBeforeWidgets = contentBeforeWidgets,
             )
         }
     }
@@ -205,22 +187,24 @@ private fun DashboardWidgetLayout(
     scrollToTopTrigger: Flow<Unit>,
     onDashboardInteracted: () -> Unit,
     hasNewWidgets: Boolean,
+    showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
-    headerScrollBridge: DashboardHeaderScrollBridge,
+    scrollBehavior: WooPageHeaderScrollBehavior,
+    contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1,
 ) {
     val scrollState = rememberScrollState()
-    val headerNestedScrollConnection = headerScrollBridge.nestedScrollConnection
-    val scrollModifier = (headerNestedScrollConnection?.let { modifier.nestedScroll(it) } ?: modifier)
+    val scrollModifier = modifier
+        .nestedScroll(scrollBehavior.nestedScrollConnection)
         .verticalScroll(scrollState)
-        .padding(WooTheme.padding.padding7)
 
-    LaunchedEffect(scrollToTopTrigger, headerScrollBridge, scrollState) {
+    LaunchedEffect(scrollToTopTrigger, scrollBehavior, scrollState) {
         scrollToTopTrigger.collectLatest {
-            headerScrollBridge.scrollToTop {
-                scrollState.animateScrollTo(0)
+            coroutineScope {
+                launch { scrollState.animateScrollTo(0) }
+                launch { scrollBehavior.expand() }
             }
         }
     }
@@ -232,44 +216,49 @@ private fun DashboardWidgetLayout(
             .collect { onDashboardInteracted() }
     }
 
-    Column(
-        modifier = scrollModifier,
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
-    ) {
-        if (numberOfColumns == 1) {
-            widgetUiModels.forEach { widget ->
-                key(widget.stableKey()) {
-                    AnimatedVisibility(widget.isVisible) {
-                        widgetContent(widget, Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        } else {
-            val widgetColumns = splitWidgetsIntoColumns(
-                numberOfColumns = numberOfColumns,
-                visibleUiWidgets = widgetUiModels.filter { widget -> widget.isVisible },
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
-            ) {
-                widgetColumns.forEach { columnWidgets ->
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
-                    ) {
-                        columnWidgets.forEach { widget ->
+    Column(modifier = scrollModifier) {
+        contentBeforeWidgets()
+        Column(
+            modifier = Modifier.padding(WooTheme.padding.padding7),
+            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
+        ) {
+            if (numberOfColumns == 1) {
+                widgetUiModels.forEach { widget ->
+                    key(widget.stableKey()) {
+                        AnimatedVisibility(widget.isVisible) {
                             widgetContent(widget, Modifier.fillMaxWidth())
                         }
                     }
                 }
+            } else {
+                val widgetColumns = splitWidgetsIntoColumns(
+                    numberOfColumns = numberOfColumns,
+                    visibleUiWidgets = widgetUiModels.filter { widget -> widget.isVisible },
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
+                ) {
+                    widgetColumns.forEach { columnWidgets ->
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space7),
+                        ) {
+                            columnWidgets.forEach { widget ->
+                                widgetContent(widget, Modifier.fillMaxWidth())
+                            }
+                        }
+                    }
+                }
+            }
+            if (showCustomizeButton) {
+                DashboardCustomizeButton(
+                    hasNewWidgets = hasNewWidgets,
+                    onClick = onEditWidgetsClicked,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
             }
         }
-        DashboardCustomizeButton(
-            hasNewWidgets = hasNewWidgets,
-            onClick = onEditWidgetsClicked,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-        )
     }
 }
 
@@ -597,9 +586,6 @@ private fun DashboardWideLayoutPreview() {
 private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
     WooDesignSystemThemeWithBackground {
         val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
-        val headerScrollBridge = remember(scrollBehavior) {
-            DashboardHeaderScrollBridge().apply { attach(scrollBehavior) }
-        }
         Column {
             DashboardHeader(
                 storeName = "Example Store",
@@ -614,8 +600,10 @@ private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
                 scrollToTopTrigger = emptyFlow(),
                 onDashboardInteracted = {},
                 hasNewWidgets = true,
+                showCustomizeButton = true,
                 onEditWidgetsClicked = {},
-                headerScrollBridge = headerScrollBridge,
+                scrollBehavior = scrollBehavior,
+                contentBeforeWidgets = {},
                 modifier = Modifier.weight(1f),
             ) { widget, modifier ->
                 DashboardPreviewCardContent(widget = widget, modifier = modifier)
