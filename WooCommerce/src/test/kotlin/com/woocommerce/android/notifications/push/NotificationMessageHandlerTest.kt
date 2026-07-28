@@ -111,6 +111,7 @@ class NotificationMessageHandlerTest {
         .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
+    private val markedAsPaidOrdersCache = MarkedAsPaidOrdersCache()
     private val wooNotificationPayload = mapOf("type" to "new_order")
     private val wooNotificationModel
         get() = NotificationModel(
@@ -134,6 +135,7 @@ class NotificationMessageHandlerTest {
             getWooVisibleSites = getWooVisibleSites,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
+            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
         )
     }
 
@@ -276,6 +278,58 @@ class NotificationMessageHandlerTest {
                 source = eq(NotificationSource.WOO_DRIVEN)
             )
         }
+
+    @Test
+    fun `given order marked as paid on this device, when its notification arrives, then it is not displayed`() =
+        runTest {
+            // GIVEN
+            val orderId = 4321L
+            givenWooDrivenOrderNotification(orderId)
+            markedAsPaidOrdersCache.onOrderMovedToPaidStatus(orderNotification.remoteSiteId, orderId, "processing")
+
+            // WHEN
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+            // THEN
+            verify(dispatcher, atLeastOnce()).dispatch(any())
+            verifyNoInteractions(notificationBuilder)
+            verifyNoInteractions(notificationAnalyticsTracker)
+        }
+
+    @Test
+    fun `given another order marked as paid on this device, when order notification arrives, then it is displayed`() =
+        runTest {
+            // GIVEN
+            givenWooDrivenOrderNotification(orderId = 4321L)
+            markedAsPaidOrdersCache.onOrderMovedToPaidStatus(orderNotification.remoteSiteId, 9999L, "processing")
+
+            // WHEN
+            notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
+
+            // THEN
+            verify(notificationBuilder).buildAndDisplayWooNotification(
+                pushId = any(),
+                notification = any(),
+                source = eq(NotificationSource.WOO_DRIVEN),
+                analyticsId = any(),
+                isGroupNotification = eq(false)
+            )
+        }
+
+    private fun givenWooDrivenOrderNotification(orderId: Long) {
+        val wooDrivenModel = NotificationModel(
+            remoteNoteId = 0L,
+            remoteSiteId = orderNotification.remoteSiteId,
+            type = NotificationModel.Kind.STORE_ORDER,
+            meta = FormattableMeta(
+                ids = FormattableMeta.Ids(site = orderNotification.remoteSiteId, order = orderId)
+            )
+        )
+        val mockParser: NotificationsParser = mock {
+            on { buildNotificationModelFromPayloadMap(any()) } doReturn wooDrivenModel
+        }
+        createNotificationMessageHandler(mockParser)
+    }
 
     @Test
     fun `given store stock notification, when notification received, then process it as stock`() =
