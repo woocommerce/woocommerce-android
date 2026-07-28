@@ -7,28 +7,31 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.jitm.JitmModal
+import com.woocommerce.android.ui.jitm.JitmState
+import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
+import com.woocommerce.android.ui.payments.banner.Banner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "CyclomaticComplexMethod")
 @Composable
 internal fun OrderListRoute(
     viewModel: OrderListViewModel,
@@ -36,9 +39,21 @@ internal fun OrderListRoute(
     currencyFormatter: CurrencyFormatter,
     detailHighlightedOrderId: Long?,
     scrollToTopRequests: Flow<Unit>,
+    jitmViewModelProvider: () -> JitmViewModel,
     onOrderTapped: (OrderListNavigationTarget) -> Unit,
     onRefresh: () -> Unit,
     onLearnMoreClicked: () -> Unit,
+    onSearchClicked: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit,
+    onSearchSubmitted: (String) -> Unit,
+    onSearchClosed: () -> Unit,
+    onBarcodeClicked: () -> Unit,
+    onFiltersClicked: () -> Unit,
+    onCreateOrderClicked: () -> Unit,
+    onSelectionCloseClicked: () -> Unit,
+    onSelectionUpdateStatusClicked: () -> Unit,
+    onTroubleshootingClicked: (OrderListTroubleshootingType) -> Unit,
+    onContactSupportClicked: (OrderListTroubleshootingType) -> Unit,
     onListAtTopChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -49,12 +64,27 @@ internal fun OrderListRoute(
     val isLoadingMore by viewModel.isLoadingMore.observeAsState(false)
     val orderStatusOptions by viewModel.orderStatusOptions.observeAsState(emptyMap())
     val viewState by viewModel.viewStateLiveData.liveData.observeAsState(OrderListViewModel.ViewState())
+    val lastUpdate by viewModel.lastUpdateOrdersList.observeAsState()
     val selectedOrderIds by viewModel.selectedOrderIds.collectAsStateWithLifecycle()
     val createdOrderId by communicationViewModel.createdOrderIdPendingScrollToTopFlow
         .collectAsStateWithLifecycle()
     val presenter = remember { OrderListPaging2Presenter() }
     val presentation by presenter.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    var programmaticScrollCount by remember { mutableIntStateOf(0) }
+    var pendingCreatedOrderId by remember { mutableStateOf<Long?>(null) }
+    val currentCreatedOrderHandled = rememberUpdatedState(
+        communicationViewModel::onScrollToTopAfterOrderCreationHandled
+    )
+
+    suspend fun runProgrammaticScroll(scroll: suspend () -> Unit) {
+        programmaticScrollCount += 1
+        try {
+            scroll()
+        } finally {
+            programmaticScrollCount -= 1
+        }
+    }
 
     DisposableEffect(presenter) {
         onDispose(presenter::close)
@@ -70,7 +100,9 @@ internal fun OrderListRoute(
     LaunchedEffect(scrollToTopRequests, listState) {
         scrollToTopRequests.collectLatest {
             if (listState.layoutInfo.totalItemsCount > 0) {
-                listState.animateScrollToItem(0)
+                runProgrammaticScroll {
+                    listState.animateScrollToItem(0)
+                }
             }
         }
     }
@@ -80,10 +112,6 @@ internal fun OrderListRoute(
         }.collect(onListAtTopChanged)
     }
 
-    var pendingCreatedOrderId by remember { mutableStateOf<Long?>(null) }
-    val currentCreatedOrderHandled = rememberUpdatedState(
-        communicationViewModel::onScrollToTopAfterOrderCreationHandled
-    )
     LaunchedEffect(createdOrderId) {
         pendingCreatedOrderId = createdOrderId
     }
@@ -94,25 +122,26 @@ internal fun OrderListRoute(
     ) {
         val pendingOrderId = pendingCreatedOrderId ?: return@LaunchedEffect
         if (presentation.itemCount > 0) {
-            listState.scrollToItem(0)
+            runProgrammaticScroll {
+                listState.scrollToItem(0)
+            }
         }
         if (presenter.indexOfOrder(presentation, pendingOrderId) != null) {
             pendingCreatedOrderId = null
             currentCreatedOrderHandled.value()
         }
     }
-    val userScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (
-                    source == NestedScrollSource.UserInput &&
-                    available.y != 0f &&
-                    pendingCreatedOrderId != null
-                ) {
-                    pendingCreatedOrderId = null
-                    currentCreatedOrderHandled.value()
-                }
-                return Offset.Zero
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.isScrollInProgress to programmaticScrollCount
+        }.collect { (isScrollInProgress, activeProgrammaticScrolls) ->
+            if (
+                isScrollInProgress &&
+                activeProgrammaticScrolls == 0 &&
+                pendingCreatedOrderId != null
+            ) {
+                pendingCreatedOrderId = null
+                currentCreatedOrderHandled.value()
             }
         }
     }
@@ -144,45 +173,115 @@ internal fun OrderListRoute(
         ::itemAt
     }
     val contentState = emptyViewType.toOrderListContentState(
-        query = viewModel.searchQuery,
+        query = viewState.searchQuery,
         isAppending = isLoadingMore,
         contentRevision = presentation.contentRevision,
     )
+    val troubleshootingType = viewState.toTroubleshootingType()
+    var isTroubleshootingExpanded by rememberSaveable(troubleshootingType) {
+        mutableStateOf(true)
+    }
+    val screenState = OrderListScreenState(
+        isSearchActive = viewState.isSearching,
+        searchQuery = viewState.searchQuery,
+        filterCount = viewState.filterCount,
+        lastUpdate = lastUpdate,
+        rowState = OrderListRowState(
+            bulkSelectedOrderIds = selectedOrderIds,
+            detailHighlightedOrderId = detailHighlightedOrderId,
+        ),
+        troubleshooting = troubleshootingType?.let {
+            OrderListTroubleshootingPresentation(
+                type = it,
+                isExpanded = isTroubleshootingExpanded,
+            )
+        },
+    )
+    val jitmViewModel = if (viewState.jitmEnabled) jitmViewModelProvider() else null
+    val jitmState = if (jitmViewModel != null) {
+        val state by jitmViewModel.jitmState.observeAsState()
+        state
+    } else {
+        null
+    }
 
-    WCPullToRefreshBox(
-        isRefreshing = isFetchingFirstPage || viewState.isBulkUpdating,
-        onRefresh = onRefresh,
-        enabled = selectedOrderIds.isEmpty() && !viewState.isBulkUpdating,
+    OrderListScreen(
+        state = screenState,
+        orderListContent = { contentModifier ->
+            WCPullToRefreshBox(
+                isRefreshing = isFetchingFirstPage || viewState.isBulkUpdating,
+                onRefresh = onRefresh,
+                enabled = selectedOrderIds.isEmpty() && !viewState.isBulkUpdating,
+                modifier = contentModifier,
+            ) {
+                OrderListContent(
+                    state = contentState,
+                    rowState = screenState.rowState,
+                    itemCount = presentation.itemCount,
+                    itemKey = itemKey,
+                    itemAt = itemAt,
+                    itemContentType = itemContentType,
+                    onOrderActivated = { orderId ->
+                        if (
+                            viewModel.onOrderActivated(orderId) ==
+                            OrderListViewModel.OrderActivation.OPEN_DETAIL
+                        ) {
+                            presenter.navigationTarget(presentation, orderId)?.let(onOrderTapped)
+                        }
+                    },
+                    onOrderLongPressed = viewModel::onOrderLongPressed,
+                    onOrderSelectionToggled = viewModel::toggleOrderSelection,
+                    onMarkOrderCompleted = viewModel::onSwipeToComplete,
+                    onLearnMoreClicked = onLearnMoreClicked,
+                    onShowGuestOrdersClicked = viewModel::onSearchGuestOrdersClicked,
+                    onRetryClicked = onRefresh,
+                    modifier = Modifier.fillMaxSize(),
+                    listState = listState,
+                )
+            }
+        },
+        onSearchClicked = onSearchClicked,
+        onSearchQueryChanged = onSearchQueryChanged,
+        onSearchSubmitted = onSearchSubmitted,
+        onSearchClosed = onSearchClosed,
+        onBarcodeClicked = onBarcodeClicked,
+        onFiltersClicked = onFiltersClicked,
+        onCreateOrderClicked = onCreateOrderClicked,
+        onSelectionCloseClicked = onSelectionCloseClicked,
+        onSelectionUpdateStatusClicked = onSelectionUpdateStatusClicked,
+        onTroubleshootingExpandedChanged = { isTroubleshootingExpanded = it },
+        onTroubleshootingClicked = {
+            troubleshootingType?.let(onTroubleshootingClicked)
+        },
+        onContactSupportClicked = {
+            troubleshootingType?.let(onContactSupportClicked)
+        },
         modifier = modifier.fillMaxSize(),
-    ) {
-        OrderListContent(
-            state = contentState,
-            rowState = OrderListRowState(
-                bulkSelectedOrderIds = selectedOrderIds,
-                detailHighlightedOrderId = detailHighlightedOrderId,
-            ),
-            itemCount = presentation.itemCount,
-            itemKey = itemKey,
-            itemAt = itemAt,
-            itemContentType = itemContentType,
-            onOrderActivated = { orderId ->
-                if (viewModel.onOrderActivated(orderId) == OrderListViewModel.OrderActivation.OPEN_DETAIL) {
-                    presenter.navigationTarget(presentation, orderId)?.let(onOrderTapped)
+        jitmContent = when (jitmState) {
+            is JitmState.Banner -> {
+                {
+                    WooThemeWithBackground {
+                        Banner(jitmState)
+                    }
                 }
-            },
-            onOrderLongPressed = { orderId ->
-                viewModel.onOrderLongPressed(orderId)
-            },
-            onOrderSelectionToggled = viewModel::toggleOrderSelection,
-            onMarkOrderCompleted = viewModel::onSwipeToComplete,
-            onLearnMoreClicked = onLearnMoreClicked,
-            onShowGuestOrdersClicked = viewModel::onSearchGuestOrdersClicked,
-            onRetryClicked = onRefresh,
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(userScrollConnection),
-            listState = listState,
-        )
+            }
+            is JitmState.Modal -> {
+                {
+                    WooThemeWithBackground {
+                        JitmModal(jitmState)
+                    }
+                }
+            }
+            JitmState.Hidden, null -> null
+        },
+    )
+}
+
+private fun OrderListViewModel.ViewState.toTroubleshootingType(): OrderListTroubleshootingType? {
+    return when {
+        isErrorFetchingDataBannerVisible -> OrderListTroubleshootingType.ParsingError
+        shouldDisplayTroubleshootingBanner -> OrderListTroubleshootingType.Timeout
+        else -> null
     }
 }
 

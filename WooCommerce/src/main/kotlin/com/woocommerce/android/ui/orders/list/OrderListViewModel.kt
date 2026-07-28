@@ -201,25 +201,12 @@ class OrderListViewModel @Inject constructor(
 
     private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
 
-    // Legacy Fragment and Route compatibility until the Compose shell delegates all search events to this ViewModel.
-    var isSearching: Boolean
-        get() = viewState.isSearching
-        set(value) {
-            viewState = viewState.copy(isSearching = value)
-        }
-
-    var searchQuery: String
-        get() = viewState.searchQuery
-        set(value) {
-            viewState = viewState.copy(searchQuery = value)
-        }
-
     private var dismissListErrors = false
     private var searchJob: Job? = null
 
     /**
-     * The query the guest-orders filter was activated for. Restored and legacy-host searches use this
-     * to keep the guest filter active as long as the query hasn't changed.
+     * The query the guest-orders filter was activated for. Restored searches use this to keep the
+     * guest filter active as long as the query hasn't changed.
      */
     private var guestSearchQuery: String?
         get() = savedState[KEY_GUEST_SEARCH_QUERY]
@@ -261,7 +248,7 @@ class OrderListViewModel @Inject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
-            _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
+            _emptyViewType.value = EmptyViewType.ORDER_LIST_LOADING
             if (selectedSite.exists()) {
                 loadOrders()
             } else {
@@ -284,9 +271,13 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
-        if (isSearching && searchQuery.isNotEmpty()) {
+        if (viewState.isSearching && viewState.searchQuery.isNotEmpty()) {
             cancelPendingSearch()
-            executeSearch(searchQuery, shouldTrackSearch = false)
+            if (viewState.searchQuery.length < MIN_SEARCH_QUERY_LENGTH) {
+                clearOrderListPresentation()
+                return
+            }
+            executeSearch(viewState.searchQuery, shouldTrackSearch = false)
             return
         }
 
@@ -337,22 +328,22 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun onSearchOpened() {
-        if (isSearching) return
+        if (viewState.isSearching) return
 
         analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
-        isSearching = true
+        viewState = viewState.copy(isSearching = true)
         clearOrderListPresentation()
     }
 
     fun onSearchQueryChanged(query: String) {
-        if (!isSearching) return
+        if (!viewState.isSearching) return
 
         if (query.isEmpty()) {
             onSearchCleared()
             return
         }
 
-        searchQuery = query
+        viewState = viewState.copy(searchQuery = query)
         cancelPendingSearch()
         if (query.length < MIN_SEARCH_QUERY_LENGTH) {
             clearOrderListPresentation()
@@ -361,17 +352,17 @@ class OrderListViewModel @Inject constructor(
 
         searchJob = launch {
             delay(AppConstants.SEARCH_TYPING_DELAY_MS)
-            if (isSearching && searchQuery == query) {
+            if (viewState.isSearching && viewState.searchQuery == query) {
                 executeSearch(query, shouldTrackSearch = true)
             }
         }
     }
 
     fun onSearchSubmitted(query: String) {
-        if (!isSearching) return
+        if (!viewState.isSearching) return
 
         cancelPendingSearch()
-        searchQuery = query
+        viewState = viewState.copy(searchQuery = query)
         if (query.isEmpty()) {
             onSearchCleared()
         } else {
@@ -382,7 +373,7 @@ class OrderListViewModel @Inject constructor(
     fun onSearchCleared() {
         cancelPendingSearch()
         guestSearchQuery = null
-        searchQuery = ""
+        viewState = viewState.copy(searchQuery = "")
         loadOrders()
     }
 
@@ -394,20 +385,6 @@ class OrderListViewModel @Inject constructor(
             searchQuery = ""
         )
         loadOrders()
-    }
-
-    /**
-     * Legacy host entry point. OrderListFragment tracks text-search analytics before calling this method.
-     * The Compose shell should use the explicit search event methods above.
-     */
-    fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
-        cancelPendingSearch()
-        this.searchQuery = searchQuery
-        executeSearch(
-            searchQuery = searchQuery,
-            searchGuestOrders = searchGuestOrders,
-            shouldTrackSearch = false
-        )
     }
 
     private fun executeSearch(
@@ -439,7 +416,7 @@ class OrderListViewModel @Inject constructor(
         searchJob = null
     }
 
-    fun clearOrderListPresentation() {
+    private fun clearOrderListPresentation() {
         _pagedListData.value = null
         _emptyViewType.value = null
     }
@@ -452,7 +429,7 @@ class OrderListViewModel @Inject constructor(
     fun onSearchGuestOrdersClicked() {
         cancelPendingSearch()
         executeSearch(
-            searchQuery = searchQuery,
+            searchQuery = viewState.searchQuery,
             searchGuestOrders = true,
             shouldTrackSearch = false
         )
@@ -713,14 +690,14 @@ class OrderListViewModel @Inject constructor(
                     isError -> EmptyViewType.NETWORK_ERROR
                     isLoadingData -> {
                         // don't show intermediate screen when loading search results
-                        if (isSearching) {
+                        if (viewState.isSearching) {
                             null
                         } else {
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
 
-                    isSearching && searchQuery.isNotEmpty() -> {
+                    viewState.isSearching && viewState.searchQuery.isNotEmpty() -> {
                         if (isGuestLabelSearch() && activeWCOrderListDescriptor?.customerId == null) {
                             EmptyViewType.SEARCH_RESULTS_GUEST
                         } else {
@@ -742,7 +719,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun isGuestLabelSearch(): Boolean =
-        searchQuery.trim().equals(
+        viewState.searchQuery.trim().equals(
             resourceProvider.getString(R.string.orderdetail_customer_name_default),
             ignoreCase = true
         )
@@ -768,7 +745,7 @@ class OrderListViewModel @Inject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             if (viewState.isRefreshPending) {
-                if (isSearching) {
+                if (viewState.isSearching) {
                     activePagedListWrapper?.fetchFirstPage()
                 }
                 ordersPagedListWrapper?.fetchFirstPage()
@@ -777,7 +754,7 @@ class OrderListViewModel @Inject constructor(
             // Invalidate the list data so that orders that have not
             // yet been downloaded (the "loading" items) can be removed
             // from the current list view.
-            if (isSearching) {
+            if (viewState.isSearching) {
                 activePagedListWrapper?.invalidateData()
             }
             ordersPagedListWrapper?.invalidateData()
@@ -787,7 +764,7 @@ class OrderListViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onNotificationReceived(event: NotificationReceivedEvent) {
-        if (event.channel == NotificationChannelType.NEW_ORDER && isSearching) {
+        if (event.channel == NotificationChannelType.NEW_ORDER && viewState.isSearching) {
             activePagedListWrapper?.fetchFirstPage()
         }
     }

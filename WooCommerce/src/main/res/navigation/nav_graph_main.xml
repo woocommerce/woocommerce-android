@@ -107,6 +107,10 @@
             android:name="orderId"
             android:defaultValue="-1L"
             app:argType="long" />
+        <argument
+            android:name="jitm_message_path_key"
+            android:defaultValue="woomobile:order_list:admin_notices"
+            app:argType="string" />
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">

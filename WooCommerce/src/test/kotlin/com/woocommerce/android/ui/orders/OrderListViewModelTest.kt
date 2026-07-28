@@ -184,7 +184,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Request to load new list fetches order status options and payment gateways if connected`() = testBlocking {
         clearInvocations(orderListRepository)
-        viewModel.submitSearchOrFilter(ANY_SEARCH_QUERY)
+        viewModel.onSearchOpened()
+        viewModel.onSearchSubmitted(ANY_SEARCH_QUERY)
 
         verify(viewModel.activePagedListWrapper, times(1))?.fetchFirstPage()
         verify(orderListRepository, times(1)).fetchPaymentGateways()
@@ -223,25 +224,25 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the list presentation is cleared, then the active list is no longer exposed`() {
+    fun `when search is opened, then the active list presentation is no longer exposed`() {
         val pagedList = mock<PagedList<OrderListItemUIType>>()
         whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
         viewModel.pagedListData.observeForever { }
         viewModel.loadOrders()
 
-        viewModel.clearOrderListPresentation()
+        viewModel.onSearchOpened()
 
         assertThat(viewModel.pagedListData.value).isNull()
         assertThat(viewModel.emptyViewType.value).isNull()
     }
 
     @Test
-    fun `given an unchanged descriptor, when orders reload after presentation clear, then cached list is restored`() {
+    fun `given an unchanged descriptor, when orders reload after search opens, then cached list is restored`() {
         val pagedList = mock<PagedList<OrderListItemUIType>>()
         whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
         viewModel.pagedListData.observeForever { }
         viewModel.loadOrders()
-        viewModel.clearOrderListPresentation()
+        viewModel.onSearchOpened()
 
         viewModel.loadOrders()
 
@@ -470,6 +471,41 @@ class OrderListViewModelTest : BaseUnitTest() {
             verify(analyticsTracker, never()).track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
         }
 
+    @Test
+    fun `given a restored active short query, when ViewModel is recreated, then presentation stays cleared`() =
+        testBlocking {
+            // GIVEN
+            val savedState = OrderListFragmentArgs().toSavedStateHandle().apply {
+                this[OrderListViewModel.ViewState::class.java.name] = OrderListViewModel.ViewState(
+                    isSearching = true,
+                    searchQuery = "ab"
+                )
+            }
+            whenever(selectedSite.exists()).thenReturn(true)
+            clearInvocations(
+                getWCOrderListDescriptorWithFilters,
+                getWCOrderListDescriptorWithFiltersAndSearchQuery,
+                analyticsTracker
+            )
+
+            // WHEN
+            viewModel = createViewModel(savedState)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.isSearching).isTrue()
+            assertThat(viewModel.viewState.searchQuery).isEqualTo("ab")
+            assertThat(viewModel.pagedListData.value).isNull()
+            assertThat(viewModel.emptyViewType.value).isNull()
+            verify(getWCOrderListDescriptorWithFilters, never()).invoke()
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
+            verify(analyticsTracker, never()).track(
+                eq(AnalyticsEvent.ORDERS_LIST_SEARCH),
+                any<Map<String, *>>()
+            )
+            verify(analyticsTracker, never()).track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
+        }
+
     /**
      * Test for proper handling of a request to fetch orders and order status options
      * when the device is offline. This scenario should result in an "offline" snackbar
@@ -532,14 +568,13 @@ class OrderListViewModelTest : BaseUnitTest() {
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isError = null
      * - viewModel.orderStatusFilter = ""
-     * - viewModel.isSearching = false
+     * - viewModel.viewState.isSearching = false
      * - pagedListWrapper.isFetchingFirstPage = false
      * - pagedListWrapper.data != null
      * - There are NO orders in the db for the active store
      */
     @Test
     fun `Display 'No orders yet' empty view when no orders for site for ALL tab`() = testBlocking {
-        viewModel.isSearching = false
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(false)
@@ -559,7 +594,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
-     * - viewModel.isSearching = false
+     * - viewModel.viewState.isSearching = false
      * - viewModel.orderStatusFilter = ""
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isFetchingFirstPage = false
@@ -567,8 +602,6 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display error empty view on fetch orders error when no cached orders`() = testBlocking {
-        viewModel.isSearching = false
-
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(mock())
@@ -591,7 +624,7 @@ class OrderListViewModelTest : BaseUnitTest() {
      *
      * This view gets generated when:
      * - networkStatus.isConnected = false
-     * - viewModel.isSearching = false
+     * - viewModel.viewState.isSearching = false
      * - viewModel.orderStatusFilter = ""
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isFetchingFirstPage = false
@@ -599,7 +632,6 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Display offline empty view when offline and list is empty`() = testBlocking {
-        viewModel.isSearching = false
         doReturn(false).whenever(networkStatus).isConnected()
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
@@ -622,15 +654,15 @@ class OrderListViewModelTest : BaseUnitTest() {
      * results is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
-     * - viewModel.isSearching = true
+     * - viewModel.viewState.isSearching = true
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isFetchingFirstPage = false
      * - pagedListWrapper.isError = null
      */
     @Test
     fun `Display empty view for empty search result`() = testBlocking {
-        viewModel.isSearching = true
-        viewModel.searchQuery = "query"
+        viewModel.onSearchOpened()
+        viewModel.onSearchSubmitted("query")
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -656,8 +688,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given search query matches the guest label, when there are no results, then show guest empty view`() = testBlocking {
         whenever(resourceProvider.getString(R.string.orderdetail_customer_name_default)).doReturn("Guest")
-        viewModel.isSearching = true
-        viewModel.searchQuery = " guest "
+        viewModel.onSearchOpened()
+        viewModel.onSearchSubmitted(" guest ")
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -680,9 +712,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         whenever(getWCOrderListDescriptorWithFiltersAndSearchQuery.invoke(anyString(), anyBoolean())).thenReturn(
             WCOrderListDescriptor(site = mock(), customerId = 123L)
         )
-        viewModel.isSearching = true
-        viewModel.searchQuery = "guest"
-        viewModel.submitSearchOrFilter("guest")
+        givenActiveSearchQuery("guest")
+        viewModel.onSearchSubmitted("guest")
         whenever(pagedListWrapper.data.value).doReturn(mock())
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
@@ -701,7 +732,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the guest orders empty view button is clicked, then search for guest orders`() = testBlocking {
-        viewModel.searchQuery = "Guest"
+        givenActiveSearchQuery("Guest")
 
         viewModel.onSearchGuestOrdersClicked()
 
@@ -714,12 +745,12 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given a guest orders search, when the same query is re-submitted, then the guest filter is kept`() =
         testBlocking {
-            // GIVEN a guest orders search, e.g. re-submitted by the restored search view after a config change
-            viewModel.searchQuery = "Guest"
+            // GIVEN
+            givenActiveSearchQuery("Guest")
             viewModel.onSearchGuestOrdersClicked()
 
-            // WHEN the same query is re-submitted as a plain text search
-            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            // WHEN
+            viewModel.onSearchSubmitted("Guest")
 
             // THEN the guest filter is kept
             verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(2)).invoke(
@@ -731,17 +762,17 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given a guest orders search, when a different query is submitted, then the guest filter is cleared`() =
         testBlocking {
-            viewModel.searchQuery = "Guest"
+            givenActiveSearchQuery("Guest")
             viewModel.onSearchGuestOrdersClicked()
 
-            viewModel.submitSearchOrFilter(searchQuery = "Guests")
+            viewModel.onSearchSubmitted("Guests")
 
             verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
                 searchQuery = "Guests",
                 searchGuestOrders = false
             )
             // AND the guest filter is not restored for the original query anymore
-            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            viewModel.onSearchSubmitted("Guest")
             verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(1)).invoke(
                 searchQuery = "Guest",
                 searchGuestOrders = false
@@ -751,12 +782,13 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given a guest orders search, when the search is closed, then the guest filter is cleared`() =
         testBlocking {
-            viewModel.searchQuery = "Guest"
+            givenActiveSearchQuery("Guest")
             viewModel.onSearchGuestOrdersClicked()
 
             viewModel.onSearchClosed()
 
-            viewModel.submitSearchOrFilter(searchQuery = "Guest")
+            viewModel.onSearchOpened()
+            viewModel.onSearchSubmitted("Guest")
             verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
                 searchQuery = "Guest",
                 searchGuestOrders = false
@@ -768,14 +800,13 @@ class OrderListViewModelTest : BaseUnitTest() {
      * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].
      *
      * This view gets generated when:
-     * - viewModel.isSearching = false
+     * - viewModel.viewState.isSearching = false
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isFetchingFirstPage = true
      * - pagedListWrapper.isError = null
      */
     @Test
     fun `Display Loading empty view for any order list tab`() = testBlocking {
-        viewModel.isSearching = false
         whenever(pagedListWrapper.isEmpty.value).doReturn(true)
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
@@ -796,14 +827,14 @@ class OrderListViewModelTest : BaseUnitTest() {
      * and verify the empty view is *not* shown in this situation
      *
      * This view gets generated when:
-     * - viewModel.isSearching = true
+     * - viewModel.viewState.isSearching = true
      * - pagedListWrapper.isEmpty = true
      * - pagedListWrapper.isFetchingFirstPage = true
      * - pagedListWrapper.isError = null
      */
     @Test
     fun `Does not display the Loading empty view in search mode`() = testBlocking {
-        viewModel.isSearching = true
+        viewModel.onSearchOpened()
         whenever(pagedListWrapper.listError.value).doReturn(null)
         whenever(pagedListWrapper.isFetchingFirstPage.value).doReturn(true)
 
@@ -865,9 +896,8 @@ class OrderListViewModelTest : BaseUnitTest() {
      */
     @Test
     fun `Request refresh for active list when received new order notification and is in search`() = testBlocking {
-        viewModel.isSearching = true
-
-        viewModel.submitSearchOrFilter(searchQuery = "Joe Doe")
+        viewModel.onSearchOpened()
+        viewModel.onSearchSubmitted("Joe Doe")
 
         // Reset as we're no interested in previous invocations in this test
         reset(viewModel.activePagedListWrapper)
@@ -1320,7 +1350,8 @@ class OrderListViewModelTest : BaseUnitTest() {
             isFetchingFirstPage = it
         }
 
-        viewModel.submitSearchOrFilter("query")
+        viewModel.onSearchOpened()
+        viewModel.onSearchSubmitted("query")
         viewModel.onSearchClosed()
 
         assertNotNull(isFetchingFirstPage)
@@ -1564,6 +1595,11 @@ class OrderListViewModelTest : BaseUnitTest() {
                 )
             )
         }
+    }
+
+    private fun givenActiveSearchQuery(query: String) {
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged(query)
     }
 
     private fun selectOrders(count: Int) {
