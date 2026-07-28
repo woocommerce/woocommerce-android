@@ -5,7 +5,7 @@
 25.4
 -----
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
-- [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [PR URL]
+- [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
 
 25.3
 -----
