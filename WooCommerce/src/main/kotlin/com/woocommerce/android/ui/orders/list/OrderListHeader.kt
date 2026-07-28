@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -140,8 +139,8 @@ private fun OrderListSearchHeader(
                 keyboardController?.hide()
                 onSearchClosed()
             },
+            focusRequester = focusRequester,
             modifier = Modifier
-                .focusRequester(focusRequester)
                 .fillMaxWidth()
                 .testTag(OrderListScreenTestTags.SEARCH_FIELD),
         )
