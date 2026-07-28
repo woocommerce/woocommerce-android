@@ -439,10 +439,6 @@ class MainActivity :
     private fun setOnBackNavigationCallback() {
         onBackPressedDispatcher.addCallback(this) {
             AnalyticsTracker.trackBackPressed(this@MainActivity)
-            val fragment = getActiveChildFragment()
-            if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
-                return@addCallback
-            }
             supportFragmentManager.primaryNavigationFragment?.let {
                 updateAppBarVisibility(it)
             }
@@ -583,17 +579,6 @@ class MainActivity :
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         return navHostFragment.childFragmentManager.primaryNavigationFragment as? TopLevelFragment
-    }
-
-    /**
-     * Returns the fragment currently shown by the navigation component, or null if we're at the root
-     */
-    private fun getActiveChildFragment(): Fragment? {
-        return if (isChildFragmentShowing()) {
-            getHostChildFragment()
-        } else {
-            null
-        }
     }
 
     /**
