@@ -46,11 +46,13 @@ data class WooBackgroundColors(
 @Suppress("LongParameterList")
 data class WooSurfaceColors(
     val default: Color,
+    val bright: Color,
     val surfaceDim: Color,
     val surfaceContainerHighest: Color,
     val onDefault: Color,
     val onVariant: Color,
     val onVariantLowest: Color,
+    val onVariantHighest: Color,
     val inverted: Color,
     val onInverted: Color,
 )
@@ -86,6 +88,8 @@ data class WooStateLayerColors(
 @Immutable
 data class WooTintLayerColors(
     val primaryContainer: WooOpacityColors,
+    val onSurface: WooOpacityColors,
+    val primary: WooOpacityColors,
 )
 
 @Immutable
@@ -117,6 +121,8 @@ data class WooPaletteColors(
     val wooOrange: WooPaletteRampColors,
     val wooPink: WooPaletteRampColors,
     val wooPurple: WooPurpleColors,
+    val white: Color,
+    val black: Color,
 )
 
 @Immutable

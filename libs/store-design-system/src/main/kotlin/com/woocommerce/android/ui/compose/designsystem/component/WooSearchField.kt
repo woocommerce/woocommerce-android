@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -77,17 +78,13 @@ fun WooSearchField(
     }
 
     val colors = WooTheme.colors
-    val textColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
-    val iconColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
-    val placeholderColor = colors.stateLayers.onSurface.opacity16
-    val clearIconColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest
-    val fieldContainerColor = colors.surface.surfaceDim
+    val style = wooSearchFieldStyle(enabled = enabled, colors = colors)
     val showClearButton = onClearClick != null && value.isNotEmpty()
 
     Row(
         modifier = modifier
             .height(SEARCH_SHELL_HEIGHT)
-            .background(colors.surface.default)
+            .background(style.shellColor)
             .padding(horizontal = WooTheme.padding.padding7),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -102,7 +99,7 @@ fun WooSearchField(
                     .height(SEARCH_FIELD_HEIGHT)
                     .fillMaxWidth()
                     .background(
-                        color = fieldContainerColor,
+                        color = style.fieldContainerColor,
                         shape = RoundedCornerShape(WooTheme.radius.large),
                     )
                     .padding(horizontal = WooTheme.padding.padding5),
@@ -112,7 +109,7 @@ fun WooSearchField(
                     imageVector = WooIcons.Regular.MagnifyingGlass,
                     contentDescription = null,
                     modifier = Modifier.size(WooTheme.iconSize.size18),
-                    tint = iconColor,
+                    tint = style.iconColor,
                 )
 
                 BasicTextField(
@@ -130,7 +127,7 @@ fun WooSearchField(
                         .weight(1f),
                     enabled = enabled,
                     singleLine = true,
-                    textStyle = WooTheme.text.bodyLarge.regular.copy(color = textColor),
+                    textStyle = WooTheme.text.bodyLarge.regular.copy(color = style.textColor),
                     cursorBrush = SolidColor(colors.primary),
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions,
@@ -139,7 +136,7 @@ fun WooSearchField(
                             if (value.isEmpty() && placeholder != null) {
                                 Text(
                                     text = placeholder,
-                                    color = placeholderColor,
+                                    color = style.placeholderColor,
                                     style = WooTheme.text.bodyLarge.regular,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -160,8 +157,8 @@ fun WooSearchField(
                     onClick = onClearClick,
                     enabled = enabled,
                     contentDescription = clearContentDescription.orEmpty(),
-                    color = clearIconColor,
-                    iconColor = fieldContainerColor,
+                    color = style.clearIconColor,
+                    iconColor = style.fieldContainerColor,
                     modifier = Modifier.align(Alignment.CenterEnd),
                 )
             }
@@ -176,6 +173,27 @@ fun WooSearchField(
             )
         }
     }
+}
+
+internal data class WooSearchFieldStyle(
+    val shellColor: Color,
+    val fieldContainerColor: Color,
+    val textColor: Color,
+    val iconColor: Color,
+    val placeholderColor: Color,
+    val clearIconColor: Color,
+)
+
+internal fun wooSearchFieldStyle(enabled: Boolean, colors: WooColors): WooSearchFieldStyle {
+    val contentColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest
+    return WooSearchFieldStyle(
+        shellColor = colors.surface.bright,
+        fieldContainerColor = colors.surface.surfaceDim,
+        textColor = contentColor,
+        iconColor = contentColor,
+        placeholderColor = colors.stateLayers.onSurface.opacity24,
+        clearIconColor = contentColor,
+    )
 }
 
 @Composable

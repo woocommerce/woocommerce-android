@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
@@ -107,16 +110,13 @@ internal fun WooCellLayout(
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {
-    val slotContentColor = if (enabled) {
-        WooTheme.colors.surface.onDefault
-    } else {
-        WooTheme.colors.surface.onVariantLowest
-    }
+    val style = wooCellStyle(enabled = enabled, colors = WooTheme.colors)
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = MIN_TOUCH_TARGET_SIZE)
+            .background(style.containerColor)
             .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -125,7 +125,7 @@ internal fun WooCellLayout(
                 modifier = Modifier.padding(end = WooTheme.spacing.space5),
                 contentAlignment = Alignment.Center,
             ) {
-                CompositionLocalProvider(LocalContentColor provides slotContentColor) {
+                CompositionLocalProvider(LocalContentColor provides style.slotContentColor) {
                     leadingContent()
                 }
             }
@@ -143,13 +143,23 @@ internal fun WooCellLayout(
                 modifier = Modifier.padding(start = WooTheme.spacing.space5),
                 contentAlignment = Alignment.Center,
             ) {
-                CompositionLocalProvider(LocalContentColor provides slotContentColor) {
+                CompositionLocalProvider(LocalContentColor provides style.slotContentColor) {
                     trailingContent()
                 }
             }
         }
     }
 }
+
+internal data class WooCellStyle(
+    val containerColor: Color,
+    val slotContentColor: Color,
+)
+
+internal fun wooCellStyle(enabled: Boolean, colors: WooColors): WooCellStyle = WooCellStyle(
+    containerColor = colors.surface.bright,
+    slotContentColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
+)
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark

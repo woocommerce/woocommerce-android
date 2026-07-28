@@ -53,7 +53,8 @@ class WCProductLeaderboardsMapperTest {
                 productCategoriesDao = databaseRule.db.productCategoriesDao,
                 productTagsDao = databaseRule.db.productTagsDao,
                 productShippingClassesDao = databaseRule.db.productShippingClassesDao,
-                productReviewsDao = databaseRule.db.productReviewsDao
+                productReviewsDao = databaseRule.db.productReviewsDao,
+                database = databaseRule.db,
             )
         )
     }

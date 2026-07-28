@@ -43,7 +43,7 @@ internal fun PreviewOnlySegmentControlSample(
         modifier = modifier
             .height(SEGMENT_CONTROL_HEIGHT)
             .clip(RoundedCornerShape(WooTheme.radius.full))
-            .background(WooTheme.colors.tintLayers.primaryContainer.opacity10)
+            .background(WooTheme.colors.tintLayers.primaryContainer.opacity16)
             .padding(WooTheme.padding.padding1),
     ) {
         PreviewOnlySegmentItem(
@@ -67,12 +67,12 @@ internal fun PreviewOnlySegmentControlSample(
 @Composable
 internal fun PreviewOnlySheetSample(modifier: Modifier = Modifier) {
     Surface(
-        color = WooTheme.colors.background.section,
+        color = WooTheme.colors.surface.bright,
         shape = RoundedCornerShape(
             topStart = WooTheme.radius.extraLarge,
             topEnd = WooTheme.radius.extraLarge,
         ),
-        border = BorderStroke(WooTheme.stroke.extraThin, WooTheme.colors.outlineVariant),
+        border = BorderStroke(WooTheme.stroke.thin, WooTheme.colors.surface.onVariantLowest),
         modifier = modifier
     ) {
         Column(
@@ -86,7 +86,7 @@ internal fun PreviewOnlySheetSample(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(width = 40.dp, height = 4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(WooTheme.colors.outlineVariant),
+                    .background(WooTheme.colors.surface.onVariantLowest),
             )
             Text(
                 text = "Sheet preview",
@@ -108,7 +108,7 @@ internal fun PreviewOnlyTabBarSample(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp),
-        color = WooTheme.colors.surface.default,
+        color = WooTheme.colors.surface.bright,
     ) {
         Column {
             WooDivider()
@@ -150,7 +150,8 @@ internal fun PreviewOnlyTableSample(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(WooTheme.stroke.extraThin, WooTheme.colors.outlineVariant),
+            .background(WooTheme.colors.surface.bright)
+            .border(WooTheme.stroke.thin, WooTheme.colors.outlineVariant),
     ) {
         PreviewOnlyTableRow("Product", "Stock", "Price", isHeader = true)
         WooDivider()
@@ -167,7 +168,7 @@ private fun PreviewOnlySegmentItem(
     modifier: Modifier = Modifier,
 ) {
     val containerColor = if (selected) {
-        WooTheme.colors.surface.default
+        WooTheme.colors.surface.bright
     } else {
         Color.Transparent
     }

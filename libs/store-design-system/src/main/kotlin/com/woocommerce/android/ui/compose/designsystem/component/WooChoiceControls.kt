@@ -507,7 +507,7 @@ internal fun wooCheckboxStyle(
         !enabled -> WooCheckboxStyle(
             containerColor = disabledStateLayerColor,
             borderColor = Color.Transparent,
-            markColor = colors.onPrimary,
+            markColor = colors.stateLayers.onSurface.opacity24,
             borderWidth = stroke.none,
             mark = mark,
         )
@@ -548,7 +548,7 @@ internal fun wooRadioButtonStyle(
         selected -> WooRadioButtonStyle(
             containerColor = disabledStateLayerColor,
             borderColor = Color.Transparent,
-            dotColor = colors.onPrimary,
+            dotColor = colors.stateLayers.onSurface.opacity24,
             borderWidth = stroke.none,
         )
 
@@ -577,15 +577,19 @@ internal fun wooFilterChipStyle(
     return when {
         selected -> WooFilterChipStyle(
             containerColor = colors.container.secondaryContainer,
-            contentColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
+            contentColor = if (enabled) {
+                colors.container.onSecondaryContainer
+            } else {
+                colors.surface.onVariantLowest
+            },
             borderColor = Color.Transparent,
             borderWidth = stroke.none,
         )
 
         else -> WooFilterChipStyle(
-            containerColor = colors.surface.default,
+            containerColor = colors.surface.bright,
             contentColor = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
-            borderColor = colors.outlineVariant,
+            borderColor = colors.tintLayers.onSurface.opacity16,
             borderWidth = stroke.regular,
         )
     }

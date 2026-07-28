@@ -45,7 +45,7 @@ fun WooTabRow(
         modifier = modifier
             .fillMaxWidth()
             .height(WooTabsDefaults.RowHeight),
-        containerColor = WooTheme.colors.surface.default,
+        containerColor = WooTheme.colors.surface.bright,
         contentColor = WooTheme.colors.surface.onDefault,
         indicator = {
             WooTabIndicator(
@@ -142,7 +142,7 @@ private fun WooTabRowDivider(
         modifier = modifier
             .fillMaxWidth()
             .height(WooTheme.stroke.extraThin)
-            .background(WooTheme.colors.outlineVariant),
+            .background(WooTheme.colors.tintLayers.onSurface.opacity16),
     )
 }
 

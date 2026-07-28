@@ -22,6 +22,8 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.orders.CurrencyMatchResult
+import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -68,6 +70,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -108,6 +111,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
+    protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
+    protected lateinit var isStoreCurrencyMatch: IsStoreCurrencyMatch
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -120,13 +125,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val mode: OrderCreateEditViewModel.Mode
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
+    protected open val orderCurrency: String? = null
 
     @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.getEmptyOrder(Date(), Date())
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
+        savedState = spy(
+            OrderCreateEditFormFragmentArgs(
+                mode = mode,
+                sku = sku,
+                barcodeFormat = barcodeFormat,
+                orderCurrency = orderCurrency
+            ).toSavedStateHandle()
+        ) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on {
                 getLiveData(
@@ -222,6 +235,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
+        isCurrencyQueryParamSupported = mock()
+        isStoreCurrencyMatch = mock()
+        // Only consulted when the screen was opened with an order currency, so stubbing it otherwise
+        // would trip the strict stubbing check.
+        if (orderCurrency != null) {
+            isStoreCurrencyMatch.stub {
+                on { invoke(any()) } doReturn CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+            }
+        }
     }
 
     protected abstract val tracksFlow: String
@@ -1704,6 +1726,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given pending products in two pane mode, when configuration changes, then preserve pending products`() {
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+        val pendingItems = listOf(ProductSelectorViewModel.SelectedItem.Product(123))
+        sut.onItemsSelectionChanged(pendingItems)
+
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+
+        assertThat(sut.pendingSelectedItems.value).isEqualTo(pendingItems)
+    }
+
+    @Test
     fun `given configurable item expanded, then track configuration CTA shown`() {
         testBlocking {
             createSut()
@@ -2179,6 +2212,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
+            isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            isStoreCurrencyMatch = isStoreCurrencyMatch,
         )
     }
 

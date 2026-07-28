@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 14:55:30+0000
+Translation-Revision-Date: 2026-07-13 14:56:37+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Ce type d’image n’est pas pris en charge. Veuillez sélectionner une image au format PNG, JPEG, WebP, GIF, BMP, HEIC ou HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Le système ne parvient pas à se connecter à ma boutique. L’application a détecté une erreur de connexion lors d’une tentative d’accès à ma boutique. Comment résoudre ce problème ?</string>
+    <string name="settings_crash_reporting_error_update">Une erreur est survenue lors de la mise à jour de votre réglage de signalement d’incident.</string>
+    <string name="empty_search_guest_orders_button">Afficher les commandes invités</string>
+    <string name="empty_message_with_search_guest">Vous recherchez des commandes passées par des clients invités ?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Cette commande a été payée avec une carte-cadeau. Si vous procédez au remboursement ici, il ne sera pas recrédité sur la carte-cadeau. Pour contourner le problème, veuillez passer par l’interface d’administration de votre boutique sur le Web.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Rembourser depuis l’interface d’administration de votre boutique</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Nous n’avons pas pu vérifier le certificat de sécurité de ce site. Contactez votre hébergeur ou l’administrateur de votre site, puis réessayez.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Nous n’avons pas pu établir de connexion sécurisée. Vérifiez que la date et l’heure de votre appareil sont correctes, puis réessayez.</string>
     <string name="woopos_refund_preview_error">Impossible de calculer le total du remboursement. Veuillez réessayer.</string>
@@ -502,11 +509,6 @@ Language: fr
     <string name="connectivity_tool_view_technical_details">Voir les détails techniques</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Récupération des produits de votre boutique</string>
     <string name="user_role_access_error_fetch_failed">Nous n’avons pas pu vérifier votre rôle dans cette boutique. Veuillez réessayer. Si le problème persiste, contactez l’assistance.</string>
-    <string name="woopos_eligibility_learn_more_label">Lire la suite</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Acceptez les paiements en personne pour seulement 2,70 % + 0,10 $ par transaction. &lt;b&gt;Passez à la version Pro&lt;/b&gt; pour accéder au paiement sans contact sur votre téléphone et à notre système de point de vente complet avec synchronisation des stocks et des commandes en temps réel.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Acceptez les paiements en personne pour seulement 2,70 % + 0,10 $ par transaction. Passez à la version Pro pour accéder au paiement sans contact sur votre téléphone et à notre système de point de vente complet avec synchronisation des stocks et des commandes en temps réel.</string>
-    <string name="woopos_eligibility_ciab_title">Plan Pro requis</string>
-    <string name="ciab_order_status_open">Ouvrir</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Achat de l’étiquette d’expédition impossible. Veuillez renseigner l’adresse d’origine.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Adresse d’origine manquante ou non valide</string>
     <string name="woopos_orders_details_refund_details_background">Arrière-plan de la boîte de dialogue des détails du remboursement</string>

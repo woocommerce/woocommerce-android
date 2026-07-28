@@ -175,7 +175,8 @@ class ApplicationPasswordsNetwork @Inject constructor(
         path: String,
         clazz: Class<T>,
         body: Map<String, Any>,
-    ) = executeGsonRequest(site, HttpMethod.PUT, path, clazz, body = body)
+        params: Map<String, String>
+    ) = executeGsonRequest(site, HttpMethod.PUT, path, clazz, params = params, body = body)
 
     override suspend fun <T : Any> executeDeleteGsonRequest(
         site: SiteModel,

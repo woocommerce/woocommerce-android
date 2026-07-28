@@ -30,4 +30,9 @@ class WCWPAPIEndpointTest {
         assertEquals("/wc/v4/refunds/", WOOCOMMERCE.refunds.pathV4)
         assertEquals("/wc/v4/refunds/preview/", WOOCOMMERCE.refunds.preview.pathV4)
     }
+
+    @Test
+    fun `when building product duplicate path, then v3 route is correct`() {
+        assertEquals("/wc/v3/products/123/duplicate/", WOOCOMMERCE.products.id(123).duplicate.pathV3)
+    }
 }

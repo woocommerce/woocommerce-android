@@ -20,9 +20,9 @@ doc defines the technical boundaries that support that rollout.
   `50XIH5MmOf4xUYEkM6fAm6-fi`. Do not expand them into raw URLs in public repo docs.
 - Agents should use [figma-navigation.md](figma-navigation.md) when inspecting Figma components or
   collecting live Figma screenshots.
-- Foundation source values come from `docs/design-system/figma-export.json`. This docs branch is
-  allowed to lack runtime foundation code; future implementation consumes these docs as the
-  contract.
+- Foundation source values come from `docs/design-system/figma-export.json`. Approved Android
+  override values are documented in [token-map.md](token-map.md); the export remains an audit/source
+  artifact and must not be hand-edited to apply them.
 
 ## Package
 
@@ -78,20 +78,22 @@ rollout wiring should stay outside the module.
 - Keep primitive literals in palette XML resources and alias exact matching semantic XML resources
   to those primitives. Keep resolved ARGB literals for opacity tokens that cannot be represented as
   a normal Android color-resource alias.
-- Treat `surfaceDim` and `surfaceContainerHighest` as source-backed public Store roles, not
-  generated Material aliases.
+- Treat `surface.bright`, `surfaceDim`, `surfaceContainerHighest`, and `surface.onVariantHighest` as
+  source-backed public Store roles, not generated Material aliases. Generic `surface.default` and
+  `surface.bright` are distinct in both modes.
 - Expose `WooTheme.stroke` because production design-system components use the source-backed stroke
   scale. Fractional stroke widths still need visual verification in components that use them.
 - Expose `WooTheme.colors.stateLayers.onSurface.opacity08`, `opacity10`, `opacity16`, and
   `opacity24` as complete mode-aware `Color` values. Do not expose public `WooTheme.stateAlpha` or
   other raw alpha floats.
-- Keep `stateLayers` separate from `surface`: the normal light state-layer base is `#1E1E1E`, while
-  `surface.onDefault` is `#000000`.
+- Keep `stateLayers` separate from `surface`; the supplied export resolves the normal light
+  state-layer base and `surface.onDefault` to `#101517` while preserving distinct semantic groups.
 - State-layer colors are Store authoring tokens and do not project into Material `ColorScheme`.
 - Expose `WooTheme.colors.error` / `onError` together and project them to Material `error` /
   `onError`.
-- Expose Primary Container tint layers as complete mode-aware colors under
-  `WooTheme.colors.tintLayers.primaryContainer`; the Segmented Control consumes `opacity10`.
+- Expose Primary Container, On Surface, and Primary tint layers as complete mode-aware colors under
+  `WooTheme.colors.tintLayers`; the Segmented Control consumes `primaryContainer.opacity16`, and
+  dividers/subtle component boundaries consume `onSurface.opacity16`.
 - High-contrast state-layer values remain unresolved and stay outside normal `Light` / `Dark`
   runtime mapping.
 - Do not create public `WooTheme.minimumTouchTarget` from legacy dimensions or screen-size variables.
@@ -173,7 +175,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
   projections for Material 3 components, defaults, and helpers. Use them when a Material API requires
   them, not as the primary Store design-system authoring surface.
 - `WooTheme.colors` should expose source-backed Store authoring roles from `figma-export.json` /
-  `Woo theme`, grouped shallowly by source intent.
+  `Woo Theme`, grouped shallowly by source intent. Primitive palettes come from top-level `Colors`.
 - Do not limit `WooTheme.colors` to a small curated Material 3-like subset.
 - Parse Store runtime/public foundations from the current top-level foundation sections in
   `figma-export.json`.
@@ -183,7 +185,7 @@ i1 uses manual Kotlin/Compose runtime token definitions first.
 - Use normal `Light` / `Dark` values for runtime color modes. The current export omits high-contrast
   modes; accessibility-mode mapping remains separately scoped.
 - Use Android typography mode values from `Typescale`; `Typescale/<Role>/Font` resolves through
-  `Font theme/Font/Plain`, whose Android value is `Roboto`. Android default font is the accepted
+  `Font Theme/Font/Plain`, whose Android value is `Roboto`. Android default font is the accepted
   runtime equivalent.
 - Do not create `WooTheme.semanticColors`; supported status, alert, overlay, state-layer, tint-layer,
   and palette colors live as grouped fields under `WooTheme.colors`.
@@ -221,20 +223,29 @@ constants:
 
 | API suffix | Light Figma `RRGGBBAA` / Android `AARRGGBB` | Dark Figma `RRGGBBAA` / Android `AARRGGBB` | Verified use |
 | --- | --- | --- | --- |
-| `onSurface.opacity08` | `#1E1E1E14` / `#141E1E1E` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
-| `onSurface.opacity10` | `#1E1E1E1A` / `#1A1E1E1E` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
-| `onSurface.opacity16` | `#1E1E1E29` / `#291E1E1E` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio and resting Search placeholder. |
-| `onSurface.opacity24` | `#1E1E1E3D` / `#3D1E1E1E` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content. |
+| `onSurface.opacity08` | `#10151714` / `#14101517` | `#FFFFFF14` / `#14FFFFFF` | Disabled filled and tonal button containers. |
+| `onSurface.opacity10` | `#1015171A` / `#1A101517` | `#FFFFFF1A` / `#1AFFFFFF` | Neutral outlined badge and disabled outlined-button border. |
+| `onSurface.opacity16` | `#10151729` / `#29101517` | `#FFFFFF29` / `#29FFFFFF` | Disabled checkbox/radio roots. |
+| `onSurface.opacity24` | `#1015173D` / `#3D101517` | `#FFFFFF3D` / `#3DFFFFFF` | Disabled button content, Search placeholder, and disabled choice-control marks/dots. |
 
 The checked-in export directly supplies all four normal-mode state-layer colors. High-contrast
 state-layer behavior remains unresolved because those modes are not included in the current export.
 
 ### Runtime Tint Layers
 
-The runtime `tintLayers` group nests the complete Primary Container colors under
-`primaryContainer.opacity08`, `opacity10`, `opacity16`, and `opacity24`. The canonical Segmented
-Control binds its track to `primaryContainer.opacity10`; the other published components do not bind
-to this tint-layer family. Keep these as complete mode-aware colors rather than public alpha floats.
+The runtime `tintLayers` group exposes complete mode-aware colors under `primaryContainer`,
+`onSurface`, and `primary`, each with `opacity08`, `opacity10`, `opacity16`, and `opacity24`.
+
+- Segmented Control binds its track to `primaryContainer.opacity16`.
+- Dividers and subtle component boundaries bind to `onSurface.opacity16`.
+- Light `onSurface.opacity24` intentionally uses `#1E1E1E` as its RGB base, unlike the State Layer.
+- The approved WOOMOB-3552 dark Primary Container tint override is documented in
+  [token-map.md](token-map.md). `figma-export.json` remains unchanged as the audit/source artifact
+  until refreshed through the export workflow.
+- Primary tint layers use `#873EFF` at the matching alpha in both modes.
+
+Keep these as complete mode-aware colors rather than public alpha floats. The committed export keeps
+its explicit RGBA values; runtime XML aliases are allowed only where exact and semantically appropriate.
 
 ## Component Strategy
 
