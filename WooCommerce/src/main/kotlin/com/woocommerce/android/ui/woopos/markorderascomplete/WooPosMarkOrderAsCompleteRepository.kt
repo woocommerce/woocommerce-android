@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.markorderascomplete
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -17,6 +18,7 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val orderMapper: OrderMapper,
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache,
 ) {
     suspend fun getOrderById(orderId: Long): Order? = withContext(Dispatchers.IO) {
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) }
@@ -48,6 +50,12 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
             WooLog.e(T.POS, "Mark order as complete failed - ${updateResult.event.error.message}")
             return@withContext MarkOrderAsCompleteOutcome.Failure
         }
+
+        markedAsPaidOrdersCache.onOrderMovedToPaidStatus(
+            siteId = selectedSite.get().siteId,
+            orderId = orderId,
+            newStatusKey = Order.Status.Completed.value,
+        )
 
         val trimmedNote = customerNote?.takeIf { it.isNotBlank() }
             ?: return@withContext MarkOrderAsCompleteOutcome.Success

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.markorderascomplete
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -15,6 +16,7 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -35,13 +37,19 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val site: SiteModel = mock()
     private val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
 
     private lateinit var repository: WooPosMarkOrderAsCompleteRepository
 
     @Before
     fun setUp() {
         runBlocking {
-            repository = WooPosMarkOrderAsCompleteRepository(selectedSite, orderStore, orderMapper)
+            repository = WooPosMarkOrderAsCompleteRepository(
+                selectedSite,
+                orderStore,
+                orderMapper,
+                markedAsPaidOrdersCache,
+            )
             whenever(selectedSite.get()).thenReturn(site)
             whenever(
                 orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)
@@ -84,6 +92,54 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
                 note = any(),
                 isCustomerNote = any(),
             )
+        }
+
+    @Test
+    fun `given remote update succeeds, when markOrderAsComplete, then order is recorded as paid`() =
+        runTest {
+            // GIVEN
+            val orderId = 123L
+            val siteId = 999L
+            whenever(site.siteId).thenReturn(siteId)
+
+            // WHEN
+            repository.markOrderAsComplete(orderId, customerNote = null)
+
+            // THEN
+            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+                siteId = siteId,
+                orderId = orderId,
+                newStatusKey = Order.Status.Completed.value,
+            )
+        }
+
+    @Test
+    fun `given remote update fails, when markOrderAsComplete, then order is not recorded as paid`() =
+        runTest {
+            // GIVEN
+            whenever(
+                orderStore.updateOrderStatusAndPaymentDetails(
+                    orderId = any(),
+                    site = eq(site),
+                    newStatus = any(),
+                    newPaymentMethodId = eq("other"),
+                    newPaymentMethodTitle = eq("Other"),
+                    cashPaymentChangeDueAmount = isNull(),
+                )
+            ).thenReturn(
+                flowOf(
+                    UpdateOrderResult.RemoteUpdateResult(
+                        OnOrderChanged(orderError = WCOrderStore.OrderError())
+                    )
+                )
+            )
+
+            // WHEN
+            val result = repository.markOrderAsComplete(123L, customerNote = null)
+
+            // THEN
+            assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Failure)
+            verifyNoInteractions(markedAsPaidOrdersCache)
         }
 
     @Test
