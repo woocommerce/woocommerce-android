@@ -17,6 +17,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -67,6 +68,8 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -126,6 +129,7 @@ class OrderListViewModel @Inject constructor(
         private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
         private const val KEY_PENDING_BULK_UPDATE_ORDER_IDS = "pending_bulk_update_order_ids"
         private const val KEY_SELECTED_ORDER_IDS = "selected_order_ids"
+        private const val MIN_SEARCH_QUERY_LENGTH = 3
     }
 
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -197,18 +201,24 @@ class OrderListViewModel @Inject constructor(
 
     private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
 
+    // Legacy Fragment and Route compatibility until the Compose shell delegates all search events to this ViewModel.
     var isSearching: Boolean
         get() = viewState.isSearching
         set(value) {
             viewState = viewState.copy(isSearching = value)
         }
 
+    var searchQuery: String
+        get() = viewState.searchQuery
+        set(value) {
+            viewState = viewState.copy(searchQuery = value)
+        }
+
     private var dismissListErrors = false
-    var searchQuery = ""
+    private var searchJob: Job? = null
 
     /**
-     * The query the guest-orders filter was activated for. After a configuration change the restored
-     * search view re-submits the query as a plain text search, so [submitSearchOrFilter] uses this
+     * The query the guest-orders filter was activated for. Restored and legacy-host searches use this
      * to keep the guest filter active as long as the query hasn't changed.
      */
     private var guestSearchQuery: String?
@@ -274,6 +284,12 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
+        if (isSearching && searchQuery.isNotEmpty()) {
+            cancelPendingSearch()
+            executeSearch(searchQuery, shouldTrackSearch = false)
+            return
+        }
+
         val listDescriptor = getWCOrderListDescriptorWithFilters()
         // When filters haven't changed (e.g. returning from order detail), avoid recreating the
         // PagedListWrapper — clearing/re-binding its LiveData sources causes the list to flash.
@@ -320,11 +336,85 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun onSearchOpened() {
+        if (isSearching) return
+
+        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
+        isSearching = true
+        clearOrderListPresentation()
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        if (!isSearching) return
+
+        if (query.isEmpty()) {
+            onSearchCleared()
+            return
+        }
+
+        searchQuery = query
+        cancelPendingSearch()
+        if (query.length < MIN_SEARCH_QUERY_LENGTH) {
+            clearOrderListPresentation()
+            return
+        }
+
+        searchJob = launch {
+            delay(AppConstants.SEARCH_TYPING_DELAY_MS)
+            if (isSearching && searchQuery == query) {
+                executeSearch(query, shouldTrackSearch = true)
+            }
+        }
+    }
+
+    fun onSearchSubmitted(query: String) {
+        if (!isSearching) return
+
+        cancelPendingSearch()
+        searchQuery = query
+        if (query.isEmpty()) {
+            onSearchCleared()
+        } else {
+            executeSearch(query, shouldTrackSearch = true)
+        }
+    }
+
+    fun onSearchCleared() {
+        cancelPendingSearch()
+        guestSearchQuery = null
+        searchQuery = ""
+        loadOrders()
+    }
+
+    fun onSearchClosed() {
+        cancelPendingSearch()
+        guestSearchQuery = null
+        viewState = viewState.copy(
+            isSearching = false,
+            searchQuery = ""
+        )
+        loadOrders()
+    }
+
     /**
-     * Creates and activates a new list with the search and filter params provided. This should only be used
-     * by the search component portion of the order list view.
+     * Legacy host entry point. OrderListFragment tracks text-search analytics before calling this method.
+     * The Compose shell should use the explicit search event methods above.
      */
     fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+        cancelPendingSearch()
+        this.searchQuery = searchQuery
+        executeSearch(
+            searchQuery = searchQuery,
+            searchGuestOrders = searchGuestOrders,
+            shouldTrackSearch = false
+        )
+    }
+
+    private fun executeSearch(
+        searchQuery: String,
+        searchGuestOrders: Boolean = false,
+        shouldTrackSearch: Boolean
+    ) {
         clearOrderListPresentation()
         val sanitizedQuery = sanitizeSearchQuery(searchQuery)
         val isGuestSearch = searchGuestOrders || sanitizedQuery == guestSearchQuery
@@ -336,6 +426,17 @@ class OrderListViewModel @Inject constructor(
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+        if (shouldTrackSearch) {
+            analyticsTracker.track(
+                AnalyticsEvent.ORDERS_LIST_SEARCH,
+                mapOf(AnalyticsTracker.KEY_SEARCH to searchQuery)
+            )
+        }
+    }
+
+    private fun cancelPendingSearch() {
+        searchJob?.cancel()
+        searchJob = null
     }
 
     fun clearOrderListPresentation() {
@@ -349,7 +450,12 @@ class OrderListViewModel @Inject constructor(
      * search as an explicit guest-orders filter instead.
      */
     fun onSearchGuestOrdersClicked() {
-        submitSearchOrFilter(searchQuery = searchQuery, searchGuestOrders = true)
+        cancelPendingSearch()
+        executeSearch(
+            searchQuery = searchQuery,
+            searchGuestOrders = true,
+            shouldTrackSearch = false
+        )
     }
 
     fun changeTroubleshootingBannerVisibility(show: Boolean) {
@@ -730,11 +836,6 @@ class OrderListViewModel @Inject constructor(
     fun onFiltersButtonTapped() {
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(ShowOrderFilters)
-    }
-
-    fun onSearchClosed() {
-        guestSearchQuery = null
-        loadOrders()
     }
 
     private fun updateOrderDisplayedStatus(orderId: Long, status: String) {
@@ -1218,6 +1319,7 @@ class OrderListViewModel @Inject constructor(
         val isErrorFetchingDataBannerVisible: Boolean = false,
         val shouldDisplayTroubleshootingBanner: Boolean = false,
         val isSearching: Boolean = false,
+        val searchQuery: String = "",
         val isBulkUpdating: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel

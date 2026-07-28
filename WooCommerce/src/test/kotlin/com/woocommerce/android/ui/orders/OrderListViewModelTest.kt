@@ -4,9 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -41,6 +43,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.ShouldUpdateOrdersList
+import com.woocommerce.android.util.advanceTimeAndRun
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
@@ -244,6 +247,228 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.pagedListData.value).isSameAs(pagedList)
     }
+
+    @Test
+    fun `when search is opened and orders reload, then menu search analytics is tracked exactly once`() {
+        // GIVEN
+        clearInvocations(analyticsTracker)
+
+        // WHEN
+        viewModel.onSearchOpened()
+        viewModel.onSearchOpened()
+        viewModel.loadOrders()
+
+        // THEN
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
+    }
+
+    @Test
+    fun `given rapid query changes, when debounce completes, then only the latest search executes`() = testBlocking {
+        // GIVEN
+        clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged("first")
+        advanceTimeAndRun(AppConstants.SEARCH_TYPING_DELAY_MS - 1)
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
+
+        // WHEN
+        viewModel.onSearchQueryChanged("second")
+        advanceTimeAndRun(AppConstants.SEARCH_TYPING_DELAY_MS)
+
+        // THEN
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+            searchQuery = "second",
+            searchGuestOrders = false
+        )
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(
+            searchQuery = "first",
+            searchGuestOrders = false
+        )
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDERS_LIST_SEARCH,
+            mapOf(AnalyticsTracker.KEY_SEARCH to "second")
+        )
+    }
+
+    @Test
+    fun `given a pending search, when orders load, then passive search cancels debounce without analytics`() =
+        testBlocking {
+            // GIVEN
+            clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("query")
+
+            // WHEN
+            viewModel.loadOrders()
+            advanceUntilIdle()
+
+            // THEN
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(1)).invoke(
+                searchQuery = "query",
+                searchGuestOrders = false
+            )
+            verify(analyticsTracker, never()).track(
+                eq(AnalyticsEvent.ORDERS_LIST_SEARCH),
+                any<Map<String, *>>()
+            )
+        }
+
+    @Test
+    fun `given a short query, when submitted, then search executes immediately`() = testBlocking {
+        // GIVEN
+        clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged("ab")
+        advanceTimeAndRun(AppConstants.SEARCH_TYPING_DELAY_MS)
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
+
+        // WHEN
+        viewModel.onSearchSubmitted("ab")
+
+        // THEN
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+            searchQuery = "ab",
+            searchGuestOrders = false
+        )
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDERS_LIST_SEARCH,
+            mapOf(AnalyticsTracker.KEY_SEARCH to "ab")
+        )
+    }
+
+    @Test
+    fun `given a pending search, when submitted, then debounce is cancelled and search executes once`() =
+        testBlocking {
+            // GIVEN
+            clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("query")
+
+            // WHEN
+            viewModel.onSearchSubmitted("query")
+
+            // THEN
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "query",
+                searchGuestOrders = false
+            )
+            advanceUntilIdle()
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, times(1)).invoke(
+                searchQuery = "query",
+                searchGuestOrders = false
+            )
+            verify(analyticsTracker, times(1)).track(
+                AnalyticsEvent.ORDERS_LIST_SEARCH,
+                mapOf(AnalyticsTracker.KEY_SEARCH to "query")
+            )
+        }
+
+    @Test
+    fun `given an active search, when cleared, then normal orders reload and search stays open`() = testBlocking {
+        // GIVEN
+        clearInvocations(
+            getWCOrderListDescriptorWithFilters,
+            getWCOrderListDescriptorWithFiltersAndSearchQuery,
+            analyticsTracker
+        )
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged("query")
+
+        // WHEN
+        viewModel.onSearchCleared()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.viewState.isSearching).isTrue()
+        assertThat(viewModel.viewState.searchQuery).isEmpty()
+        verify(getWCOrderListDescriptorWithFilters).invoke()
+        verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
+        verify(analyticsTracker, never()).track(
+            eq(AnalyticsEvent.ORDERS_LIST_SEARCH),
+            any<Map<String, *>>()
+        )
+    }
+
+    @Test
+    fun `given a pending search, when closed, then normal orders reload and pending search is cancelled`() =
+        testBlocking {
+            // GIVEN
+            clearInvocations(
+                getWCOrderListDescriptorWithFilters,
+                getWCOrderListDescriptorWithFiltersAndSearchQuery,
+                analyticsTracker
+            )
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("query")
+
+            // WHEN
+            viewModel.onSearchClosed()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.isSearching).isFalse()
+            assertThat(viewModel.viewState.searchQuery).isEmpty()
+            verify(getWCOrderListDescriptorWithFilters).invoke()
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
+            verify(analyticsTracker, never()).track(
+                eq(AnalyticsEvent.ORDERS_LIST_SEARCH),
+                any<Map<String, *>>()
+            )
+        }
+
+    @Test
+    fun `given a hash-prefixed query, when debounce completes, then raw state is sanitized only for search`() =
+        testBlocking {
+            // GIVEN
+            clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+            viewModel.onSearchOpened()
+
+            // WHEN
+            viewModel.onSearchQueryChanged("#123")
+            advanceTimeAndRun(AppConstants.SEARCH_TYPING_DELAY_MS)
+
+            // THEN
+            assertThat(viewModel.viewState.searchQuery).isEqualTo("#123")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "123",
+                searchGuestOrders = false
+            )
+            verify(analyticsTracker).track(
+                AnalyticsEvent.ORDERS_LIST_SEARCH,
+                mapOf(AnalyticsTracker.KEY_SEARCH to "#123")
+            )
+        }
+
+    @Test
+    fun `given a restored active search, when ViewModel is recreated, then search resumes without analytics`() =
+        testBlocking {
+            // GIVEN
+            val savedState = OrderListFragmentArgs().toSavedStateHandle().apply {
+                this[OrderListViewModel.ViewState::class.java.name] = OrderListViewModel.ViewState(
+                    isSearching = true,
+                    searchQuery = "restored query"
+                )
+            }
+            whenever(selectedSite.exists()).thenReturn(true)
+            clearInvocations(getWCOrderListDescriptorWithFiltersAndSearchQuery, analyticsTracker)
+
+            // WHEN
+            viewModel = createViewModel(savedState)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.viewState.isSearching).isTrue()
+            assertThat(viewModel.viewState.searchQuery).isEqualTo("restored query")
+            verify(getWCOrderListDescriptorWithFiltersAndSearchQuery).invoke(
+                searchQuery = "restored query",
+                searchGuestOrders = false
+            )
+            verify(analyticsTracker, never()).track(
+                eq(AnalyticsEvent.ORDERS_LIST_SEARCH),
+                any<Map<String, *>>()
+            )
+            verify(analyticsTracker, never()).track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
+        }
 
     /**
      * Test for proper handling of a request to fetch orders and order status options
