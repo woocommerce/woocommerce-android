@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeTone
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @PreviewLightDark
@@ -172,8 +172,16 @@ private fun previewOrder(
     dateCreated = "Jul 24, 2026 10:30",
     total = total,
     badges = listOf(
-        OrderListBadgeUiModel("Processing", WooBadgeTone.Neutral),
-        OrderListBadgeUiModel("POS", WooBadgeTone.Neutral),
+        OrderListBadgeUiModel(
+            text = "Processing",
+            containerColorRes = R.color.tag_bg_processing,
+            contentColorRes = R.color.tagView_text,
+        ),
+        OrderListBadgeUiModel(
+            text = "POS",
+            containerColorRes = R.color.tag_bg_pos,
+            contentColorRes = R.color.tag_text_pos,
+        ),
     ),
     showDivider = showDivider,
 )

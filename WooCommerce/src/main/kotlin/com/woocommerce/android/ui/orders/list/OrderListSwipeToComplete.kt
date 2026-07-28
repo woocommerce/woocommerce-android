@@ -9,10 +9,8 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -100,6 +98,7 @@ internal fun OrderListSwipeToComplete(
             orderId = orderId,
             isCompleted = isCompleted,
             showAction = isEnabled,
+            modifier = Modifier.matchParentSize(),
         )
         content(
             Modifier.absoluteOffset {
@@ -114,6 +113,7 @@ private fun OrderListSwipeBackground(
     orderId: Long,
     isCompleted: Boolean,
     showAction: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val background = if (isCompleted) {
         colorResource(R.color.color_on_surface_disabled)
@@ -121,8 +121,7 @@ private fun OrderListSwipeBackground(
         WooTheme.colors.primary
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .background(background)
             .then(
                 if (!isCompleted && showAction) {
@@ -133,25 +132,27 @@ private fun OrderListSwipeBackground(
             ),
     ) {
         if (!isCompleted && showAction) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
-                    .padding(horizontal = WooTheme.padding.padding7)
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        top = WooTheme.padding.padding5,
+                        end = WooTheme.padding.padding5,
+                    )
                     .clearAndSetSemantics { },
-                horizontalArrangement = Arrangement.Absolute.Right,
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2),
             ) {
                 Icon(
                     imageVector = WooIcons.Regular.CheckSmall,
                     contentDescription = null,
                     tint = WooTheme.colors.onPrimary,
-                    modifier = Modifier.size(WooTheme.iconSize.size18),
+                    modifier = Modifier.size(WooTheme.iconSize.size24),
                 )
                 Text(
                     text = stringResource(R.string.orderlist_mark_completed),
                     color = WooTheme.colors.onPrimary,
-                    style = WooTheme.text.bodySmall.emphasized,
+                    style = WooTheme.text.bodyLarge.regular,
                 )
             }
         }

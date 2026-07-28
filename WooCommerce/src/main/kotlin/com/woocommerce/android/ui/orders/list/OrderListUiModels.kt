@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
-import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeTone
+import androidx.annotation.ColorRes
 
 internal sealed interface OrderListContentState {
     data object InitialLoading : OrderListContentState
@@ -47,7 +47,8 @@ internal sealed interface OrderListItemUiModel {
 
 internal data class OrderListBadgeUiModel(
     val text: String,
-    val tone: WooBadgeTone,
+    @ColorRes val containerColorRes: Int,
+    @ColorRes val contentColorRes: Int,
 )
 
 internal data class OrderListRowState(

@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.list
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.TimeGroup
-import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeTone
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
@@ -41,8 +41,16 @@ class OrderListItemUiMapperTest {
                 dateCreated = "Today",
                 total = "USD 19.50",
                 badges = listOf(
-                    OrderListBadgeUiModel("Processing order", WooBadgeTone.Success),
-                    OrderListBadgeUiModel("POS", WooBadgeTone.NeutralOutlined),
+                    OrderListBadgeUiModel(
+                        text = "Processing order",
+                        containerColorRes = R.color.tag_bg_processing,
+                        contentColorRes = R.color.tagView_text,
+                    ),
+                    OrderListBadgeUiModel(
+                        text = "POS",
+                        containerColorRes = R.color.tag_bg_pos,
+                        contentColorRes = R.color.tag_text_pos,
+                    ),
                 ),
                 isCompleted = false,
                 showDivider = true,
@@ -69,24 +77,29 @@ class OrderListItemUiMapperTest {
         assertThat(result.showDivider).isFalse()
         assertThat(result.isCompleted).isTrue()
         assertThat(result.badges).containsExactly(
-            OrderListBadgeUiModel(Order.Status.Completed.value, WooBadgeTone.Info)
+            OrderListBadgeUiModel(
+                text = Order.Status.Completed.value,
+                containerColorRes = R.color.tag_bg_completed,
+                contentColorRes = R.color.tagView_text,
+            )
         )
     }
 
     @Test
-    fun `given core and custom statuses, when mapped, then semantic badge tones are stable`() {
+    fun `given core and custom statuses, when mapped, then legacy badge colors are used`() {
         val statuses = listOf(
-            Order.Status.Processing.value to WooBadgeTone.Success,
-            Order.Status.Completed.value to WooBadgeTone.Info,
-            Order.Status.OnHold.value to WooBadgeTone.Caution,
-            Order.Status.Failed.value to WooBadgeTone.Error,
-            Order.Status.Pending.value to WooBadgeTone.Neutral,
-            Order.Status.Cancelled.value to WooBadgeTone.Neutral,
-            Order.Status.Refunded.value to WooBadgeTone.Neutral,
-            "custom-status" to WooBadgeTone.Neutral,
+            Order.Status.Processing.value to R.color.tag_bg_processing,
+            Order.Status.Completed.value to R.color.tag_bg_completed,
+            Order.Status.OnHold.value to R.color.tag_bg_on_hold,
+            Order.Status.Failed.value to R.color.tag_bg_failed,
+            Order.Status.Pending.value to R.color.tag_bg_other,
+            Order.Status.Cancelled.value to R.color.tag_bg_other,
+            Order.Status.Refunded.value to R.color.tag_bg_other,
+            " Processing " to R.color.tag_bg_processing,
+            "custom-status" to R.color.tagView_bg,
         )
 
-        statuses.forEach { (status, expectedTone) ->
+        statuses.forEach { (status, expectedContainerColor) ->
             // WHEN
             val result = order(status = status).toUiModel(
                 orderStatusOptions = emptyMap(),
@@ -95,7 +108,8 @@ class OrderListItemUiMapperTest {
             ) as OrderListItemUiModel.Order
 
             // THEN
-            assertThat(result.badges.single().tone).isEqualTo(expectedTone)
+            assertThat(result.badges.single().containerColorRes).isEqualTo(expectedContainerColor)
+            assertThat(result.badges.single().contentColorRes).isEqualTo(R.color.tagView_text)
         }
     }
 

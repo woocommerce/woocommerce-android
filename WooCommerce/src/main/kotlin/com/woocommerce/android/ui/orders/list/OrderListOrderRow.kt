@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooBadge
+import com.woocommerce.android.ui.compose.designsystem.component.WooBadgeDefaults
 import com.woocommerce.android.ui.compose.designsystem.icons.CheckSmall
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
@@ -132,16 +134,11 @@ internal fun OrderListOrderRow(
                             )
                         }
                     }
-                }
-                .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
+                },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (isBulkSelectionActive) {
-                BulkSelectionIndicator(
-                    isSelected = isBulkSelected,
-                    orderId = order.orderId,
-                )
-                Spacer(modifier = Modifier.width(WooTheme.spacing.space4))
+            if (isBulkSelected) {
+                BulkSelectionIndicator(orderId = order.orderId)
             }
             OrderContent(
                 order = order,
@@ -152,35 +149,26 @@ internal fun OrderListOrderRow(
 }
 
 @Composable
-private fun BulkSelectionIndicator(
-    isSelected: Boolean,
-    orderId: Long,
-) {
+private fun BulkSelectionIndicator(orderId: Long) {
     Box(
         modifier = Modifier
+            .padding(start = SELECTION_SLOT_START_INSET)
             .size(SELECTION_INDICATOR_SIZE)
-            .testTag(OrderListTestTags.selectionSlot(orderId)),
+            .testTag(OrderListTestTags.selectionSlot(orderId))
+            .background(
+                color = WooTheme.colors.primary,
+                shape = RoundedCornerShape(WooTheme.radius.small),
+            ),
         contentAlignment = Alignment.Center,
     ) {
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .size(SELECTION_INDICATOR_SIZE)
-                    .testTag(OrderListTestTags.selectionIndicator(orderId))
-                    .background(
-                        color = WooTheme.colors.primary,
-                        shape = RoundedCornerShape(WooTheme.radius.medium),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = WooIcons.Regular.CheckSmall,
-                    contentDescription = null,
-                    tint = WooTheme.colors.onPrimary,
-                    modifier = Modifier.size(WooTheme.iconSize.size18),
-                )
-            }
-        }
+        Icon(
+            imageVector = WooIcons.Regular.CheckSmall,
+            contentDescription = null,
+            tint = WooTheme.colors.onPrimary,
+            modifier = Modifier
+                .size(WooTheme.iconSize.size24)
+                .testTag(OrderListTestTags.selectionIndicator(orderId)),
+        )
     }
 }
 
@@ -191,46 +179,54 @@ private fun OrderContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+        modifier = modifier.padding(
+            start = WooTheme.padding.padding5,
+            end = WooTheme.padding.padding5,
+            top = WooTheme.padding.padding4,
+            bottom = WooTheme.padding.padding5,
+        ),
     ) {
+        order.dateCreated?.takeIf(String::isNotBlank)?.let { dateCreated ->
+            Text(
+                text = dateCreated,
+                color = WooTheme.colors.surface.onVariant,
+                style = WooTheme.text.bodySmall.regular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(WooTheme.spacing.space2))
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = order.number,
                 color = WooTheme.colors.surface.onDefault,
-                style = WooTheme.text.bodyLarge.emphasized,
+                style = WooTheme.text.bodyLarge.regular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.width(WooTheme.spacing.space3))
+            Text(
+                text = order.customerName,
+                color = WooTheme.colors.surface.onDefault,
+                style = WooTheme.text.bodyLarge.regular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
+            Spacer(modifier = Modifier.width(WooTheme.spacing.space5))
             Text(
                 text = order.total,
                 color = WooTheme.colors.surface.onDefault,
-                style = WooTheme.text.bodyLarge.emphasized,
+                style = WooTheme.text.bodyLarge.regular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        Text(
-            text = order.customerName,
-            color = WooTheme.colors.surface.onDefault,
-            style = WooTheme.text.bodyMedium.regular,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        order.dateCreated?.takeIf(String::isNotBlank)?.let { dateCreated ->
-            Text(
-                text = dateCreated,
-                color = WooTheme.colors.surface.onDefault,
-                style = WooTheme.text.bodySmall.regular,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
         if (order.badges.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(WooTheme.spacing.space3))
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2),
                 verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2),
@@ -238,7 +234,10 @@ private fun OrderContent(
                 order.badges.forEach { badge ->
                     WooBadge(
                         text = badge.text,
-                        tone = badge.tone,
+                        colors = WooBadgeDefaults.colors(
+                            containerColor = colorResource(badge.containerColorRes),
+                            contentColor = colorResource(badge.contentColorRes),
+                        ),
                     )
                 }
             }
@@ -247,4 +246,5 @@ private fun OrderContent(
 }
 
 private val ORDER_ROW_MIN_HEIGHT = 96.dp
-private val SELECTION_INDICATOR_SIZE = 24.dp
+private val SELECTION_SLOT_START_INSET = 12.dp
+private val SELECTION_INDICATOR_SIZE = 40.dp

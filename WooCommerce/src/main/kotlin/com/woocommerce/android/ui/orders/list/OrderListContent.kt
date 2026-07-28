@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.list
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -29,6 +31,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -127,7 +133,8 @@ private fun OrderLazyList(
                     if (item.showDivider) {
                         WooDivider(
                             modifier = Modifier
-                                .padding(horizontal = WooTheme.padding.padding7)
+                                .background(WooTheme.colors.surface.default)
+                                .padding(start = WooTheme.padding.padding5)
                                 .testTag(OrderListTestTags.orderDivider(orderId))
                         )
                     }
@@ -158,64 +165,67 @@ private fun OrderLazyList(
 private fun OrderListDateSection(section: OrderListItemUiModel.DateSection) {
     Text(
         text = section.title,
-        color = WooTheme.colors.background.onSection,
-        style = WooTheme.text.titleSmall.strong,
+        color = WooTheme.colors.background.onSectionVariant,
+        style = WooTheme.text.titleSmall.emphasized,
         modifier = Modifier
             .fillMaxWidth()
             .testTag(OrderListTestTags.DATE_SECTION)
             .semantics { heading() }
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
+            .padding(horizontal = WooTheme.padding.padding5, vertical = WooTheme.padding.padding4),
     )
 }
 
 @Composable
 private fun OrderListItemSkeleton(testTag: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag(testTag)
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
-    ) {
-        SkeletonView(
-            width = SKELETON_DATE_WIDTH,
-            height = SKELETON_DATE_HEIGHT,
-            modifier = Modifier.testTag(OrderListTestTags.SKELETON_DATE),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+    Column(modifier = Modifier.background(WooTheme.colors.surface.default)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(testTag)
+                .padding(horizontal = WooTheme.padding.padding5, vertical = WooTheme.padding.padding4),
+            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
         ) {
             SkeletonView(
-                modifier = Modifier
-                    .weight(4f)
-                    .height(SKELETON_TEXT_HEIGHT)
-                    .testTag(OrderListTestTags.SKELETON_TITLE),
+                width = SKELETON_DATE_WIDTH,
+                height = SKELETON_DATE_HEIGHT,
+                modifier = Modifier.testTag(OrderListTestTags.SKELETON_DATE),
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .weight(4f)
+                        .height(SKELETON_TEXT_HEIGHT)
+                        .testTag(OrderListTestTags.SKELETON_TITLE),
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(SKELETON_TEXT_HEIGHT)
+                        .testTag(OrderListTestTags.SKELETON_TOTAL),
+                )
+            }
             SkeletonView(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(SKELETON_TEXT_HEIGHT)
-                    .testTag(OrderListTestTags.SKELETON_TOTAL),
+                width = SKELETON_BADGE_WIDTH,
+                height = SKELETON_BADGE_HEIGHT,
+                modifier = Modifier.testTag(OrderListTestTags.SKELETON_BADGE),
             )
         }
-        SkeletonView(
-            width = SKELETON_BADGE_WIDTH,
-            height = SKELETON_BADGE_HEIGHT,
-            modifier = Modifier.testTag(OrderListTestTags.SKELETON_BADGE),
+        WooDivider(
+            modifier = Modifier
+                .padding(start = WooTheme.padding.padding5)
+                .testTag(OrderListTestTags.SKELETON_DIVIDER)
         )
     }
-    WooDivider(
-        modifier = Modifier
-            .padding(horizontal = WooTheme.padding.padding7)
-            .testTag(OrderListTestTags.SKELETON_DIVIDER)
-    )
 }
 
 @Composable
 private fun OrderListInitialLoading(modifier: Modifier) {
     OrderListMessage(
-        title = stringResource(R.string.orderlist_loading),
+        title = AnnotatedString(stringResource(R.string.orderlist_loading)),
+        isTitleBold = true,
         message = null,
         image = R.drawable.img_empty_orders_loading,
         actionText = null,
@@ -234,38 +244,39 @@ private fun OrderListEmptyState(
 ) {
     val presentation = when (state) {
         OrderListEmptyState.NoOrders -> OrderListMessagePresentation(
-            title = stringResource(R.string.empty_order_list_title),
+            title = AnnotatedString(stringResource(R.string.empty_order_list_title)),
+            isTitleBold = true,
             message = stringResource(R.string.empty_order_list_message),
             image = R.drawable.img_empty_orders_no_orders,
             actionText = stringResource(R.string.learn_more),
             action = OrderListEmptyAction.LearnMore,
         )
         OrderListEmptyState.Filtered -> OrderListMessagePresentation(
-            title = stringResource(R.string.orders_empty_message_for_filtered_orders),
+            title = AnnotatedString(stringResource(R.string.orders_empty_message_for_filtered_orders)),
             message = null,
             image = R.drawable.img_empty_search,
         )
         is OrderListEmptyState.Search -> OrderListMessagePresentation(
-            title = stringResource(R.string.empty_message_with_search, state.query),
+            title = searchEmptyTitle(state.query),
             message = null,
             image = R.drawable.img_empty_search,
         )
         is OrderListEmptyState.GuestSearch -> OrderListMessagePresentation(
-            title = stringResource(R.string.empty_message_with_search, state.query),
+            title = searchEmptyTitle(state.query),
             message = stringResource(R.string.empty_message_with_search_guest),
             image = R.drawable.img_empty_search,
             actionText = stringResource(R.string.empty_search_guest_orders_button),
             action = OrderListEmptyAction.ShowGuestOrders,
         )
         OrderListEmptyState.Offline -> OrderListMessagePresentation(
-            title = stringResource(R.string.offline_error),
+            title = AnnotatedString(stringResource(R.string.offline_error)),
             message = null,
             image = R.drawable.ic_woo_error_state,
             actionText = stringResource(R.string.retry),
             action = OrderListEmptyAction.Retry,
         )
         OrderListEmptyState.NetworkError -> OrderListMessagePresentation(
-            title = stringResource(R.string.error_generic_network),
+            title = AnnotatedString(stringResource(R.string.error_generic_network)),
             message = null,
             image = R.drawable.ic_woo_error_state,
             actionText = stringResource(R.string.retry),
@@ -281,6 +292,7 @@ private fun OrderListEmptyState(
 
     OrderListMessage(
         title = presentation.title,
+        isTitleBold = presentation.isTitleBold,
         message = presentation.message,
         image = presentation.image,
         actionText = presentation.actionText,
@@ -290,8 +302,28 @@ private fun OrderListEmptyState(
 }
 
 @Composable
+private fun searchEmptyTitle(query: String): AnnotatedString {
+    val title = stringResource(R.string.empty_message_with_search, query)
+    return remember(title, query) {
+        buildAnnotatedString {
+            append(title)
+            val queryStart = title.lastIndexOf(query)
+            if (query.isNotEmpty() && queryStart >= 0) {
+                addStyle(
+                    style = SpanStyle(fontWeight = FontWeight.Bold),
+                    start = queryStart,
+                    end = queryStart + query.length,
+                )
+            }
+        }
+    }
+}
+
+@Suppress("LongParameterList")
+@Composable
 private fun OrderListMessage(
-    title: String,
+    title: AnnotatedString,
+    isTitleBold: Boolean,
     message: String?,
     @DrawableRes image: Int,
     actionText: String?,
@@ -311,25 +343,26 @@ private fun OrderListMessage(
             Text(
                 text = title,
                 color = WooTheme.colors.background.onSection,
-                style = WooTheme.text.titleMedium.strong,
+                style = if (isTitleBold) WooTheme.text.titleLarge.strong else WooTheme.text.titleLarge.emphasized,
                 textAlign = TextAlign.Center,
+                modifier = Modifier.widthIn(max = MESSAGE_TEXT_MAX_WIDTH),
             )
             if (showImage) {
                 Image(
                     painter = painterResource(image),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(top = WooTheme.padding.padding8)
-                        .size(MESSAGE_IMAGE_SIZE),
+                    modifier = Modifier.padding(top = WooTheme.padding.padding8),
                 )
             }
             message?.let {
                 Text(
                     text = it,
                     color = WooTheme.colors.background.onSectionVariant,
-                    style = WooTheme.text.bodyMedium.regular,
+                    style = WooTheme.text.bodyLarge.regular,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = WooTheme.padding.padding8),
+                    modifier = Modifier
+                        .padding(top = WooTheme.padding.padding8)
+                        .widthIn(max = MESSAGE_TEXT_MAX_WIDTH),
                 )
             }
             if (actionText != null && onActionClicked != null) {
@@ -338,6 +371,8 @@ private fun OrderListMessage(
                     onClick = onActionClicked,
                     modifier = Modifier
                         .padding(top = WooTheme.padding.padding8)
+                        .padding(horizontal = WooTheme.padding.padding7)
+                        .fillMaxWidth()
                         .testTag(OrderListTestTags.EMPTY_ACTION),
                 )
             }
@@ -346,9 +381,10 @@ private fun OrderListMessage(
 }
 
 private data class OrderListMessagePresentation(
-    val title: String,
+    val title: AnnotatedString,
     val message: String?,
     @DrawableRes val image: Int,
+    val isTitleBold: Boolean = false,
     val actionText: String? = null,
     val action: OrderListEmptyAction? = null,
 )
@@ -362,9 +398,9 @@ private enum class OrderListEmptyAction {
 private const val APPEND_PROGRESS_KEY = "order-list-append-progress"
 private val PROGRESS_SIZE = 24.dp
 private val SKELETON_DATE_WIDTH = 80.dp
-private val SKELETON_DATE_HEIGHT = 12.dp
-private val SKELETON_TEXT_HEIGHT = 16.dp
+private val SKELETON_DATE_HEIGHT = 16.dp
+private val SKELETON_TEXT_HEIGHT = 20.dp
 private val SKELETON_BADGE_WIDTH = 100.dp
 private val SKELETON_BADGE_HEIGHT = 24.dp
-private val MESSAGE_IMAGE_SIZE = 160.dp
+private val MESSAGE_TEXT_MAX_WIDTH = 260.dp
 private val MIN_MESSAGE_IMAGE_HEIGHT = 400.dp
