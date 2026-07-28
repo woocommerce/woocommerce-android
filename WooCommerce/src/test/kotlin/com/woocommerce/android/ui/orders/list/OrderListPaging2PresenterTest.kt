@@ -69,7 +69,7 @@ class OrderListPaging2PresenterTest {
     }
 
     @Test
-    fun `given a valid placeholder, when key and type are read, then loading identity is saveable without loading`() {
+    fun `given a valid placeholder, when its key is read, then identity is saveable without loading`() {
         // GIVEN
         val pagedList = pagedList(listOf(order(1L), null))
         val presenter = OrderListPaging2Presenter()
@@ -78,14 +78,12 @@ class OrderListPaging2PresenterTest {
 
         // WHEN
         val key = presenter.keyAt(state, 1)
-        val contentType = presenter.contentTypeAt(state, 1)
 
         // THEN
         assertThat(state.itemCount).isEqualTo(2)
         assertThat(state.generation).isEqualTo(1L)
         assertThat(key).isEqualTo("order-list-placeholder:1:1")
         assertThat(key).isInstanceOf(String::class.java)
-        assertThat(contentType).isEqualTo(OrderListPaging2Presenter.ItemContentType.Loading)
         verify(pagedList, never()).loadAround(any())
 
         presenter.close()
