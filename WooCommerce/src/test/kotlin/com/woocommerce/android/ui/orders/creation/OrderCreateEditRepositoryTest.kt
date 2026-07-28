@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderAttributionOrigin
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -53,6 +54,9 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var wooCommerceStore: WooCommerceStore
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported = mock()
+    private val orderMapper: OrderMapper = mock {
+        on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
+    }
 
     private val defaultSiteModel = SiteModel()
 
@@ -77,13 +81,14 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             selectedSite = selectedSite,
             orderStore = mock(),
             orderUpdateStore = orderUpdateStore,
-            orderMapper = mock(),
+            orderMapper = orderMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
             analyticsTrackerWrapper = trackerWrapper,
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            markedAsPaidOrdersCache = mock(),
         )
     }
 

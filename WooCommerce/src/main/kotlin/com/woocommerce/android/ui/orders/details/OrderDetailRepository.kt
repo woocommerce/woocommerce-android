@@ -20,11 +20,13 @@ import com.woocommerce.android.model.ShippingLabelMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -49,7 +51,8 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
-    private val shippingLabelMapper: ShippingLabelMapper
+    private val shippingLabelMapper: ShippingLabelMapper,
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -132,7 +135,11 @@ class OrderDetailRepository @Inject constructor(
             orderId,
             selectedSite.get(),
             status
-        )
+        ).onEach { result ->
+            if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
+                markedAsPaidOrdersCache.onOrderMovedToPaidStatus(selectedSite.get().siteId, orderId, newStatus)
+            }
+        }
     }
 
     suspend fun addOrderNote(

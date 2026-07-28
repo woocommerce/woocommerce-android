@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -45,6 +46,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -89,7 +91,16 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
+        on {
+            updateOrderStatusAndPaymentDetails(any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+        }.thenReturn(
+            flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(OnOrderChanged()),
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()),
+            )
+        )
     }
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
 
     private val gatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock {
@@ -445,6 +456,24 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
                 eq(CUSTOM_PAYMENT_METHOD_TITLE),
                 eq(null)
+            )
+        }
+
+    @Test
+    fun `given cash payment confirmed, when order update succeeds, then order is recorded as paid`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(null)
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+
+            // THEN
+            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+                siteId = site.siteId,
+                orderId = 1L,
+                newStatusKey = Order.Status.Completed.value,
             )
         }
 
@@ -1209,7 +1238,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
-            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings
+            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
+            markedAsPaidOrdersCache = markedAsPaidOrdersCache
         )
     }
 
