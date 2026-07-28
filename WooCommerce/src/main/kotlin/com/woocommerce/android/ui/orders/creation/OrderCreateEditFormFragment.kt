@@ -556,7 +556,7 @@ class OrderCreateEditFormFragment :
                 if (isEditable) {
                     binding.showEditableControls(new)
                 } else {
-                    binding.hideEditableControls()
+                    binding.hideEditableControls(new)
                 }
             }
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
@@ -1337,8 +1337,20 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
-        messageNoEditableFields.visibility = View.VISIBLE
+    private fun FragmentOrderCreateEditFormBinding.hideEditableControls(
+        state: OrderCreateEditViewModel.ViewState
+    ) {
+        messageNoEditableFields.apply {
+            state.currencyMismatch?.let { mismatch ->
+                title = getString(R.string.order_editing_currency_mismatch_title)
+                message = getString(
+                    R.string.order_editing_currency_mismatch_message,
+                    mismatch.orderCurrency,
+                    mismatch.storeCurrency
+                )
+            }
+            visibility = View.VISIBLE
+        }
         productsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false

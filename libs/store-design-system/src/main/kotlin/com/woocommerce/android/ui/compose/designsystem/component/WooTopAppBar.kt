@@ -169,7 +169,7 @@ private fun WooTopAppBarLayout(
                 ),
             ),
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = WooTheme.colors.surface.default,
+                containerColor = WooTheme.colors.surface.bright,
                 navigationIconContentColor = WooTheme.colors.surface.onDefault,
                 titleContentColor = titleColor,
                 actionIconContentColor = WooTheme.colors.primary,

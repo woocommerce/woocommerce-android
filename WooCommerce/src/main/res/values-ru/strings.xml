@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 18:57:46+0000
+Translation-Revision-Date: 2026-07-15 09:59:01+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Этот тип изображения не поддерживается. Выберите изображение в формате PNG, JPEG, WebP, GIF, BMP, HEIC или HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Мой магазин недоступен. Приложение обнаружило ошибку подключения при попытке подключиться к моему магазину. Как решить эту проблему?</string>
+    <string name="settings_crash_reporting_error_update">При обновлении настройки отчётов о сбоях произошла ошибка</string>
+    <string name="empty_search_guest_orders_button">Показать заказы гостей</string>
+    <string name="empty_message_with_search_guest">Ищете заказы, размещённые гостевыми клиентами?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Этот заказ был оплачен подарочной картой. Возврат средств здесь не восстановит баланс подарочной карты. Чтобы правильно выполнить возврат средств, выполните обработку в учётной записи администратора магазина на веб-сайте.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Возврат средств из учётной записи администратора магазина</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Не удалось проверить сертификат безопасности этого сайта. Обратитесь к поставщику услуг хостинга или администратору сайта, а затем повторите попытку.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Не удалось установить безопасное подключение. Убедитесь в корректной настройке даты и времени на устройстве, затем повторите попытку.</string>
     <string name="woopos_refund_preview_error">Не удалось рассчитать общую сумму возврата. Повторите попытку.</string>
@@ -502,11 +509,6 @@ Language: ru
     <string name="connectivity_tool_view_technical_details">Просмотр технических данных</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Получение товаров вашего магазина</string>
     <string name="user_role_access_error_fetch_failed">Не удалось подтвердить вашу роль в этом магазине. Повторите попытку. Если устранить проблему не удалось, обратитесь в службу поддержки.</string>
-    <string name="woopos_eligibility_learn_more_label">Подробнее</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. &lt;b&gt;Перейдите на Pro&lt;/b&gt;, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. Перейдите на Pro, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
-    <string name="woopos_eligibility_ciab_title">Требуется тарифный план Pro</string>
-    <string name="ciab_order_status_open">Открыть</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Не удалось приобрести транспортную этикетку. Укажите адрес отправителя.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Адрес отправителя отсутствует или недействителен</string>
     <string name="woopos_orders_details_refund_details_background">Фон диалогового окна сведений о возврате</string>

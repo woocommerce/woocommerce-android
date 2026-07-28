@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-29 16:54:43+0000
+Translation-Revision-Date: 2026-07-13 16:57:11+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">نوع الصورة هذا غير مدعوم. يرجى تحديد صورة بتنسيق PNG أو JPEG أو WebP أو GIF أو BMP أو HEIC أو HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">لا يمكن الوصول إلى متجري. اكتشف التطبيق خطأً في الاتصال أثناء محاولة الوصول إلى متجري. كيف يمكنني حل هذه المشكلة؟</string>
+    <string name="settings_crash_reporting_error_update">حدث خطأ في تحديث إعدادات الإبلاغ عن الأعطال الخاصة بك</string>
+    <string name="empty_search_guest_orders_button">إظهار طلبات الزوار</string>
+    <string name="empty_message_with_search_guest">هل تبحث عن الطلبات التي قدمها العملاء الزوار؟</string>
+    <string name="order_refunds_gift_card_unsupported_message">تم دفع هذا الطلب باستخدام بطاقة هدايا. لن يؤدي استرداد المبلغ هنا إلى استعادة رصيد بطاقة الهدايا. لإجراء عملية الاسترداد بشكل صحيح، يرجى تنفيذها من خلال مشرف متجرك على الويب.</string>
+    <string name="order_refunds_gift_card_unsupported_title">استرداد المبلغ من خلال مشرف متجرك</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">تعذّر علينا التحقق من شهادة الأمان لهذا الموقع. تواصل مع مزوِّد خدمة الاستضافة أو مسؤول الموقع لديك، ثم أعِد المحاولة.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">تعذّر علينا إنشاء اتصال آمن. تحقق من صحة التاريخ والوقت على جهازك، ثم أعِد المحاولة.</string>
     <string name="woopos_refund_preview_error">تعذّر حساب إجمالي الأموال المستردة. يُرجى إعادة المحاولة.</string>
@@ -502,11 +509,6 @@ Language: ar
     <string name="connectivity_tool_view_technical_details">عرض التفاصيل الفنية</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">جارٍ جلب منتجات متجرك</string>
     <string name="user_role_access_error_fetch_failed">تعذّر التحقق من دورك في هذا المتجر. يُرجى المحاولة مرة أخرى. يُرجى التواصل مع الدعم إذا استمرت هذه المشكلة.</string>
-    <string name="woopos_eligibility_learn_more_label">التعرُّف على المزيد</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. &lt;b&gt;قم بالترقية إلى الخطة الاحترافية&lt;/b&gt; للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">اقبل المدفوعات بصفة شخصية مقابل 2.70% + 0.10 دولار لكل معاملة. قم بالترقية إلى الخطة الاحترافية للوصول إلى ميزة \"الضغط للدفع\" على هاتفك ونظام نقطة البيع الكامل لدينا مع المخزون في الوقت الفعلي ومزامنة الطلب.</string>
-    <string name="woopos_eligibility_ciab_title">مطلوب خطة احترافية.</string>
-    <string name="ciab_order_status_open">فتح</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">يتعذر شراء ملصق الشحن. يُرجى إكمال عنوان المنشأ.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">العنوان الأصلي مفقود أو غير صالح</string>
     <string name="woopos_orders_details_refund_details_background">خلفية مربع تفاصيل عملية استرداد الأموال</string>

@@ -94,7 +94,7 @@ class AIProductVariationsDataSourceTest {
             val result = dataSource.getVariation(productId = 100L, variationId = 10L)
 
             assertThat(result.getOrThrow()).isEqualTo(variation)
-            verify(productStore, never()).fetchSingleVariation(any(), any(), any())
+            verify(productStore, never()).fetchSingleVariation(any(), any(), any(), any())
         }
 
     @Test

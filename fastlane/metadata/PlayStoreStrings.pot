@@ -16,16 +16,16 @@ msgid "This release includes internal updates and maintenance improvements for a
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_253"
+msgid ""
+"25.3:\n"
+"This update delivers accurate multi-currency pricing, improved product duplication, and reliable variation image handling. The My Store toolbar is now glitch-free, Analytics Hub shows clearer data comparisons, and In-Person Payments onboarding is more flexible. Plus, several crashes and UI bugs are fixed.\n"
+msgstr ""
+
 msgctxt "release_note_252"
 msgid ""
 "25.2:\n"
 "Managing your store just got smoother: guest orders are easier to find in orders list, shipping packages respond reliably, gift card refunds are handled safely, and weekly stats follow your store settings. We’ve also improved sign-in, navigation, product editing, and overall stability.\n"
-msgstr ""
-
-msgctxt "release_note_251"
-msgid ""
-"25.1:\n"
-"Refunds in Woo POS now open full screen for a cleaner flow. This release also makes the app more dependable when your store can't be reached, with clearer alerts and a quick path to support. Sign-in errors are easier to understand, and we fixed missing recent orders, a startup crash, and other small glitches. Happy selling!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

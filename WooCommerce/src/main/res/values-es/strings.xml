@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:59:08+0000
+Translation-Revision-Date: 2026-07-14 09:57:22+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Este tipo de imagen no es compatible. Selecciona una imagen PNG, JPEG, WebP, GIF, BMP, HEIC o HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">No se puede acceder a mi tienda. La aplicación ha detectado un error de conexión al intentar acceder a mi tienda. ¿Cómo lo puedo solucionar?</string>
+    <string name="settings_crash_reporting_error_update">Se ha producido un error al actualizar tu configuración para reportar fallos</string>
+    <string name="empty_search_guest_orders_button">Mostrar pedidos de invitados</string>
+    <string name="empty_message_with_search_guest">¿Buscas pedidos realizados por clientes invitados?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Este pedido se ha pagado con una tarjeta regalo. Si efectúas el reembolso aquí, no se restablecerá el saldo de la tarjeta regalo. Para efectuar el reembolso correctamente, gestiónalo desde la administración de tu tienda en la web.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Reembolso desde la administración de tu tienda</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">No hemos podido verificar el certificado de seguridad de este sitio. Ponte en contacto con tu proveedor de hosting o administrador del sitio e inténtalo de nuevo.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">No hemos podido establecer una conexión segura. Comprueba que la fecha y la hora del dispositivo sean correctas e inténtalo de nuevo.</string>
     <string name="woopos_refund_preview_error">No se ha podido calcular el total del reembolso. Inténtalo de nuevo.</string>
@@ -502,11 +509,6 @@ Language: es
     <string name="connectivity_tool_view_technical_details">Mostrar detalles técnicos</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Recuperando productos en tu tienda</string>
     <string name="user_role_access_error_fetch_failed">No hemos podido verificar tu perfil en esta tienda. Inténtalo de nuevo. Si el problema continúa, ponte en contacto con el soporte técnico.</string>
-    <string name="woopos_eligibility_learn_more_label">Más información</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Acepta pagos en persona por solo 2,70 % + 0,10 $ por transacción. &lt;b&gt;Mejora a Pro&lt;/b&gt; para acceder a la función de pago con toque en tu teléfono y a nuestro sistema de punto de venta completo con inventario en tiempo real y sincronización de pedidos.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Acepta pagos en persona por solo 2,70 % + 0,10 $ por transacción. Mejora a Pro para acceder a la función de pago con toque en tu teléfono y a nuestro sistema de punto de venta completo con inventario en tiempo real y sincronización de pedidos.</string>
-    <string name="woopos_eligibility_ciab_title">Se necesita el plan Pro.</string>
-    <string name="ciab_order_status_open">Abiertas</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">No se ha podido comprar la etiqueta de envío. Completa la dirección de origen.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Falta la dirección de origen o no es válida</string>
     <string name="woopos_orders_details_refund_details_background">Fondo del cuadro de diálogo de detalles del reembolso</string>

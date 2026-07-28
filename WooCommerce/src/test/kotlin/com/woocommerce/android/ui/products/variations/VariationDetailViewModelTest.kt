@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R.string
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -11,8 +12,10 @@ import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.VariationViewState
+import com.woocommerce.android.util.Optional
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionStringSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -186,6 +189,26 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         assertThat(showUpdateProductError?.message)
             .isEqualTo(displayErrorMessage)
     }
+
+    @Test
+    fun `given the variation image was removed, when the store rejects the removal, then the unsupported version error is shown`() =
+        testBlocking {
+            val result = WCProductStore.OnVariationUpdated(remoteProductId = 1, remoteVariationId = 2)
+            result.error = WCProductStore.ProductError(
+                type = WCProductStore.ProductErrorType.INVALID_VARIATION_IMAGE_ID,
+                message = ""
+            )
+            doReturn(result).whenever(variationRepository).updateVariation(any())
+
+            setup()
+            sut.variationViewStateData.observeForever { _, _ -> }
+            sut.onVariationChanged(image = Optional(null))
+            sut.onUpdateButtonClicked()
+
+            assertThat(sut.event.value).matches {
+                it is ShowSnackbar && it.message == string.variation_detail_update_variation_image_error
+            }
+        }
 
     @Test
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {

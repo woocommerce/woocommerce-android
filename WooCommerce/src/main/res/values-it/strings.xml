@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 08:57:34+0000
+Translation-Revision-Date: 2026-07-15 09:59:01+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Questo tipo di immagine non è supportato. Seleziona un\'immagine PNG, JPEG, WebP, GIF, BMP, HEIC o HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Il mio negozio non può essere raggiunto. L\'app ha rilevato un errore di connessione durante il tentativo di raggiungere il mio negozio. Come posso risolvere questo problema?</string>
+    <string name="empty_message_with_search_guest">Cerchi ordini effettuati da clienti ospiti?</string>
+    <string name="settings_crash_reporting_error_update">Si è verificato un errore durante l\'aggiornamento delle impostazioni relative alla segnalazione degli arresti anomali</string>
+    <string name="empty_search_guest_orders_button">Mostra ordini dei clienti ospiti</string>
+    <string name="order_refunds_gift_card_unsupported_title">Rimborso dall\'amministratore del negozio</string>
+    <string name="order_refunds_gift_card_unsupported_message">Questo ordine è stato pagato con una gift card. Il rimborso qui non ripristinerà il saldo della gift card. Per effettuare correttamente il rimborso, ti preghiamo di gestirlo tramite l\'amministratore del tuo negozio sul sito web.</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Impossibile verificare il certificato di sicurezza di questo sito. Contatta il fornitore del servizio di hosting o l\'amministratore del sito, quindi riprova.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Impossibile stabilire una connessione sicura. Verifica che la data e l\'ora del dispositivo siano corrette, quindi riprova.</string>
     <string name="woopos_refund_preview_error">Impossibile calcolare il totale del rimborso. Riprova.</string>
@@ -501,11 +508,6 @@ Language: it
     <string name="connectivity_tool_technical_details_title">Dettagli tecnici</string>
     <string name="connectivity_tool_view_technical_details">Visualizza dettagli tecnici</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Recupero dei prodotti nel negozio</string>
-    <string name="woopos_eligibility_learn_more_label">Scopri di più</string>
-    <string name="woopos_eligibility_ciab_title">Piano Pro richiesto.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accetta pagamenti di persona a soli 2,70% + $ 0,10 per transazione. &lt;b&gt;Passa a Pro&lt;/b&gt; per accedere al tap-to-pay sul tuo telefono e al nostro sistema completo di punti vendita con inventario in tempo reale e sincronizzazione degli ordini.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accetta pagamenti di persona a soli 2,70% + $ 0,10 per transazione. Passa a Pro per accedere al tap-to-pay sul tuo telefono e al nostro sistema completo di punti vendita con inventario in tempo reale e sincronizzazione degli ordini.</string>
-    <string name="ciab_order_status_open">Aperto</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Impossibile acquistare l\'etichetta di spedizione. Completa l\'indirizzo di origine.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Indirizzo di origine mancante o non valido</string>
     <string name="woopos_orders_details_refund_details_background">Sfondo della finestra di dialogo dei dettagli del rimborso</string>

@@ -124,8 +124,8 @@ private fun PageHeaderActions(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun pageHeaderColors(): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = WooTheme.colors.surface.default,
-    scrolledContainerColor = WooTheme.colors.surface.default,
+    containerColor = WooTheme.colors.surface.bright,
+    scrolledContainerColor = WooTheme.colors.surface.bright,
     titleContentColor = WooTheme.colors.background.onSection,
     actionIconContentColor = WooTheme.colors.primary,
 )

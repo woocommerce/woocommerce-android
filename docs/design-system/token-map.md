@@ -36,8 +36,9 @@ Refreshing the export should preserve this parser contract:
 - If a future component audit proves a `Semantic` variable is the intended source, update this
   token map with the component evidence and approved mapping before consuming that section.
 
-Use the committed export for row-level source paths and values. Keep unresolved notes in this token
-map. Do not use older split token exports as current foundation sources.
+Use the committed export for row-level source paths and values except where an approved override is
+recorded in this token map. Keep unresolved notes in this token map. Do not hand-edit the export to
+apply an override or use older split token exports as current foundation sources.
 
 The Figma `Color roles` frame validates the role inventory and light-mode values for Primary and
 Secondary, Container, Surface, Outline, and Error/alert/success. Background, Overlay, and Palette are
@@ -58,16 +59,16 @@ interop.
 
 | Android API | Source reference | Light value | Dark value | Material 3 role mapping | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `WooTheme.colors` | `figma-export.json` / `Woo theme` | See color reconciliation table | See color reconciliation table | Projection to `ColorScheme` | production | Grouped Store authoring roles; Material 3 is an interop projection. |
-| `WooTheme.text` | `figma-export.json` / `Typescale` and `Font theme` | See text table | Same values | Regular projection to `Typography` | production | Android mode values; Android default font is the runtime equivalent for source `Roboto`. |
+| `WooTheme.colors` | `figma-export.json` / `Woo Theme` and `Colors` | See color reconciliation table | See color reconciliation table | Projection to `ColorScheme` | production | Semantic roles retain aliases to the separate primitive collection; Material 3 is an interop projection. |
+| `WooTheme.text` | `figma-export.json` / `Typescale` and `Font Theme` | See text table | Same values | Regular projection to `Typography` | production | Android mode values; Android default font is the runtime equivalent for source `Roboto`. |
 | `WooTheme.spacing` | `figma-export.json` / `Spacing/Spacing` | `0..64dp` | Same values | No Material role | production | Theme-scoped spacing accessor. |
 | `WooTheme.padding` | `figma-export.json` / `Spacing/Padding` | `0..64dp` | Same values | No Material role | production | Separate group from spacing even when values match. |
 | `WooTheme.radius` | `figma-export.json` / `Shape/Corner-Radius` | `0..999dp` | Same values | Partial projection to `Shapes` | production | Includes Woo-only `none` and `full` tokens. |
-| `WooTheme.iconSize` | `figma-export.json` / `Icon/Size` | `14..32dp` | Same values | No Material role | production | Glyph sizes only; not touch-target or layout sizing. |
+| `WooTheme.iconSize` | `figma-export.json` / `Icon/Icon-Size` | `14..32dp` | Same values | No Material role | production | Glyph sizes only; not touch-target or layout sizing. |
 
 ## PR 2 Public Color Surface
 
-`WooTheme.colors` exposes source-backed Store authoring roles from `figma-export.json` / `Woo theme`.
+`WooTheme.colors` exposes source-backed Store authoring roles from `figma-export.json` / `Woo Theme`.
 Group the public API shallowly by source intent; do not collapse the source into a small Material
 3-like subset.
 
@@ -75,15 +76,15 @@ Group the public API shallowly by source intent; do not collapse the source into
 | --- | --- |
 | Core | Primary, on-primary, secondary, on-secondary, error, and on-error roles. |
 | Container | Primary container, on-primary container, secondary container, and on-secondary container. These are accent containers; status containers stay under `status`. |
-| Surface | Surface, surface dim, surface container highest, on-default, on-variant, on-variant-lowest, inverted, and on-inverted roles. |
+| Surface | Surface, surface bright, surface dim, surface container highest, on-default, on-variant, on-variant-lowest, on-variant-highest, inverted, and on-inverted roles. |
 | Outline | `outline` and `outlineVariant`. |
 | Status | Error, warning, caution, success, info, and neutral containers plus their on-container colors. |
 | Alert | Red, orange, green, and blue alert ramp colors plus their on-colors. |
-| Background | Export-backed background roles; not validated by the Color roles frame. |
+| Background | Stable Android compatibility group backed by the export's three `Add-Ons` roles. `onSectionVariant` aliases `onSection`; there is no fourth source token. |
 | Overlay | Export-backed overlay roles; not validated by the Color roles frame. |
 | State layer | Export-backed, mode-aware On Surface `Opacity-08`, `Opacity-10`, `Opacity-16`, and `Opacity-24` colors under `WooTheme.colors.stateLayers.onSurface`. |
-| Tint layer | Export-backed Primary Container `Opacity-08`, `Opacity-10`, `Opacity-16`, and `Opacity-24` colors under `WooTheme.colors.tintLayers.primaryContainer`; the Segmented Control binds to `Opacity-10`. |
-| Palette | Export-backed primitive/ramp data exposed as public `WooTheme.colors.palette.*` tokens. |
+| Tint layer | Export-backed Primary Container, On Surface, and Primary opacity families under `WooTheme.colors.tintLayers`; Segmented Control binds to Primary Container `Opacity-16`, while dividers and subtle component boundaries bind to On Surface `Opacity-16`. |
+| Palette | Top-level `Colors` primitive/ramp data, including White and Black, exposed as public `WooTheme.colors.palette.*` tokens. |
 
 ## Mapping Rules
 
@@ -104,10 +105,10 @@ Group the public API shallowly by source intent; do not collapse the source into
   `WooTheme.colors.stateLayers.onSurface`. Do not create public `WooTheme.stateAlpha` or other raw
   alpha floats.
 - Keep state layers out of `MaterialTheme.colorScheme`; components consume the Store tokens directly.
-- Keep `stateLayers` separate from `surface`. Their light On Surface bases intentionally differ:
-  state layers use `#1E1E1E`, while `surface.onDefault` uses `#000000`.
-- Expose Primary Container tint layers as complete mode-aware `Color` values under
-  `WooTheme.colors.tintLayers.primaryContainer`. Do not replace them with reusable alpha floats.
+- Keep `stateLayers` separate from `surface`. The light On Surface base is `#101517`, matching the
+  resolved semantic On Surface value, while retaining complete opacity-specific colors.
+- Expose Primary Container, On Surface, and Primary tint layers as complete mode-aware `Color`
+  values under `WooTheme.colors.tintLayers`. Do not replace them with reusable alpha floats.
 - Do not create a separate `WooTheme.semanticColors` group in PR 2.
 - If a non-color Figma variable has no clean Material 3 role, add it as an internal adapter token
   first.
@@ -150,97 +151,107 @@ When defining tokens:
 ## Public Color Source Reconciliation
 
 Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
-`figma-export.json` according to the Figma export parsing rules.
+`figma-export.json` according to the Figma export parsing rules, except for explicitly approved
+Android overrides. WOOMOB-3552 approves `#6D469C` as the dark Primary Container tint RGB base for
+08/10/16/24; the checked-in export remains unchanged as an audit/source artifact until refreshed by
+the export workflow.
 
 High-contrast state-layer values are not present in the current export and are not part of normal
 runtime mapping.
 
 | Android API | Source path | Export file | Light hex / alpha | Dark hex / alpha | M3 projection | Status | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `WooTheme.colors.primary` | `Woo theme/Primary` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | `primary` | production | Core primary. |
-| `WooTheme.colors.onPrimary` | `Woo theme/On-Primary` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onPrimary` | production | Foreground for `primary`. |
-| `WooTheme.colors.secondary` | `Woo theme/Secondary` | `figma-export.json` | `#6108CE` / 100% | `#383146` / 100% | `secondary` | production | Core secondary. |
-| `WooTheme.colors.onSecondary` | `Woo theme/On-Secondary` | `figma-export.json` | `#FFFFFF` / 100% | `#F1EDFE` / 100% | `onSecondary` | production | Foreground for `secondary`. |
-| `WooTheme.colors.error` | `Woo theme/Error` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | `error` | production | Foreground/control error role; used by Checkbox error states. |
-| `WooTheme.colors.onError` | `Woo theme/On-Error` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onError` | production | Foreground paired with `error`. |
-| `WooTheme.colors.container.primaryContainer` | `Woo theme/Primary-Container` | `figma-export.json` | `#B999FF` / 100% | `#FFFFFF` / 100% | `primaryContainer` | production | Accent container role. |
-| `WooTheme.colors.container.onPrimaryContainer` | `Woo theme/On-Primary-Container` | `figma-export.json` | `#2C045D` / 100% | `#FFFFFF` / 100% | `onPrimaryContainer` | production | Foreground for `primaryContainer`. |
-| `WooTheme.colors.container.secondaryContainer` | `Woo theme/Secondary-Container` | `figma-export.json` | `#F2EDFF` / 100% | `#3C087E` / 100% | `secondaryContainer` | production | Accent container role; dark resolves to Woo Purple 80. |
-| `WooTheme.colors.container.onSecondaryContainer` | `Woo theme/On-Secondary-Container` | `figma-export.json` | `#873EFF` / 100% | `#B999FF` / 100% | `onSecondaryContainer` | production | Foreground for `secondaryContainer`; dark resolves to Woo Purple 20. |
-| `WooTheme.colors.outline` | `Woo theme/Outline/Outline` | `figma-export.json` | `#787C82` / 100% | `#454549` / 100% | `outline` | production | Boundary token. |
-| `WooTheme.colors.outlineVariant` | `Woo theme/Outline/Outline-Variant` | `figma-export.json` | `#DCDCDE` / 100% | `#5E5E63` / 100% | `outlineVariant` | production | Subtle boundary token. |
-| `WooTheme.colors.background.section` | `Woo theme/Background/Section-Background` | `figma-export.json` | `#F2F2F8` / 100% | `#101517` / 100% | `background` | production | Section background. |
-| `WooTheme.colors.background.onSection` | `Woo theme/Background/On-Section-Background` | `figma-export.json` | `#1E1E1E` / 100% | `#FFFFFF` / 100% | `onBackground` | production | Foreground for `section`. |
-| `WooTheme.colors.background.sectionVariant` | `Woo theme/Background/Section-Background-Variant` | `figma-export.json` | `#F0F0F0` / 100% | `#101517` / 100% | `surfaceVariant` | production | Variant section background. |
-| `WooTheme.colors.background.onSectionVariant` | `Woo theme/Background/On-Section-Background-Variant` | `figma-export.json` | `#1C1C1E` / 100% | `#8B8A8E` / 100% | No direct M3 role | production | Foreground for `sectionVariant`. |
-| `WooTheme.colors.surface.default` | `Woo theme/Surface/Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#232529` / 100% | `surface` | production | Default surface. |
-| `WooTheme.colors.surface.surfaceDim` | `Woo theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#2C3338` / 100% | `surfaceDim` | production | Promoted source-backed surface role. |
-| `WooTheme.colors.surface.surfaceContainerHighest` | `Woo theme/Surface/Surface-Container-Highest` | `figma-export.json` | `#DCDCDE` / 100% | `#232529` / 100% | `surfaceContainerHighest` | production | Promoted source-backed surface role. |
-| `WooTheme.colors.surface.onDefault` | `Woo theme/Surface/On-Surface` | `figma-export.json` | `#000000` / 100% | `#FFFFFF` / 100% | `onSurface` | production | Foreground for default surface. |
-| `WooTheme.colors.surface.onVariant` | `Woo theme/Surface/On-Surface-Variant` | `figma-export.json` | `#2C3338` / 100% | `#626068` / 100% | `onSurfaceVariant` | production | Variant foreground. |
-| `WooTheme.colors.surface.onVariantLowest` | `Woo theme/Surface/On-Surface-Variant-Lowest` | `figma-export.json` | `#50575E` / 100% | `#626068` / 100% | No direct M3 role | production | Lowest variant foreground. |
-| `WooTheme.colors.surface.inverted` | `Woo theme/Surface/Inverse-Surface` | `figma-export.json` | `#000000` / 100% | `#FFFFFF` / 100% | `inverseSurface` | production | Inverse surface. |
-| `WooTheme.colors.surface.onInverted` | `Woo theme/Surface/On-Inverse-Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#000000` / 100% | `inverseOnSurface` | production | Foreground for inverse surface. |
-| `WooTheme.colors.status.errorContainer` | `Woo theme/Alerts/Error-Container` | `figma-export.json` | `#F6E6E3` / 100% | `#F6E6E3` / 100% | `errorContainer` | production | Error container. |
-| `WooTheme.colors.status.onErrorContainer` | `Woo theme/Alerts/On-Error-Container` | `figma-export.json` | `#470000` / 100% | `#470000` / 100% | `onErrorContainer` | production | Foreground for `errorContainer`. |
-| `WooTheme.colors.status.warningContainer` | `Woo theme/Alerts/Warning-Container` | `figma-export.json` | `#FDE6BE` / 100% | `#FDE6BE` / 100% | No direct M3 role | production | Warning container. |
-| `WooTheme.colors.status.onWarningContainer` | `Woo theme/Alerts/On-Warning-Container` | `figma-export.json` | `#2E1900` / 100% | `#2E1900` / 100% | No direct M3 role | production | Foreground for `warningContainer`. |
-| `WooTheme.colors.status.cautionContainer` | `Woo theme/Alerts/Caution-Container` | `figma-export.json` | `#FEE995` / 100% | `#FEE995` / 100% | No direct M3 role | production | Caution container. |
-| `WooTheme.colors.status.onCautionContainer` | `Woo theme/Alerts/On-Caution-Container` | `figma-export.json` | `#281D00` / 100% | `#281D00` / 100% | No direct M3 role | production | Foreground for `cautionContainer`. |
-| `WooTheme.colors.status.successContainer` | `Woo theme/Alerts/Success-Container` | `figma-export.json` | `#C6F7CD` / 100% | `#C6F7CD` / 100% | No direct M3 role | production | Success container. |
-| `WooTheme.colors.status.onSuccessContainer` | `Woo theme/Alerts/On-Success-Container` | `figma-export.json` | `#002900` / 100% | `#002900` / 100% | No direct M3 role | production | Foreground for `successContainer`. |
-| `WooTheme.colors.status.infoContainer` | `Woo theme/Alerts/Info-Container` | `figma-export.json` | `#DEEBFA` / 100% | `#DEEBFA` / 100% | No direct M3 role | production | Info container. |
-| `WooTheme.colors.status.onInfoContainer` | `Woo theme/Alerts/On-Info-Container` | `figma-export.json` | `#001B4F` / 100% | `#001B4F` / 100% | No direct M3 role | production | Foreground for `infoContainer`. |
-| `WooTheme.colors.status.neutralContainer` | `Woo theme/Alerts/Neutral-Container` | `figma-export.json` | `#F4F4F4` / 100% | `#F4F4F4` / 100% | No direct M3 role | production | Neutral container. |
-| `WooTheme.colors.status.onNeutralContainer` | `Woo theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
-| `WooTheme.colors.overlay.overlay20` | `Woo theme/Overlay/Opacity-20` | `figma-export.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Overlay color. |
-| `WooTheme.colors.overlay.overlay50` | `Woo theme/Overlay/Opacity-50` | `figma-export.json` | `#000000` / 50% | `#000000` / 75% | `scrim` | production | Overlay color. |
-| `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#1E1E1E14` | `#FFFFFF14` | No M3 projection | production | Disabled filled/tonal button container. |
-| `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1E1E1E1A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
-| `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#1E1E1E29` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio and resting Search placeholder. |
-| `WooTheme.colors.stateLayers.onSurface.opacity24` | `Woo theme/State-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1E1E1E3D` | `#FFFFFF3D` | No M3 projection | production | Disabled button content. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#FFFFFF14` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#FFFFFF1A` | No M3 projection | production | Canonical Segmented Control track. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#FFFFFF29` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#FFFFFF3D` | No M3 projection | production | Source-backed tint-layer family; no published component binding found. |
-| `WooTheme.colors.alert.red` | `Woo theme/Alerts/Red` | `figma-export.json` | `#FC4A5B` / 100% | `#DC3545` / 100% | No direct M3 role | production | Alert ramp color. |
-| `WooTheme.colors.alert.onRed` | `Woo theme/Alerts/On-Red` | `figma-export.json` | `#FFFFFF` / 100% | `#DC3545` / 100% | No direct M3 role | production | Foreground for `red`. |
-| `WooTheme.colors.alert.orange` | `Woo theme/Alerts/Orange` | `figma-export.json` | `#FF9000` / 100% | `#EAAB2D` / 100% | No direct M3 role | production | Alert ramp color. |
-| `WooTheme.colors.alert.onOrange` | `Woo theme/Alerts/On-Orange` | `figma-export.json` | `#FFFFFF` / 100% | `#EAAB2D` / 100% | No direct M3 role | production | Foreground for `orange`. |
-| `WooTheme.colors.alert.green` | `Woo theme/Alerts/Green` | `figma-export.json` | `#27AE32` / 100% | `#69B66F` / 100% | No direct M3 role | production | Alert ramp color. |
-| `WooTheme.colors.alert.onGreen` | `Woo theme/Alerts/On-Green` | `figma-export.json` | `#FFFFFF` / 100% | `#69B66F` / 100% | No direct M3 role | production | Foreground for `green`. |
-| `WooTheme.colors.alert.blue` | `Woo theme/Alerts/Blue` | `figma-export.json` | `#1E94D0` / 100% | `#1E94D0` / 100% | No direct M3 role | production | Alert ramp color. |
-| `WooTheme.colors.alert.onBlue` | `Woo theme/Alerts/On-Blue` | `figma-export.json` | `#FFFFFF` / 100% | `#1E94D0` / 100% | No direct M3 role | production | Foreground for `blue`. |
-| `WooTheme.colors.palette.sandstone.shade5` | `Woo theme/Add-On-Colors/Woo-Sandstone/5` | `figma-export.json` | `#FBF9F6` / 100% | `#FBF9F6` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.sandstone.shade10` | `Woo theme/Add-On-Colors/Woo-Sandstone/10` | `figma-export.json` | `#F1EEEB` / 100% | `#F1EEEB` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.sandstone.shade20` | `Woo theme/Add-On-Colors/Woo-Sandstone/20` | `figma-export.json` | `#E6E2DE` / 100% | `#E6E2DE` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.sandstone.shade40` | `Woo theme/Add-On-Colors/Woo-Sandstone/40` | `figma-export.json` | `#C5C2BF` / 100% | `#C5C2BF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.sandstone.shade60` | `Woo theme/Add-On-Colors/Woo-Sandstone/60` | `figma-export.json` | `#8B8A89` / 100% | `#8B8A89` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooBlue.shade20` | `Woo theme/Add-On-Colors/Woo-Blue/20` | `figma-export.json` | `#75FFFF` / 100% | `#75FFFF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooBlue.shade40` | `Woo theme/Add-On-Colors/Woo-Blue/40` | `figma-export.json` | `#1AD0FD` / 100% | `#1AD0FD` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooBlue.shade60` | `Woo theme/Add-On-Colors/Woo-Blue/60` | `figma-export.json` | `#05096C` / 100% | `#05096C` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooGreen.shade20` | `Woo theme/Add-On-Colors/Woo-Green/20` | `figma-export.json` | `#D5FF4A` / 100% | `#D5FF4A` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooGreen.shade40` | `Woo theme/Add-On-Colors/Woo-Green/40` | `figma-export.json` | `#06E782` / 100% | `#06E782` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooGreen.shade60` | `Woo theme/Add-On-Colors/Woo-Green/60` | `figma-export.json` | `#083D2D` / 100% | `#083D2D` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooOrange.shade20` | `Woo theme/Add-On-Colors/Woo-Orange/20` | `figma-export.json` | `#FFE500` / 100% | `#FFE500` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooOrange.shade40` | `Woo theme/Add-On-Colors/Woo-Orange/40` | `figma-export.json` | `#FF9000` / 100% | `#FF9000` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooOrange.shade60` | `Woo theme/Add-On-Colors/Woo-Orange/60` | `figma-export.json` | `#FF4800` / 100% | `#FF4800` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPink.shade20` | `Woo theme/Add-On-Colors/Woo-Pink/20` | `figma-export.json` | `#FCA8FF` / 100% | `#FCA8FF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPink.shade40` | `Woo theme/Add-On-Colors/Woo-Pink/40` | `figma-export.json` | `#FF45E3` / 100% | `#FF45E3` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPink.shade60` | `Woo theme/Add-On-Colors/Woo-Pink/60` | `figma-export.json` | `#4E0061` / 100% | `#4E0061` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade0` | `Woo theme/Add-On-Colors/Woo-Purple/0` | `figma-export.json` | `#F2EDFF` / 100% | `#F2EDFF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade5` | `Woo theme/Add-On-Colors/Woo-Purple/5` | `figma-export.json` | `#E1D7FF` / 100% | `#E1D7FF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade10` | `Woo theme/Add-On-Colors/Woo-Purple/10` | `figma-export.json` | `#D1C1FF` / 100% | `#D1C1FF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade20` | `Woo theme/Add-On-Colors/Woo-Purple/20` | `figma-export.json` | `#B999FF` / 100% | `#B999FF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade30` | `Woo theme/Add-On-Colors/Woo-Purple/30` | `figma-export.json` | `#A77EFF` / 100% | `#A77EFF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade40` | `Woo theme/Add-On-Colors/Woo-Purple/40` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade50` | `Woo theme/Add-On-Colors/Woo-Purple/50` | `figma-export.json` | `#720EEC` / 100% | `#720EEC` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade60` | `Woo theme/Add-On-Colors/Woo-Purple/60` | `figma-export.json` | `#6108CE` / 100% | `#6108CE` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade70` | `Woo theme/Add-On-Colors/Woo-Purple/70` | `figma-export.json` | `#5007AA` / 100% | `#5007AA` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade80` | `Woo theme/Add-On-Colors/Woo-Purple/80` | `figma-export.json` | `#3C087E` / 100% | `#3C087E` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade90` | `Woo theme/Add-On-Colors/Woo-Purple/90` | `figma-export.json` | `#2C045D` / 100% | `#2C045D` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.wooPurple.shade100` | `Woo theme/Add-On-Colors/Woo-Purple/100` | `figma-export.json` | `#1F0342` / 100% | `#1F0342` / 100% | No direct M3 role | production | Public palette ramp token. |
-| `WooTheme.colors.palette.gray.shade0..shade100` | `Woo theme/Add-On-Colors/Gray/0..100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
+| `WooTheme.colors.primary` | `Woo Theme/Primary` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | `primary` | production | Core primary. |
+| `WooTheme.colors.onPrimary` | `Woo Theme/On-Primary` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onPrimary` | production | Foreground for `primary`. |
+| `WooTheme.colors.secondary` | `Woo Theme/Secondary` | `figma-export.json` | `#6108CE` / 100% | `#383146` / 100% | `secondary` | production | Core secondary. |
+| `WooTheme.colors.onSecondary` | `Woo Theme/On-Secondary` | `figma-export.json` | `#FFFFFF` / 100% | `#F1EDFE` / 100% | `onSecondary` | production | Foreground for `secondary`. |
+| `WooTheme.colors.error` | `Woo Theme/Error` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | `error` | production | Foreground/control error role; used by Checkbox error states. |
+| `WooTheme.colors.onError` | `Woo Theme/On-Error` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onError` | production | Foreground paired with `error`. |
+| `WooTheme.colors.container.primaryContainer` | `Woo Theme/Primary-Container` | `figma-export.json` | `#B999FF` / 100% | `#3C087E` / 100% | `primaryContainer` | production | Accent container role. |
+| `WooTheme.colors.container.onPrimaryContainer` | `Woo Theme/On-Primary-Container` | `figma-export.json` | `#2C045D` / 100% | `#FFFFFF` / 100% | `onPrimaryContainer` | production | Foreground for `primaryContainer`. |
+| `WooTheme.colors.container.secondaryContainer` | `Woo Theme/Secondary-Container` | `figma-export.json` | `#B999FF29` | `#873EFF29` | `secondaryContainer` | production | The supplied export aliases light/dark to different opacity16 tint roles. Live published Figma still resolves stale opacity24 values. |
+| `WooTheme.colors.container.onSecondaryContainer` | `Woo Theme/On-Secondary-Container` | `figma-export.json` | `#873EFF` / 100% | `#FFFFFF` / 100% | `onSecondaryContainer` | production | Foreground for `secondaryContainer`; selected Filter Chip content uses this role. |
+| `WooTheme.colors.outline` | `Woo Theme/Outline/Outline` | `figma-export.json` | `#787C82` / 100% | `#8C8F94` / 100% | `outline` | production | Boundary token. |
+| `WooTheme.colors.outlineVariant` | `Woo Theme/Outline/Outline-Variant` | `figma-export.json` | `#DCDCDE` / 100% | `#50575E` / 100% | `outlineVariant` | production | Subtle boundary token. |
+| `WooTheme.colors.background.section` | `Woo Theme/Add-Ons/Section-Background` | `figma-export.json` | `#F0EDF4` / 100% | `#000000` / 100% | `background` | production | Stable Android background API backed by the renamed source group. |
+| `WooTheme.colors.background.onSection` | `Woo Theme/Add-Ons/On-Section-Background` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | `onBackground` | production | Foreground for both Add-On section surfaces. |
+| `WooTheme.colors.background.sectionVariant` | `Woo Theme/Add-Ons/Section-Background-Variant` | `figma-export.json` | `#F0F0F0` / 100% | `#101517` / 100% | `surfaceVariant` | production | Variant section background. |
+| `WooTheme.colors.background.onSectionVariant` | Compatibility alias of `Woo Theme/Add-Ons/On-Section-Background` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Stable public alias only; the supplied source removed the former fourth token. |
+| `WooTheme.colors.surface.default` | `Woo Theme/Surface/Surface` | `figma-export.json` | `#F6F7F7` / 100% | `#1D2327` / 100% | `surface` | production | Generic Surface; no longer conflated with Surface Bright. |
+| `WooTheme.colors.surface.bright` | `Woo Theme/Surface/Surface-Bright` | `figma-export.json` | `#FFFFFF` / 100% | `#101517` / 100% | `surfaceBright` | production | Shell for Cell, Filter Chip, Top Navigation Bar, Page Header, Search, Segmented Control, Sheet, Tab Bar, Tabs, and Table. |
+| `WooTheme.colors.surface.surfaceDim` | `Woo Theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#101517` / 100% | `surfaceDim` | production | Promoted source-backed surface role. |
+| `WooTheme.colors.surface.surfaceContainerHighest` | `Woo Theme/Surface/Surface-Container-Highest` | `figma-export.json` | `#8C8F94` / 100% | `#50575E` / 100% | `surfaceContainerHighest` | production | Promoted source-backed surface role. |
+| `WooTheme.colors.surface.onDefault` | `Woo Theme/Surface/On-Surface` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | `onSurface` | production | Foreground for neutral surfaces. |
+| `WooTheme.colors.surface.onVariant` | `Woo Theme/Surface/On-Surface-Variant` | `figma-export.json` | `#2C3338` / 100% | `#C3C4C7` / 100% | `onSurfaceVariant` | production | Variant foreground and enabled Cell affordance color. |
+| `WooTheme.colors.surface.onVariantLowest` | `Woo Theme/Surface/On-Surface-Variant-Lowest` | `figma-export.json` | `#8C8F94` / 100% | `#646970` / 100% | No direct M3 role | production | Lowest-emphasis variant foreground. |
+| `WooTheme.colors.surface.onVariantHighest` | `Woo Theme/Surface/On-Surface-Variant-Highest` | `figma-export.json` | `#50575E` / 100% | `#A7AAAD` / 100% | No direct M3 role | production | Highest-emphasis variant foreground. |
+| `WooTheme.colors.surface.inverted` | `Woo Theme/Surface/Inverse-Surface` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | `inverseSurface` | production | Inverse surface. |
+| `WooTheme.colors.surface.onInverted` | `Woo Theme/Surface/On-Inverse-Surface` | `figma-export.json` | `#FFFFFF` / 100% | `#101517` / 100% | `inverseOnSurface` | production | Foreground for inverse surface. |
+| `WooTheme.colors.status.errorContainer` | `Woo Theme/Alerts/Error-Container` | `figma-export.json` | `#F6E6E3` / 100% | `#F6E6E3` / 100% | `errorContainer` | production | Error container. |
+| `WooTheme.colors.status.onErrorContainer` | `Woo Theme/Alerts/On-Error-Container` | `figma-export.json` | `#470000` / 100% | `#470000` / 100% | `onErrorContainer` | production | Foreground for `errorContainer`. |
+| `WooTheme.colors.status.warningContainer` | `Woo Theme/Alerts/Warning-Container` | `figma-export.json` | `#FDE6BE` / 100% | `#FFDDEE` / 100% | No direct M3 role | production | Warning container; caution remains a separate unchanged meaning. |
+| `WooTheme.colors.status.onWarningContainer` | `Woo Theme/Alerts/On-Warning-Container` | `figma-export.json` | `#2E1900` / 100% | `#2E1900` / 100% | No direct M3 role | production | Foreground for `warningContainer`. |
+| `WooTheme.colors.status.cautionContainer` | `Woo Theme/Alerts/Caution-Container` | `figma-export.json` | `#FEE995` / 100% | `#FEE995` / 100% | No direct M3 role | production | Caution container. |
+| `WooTheme.colors.status.onCautionContainer` | `Woo Theme/Alerts/On-Caution-Container` | `figma-export.json` | `#281D00` / 100% | `#281D00` / 100% | No direct M3 role | production | Foreground for `cautionContainer`. |
+| `WooTheme.colors.status.successContainer` | `Woo Theme/Alerts/Success-Container` | `figma-export.json` | `#C6F7CD` / 100% | `#C6F7CD` / 100% | No direct M3 role | production | Success container. |
+| `WooTheme.colors.status.onSuccessContainer` | `Woo Theme/Alerts/On-Success-Container` | `figma-export.json` | `#002900` / 100% | `#002900` / 100% | No direct M3 role | production | Foreground for `successContainer`. |
+| `WooTheme.colors.status.infoContainer` | `Woo Theme/Alerts/Info-Container` | `figma-export.json` | `#DEEBFA` / 100% | `#DEEBFA` / 100% | No direct M3 role | production | Info container. |
+| `WooTheme.colors.status.onInfoContainer` | `Woo Theme/Alerts/On-Info-Container` | `figma-export.json` | `#001B4F` / 100% | `#001B4F` / 100% | No direct M3 role | production | Foreground for `infoContainer`. |
+| `WooTheme.colors.status.neutralContainer` | `Woo Theme/Alerts/Neutral-Container` | `figma-export.json` | `#F4F4F4` / 100% | `#F4F4F4` / 100% | No direct M3 role | production | Neutral container. |
+| `WooTheme.colors.status.onNeutralContainer` | `Woo Theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
+| `WooTheme.colors.overlay.overlay20` | `Woo Theme/Overlay/Opacity-20` | `figma-export.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Overlay color. |
+| `WooTheme.colors.overlay.overlay50` | `Woo Theme/Overlay/Opacity-50` | `figma-export.json` | `#000000` / 50% | `#000000` / 75% | `scrim` | production | Overlay color. |
+| `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo Theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#10151714` | `#FFFFFF14` | No M3 projection | production | Disabled filled/tonal button container. |
+| `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo Theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1015171A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
+| `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo Theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#10151729` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio containers. |
+| `WooTheme.colors.stateLayers.onSurface.opacity24` | `Woo Theme/State-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1015173D` | `#FFFFFF3D` | No M3 projection | production | Disabled button content, Search placeholder, and disabled choice-control marks/dots. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#6D469C14` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#146D469C`. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#6D469C1A` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#1A6D469C`. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#6D469C29` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#296D469C`. Canonical Segmented Control track and supplied light Secondary Container source. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#6D469C3D` | No M3 projection | production | WOOMOB-3552-confirmed dark base; Android `#3D6D469C`. |
+| `WooTheme.colors.tintLayers.onSurface.opacity08..opacity16` | `Woo Theme/Tint-Layers/On-Surface/Opacity-08..Opacity-16` | `figma-export.json` | `#10151714..#10151729` | White at matching alpha | No M3 projection | production | Explicit source values; not aliases to State Layers. |
+| `WooTheme.colors.tintLayers.onSurface.opacity24` | `Woo Theme/Tint-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1E1E1E3D` | `#FFFFFF3D` | No M3 projection | production | Light mode intentionally differs from the State Layer base. |
+| `WooTheme.colors.tintLayers.primary.opacity08..opacity24` | `Woo Theme/Tint-Layers/Primary/Opacity-08..Opacity-24` | `figma-export.json` | Primary at matching alpha | Primary at matching alpha | No M3 projection | production | Dark opacity16 is the supplied Secondary Container source. |
+| `WooTheme.colors.alert.red` | `Woo Theme/Alerts/Red` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | No direct M3 role | production | Alert ramp color. |
+| `WooTheme.colors.alert.onRed` | `Woo Theme/Alerts/On-Red` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Foreground for `red`. |
+| `WooTheme.colors.alert.orange` | `Woo Theme/Alerts/Orange` | `figma-export.json` | `#FF9000` / 100% | `#EAAB2D` / 100% | No direct M3 role | production | Alert ramp color. |
+| `WooTheme.colors.alert.onOrange` | `Woo Theme/Alerts/On-Orange` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Foreground for `orange`. |
+| `WooTheme.colors.alert.green` | `Woo Theme/Alerts/Green` | `figma-export.json` | `#27AE32` / 100% | `#69B66F` / 100% | No direct M3 role | production | Alert ramp color. |
+| `WooTheme.colors.alert.onGreen` | `Woo Theme/Alerts/On-Green` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Foreground for `green`. |
+| `WooTheme.colors.alert.blue` | `Woo Theme/Alerts/Blue` | `figma-export.json` | `#1E94D0` / 100% | `#1E94D0` / 100% | No direct M3 role | production | Alert ramp color. |
+| `WooTheme.colors.alert.onBlue` | `Woo Theme/Alerts/On-Blue` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Foreground for `blue`. |
+| `WooTheme.colors.palette.sandstone.shade5` | `Colors/Sandstone/Sandstone-5` | `figma-export.json` | `#FBF9F6` / 100% | `#FBF9F6` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.sandstone.shade10` | `Colors/Sandstone/Sandstone-10` | `figma-export.json` | `#F1EEEB` / 100% | `#F1EEEB` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.sandstone.shade20` | `Colors/Sandstone/Sandstone-20` | `figma-export.json` | `#E6E2DE` / 100% | `#E6E2DE` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.sandstone.shade40` | `Colors/Sandstone/Sandstone-40` | `figma-export.json` | `#C5C2BF` / 100% | `#C5C2BF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.sandstone.shade60` | `Colors/Sandstone/Sandstone-60` | `figma-export.json` | `#8B8A89` / 100% | `#8B8A89` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooBlue.shade20` | `Colors/Blue/Blue-20` | `figma-export.json` | `#75FFFF` / 100% | `#75FFFF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooBlue.shade40` | `Colors/Blue/Blue-40` | `figma-export.json` | `#1AD0FD` / 100% | `#1AD0FD` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooBlue.shade60` | `Colors/Blue/Blue-60` | `figma-export.json` | `#05096C` / 100% | `#05096C` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooGreen.shade20` | `Colors/Green/Green-20` | `figma-export.json` | `#D5FF4A` / 100% | `#D5FF4A` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooGreen.shade40` | `Colors/Green/Green-40` | `figma-export.json` | `#06E782` / 100% | `#06E782` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooGreen.shade60` | `Colors/Green/Green-60` | `figma-export.json` | `#083D2D` / 100% | `#083D2D` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooOrange.shade20` | `Colors/Orange/Orange-20` | `figma-export.json` | `#FFE500` / 100% | `#FFE500` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooOrange.shade40` | `Colors/Orange/Orange-40` | `figma-export.json` | `#FF9000` / 100% | `#FF9000` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooOrange.shade60` | `Colors/Orange/Orange-60` | `figma-export.json` | `#FF4800` / 100% | `#FF4800` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPink.shade20` | `Colors/Pink/Pink-20` | `figma-export.json` | `#FCA8FF` / 100% | `#FCA8FF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPink.shade40` | `Colors/Pink/Pink-40` | `figma-export.json` | `#FF45E3` / 100% | `#FF45E3` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPink.shade60` | `Colors/Pink/Pink-60` | `figma-export.json` | `#4E0061` / 100% | `#4E0061` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade0` | `Colors/Purple/Purple-0` | `figma-export.json` | `#F2EDFF` / 100% | `#F2EDFF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade5` | `Colors/Purple/Purple-5` | `figma-export.json` | `#E1D7FF` / 100% | `#E1D7FF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade10` | `Colors/Purple/Purple-10` | `figma-export.json` | `#D1C1FF` / 100% | `#D1C1FF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade20` | `Colors/Purple/Purple-20` | `figma-export.json` | `#B999FF` / 100% | `#B999FF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade30` | `Colors/Purple/Purple-30` | `figma-export.json` | `#A77EFF` / 100% | `#A77EFF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade40` | `Colors/Purple/Purple-40` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade50` | `Colors/Purple/Purple-50` | `figma-export.json` | `#720EEC` / 100% | `#720EEC` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade60` | `Colors/Purple/Purple-60` | `figma-export.json` | `#6108CE` / 100% | `#6108CE` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade70` | `Colors/Purple/Purple-70` | `figma-export.json` | `#5007AA` / 100% | `#5007AA` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade80` | `Colors/Purple/Purple-80` | `figma-export.json` | `#3C087E` / 100% | `#3C087E` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade90` | `Colors/Purple/Purple-90` | `figma-export.json` | `#2C045D` / 100% | `#2C045D` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.wooPurple.shade100` | `Colors/Purple/Purple-100` | `figma-export.json` | `#1F0342` / 100% | `#1F0342` / 100% | No direct M3 role | production | Public palette ramp token. |
+| `WooTheme.colors.palette.gray.shade0..shade100` | `Colors/Gray/Gray-0..Gray-100` | `figma-export.json` | Gray ramp / 100% | Gray ramp / 100% | No direct M3 role | production | Public gray palette ramp token. |
+| `WooTheme.colors.palette.white` | `Colors/White` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Public primitive used by exact semantic XML aliases. |
+| `WooTheme.colors.palette.black` | `Colors/Black` | `figma-export.json` | `#000000` / 100% | `#000000` / 100% | No direct M3 role | production | Public primitive used by exact semantic XML aliases. |
 
 ## Material 3 Color Projection
 
@@ -282,26 +293,45 @@ project into `ColorScheme`; components consume those mode-aware colors directly.
 | `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
 | `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
 | `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
-| `surfaceBright` | `WooTheme.colors.surface.default` | production | Material role projection from the source-backed default surface. |
+| `surfaceBright` | `WooTheme.colors.surface.bright` | production | Direct source-backed projection, distinct from generic Surface. |
 | `surfaceDim` | `WooTheme.colors.surface.surfaceDim` | production | Promoted source-backed Store surface role. |
-| `surfaceContainer` | `WooTheme.colors.background.section` | production | Internal surface alias for navigation bars, menus, cards, and sheets. |
+| `surfaceContainer` | `WooTheme.colors.surface.default` | production | Internal alias to the nearest generic source surface. |
 | `surfaceContainerHigh` | `WooTheme.colors.surface.default` | production | Internal surface alias for Material container hierarchy. |
 | `surfaceContainerHighest` | `WooTheme.colors.surface.surfaceContainerHighest` | production | Promoted source-backed Store surface role. |
-| `surfaceContainerLow` | `WooTheme.colors.background.sectionVariant` | production | Internal surface alias for elevated cards and subtle containers. |
-| `surfaceContainerLowest` | `WooTheme.colors.surface.default` | production | Internal surface alias for Material container hierarchy. |
+| `surfaceContainerLow` | `WooTheme.colors.surface.default` | production | Internal alias to the nearest generic source surface. |
+| `surfaceContainerLowest` | `WooTheme.colors.surface.bright` | production | Explicit brightest source surface; no obsolete default/bright equivalence. |
 | `surfaceTint` | Material 3 builder default | implicit | Builder default resolves to the passed Woo `primary`. |
 | `inversePrimary` | Material 3 default | defaulted | Keeps snackbar/action behavior on Material defaults until a source-backed inverse accent is approved. |
 | `primaryFixed*`, `secondaryFixed*`, `tertiaryFixed*` | Material 3 default | defaulted | Fixed roles are omitted until a source-backed Store fixed-role set or consuming component requires them. |
 
+## Component Color Bindings
+
+Live Figma binding evidence determines component roles even when the supplied export intentionally
+overrides stale resolved values in the published library.
+
+| Component or element | Runtime binding | Notes |
+| --- | --- | --- |
+| Cell | `surface.bright` shell; `surface.onVariant` enabled slot/affordance color | Titles remain `surface.onDefault`, descriptions remain `surface.onVariant`, and disabled slots use `onVariantLowest`. |
+| Filter Chip | Resting `surface.bright` with `tintLayers.onSurface.opacity16` boundary; selected content `container.onSecondaryContainer` | Selected container continues consuming semantic `container.secondaryContainer`, including the supplied opacity16 discrepancy. |
+| Top Navigation Bar and XML toolbar | `surface.bright` shell; global divider tint; navigation-button borders use `outlineVariant` at regular stroke | XML ownership and behavior remain unchanged. |
+| Page Header | `surface.bright` shell and global divider tint | No geometry change. |
+| Search | `surface.bright` shell; `stateLayers.onSurface.opacity24` placeholder | Active search and clear icons use `surface.onDefault`; the inner field remains `surface.surfaceDim`. |
+| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Preview-only API boundary is unchanged. |
+| Sheet | `surface.bright` body; `surface.onVariantLowest` thin boundary and handle | Preview-only geometry/API remains unchanged. |
+| Tab Bar and Tabs | `surface.bright` shell and global divider tint | Tab Bar remains preview-only. |
+| Table | Explicit `surface.bright` shell with thin outer stroke and global divider tint | Preview-only data/API boundary is unchanged. |
+| Divider | `tintLayers.onSurface.opacity16` | Applies to standalone, vertical, navigation, page-header, tab, and table dividers. |
+| Disabled selected checkbox/radio | `stateLayers.onSurface.opacity16` root and `stateLayers.onSurface.opacity24` mark/dot | Enabled selection still uses matching On Primary/On Error semantics. |
+
 ## Public Text Tokens
 
 `WooTheme.text` exposes all 15 Android type roles from `figma-export.json` / `Typescale` and
-`Font theme`, with `regular`, `emphasized`, and `strong` variants. The regular variant is projected
+`Font Theme`, with `regular`, `emphasized`, and `strong` variants. The regular variant is projected
 to `MaterialTheme.typography`. Android values must read the Android mode, and Android default font is
 the runtime equivalent for source `Roboto`. Export role names are hyphenated, while Android docs/API
 names are camelCase.
 
-`Typescale/<Role>/Font` resolves through `Font theme/Font/Plain`, whose Android value is `Roboto`.
+`Typescale/<Role>/Font` resolves through `Font Theme/Font/Plain`, whose Android value is `Roboto`.
 Android default font is the approved runtime equivalent. Most regular weights use `Weight`, but
 `Display-Large` and `Body-Small` use `Weight-Regular`. Most strong weights use `Weight-Strong`, but
 `Display-Large` uses
@@ -370,18 +400,18 @@ public elevation or minimum-touch-target accessors on the Store design-system th
 | Token | Source path | Value | Material projection | Status | Notes |
 | --- | --- | ---: | --- | --- | --- |
 | `WooTheme.radius.none` | `Shape/Corner-Radius/None` | `0dp` | No Material role | production | Public zero-radius token. |
-| `WooTheme.radius.extraSmall` | `Shape/Corner-Radius/Extra-small` | `2dp` | `MaterialTheme.shapes.extraSmall` | production | Shape projection. |
+| `WooTheme.radius.extraSmall` | `Shape/Corner-Radius/Extra-Small` | `2dp` | `MaterialTheme.shapes.extraSmall` | production | Shape projection. |
 | `WooTheme.radius.small` | `Shape/Corner-Radius/Small` | `4dp` | `MaterialTheme.shapes.small` | production | Shape projection. |
 | `WooTheme.radius.medium` | `Shape/Corner-Radius/Medium` | `8dp` | `MaterialTheme.shapes.medium` | production | Shape projection. |
 | `WooTheme.radius.large` | `Shape/Corner-Radius/Large` | `12dp` | `MaterialTheme.shapes.large` | production | Shape projection; visual review risk because current projection is `8dp`. |
-| `WooTheme.radius.extraLarge` | `Shape/Corner-Radius/Extra-large` | `16dp` | `MaterialTheme.shapes.extraLarge` | production | Shape projection; visual review risk because current projection is `8dp`. |
+| `WooTheme.radius.extraLarge` | `Shape/Corner-Radius/Extra-Large` | `16dp` | `MaterialTheme.shapes.extraLarge` | production | Shape projection; visual review risk because current projection is `8dp`. |
 | `WooTheme.radius.full` | `Shape/Corner-Radius/Full` | `999dp` | No Material role | production | Woo-only pill/full-radius sentinel. |
-| `WooTheme.iconSize.size14` | `Icon/Size/Extra-small` | `14dp` | No Material role | production | Glyph size only. |
-| `WooTheme.iconSize.size16` | `Icon/Size/Small` | `16dp` | No Material role | production | Glyph size only. |
-| `WooTheme.iconSize.size18` | `Icon/Size/Medium` | `18dp` | No Material role | production | Glyph size only. |
-| `WooTheme.iconSize.size20` | `Icon/Size/Large` | `20dp` | No Material role | production | Glyph size only. |
-| `WooTheme.iconSize.size24` | `Icon/Size/Large-Increased` | `24dp` | No Material role | production | Glyph size only. |
-| `WooTheme.iconSize.size32` | `Icon/Size/Extra-Large` | `32dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size14` | `Icon/Icon-Size/Extra-Small` | `14dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size16` | `Icon/Icon-Size/Small` | `16dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size18` | `Icon/Icon-Size/Medium` | `18dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size20` | `Icon/Icon-Size/Medium-Increased` | `20dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size24` | `Icon/Icon-Size/Large` | `24dp` | No Material role | production | Glyph size only. |
+| `WooTheme.iconSize.size32` | `Icon/Icon-Size/Extra-Large` | `32dp` | No Material role | production | Glyph size only. |
 | `WooTheme.stroke.none` | `Shape/Stroke/Weight/None` | `0dp` | No Material role | production | Public zero-stroke token. |
 | `WooTheme.stroke.extraThin` | `Shape/Stroke/Weight/Extra-Thin` | `0.5dp` | No Material role | production | Public stroke token; verify fractional rendering in consuming components. |
 | `WooTheme.stroke.thin` | `Shape/Stroke/Weight/Thin` | `0.75dp` | No Material role | production | Public stroke token; verify fractional rendering in consuming components. |

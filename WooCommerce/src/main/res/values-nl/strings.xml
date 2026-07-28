@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:54:12+0000
+Translation-Revision-Date: 2026-07-14 14:56:28+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Dit afbeeldingstype wordt niet ondersteund Selecteer een PNG-, JPEG-, WebP-, GIF-, BMP-, HEIC- of HEIF-afbeelding.</string>
+    <string name="ai_support_chat_store_connection_error_message">Mijn winkel is niet bereikbaar. De app heeft een verbindingsfout gedetecteerd bij het bereiken van mijn winkel. Hoe kan ik dit oplossen?</string>
+    <string name="settings_crash_reporting_error_update">Er is een fout opgetreden bij het bijwerken van je instellingen voor het melden van crashes</string>
+    <string name="empty_search_guest_orders_button">Bestellingen van gasten weergeven</string>
+    <string name="empty_message_with_search_guest">Op zoek naar bestellingen geplaatst door gasten?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Deze bestelling is betaald met een cadeaubon. Terugbetaling hier zal het cadeaubonsaldo niet herstellen. Verwerk het vanuit je websitebeheerder om het bedrag correct terug te betalen.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Terugbetaling van je winkelbeheerder</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">We konden het beveiligingscertificaat van deze site niet verifiëren. Neem contact op met je hostingprovider of sitebeheerder en probeer het opnieuw.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">We konden geen veilige verbinding tot stand brengen. Controleer of de datum en tijd van je apparaat correct zijn en probeer het opnieuw.</string>
     <string name="woopos_refund_preview_error">Kon het restitutietotaal niet berekenen. Probeer het nog eens.</string>
@@ -502,11 +509,6 @@ Language: nl
     <string name="connectivity_tool_view_technical_details">Technische gegevens weergeven</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Producten ophalen in je winkel</string>
     <string name="user_role_access_error_fetch_failed">We konden je rol in deze winkel niet verifiëren. Probeer het nog eens. Als het probleem zich blijft voordoen, neem je contact op met support.</string>
-    <string name="woopos_eligibility_learn_more_label">Meer informatie</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. &lt;b&gt;Upgrade naar Pro&lt;/b&gt; om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime voorraadsynchronisatie en synchronisatie van bestellingen.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. Upgrade naar Pro om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime synchronisatie van voorraad en bestellingen.</string>
-    <string name="woopos_eligibility_ciab_title">Pro-abonnement vereist.</string>
-    <string name="ciab_order_status_open">Open</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Kan het verzendlabel niet aanschaffen. Vul het oorspronkelijke adres in.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Adres van herkomst ontbreekt of is ongeldig</string>
     <string name="woopos_orders_details_refund_details_background">Achtergrond van dialoogvenster Terugbetalingsgegevens</string>
