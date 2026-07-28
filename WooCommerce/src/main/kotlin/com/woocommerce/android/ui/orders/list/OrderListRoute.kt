@@ -69,7 +69,8 @@ internal fun OrderListRoute(
     val createdOrderId by communicationViewModel.createdOrderIdPendingScrollToTopFlow
         .collectAsStateWithLifecycle()
     val presenter = remember { OrderListPaging2Presenter() }
-    val presentation by presenter.state.collectAsStateWithLifecycle()
+    // Deferred lazy-list lambdas must share this exact count, snapshot, and generation.
+    val presentation = presenter.state.collectAsStateWithLifecycle().value
     val listState = rememberLazyListState()
     var programmaticScrollCount by remember { mutableIntStateOf(0) }
     var pendingCreatedOrderId by remember { mutableStateOf<Long?>(null) }
