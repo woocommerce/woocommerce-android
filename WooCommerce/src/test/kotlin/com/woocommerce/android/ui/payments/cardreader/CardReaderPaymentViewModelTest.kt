@@ -204,6 +204,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            markedAsPaidOrdersCache = mock(),
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -2699,6 +2700,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            markedAsPaidOrdersCache = mock(),
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
@@ -2737,6 +2739,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            markedAsPaidOrdersCache = mock(),
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}

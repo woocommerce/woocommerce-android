@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.PointOfSaleMode
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -48,6 +49,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache,
 ) {
     fun create(
         orderId: Long,
@@ -74,6 +76,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        markedAsPaidOrdersCache = markedAsPaidOrdersCache,
         paymentOrRefund = PaymentOrRefund.Payment(
             orderId = orderId,
             paymentType = paymentType
@@ -106,6 +109,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        markedAsPaidOrdersCache = markedAsPaidOrdersCache,
         paymentOrRefund = PaymentOrRefund.Refund(
             orderId = orderId,
             refundAmount = refundAmount

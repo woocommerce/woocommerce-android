@@ -42,6 +42,7 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -84,6 +85,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.reflect.KMutableProperty0
 
@@ -110,6 +112,7 @@ class CardReaderPaymentController(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache,
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
@@ -466,6 +469,11 @@ class CardReaderPaymentController(
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
+        markedAsPaidOrdersCache.onOrderMovedToPaidStatus(
+            siteId = selectedSite.get().siteId,
+            orderId = orderId,
+            newStatusKey = CoreOrderStatus.PROCESSING.value,
+        )
 
         triggerEvent(CardReaderPaymentEvent.PlaySuccessfulPaymentSound)
         showPaymentSuccessfulState()

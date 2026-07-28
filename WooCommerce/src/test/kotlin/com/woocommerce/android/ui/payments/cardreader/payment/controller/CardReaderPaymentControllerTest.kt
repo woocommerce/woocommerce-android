@@ -38,6 +38,7 @@ import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -98,9 +99,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.reflect.KMutableProperty0
@@ -130,6 +133,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -222,6 +226,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
@@ -1393,6 +1398,36 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             controller.start()
 
             verify(paymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
+        }
+
+    @Test
+    fun `when payment succeeds, then order is recorded as paid`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                newStatusKey = eq(CoreOrderStatus.PROCESSING.value),
+            )
+        }
+
+    @Test
+    fun `when payment fails, then order is not recorded as paid`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            controller.start()
+
+            verifyNoInteractions(markedAsPaidOrdersCache)
         }
 
     @Test
@@ -3863,6 +3898,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,
