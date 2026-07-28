@@ -282,7 +282,7 @@ private val CatalogRoot = CatalogNode.Group(
                 CatalogNode.Leaf(
                     path = "production/badges",
                     title = "Badges",
-                    description = "Status tones and icon-leading variants.",
+                    description = "Semantic tones, custom colors, and icon-leading variants.",
                     content = { ProductionBadgesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
