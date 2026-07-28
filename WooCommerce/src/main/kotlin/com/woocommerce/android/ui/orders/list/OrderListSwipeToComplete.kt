@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -134,10 +135,10 @@ private fun OrderListSwipeBackground(
         if (!isCompleted && showAction) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(
+                    .align(AbsoluteAlignment.TopRight)
+                    .absolutePadding(
                         top = WooTheme.padding.padding5,
-                        end = WooTheme.padding.padding5,
+                        right = WooTheme.padding.padding5,
                     )
                     .clearAndSetSemantics { },
                 horizontalAlignment = Alignment.CenterHorizontally,

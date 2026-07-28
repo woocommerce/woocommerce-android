@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.orders.list
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,15 +93,11 @@ internal fun OrderListOrderRow(
                 .testTag(OrderListTestTags.orderRow(order.orderId))
                 .background(background)
                 .focusRequester(focusRequester)
-                .focusable()
                 .onPreviewKeyEvent { event ->
-                    if (event.type != KeyEventType.KeyUp) return@onPreviewKeyEvent false
-                    when (event.key) {
-                        Key.Enter, Key.DirectionCenter -> {
-                            activate()
-                            true
-                        }
-                        Key.Spacebar -> {
+                    if (event.key != Key.Spacebar) return@onPreviewKeyEvent false
+                    when (event.type) {
+                        KeyEventType.KeyDown -> true
+                        KeyEventType.KeyUp -> {
                             onSelectionToggle()
                             true
                         }
@@ -118,7 +113,6 @@ internal fun OrderListOrderRow(
                     role = Role.Button
                     requestFocus {
                         focusRequester.requestFocus()
-                        true
                     }
                     customActions = buildList {
                         add(CustomAccessibilityAction(selectionAction, onSelectionToggle))
