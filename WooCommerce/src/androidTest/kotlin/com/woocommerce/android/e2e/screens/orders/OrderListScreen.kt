@@ -1,5 +1,6 @@
 package com.woocommerce.android.e2e.screens.orders
 
+import android.widget.EditText
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.By
@@ -19,6 +20,10 @@ import java.util.regex.Pattern
 class OrderListScreen : Screen(R.id.order_list_compose_container) {
     private val device = UiDevice.getInstance(getInstrumentation())
 
+    init {
+        waitFor(By.res(OrderListTestTags.SCREEN), "Orders screen")
+    }
+
     fun selectOrder(index: Int): SingleOrderScreen {
         waitForOrderRows(minimumCount = index + 1)[index].click()
         return SingleOrderScreen()
@@ -31,20 +36,21 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
     }
 
     fun openSearchPane(): OrderListScreen {
-        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
-            clickOn(R.id.menu_search)
+        if (device.findObject(SEARCH_FIELD_SELECTOR) == null) {
+            waitFor(By.res(OrderListTestTags.SEARCH_ACTION), "Orders search action").click()
         }
+        searchTextField()
         return this
     }
 
     fun enterSearchTerm(term: String): OrderListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        replaceSearchTerm(term)
         waitForOrderRows(minimumCount = 1)
         return this
     }
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
-        typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        replaceSearchTerm(term)
         waitFor(By.res(OrderListTestTags.EMPTY), "empty Orders state")
         return this
     }
@@ -53,25 +59,28 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         // to support test on tablets - search bar is displayed on split screen
         // clearing search bar so test can continue in a clean state
         if (Screen.isElementDisplayed(R.id.orderDetail_container)) {
-            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+            searchTextField().clear()
             return this
         } // to support test on phones
-        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
-            // Double pressBack is needed because first one only removes the focus
-            // from search field, while the second one leaves the search mode.
+        else if (device.findObject(SEARCH_FIELD_SELECTOR) != null) {
             Espresso.pressBack()
-            Espresso.pressBack()
+            if (!waitForSearchModeToClose(SEARCH_BACK_TIMEOUT_MS)) {
+                Espresso.pressBack()
+                check(waitForSearchModeToClose(NODE_TIMEOUT_MS)) {
+                    "Orders search mode did not close"
+                }
+            }
         }
         return this
     }
 
     fun tapFilters(): FilterScreen {
-        clickOn(R.id.btn_order_filter)
+        waitFor(By.res(OrderListTestTags.FILTERS), "Orders filters").click()
         return FilterScreen()
     }
 
     fun createFABTap(): UnifiedOrderScreen {
-        clickOn(R.id.createOrderButton)
+        waitFor(By.res(OrderListTestTags.CREATE_ORDER_FAB), "Create order button").click()
         return UnifiedOrderScreen()
     }
 
@@ -113,6 +122,30 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         val expectedString = "We're sorry, we couldn't find results for \"${term}\""
         waitFor(By.textContains(expectedString), "empty search result for $term")
         return this
+    }
+
+    private fun replaceSearchTerm(term: String) {
+        searchTextField().setText(term)
+        Espresso.closeSoftKeyboard()
+    }
+
+    private fun searchTextField(): UiObject2 {
+        waitUntil(
+            condition = { findSearchTextField() != null },
+            failureMessage = { "Orders search text field was not found" },
+        )
+        return requireNotNull(findSearchTextField()) { "Orders search text field was not found" }
+    }
+
+    private fun findSearchTextField(): UiObject2? {
+        return device.findObject(SEARCH_FIELD_SELECTOR)?.findObject(SEARCH_TEXT_FIELD_SELECTOR)
+    }
+
+    private fun waitForSearchModeToClose(timeoutMs: Long): Boolean {
+        return device.wait(
+            Condition<UiDevice, Boolean> { device.findObject(SEARCH_FIELD_SELECTOR) == null },
+            timeoutMs,
+        )
     }
 
     private fun scrollToOrder(orderId: Int) {
@@ -160,6 +193,9 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
 
     private companion object {
         const val NODE_TIMEOUT_MS = 10_000L
+        const val SEARCH_BACK_TIMEOUT_MS = 1_000L
+        val SEARCH_FIELD_SELECTOR: BySelector = By.res(OrderListTestTags.SEARCH_FIELD)
+        val SEARCH_TEXT_FIELD_SELECTOR: BySelector = By.clazz(EditText::class.java)
         val ORDER_ROW_SELECTOR: BySelector = By.res(
             Pattern.compile("${OrderListTestTags.ORDER_ROW_PREFIX}[0-9]+")
         )
