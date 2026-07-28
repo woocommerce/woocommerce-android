@@ -189,7 +189,7 @@ private fun OrderContent(
         order.dateCreated?.takeIf(String::isNotBlank)?.let { dateCreated ->
             Text(
                 text = dateCreated,
-                color = WooTheme.colors.surface.onVariant,
+                color = colorResource(R.color.color_on_surface_medium),
                 style = WooTheme.text.bodySmall.regular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
