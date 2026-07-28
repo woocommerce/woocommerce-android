@@ -29,7 +29,7 @@ internal fun OrderListItemUIType.toUiModel(
             add(
                 OrderListBadgeUiModel(
                     text = orderStatusOptions[status]?.label ?: status,
-                    containerColorRes = status.toOrderStatusBadgeContainerColor(),
+                    containerColorRes = status.toOrderStatusBadgeContainerColorRes(),
                     contentColorRes = R.color.tagView_text,
                 )
             )
@@ -49,7 +49,7 @@ internal fun OrderListItemUIType.toUiModel(
 }
 
 @ColorRes
-private fun String.toOrderStatusBadgeContainerColor(): Int = when (trim().lowercase(Locale.US)) {
+private fun String.toOrderStatusBadgeContainerColorRes(): Int = when (trim().lowercase(Locale.US)) {
     CoreOrderStatus.PROCESSING.value -> R.color.tag_bg_processing
     CoreOrderStatus.FAILED.value -> R.color.tag_bg_failed
     CoreOrderStatus.COMPLETED.value -> R.color.tag_bg_completed

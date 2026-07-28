@@ -164,7 +164,7 @@ private fun BadgeLeadingIcon() {
 }
 
 @Immutable
-data class WooBadgeColors(
+class WooBadgeColors internal constructor(
     val containerColor: Color,
     val contentColor: Color,
     val border: BorderStroke? = null,

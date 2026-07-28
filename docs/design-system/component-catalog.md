@@ -111,7 +111,7 @@ component split does not add module screenshot infrastructure.
 
 | Component | Android API | Status | Notes |
 | --- | --- | --- | --- |
-| Badges | `WooBadge`, `WooBadgeTone` | production | Compact label badge with optional decorative leading icon and status tones including `NeutralOutlined`. |
+| Badges | `WooBadge`, `WooBadgeTone`, `WooBadgeColors`, `WooBadgeDefaults` | production | Compact label badge with optional decorative leading icon and status tones including `NeutralOutlined`. Prefer semantic tones; use `WooBadgeDefaults.colors(...)` only when a feature must preserve an established custom palette. |
 | Buttons | `WooFilledButton`, `WooFilledTonalButton`, `WooOutlinedButton`, `WooButtonSize` | production | Figma-backed Fill/Tonal/Outline treatments exposed with Material 3-aligned Filled, Filled Tonal, and Outlined API names. Supports optional leading icon, enabled/disabled state, medium/small sizes, and 48dp touch target preservation. Use one Filled button per screen, Filled Tonal for alternatives, and Outlined for low-emphasis actions. |
 | Cell | `WooCell`, `WooSettingsRow` | production | Surface Bright row shell with On Surface titles, On Surface Variant descriptions/slots, and a settings convenience. Keep one row-level action; avoid duplicate child semantics. Figma `Cell Content` maps to internal row content styling, not a standalone public API. |
 | Checkbox | `WooCheckbox` | production | Controlled Material 3 checkbox wrapper. Caller owns label and group semantics. |
