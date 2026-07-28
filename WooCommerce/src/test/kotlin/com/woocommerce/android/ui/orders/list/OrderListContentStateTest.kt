@@ -4,7 +4,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class OrderListRouteTest {
+class OrderListContentStateTest {
     @Test
     fun `when empty view types are mapped, then Compose content states are returned`() {
         assertThat(contentState(EmptyViewType.ORDER_LIST_LOADING))

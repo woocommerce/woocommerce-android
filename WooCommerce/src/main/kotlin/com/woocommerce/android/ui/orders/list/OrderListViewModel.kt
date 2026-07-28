@@ -473,6 +473,11 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun onPullToRefresh() {
+        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
+        fetchOrdersAndOrderDependencies()
+    }
+
     /**
      * Fetch payment gateways so they are available for order refunds later
      */

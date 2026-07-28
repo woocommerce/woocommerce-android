@@ -560,6 +560,17 @@ class OrderListViewModelTest : BaseUnitTest() {
             verify(orderListRepository).fetchOrderStatusOptionsFromApi()
         }
 
+    @Test
+    fun `when orders are pulled to refresh, then track the gesture and refresh the active list`() = testBlocking {
+        viewModel.loadOrders()
+        clearInvocations(analyticsTracker, pagedListWrapper)
+
+        viewModel.onPullToRefresh()
+
+        verify(analyticsTracker).track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
+        verify(pagedListWrapper).fetchFirstPage()
+    }
+
     /**
      * Test the logic that generates the "No orders yet" empty view for the ALL tab
      * is successful and verify the view is emitted via [OrderListViewModel.emptyViewType].

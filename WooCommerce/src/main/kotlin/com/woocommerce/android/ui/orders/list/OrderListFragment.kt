@@ -173,7 +173,7 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
         binding.orderListComposeContainer.addView(
             designSystemComposeView {
                 val highlightedOrderId by selectedOrder.selectedOrderId.observeAsState()
-                OrderListRoute(
+                OrderListScreen(
                     viewModel = viewModel,
                     communicationViewModel = communicationViewModel,
                     currencyFormatter = currencyFormatter,
@@ -182,22 +182,10 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
                     scrollToTopRequests = scrollToTopRequests,
                     jitmViewModelProvider = { jitmViewModel },
                     onOrderTapped = ::openOrderDetail,
-                    onRefresh = {
-                        AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
-                        refreshOrders()
-                    },
                     onLearnMoreClicked = {
                         ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                     },
-                    onSearchClicked = viewModel::onSearchOpened,
-                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                    onSearchSubmitted = viewModel::onSearchSubmitted,
-                    onSearchClosed = viewModel::onSearchClosed,
-                    onBarcodeClicked = viewModel::onScanClicked,
-                    onFiltersClicked = viewModel::onFiltersButtonTapped,
                     onCreateOrderClicked = ::openOrderCreationFragment,
-                    onSelectionCloseClicked = viewModel::clearOrderSelection,
-                    onSelectionUpdateStatusClicked = viewModel::onBulkUpdateStatusClicked,
                     onTroubleshootingClicked = ::onTroubleshootingClicked,
                     onContactSupportClicked = ::onContactSupportClicked,
                     onListAtTopChanged = { isListAtTop = it },
@@ -431,7 +419,8 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
                     action = event.action
                 )
 
-                is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                is OrderListViewModel.OrderListEvent.RetryLoadingOrders ->
+                    viewModel.fetchOrdersAndOrderDependencies()
                 is OrderListViewModel.OrderListEvent.ShowUpdateStatusDialog -> {
                     showBulkUpdateStatusDialog(event.currentStatus, event.orderStatusList)
                 }
@@ -696,10 +685,6 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
                 startPaymentsFlow = startPaymentsFlow,
             )
         }
-    }
-
-    private fun refreshOrders() {
-        viewModel.fetchOrdersAndOrderDependencies()
     }
 
     override fun shouldExpandToolbar(): Boolean {
