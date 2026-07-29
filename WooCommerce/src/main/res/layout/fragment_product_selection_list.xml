@@ -31,17 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Product search type view -->
-            <com.woocommerce.android.ui.products.WCProductSearchTabView
-                android:id="@+id/productsSearchTabView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible" />
-
             <!-- Products filter and sort view -->
             <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
                 android:id="@+id/products_sort_filter_card"
@@ -52,7 +41,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/productsSearchTabView"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 
             <androidx.compose.ui.platform.ComposeView
@@ -86,7 +75,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/productsSearchTabView" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
                 android:id="@+id/loadMoreProgress"
