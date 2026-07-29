@@ -572,7 +572,9 @@ class ProductListViewModel @Inject constructor(
                     skuSearchOptions == productRepository.lastIsSkuSearch
                 ) {
                     if (loadMore) {
-                        updateProductList(_productList.value.orEmpty() + products)
+                        updateProductList(
+                            (_productList.value.orEmpty() + products).distinctBy(Product::remoteId)
+                        )
                     } else {
                         updateProductList(products)
                     }

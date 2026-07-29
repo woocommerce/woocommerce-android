@@ -966,6 +966,37 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given overlapping search pages, when results append, then duplicate products are removed`() = testBlocking {
+        val firstProduct = ProductTestUtils.generateProduct(productId = 1L)
+        val secondProduct = ProductTestUtils.generateProduct(productId = 2L)
+        doReturn(true).whenever(productRepository).canLoadMoreProducts
+        doReturn("hoodie").whenever(productRepository).lastSearchQuery
+        doReturn(WCProductStore.SkuSearchOptions.Disabled).whenever(productRepository).lastIsSkuSearch
+        doReturn(listOf(firstProduct), listOf(firstProduct, secondProduct))
+            .whenever(productRepository).searchProductList(
+                searchQuery = "hoodie",
+                skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+                loadMore = false,
+                productFilterOptions = emptyMap(),
+            )
+        doReturn(listOf(firstProduct, secondProduct)).whenever(productRepository).searchProductList(
+            searchQuery = "hoodie",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+            loadMore = true,
+            productFilterOptions = emptyMap(),
+        )
+        createViewModel()
+        viewModel.onSearchOpened()
+
+        viewModel.onSearchQueryChanged("hoodie")
+        advanceUntilIdle()
+        viewModel.onLoadMoreRequested()
+        advanceUntilIdle()
+
+        assertThat(viewModel.productList.value.orEmpty().map(Product::remoteId)).containsExactly(1L, 2L)
+    }
+
+    @Test
     fun `given restored active search, when ViewModel loads, then search analytics is not tracked`() = testBlocking {
         savedStateHandle[ProductListViewState::class.java.name] = ProductListViewState(
             isSearchActive = true,
