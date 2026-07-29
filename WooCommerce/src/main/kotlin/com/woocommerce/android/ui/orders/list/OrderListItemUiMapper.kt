@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemU
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import java.util.Locale
 
 internal fun OrderListItemUIType.toUiModel(
     orderStatusOptions: Map<String, WCOrderStatusModel>,
@@ -49,7 +48,7 @@ internal fun OrderListItemUIType.toUiModel(
 }
 
 @ColorRes
-private fun String.toOrderStatusBadgeContainerColorRes(): Int = when (trim().lowercase(Locale.US)) {
+private fun String.toOrderStatusBadgeContainerColorRes(): Int = when (this) {
     CoreOrderStatus.PROCESSING.value -> R.color.tag_bg_processing
     CoreOrderStatus.FAILED.value -> R.color.tag_bg_failed
     CoreOrderStatus.COMPLETED.value -> R.color.tag_bg_completed

@@ -95,7 +95,6 @@ class OrderListItemUiMapperTest {
             Order.Status.Pending.value to R.color.tag_bg_other,
             Order.Status.Cancelled.value to R.color.tag_bg_other,
             Order.Status.Refunded.value to R.color.tag_bg_other,
-            " Processing " to R.color.tag_bg_processing,
             "custom-status" to R.color.tagView_bg,
         )
 
