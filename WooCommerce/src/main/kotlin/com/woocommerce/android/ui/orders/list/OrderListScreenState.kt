@@ -15,7 +15,7 @@ internal data class OrderListScreenState(
     val selectedOrderCount: Int
         get() = rowState.bulkSelectedOrderIds.size
 
-    val headerMode: OrderListHeaderMode
+    private val headerMode: OrderListHeaderMode
         get() = when {
             isSelecting -> OrderListHeaderMode.Selection
             isSearchActive -> OrderListHeaderMode.Search
@@ -33,15 +33,4 @@ internal data class OrderListScreenState(
 
     val shouldShowCreateOrderFab: Boolean
         get() = showCreateOrderFab && headerMode != OrderListHeaderMode.Selection
-}
-
-internal data class OrderListHeaderContent(
-    val mode: OrderListHeaderMode,
-    val selectedOrderCount: Int,
-)
-
-internal enum class OrderListHeaderMode {
-    Selection,
-    Search,
-    Browsing,
 }
