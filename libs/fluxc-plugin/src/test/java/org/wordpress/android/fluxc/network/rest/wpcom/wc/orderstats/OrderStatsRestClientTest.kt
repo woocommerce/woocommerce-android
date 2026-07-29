@@ -94,38 +94,19 @@ class OrderStatsRestClientTest {
     @Test
     fun `given missing Jetpack signature, when visitor stats are fetched, then notify and preserve error mapping`() =
         runTest {
-            VisitorStatsEndpoint.entries.forEach { endpoint ->
-                clearInvocations(wpComSiteInvalidationListener)
-                val error = createNetworkError()
-                stubVisitorStatsResponse(endpoint, error)
-
-                val mapping = fetchVisitorStats(endpoint)
-
-                assertThat(mapping)
-                    .describedAs(endpoint.name)
-                    .isEqualTo(
-                        when (endpoint) {
-                            VisitorStatsEndpoint.VISITS -> ErrorMapping(
-                                type = "GENERIC_ERROR",
-                                message = JETPACK_CONNECTION_MISSING_MESSAGE
-                            )
-
-                            VisitorStatsEndpoint.SUMMARY -> ErrorMapping(
-                                type = "INVALID_ID",
-                                message = JETPACK_CONNECTION_MISSING_MESSAGE,
-                                apiErrorCode = INVALID_BLOG_ERROR_CODE,
-                                original = "NOT_FOUND"
-                            )
-                        }
-                    )
-                verify(wpComSiteInvalidationListener).onSiteInvalidated(
-                    WPComSiteInvalidationEvent(
-                        siteId = SITE_ID,
-                        reason = WPComSiteInvalidationReason.JETPACK_CONNECTION_MISSING
-                    )
-                )
-            }
+            assertSiteInvalidation(createNetworkError())
         }
+
+    @Test
+    fun `given trivial missing Jetpack message variation, when visitor stats are fetched, then notify`() = runTest {
+        listOf(
+            "$JETPACK_CONNECTION_MISSING_MESSAGE.",
+            "  $JETPACK_CONNECTION_MISSING_MESSAGE  ",
+            "this BLOG does NOT have jetpack CONNECTED"
+        ).forEach { message ->
+            assertSiteInvalidation(createNetworkError(message = message))
+        }
+    }
 
     @Test
     fun `given Stats module is disabled, when visitor stats are fetched, then do not notify`() = runTest {
@@ -142,8 +123,8 @@ class OrderStatsRestClientTest {
     @Test
     fun `given different error code or message, when visitor stats are fetched, then do not notify`() = runTest {
         listOf(
-            createNetworkError(apiError = "unknown_blog", message = "Unknown blog"),
-            createNetworkError(message = "This blog does not have Jetpack connected.")
+            createNetworkError(apiError = "unknown_blog"),
+            createNetworkError(message = "This blog does not have Jetpack installed")
         ).forEach { error ->
             assertNoSiteInvalidation(error)
         }
@@ -158,6 +139,39 @@ class OrderStatsRestClientTest {
             fetchVisitorStats(endpoint)
 
             verify(wpComSiteInvalidationListener, never()).onSiteInvalidated(any())
+        }
+    }
+
+    private suspend fun assertSiteInvalidation(error: WPComGsonNetworkError) {
+        VisitorStatsEndpoint.entries.forEach { endpoint ->
+            clearInvocations(wpComSiteInvalidationListener)
+            stubVisitorStatsResponse(endpoint, error)
+
+            val mapping = fetchVisitorStats(endpoint)
+
+            assertThat(mapping)
+                .describedAs(endpoint.name)
+                .isEqualTo(
+                    when (endpoint) {
+                        VisitorStatsEndpoint.VISITS -> ErrorMapping(
+                            type = "GENERIC_ERROR",
+                            message = error.message
+                        )
+
+                        VisitorStatsEndpoint.SUMMARY -> ErrorMapping(
+                            type = "INVALID_ID",
+                            message = error.message,
+                            apiErrorCode = INVALID_BLOG_ERROR_CODE,
+                            original = "NOT_FOUND"
+                        )
+                    }
+                )
+            verify(wpComSiteInvalidationListener).onSiteInvalidated(
+                WPComSiteInvalidationEvent(
+                    siteId = SITE_ID,
+                    reason = WPComSiteInvalidationReason.JETPACK_CONNECTION_MISSING
+                )
+            )
         }
     }
 

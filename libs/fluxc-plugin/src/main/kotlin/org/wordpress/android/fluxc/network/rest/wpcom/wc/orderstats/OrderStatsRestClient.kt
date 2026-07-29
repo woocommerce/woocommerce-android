@@ -332,7 +332,10 @@ class OrderStatsRestClient @Inject constructor(
         if (
             error.volleyError?.networkResponse?.statusCode == HTTP_NOT_FOUND &&
             error.apiError == INVALID_BLOG_ERROR_CODE &&
-            error.message == JETPACK_CONNECTION_MISSING_ERROR_MESSAGE
+            error.message
+                ?.trim()
+                ?.trimEnd('.')
+                ?.equals(JETPACK_CONNECTION_MISSING_ERROR_MESSAGE, ignoreCase = true) == true
         ) {
             wpComSiteInvalidationListener.ifPresent {
                 it.onSiteInvalidated(
