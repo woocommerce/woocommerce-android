@@ -357,7 +357,6 @@ class MainActivity :
         // Drop stale main-flow state when no site is selected so login can take over cleanly.
         val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
         super.onCreate(bundle)
-        setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
@@ -383,6 +382,8 @@ class MainActivity :
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
+        // Register after the NavHost so analytics and screen handling run before navigation consumes back.
+        setOnBackNavigationCallback()
         val graphInflater = navHostFragment.navController.navInflater
 
         val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)

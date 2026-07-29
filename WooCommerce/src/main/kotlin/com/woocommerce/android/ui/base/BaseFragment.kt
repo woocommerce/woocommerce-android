@@ -31,6 +31,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
                     isEnabled = true
                 }
             } else {
+                // Allowed presses are tracked by MainActivity when redispatched; consumed presses stop here.
                 AnalyticsTracker.trackBackPressed(requireActivity())
             }
         }
