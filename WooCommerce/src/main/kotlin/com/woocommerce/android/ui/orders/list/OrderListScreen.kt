@@ -72,19 +72,20 @@ internal fun OrderListScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .testTag(OrderListScreenTestTags.SCREEN),
+            .testTag(OrderListTestTags.SCREEN),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             OrderListHeader(
                 content = state.headerContent,
                 searchQuery = state.searchQuery,
                 filterCount = state.filterCount,
-                showBrowsingControls = state.shouldShowBrowsingControls,
+                lastUpdate = state.lastUpdate,
                 onSearchClicked = onSearchClicked,
                 onSearchQueryChanged = onSearchQueryChanged,
                 onSearchSubmitted = onSearchSubmitted,
                 onSearchClosed = onSearchClosed,
                 onBarcodeClicked = onBarcodeClicked,
+                onFiltersClicked = onFiltersClicked,
                 onSelectionCloseClicked = onSelectionCloseClicked,
                 onSelectionUpdateStatusClicked = onSelectionUpdateStatusClicked,
             )
@@ -98,19 +99,11 @@ internal fun OrderListScreen(
                 )
             }
 
-            AnimatedVisibility(visible = state.shouldShowBrowsingControls) {
-                OrderListBrowsingControls(
-                    filterCount = state.filterCount,
-                    lastUpdate = state.lastUpdate,
-                    onFiltersClicked = onFiltersClicked,
-                )
-            }
-
             jitmContent?.let { content ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag(OrderListScreenTestTags.JITM),
+                        .testTag(OrderListTestTags.JITM),
                 ) {
                     content()
                 }
@@ -120,7 +113,7 @@ internal fun OrderListScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .testTag(OrderListScreenTestTags.BODY),
+                    .testTag(OrderListTestTags.BODY),
             ) {
                 orderListContent(Modifier.fillMaxSize())
             }
@@ -138,7 +131,7 @@ internal fun OrderListScreen(
                 onClick = onCreateOrderClicked,
                 containerColor = WooTheme.colors.primary,
                 contentColor = WooTheme.colors.onPrimary,
-                modifier = Modifier.testTag(OrderListScreenTestTags.CREATE_ORDER_FAB),
+                modifier = Modifier.testTag(OrderListTestTags.CREATE_ORDER_FAB),
             ) {
                 Icon(
                     imageVector = WooIcons.Regular.Plus,
@@ -149,16 +142,6 @@ internal fun OrderListScreen(
         }
     }
 }
-internal data class OrderListTroubleshootingPresentation(
-    val type: OrderListTroubleshootingType,
-    val isExpanded: Boolean = true,
-)
-
-internal enum class OrderListTroubleshootingType {
-    ParsingError,
-    Timeout,
-}
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun OrderListTroubleshooting(
@@ -171,7 +154,7 @@ private fun OrderListTroubleshooting(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .testTag(OrderListScreenTestTags.TROUBLESHOOTING),
+            .testTag(OrderListTestTags.TROUBLESHOOTING),
     ) {
         Surface(
             color = WooTheme.colors.surface.default,
@@ -185,7 +168,7 @@ private fun OrderListTroubleshooting(
                             role = Role.Button,
                             onValueChange = onExpandedChanged,
                         )
-                        .testTag(OrderListScreenTestTags.TROUBLESHOOTING_TOGGLE)
+                        .testTag(OrderListTestTags.TROUBLESHOOTING_TOGGLE)
                         .padding(
                             horizontal = WooTheme.padding.padding7,
                             vertical = WooTheme.padding.padding4,
@@ -246,7 +229,7 @@ private fun OrderListTroubleshooting(
                                 onClick = onTroubleshootingClicked,
                                 size = WooButtonSize.Small,
                                 modifier = Modifier.testTag(
-                                    OrderListScreenTestTags.TROUBLESHOOTING_ACTION
+                                    OrderListTestTags.TROUBLESHOOTING_ACTION
                                 ),
                             )
                             WooOutlinedButton(
@@ -254,7 +237,7 @@ private fun OrderListTroubleshooting(
                                 onClick = onContactSupportClicked,
                                 size = WooButtonSize.Small,
                                 modifier = Modifier.testTag(
-                                    OrderListScreenTestTags.CONTACT_SUPPORT_ACTION
+                                    OrderListTestTags.CONTACT_SUPPORT_ACTION
                                 ),
                             )
                         }

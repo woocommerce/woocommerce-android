@@ -51,29 +51,19 @@ import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
 import com.woocommerce.android.util.StringUtils
 
-internal data class OrderListHeaderContent(
-    val mode: OrderListHeaderMode,
-    val selectedOrderCount: Int,
-)
-
-internal enum class OrderListHeaderMode {
-    Selection,
-    Search,
-    Browsing,
-}
-
 @Composable
 @Suppress("LongParameterList")
 internal fun OrderListHeader(
     content: OrderListHeaderContent,
     searchQuery: String,
     filterCount: Int,
-    showBrowsingControls: Boolean,
+    lastUpdate: String?,
     onSearchClicked: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchSubmitted: (String) -> Unit,
     onSearchClosed: () -> Unit,
     onBarcodeClicked: () -> Unit,
+    onFiltersClicked: () -> Unit,
     onSelectionCloseClicked: () -> Unit,
     onSelectionUpdateStatusClicked: () -> Unit,
 ) {
@@ -104,9 +94,11 @@ internal fun OrderListHeader(
                 onSearchClosed = onSearchClosed,
             )
             OrderListHeaderMode.Browsing -> OrderListBrowsingHeader(
-                showDivider = !showBrowsingControls,
+                filterCount = filterCount,
+                lastUpdate = lastUpdate,
                 onSearchClicked = onSearchClicked,
                 onBarcodeClicked = onBarcodeClicked,
+                onFiltersClicked = onFiltersClicked,
             )
         }
     }
@@ -114,28 +106,37 @@ internal fun OrderListHeader(
 
 @Composable
 private fun OrderListBrowsingHeader(
-    showDivider: Boolean,
+    filterCount: Int,
+    lastUpdate: String?,
     onSearchClicked: () -> Unit,
     onBarcodeClicked: () -> Unit,
+    onFiltersClicked: () -> Unit,
 ) {
-    WooPageHeader(
-        title = stringResource(R.string.orders),
-        showDivider = showDivider,
-        actions = {
-            WooOutlinedIconButton(
-                imageVector = WooIcons.Regular.BarcodeScan,
-                contentDescription = stringResource(R.string.scan_barcode),
-                onClick = onBarcodeClicked,
-                modifier = Modifier.testTag(OrderListScreenTestTags.BARCODE_ACTION),
-            )
-            WooOutlinedIconButton(
-                imageVector = WooIcons.Regular.MagnifyingGlass,
-                contentDescription = stringResource(R.string.orderlist_search_hint),
-                onClick = onSearchClicked,
-                modifier = Modifier.testTag(OrderListScreenTestTags.SEARCH_ACTION),
-            )
-        },
-    )
+    Column {
+        WooPageHeader(
+            title = stringResource(R.string.orders),
+            showDivider = false,
+            actions = {
+                WooOutlinedIconButton(
+                    imageVector = WooIcons.Regular.BarcodeScan,
+                    contentDescription = stringResource(R.string.scan_barcode),
+                    onClick = onBarcodeClicked,
+                    modifier = Modifier.testTag(OrderListTestTags.BARCODE_ACTION),
+                )
+                WooOutlinedIconButton(
+                    imageVector = WooIcons.Regular.MagnifyingGlass,
+                    contentDescription = stringResource(R.string.orderlist_search_hint),
+                    onClick = onSearchClicked,
+                    modifier = Modifier.testTag(OrderListTestTags.SEARCH_ACTION),
+                )
+            },
+        )
+        OrderListBrowsingControls(
+            filterCount = filterCount,
+            lastUpdate = lastUpdate,
+            onFiltersClicked = onFiltersClicked,
+        )
+    }
 }
 
 @Composable
@@ -181,7 +182,7 @@ private fun OrderListSearchHeader(
             focusRequester = focusRequester,
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag(OrderListScreenTestTags.SEARCH_FIELD),
+                .testTag(OrderListTestTags.SEARCH_FIELD),
         )
         WooDivider()
     }
@@ -205,7 +206,7 @@ private fun OrderListSelectionHeader(
             .fillMaxWidth()
             .height(SELECTION_HEADER_HEIGHT)
             .background(WooTheme.colors.surface.default)
-            .testTag(OrderListScreenTestTags.SELECTION_HEADER),
+            .testTag(OrderListTestTags.SELECTION_HEADER),
     ) {
         Row(
             modifier = Modifier
@@ -218,7 +219,7 @@ private fun OrderListSelectionHeader(
                 imageVector = WooIcons.Regular.Xmark,
                 contentDescription = stringResource(R.string.close),
                 onClick = onCloseClicked,
-                modifier = Modifier.testTag(OrderListScreenTestTags.SELECTION_CLOSE),
+                modifier = Modifier.testTag(OrderListTestTags.SELECTION_CLOSE),
             )
             Text(
                 text = selectedCountText,
@@ -229,7 +230,7 @@ private fun OrderListSelectionHeader(
                         heading()
                         liveRegion = LiveRegionMode.Polite
                     }
-                    .testTag(OrderListScreenTestTags.SELECTION_TITLE),
+                    .testTag(OrderListTestTags.SELECTION_TITLE),
                 color = WooTheme.colors.surface.onDefault,
                 style = WooTheme.text.titleMedium.strong,
                 maxLines = 1,
@@ -252,13 +253,13 @@ private fun OrderSelectionOverflowMenu(
             imageVector = WooIcons.Regular.Ellipsis,
             contentDescription = stringResource(R.string.more_options),
             onClick = { isExpanded = true },
-            modifier = Modifier.testTag(OrderListScreenTestTags.SELECTION_OVERFLOW),
+            modifier = Modifier.testTag(OrderListTestTags.SELECTION_OVERFLOW),
         )
         DropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
             containerColor = WooTheme.colors.surface.default,
-            modifier = Modifier.testTag(OrderListScreenTestTags.SELECTION_MENU),
+            modifier = Modifier.testTag(OrderListTestTags.SELECTION_MENU),
         ) {
             DropdownMenuItem(
                 text = {
@@ -272,14 +273,14 @@ private fun OrderSelectionOverflowMenu(
                     isExpanded = false
                     onUpdateStatusClicked()
                 },
-                modifier = Modifier.testTag(OrderListScreenTestTags.SELECTION_UPDATE_STATUS),
+                modifier = Modifier.testTag(OrderListTestTags.SELECTION_UPDATE_STATUS),
             )
         }
     }
 }
 
 @Composable
-internal fun OrderListBrowsingControls(
+private fun OrderListBrowsingControls(
     filterCount: Int,
     lastUpdate: String?,
     onFiltersClicked: () -> Unit,
@@ -289,7 +290,7 @@ internal fun OrderListBrowsingControls(
         modifier = modifier
             .fillMaxWidth()
             .background(WooTheme.colors.surface.bright)
-            .testTag(OrderListScreenTestTags.BROWSING_CONTROLS),
+            .testTag(OrderListTestTags.BROWSING_CONTROLS),
     ) {
         Row(
             modifier = Modifier
@@ -334,14 +335,14 @@ internal fun OrderListBrowsingControls(
                     text = stringResource(R.string.product_list_filters_selected, filterCount),
                     onClick = onFiltersClicked,
                     size = WooButtonSize.Small,
-                    modifier = Modifier.testTag(OrderListScreenTestTags.FILTERS),
+                    modifier = Modifier.testTag(OrderListTestTags.FILTERS),
                 )
             } else {
                 WooOutlinedButton(
                     text = stringResource(R.string.product_list_filters),
                     onClick = onFiltersClicked,
                     size = WooButtonSize.Small,
-                    modifier = Modifier.testTag(OrderListScreenTestTags.FILTERS),
+                    modifier = Modifier.testTag(OrderListTestTags.FILTERS),
                 )
             }
         }
