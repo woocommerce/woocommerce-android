@@ -43,6 +43,20 @@ class BaseFragmentTest {
         assertThat(setup.hostBackPressCalls()).isEqualTo(1)
     }
 
+    @Test
+    fun `given listener consumes back, when navigation continues later, then listener is not invoked again`() {
+        // GIVEN
+        val setup = givenBackPressSetup(allowBackPress = false)
+        setup.activity.onBackPressedDispatcher.onBackPressed()
+
+        // WHEN
+        setup.fragment.continueBackNavigation()
+
+        // THEN
+        assertThat(setup.fragment.backPressCalls).isEqualTo(1)
+        assertThat(setup.hostBackPressCalls()).isEqualTo(1)
+    }
+
     private fun givenBackPressSetup(allowBackPress: Boolean): BackPressSetup {
         val activity = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
         var hostBackPressCalls = 0

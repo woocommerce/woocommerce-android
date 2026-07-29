@@ -24,12 +24,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
         override fun handleOnBackPressed() {
             val listener = this@BaseFragment as? BackPressListener ?: return
             if (listener.onRequestAllowBackPress()) {
-                isEnabled = false
-                try {
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                } finally {
-                    isEnabled = true
-                }
+                continueBackNavigation()
             } else {
                 // Allowed presses are tracked by MainActivity when redispatched; consumed presses stop here.
                 AnalyticsTracker.trackBackPressed(requireActivity())
@@ -53,6 +48,15 @@ open class BaseFragment : Fragment, BaseFragmentView {
             backPressedCallback.remove()
             backPressedCallback.isEnabled = true
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        }
+    }
+
+    internal fun continueBackNavigation() {
+        backPressedCallback.isEnabled = false
+        try {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        } finally {
+            backPressedCallback.isEnabled = true
         }
     }
 
