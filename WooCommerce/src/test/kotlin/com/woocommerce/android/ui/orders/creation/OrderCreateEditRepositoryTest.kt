@@ -7,6 +7,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -23,6 +24,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -57,6 +59,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private val orderMapper: OrderMapper = mock {
         on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
     }
+    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -88,7 +91,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
-            markedAsPaidOrdersCache = mock(),
+            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
         )
     }
 
@@ -249,6 +252,46 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
+
+    @Test
+    fun `given an order update succeeds, when it moves to a paid status, then the order is recorded as paid`() =
+        testBlocking {
+            // GIVEN
+            val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+            whenever(isCurrencyQueryParamSupported()).thenReturn(false)
+            whenever(orderMapper.toAppModel(any())).thenReturn(paidOrder)
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+            // WHEN
+            sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+                siteId = defaultSiteModel.siteId,
+                orderId = 123L,
+                newStatusKey = Order.Status.Processing.value,
+            )
+        }
+
+    @Test
+    fun `given an order update fails, when it moves to a paid status, then the order is not recorded as paid`() =
+        testBlocking {
+            // GIVEN
+            whenever(isCurrencyQueryParamSupported()).thenReturn(false)
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull())).thenReturn(
+                WooResult(
+                    WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)
+                )
+            )
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verifyNoInteractions(markedAsPaidOrdersCache)
+        }
 
     @Test
     fun `given the store takes the currency query param, when an order is updated, then the currency is sent`() =
