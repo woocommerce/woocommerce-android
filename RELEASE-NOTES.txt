@@ -4,6 +4,7 @@
 
 25.4
 -----
+- [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
 
 25.3
