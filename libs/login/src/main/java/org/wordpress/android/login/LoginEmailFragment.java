@@ -289,7 +289,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
 
         if (NetworkUtils.checkConnection(getActivity())) {
             if (isAdded()) {
-                mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore, false);
+                mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore);
                 mIsSocialLogin = true;
                 mLoginListener.addGoogleLoginFragment(mIsSignupFromLoginEnabled);
             } else {

@@ -330,7 +330,7 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
             String currentUsername = mAccountStore.getAccount().getUserName();
             AppLog.e(T.NUX, "User is already logged in WordPress.com: " + currentUsername);
 
-            ArrayList<Integer> oldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore, true);
+            ArrayList<Integer> oldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore);
             mLoginListener.alreadyLoggedInWpcom(oldSitesIDs);
         } else {
             mLoginListener.gotWpcomSiteInfo(failedEndpoint);
