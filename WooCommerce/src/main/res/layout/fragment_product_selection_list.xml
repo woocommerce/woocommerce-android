@@ -31,19 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Products filter and sort view -->
-            <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
-                android:id="@+id/products_sort_filter_card"
-                style="@style/Woo.Card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_00"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible" />
-
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/blaze_banner_view"
                 android:layout_width="match_parent"
@@ -53,7 +40,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/products_sort_filter_card" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/productsRecycler"
