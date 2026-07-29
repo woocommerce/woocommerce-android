@@ -26,6 +26,13 @@ object DeviceInfo {
             val locale = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
             return locale[0]?.displayLanguage
         }
+
+    /**
+     * The device locale as a BCP 47 tag, e.g. `en-GB`. Unlike the app language, this is unaffected by a per-app
+     * language override.
+     */
+    val localeTag: String?
+        get() = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.toLanguageTag()
 }
 
 @Singleton
@@ -38,6 +45,8 @@ class DeviceInfoWrapper @Inject constructor() {
         get() = DeviceInfo.name
     val locale: String?
         get() = DeviceInfo.locale
+    val localeTag: String?
+        get() = DeviceInfo.localeTag
     val screenWidthDp: Int
         get() = Resources.getSystem().configuration.screenWidthDp
     val screenHeightDp: Int
