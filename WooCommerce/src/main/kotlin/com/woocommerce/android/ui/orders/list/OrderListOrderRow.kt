@@ -152,9 +152,9 @@ private fun OrderListSwipeToComplete(
     isCompleted: Boolean,
     isEnabled: Boolean,
     onMarkCompleted: () -> Unit,
+    modifier: Modifier = Modifier,
     canHandleDelta: () -> Boolean = { true },
     canCommit: () -> Boolean = { true },
-    modifier: Modifier = Modifier,
     content: @Composable (Modifier) -> Unit,
 ) {
     var widthPx by remember(orderId) { mutableIntStateOf(0) }
