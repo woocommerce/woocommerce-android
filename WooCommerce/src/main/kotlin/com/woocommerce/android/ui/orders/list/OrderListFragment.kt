@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -40,7 +39,7 @@ import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.setDesignSystemContent
 import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -170,32 +169,26 @@ class OrderListFragment : TopLevelFragment(R.layout.fragment_order_list) {
         uiMessageResolver.anchorViewId = null
 
         ViewGroupCompat.setTransitionGroup(binding.orderListComposeContainer, true)
-        binding.orderListComposeContainer.addView(
-            designSystemComposeView {
-                val highlightedOrderId by selectedOrder.selectedOrderId.observeAsState()
-                OrderListScreen(
-                    viewModel = viewModel,
-                    communicationViewModel = communicationViewModel,
-                    currencyFormatter = currencyFormatter,
-                    detailHighlightedOrderId = highlightedOrderId
-                        ?.takeIf { requireContext().isTwoPanesShouldBeUsed },
-                    scrollToTopRequests = scrollToTopRequests,
-                    jitmViewModelProvider = { jitmViewModel },
-                    onOrderTapped = ::openOrderDetail,
-                    onLearnMoreClicked = {
-                        ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
-                    },
-                    onCreateOrderClicked = ::openOrderCreationFragment,
-                    onTroubleshootingClicked = ::onTroubleshootingClicked,
-                    onContactSupportClicked = ::onContactSupportClicked,
-                    onListAtTopChanged = { isListAtTop = it },
-                )
-            }.apply {
-                id = R.id.order_list_compose_view
-            },
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-        )
+        binding.orderListComposeContainer.setDesignSystemContent {
+            val highlightedOrderId by selectedOrder.selectedOrderId.observeAsState()
+            OrderListScreen(
+                viewModel = viewModel,
+                communicationViewModel = communicationViewModel,
+                currencyFormatter = currencyFormatter,
+                detailHighlightedOrderId = highlightedOrderId
+                    ?.takeIf { requireContext().isTwoPanesShouldBeUsed },
+                scrollToTopRequests = scrollToTopRequests,
+                jitmViewModelProvider = { jitmViewModel },
+                onOrderTapped = ::openOrderDetail,
+                onLearnMoreClicked = {
+                    ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
+                },
+                onCreateOrderClicked = ::openOrderCreationFragment,
+                onTroubleshootingClicked = ::onTroubleshootingClicked,
+                onContactSupportClicked = ::onContactSupportClicked,
+                onListAtTopChanged = { isListAtTop = it },
+            )
+        }
 
         initObservers()
         initSelectionObserver()
