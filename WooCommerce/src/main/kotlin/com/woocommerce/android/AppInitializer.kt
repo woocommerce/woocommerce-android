@@ -409,8 +409,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     private fun monitorWPComSiteInvalidations() {
         appCoroutineScope.launch {
-            // Reset the selected site and route the user to the site picker when WPCom no longer
-            // recognises the selected site (the `unknown_blog` error code)
+            // Reset the selected site and route the user to the site picker when WPCom invalidates it.
             wpComSiteInvalidationNotifier.siteInvalidationEvents
                 .onEach { event ->
                     val selected = selectedSite.getOrNull() ?: return@onEach
@@ -418,7 +417,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     if (event.siteId == 0L || event.siteId != selected.siteId) return@onEach
                     // Only recover while in the foreground; resetting in the background would strip the
                     // selected site without being able to route to the picker. A foreground request will
-                    // fail with unknown_blog again and trigger recovery then.
+                    // fail again and trigger recovery then.
                     if (!isAppInForeground) return@onEach
                     when (event.reason) {
                         WPComSiteInvalidationReason.UNKNOWN_BLOG -> {
@@ -427,6 +426,16 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                                 "Received unknown_blog for the selected site, resetting selected site"
                             )
                             analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                        }
+
+                        WPComSiteInvalidationReason.JETPACK_CONNECTION_MISSING -> {
+                            WooLog.w(
+                                T.LOGIN,
+                                "Received missing Jetpack connection for the selected site, resetting selected site"
+                            )
+                            analyticsTracker.track(
+                                AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_MISSING_JETPACK_CONNECTION
+                            )
                         }
                     }
                     prefs.sitePickerErrorMessage = R.string.site_picker_unknown_blog_error

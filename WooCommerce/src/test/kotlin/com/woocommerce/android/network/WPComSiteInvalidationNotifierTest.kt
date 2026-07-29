@@ -23,6 +23,20 @@ class WPComSiteInvalidationNotifierTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when Jetpack connection is missing, then the typed event is emitted`() = testBlocking {
+        val event = WPComSiteInvalidationEvent(
+            SITE_ID,
+            WPComSiteInvalidationReason.JETPACK_CONNECTION_MISSING
+        )
+
+        sut.siteInvalidationEvents.test {
+            sut.onSiteInvalidated(event)
+
+            assertThat(awaitItem()).isEqualTo(event)
+        }
+    }
+
     companion object {
         private const val SITE_ID = 789L
     }

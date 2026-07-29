@@ -13,5 +13,6 @@ data class WPComSiteInvalidationEvent(
 )
 
 enum class WPComSiteInvalidationReason {
-    UNKNOWN_BLOG
+    UNKNOWN_BLOG,
+    JETPACK_CONNECTION_MISSING
 }

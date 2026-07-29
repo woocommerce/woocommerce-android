@@ -855,6 +855,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Errors
     JETPACK_TUNNEL_TIMEOUT,
     SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG,
+    SELECTED_SITE_RESET_DUE_TO_MISSING_JETPACK_CONNECTION,
 
     // -- Order status changes
     SET_ORDER_STATUS_DIALOG_APPLY_BUTTON_TAPPED,
