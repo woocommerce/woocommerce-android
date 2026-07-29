@@ -3,21 +3,22 @@ package com.woocommerce.android.network
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.UnknownBlogListener
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationListener
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Bridges FluxC's [UnknownBlogListener] (invoked from the network layer when WPCom returns the
- * `unknown_blog` error code) to a [Flow] the app can observe to recover from a stale selected site.
+ * Bridges FluxC's [WPComSiteInvalidationListener] to a [Flow] the app can observe to recover from
+ * an invalid site.
  */
 @Singleton
-class UnknownBlogNotifier @Inject constructor() : UnknownBlogListener {
+class WPComSiteInvalidationNotifier @Inject constructor() : WPComSiteInvalidationListener {
     // replay = 1 so the one-shot recovery signal isn't lost if it is emitted before the observer subscribes
-    private val _unknownBlogEvents = MutableSharedFlow<Long>(replay = 1)
-    val unknownBlogEvents: Flow<Long> = _unknownBlogEvents.asSharedFlow()
+    private val _siteInvalidationEvents = MutableSharedFlow<WPComSiteInvalidationEvent>(replay = 1)
+    val siteInvalidationEvents: Flow<WPComSiteInvalidationEvent> = _siteInvalidationEvents.asSharedFlow()
 
-    override fun onUnknownBlog(siteId: Long) {
-        _unknownBlogEvents.tryEmit(siteId)
+    override fun onSiteInvalidated(event: WPComSiteInvalidationEvent) {
+        _siteInvalidationEvents.tryEmit(event)
     }
 }

@@ -24,7 +24,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.network.UnknownBlogNotifier
+import com.woocommerce.android.network.WPComSiteInvalidationNotifier
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
@@ -85,6 +85,7 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.logging.FluxCCrashLoggerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.OnJetpackTimeoutError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
@@ -148,7 +149,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
 
-    @Inject lateinit var unknownBlogNotifier: UnknownBlogNotifier
+    @Inject lateinit var wpComSiteInvalidationNotifier: WPComSiteInvalidationNotifier
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
@@ -268,7 +269,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         monitorApplicationPasswordsStatus()
 
-        monitorUnknownBlogErrors()
+        monitorWPComSiteInvalidations()
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
@@ -406,21 +407,28 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
-    private fun monitorUnknownBlogErrors() {
+    private fun monitorWPComSiteInvalidations() {
         appCoroutineScope.launch {
             // Reset the selected site and route the user to the site picker when WPCom no longer
             // recognises the selected site (the `unknown_blog` error code)
-            unknownBlogNotifier.unknownBlogEvents
-                .onEach { siteId ->
+            wpComSiteInvalidationNotifier.siteInvalidationEvents
+                .onEach { event ->
                     val selected = selectedSite.getOrNull() ?: return@onEach
                     // siteId is the WPCom blog id; ignore non-WPCom (0) and other sites
-                    if (siteId == 0L || siteId != selected.siteId) return@onEach
+                    if (event.siteId == 0L || event.siteId != selected.siteId) return@onEach
                     // Only recover while in the foreground; resetting in the background would strip the
                     // selected site without being able to route to the picker. A foreground request will
                     // fail with unknown_blog again and trigger recovery then.
                     if (!isAppInForeground) return@onEach
-                    WooLog.w(T.LOGIN, "Received unknown_blog for the selected site, resetting selected site")
-                    analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                    when (event.reason) {
+                        WPComSiteInvalidationReason.UNKNOWN_BLOG -> {
+                            WooLog.w(
+                                T.LOGIN,
+                                "Received unknown_blog for the selected site, resetting selected site"
+                            )
+                            analyticsTracker.track(AnalyticsEvent.SELECTED_SITE_RESET_DUE_TO_UNKNOWN_BLOG)
+                        }
+                    }
                     prefs.sitePickerErrorMessage = R.string.site_picker_unknown_blog_error
                     selectedSite.reset(persistSynchronously = true)
                     restartMainActivity()

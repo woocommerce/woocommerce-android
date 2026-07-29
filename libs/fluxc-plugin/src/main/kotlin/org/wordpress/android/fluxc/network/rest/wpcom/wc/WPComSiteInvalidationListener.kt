@@ -1,10 +1,17 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
 /**
- * Notified when a WooCommerce REST request fails because WPCom no longer recognises the site ID
- * (the `unknown_blog` error code). This usually means the selected site is stale, was disconnected
- * from Jetpack, or was deleted, and the app should recover from it.
+ * Notified when WPCom indicates that a site can no longer be used by the app.
  */
-interface UnknownBlogListener {
-    fun onUnknownBlog(siteId: Long)
+interface WPComSiteInvalidationListener {
+    fun onSiteInvalidated(event: WPComSiteInvalidationEvent)
+}
+
+data class WPComSiteInvalidationEvent(
+    val siteId: Long,
+    val reason: WPComSiteInvalidationReason
+)
+
+enum class WPComSiteInvalidationReason {
+    UNKNOWN_BLOG
 }

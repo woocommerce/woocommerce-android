@@ -5,17 +5,21 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UnknownBlogNotifierTest : BaseUnitTest() {
-    private val sut = UnknownBlogNotifier()
+class WPComSiteInvalidationNotifierTest : BaseUnitTest() {
+    private val sut = WPComSiteInvalidationNotifier()
 
     @Test
-    fun `when onUnknownBlog is called, then the site id is emitted`() = testBlocking {
-        sut.unknownBlogEvents.test {
-            sut.onUnknownBlog(SITE_ID)
+    fun `when site is invalidated, then the event is emitted`() = testBlocking {
+        val event = WPComSiteInvalidationEvent(SITE_ID, WPComSiteInvalidationReason.UNKNOWN_BLOG)
 
-            assertThat(awaitItem()).isEqualTo(SITE_ID)
+        sut.siteInvalidationEvents.test {
+            sut.onSiteInvalidated(event)
+
+            assertThat(awaitItem()).isEqualTo(event)
         }
     }
 

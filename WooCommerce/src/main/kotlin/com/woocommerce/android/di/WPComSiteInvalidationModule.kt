@@ -1,15 +1,17 @@
 package com.woocommerce.android.di
 
-import com.woocommerce.android.network.UnknownBlogNotifier
+import com.woocommerce.android.network.WPComSiteInvalidationNotifier
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.UnknownBlogListener
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationListener
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface UnknownBlogModule {
+interface WPComSiteInvalidationModule {
     @Binds
-    fun bindUnknownBlogListener(notifier: UnknownBlogNotifier): UnknownBlogListener
+    fun bindWPComSiteInvalidationListener(
+        notifier: WPComSiteInvalidationNotifier
+    ): WPComSiteInvalidationListener
 }
