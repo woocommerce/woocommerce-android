@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,7 +33,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.setDesignSystemContent
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -146,22 +145,18 @@ class ProductListFragment :
         _binding = FragmentProductListBinding.bind(view)
         uiMessageResolver.anchorViewId = null
         ViewGroupCompat.setTransitionGroup(binding.productsComposeContainer, true)
-        binding.productsComposeContainer.addView(
-            designSystemComposeView {
-                ProductListScreen(
-                    viewModel = productListViewModel,
-                    currencyFormatter = currencyFormatter,
-                    activeUploadProductIds = mediaFileUploadHandler.activeUploadProductIds,
-                    isPullToRefreshEnabled = isPullToRefreshEnabled,
-                    scrollToTopRequests = scrollToTopRequests,
-                    isTwoPaneLayout = isWindowClassLargeThanCompact(),
-                    onEmptyAddProductClicked = ::showAddProductBottomSheet,
-                    onListAtTopChanged = { isListAtTop = it },
-                )
-            },
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT,
-        )
+        binding.productsComposeContainer.setDesignSystemContent {
+            ProductListScreen(
+                viewModel = productListViewModel,
+                currencyFormatter = currencyFormatter,
+                activeUploadProductIds = mediaFileUploadHandler.activeUploadProductIds,
+                isPullToRefreshEnabled = isPullToRefreshEnabled,
+                scrollToTopRequests = scrollToTopRequests,
+                isTwoPaneLayout = isWindowClassLargeThanCompact(),
+                onEmptyAddProductClicked = ::showAddProductBottomSheet,
+                onListAtTopChanged = { isListAtTop = it },
+            )
+        }
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         setupObservers()

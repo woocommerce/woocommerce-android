@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.list.ProductListFragment">
 
-    <FrameLayout
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/products_compose_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
