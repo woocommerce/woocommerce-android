@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.jetpacktunnel
 
+import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
@@ -194,6 +195,7 @@ object JetpackTunnelGsonRequest {
      * @param type the Type defining the expected response
      * @param listener the success listener
      * @param errorListener the error listener
+     * @param params the parameters to append to the endpoint's query string
      *
      * @param T the expected response object from the WP-API endpoint
      */
@@ -204,9 +206,10 @@ object JetpackTunnelGsonRequest {
         body: Map<String, Any>,
         type: Type,
         listener: (T?, List<Header>) -> Unit,
-        errorListener: WPComErrorListener
+        errorListener: WPComErrorListener,
+        params: Map<String, String> = emptyMap()
     ): WPComGsonRequest<JetpackTunnelResponse<T>>? {
-        val wrappedBody = createTunnelBody(method = "put", body = body, path = wpApiEndpoint)
+        val wrappedBody = createTunnelBody(method = "put", body = body, path = wpApiEndpoint, params = params)
         return buildWrappedPostRequest(siteId, wrappedBody, type, listener, "PUT", wpApiEndpoint, errorListener)
     }
 
@@ -289,11 +292,12 @@ object JetpackTunnelGsonRequest {
     private fun createTunnelBody(
         method: String,
         body: Map<String, Any> = mapOf(),
-        path: String
+        path: String,
+        params: Map<String, String> = emptyMap()
     ): MutableMap<String, Any> {
         val finalBody = mutableMapOf<String, Any>()
         with(finalBody) {
-            put("path", "$path&_method=$method")
+            put("path", "$path${params.toTunnelQuery()}&_method=$method")
             put("json", "true")
             if (body.isNotEmpty()) {
                 put("body", gson.toJson(body, object : TypeToken<Map<String, Any>>() {}.type))
@@ -301,4 +305,16 @@ object JetpackTunnelGsonRequest {
         }
         return finalBody
     }
+
+    /**
+     * The tunnel expects the endpoint's query parameters appended to the path with `&` rather than as a regular
+     * query string, e.g. `/wc/v3/orders/1&currency=EUR&_method=put`. A `?` would be treated as part of the route
+     * and the request would fail with `rest_no_route`.
+     *
+     * Keys and values are percent-encoded, matching what [android.net.Uri.Builder.appendQueryParameter] does on the
+     * direct (non-tunnel) path. The tunnel splits the path on `&` before decoding, so an encoded separator stays
+     * inside its value instead of introducing a spurious parameter.
+     */
+    private fun Map<String, String>.toTunnelQuery(): String =
+        entries.joinToString(separator = "") { "&${Uri.encode(it.key)}=${Uri.encode(it.value)}" }
 }

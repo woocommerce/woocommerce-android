@@ -80,14 +80,16 @@ class JetpackTunnelWPAPINetwork @Inject constructor(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any>
+        body: Map<String, Any>,
+        params: Map<String, String>
     ): WPAPIResponse<T> {
         return jetpackTunnelGsonRequestBuilder.syncPutRequest(
             restClient = this,
             site = site,
             url = path,
             clazz = clazz,
-            body = body
+            body = body,
+            params = params
         ).toWPAPIResponse()
     }
 

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 16:58:30+0000
+Translation-Revision-Date: 2026-07-14 16:56:31+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Bu görsel türü desteklenmiyor. Lütfen bir PNG, JPEG, WebP, GIF, BMP, HEIC veya HEIF görseli seçin.</string>
+    <string name="ai_support_chat_store_connection_error_message">Mağazama ulaşılamıyor. Uygulama, mağazama ulaşmaya çalışırken bir bağlantı hatası algıladı. Bunu nasıl düzeltebilirim?</string>
+    <string name="settings_crash_reporting_error_update">Çökme bildirme ayarlarınız güncellenirken bir hata oluştu</string>
+    <string name="empty_search_guest_orders_button">Misafir siparişlerini göster</string>
+    <string name="empty_message_with_search_guest">Misafir müşteriler tarafından verilen siparişleri mi arıyorsunuz?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Bu sipariş bir hediye kartıyla ödendi. Burada geri ödeme yapıldığında hediye kartı bakiyesi geri yüklenemez. Doğru iade etmek için lütfen bunu web\'deki mağaza yöneticinizden işleme alın.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Mağaza yöneticinizden para iadesi</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Bu sitenin güvenlik sertifikasını doğrulayamadık. Barındırma sağlayıcınızla veya site yöneticinizle iletişime geçip tekrar deneyin.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Güvenli bir bağlantı kuramadık. Cihazınızın tarih ve saatinin doğru olup olmadığını kontrol edin ve tekrar deneyin.</string>
     <string name="woopos_refund_preview_error">İade toplamı hesaplanamadı. Lütfen tekrar deneyin.</string>
@@ -501,11 +508,6 @@ Language: tr
     <string name="orderlist_connectivity_tool_store_products_check_title">Mağazanızdaki ürünler alınıyor</string>
     <string name="user_role_access_error_fetch_failed">Bu mağazadaki rolünüzü doğrulayamadık. Lütfen tekrar deneyin. Sorun devam ederse desteğe başvurun.</string>
     <string name="connectivity_tool_view_technical_details">VideoPress teknik bilgileri</string>
-    <string name="woopos_eligibility_learn_more_label">Daha Fazla Bilgi Edinin</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için &lt;b&gt;Pro\'ya yükseltin&lt;/b&gt;.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için Pro\'ya yükseltin.</string>
-    <string name="woopos_eligibility_ciab_title">Pro paket gerekli</string>
-    <string name="ciab_order_status_open">Açık</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Menşe adresi eksik veya geçersiz</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Gönderim etiketi satın alınamıyor. Lütfen menşe adresini tamamlayın.</string>
     <string name="woopos_orders_details_refund_tax">Vergi</string>

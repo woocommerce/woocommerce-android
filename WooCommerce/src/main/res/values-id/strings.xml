@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:54:59+0000
+Translation-Revision-Date: 2026-07-14 09:56:01+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Jenis gambar ini tidak didukung. Pilih gambar PNG, JPEG, WebP, GIF, BMP, HEIC, atau HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Toko saya tidak dapat dijangkau. Aplikasi mendeteksi error koneksi saat mencoba menjangkau toko saya. Bagaimana cara memperbaiki ini?</string>
+    <string name="settings_crash_reporting_error_update">Terjadi error saat memperbarui pengaturan pelaporan crash Anda</string>
+    <string name="empty_search_guest_orders_button">Tampilkan pesanan tamu</string>
+    <string name="empty_message_with_search_guest">Mencari pesanan dari pelanggan tamu?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Pesanan ini dibayar dengan kartu hadiah. Mengembalikan dana di sini tidak akan mengembalikan saldo kartu hadiah. Untuk mengembalikan dana dengan benar, lakukan pemrosesannya dari admin toko Anda di web.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Pengembalian dana dari admin toko Anda</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Kami tidak dapat membuat sambungan aman. Periksa apakah tanggal dan waktu perangkat Anda benar, lalu coba lagi.</string>
     <string name="woopos_refund_preview_error">Tidak dapat menghitung total pengembalian dana. Coba lagi.</string>
     <string name="woopos_orders_details_refresh_error">Tidak dapat menyegarkan pesanan. Periksa koneksi Anda dan coba lagi.</string>
@@ -501,11 +508,6 @@ Language: id
     <string name="connectivity_tool_view_technical_details">Lihat detail teknis</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Mengambil produk di toko Anda</string>
     <string name="user_role_access_error_fetch_failed">Kami tidak dapat memastikan peran Anda di toko ini. Coba lagi. Jika masalah berlanjut, hubungi dukungan.</string>
-    <string name="woopos_eligibility_learn_more_label">Baca Selengkapnya</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. &lt;b&gt;Upgrade ke paket Pro&lt;/b&gt; guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Terima pembayaran secara langsung dengan biaya hanya 2,70% + $0,10 per transaksi. Upgrade ke paket Pro guna mengakses fitur Ketuk untuk Membayar di ponsel Anda dan sistem titik penjualan lengkap kami beserta sinkronisasi inventaris dan pesanan secara real-time.</string>
-    <string name="woopos_eligibility_ciab_title">Paket Pro diperlukan</string>
-    <string name="ciab_order_status_open">Buka</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Tidak dapat membeli label pengiriman. Silakan lengkapi alamat asal.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Alamat asal tidak ditemukan atau tidak valid</string>
     <string name="woopos_orders_details_refund_details_background">Latar belakang dialog rincian pengembalian dana</string>

@@ -316,7 +316,8 @@
     <string name="login_discovery_error_options">Here are a few other things you can try:</string>
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
-    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found_title">Wrong email</string>
+    <string name="login_no_wpcom_account_found_message">User does not exist. Verify the email address is correct or try with a different account.</string>
     <string name="user_role_access_error_user_roles_null">This app supports only Administrator and Shop Manager user roles. We were unable to fetch user roles for your account. Please contact support.</string>
     <string name="user_role_access_error_fetch_failed">We couldn\'t verify your role on this store. Please try again. If the problem persists, contact support.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
@@ -826,6 +827,8 @@
     -->
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_currency_mismatch_title">This order can\'t be edited in the app</string>
+    <string name="order_editing_currency_mismatch_message">Sorry, you can only edit this order on the web, as it uses %1$s, and your site\'s currency is %2$s.</string>
     <string name="order_editing_locked_content_description">locked</string>
     <string name="order_editing_barcode_content_description">Scan barcode</string>
     <string name="order_editing_add_content_description">Add product</string>
@@ -1797,9 +1800,8 @@
     <string name="card_reader_onboarding_account_under_review_header">In-Person Payments is currently unavailable</string>
     <string name="card_reader_onboarding_account_under_review_hint">You\’ll be able to accept In-Person Payments as soon as we finish reviewing your account.</string>
 
-    <string name="card_reader_onboarding_account_overdue_requirements_header">In-Person Payments is currently unavailable</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement on your account. Please take care of that to resume In-Person Payments.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_refresh_button" translatable="false">@string/refresh_button</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Overdue requirements on your account</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">You have at least one overdue requirement. You can skip and keep taking payments, but if the requirement is blocking your account, some transactions may be declined until you resolve it.</string>
     <string name="card_reader_onboarding_account_overdue_requirements_take_care_button">Resolve now</string>
 
     <string name="card_reader_onboarding_account_pending_requirements_header">Your account has pending requirements</string>
@@ -2028,6 +2030,9 @@
     <string name="product_duplicate_progress_title">Duplicating your product…</string>
     <string name="product_duplicate_progress_body">Please wait while we save a copy of this product to your store</string>
     <string name="product_duplicate_copied_product_name">%1$s Copy</string>
+    <string name="product_duplicate_discard_changes_title">Discard changes and duplicate?</string>
+    <string name="product_duplicate_discard_changes_message">Your unsaved changes will be lost. The duplicate will use the last saved version.</string>
+    <string name="product_duplicate_discard_changes_action">Discard &amp; duplicate</string>
     <string name="product_trash">Trash product</string>
     <string name="product_confirm_trash">Do you want to move this product to the Trash?</string>
     <string name="product_trash_yes">Move to trash</string>
@@ -2160,11 +2165,6 @@
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
-    <string name="product_creation_survey_title">We value your input!</string>
-    <string name="product_creation_survey_description">Got a minute? Help us improve our AI-assisted features with your quick feedback.</string>
-    <string name="product_creation_survey_button_open">Start the Survey</string>
-    <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
-    <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
     <string name="ai_product_creation_generate_details_button">Generate Product Details</string>
     <string name="ai_product_creation_view_image">View photo</string>
     <string name="ai_product_creation_replace_image">Replace photo</string>
@@ -3205,7 +3205,6 @@
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
-    <string name="store_onboarding_menu_share_feedback">Share feedback</string>
     <string name="store_onboarding_menu_hide_store_setup">Hide store setup list</string>
     <string name="store_onboarding_launch_store_button">Publish my store</string>
     <string name="store_onboarding_launch_store_share_url_button">Share URL</string>
@@ -3876,6 +3875,7 @@
     <string name="woopos_cart_item_custom_amount_content_description">Custom amount %1$s, %2$s</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
+    <string name="woopos_cart_custom_amount_discount_not_applied">Discount not applied</string>
     <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
     <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>

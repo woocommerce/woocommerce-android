@@ -205,6 +205,7 @@ class ProductDetailsToolbarHelper @Inject constructor() :
                 }
             )
         }
+        findItem(R.id.menu_duplicate)?.isVisible = state.duplicateOption
         findItem(R.id.menu_trash_product)?.isVisible = state.trashOption
     }
 

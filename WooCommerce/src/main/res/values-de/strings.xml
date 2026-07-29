@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 14:58:27+0000
+Translation-Revision-Date: 2026-07-14 09:58:31+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Dieser Bildtyp wird nicht unterstützt. Bitte wähle ein Bild in diesem Format aus: PNG, JPEG, WebP, GIF, BMP, HEIC oder HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Mein Shop ist nicht erreichbar. Die App hat beim Versuch, meinen Shop aufzurufen, einen Verbindungsfehler erkannt. Wie kann ich das Problem beheben?</string>
+    <string name="settings_crash_reporting_error_update">Beim Aktualisieren deiner Einstellung für Absturzberichte ist ein Fehler aufgetreten</string>
+    <string name="empty_search_guest_orders_button">Gastbestellungen anzeigen</string>
+    <string name="empty_message_with_search_guest">Suchst du nach Bestellungen von Gästen?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Diese Bestellung wurde mit einer Geschenkkarte bezahlt. Wenn du hier eine Rückerstattung vornimmst, wird das Geschenkkartenguthaben nicht wiederhergestellt. Um die Rückerstattung korrekt vorzunehmen, bearbeite sie bitte über deine Shop-Administration im Web.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Über die Shop-Administration erstatten</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Wir konnten das Sicherheitszertifikat dieser Website nicht verifizieren. Kontaktiere deinen Hosting-Anbieter oder deinen Website-Administrator und versuche es dann erneut.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Wir konnten keine sichere Verbindung herstellen. Überprüfe das Datum und die Uhrzeit deines Geräts und versuche es dann erneut.</string>
     <string name="woopos_refund_preview_error">Die Rückerstattungssumme konnte nicht berechnet werden. Bitte versuche es erneut.</string>
@@ -502,11 +509,6 @@ Language: de
     <string name="connectivity_tool_view_technical_details">Technische Details anzeigen</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Produkte in deinem Shop werden abgerufen</string>
     <string name="user_role_access_error_fetch_failed">Wir konnten deine Rolle in diesem Shop nicht verifizieren. Bitte versuche es erneut. Wenn das Problem weiter besteht, wende dich an den Support.</string>
-    <string name="woopos_eligibility_learn_more_label">Weitere Informationen</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Nimm persönlich Zahlungen für nur 2,70 % + 0,10 USD pro Transaktion entgegen. Führe ein &lt;b&gt;Upgrade auf Pro&lt;/b&gt; durch, um Tap-to-Pay auf deinem Mobiltelefon und unserem vollständigen Point-of-Sale-System mit Echtzeit-Inventarisierung und Bestellsynchronisierung zu nutzen.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Nimm persönlich Zahlungen für nur 2,70 % + 0,10 USD pro Transaktion entgegen. Führe ein Upgrade auf Pro durch, um Tap-to-Pay auf deinem Mobiltelefon und unserem vollständigen Point-of-Sale-System mit Echtzeit-Inventarisierung und Bestellsynchronisierung zu nutzen.</string>
-    <string name="woopos_eligibility_ciab_title">Pro-Tarif erforderlich</string>
-    <string name="ciab_order_status_open">Offen</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Das Versandetikett kann nicht gekauft werden. Bitte gib die Adresse des Absenders an.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Absenderadresse fehlt oder ist ungültig</string>
     <string name="woopos_orders_details_refund_details_background">Hintergrund des Dialogs „Rückerstattungsdetails“</string>
