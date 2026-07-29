@@ -119,6 +119,8 @@ private fun OrderLazyList(
             count = itemCount,
             key = itemKey,
         ) { index ->
+            // itemAt is memoized per index. Advance contentRevision when mapped content changes
+            // without replacing the accessor.
             val item = remember(index, contentRevision, itemAt) { itemAt(index) }
             when (item) {
                 is OrderListItemUiModel.DateSection -> OrderListDateSection(item)
