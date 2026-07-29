@@ -1,5 +1,5 @@
 [versions]
-agp = '9.2.1'
+agp = '9.3.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
