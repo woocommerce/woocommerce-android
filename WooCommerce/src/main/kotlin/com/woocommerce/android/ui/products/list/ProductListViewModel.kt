@@ -266,7 +266,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onSearchRequested() {
-        if (viewState.query.orEmpty().length > 2) {
+        if (viewState.query.orEmpty().isNotEmpty()) {
             refreshProducts(shouldTrackSearch = true)
         }
     }

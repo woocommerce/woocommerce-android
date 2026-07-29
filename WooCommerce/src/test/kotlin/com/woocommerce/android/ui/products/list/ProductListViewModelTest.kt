@@ -877,7 +877,6 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.onSearchOpened()
 
         viewModel.onSearchQueryChanged("ab")
-        viewModel.onSearchRequested()
         advanceUntilIdle()
 
         verify(productRepository, never()).searchProductList(
@@ -886,6 +885,30 @@ class ProductListViewModelTest : BaseUnitTest() {
             loadMore = any(),
             excludedProductIds = anyOrNull(),
             productFilterOptions = any(),
+        )
+    }
+
+    @Test
+    fun `given short search query, when search is submitted, then search is requested`() = testBlocking {
+        createViewModel()
+        viewModel.onSearchOpened()
+        viewModel.onSearchQueryChanged("ab")
+
+        viewModel.onSearchRequested()
+        advanceUntilIdle()
+
+        verify(productRepository).searchProductList(
+            searchQuery = "ab",
+            skuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
+            loadMore = false,
+            productFilterOptions = emptyMap(),
+        )
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_SEARCHED,
+            mapOf(
+                AnalyticsTracker.KEY_SEARCH to "ab",
+                AnalyticsTracker.KEY_SEARCH_FILTER to AnalyticsTracker.VALUE_SEARCH_ALL,
+            )
         )
     }
 
