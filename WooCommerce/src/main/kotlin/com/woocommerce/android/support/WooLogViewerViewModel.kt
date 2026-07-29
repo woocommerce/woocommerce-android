@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.util.DeviceInfo
+import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
 import com.woocommerce.android.util.logs.LogFileWriter
@@ -25,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WooLogViewerViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val wooFileLogger: WooFileLogger
+    private val wooFileLogger: WooFileLogger,
+    private val deviceInfo: DeviceInfoWrapper
 ) : ScopedViewModel(savedState) {
 
     private val selectedLogFile = savedState.getNullableStateFlow(
@@ -98,8 +99,12 @@ class WooLogViewerViewModel @Inject constructor(
     }
 
     private fun getDeviceInfo(): LogEntry {
-        return with(DeviceInfo) {
-            LogEntry(WooLog.T.DEVICE, WooLog.LogLevel.w, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
+        return with(deviceInfo) {
+            LogEntry(
+                WooLog.T.DEVICE,
+                WooLog.LogLevel.w,
+                "OS: $osName\nDeviceName: $name\nLanguage: $locale"
+            )
         }
     }
 
