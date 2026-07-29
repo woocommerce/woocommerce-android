@@ -18,7 +18,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -382,8 +381,7 @@ class MainActivity :
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        // Register after the NavHost so analytics and screen handling run before navigation consumes back.
-        setOnBackNavigationCallback()
+        setOnBackNavigationCallback(navHostFragment)
         val graphInflater = navHostFragment.navController.navInflater
 
         val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)
@@ -437,18 +435,12 @@ class MainActivity :
         viewModel.showFeatureAnnouncementIfNeeded()
     }
 
-    private fun setOnBackNavigationCallback() {
-        onBackPressedDispatcher.addCallback(this) {
+    private fun setOnBackNavigationCallback(navHostFragment: NavHostFragment) {
+        addBackNavigationCallbackAfterNavHost(navHostFragment) {
             AnalyticsTracker.trackBackPressed(this@MainActivity)
             supportFragmentManager.primaryNavigationFragment?.let {
                 updateAppBarVisibility(it)
             }
-            // Disable this callback temporarily to prevent infinite recursion from onBackPressed() call below.
-            isEnabled = false
-            // Trigger the default back press behavior.
-            onBackPressedDispatcher.onBackPressed()
-            // Re-enable the callback for future custom back presses handling.
-            isEnabled = true
         }
     }
 
