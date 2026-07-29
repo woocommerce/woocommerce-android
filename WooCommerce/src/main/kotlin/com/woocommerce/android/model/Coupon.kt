@@ -7,6 +7,9 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponWithEmails
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 @Parcelize
@@ -18,7 +21,8 @@ data class Coupon(
     val dateModifiedGmt: Date? = null,
     val type: Type? = null,
     val description: String? = null,
-    val dateExpires: Date? = null,
+    val dateExpiresGmt: Date? = null,
+    val dateExpiresLocal: LocalDate? = null,
     val usageCount: Int? = null,
     val isShippingFree: Boolean? = null,
     val productIds: List<Long>,
@@ -32,7 +36,8 @@ data class Coupon(
             amount isEqualTo otherCoupon.amount &&
             type == otherCoupon.type &&
             description == otherCoupon.description &&
-            dateExpires == otherCoupon.dateExpires &&
+            dateExpiresGmt == otherCoupon.dateExpiresGmt &&
+            dateExpiresLocal == otherCoupon.dateExpiresLocal &&
             usageCount == otherCoupon.usageCount &&
             isShippingFree == otherCoupon.isShippingFree &&
             productIds == otherCoupon.productIds &&
@@ -113,7 +118,8 @@ fun CouponWithEmails.toAppModel() = Coupon(
     dateModifiedGmt = coupon.dateModifiedGmt.parseGmtDateFromIso8601DateFormat(),
     type = coupon.discountType?.let { Coupon.Type.fromDataModel(it) },
     description = coupon.description,
-    dateExpires = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
+    dateExpiresGmt = coupon.dateExpiresGmt.parseGmtDateFromIso8601DateFormat(),
+    dateExpiresLocal = coupon.dateExpires.toLocalDateOrNull(),
     usageCount = coupon.usageCount,
     isShippingFree = coupon.isShippingFree,
     productIds = coupon.includedProductIds.orEmpty(),
@@ -131,3 +137,9 @@ fun CouponWithEmails.toAppModel() = Coupon(
         restrictedEmails = restrictedEmails.map { it.email }
     )
 )
+
+private fun String?.toLocalDateOrNull(): LocalDate? = this?.let {
+    runCatching {
+        LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toLocalDate()
+    }.getOrNull()
+}

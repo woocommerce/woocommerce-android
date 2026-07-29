@@ -50,8 +50,9 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
 import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalDate
 import java.util.Date
-import java.util.concurrent.TimeUnit.DAYS
 
 private const val COUPON_ID = 1L
 
@@ -242,27 +243,30 @@ class EditCouponViewModelTests : BaseUnitTest() {
         }
 
     @Test
-    fun `when expiry date is changed, then update the coupon draft`() = testBlocking {
-        val newDate = Date(System.currentTimeMillis() + DAYS.toMillis(1))
+    fun `when expiry date is changed, then update only the local coupon date`() = testBlocking {
+        val exactGmtExpiry = Date.from(Instant.parse("2025-06-15T13:45:30Z"))
+        val newDate = LocalDate.of(2025, 6, 16)
+        storedCoupon = storedCoupon.copy(dateExpiresGmt = exactGmtExpiry)
         setup()
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onExpiryDateChanged(newDate)
         }.last()
 
-        assertThat(state.couponDraft.dateExpires).isEqualTo(newDate)
+        assertThat(state.couponDraft.dateExpiresLocal).isEqualTo(newDate)
+        assertThat(state.couponDraft.dateExpiresGmt).isEqualTo(exactGmtExpiry)
     }
 
     @Test
     fun `when expiry date is removed, then update the coupon draft`() = testBlocking {
-        storedCoupon = storedCoupon.copy(dateExpires = Date())
+        storedCoupon = storedCoupon.copy(dateExpiresLocal = LocalDate.of(2025, 6, 16))
         setup()
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onExpiryDateChanged(null)
         }.last()
 
-        assertThat(state.couponDraft.dateExpires).isNull()
+        assertThat(state.couponDraft.dateExpiresLocal).isNull()
     }
 
     @Test
@@ -283,13 +287,13 @@ class EditCouponViewModelTests : BaseUnitTest() {
         viewModel.onCouponCodeChanged("New code")
         viewModel.onSaveClick()
 
-        verify(couponRepository).updateCoupon(argThat { code == "New code" })
+        verify(couponRepository).updateCoupon(argThat { code == "New code" }, eq(storedCoupon))
     }
 
     @Test
     fun `when coupon is updated, then show a snackbar and navigate up`() = testBlocking {
         setup {
-            whenever(couponRepository.updateCoupon(any())).thenReturn(Result.success(Unit))
+            whenever(couponRepository.updateCoupon(any(), any())).thenReturn(Result.success(Unit))
         }
 
         val events = viewModel.event.runAndCaptureValues {
@@ -303,7 +307,7 @@ class EditCouponViewModelTests : BaseUnitTest() {
     @Test
     fun `when coupon is fails, then show an error snackbar`() = testBlocking {
         setup {
-            whenever(couponRepository.updateCoupon(any())).thenReturn(
+            whenever(couponRepository.updateCoupon(any(), any())).thenReturn(
                 Result.failure(WooException(WooError(TIMEOUT, UNKNOWN)))
             )
         }
