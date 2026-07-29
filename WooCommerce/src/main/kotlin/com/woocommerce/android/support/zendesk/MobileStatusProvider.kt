@@ -262,6 +262,11 @@ class MobileStatusProvider @Inject constructor(
         entry("POS local catalog", appPrefs.wooPosLocalCatalogEnabled)
     )
 
+    /**
+     * A missing installer of record and a failed lookup mean different things: the first says the APK was
+     * sideloaded rather than installed from a store, which is a finding in itself, while the second says we
+     * could not tell. They are reported separately so an HE is not left guessing which one they are looking at.
+     */
     private fun installSource() = runCatching {
         val packageManager = context.packageManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -270,7 +275,10 @@ class MobileStatusProvider @Inject constructor(
             @Suppress("DEPRECATION")
             packageManager.getInstallerPackageName(context.packageName)
         }
-    }.getOrNull() ?: UNKNOWN
+    }.fold(
+        onSuccess = { installer -> installer ?: SIDELOADED },
+        onFailure = { UNKNOWN }
+    )
 
     private fun fcmTokenState() = appPrefs.getFCMToken()
         .takeIf { it.isNotBlank() }
@@ -313,6 +321,7 @@ class MobileStatusProvider @Inject constructor(
 
         const val SECTION_UNAVAILABLE = "Info not found"
         private const val UNKNOWN = "unknown"
+        private const val SIDELOADED = "sideloaded"
         private const val NONE = "none"
         private const val MISSING = "missing"
         private const val NOT_SET = "not set"

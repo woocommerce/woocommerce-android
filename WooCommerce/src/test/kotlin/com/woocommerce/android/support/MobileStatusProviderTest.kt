@@ -1,5 +1,7 @@
 package com.woocommerce.android.support
 
+import android.content.Context
+import android.content.pm.PackageManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.background.GetBackgroundRestrictions
@@ -193,6 +195,29 @@ class MobileStatusProviderTest : BaseUnitTest() {
         assertThat(report).contains("OS: Android 15 (API 35)")
         assertThat(report).contains("Screen: 411x914 dp")
         assertThat(report).contains("Version: 21.3 (2103003)")
+    }
+
+    @Test
+    fun `given no installer of record, when the report is generated, then the app is reported as sideloaded`() =
+        testBlocking {
+            // A gradle or adb install has no installer of record, which is not the same as being unable to look it up
+            val report = providerWithInstaller { null }(SiteModel())
+
+            assertThat(report).contains("Install source: sideloaded")
+        }
+
+    @Test
+    fun `given an installer of record, when the report is generated, then it is reported`() = testBlocking {
+        val report = providerWithInstaller { PLAY_STORE }(SiteModel())
+
+        assertThat(report).contains("Install source: $PLAY_STORE")
+    }
+
+    @Test
+    fun `given the installer lookup fails, when the report is generated, then the source is unknown`() = testBlocking {
+        val report = providerWithInstaller { throw IllegalArgumentException() }(SiteModel())
+
+        assertThat(report).contains("Install source: unknown")
     }
 
     @Test
@@ -489,7 +514,46 @@ class MobileStatusProviderTest : BaseUnitTest() {
             assertThat(report).contains("Product add-ons: true")
         }
 
+    /**
+     * Unit tests run with `Build.VERSION.SDK_INT` of 0, so the pre-API-30 `getInstallerPackageName` branch is the
+     * one exercised here.
+     */
+    @Suppress("DEPRECATION")
+    private fun providerWithInstaller(installer: () -> String?): MobileStatusProvider {
+        val packageManager = mock<PackageManager> {
+            on { getInstallerPackageName(PACKAGE_NAME) } doAnswer { installer() }
+        }
+        return providerWith(
+            mock<Context> {
+                on { this.packageManager } doReturn packageManager
+                on { packageName } doReturn PACKAGE_NAME
+            }
+        )
+    }
+
+    private fun providerWith(context: Context) = MobileStatusProvider(
+        context = context,
+        envDataSource = envDataSource,
+        deviceInfo = deviceInfo,
+        localeProvider = localeProvider,
+        featureFlagRepository = featureFlagRepository,
+        notificationSystemStatusProvider = notificationSystemStatusProvider,
+        notificationChannelsHandler = notificationChannelsHandler,
+        pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
+        getBackgroundRestrictions = getBackgroundRestrictions,
+        deviceFeatures = deviceFeatures,
+        getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
+        appPrefs = appPrefs,
+        accountStore = accountStore,
+        siteStore = siteStore,
+        wooCommerceStore = wooCommerceStore,
+        syncTimestampManager = syncTimestampManager
+    )
+
     private companion object {
+        const val PLAY_STORE = "com.android.vending"
+        const val PACKAGE_NAME = "com.woocommerce.android"
+
         // 2026-07-29T09:29:49Z, :50Z and :51Z
         const val FULL_SYNC_MILLIS = 1785317389000L
         const val PRODUCTS_SYNC_MILLIS = 1785317390000L
