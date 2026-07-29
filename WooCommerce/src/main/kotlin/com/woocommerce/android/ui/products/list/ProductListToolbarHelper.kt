@@ -17,7 +17,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.WCProductSearchTabView
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
@@ -52,17 +51,8 @@ class ProductListToolbarHelper @Inject constructor(
                 override fun handleOnBackPressed() {
                     if (isWindowClassLargeThanCompact()) {
                         val navHostFragment = binding?.detailNavContainer?.getFragment<NavHostFragment?>()
-                        val detailsFragment = navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)
-                        if (detailsFragment is MainActivity.Companion.BackPressListener) {
-                            if (detailsFragment.onRequestAllowBackPress()) {
-                                if (!navHostFragment.findNavController().popBackStack()) {
-                                    listFragment?.findNavController()?.popBackStack()
-                                }
-                            }
-                        } else {
-                            if (navHostFragment?.findNavController()?.popBackStack() == false) {
-                                listFragment?.findNavController()?.popBackStack()
-                            }
+                        if (navHostFragment?.findNavController()?.popBackStack() == false) {
+                            listFragment?.findNavController()?.popBackStack()
                         }
                     } else if (searchMenuItem?.isActionViewExpanded == true) {
                         searchMenuItem?.collapseActionView()
