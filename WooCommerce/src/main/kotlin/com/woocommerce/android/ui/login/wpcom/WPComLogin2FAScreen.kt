@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -141,7 +143,15 @@ fun WPComLogin2FAScreen(
                         )
                     },
                     enabled = viewState.canUseAlternateMethods,
-                    loading = viewState.isRequestingSms
+                    loading = viewState.isRequestingSms,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    border = if (viewState.canUseAlternateMethods) {
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    } else {
+                        ButtonDefaults.outlinedButtonBorder(enabled = false)
+                    }
                 )
                 if (viewState.isSecurityKeySupported) {
                     WCTextButton(
