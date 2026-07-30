@@ -20,8 +20,11 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -52,7 +55,8 @@ class MobileStatusProvider @Inject constructor(
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val syncTimestampManager: WooPosSyncTimestampManager
+    private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val wooPushNotificationsStore: WooPushNotificationsStore
 ) {
     /**
      * @param siteAddress the address the merchant typed into the support form, which can differ from the selected
@@ -70,6 +74,7 @@ class MobileStatusProvider @Inject constructor(
         appendSection(HEADING_NOTIFICATIONS, SCOPE_APP_WIDE) { notificationsSection() }
         appendSection(HEADING_ACCOUNT, SCOPE_APP_WIDE) { accountSection(siteAddress) }
         appendSection(HEADING_STORE, storeScope) { storeSection(selectedSite) }
+        appendSection(HEADING_STORE_NOTIFICATIONS, storeScope) { storeNotificationsSection(selectedSite) }
         appendSection(HEADING_PAYMENTS, storeScope) { paymentsSection(selectedSite) }
         appendSection(HEADING_POS, storeScope) { posSection(selectedSite) }
         appendSection(HEADING_FEATURE_FLAGS, SCOPE_APP_WIDE) { featureFlagsSection() }
@@ -167,16 +172,76 @@ class MobileStatusProvider @Inject constructor(
                     appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { "$NOT_SET ($REASON_NO_STORE_ID)" }
                 ),
                 entry("Auth method", connectionType.name),
+                entry("Site supports app passwords", isApplicationPasswordsSupported),
                 entry(
                     "Jetpack",
                     "installed=$isJetpackInstalled connected=$isJetpackConnected CP=$isJetpackCPConnected"
                 ),
                 entry("Plan", "${planShortName.orEmpty().ifEmpty { UNKNOWN }} ($planId)"),
-                entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN),
-                entry("Push registration", pushNotificationRegistrationStatus(siteId).name)
+                entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN)
             )
         }
     }
+
+    /**
+     * Which of the two push systems serves this store, and the per-store alert settings behind it. Both are
+     * store-scoped: the Woo token is registered per store, and the alert settings live on the store itself.
+     *
+     * Answers the two questions support cannot otherwise resolve from a ticket — whether a store is on Woo-driven
+     * or the legacy WPCom-driven push, and whether an alert the merchant says is missing is simply switched off.
+     */
+    private suspend fun storeNotificationsSection(selectedSite: SiteModel?): List<String> {
+        if (selectedSite == null) return listOf(NO_STORE_SELECTED_HINT)
+
+        return listOf(
+            entry("Push registration", pushRegistration(selectedSite))
+        ) + alertSettings(selectedSite)
+    }
+
+    /**
+     * Reported as the bare status. Why it is what it is depends on the login, the Woo version, the FCM token and a
+     * feature flag, all of which the report already carries as their own fields — deriving a cause here would be a
+     * second copy of the decisions `RegisterDevice` makes, and would start stating confident nonsense as soon as
+     * the two drifted. The field reference explains how to read them together.
+     */
+    private suspend fun pushRegistration(selectedSite: SiteModel) =
+        pushNotificationRegistrationStatus(selectedSite.siteId).name
+
+    /**
+     * Persisted by the last successful fetch, so absent until the merchant has opened notification settings at
+     * least once. Absent is not the same as disabled, and the report says which.
+     */
+    private suspend fun alertSettings(selectedSite: SiteModel): List<String> {
+        val preferences = wooPushNotificationsStore.observeNotificationPreferences(selectedSite).first()
+            ?: return listOf(entry("Alert settings", "$NOT_FETCHED ($REASON_NO_ALERT_SETTINGS)"))
+
+        return listOf(
+            entry("New order alerts", preferences.storeOrder.describeOrders()),
+            entry("Review alerts", preferences.storeReview.describeReviews()),
+            entry("Stock alerts", preferences.storeStock.describeStock())
+        )
+    }
+
+    /**
+     * The stored fields, named and printed as they are. What a threshold actually filters is the settings screen's
+     * business - the report saying "only orders of X or more" would be restating a product rule it does not own,
+     * and it already had it wrong: the screen says "Orders over X". The field reference carries the semantics.
+     */
+    private fun WooPushNotificationPreferences.StoreOrderPreferences?.describeOrders() =
+        if (this == null) NOT_SET else "enabled=${enabled.orNotSet()}, min amount=${minAmount.orNotSet()}"
+
+    private fun WooPushNotificationPreferences.StoreReviewPreferences?.describeReviews() =
+        if (this == null) NOT_SET else "enabled=${enabled.orNotSet()}, max rating=${maxRating.orNotSet()}"
+
+    private fun WooPushNotificationPreferences.StoreStockPreferences?.describeStock() =
+        if (this == null) {
+            NOT_SET
+        } else {
+            "enabled=${enabled.orNotSet()}, low stock=${lowStock.orNotSet()}, " +
+                "out of stock=${outOfStock.orNotSet()}, on backorder=${onBackorder.orNotSet()}"
+        }
+
+    private fun Any?.orNotSet() = this?.toString() ?: NOT_SET
 
     /**
      * Every connected site, not just the selected one — merchants often report a problem on a store other than
@@ -382,6 +447,7 @@ class MobileStatusProvider @Inject constructor(
         const val HEADING_NOTIFICATIONS = "## Notifications"
         const val HEADING_ACCOUNT = "## Account & Stores"
         const val HEADING_STORE = "## Store Details"
+        const val HEADING_STORE_NOTIFICATIONS = "## Store Notifications"
         const val HEADING_PAYMENTS = "## Payments"
         const val HEADING_POS = "## Point of Sale"
         const val HEADING_FEATURE_FLAGS = "## Feature Flags"
@@ -399,6 +465,8 @@ class MobileStatusProvider @Inject constructor(
 
         // Why a value is absent, said in the report itself. A bare "not set" reads as a fault in every one of
         // these cases, when in fact each is the expected state for a particular kind of store or setup.
+        private const val NOT_FETCHED = "not fetched"
+        private const val REASON_NO_ALERT_SETTINGS = "the merchant has not opened notification settings yet"
         private const val REASON_NO_BLOG_ID = "stores connected with application passwords do not have one"
         private const val REASON_NO_STORE_ID = "no store system status has been fetched yet"
         private const val REASON_NO_REMOTE_FLAGS = "no remote fetch has ever succeeded on this install"

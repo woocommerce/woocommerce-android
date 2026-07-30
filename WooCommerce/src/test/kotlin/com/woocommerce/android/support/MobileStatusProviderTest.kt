@@ -24,6 +24,7 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -37,9 +38,12 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -141,6 +145,27 @@ class MobileStatusProviderTest : BaseUnitTest() {
         )
     }
 
+    private val wooPushNotificationsStore: WooPushNotificationsStore = mock {
+        on { observeNotificationPreferences(any()) } doReturn flowOf(
+            WooPushNotificationPreferences(
+                storeOrder = WooPushNotificationPreferences.StoreOrderPreferences(
+                    enabled = true,
+                    minAmount = BigDecimal("100.50")
+                ),
+                storeReview = WooPushNotificationPreferences.StoreReviewPreferences(
+                    enabled = false,
+                    maxRating = 3
+                ),
+                storeStock = WooPushNotificationPreferences.StoreStockPreferences(
+                    enabled = true,
+                    lowStock = true,
+                    outOfStock = false,
+                    onBackorder = null
+                )
+            )
+        )
+    }
+
     private val sut = MobileStatusProvider(
         context = mock(),
         envDataSource = envDataSource,
@@ -157,7 +182,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
         accountStore = accountStore,
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
-        syncTimestampManager = syncTimestampManager
+        syncTimestampManager = syncTimestampManager,
+        wooPushNotificationsStore = wooPushNotificationsStore
     )
 
     @Test
@@ -172,6 +198,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             MobileStatusProvider.HEADING_NOTIFICATIONS,
             MobileStatusProvider.HEADING_ACCOUNT,
             MobileStatusProvider.HEADING_STORE,
+            MobileStatusProvider.HEADING_STORE_NOTIFICATIONS,
             MobileStatusProvider.HEADING_PAYMENTS,
             MobileStatusProvider.HEADING_POS,
             MobileStatusProvider.HEADING_FEATURE_FLAGS,
@@ -285,16 +312,51 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the report is generated, then the per-store alert settings are included`() = testBlocking {
+        val report = sut(SiteModel())
+
+        assertThat(report).contains("New order alerts: enabled=true, min amount=100.50")
+        assertThat(report).contains("Review alerts: enabled=false, max rating=3")
+        assertThat(report).contains(
+            "Stock alerts: enabled=true, low stock=true, out of stock=false, on backorder=not set"
+        )
+    }
+
+    @Test
+    fun `given alert settings were never fetched, when the report is generated, then it says so`() = testBlocking {
+        wooPushNotificationsStore.stub { on { observeNotificationPreferences(any()) } doReturn flowOf(null) }
+
+        val report = sut(SiteModel())
+
+        assertThat(report)
+            .contains("Alert settings: not fetched (the merchant has not opened notification settings yet)")
+        assertThat(report).doesNotContain("New order alerts")
+    }
+
+    @Test
+    fun `given no selected site, when the report is generated, then the store notifications section degrades`() =
+        testBlocking {
+            val report = sut(null)
+
+            assertThat(report).contains(
+                "${MobileStatusProvider.HEADING_STORE_NOTIFICATIONS} ${MobileStatusProvider.SCOPE_NO_STORE}"
+            )
+            assertThat(report).doesNotContain("Push registration")
+        }
+
+    @Test
     fun `when the report is generated, then push registration is reported with the store it belongs to`() =
         testBlocking {
             val report = sut(SiteModel().apply { url = "https://selected.com" })
 
-            val storeSection = report.substringAfter(MobileStatusProvider.HEADING_STORE).substringBefore("\n## ")
-            assertThat(storeSection).contains("Push registration: REGISTERED_BOTH")
-            val notificationsSection = report
+            val storeNotifications = report
+                .substringAfter(MobileStatusProvider.HEADING_STORE_NOTIFICATIONS)
+                .substringBefore("\n## ")
+            assertThat(storeNotifications).contains("Push registration: REGISTERED_BOTH")
+            val appWideNotifications = report
                 .substringAfter(MobileStatusProvider.HEADING_NOTIFICATIONS)
                 .substringBefore("\n## ")
-            assertThat(notificationsSection).doesNotContain("Push registration")
+            assertThat(appWideNotifications).doesNotContain("Push registration")
         }
 
     @Test
@@ -614,8 +676,29 @@ class MobileStatusProviderTest : BaseUnitTest() {
         accountStore = accountStore,
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
-        syncTimestampManager = syncTimestampManager
+        syncTimestampManager = syncTimestampManager,
+        wooPushNotificationsStore = wooPushNotificationsStore
     )
+
+    @Test
+    fun `given the site advertises app passwords, when the report is generated, then it is reported`() = testBlocking {
+        val site = SiteModel().apply {
+            url = "https://example.com"
+            applicationPasswordsAuthorizeUrl = "https://example.com/wp-admin/authorize-application.php"
+        }
+
+        val report = sut(site)
+
+        assertThat(report).contains("Site supports app passwords: true")
+    }
+
+    @Test
+    fun `given the site does not advertise app passwords, when the report is generated, then it is reported`() =
+        testBlocking {
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Site supports app passwords: false")
+        }
 
     private companion object {
         const val PLAY_STORE = "com.android.vending"
