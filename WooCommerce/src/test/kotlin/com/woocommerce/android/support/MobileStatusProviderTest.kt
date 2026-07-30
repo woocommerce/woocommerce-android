@@ -403,20 +403,20 @@ class MobileStatusProviderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when the report is generated, then the FCM token is redacted to its last characters`() = testBlocking {
+    fun `when the report is generated, then the push token is redacted to its last characters`() = testBlocking {
         val report = sut(SiteModel())
 
-        assertThat(report).contains("FCM token: present (…klmnop)")
+        assertThat(report).contains("Push token: present (…klmnop)")
         assertThat(report).doesNotContain("abcdefghijklmnop")
     }
 
     @Test
-    fun `given no FCM token, when the report is generated, then the token is reported as missing`() = testBlocking {
+    fun `given no push token, when the report is generated, then the token is reported as missing`() = testBlocking {
         appPrefs.stub { on { getFCMToken() } doReturn "" }
 
         val report = sut(SiteModel())
 
-        assertThat(report).contains("FCM token: missing")
+        assertThat(report).contains("Push token: missing")
     }
 
     @Test

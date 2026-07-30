@@ -130,7 +130,7 @@ class MobileStatusProvider @Inject constructor(
             entry("App notifications enabled", notificationSystemStatusProvider.areAppNotificationsEnabled()),
             entry("Disabled channels", disabledChannels.joinToString().ifEmpty { NONE }),
             entry("New order sound", notificationChannelsHandler.checkNewOrderNotificationSound().describe()),
-            entry("FCM token", fcmTokenState())
+            entry("Push token", pushTokenState())
         ) + backgroundRestrictions()
     }
 
@@ -202,7 +202,7 @@ class MobileStatusProvider @Inject constructor(
     }
 
     /**
-     * Reported as the bare status. Why it is what it is depends on the login, the Woo version, the FCM token and a
+     * Reported as the bare status. Why it is what it is depends on the login, the Woo version, the push token and a
      * feature flag, all of which the report already carries as their own fields — deriving a cause here would be a
      * second copy of the decisions `RegisterDevice` makes, and would start stating confident nonsense as soon as
      * the two drifted. The field reference explains how to read them together.
@@ -406,7 +406,7 @@ class MobileStatusProvider @Inject constructor(
         onFailure = { UNKNOWN }
     )
 
-    private fun fcmTokenState() = appPrefs.getFCMToken()
+    private fun pushTokenState() = appPrefs.getFCMToken()
         .takeIf { it.isNotBlank() }
         ?.let { "present (…${it.takeLast(REDACTED_TOKEN_LENGTH)})" }
         ?: MISSING

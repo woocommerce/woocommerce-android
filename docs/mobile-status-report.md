@@ -71,7 +71,7 @@ Duplicated on purpose — the report has to stand on its own when a merchant rea
 | `App notifications enabled` | The system-level toggle for the whole app. | `true`, `false` |
 | `Disabled channels` | Woo notification channels the merchant has turned off individually. | Channel names, e.g. `NEW_ORDER, REVIEW`; `none` |
 | `New order sound` | Whether the new-order channel still has the sound the app installs. | `default`, `disabled`, `changed from the default` |
-| `FCM token` | Whether a push token exists. Redacted to its last six characters — enough to compare against server logs, not enough to address the device. | `present (…abc123)`, `missing` |
+| `Push token` | Whether a push token exists. Redacted to its last six characters — enough to compare against server logs, not enough to address the device. | `present (…abc123)`, `missing` |
 | `Background restricted` | The system has restricted the app's background work. | `true`, `false` |
 | `Power save mode` | Battery saver is on device-wide. | `true`, `false` |
 | `Data saver` | Data saver is on, which blocks background network use. | `true`, `false` |
@@ -164,7 +164,7 @@ decide it are all reported elsewhere as their own fields, and reading them toget
 
 | Check | Where it is in the report | What it means |
 | --- | --- | --- |
-| Is there an FCM token at all? | `FCM token` (Notifications) | `missing` blocks both systems — nothing can register. Start here. |
+| Is there a push token at all? | `Push token` (Notifications) | `missing` blocks both systems — nothing can register. Start here. |
 | Is Woo-driven push switched on? | `woo_self_driven_push_notifications_m1` (Feature Flags) | `false` means the Woo-driven path is never attempted, whatever the store supports. |
 | Is the plugin new enough? | `Woo core version` (Store Details) | Woo-driven push needs **10.9.2 or later**. Below that, only the legacy WPCom system can serve the store. |
 | Can the legacy system serve it? | `Auth method` (Store Details) | The legacy system needs a WPCom account and a full Jetpack connection. `ApplicationPasswords` has neither, so a store below the version gate on an application-password login receives nothing at all. |
@@ -175,7 +175,7 @@ Worked combinations:
   unavailable and there is no legacy fallback for this merchant. Updating Woo is the only fix.
 - **`REGISTERED_WPCOM_ONLY`, Woo below 10.9.2, `Auth method: Jetpack`** — working as designed on the legacy system.
   Updating Woo moves the store onto Woo-driven push.
-- **`UNREGISTERED`, Woo 10.9.2 or later, flag `true`, `FCM token: present`** — the store is not the constraint.
+- **`UNREGISTERED`, Woo 10.9.2 or later, flag `true`, `Push token: present`** — the store is not the constraint.
   Registration was attempted and did not succeed; check the app log for the registration call.
 - **`REGISTERED_BOTH`** — both systems hold a token, the usual explanation for duplicate new-order notifications.
 
