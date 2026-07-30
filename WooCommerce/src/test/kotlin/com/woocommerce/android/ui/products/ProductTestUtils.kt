@@ -225,6 +225,7 @@ object ProductTestUtils {
         Product.Image(
             id = imageId,
             name = "Image $imageId",
+            alt = null,
             source = "Image $imageId source",
             dateCreated = Date.from(Instant.EPOCH),
             isCoverImage = false

@@ -61,7 +61,7 @@ class WooPosVariationMapperTest : BaseUnitTest() {
     fun `given product variation with image, when mapping from ProductVariation, then image mapped correctly`() {
         // GIVEN
         val productVariation = ProductTestUtils.generateProductVariation()
-            .copy(image = Product.Image(1L, "Test Image", "http://example.com/image.jpg", null, false))
+            .copy(image = Product.Image(1L, "Test Image", null, "http://example.com/image.jpg", null, false))
 
         // WHEN
         val result = sut.fromProductVariation(productVariation)
