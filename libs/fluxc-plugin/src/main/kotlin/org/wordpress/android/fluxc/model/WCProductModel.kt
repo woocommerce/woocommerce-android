@@ -417,7 +417,7 @@ data class WCProductModel(
 
     /**
      * Compares this product's images with the passed product's images, returns true only if both
-     * lists contain the same images in the same order
+     * lists contain the same images in the same order with the same alt text and name
      */
     fun hasSameImages(updatedProduct: WCProductModel): Boolean {
         val updatedImages = updatedProduct.getImageListOrEmpty()
@@ -426,7 +426,10 @@ data class WCProductModel(
             return false
         }
         for (i in thisImages.indices) {
-            if (thisImages[i].id != updatedImages[i].id) {
+            if (thisImages[i].id != updatedImages[i].id ||
+                thisImages[i].alt != updatedImages[i].alt ||
+                thisImages[i].name != updatedImages[i].name
+            ) {
                 return false
             }
         }
