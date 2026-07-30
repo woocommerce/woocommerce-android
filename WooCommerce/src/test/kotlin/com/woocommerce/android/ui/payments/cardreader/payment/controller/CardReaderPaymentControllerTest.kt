@@ -38,7 +38,7 @@ import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringText
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -133,7 +133,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -226,7 +226,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
-            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
@@ -1409,7 +1409,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
                 siteId = eq(siteModel.siteId),
                 orderId = eq(ORDER_ID),
                 newStatusKey = eq(CoreOrderStatus.PROCESSING.value),
@@ -1427,7 +1427,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verifyNoInteractions(markedAsPaidOrdersCache)
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
         }
 
     @Test
@@ -3898,7 +3898,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
-            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,

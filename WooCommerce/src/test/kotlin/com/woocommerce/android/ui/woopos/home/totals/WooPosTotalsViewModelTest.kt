@@ -158,7 +158,7 @@ class WooPosTotalsViewModelTest {
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
-        markedAsPaidOrdersCache = mock(),
+        newOrderNotificationSuppressionCache = mock(),
     )
 
     private fun createMockSavedStateHandle(): SavedStateHandle {

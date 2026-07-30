@@ -42,7 +42,7 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -112,7 +112,7 @@ class CardReaderPaymentController(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
@@ -469,7 +469,7 @@ class CardReaderPaymentController(
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
-        markedAsPaidOrdersCache.onOrderMovedToPaidStatus(
+        newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
             siteId = selectedSite.get().siteId,
             orderId = orderId,
             newStatusKey = CoreOrderStatus.PROCESSING.value,

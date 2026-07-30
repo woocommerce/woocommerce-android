@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.cashpayment
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.SiteParameters
 import kotlinx.coroutines.flow.flowOf
@@ -33,7 +33,7 @@ class WooPosCashPaymentRepositoryTest {
     private val orderStore: WCOrderStore = mock()
     private val orderMapper: OrderMapper = mock()
     private val gatewayStore: WCGatewayStore = mock()
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private lateinit var repository: WooPosCashPaymentRepository
 
@@ -45,7 +45,7 @@ class WooPosCashPaymentRepositoryTest {
             orderStore,
             orderMapper,
             gatewayStore,
-            markedAsPaidOrdersCache
+            newOrderNotificationSuppressionCache
         )
     }
 
@@ -161,7 +161,7 @@ class WooPosCashPaymentRepositoryTest {
             newPaymentMethodTitle = gatewayTitle,
             cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
         )
-        verifyNoInteractions(markedAsPaidOrdersCache)
+        verifyNoInteractions(newOrderNotificationSuppressionCache)
     }
 
     @Test
@@ -191,7 +191,7 @@ class WooPosCashPaymentRepositoryTest {
         repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
 
         // THEN
-        verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+        verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
             siteId = siteId,
             orderId = orderId,
             newStatusKey = Order.Status.Completed.value,

@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.woopos.markorderascomplete
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -37,7 +37,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val site: SiteModel = mock()
     private val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private lateinit var repository: WooPosMarkOrderAsCompleteRepository
 
@@ -48,7 +48,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
                 selectedSite,
                 orderStore,
                 orderMapper,
-                markedAsPaidOrdersCache,
+                newOrderNotificationSuppressionCache,
             )
             whenever(selectedSite.get()).thenReturn(site)
             whenever(
@@ -106,7 +106,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             repository.markOrderAsComplete(orderId, customerNote = null)
 
             // THEN
-            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
                 siteId = siteId,
                 orderId = orderId,
                 newStatusKey = Order.Status.Completed.value,
@@ -139,7 +139,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
 
             // THEN
             assertThat(result).isEqualTo(MarkOrderAsCompleteOutcome.Failure)
-            verifyNoInteractions(markedAsPaidOrdersCache)
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
         }
 
     @Test
