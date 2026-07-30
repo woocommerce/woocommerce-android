@@ -1,13 +1,20 @@
 package com.woocommerce.android.ui.aiassistant
 
 import android.content.Context
+import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.DateUtils
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,6 +30,19 @@ class AiAssistantOrderCardRendererTest {
     private val selectedSite: SelectedSite = mock()
     private val crashLogger: CrashLogging = mock()
     private val dateUtils = DateUtils(Locale.US, crashLogger, selectedSite)
+
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
+    @Before
+    fun setUpDateFormat() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+    }
+
+    @After
+    fun tearDownDateFormat() {
+        dateFormatMock.close()
+    }
 
     @Test
     fun `when renderer is created, then class has direct unit test coverage`() {

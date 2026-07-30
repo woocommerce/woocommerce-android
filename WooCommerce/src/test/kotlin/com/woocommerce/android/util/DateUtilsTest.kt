@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
@@ -9,12 +10,16 @@ import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -26,13 +31,24 @@ class DateUtilsTest {
 
     private val crashLogger: CrashLogging = mock()
 
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
     @Before
     fun setUp() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("EEEEMMMd"))).thenReturn("EEEE, MMM d")
+
         dateUtilsUnderTest = DateUtils(
             Locale.US,
             crashLogger = crashLogger,
             selectedSite = mock()
         )
+    }
+
+    @After
+    fun tearDown() {
+        dateFormatMock.close()
     }
 
     @Test
@@ -83,6 +99,29 @@ class DateUtilsTest {
         assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
 
         assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
+    }
+
+    @Test
+    fun `given a day-first locale, when getting the short month day string, then the day comes first`() {
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("d MMM")
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+
+        assertEquals("3 Jul", ukDateUtils.getShortMonthDayString("2018-07-03"))
+    }
+
+    @Test
+    fun `given a day-first locale, when getting the short month day and year string, then the day comes first`() {
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+
+        assertEquals("3 Jul 2018", ukDateUtils.getShortMonthDayAndYearString("2018-07-03"))
+    }
+
+    @Test
+    fun `when a localized medium date is parsed, then it is converted to yyyy-MM-dd`() {
+        assertEquals("2020-12-02", dateUtilsUnderTest.formatToYYYYmmDD("Dec 2, 2020"))
+
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+        assertEquals("2020-12-02", ukDateUtils.formatToYYYYmmDD("2 Dec 2020"))
     }
 
     @Test
