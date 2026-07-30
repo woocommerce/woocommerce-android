@@ -171,6 +171,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             MobileStatusProvider.HEADING_CONNECTIVITY,
             MobileStatusProvider.HEADING_NOTIFICATIONS,
             MobileStatusProvider.HEADING_ACCOUNT,
+            MobileStatusProvider.HEADING_STORE,
             MobileStatusProvider.HEADING_PAYMENTS,
             MobileStatusProvider.HEADING_POS,
             MobileStatusProvider.HEADING_FEATURE_FLAGS,
@@ -180,11 +181,38 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
     @Test
     fun `when the report is generated, then every section heading states its scope`() = testBlocking {
-        val report = sut(SiteModel())
+        val report = sut(SiteModel().apply { url = "https://selected.com" })
 
         val headings = report.lines().filter { it.startsWith("## ") }
         assertThat(headings).isNotEmpty
-        assertThat(headings).allMatch { it.endsWith(MobileStatusProvider.SCOPE_APP_WIDE) }
+        assertThat(headings).allMatch {
+            it.endsWith(MobileStatusProvider.SCOPE_APP_WIDE) || it.endsWith("(selected store: https://selected.com)")
+        }
+    }
+
+    @Test
+    fun `when the report is generated, then store scoped sections name the selected store`() = testBlocking {
+        val report = sut(SiteModel().apply { url = "https://selected.com" })
+
+        assertThat(report).contains("${MobileStatusProvider.HEADING_STORE} (selected store: https://selected.com)")
+        assertThat(report).contains("${MobileStatusProvider.HEADING_PAYMENTS} (selected store: https://selected.com)")
+        assertThat(report).contains("${MobileStatusProvider.HEADING_POS} (selected store: https://selected.com)")
+    }
+
+    @Test
+    fun `given no selected site, when the report is generated, then store scoped headings say so`() = testBlocking {
+        val report = sut(null)
+
+        assertThat(report).contains("${MobileStatusProvider.HEADING_STORE} ${MobileStatusProvider.SCOPE_NO_STORE}")
+        assertThat(report).contains("${MobileStatusProvider.HEADING_PAYMENTS} ${MobileStatusProvider.SCOPE_NO_STORE}")
+        assertThat(report).contains("${MobileStatusProvider.HEADING_POS} ${MobileStatusProvider.SCOPE_NO_STORE}")
+    }
+
+    @Test
+    fun `when the report is generated, then the scope legend is included`() = testBlocking {
+        val report = sut(SiteModel())
+
+        assertThat(report).contains(MobileStatusProvider.SCOPE_LEGEND)
     }
 
     @Test
@@ -245,10 +273,22 @@ class MobileStatusProviderTest : BaseUnitTest() {
         assertThat(report).contains("Play Services: available")
         assertThat(report).contains("Permission granted: true")
         assertThat(report).contains("Disabled channels: REVIEW")
-        assertThat(report).contains("New order sound: SOUND_MODIFIED")
-        assertThat(report).contains("Push registration: REGISTERED_BOTH")
+        assertThat(report).contains("New order sound: changed from the default")
         assertThat(report).contains("Data saver: true")
     }
+
+    @Test
+    fun `when the report is generated, then push registration is reported with the store it belongs to`() =
+        testBlocking {
+            val report = sut(SiteModel().apply { url = "https://selected.com" })
+
+            val storeSection = report.substringAfter(MobileStatusProvider.HEADING_STORE).substringBefore("\n## ")
+            assertThat(storeSection).contains("Push registration: REGISTERED_BOTH")
+            val notificationsSection = report
+                .substringAfter(MobileStatusProvider.HEADING_NOTIFICATIONS)
+                .substringBefore("\n## ")
+            assertThat(notificationsSection).doesNotContain("Push registration")
+        }
 
     @Test
     fun `when the report is generated, then the FCM token is redacted to its last characters`() = testBlocking {
@@ -411,7 +451,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `given no selected site, when the report is generated, then the POS section degrades`() = testBlocking {
         val report = sut(null)
 
-        assertThat(report).contains("Point of Sale: none")
+        assertThat(report).contains("No store selected, so there is nothing to report here")
         assertThat(report).doesNotContain("POS tab visible")
     }
 
@@ -449,7 +489,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `given no selected site, when the report is generated, then it is still produced`() = testBlocking {
         val report = sut(null)
 
-        assertThat(report).contains("Selected store: none")
+        assertThat(report).contains(MobileStatusProvider.SCOPE_NO_STORE)
         assertThat(report).contains("Connected stores: 3")
         assertThat(report).contains(MobileStatusProvider.HEADING_DEVICE)
     }
@@ -470,9 +510,27 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
         assertThat(report).contains("Remote values loaded: true")
         FeatureFlag.entries.forEach { flag ->
-            assertThat(report).contains("${flag.remoteFlagKey}: true")
+            assertThat(report).contains("${flag.remoteFlagKey}: true (remote)")
         }
     }
+
+    @Test
+    fun `given a flag falls back to its compiled-in value, when the report is generated, then the source says so`() =
+        testBlocking {
+            val flag = FeatureFlag.entries.first()
+            featureFlagRepository.stub {
+                on { getFlagState(flag) } doReturn FeatureFlagRepository.FeatureFlagState(
+                    flag = flag,
+                    localValue = true,
+                    remoteValue = null,
+                    overrideValue = null
+                )
+            }
+
+            val report = sut(SiteModel())
+
+            assertThat(report).contains("${flag.remoteFlagKey}: true (compiled-in default)")
+        }
 
     @Test
     fun `given no remote flag values, when the report is generated, then remote values are reported as not loaded`() =

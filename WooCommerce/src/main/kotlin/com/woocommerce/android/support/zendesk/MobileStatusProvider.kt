@@ -7,6 +7,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -60,16 +61,28 @@ class MobileStatusProvider @Inject constructor(
      */
     suspend operator fun invoke(selectedSite: SiteModel?, siteAddress: String? = null): String = buildString {
         appendLine(REPORT_HEADING)
+        appendLine(SCOPE_LEGEND)
+        val storeScope = storeScope(selectedSite)
         appendSection(HEADING_APP, SCOPE_APP_WIDE) { appSection() }
         appendSection(HEADING_DEVICE, SCOPE_APP_WIDE) { deviceSection() }
         appendSection(HEADING_CONNECTIVITY, SCOPE_APP_WIDE) { connectivitySection() }
-        appendSection(HEADING_NOTIFICATIONS, SCOPE_APP_WIDE) { notificationsSection(selectedSite) }
-        appendSection(HEADING_ACCOUNT, SCOPE_APP_WIDE) { accountSection(selectedSite, siteAddress) }
-        appendSection(HEADING_PAYMENTS, SCOPE_APP_WIDE) { paymentsSection(selectedSite) }
-        appendSection(HEADING_POS, SCOPE_APP_WIDE) { posSection(selectedSite) }
+        appendSection(HEADING_NOTIFICATIONS, SCOPE_APP_WIDE) { notificationsSection() }
+        appendSection(HEADING_ACCOUNT, SCOPE_APP_WIDE) { accountSection(siteAddress) }
+        appendSection(HEADING_STORE, storeScope) { storeSection(selectedSite) }
+        appendSection(HEADING_PAYMENTS, storeScope) { paymentsSection(selectedSite) }
+        appendSection(HEADING_POS, storeScope) { posSection(selectedSite) }
         appendSection(HEADING_FEATURE_FLAGS, SCOPE_APP_WIDE) { featureFlagsSection() }
         appendSection(HEADING_EXPERIMENTAL, SCOPE_APP_WIDE) { experimentalFeaturesSection() }
     }
+
+    /**
+     * Names the store the store-scoped sections describe, rather than saying only that they are store-scoped: a
+     * merchant with several stores needs to know which one the values below belong to.
+     */
+    private fun storeScope(selectedSite: SiteModel?) = selectedSite
+        ?.url.orEmpty().ifEmpty { null }
+        ?.let { "(selected store: $it)" }
+        ?: SCOPE_NO_STORE
 
     private fun appSection(): List<String> {
         val versionName = envDataSource.generateVersionName(context)
@@ -97,17 +110,26 @@ class MobileStatusProvider @Inject constructor(
      */
     private fun connectivitySection() = envDataSource.generateNetworkInformation(context).lines()
 
-    private suspend fun notificationsSection(selectedSite: SiteModel?): List<String> {
+    /**
+     * Push registration is deliberately absent: it is the one notification value keyed on a single store, so it is
+     * reported with the store it belongs to rather than among these device-level settings.
+     */
+    private fun notificationsSection(): List<String> {
         val disabledChannels = notificationSystemStatusProvider.disabledWooNotificationChannels()
         return listOf(
             entry("Play Services", if (deviceFeatures.isGooglePlayServicesAvailable()) "available" else "unavailable"),
             entry("Permission granted", notificationSystemStatusProvider.hasPostNotificationsPermission()),
             entry("App notifications enabled", notificationSystemStatusProvider.areAppNotificationsEnabled()),
             entry("Disabled channels", disabledChannels.joinToString().ifEmpty { NONE }),
-            entry("New order sound", notificationChannelsHandler.checkNewOrderNotificationSound().name),
-            entry("FCM token", fcmTokenState()),
-            entry("Push registration", pushNotificationRegistrationStatus(selectedSite?.siteId).name)
+            entry("New order sound", notificationChannelsHandler.checkNewOrderNotificationSound().describe()),
+            entry("FCM token", fcmTokenState())
         ) + backgroundRestrictions()
+    }
+
+    private fun NewOrderNotificationSoundStatus.describe() = when (this) {
+        NewOrderNotificationSoundStatus.DEFAULT -> "default"
+        NewOrderNotificationSoundStatus.DISABLED -> "disabled"
+        NewOrderNotificationSoundStatus.SOUND_MODIFIED -> "changed from the default"
     }
 
     private fun backgroundRestrictions() = with(getBackgroundRestrictions()) {
@@ -118,31 +140,37 @@ class MobileStatusProvider @Inject constructor(
         )
     }
 
-    private fun accountSection(selectedSite: SiteModel?, siteAddress: String?): List<String> {
+    private fun accountSection(siteAddress: String?): List<String> {
         val userId = accountStore.account?.userId ?: 0L
-        val account = listOfNotNull(
+        return listOfNotNull(
             entry("WPCom user ID", userId.takeIf { it != 0L } ?: NOT_LOGGED_IN),
             siteAddress?.takeIf { it.isNotBlank() }?.let { entry("Address given in the form", it) },
             entry("Connected stores", siteStore.sites.size)
-        )
-        val site = selectedSite?.let {
+        ) + allSites()
+    }
+
+    /**
+     * The store the app currently has selected, which every following store-scoped section also describes.
+     */
+    private suspend fun storeSection(selectedSite: SiteModel?): List<String> {
+        if (selectedSite == null) return listOf(NO_STORE_SELECTED_HINT)
+
+        return with(selectedSite) {
             listOf(
-                entry("Selected store", it.url.orEmpty().ifEmpty { UNKNOWN }),
                 // Blog ID is 0 for application password sites, and Store ID is missing until the first successful
                 // system status fetch. They fail in opposite conditions, so both are reported.
-                entry("Blog ID", it.siteId.takeIf { id -> id != 0L } ?: NOT_SET),
-                entry("Store ID", appPrefs.getWCStoreID(it.siteId).orEmpty().ifEmpty { NOT_SET }),
-                entry("Auth method", it.connectionType.name),
+                entry("Blog ID", siteId.takeIf { it != 0L } ?: NOT_SET),
+                entry("Store ID", appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { NOT_SET }),
+                entry("Auth method", connectionType.name),
                 entry(
                     "Jetpack",
-                    "installed=${it.isJetpackInstalled} connected=${it.isJetpackConnected} " +
-                        "CP=${it.isJetpackCPConnected}"
+                    "installed=$isJetpackInstalled connected=$isJetpackConnected CP=$isJetpackCPConnected"
                 ),
-                entry("Plan", "${it.planShortName.orEmpty().ifEmpty { UNKNOWN }} (${it.planId})"),
-                entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN)
+                entry("Plan", "${planShortName.orEmpty().ifEmpty { UNKNOWN }} ($planId)"),
+                entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN),
+                entry("Push registration", pushNotificationRegistrationStatus(siteId).name)
             )
-        } ?: listOf(entry("Selected store", NONE))
-        return account + site + allSites()
+        }
     }
 
     /**
@@ -160,7 +188,7 @@ class MobileStatusProvider @Inject constructor(
      * visible as Zendesk tags, which the merchant-facing report cannot show.
      */
     private suspend fun paymentsSection(selectedSite: SiteModel?): List<String> {
-        if (selectedSite == null) return listOf(entry("Payment plugins", NONE))
+        if (selectedSite == null) return listOf(NO_STORE_SELECTED_HINT)
 
         // Read from the plugin cache rather than fetching, to keep ticket creation off the network. The cache can
         // be empty if nothing has fetched plugins for this site yet, which is not the same as "not installed".
@@ -216,7 +244,7 @@ class MobileStatusProvider @Inject constructor(
      * to the same ticket, so the report points at it instead.
      */
     private suspend fun posSection(selectedSite: SiteModel?): List<String> {
-        if (selectedSite == null) return listOf(entry("Point of Sale", NONE))
+        if (selectedSite == null) return listOf(NO_STORE_SELECTED_HINT)
 
         val tabVisible = appPrefs.isPOSTabVisibleForSite(selectedSite.id)
         val launchable = appPrefs.isPOSLaunchableForSite(selectedSite.id)
@@ -248,7 +276,17 @@ class MobileStatusProvider @Inject constructor(
         return listOf(entry("Remote values loaded", remoteValuesLoaded)) +
             states
                 .sortedBy { it.flag.remoteFlagKey }
-                .map { entry(it.flag.remoteFlagKey, it.effectiveValue) }
+                .map { entry(it.flag.remoteFlagKey, "${it.effectiveValue} (${it.source()})") }
+    }
+
+    /**
+     * Where the effective value came from. Without this a flag reads the same whether it was set remotely or is
+     * simply the value the app shipped with, which are very different findings when a rollout is misbehaving.
+     */
+    private fun FeatureFlagRepository.FeatureFlagState.source() = when {
+        overrideValue != null -> "debug override"
+        remoteValue != null -> "remote"
+        else -> "compiled-in default"
     }
 
     /**
@@ -309,11 +347,23 @@ class MobileStatusProvider @Inject constructor(
         /** Values covering the whole installation on this device, as opposed to a single store. */
         const val SCOPE_APP_WIDE = "(app-wide)"
 
+        /** Stands in for the store name when the app has no store selected, so the scope is never blank. */
+        const val SCOPE_NO_STORE = "(no store selected)"
+
+        /**
+         * Spelled out once at the top rather than relying on the reader inferring what the scopes mean, because
+         * this report is read by Happiness Engineers and by merchants in Help & Support alike.
+         */
+        const val SCOPE_LEGEND =
+            "Scopes: $SCOPE_APP_WIDE values cover the whole app on this device. " +
+                "(selected store: ...) values cover only the named store."
+
         const val HEADING_APP = "## App"
         const val HEADING_DEVICE = "## Device"
         const val HEADING_CONNECTIVITY = "## Connectivity"
         const val HEADING_NOTIFICATIONS = "## Notifications"
         const val HEADING_ACCOUNT = "## Account & Stores"
+        const val HEADING_STORE = "## Store Details"
         const val HEADING_PAYMENTS = "## Payments"
         const val HEADING_POS = "## Point of Sale"
         const val HEADING_FEATURE_FLAGS = "## Feature Flags"
@@ -327,6 +377,7 @@ class MobileStatusProvider @Inject constructor(
         private const val NOT_SET = "not set"
         private const val NOT_LOGGED_IN = "not logged in"
         private const val NEVER = "never"
+        private const val NO_STORE_SELECTED_HINT = "No store selected, so there is nothing to report here"
         private const val POS_REASON_HINT =
             "Reason is logged - search application_log.txt for " +
                 "\"POS Tab Not visible reason\" or \"POS cannot be launched\""
