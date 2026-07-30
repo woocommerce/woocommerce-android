@@ -8,5 +8,5 @@
         path="." />
     <cache-path
         name="internal_cache"
-        path="." />
+        path="logs" />
 </paths>
