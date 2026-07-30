@@ -8,7 +8,6 @@ import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
-import com.woocommerce.android.extensions.formatToMonthDateOnly
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -430,34 +429,6 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `formatToMonthDateOnly() returns correct values`() {
-        assertEquals("Aug 8", "2019-08-08".formatToMonthDateOnly(Locale.US))
-        assertEquals("Feb 23", "2019-02-23".formatToMonthDateOnly(Locale.US))
-        assertEquals("Jan 2", "2019-01-02".formatToMonthDateOnly(Locale.US))
-        assertEquals("Jun 4", "2019-06-04".formatToMonthDateOnly(Locale.US))
-        assertEquals("Sep 9", "2019-09-09".formatToMonthDateOnly(Locale.US))
-        assertEquals("Dec 22", "2018-12-22".formatToMonthDateOnly(Locale.US))
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "2019".formatToMonthDateOnly(Locale.US)
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "20-W12".formatToMonthDateOnly(Locale.US)
-        }
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "".formatToMonthDateOnly(Locale.US)
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "21".formatToMonthDateOnly(Locale.US)
-        }
-    }
-
-    @Test
     fun `getDateAtStartOfDay() returns correct value`() {
         val year = 1999
         val month = 11
@@ -667,7 +638,7 @@ class DateUtilsTest {
     fun `getShortMonthDayString() with a valid date returns correct value`() {
         // getShortMonthDayString returns the expected value
         val stringDate = "2023-12-27"
-        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate), stringDate.formatToMonthDateOnly())
+        assertEquals("Dec 27", dateUtilsUnderTest.getShortMonthDayString(stringDate))
     }
 
     @Test
