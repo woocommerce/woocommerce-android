@@ -76,11 +76,6 @@ fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = S
     locale
 ).format(this)
 
-fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
-    "d, yyyy",
-    locale
-).format(this)
-
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     val symbols = DateFormatSymbols(locale)
     symbols.amPmStrings = arrayOf("am", "pm")
@@ -174,15 +169,15 @@ fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
 
 fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
     val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
-        this.formatToMMMdd(locale)
+        SimpleDateFormat("MMM d", locale).format(this)
     } else {
-        this.formatToMMMddYYYY(locale)
+        SimpleDateFormat("MMM d, yyyy", locale).format(this)
     }
 
     val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
-        other.formatToDDyyyy(locale)
+        SimpleDateFormat("d, yyyy", locale).format(other)
     } else {
-        other.formatToMMMddYYYY(locale)
+        SimpleDateFormat("MMM d, yyyy", locale).format(other)
     }
 
     return "$formattedStartDate – $formattedEndDate"
