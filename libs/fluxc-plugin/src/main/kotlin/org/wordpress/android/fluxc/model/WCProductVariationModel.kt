@@ -98,7 +98,7 @@ data class WCProductVariationModel(
                     WCProductImageModel(this.getLong("id")).also {
                         it.name = this.getString("name") ?: ""
                         it.src = this.getString("src") ?: ""
-                        it.alt = this.getString("alt") ?: ""
+                        it.alt = this.getString("alt")
                         return it
                     }
                 }
