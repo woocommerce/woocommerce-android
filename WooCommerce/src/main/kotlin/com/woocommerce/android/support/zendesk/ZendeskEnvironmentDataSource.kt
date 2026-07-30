@@ -3,21 +3,35 @@ package com.woocommerce.android.support.zendesk
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Environment
+import android.os.StatFs
 import android.telephony.TelephonyManager
 import android.text.TextUtils
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.extensions.stateLogInformation
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import java.util.Locale
 import javax.inject.Inject
 
 class ZendeskEnvironmentDataSource @Inject constructor() {
-    val totalAvailableMemorySize: String get() = DeviceUtils.getTotalAvailableMemorySize()
+    /**
+     * Free space on the partition the app stores its data on.
+     *
+     * Measured here rather than via `DeviceUtils.getTotalAvailableMemorySize()`, which adds the free space of the
+     * internal and the external storage together. On a device with emulated external storage — which is every
+     * current device — both are views of the same partition, so it reported roughly twice the space actually free.
+     * It also stopped formatting at megabytes, so a half-full 128 GB phone read as `104,857MB`.
+     */
+    val totalAvailableMemorySize: String
+        get() = StatFs(Environment.getDataDirectory().path)
+            .let { it.availableBlocksLong * it.blockSizeLong }
+            .let { formatAvailableSpace(it) }
+
     val deviceLanguage: String get() = Locale.getDefault().language
 
     fun generateVersionName(context: Context) = PackageUtils.getVersionName(context)
@@ -92,5 +106,20 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
         const val noneValue = "none"
 
         const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
+
+        // Storage
+        private const val bytesPerUnit = 1024.0
+        private val spaceUnits = listOf("B", "KB", "MB", "GB", "TB")
+
+        @VisibleForTesting
+        internal fun formatAvailableSpace(bytes: Long): String {
+            var value = bytes.toDouble()
+            var unitIndex = 0
+            while (value >= bytesPerUnit && unitIndex < spaceUnits.lastIndex) {
+                value /= bytesPerUnit
+                unitIndex++
+            }
+            return String.format(Locale.US, "%.1f %s", value, spaceUnits[unitIndex])
+        }
     }
 }
