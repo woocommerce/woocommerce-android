@@ -15,7 +15,11 @@ class WooPosResolveRefundFlowTest {
 
     private val selectedSite: SelectedSite = mock()
     private val availabilityCache = WooPosServerRefundAvailabilityCache()
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    // Defaults to a version that supports server refunds; version-gating tests override it.
+    // An unknown (null) version fails closed to the local flow.
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
+        on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+    }
     private val featureFlagRepository: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
     }
@@ -64,12 +68,22 @@ class WooPosResolveRefundFlowTest {
     }
 
     @Test
-    fun `given WC version unknown, when resolved, then flow is server so the preview probe can settle it`() {
+    fun `given WC version unknown, when resolved, then flow is local because preview alone must not unlock the create`() {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn(null)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed)
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
+    }
+
+    @Test
+    fun `given WC version unknown and availability cached true, when resolved, then flow is still local`() {
+        // GIVEN
+        whenever(getWooCoreVersion.invoke()).thenReturn(null)
+        availabilityCache.markAvailable(LOCAL_SITE_ID)
+
+        // THEN
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
     }
 
     @Test

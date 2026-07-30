@@ -125,6 +125,9 @@ class WooPosRefundViewModelTest {
 
     @Before
     fun setUp() = runTest {
+        // Default to a version that supports server refunds; version-gating tests override this.
+        // An unknown (null) version fails closed to the local flow.
+        whenever(getWooCoreVersion.invoke()).thenReturn(WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS)
         val testSettings = Settings(
             currencyCode = "USD",
             currencyPosition = CurrencyPosition.LEFT,

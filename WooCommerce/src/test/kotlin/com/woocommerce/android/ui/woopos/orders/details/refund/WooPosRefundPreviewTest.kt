@@ -31,7 +31,11 @@ class WooPosRefundPreviewTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val availabilityCache = WooPosServerRefundAvailabilityCache()
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    // Defaults to a version that supports server refunds; version-gating tests override it.
+    // An unknown (null) version fails closed to the local flow.
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
+        on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+    }
     private val featureFlagRepository: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
     }
@@ -44,8 +48,6 @@ class WooPosRefundPreviewTest {
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        // The version mock defaults to null (unknown) → not below support → cases probe the network,
-        // unless a test stubs a specific version.
         WooPosRefundPreview(refundStore, selectedSite, availabilityCache, resolveRefundFlowFor(selectedSite))
     }
 
@@ -186,17 +188,16 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given WC version unknown, when invoked, then still probes the preview route`() = runTest {
+    fun `given WC version unknown, when invoked, then falls back to local without probing`() = runTest {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn(null)
-        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
-            .thenReturn(WooResult(preview()))
 
         // WHEN
-        sut(ORDER_ID, lineItems)
+        val result = sut(ORDER_ID, lineItems)
 
         // THEN
-        verify(refundStore).previewRefund(eq(site), eq(ORDER_ID), eq(lineItems))
+        assertThat(result).isInstanceOf(WooPosRefundPreview.Result.FallbackToLocal::class.java)
+        verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
     @Test
