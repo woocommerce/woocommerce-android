@@ -1,8 +1,11 @@
 package com.woocommerce.android.util
 
+import android.content.Context
 import android.content.res.Resources
 import android.os.Build
+import androidx.core.app.LocaleManagerCompat
 import androidx.core.os.ConfigurationCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,15 +31,20 @@ object DeviceInfo {
         }
 
     /**
-     * The device locale as a BCP 47 tag, e.g. `en-GB`. Unlike the app language, this is unaffected by a per-app
-     * language override.
+     * The device locale as a BCP 47 tag, e.g. `en-GB`.
+     *
+     * Read through [LocaleManagerCompat] rather than the system configuration: from API 33 the per-app language
+     * override is applied to the system configuration too, so reading it there would report the app language and
+     * make this indistinguishable from it.
      */
-    val localeTag: String?
-        get() = ConfigurationCompat.getLocales(Resources.getSystem().configuration)[0]?.toLanguageTag()
+    fun systemLocaleTag(context: Context): String? =
+        LocaleManagerCompat.getSystemLocales(context)[0]?.toLanguageTag()
 }
 
 @Singleton
-class DeviceInfoWrapper @Inject constructor() {
+class DeviceInfoWrapper @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     val osName: String
         get() = DeviceInfo.OS
     val osVersionCode: Int
@@ -46,7 +54,7 @@ class DeviceInfoWrapper @Inject constructor() {
     val locale: String?
         get() = DeviceInfo.locale
     val localeTag: String?
-        get() = DeviceInfo.localeTag
+        get() = DeviceInfo.systemLocaleTag(context)
     val screenWidthDp: Int
         get() = Resources.getSystem().configuration.screenWidthDp
     val screenHeightDp: Int
