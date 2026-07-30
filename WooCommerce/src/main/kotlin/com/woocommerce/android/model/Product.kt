@@ -354,7 +354,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
                 JsonObject().also { json ->
                     json.addProperty("id", image.id)
                     json.addProperty("name", image.name)
-                    json.addProperty("source", image.source)
+                    json.addProperty("src", image.source)
                 }
             )
         }
