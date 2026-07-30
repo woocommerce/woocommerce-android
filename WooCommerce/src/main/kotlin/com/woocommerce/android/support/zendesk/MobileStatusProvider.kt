@@ -6,18 +6,31 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.extensions.logInformation
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.tools.connectionTypeOrNull
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -37,9 +50,13 @@ class MobileStatusProvider @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val getBackgroundRestrictions: GetBackgroundRestrictions,
     private val deviceFeatures: DeviceFeatures,
+    private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper,
     private val accountStore: AccountStore,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val wooCommerceStore: WooCommerceStore,
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val syncTimestampManager: WooPosSyncTimestampManager
 ) {
     /**
      * @param siteAddress the address the merchant typed into the support form, which can differ from the selected
@@ -56,7 +73,21 @@ class MobileStatusProvider @Inject constructor(
         appendSection(HEADING_ACCOUNT) { accountSection(siteAddress) }
         appendSection(HEADING_FEATURE_FLAGS) { featureFlagsSection() }
         appendSection(HEADING_EXPERIMENTAL) { experimentalFeaturesSection() }
+
+        // Everything above describes the whole app on this device, everything below only the named store. The
+        // band says so once, instead of every heading carrying a scope and a legend explaining what it means.
+        appendLine()
+        appendLine(selectedSite?.let { "# Selected store: ${it.storeLabel()}" } ?: HEADING_NO_STORE)
+        if (selectedSite == null) return@buildString
+
+        appendSection(HEADING_STORE) { storeSection(selectedSite) }
+        appendSection(HEADING_PAYMENTS) { paymentsSection(selectedSite) }
+        appendSection(HEADING_POS) { posSection(selectedSite) }
     }
+
+    private fun SiteModel.storeLabel() = url.orEmpty()
+        .ifBlank { name.orEmpty() }
+        .ifBlank { "local id $id" }
 
     private fun appSection(): List<String> {
         val versionName = envDataSource.generateVersionName(context)
@@ -116,6 +147,18 @@ class MobileStatusProvider @Inject constructor(
         ) + allSites()
     }
 
+    private suspend fun storeSection(selectedSite: SiteModel) = with(selectedSite) {
+        listOf(
+            entry("Blog ID", siteId.takeIf { it != 0L } ?: NOT_SET),
+            entry("Store ID", appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { NOT_SET }),
+            entry("Auth method", connectionTypeOrNull?.name ?: UNKNOWN),
+            entry("Site supports app passwords", isApplicationPasswordsSupported),
+            entry("Jetpack", "installed=$isJetpackInstalled connected=$isJetpackConnected CP=$isJetpackCPConnected"),
+            entry("Plan", "${planShortName.orEmpty().ifEmpty { UNKNOWN }} ($planId)"),
+            entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN)
+        )
+    }
+
     // Non-Woo sites are excluded here and from the count: the site store holds every site on the WPCom account.
     private fun wooSites() = siteStore.sites.filter { it.hasWooCommerce }
 
@@ -124,6 +167,97 @@ class MobileStatusProvider @Inject constructor(
         ?.map { entry(it.url.orEmpty().ifEmpty { UNKNOWN }, it.logInformation) }
         ?.let { listOf("", "All connected stores:") + it }
         .orEmpty()
+
+    private suspend fun paymentsSection(selectedSite: SiteModel): List<String> {
+        // Read from the plugin cache rather than fetching, to keep ticket creation off the network.
+        val plugins = wooCommerceStore.getSitePlugins(selectedSite)
+        val installState = if (plugins.isEmpty()) {
+            listOf(entry("Payment plugins", UNKNOWN))
+        } else {
+            listOf(
+                entry("WooPayments", plugins.stateOf(PluginType.WOOCOMMERCE_PAYMENTS)),
+                entry("Stripe extension", plugins.stateOf(PluginType.STRIPE_EXTENSION_GATEWAY))
+            )
+        }
+
+        return installState + inPersonPayments(selectedSite)
+    }
+
+    // Read straight from the prefs rather than through `GetActivePaymentsPlugin`, which falls back to a fetch.
+    private fun inPersonPayments(site: SiteModel): List<String> {
+        val preferredPlugin = appPrefs.getCardReaderPreferredPlugin(site.id, site.siteId, site.selfHostedSiteId)
+        val version = preferredPlugin?.let {
+            appPrefs.getCardReaderPreferredPluginVersion(site.id, site.siteId, site.selfHostedSiteId, it)
+        }
+        val explicitlySelected =
+            appPrefs.isCardReaderPluginExplicitlySelected(site.id, site.siteId, site.selfHostedSiteId)
+        return listOf(
+            entry(
+                "In-person payments plugin",
+                preferredPlugin?.let { "${it.name} ${version.orEmpty().ifEmpty { UNKNOWN }}" } ?: NOT_SET
+            ),
+            entry("In-person payments plugin chosen by merchant", explicitlySelected),
+            entry(
+                "In-person payments onboarding",
+                appPrefs.getCardReaderOnboardingStatus(site.id, site.siteId, site.selfHostedSiteId).name
+            )
+        )
+    }
+
+    private fun List<SitePluginModel>.stateOf(type: PluginType): String {
+        val plugin = firstOrNull { it.name.endsWith(type.pluginName) } ?: return "not installed"
+        val state = if (plugin.isActive) "active" else "installed, not active"
+        return "$state ${plugin.version.orEmpty().ifEmpty { UNKNOWN }}"
+    }
+
+    // The prefs are read directly because `WooPosTabShouldBeVisible` and `WooPosCanBeLaunchedInTab` write them as
+    // a side effect of evaluating, and a status report must not mutate what it reports.
+    private suspend fun posSection(selectedSite: SiteModel): List<String> {
+        val tabVisible = appPrefs.isPOSTabVisibleForSite(selectedSite.id)
+        val launchable = appPrefs.isPOSLaunchableForSite(selectedSite.id)
+        return listOfNotNull(
+            entry("POS tab visible", tabVisible),
+            entry("POS launchable", launchable),
+            entry("Catalog strategy", catalogStrategy(tabVisible, launchable)),
+            // `unknown` rather than `0` on a failed query: an empty catalog and an unreadable one are
+            // different findings, and the sync repository's own accessors collapse both to zero.
+            safeEntry("Local catalog products") {
+                posLocalCatalogStore.getProductCount(LocalId(selectedSite.id)).getOrNull() ?: UNKNOWN
+            },
+            safeEntry("Local catalog variations") {
+                posLocalCatalogStore.getVariationCount(LocalId(selectedSite.id)).getOrNull() ?: UNKNOWN
+            },
+            // The sync timestamps parse stored strings, so a malformed value throws rather than reading as absent.
+            safeEntry("Local catalog full sync") {
+                syncTimestampManager.getFullSyncLastCompletedTimestamp().asUtcOrNever()
+            },
+            safeEntry("Products timestamp") { syncTimestampManager.getProductsLastSyncTimestamp().asUtcOrNever() },
+            safeEntry("Variations timestamp") {
+                syncTimestampManager.getVariationsLastSyncTimestamp().asUtcOrNever()
+            },
+            safeEntry("Catalog file blocked") { syncTimestampManager.isCatalogFileBlocked() }
+        )
+    }
+
+    /**
+     * Mirrors `WooPosIsLocalCatalogSupported`, which the report cannot call: it evaluates POS visibility and
+     * launchability (writing prefs as it goes) and can fall back to a network fetch for the Woo version. This
+     * reads the cached results of those same inputs instead, so it is the decision as of the last evaluation.
+     * `WooPosIsLocalCatalogSupported` logs its real verdict, so the log on the same ticket settles any
+     * disagreement between the two.
+     */
+    private fun catalogStrategy(tabVisible: Boolean, launchable: Boolean): String {
+        val wooVersion = getWooCorePluginCachedVersion()
+        val fileSyncSupported = wooVersion != null &&
+            wooVersion.semverCompareTo(WC_FILE_BASED_SYNC_MIN_VERSION) >= 0
+        val localCatalog = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1) &&
+            appPrefs.wooPosLocalCatalogEnabled &&
+            fileSyncSupported && tabVisible && launchable
+        return if (localCatalog) "local catalog" else "remote"
+    }
+
+    private fun Long?.asUtcOrNever() =
+        this?.let { DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(it)) } ?: NEVER
 
     private fun featureFlagsSection(): List<String> {
         val states = FeatureFlag.entries.map { featureFlagRepository.getFlagState(it) }
@@ -167,6 +301,12 @@ class MobileStatusProvider @Inject constructor(
 
     private fun entry(key: String, value: Any?) = "$key: $value"
 
+    // Confines a failing lookup to the field that caused it, rather than losing the whole section with it.
+    private suspend fun safeEntry(key: String, value: suspend () -> Any?) =
+        runCatching { entry(key, value()) }
+            .onFailure { currentCoroutineContext().ensureActive() }
+            .getOrElse { entry(key, UNKNOWN) }
+
     private suspend fun StringBuilder.appendSection(heading: String, content: suspend () -> List<String>) {
         appendLine()
         appendLine(heading)
@@ -178,11 +318,15 @@ class MobileStatusProvider @Inject constructor(
     companion object {
         private const val REPORT_HEADING = "### Mobile Status Report generated via the WooCommerce Android app ###"
 
+        private const val HEADING_NO_STORE = "# No store selected"
         private const val HEADING_APP = "## App"
         private const val HEADING_DEVICE = "## Device"
         private const val HEADING_CONNECTIVITY = "## Connectivity"
         private const val HEADING_NOTIFICATIONS = "## Notifications"
         private const val HEADING_ACCOUNT = "## Account & Stores"
+        private const val HEADING_STORE = "## Store Details"
+        private const val HEADING_PAYMENTS = "## Payments"
+        private const val HEADING_POS = "## Point of Sale"
         private const val HEADING_FEATURE_FLAGS = "## Feature Flags"
         private const val HEADING_EXPERIMENTAL = "## Experimental Features"
 
@@ -191,7 +335,12 @@ class MobileStatusProvider @Inject constructor(
         private const val SIDELOADED = "sideloaded"
         private const val NONE = "none"
         private const val MISSING = "missing"
+        private const val NOT_SET = "not set"
         private const val NOT_LOGGED_IN = "not logged in"
+        private const val NEVER = "never"
         private const val REDACTED_TOKEN_LENGTH = 6
+
+        // Kept in step with `WooPosIsLocalCatalogSupported`.
+        private const val WC_FILE_BASED_SYNC_MIN_VERSION = "10.5.0"
     }
 }

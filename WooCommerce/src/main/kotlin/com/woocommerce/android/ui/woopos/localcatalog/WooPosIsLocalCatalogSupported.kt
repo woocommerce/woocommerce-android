@@ -44,7 +44,9 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
-        return true
+        // The Mobile Status Report derives this same verdict from cached prefs, because evaluating it here
+        // writes them. Logging the real answer lets support tell the two apart on a ticket.
+        return true.also { wooPosLogWrapper.d("Local Catalog supported: POS is using the local catalog.") }
     }
 
     private suspend fun isSyncApproachSupported(): Boolean {

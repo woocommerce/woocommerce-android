@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.background.GetBackgroundRestrictions.BackgroundRestrictions
@@ -10,11 +11,14 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
+import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.FeatureFlagRepository.FeatureFlagState
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,9 +31,13 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 import org.wordpress.android.fluxc.model.AccountModel
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +64,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(any()) } doReturn true
         on { getFlagState(any()) } doAnswer { invocation ->
             FeatureFlagState(
                 flag = invocation.getArgument(0),
@@ -88,11 +97,35 @@ class MobileStatusProviderTest : BaseUnitTest() {
         on { isGooglePlayServicesAvailable() } doReturn true
     }
 
+    private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion = mock {
+        on { invoke() } doReturn "10.9.2"
+    }
+
     private val appPrefs: AppPrefsWrapper = mock {
         on { getFCMToken() } doReturn "abcdefghijklmnop"
+        on { getWCStoreID(any()) } doReturn "store-uuid"
         on { isProductAddonsEnabled } doReturn true
         on { jetpackAppPasswordsEnabled } doReturn false
         on { wooPosLocalCatalogEnabled } doReturn true
+        on { getCardReaderPreferredPlugin(any(), any(), any()) } doReturn PluginType.WOOCOMMERCE_PAYMENTS
+        on { getCardReaderPreferredPluginVersion(any(), any(), any(), any()) } doReturn "11.0.0"
+        on { isCardReaderPluginExplicitlySelected(any(), any(), any()) } doReturn true
+        on { getCardReaderOnboardingStatus(any(), any(), any()) } doReturn
+            CardReaderOnboardingStatus.CARD_READER_ONBOARDING_COMPLETED
+        on { isPOSTabVisibleForSite(any()) } doReturn true
+        on { isPOSLaunchableForSite(any()) } doReturn true
+    }
+
+    private val posLocalCatalogStore: WooPosLocalCatalogStore = mock {
+        on { getProductCount(any()) } doReturn Result.success(1250)
+        on { getVariationCount(any()) } doReturn Result.success(3420)
+    }
+
+    private val syncTimestampManager: WooPosSyncTimestampManager = mock {
+        on { getFullSyncLastCompletedTimestamp() } doReturn FULL_SYNC_MILLIS
+        on { getProductsLastSyncTimestamp() } doReturn PRODUCTS_SYNC_MILLIS
+        on { getVariationsLastSyncTimestamp() } doReturn VARIATIONS_SYNC_MILLIS
+        on { isCatalogFileBlocked() } doReturn false
     }
 
     private val accountStore: AccountStore = mock {
@@ -107,6 +140,12 @@ class MobileStatusProviderTest : BaseUnitTest() {
         )
     }
 
+    private val wooCommerceStore: WooCommerceStore = mock {
+        on { getSitePlugins(any<SiteModel>()) } doReturn listOf(
+            sitePlugin("woocommerce-payments/woocommerce-payments", isActive = true, version = "8.1.0")
+        )
+    }
+
     private val sut = MobileStatusProvider(
         context = mock(),
         envDataSource = envDataSource,
@@ -117,9 +156,13 @@ class MobileStatusProviderTest : BaseUnitTest() {
         notificationChannelsHandler = notificationChannelsHandler,
         getBackgroundRestrictions = getBackgroundRestrictions,
         deviceFeatures = deviceFeatures,
+        getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
         appPrefs = appPrefs,
         accountStore = accountStore,
-        siteStore = siteStore
+        siteStore = siteStore,
+        wooCommerceStore = wooCommerceStore,
+        posLocalCatalogStore = posLocalCatalogStore,
+        syncTimestampManager = syncTimestampManager
     )
 
     /**
@@ -129,23 +172,61 @@ class MobileStatusProviderTest : BaseUnitTest() {
      * express — branches, and values it has no second combination for.
      */
     @Test
-    fun `when the report is generated, then it matches the expected report`() =
+    fun `given a selected store, when the report is generated, then it matches the expected report`() =
         testBlocking {
-            val report = sut(SiteModel())
+            val report = sut(SiteModel().apply { url = "https://example.com" })
 
             assertThat(report.trimEnd()).isEqualTo(EXPECTED_REPORT)
+        }
+
+    @Test
+    fun `given no selected store, when the report is generated, then the store sections are omitted`() =
+        testBlocking {
+            val report = sut(null)
+
+            assertThat(report).endsWith("# No store selected\n")
+            assertThat(report).doesNotContain("## Store Details")
+            assertThat(report).doesNotContain("## Store Notifications")
+            assertThat(report).doesNotContain("## Payments")
+            assertThat(report).doesNotContain("## Point of Sale")
+            // The app-wide half is still reported in full.
+            assertThat(report).contains("## Device")
+            assertThat(report).contains("Connected stores: 3")
+        }
+
+    @Test
+    fun `given a store with no url, when the report is generated, then the band names it another way`() =
+        testBlocking {
+            val report = sut(SiteModel().apply { name = "Jirka's Store" })
+
+            assertThat(report).contains("# Selected store: Jirka's Store")
         }
 
     @Test
     fun `given a section fails, when the report is generated, then only that section degrades`() = testBlocking {
         deviceInfo.stub { on { name } doThrow RuntimeException("boom") }
 
-        val report = sut(SiteModel())
+        val report = sut(SiteModel().apply { url = "https://example.com" })
 
         assertThat(report.section("## Device")).isEqualTo("Info not found")
         assertThat(report).contains("Play Services: available")
         assertThat(report).contains("Product add-ons: true")
     }
+
+    @Test
+    fun `given a single field fails, when the report is generated, then the rest of its section survives`() =
+        testBlocking {
+            syncTimestampManager.stub {
+                on { getProductsLastSyncTimestamp() } doThrow NumberFormatException("malformed")
+            }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            val pos = report.section("## Point of Sale")
+            assertThat(pos).contains("Products timestamp: unknown")
+            assertThat(pos).doesNotContain("Info not found")
+            assertThat(pos).contains("Local catalog full sync: 2026-07-29T09:29:49Z")
+        }
 
     /**
      * The golden report covers data saver on with the other two off. Three booleans cannot be told apart by a
@@ -156,7 +237,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         testBlocking {
             stubRestrictions(isPowerSaveModeEnabled = true, isBackgroundRestricted = true)
 
-            val report = sut(SiteModel())
+            val report = sut(SiteModel().apply { url = "https://example.com" })
 
             assertThat(report).contains("Background restricted: true")
             assertThat(report).contains("Power save mode: true")
@@ -173,7 +254,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
                 )
             }
 
-            val report = sut(SiteModel())
+            val report = sut(SiteModel().apply { url = "https://example.com" })
 
             assertThat(report).contains("Connected stores: 1")
             assertThat(report).contains("https://store.example.com")
@@ -184,10 +265,40 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `given no push token, when the report is generated, then it is reported as missing`() = testBlocking {
         appPrefs.stub { on { getFCMToken() } doReturn "" }
 
-        val report = sut(SiteModel())
+        val report = sut(SiteModel().apply { url = "https://example.com" })
 
         assertThat(report).contains("Push token: missing")
     }
+
+    @Test
+    fun `given a Jetpack connected store, when the report is generated, then the auth method says so`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackConnected(true)
+            }
+
+            val report = sut(site)
+
+            assertThat(report).contains("Auth method: Jetpack")
+        }
+
+    /**
+     * `connectionType` answers `Jetpack` for this site in production, which the report would state as fact.
+     */
+    @Test
+    fun `given a store the app cannot classify, when the report is generated, then the auth method is unknown`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPCOM_REST
+            }
+
+            val report = sut(site)
+
+            assertThat(report).contains("Auth method: unknown")
+        }
 
     @Test
     fun `given no remote flag values, when the report is generated, then they are reported as not loaded`() =
@@ -203,10 +314,20 @@ class MobileStatusProviderTest : BaseUnitTest() {
                 }
             }
 
-            val report = sut(SiteModel())
+            val report = sut(SiteModel().apply { url = "https://example.com" })
 
             assertThat(report).contains("Remote values loaded: false")
             assertThat(report).contains("ai_support_chat: false (compiled-in default)")
+        }
+
+    @Test
+    fun `given no plugins are cached, when the report is generated, then the plugins are unknown`() =
+        testBlocking {
+            wooCommerceStore.stub { on { getSitePlugins(any<SiteModel>()) } doReturn emptyList() }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Payment plugins: unknown")
         }
 
     @Test
@@ -234,6 +355,56 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             assertThat(report).contains("Install source: unknown")
         }
+
+    @Test
+    fun `given the local catalog toggle is off, when the report is generated, then the strategy is remote`() =
+        testBlocking {
+            appPrefs.stub { on { wooPosLocalCatalogEnabled } doReturn false }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Catalog strategy: remote")
+        }
+
+    @Test
+    fun `given Woo is too old for file based sync, when the report is generated, then the strategy is remote`() =
+        testBlocking {
+            getWooCorePluginCachedVersion.stub { on { invoke() } doReturn "10.4.0" }
+
+            val report = sut(SiteModel().apply { url = "https://example.com" })
+
+            assertThat(report).contains("Catalog strategy: remote")
+        }
+
+    @Test
+    fun `given POS cannot be launched, when the report is generated, then the strategy is remote`() = testBlocking {
+        appPrefs.stub { on { isPOSLaunchableForSite(any()) } doReturn false }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Catalog strategy: remote")
+    }
+
+    @Test
+    fun `given the catalog file is blocked, when the report is generated, then it says so`() = testBlocking {
+        syncTimestampManager.stub { on { isCatalogFileBlocked() } doReturn true }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Catalog file blocked: true")
+    }
+
+    @Test
+    fun `given the catalog count cannot be read, when the report is generated, then it is unknown`() = testBlocking {
+        posLocalCatalogStore.stub {
+            on { getProductCount(any()) } doReturn Result.failure(RuntimeException("db gone"))
+        }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Local catalog products: unknown")
+        assertThat(report).contains("Local catalog variations: 3420")
+    }
 
     /** The lines of one section, without its heading, so a section can be asserted on as a whole. */
     private fun String.section(heading: String) =
@@ -266,9 +437,22 @@ class MobileStatusProviderTest : BaseUnitTest() {
         notificationChannelsHandler = notificationChannelsHandler,
         getBackgroundRestrictions = getBackgroundRestrictions,
         deviceFeatures = deviceFeatures,
+        getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
         appPrefs = appPrefs,
         accountStore = accountStore,
-        siteStore = siteStore
+        siteStore = siteStore,
+        wooCommerceStore = wooCommerceStore,
+        posLocalCatalogStore = posLocalCatalogStore,
+        syncTimestampManager = syncTimestampManager
+    )
+
+    private fun sitePlugin(name: String, isActive: Boolean, version: String) = SitePluginModel(
+        siteId = LocalId(1),
+        name = name,
+        version = version,
+        slug = name.substringAfterLast('/'),
+        authorName = "author",
+        isActive = isActive
     )
 
     private fun wooSite(url: String = "") = SiteModel().apply {
@@ -365,9 +549,43 @@ class MobileStatusProviderTest : BaseUnitTest() {
             Product add-ons: true
             Jetpack app passwords: false
             POS local catalog: true
+
+            # Selected store: https://example.com
+
+            ## Store Details
+            Blog ID: not set
+            Store ID: store-uuid
+            Auth method: ApplicationPasswords
+            Site supports app passwords: false
+            Jetpack: installed=false connected=false CP=false
+            Plan: unknown (0)
+            Woo core version: 10.9.2
+
+            ## Payments
+            WooPayments: active 8.1.0
+            Stripe extension: not installed
+            In-person payments plugin: WOOCOMMERCE_PAYMENTS 11.0.0
+            In-person payments plugin chosen by merchant: true
+            In-person payments onboarding: CARD_READER_ONBOARDING_COMPLETED
+
+            ## Point of Sale
+            POS tab visible: true
+            POS launchable: true
+            Catalog strategy: local catalog
+            Local catalog products: 1250
+            Local catalog variations: 3420
+            Local catalog full sync: 2026-07-29T09:29:49Z
+            Products timestamp: 2026-07-29T09:29:50Z
+            Variations timestamp: 2026-07-29T09:29:51Z
+            Catalog file blocked: false
         """.trimIndent().trim()
 
         const val PLAY_STORE = "com.android.vending"
         const val PACKAGE_NAME = "com.woocommerce.android"
+
+        // 2026-07-29T09:29:49Z, :50Z and :51Z
+        const val FULL_SYNC_MILLIS = 1785317389000L
+        const val PRODUCTS_SYNC_MILLIS = 1785317390000L
+        const val VARIATIONS_SYNC_MILLIS = 1785317391000L
     }
 }
