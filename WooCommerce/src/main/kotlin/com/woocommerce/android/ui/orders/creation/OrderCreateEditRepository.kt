@@ -13,7 +13,7 @@ import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
@@ -50,7 +50,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val listItemMapper: ListItemMapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
 ) {
     suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
@@ -85,7 +85,7 @@ class OrderCreateEditRepository @Inject constructor(
             result.isError -> Result.failure(WooException(result.error))
             else -> {
                 val updatedOrder = orderMapper.toAppModel(result.model!!)
-                markedAsPaidOrdersCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
                     siteId = selectedSite.get().siteId,
                     orderId = updatedOrder.id,
                     newStatusKey = updatedOrder.status.value,

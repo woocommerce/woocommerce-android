@@ -6,7 +6,7 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -100,7 +100,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             )
         )
     }
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private val gatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock {
@@ -470,7 +470,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
                 siteId = site.siteId,
                 orderId = 1L,
                 newStatusKey = Order.Status.Completed.value,
@@ -1239,7 +1239,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
-            markedAsPaidOrdersCache = markedAsPaidOrdersCache
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache
         )
     }
 

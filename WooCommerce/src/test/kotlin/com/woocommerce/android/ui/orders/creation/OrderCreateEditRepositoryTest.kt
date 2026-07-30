@@ -7,7 +7,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -59,7 +59,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private val orderMapper: OrderMapper = mock {
         on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
     }
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -91,7 +91,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
-            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         )
     }
 
@@ -267,7 +267,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
                 siteId = defaultSiteModel.siteId,
                 orderId = 123L,
                 newStatusKey = Order.Status.Processing.value,
@@ -290,7 +290,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verifyNoInteractions(markedAsPaidOrdersCache)
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
         }
 
     @Test

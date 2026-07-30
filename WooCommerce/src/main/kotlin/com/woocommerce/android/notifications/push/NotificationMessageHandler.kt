@@ -45,7 +45,7 @@ class NotificationMessageHandler @Inject constructor(
     private val getWooVisibleSites: GetWooVisibleSites,
     private val selectedSite: SelectedSite,
     private val workManagerScheduler: WorkManagerScheduler,
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) {
     companion object {
         private const val PUSH_NOTIFICATION_ID = 10000
@@ -130,7 +130,7 @@ class NotificationMessageHandler @Inject constructor(
         dispatchBackgroundEvents(notificationModel)
 
         if (notification.isOrderNotification &&
-            markedAsPaidOrdersCache.consume(notification.remoteSiteId, notification.uniqueId)
+            newOrderNotificationSuppressionCache.consume(notification.remoteSiteId, notification.uniqueId)
         ) {
             wooLog.d(NOTIFICATIONS, "Skipping new order notification, order was marked as paid on this device")
             return

@@ -3,8 +3,8 @@ package com.woocommerce.android.notifications.push
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class MarkedAsPaidOrdersCacheTest {
-    private val cache = MarkedAsPaidOrdersCache()
+class NewOrderNotificationSuppressionCacheTest {
+    private val cache = NewOrderNotificationSuppressionCache()
 
     @Test
     fun `given order moved to a notifiable status, when consumed, then the entry is dropped`() {

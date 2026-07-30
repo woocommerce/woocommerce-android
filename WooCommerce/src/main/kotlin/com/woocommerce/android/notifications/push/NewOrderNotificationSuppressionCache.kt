@@ -10,7 +10,7 @@ import javax.inject.Singleton
  * new order push notification triggered by that same action.
  */
 @Singleton
-class MarkedAsPaidOrdersCache @Inject constructor() {
+class NewOrderNotificationSuppressionCache @Inject constructor() {
     private val entries = Collections.synchronizedSet(mutableSetOf<Entry>())
 
     fun onOrderMovedToPaidStatus(siteId: Long, orderId: Long, newStatusKey: String) {

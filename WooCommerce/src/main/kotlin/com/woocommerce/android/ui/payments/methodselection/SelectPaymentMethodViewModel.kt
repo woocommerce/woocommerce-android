@@ -16,7 +16,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
@@ -81,7 +81,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -432,7 +432,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             )
         }.onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                markedAsPaidOrdersCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
                     siteId = selectedSite.get().siteId,
                     orderId = cardReaderPaymentFlowParam.orderId,
                     newStatusKey = statusKey

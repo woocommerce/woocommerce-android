@@ -111,7 +111,7 @@ class NotificationMessageHandlerTest {
         .buildNotificationModelFromPayloadMap(reviewNotificationSite2Payload)!!.toAppModel(resourceProvider)
 
     private val workManagerScheduler: WorkManagerScheduler = mock()
-    private val markedAsPaidOrdersCache = MarkedAsPaidOrdersCache()
+    private val newOrderNotificationSuppressionCache = NewOrderNotificationSuppressionCache()
     private val wooNotificationPayload = mapOf("type" to "new_order")
     private val wooNotificationModel
         get() = NotificationModel(
@@ -135,7 +135,7 @@ class NotificationMessageHandlerTest {
             getWooVisibleSites = getWooVisibleSites,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
-            markedAsPaidOrdersCache = markedAsPaidOrdersCache,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         )
     }
 
@@ -285,7 +285,11 @@ class NotificationMessageHandlerTest {
             // GIVEN
             val orderId = 4321L
             givenWooDrivenOrderNotification(orderId)
-            markedAsPaidOrdersCache.onOrderMovedToPaidStatus(orderNotification.remoteSiteId, orderId, "processing")
+            newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                siteId = orderNotification.remoteSiteId,
+                orderId = orderId,
+                newStatusKey = "processing",
+            )
 
             // WHEN
             notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)
@@ -301,7 +305,11 @@ class NotificationMessageHandlerTest {
         runTest {
             // GIVEN
             givenWooDrivenOrderNotification(orderId = 4321L)
-            markedAsPaidOrdersCache.onOrderMovedToPaidStatus(orderNotification.remoteSiteId, 9999L, "processing")
+            newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                siteId = orderNotification.remoteSiteId,
+                orderId = 9999L,
+                newStatusKey = "processing",
+            )
 
             // WHEN
             notificationMessageHandler.onNewMessageReceived(wooNotificationPayload)

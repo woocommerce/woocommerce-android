@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +23,7 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
     private val site: SiteModel = mock { on { siteId } doReturn SITE_ID }
     private val selectedSite: SelectedSite = mock { on { get() } doReturn site }
     private val orderStore: WCOrderStore = mock()
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private val sut = OrderDetailRepository(
         orderStore = orderStore,
@@ -35,7 +35,7 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
         dispatchers = coroutinesTestRule.testDispatchers,
         orderMapper = mock(),
         shippingLabelMapper = mock(),
-        markedAsPaidOrdersCache = markedAsPaidOrdersCache,
+        newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
     )
 
     @Test
@@ -48,7 +48,7 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
             sut.updateOrderStatus(ORDER_ID, Order.Status.Completed.value).collect { }
 
             // THEN
-            verify(markedAsPaidOrdersCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
                 SITE_ID,
                 ORDER_ID,
                 Order.Status.Completed.value,
@@ -67,7 +67,7 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
             sut.updateOrderStatus(ORDER_ID, Order.Status.Completed.value).collect { }
 
             // THEN
-            verifyNoInteractions(markedAsPaidOrdersCache)
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
         }
 
     private suspend fun givenUpdateResult(result: UpdateOrderResult) {

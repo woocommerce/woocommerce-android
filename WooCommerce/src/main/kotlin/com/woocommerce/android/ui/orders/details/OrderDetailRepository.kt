@@ -20,7 +20,7 @@ import com.woocommerce.android.model.ShippingLabelMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
-import com.woocommerce.android.notifications.push.MarkedAsPaidOrdersCache
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -52,7 +52,7 @@ class OrderDetailRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
     private val shippingLabelMapper: ShippingLabelMapper,
-    private val markedAsPaidOrdersCache: MarkedAsPaidOrdersCache
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -137,7 +137,11 @@ class OrderDetailRepository @Inject constructor(
             status
         ).onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                markedAsPaidOrdersCache.onOrderMovedToPaidStatus(selectedSite.get().siteId, orderId, newStatus)
+                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                    siteId = selectedSite.get().siteId,
+                    orderId = orderId,
+                    newStatusKey = newStatus,
+                )
             }
         }
     }
