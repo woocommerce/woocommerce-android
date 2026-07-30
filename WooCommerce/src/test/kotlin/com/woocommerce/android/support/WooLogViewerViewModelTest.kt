@@ -4,14 +4,17 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.logs.WooFileLogger
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -37,16 +40,43 @@ class WooLogViewerViewModelTest : BaseUnitTest() {
         viewModel.uiState.captureValues().last() as WooLogViewerViewModel.UiState.LogFilesList
 
     @Test
+    fun `when the files list is shown, then the archive is not being prepared`() = testBlocking {
+        setup()
+
+        assertThat(filesListState().isPreparingArchive).isFalse()
+    }
+
+    @Test
+    fun `when the archive has been prepared, then progress is no longer shown`() = testBlocking {
+        setup()
+        whenever(wooFileLogger.archiveLogFiles(any())).doSuspendableAnswer {
+            delay(1000)
+            File("woocommerce-logs.zip")
+        }
+        val state = filesListState()
+
+        val states = viewModel.uiState.runAndCaptureValues {
+            state.onShareAllClicked()
+            advanceUntilIdle()
+        }.filterIsInstance<WooLogViewerViewModel.UiState.LogFilesList>()
+
+        assertThat(states.map { it.isPreparingArchive }).contains(true)
+        assertThat(states.last().isPreparingArchive).isFalse()
+    }
+
+    @Test
     fun `when share all is clicked, then the archive is shared`() = testBlocking {
         setup()
         val archive = File("woocommerce-logs.zip")
         whenever(wooFileLogger.archiveLogFiles(any())).thenReturn(archive)
         val state = filesListState()
 
-        state.onShareAllClicked()
-        advanceUntilIdle()
+        val events = viewModel.event.runAndCaptureValues {
+            state.onShareAllClicked()
+            advanceUntilIdle()
+        }
 
-        assertThat(viewModel.event.captureValues().last()).isEqualTo(WooLogViewerViewModel.ShareLogsArchive(archive))
+        assertThat(events.last()).isEqualTo(WooLogViewerViewModel.ShareLogsArchive(archive))
     }
 
     @Test
@@ -55,11 +85,12 @@ class WooLogViewerViewModelTest : BaseUnitTest() {
         whenever(wooFileLogger.archiveLogFiles(any())).thenReturn(null)
         val state = filesListState()
 
-        state.onShareAllClicked()
-        advanceUntilIdle()
+        val events = viewModel.event.runAndCaptureValues {
+            state.onShareAllClicked()
+            advanceUntilIdle()
+        }
 
-        assertThat(viewModel.event.captureValues().last())
-            .isEqualTo(WooLogViewerViewModel.ShareLogsArchiveFailed)
+        assertThat(events.last()).isEqualTo(WooLogViewerViewModel.ShareLogsArchiveFailed)
     }
 
     @Test

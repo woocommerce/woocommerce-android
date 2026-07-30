@@ -15,7 +15,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
@@ -37,15 +38,17 @@ class WooLogViewerViewModel @Inject constructor(
         "selected_log_file"
     )
 
-    val uiState = selectedLogFile.map { logFile ->
+    private val isPreparingArchive = MutableStateFlow(false)
+
+    val uiState = combine(selectedLogFile, isPreparingArchive) { logFile, isPreparingArchive ->
         if (logFile == null) {
-            prepareFilesListState()
+            prepareFilesListState(isPreparingArchive)
         } else {
             prepareLogFileContentState(logFile)
         }
     }.asLiveData()
 
-    private suspend fun prepareFilesListState(): UiState.LogFilesList {
+    private suspend fun prepareFilesListState(isPreparingArchive: Boolean): UiState.LogFilesList {
         fun prepareFileDisplayName(file: File): String {
             val dateString = file.name
                 .removePrefix(LogFileWriter.LOG_FILE_NAME_PREFIX)
@@ -76,13 +79,16 @@ class WooLogViewerViewModel @Inject constructor(
             onLogFileSelected = { selectedFile ->
                 selectedLogFile.value = selectedFile
             },
+            isPreparingArchive = isPreparingArchive,
             onShareAllClicked = { shareAllLogs() }
         )
     }
 
     private fun shareAllLogs() {
         launch {
+            isPreparingArchive.value = true
             val archive = wooFileLogger.archiveLogFiles(deviceInfo = getDeviceInfo().toString())
+            isPreparingArchive.value = false
 
             if (archive != null) {
                 triggerEvent(ShareLogsArchive(archive))
@@ -126,6 +132,7 @@ class WooLogViewerViewModel @Inject constructor(
         data class LogFilesList(
             val logFiles: List<LogFile>,
             val onLogFileSelected: (LogFile) -> Unit,
+            val isPreparingArchive: Boolean = false,
             val onShareAllClicked: () -> Unit
         ) : UiState
 

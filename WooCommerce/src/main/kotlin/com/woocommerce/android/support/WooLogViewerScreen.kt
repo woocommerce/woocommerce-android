@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -148,6 +149,13 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
                 )
             }
         }
+    }
+
+    if (state.isPreparingArchive) {
+        ProgressDialog(
+            title = "",
+            subtitle = stringResource(id = R.string.logviewer_preparing_logs)
+        )
     }
 }
 
