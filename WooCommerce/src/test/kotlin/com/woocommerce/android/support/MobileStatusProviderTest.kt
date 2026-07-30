@@ -59,6 +59,15 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the report is generated, then every section heading states its scope`() = testBlocking {
+        val report = sut(SiteModel())
+
+        val headings = report.lines().filter { it.startsWith("## ") }
+        assertThat(headings).isNotEmpty
+        assertThat(headings).allMatch { it.endsWith(MobileStatusProvider.SCOPE_APP_WIDE) }
+    }
+
+    @Test
     fun `when the report is generated, then device and OS information is included`() = testBlocking {
         val report = sut(SiteModel())
 

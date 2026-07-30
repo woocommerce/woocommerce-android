@@ -24,9 +24,9 @@ class MobileStatusProvider @Inject constructor(
 ) {
     suspend operator fun invoke(selectedSite: SiteModel?): String = buildString {
         appendLine(REPORT_HEADING)
-        appendSection(HEADING_APP) { appSection() }
-        appendSection(HEADING_DEVICE) { deviceSection() }
-        appendSection(HEADING_CONNECTIVITY) { connectivitySection() }
+        appendSection(HEADING_APP, SCOPE_APP_WIDE) { appSection() }
+        appendSection(HEADING_DEVICE, SCOPE_APP_WIDE) { deviceSection() }
+        appendSection(HEADING_CONNECTIVITY, SCOPE_APP_WIDE) { connectivitySection() }
     }
 
     private fun appSection(): List<String> {
@@ -67,9 +67,17 @@ class MobileStatusProvider @Inject constructor(
 
     private fun entry(key: String, value: Any?) = "$key: $value"
 
-    private suspend fun StringBuilder.appendSection(heading: String, content: suspend () -> List<String>) {
+    /**
+     * @param scope states who the section's values describe, so a reader never has to infer whether a value covers
+     * the whole installation or a single store. Every heading carries one.
+     */
+    private suspend fun StringBuilder.appendSection(
+        heading: String,
+        scope: String,
+        content: suspend () -> List<String>
+    ) {
         appendLine()
-        appendLine(heading)
+        appendLine("$heading $scope")
         runCatching { content() }
             .onSuccess { lines -> lines.forEach { appendLine(it) } }
             .onFailure { appendLine(SECTION_UNAVAILABLE) }
@@ -77,6 +85,10 @@ class MobileStatusProvider @Inject constructor(
 
     companion object {
         const val REPORT_HEADING = "### Mobile Status Report generated via the WooCommerce Android app ###"
+
+        /** Values covering the whole installation on this device, as opposed to a single store. */
+        const val SCOPE_APP_WIDE = "(app-wide)"
+
         const val HEADING_APP = "## App"
         const val HEADING_DEVICE = "## Device"
         const val HEADING_CONNECTIVITY = "## Connectivity"
