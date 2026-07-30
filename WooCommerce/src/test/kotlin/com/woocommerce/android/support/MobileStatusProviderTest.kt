@@ -216,6 +216,13 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the report is generated, then it links to the field reference`() = testBlocking {
+        val report = sut(SiteModel())
+
+        assertThat(report).contains(MobileStatusProvider.FIELD_REFERENCE)
+    }
+
+    @Test
     fun `when the report is generated, then device and OS information is included`() = testBlocking {
         val report = sut(SiteModel())
 
@@ -231,7 +238,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             // A gradle or adb install has no installer of record, which is not the same as being unable to look it up
             val report = providerWithInstaller { null }(SiteModel())
 
-            assertThat(report).contains("Install source: sideloaded")
+            assertThat(report).contains("Install source: sideloaded (installed outside an app store, not from Play)")
         }
 
     @Test
@@ -333,7 +340,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             val report = sut(site)
 
-            assertThat(report).contains("Blog ID: not set")
+            assertThat(report)
+                .contains("Blog ID: not set (stores connected with application passwords do not have one)")
             assertThat(report).contains("Store ID: store-uuid")
         }
 
@@ -379,9 +387,9 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `when the report is generated, then the in-person payments plugin in use is included`() = testBlocking {
         val report = sut(SiteModel())
 
-        assertThat(report).contains("IPP preferred plugin: WOOCOMMERCE_PAYMENTS 11.0.0")
-        assertThat(report).contains("IPP plugin explicitly selected: true")
-        assertThat(report).contains("IPP onboarding: CARD_READER_ONBOARDING_COMPLETED")
+        assertThat(report).contains("In-person payments plugin: WOOCOMMERCE_PAYMENTS 11.0.0")
+        assertThat(report).contains("In-person payments plugin chosen by merchant: true")
+        assertThat(report).contains("In-person payments onboarding: CARD_READER_ONBOARDING_COMPLETED")
     }
 
     @Test
@@ -390,16 +398,16 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
         val report = sut(SiteModel())
 
-        assertThat(report).contains("IPP preferred plugin: not set")
+        assertThat(report).contains("In-person payments plugin: not set")
     }
 
     @Test
-    fun `given no cached plugins, when the report is generated, then IPP state is still included`() = testBlocking {
+    fun `given no cached plugins, when the report is generated, then in-person payments state is still included`() = testBlocking {
         wooCommerceStore.stub { on { getSitePlugins(any<SiteModel>()) } doReturn emptyList() }
 
         val report = sut(SiteModel())
 
-        assertThat(report).contains("IPP preferred plugin: WOOCOMMERCE_PAYMENTS 11.0.0")
+        assertThat(report).contains("In-person payments plugin: WOOCOMMERCE_PAYMENTS 11.0.0")
     }
 
     @Test
@@ -451,7 +459,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `given no selected site, when the report is generated, then the POS section degrades`() = testBlocking {
         val report = sut(null)
 
-        assertThat(report).contains("No store selected, so there is nothing to report here")
+        assertThat(report).contains("Not applicable while no store is selected")
         assertThat(report).doesNotContain("POS tab visible")
     }
 
@@ -548,7 +556,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             val report = sut(SiteModel())
 
-            assertThat(report).contains("Remote values loaded: false")
+            assertThat(report)
+                .contains("Remote values loaded: false (no remote fetch has ever succeeded on this install)")
         }
 
     @Test

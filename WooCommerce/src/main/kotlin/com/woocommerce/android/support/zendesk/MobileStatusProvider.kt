@@ -62,6 +62,7 @@ class MobileStatusProvider @Inject constructor(
     suspend operator fun invoke(selectedSite: SiteModel?, siteAddress: String? = null): String = buildString {
         appendLine(REPORT_HEADING)
         appendLine(SCOPE_LEGEND)
+        appendLine(FIELD_REFERENCE)
         val storeScope = storeScope(selectedSite)
         appendSection(HEADING_APP, SCOPE_APP_WIDE) { appSection() }
         appendSection(HEADING_DEVICE, SCOPE_APP_WIDE) { deviceSection() }
@@ -158,9 +159,13 @@ class MobileStatusProvider @Inject constructor(
         return with(selectedSite) {
             listOf(
                 // Blog ID is 0 for application password sites, and Store ID is missing until the first successful
-                // system status fetch. They fail in opposite conditions, so both are reported.
-                entry("Blog ID", siteId.takeIf { it != 0L } ?: NOT_SET),
-                entry("Store ID", appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { NOT_SET }),
+                // system status fetch. They fail in opposite conditions, so both are reported, each saying why it
+                // is absent rather than leaving a bare "not set" to be interpreted.
+                entry("Blog ID", siteId.takeIf { it != 0L } ?: "$NOT_SET ($REASON_NO_BLOG_ID)"),
+                entry(
+                    "Store ID",
+                    appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { "$NOT_SET ($REASON_NO_STORE_ID)" }
+                ),
                 entry("Auth method", connectionType.name),
                 entry(
                     "Jetpack",
@@ -219,12 +224,12 @@ class MobileStatusProvider @Inject constructor(
             appPrefs.isCardReaderPluginExplicitlySelected(site.id, site.siteId, site.selfHostedSiteId)
         return listOf(
             entry(
-                "IPP preferred plugin",
+                "In-person payments plugin",
                 preferredPlugin?.let { "${it.name} ${version.orEmpty().ifEmpty { UNKNOWN }}" } ?: NOT_SET
             ),
-            entry("IPP plugin explicitly selected", explicitlySelected),
+            entry("In-person payments plugin chosen by merchant", explicitlySelected),
             entry(
-                "IPP onboarding",
+                "In-person payments onboarding",
                 appPrefs.getCardReaderOnboardingStatus(site.id, site.siteId, site.selfHostedSiteId).name
             )
         )
@@ -273,7 +278,12 @@ class MobileStatusProvider @Inject constructor(
         // Remote values are persisted and never cleared, so a merchant whose fetch has never succeeded is running
         // entirely on compiled-in defaults. There is no other way for support to tell.
         val remoteValuesLoaded = states.any { it.remoteValue != null }
-        return listOf(entry("Remote values loaded", remoteValuesLoaded)) +
+        return listOf(
+            entry(
+                "Remote values loaded",
+                if (remoteValuesLoaded) true else "false ($REASON_NO_REMOTE_FLAGS)"
+            )
+        ) +
             states
                 .sortedBy { it.flag.remoteFlagKey }
                 .map { entry(it.flag.remoteFlagKey, "${it.effectiveValue} (${it.source()})") }
@@ -314,7 +324,7 @@ class MobileStatusProvider @Inject constructor(
             packageManager.getInstallerPackageName(context.packageName)
         }
     }.fold(
-        onSuccess = { installer -> installer ?: SIDELOADED },
+        onSuccess = { installer -> installer ?: "$SIDELOADED ($REASON_SIDELOADED)" },
         onFailure = { UNKNOWN }
     )
 
@@ -358,6 +368,14 @@ class MobileStatusProvider @Inject constructor(
             "Scopes: $SCOPE_APP_WIDE values cover the whole app on this device. " +
                 "(selected store: ...) values cover only the named store."
 
+        /**
+         * What each field means and what it can hold lives in the repository rather than in the report, which is
+         * attached to every ticket and is also shown to merchants: a per-field gloss here would double its length
+         * for readers who already know the fields.
+         */
+        const val FIELD_REFERENCE = "Field reference: " +
+            "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
+
         const val HEADING_APP = "## App"
         const val HEADING_DEVICE = "## Device"
         const val HEADING_CONNECTIVITY = "## Connectivity"
@@ -377,7 +395,14 @@ class MobileStatusProvider @Inject constructor(
         private const val NOT_SET = "not set"
         private const val NOT_LOGGED_IN = "not logged in"
         private const val NEVER = "never"
-        private const val NO_STORE_SELECTED_HINT = "No store selected, so there is nothing to report here"
+        private const val NO_STORE_SELECTED_HINT = "Not applicable while no store is selected"
+
+        // Why a value is absent, said in the report itself. A bare "not set" reads as a fault in every one of
+        // these cases, when in fact each is the expected state for a particular kind of store or setup.
+        private const val REASON_NO_BLOG_ID = "stores connected with application passwords do not have one"
+        private const val REASON_NO_STORE_ID = "no store system status has been fetched yet"
+        private const val REASON_NO_REMOTE_FLAGS = "no remote fetch has ever succeeded on this install"
+        private const val REASON_SIDELOADED = "installed outside an app store, not from Play"
         private const val POS_REASON_HINT =
             "Reason is logged - search application_log.txt for " +
                 "\"POS Tab Not visible reason\" or \"POS cannot be launched\""
