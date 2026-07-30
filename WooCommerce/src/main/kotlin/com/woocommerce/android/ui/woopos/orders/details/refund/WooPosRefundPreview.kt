@@ -1,43 +1,35 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WCRefundStore
 import javax.inject.Inject
 
+/**
+ * Fetches a server-calculated refund preview, probing the store for server-refund support.
+ *
+ * The store's eligibility is decided by [WooPosResolveRefundFlow]; when eligible, the preview
+ * request doubles as the availability probe: a success marks the store available (unlocking the
+ * computed create), a 404 (`rest_no_route` on stores older than the release shipping the preview
+ * route) marks it unavailable and falls back to the local-calculation flow.
+ */
 class WooPosRefundPreview @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val availabilityCache: WooPosV4RefundAvailabilityCache,
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion,
-    private val featureFlagRepository: FeatureFlagRepository,
+    private val availabilityCache: WooPosServerRefundAvailabilityCache,
+    private val resolveRefundFlow: WooPosResolveRefundFlow,
 ) {
     suspend operator fun invoke(
         orderId: Long,
-        lineItems: List<RefundV4LineItem>,
+        lineItems: List<RefundPreviewLineItem>,
     ): Result {
         val site = selectedSite.get()
         val localSiteId = site.localId().value
 
-        // v4 refunds are gated off in release builds (debug-only local flag). When disabled, or when
-        // v4 is already known unavailable for this store, we never probe v4 nor mark availability, so
-        // the whole flow stays on the v3 local-calculation path.
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4) ||
-            availabilityCache.isV4Available(localSiteId) == false
-        ) {
-            return Result.FallbackToLocal
-        }
-
-        if (isWooVersionBelowV4Support()) {
-            WooLog.i(WooLog.T.POS, "WooPosRefund: WooCommerce older than $MIN_WC_VERSION_FOR_V4; using v3")
-            availabilityCache.markV4Unavailable(localSiteId)
+        if (resolveRefundFlow() is WooPosRefundFlow.LocalComputed) {
             return Result.FallbackToLocal
         }
 
@@ -50,13 +42,13 @@ class WooPosRefundPreview @Inject constructor(
         return when {
             response.isError -> {
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
-                    WooLog.i(WooLog.T.POS, "WooPosRefund: v4 preview not available; falling back to v3")
-                    availabilityCache.markV4Unavailable(localSiteId)
+                    WooLog.i(WooLog.T.POS, "WooPosRefund: preview route not available; falling back to local")
+                    availabilityCache.markUnavailable(localSiteId)
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(
                         WooLog.T.POS,
-                        "WooPosRefund: v4 preview failed orderId=$orderId, type=${response.error.type}, " +
+                        "WooPosRefund: preview failed orderId=$orderId, type=${response.error.type}, " +
                             "message=${response.error.message}"
                     )
                     Result.Error
@@ -64,7 +56,7 @@ class WooPosRefundPreview @Inject constructor(
             }
 
             preview != null -> {
-                availabilityCache.markV4Available(localSiteId)
+                availabilityCache.markAvailable(localSiteId)
                 Result.ServerCalculated(preview)
             }
 
@@ -72,18 +64,9 @@ class WooPosRefundPreview @Inject constructor(
         }
     }
 
-    private fun isWooVersionBelowV4Support(): Boolean {
-        val version = getWooCoreVersion() ?: return false
-        return version.semverCompareTo(MIN_WC_VERSION_FOR_V4) < 0
-    }
-
     sealed interface Result {
         data class ServerCalculated(val preview: WCRefundPreview) : Result
         data object FallbackToLocal : Result
         data object Error : Result
-    }
-
-    private companion object {
-        private const val MIN_WC_VERSION_FOR_V4 = "10.9.0"
     }
 }

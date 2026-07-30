@@ -16,6 +16,9 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +34,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -59,9 +63,13 @@ class WooPosRefundViewModelTest {
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
     private val groupRefundItems: WooPosGroupRefundItems = mock()
-    private val buildRefundV4LineItems = WooPosBuildRefundV4LineItems()
+    private val buildRefundLineItems = WooPosBuildRefundLineItems()
     private val refundPreview: WooPosRefundPreview = mock()
-    private val v4RefundAvailabilityCache = WooPosV4RefundAvailabilityCache()
+    private val serverRefundAvailabilityCache = WooPosServerRefundAvailabilityCache()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
+    }
     private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
     private val calculateRefundTax = WooPosCalculateRefundTax()
     private val resourceProvider: ResourceProvider = mock()
@@ -142,7 +150,7 @@ class WooPosRefundViewModelTest {
 
         whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
         // Default to the v3 fallback so existing assertions exercise the local-calculation path;
-        // v4-specific tests override this.
+        // server-flow tests override this.
         whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.FallbackToLocal)
         whenever(refundSubmissionProcessor.submit(any())).thenReturn(
             flowOf(
@@ -167,9 +175,15 @@ class WooPosRefundViewModelTest {
             retrieveOrderRefunds = retrieveOrderRefunds,
             getRefundableItems = getRefundableItems,
             groupRefundItems = groupRefundItems,
-            buildRefundV4LineItems = buildRefundV4LineItems,
+            buildRefundLineItems = buildRefundLineItems,
             refundPreview = refundPreview,
-            v4RefundAvailabilityCache = v4RefundAvailabilityCache,
+            resolveRefundFlow = WooPosResolveRefundFlow(
+                selectedSite = selectedSite,
+                availabilityCache = serverRefundAvailabilityCache,
+                getWooCoreVersion = getWooCoreVersion,
+                featureFlagRepository = featureFlagRepository,
+            ),
+            serverRefundAvailabilityCache = serverRefundAvailabilityCache,
             calculateRefundSubtotal = calculateRefundSubtotal,
             calculateRefundTax = calculateRefundTax,
             resourceProvider = resourceProvider,
@@ -304,10 +318,10 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given v4 unavailable, when continue clicked, then store settings fetched and totals calculated locally`() =
+    fun `given server refunds unavailable, when continue clicked, then settings fetched and totals calculated locally`() =
         runTest {
-            // GIVEN — v4 is known unavailable for the site, so the local (v3) path is used.
-            v4RefundAvailabilityCache.markV4Unavailable(testSite.localId().value)
+            // GIVEN — server refunds are known unavailable for the site, so the local path is used.
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value)
             val refundableItems = listOf(
                 testRefundableItem.copy(rowIndex = 0),
                 testRefundableItem.copy(rowIndex = 1)
@@ -334,12 +348,12 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given another local store lacks v4, when continue clicked, then this store still probes v4`() = runTest {
-        // GIVEN — a DIFFERENT local site is known to lack v4. The cache is keyed by local site id, so
+    fun `given another local store lacks server refunds, when continue clicked, then this store still probes`() = runTest {
+        // GIVEN — a DIFFERENT local site is known to lack server refunds. The cache is keyed by local site id, so
         // that verdict must not bleed into testSite (local id 1) — important for self-hosted/WPAPI
         // stores that all share remote siteId 0.
         val otherLocalSiteId = testSite.localId().value + 1
-        v4RefundAvailabilityCache.markV4Unavailable(otherLocalSiteId)
+        serverRefundAvailabilityCache.markUnavailable(otherLocalSiteId)
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
         whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
@@ -356,12 +370,12 @@ class WooPosRefundViewModelTest {
         viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
         advanceUntilIdle()
 
-        // THEN — testSite's availability is still unknown, so it probes v4 rather than skipping to v3.
+        // THEN — testSite's availability is still unknown, so it probes rather than skipping to local totals.
         verify(refundPreview).invoke(any(), any())
     }
 
     @Test
-    fun `given v4 available, when continue clicked, then store settings are not fetched`() = runTest {
+    fun `given server refunds available, when continue clicked, then store settings are not fetched`() = runTest {
         // GIVEN
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
         whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -385,7 +399,7 @@ class WooPosRefundViewModelTest {
     }
 
     @Test
-    fun `given v4 available, when continue clicked, then review shows server-calculated totals`() = runTest {
+    fun `given server refunds available, when continue clicked, then review shows server-calculated totals`() = runTest {
         // GIVEN
         val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
@@ -435,7 +449,7 @@ class WooPosRefundViewModelTest {
     }
 
     @Test
-    fun `given v4 preview errors, when continue clicked, then content marks preview failed and stays on select`() =
+    fun `given preview errors, when continue clicked, then content marks preview failed and stays on select`() =
         runTest {
             // GIVEN
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
@@ -458,10 +472,10 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given v4 available and preview succeeded, when refund confirmed, then processor receives v4 line items`() =
+    fun `given preview succeeded, when refund confirmed, then processor receives server line items`() =
         runTest {
-            // GIVEN — v4 is available, so the preview returns server-calculated totals.
-            v4RefundAvailabilityCache.markV4Available(testSite.localId().value)
+            // GIVEN — server refunds are available, so the preview returns server-calculated totals.
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value)
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -481,10 +495,10 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            // THEN — the submission carries the simplified v4 line items and no v3 grouped items.
+            // THEN — the submission carries the server line items and no locally-grouped items.
             verify(refundSubmissionProcessor).submit(
                 argThat {
-                    val lineItem = v4LineItems?.singleOrNull()
+                    val lineItem = serverLineItems?.singleOrNull()
                     orderId == testOrderId &&
                         refundItems.isEmpty() &&
                         lineItem?.lineItemId == 1L &&
@@ -492,15 +506,15 @@ class WooPosRefundViewModelTest {
                         refundAmount.compareTo(BigDecimal("22.00")) == 0
                 }
             )
-            // v3 grouping must not run on the v4 path.
+            // Local grouping must not run on the server-computed path.
             verify(groupRefundItems, never()).invoke(any(), any(), any())
         }
 
     @Test
     fun `given preview loading, when selection toggled, then loading is cleared and stale preview dropped`() =
         runTest {
-            // GIVEN — v4 is available; the preview is held open to simulate a request still in flight.
-            v4RefundAvailabilityCache.markV4Available(testSite.localId().value)
+            // GIVEN — server refunds are available; the preview is held open to simulate a request in flight.
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value)
             val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -703,8 +717,8 @@ class WooPosRefundViewModelTest {
                 )
             )
 
-            // v4 unavailable so totals are calculated locally on Continue.
-            v4RefundAvailabilityCache.markV4Unavailable(testSite.localId().value)
+            // Server refunds unavailable so totals are calculated locally on Continue.
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
             whenever(
                 retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())

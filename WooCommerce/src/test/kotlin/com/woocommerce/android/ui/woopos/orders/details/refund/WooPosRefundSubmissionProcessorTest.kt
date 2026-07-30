@@ -30,15 +30,17 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.ComputedRefundLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -165,53 +167,56 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
-    fun `given v4 line items, when submitted, then simplified v4 refund is created and v3 not called`() = runTest {
-        // GIVEN
-        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
-            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
-                cardBrand = "visa",
-                cardLast4 = "1234",
-                paymentMethodType = CARD_PRESENT
+    fun `given server line items, when submitted, then computed refund is created and classic v3 not called`() =
+        runTest {
+            // GIVEN
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "visa",
+                    cardLast4 = "1234",
+                    paymentMethodType = CARD_PRESENT
+                )
             )
-        )
-        val v4LineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
-        whenever(
-            refundStore.createSimplifiedItemsRefund(
+            val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+            whenever(
+                refundStore.createComputedItemsRefund(
+                    site = eq(site),
+                    orderId = eq(order.id),
+                    reason = eq("Customer request"),
+                    autoRefund = eq(true),
+                    restockItems = eq(true),
+                    amount = anyOrNull(),
+                    items = eq(serverLineItems),
+                )
+            ).thenReturn(WooResult(refundModel))
+
+            // WHEN
+            processor.submit(request.copy(serverLineItems = serverLineItems)).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                awaitComplete()
+            }
+
+            // THEN — restocking is requested explicitly and no order-level amount override is sent.
+            verify(refundStore).createComputedItemsRefund(
                 site = eq(site),
                 orderId = eq(order.id),
                 reason = eq("Customer request"),
                 autoRefund = eq(true),
                 restockItems = eq(true),
-                items = eq(v4LineItems),
+                amount = isNull(),
+                items = eq(serverLineItems),
             )
-        ).thenReturn(WooResult(refundModel))
-
-        // WHEN
-        processor.submit(request.copy(v4LineItems = v4LineItems)).test {
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
-            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
-            awaitComplete()
+            verify(refundStore, never()).createItemsRefund(
+                site = any(),
+                orderId = any(),
+                amount = any(),
+                reason = any(),
+                restockItems = any(),
+                autoRefund = any(),
+                items = any()
+            )
         }
-
-        // THEN
-        verify(refundStore).createSimplifiedItemsRefund(
-            site = eq(site),
-            orderId = eq(order.id),
-            reason = eq("Customer request"),
-            autoRefund = eq(true),
-            restockItems = eq(true),
-            items = eq(v4LineItems),
-        )
-        verify(refundStore, never()).createItemsRefund(
-            site = any(),
-            orderId = any(),
-            amount = any(),
-            reason = any(),
-            restockItems = any(),
-            autoRefund = any(),
-            items = any()
-        )
-    }
 
     @Test
     fun `given payment gateway does not support refunds, when submitted, then backend refund is created manually`() =

@@ -3,40 +3,40 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class WooPosV4RefundAvailabilityCacheTest {
+class WooPosServerRefundAvailabilityCacheTest {
 
-    private val cache = WooPosV4RefundAvailabilityCache()
+    private val cache = WooPosServerRefundAvailabilityCache()
 
     @Test
-    fun `given site not probed, when isV4Available, then returns null`() {
-        assertThat(cache.isV4Available(SITE_ID)).isNull()
+    fun `given site not probed, when isAvailable, then returns null`() {
+        assertThat(cache.isAvailable(SITE_ID)).isNull()
     }
 
     @Test
-    fun `given site marked available, when isV4Available, then returns true`() {
+    fun `given site marked available, when isAvailable, then returns true`() {
         // WHEN
-        cache.markV4Available(SITE_ID)
+        cache.markAvailable(SITE_ID)
 
         // THEN
-        assertThat(cache.isV4Available(SITE_ID)).isTrue()
+        assertThat(cache.isAvailable(SITE_ID)).isTrue()
     }
 
     @Test
-    fun `given site marked unavailable, when isV4Available, then returns false`() {
+    fun `given site marked unavailable, when isAvailable, then returns false`() {
         // WHEN
-        cache.markV4Unavailable(SITE_ID)
+        cache.markUnavailable(SITE_ID)
 
         // THEN
-        assertThat(cache.isV4Available(SITE_ID)).isFalse()
+        assertThat(cache.isAvailable(SITE_ID)).isFalse()
     }
 
     @Test
     fun `given one site unavailable, when querying another site, then it is independent`() {
         // GIVEN
-        cache.markV4Unavailable(SITE_ID)
+        cache.markUnavailable(SITE_ID)
 
         // THEN
-        assertThat(cache.isV4Available(OTHER_SITE_ID)).isNull()
+        assertThat(cache.isAvailable(OTHER_SITE_ID)).isNull()
     }
 
     private companion object {

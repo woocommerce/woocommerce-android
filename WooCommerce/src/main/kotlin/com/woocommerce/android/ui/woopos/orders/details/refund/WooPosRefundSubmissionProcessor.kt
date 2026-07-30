@@ -228,23 +228,23 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
         shouldAutoRefund: Boolean,
         retryBackendNotificationOnly: Boolean,
     ): WooResult<WCRefundModel> {
-        val v4LineItems = request.v4LineItems
-        if (v4LineItems != null) {
+        val serverLineItems = request.serverLineItems
+        if (serverLineItems != null) {
             WooLog.i(
                 WooLog.T.POS,
-                "WooPosRefund: creating simplified v4 backend refund " +
+                "WooPosRefund: creating server-computed backend refund " +
                     "orderId=${request.orderId}, " +
-                    "itemCount=${v4LineItems.size}, " +
+                    "itemCount=${serverLineItems.size}, " +
                     "autoRefund=$shouldAutoRefund, " +
                     "backendOnlyRetry=$retryBackendNotificationOnly"
             )
-            return refundStore.createSimplifiedItemsRefund(
+            return refundStore.createComputedItemsRefund(
                 site = selectedSite.get(),
                 orderId = request.orderId,
                 reason = request.refundReason,
                 autoRefund = shouldAutoRefund,
                 restockItems = true,
-                items = v4LineItems,
+                items = serverLineItems,
             )
         }
 
