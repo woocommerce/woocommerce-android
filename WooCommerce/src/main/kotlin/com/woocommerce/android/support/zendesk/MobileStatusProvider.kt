@@ -20,6 +20,8 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
@@ -151,7 +153,7 @@ class MobileStatusProvider @Inject constructor(
         return listOfNotNull(
             entry("WPCom user ID", userId.takeIf { it != 0L } ?: NOT_LOGGED_IN),
             siteAddress?.takeIf { it.isNotBlank() }?.let { entry("Address given in the form", it) },
-            entry("Connected stores", siteStore.sites.size)
+            entry("Connected stores", wooSites().size)
         ) + allSites()
     }
 
@@ -171,7 +173,8 @@ class MobileStatusProvider @Inject constructor(
                     "Store ID",
                     appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { "$NOT_SET ($REASON_NO_STORE_ID)" }
                 ),
-                entry("Auth method", connectionType.name),
+                // On debug builds `connectionType` throws outright on a site it cannot classify.
+                safeEntry("Auth method") { connectionType.name },
                 entry("Site supports app passwords", isApplicationPasswordsSupported),
                 entry(
                     "Jetpack",
@@ -244,13 +247,18 @@ class MobileStatusProvider @Inject constructor(
     private fun Any?.orNotSet() = this?.toString() ?: NOT_SET
 
     /**
-     * Every connected site, not just the selected one — merchants often report a problem on a store other than
+     * Every connected store, not just the selected one — merchants often report a problem on a store other than
      * the one the app currently has selected.
+     *
+     * Non-Woo sites are left out here and out of the count above: the site store holds every site on the WPCom
+     * account, so a merchant with a pile of unrelated blogs would otherwise read as having dozens of stores.
      */
-    private fun allSites() = siteStore.sites
+    private fun wooSites() = siteStore.sites.filter { it.hasWooCommerce }
+
+    private fun allSites() = wooSites()
         .takeIf { it.isNotEmpty() }
         ?.map { entry(it.url.orEmpty().ifEmpty { UNKNOWN }, it.logInformation) }
-        ?.let { listOf("", "All connected sites:") + it }
+        ?.let { listOf("", "All connected stores:") + it }
         .orEmpty()
 
     /**
@@ -318,15 +326,19 @@ class MobileStatusProvider @Inject constructor(
 
         val tabVisible = appPrefs.isPOSTabVisibleForSite(selectedSite.id)
         val launchable = appPrefs.isPOSLaunchableForSite(selectedSite.id)
+        // The sync timestamps parse stored strings, so a malformed value throws rather than reading as absent.
         return listOfNotNull(
             entry("POS tab visible", tabVisible),
             entry("POS launchable", launchable),
-            entry("Local catalog full sync", syncTimestampManager.getFullSyncLastCompletedTimestamp().asUtcOrNever()),
-            entry("Local catalog products sync", syncTimestampManager.getProductsLastSyncTimestamp().asUtcOrNever()),
-            entry(
-                "Local catalog variations sync",
+            safeEntry("Local catalog full sync") {
+                syncTimestampManager.getFullSyncLastCompletedTimestamp().asUtcOrNever()
+            },
+            safeEntry("Local catalog products sync") {
+                syncTimestampManager.getProductsLastSyncTimestamp().asUtcOrNever()
+            },
+            safeEntry("Local catalog variations sync") {
                 syncTimestampManager.getVariationsLastSyncTimestamp().asUtcOrNever()
-            ),
+            },
             POS_REASON_HINT.takeIf { !tabVisible || !launchable }
         )
     }
@@ -340,8 +352,9 @@ class MobileStatusProvider @Inject constructor(
      */
     private fun featureFlagsSection(): List<String> {
         val states = FeatureFlag.entries.map { featureFlagRepository.getFlagState(it) }
-        // Remote values are persisted and never cleared, so a merchant whose fetch has never succeeded is running
-        // entirely on compiled-in defaults. There is no other way for support to tell.
+        // Says only what it can see: that no flag below carries a remote value, so every one of them is on its
+        // compiled-in default. It deliberately does not claim why — the reason string covers the possibilities,
+        // because none of them is distinguishable from the flag states alone.
         val remoteValuesLoaded = states.any { it.remoteValue != null }
         return listOf(
             entry(
@@ -401,6 +414,16 @@ class MobileStatusProvider @Inject constructor(
     private fun entry(key: String, value: Any?) = "$key: $value"
 
     /**
+     * Confines a failing lookup to the one field that caused it, instead of losing the whole section to
+     * [SECTION_UNAVAILABLE]. Used for the few values that can throw on their own account rather than only when
+     * something is badly wrong — the alternative is that one of them takes six healthy fields down with it.
+     */
+    private suspend fun safeEntry(key: String, value: suspend () -> Any?) =
+        runCatching { entry(key, value()) }
+            .onFailure { currentCoroutineContext().ensureActive() }
+            .getOrElse { entry(key, UNKNOWN) }
+
+    /**
      * @param scope states who the section's values describe, so a reader never has to infer whether a value covers
      * the whole installation or a single store. Every heading carries one.
      */
@@ -417,19 +440,19 @@ class MobileStatusProvider @Inject constructor(
     }
 
     companion object {
-        const val REPORT_HEADING = "### Mobile Status Report generated via the WooCommerce Android app ###"
+        private const val REPORT_HEADING = "### Mobile Status Report generated via the WooCommerce Android app ###"
 
         /** Values covering the whole installation on this device, as opposed to a single store. */
-        const val SCOPE_APP_WIDE = "(app-wide)"
+        private const val SCOPE_APP_WIDE = "(app-wide)"
 
         /** Stands in for the store name when the app has no store selected, so the scope is never blank. */
-        const val SCOPE_NO_STORE = "(no store selected)"
+        private const val SCOPE_NO_STORE = "(no store selected)"
 
         /**
          * Spelled out once at the top rather than relying on the reader inferring what the scopes mean, because
          * this report is read by Happiness Engineers and by merchants in Help & Support alike.
          */
-        const val SCOPE_LEGEND =
+        private const val SCOPE_LEGEND =
             "Scopes: $SCOPE_APP_WIDE values cover the whole app on this device. " +
                 "(selected store: ...) values cover only the named store."
 
@@ -438,22 +461,22 @@ class MobileStatusProvider @Inject constructor(
          * attached to every ticket and is also shown to merchants: a per-field gloss here would double its length
          * for readers who already know the fields.
          */
-        const val FIELD_REFERENCE = "Field reference: " +
+        private const val FIELD_REFERENCE = "Field reference: " +
             "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
 
-        const val HEADING_APP = "## App"
-        const val HEADING_DEVICE = "## Device"
-        const val HEADING_CONNECTIVITY = "## Connectivity"
-        const val HEADING_NOTIFICATIONS = "## Notifications"
-        const val HEADING_ACCOUNT = "## Account & Stores"
-        const val HEADING_STORE = "## Store Details"
-        const val HEADING_STORE_NOTIFICATIONS = "## Store Notifications"
-        const val HEADING_PAYMENTS = "## Payments"
-        const val HEADING_POS = "## Point of Sale"
-        const val HEADING_FEATURE_FLAGS = "## Feature Flags"
-        const val HEADING_EXPERIMENTAL = "## Experimental Features"
+        private const val HEADING_APP = "## App"
+        private const val HEADING_DEVICE = "## Device"
+        private const val HEADING_CONNECTIVITY = "## Connectivity"
+        private const val HEADING_NOTIFICATIONS = "## Notifications"
+        private const val HEADING_ACCOUNT = "## Account & Stores"
+        private const val HEADING_STORE = "## Store Details"
+        private const val HEADING_STORE_NOTIFICATIONS = "## Store Notifications"
+        private const val HEADING_PAYMENTS = "## Payments"
+        private const val HEADING_POS = "## Point of Sale"
+        private const val HEADING_FEATURE_FLAGS = "## Feature Flags"
+        private const val HEADING_EXPERIMENTAL = "## Experimental Features"
 
-        const val SECTION_UNAVAILABLE = "Info not found"
+        private const val SECTION_UNAVAILABLE = "Info not found"
         private const val UNKNOWN = "unknown"
         private const val SIDELOADED = "sideloaded"
         private const val NONE = "none"
@@ -469,7 +492,9 @@ class MobileStatusProvider @Inject constructor(
         private const val REASON_NO_ALERT_SETTINGS = "the merchant has not opened notification settings yet"
         private const val REASON_NO_BLOG_ID = "stores connected with application passwords do not have one"
         private const val REASON_NO_STORE_ID = "no store system status has been fetched yet"
-        private const val REASON_NO_REMOTE_FLAGS = "no remote fetch has ever succeeded on this install"
+        private const val REASON_NO_REMOTE_FLAGS =
+            "every flag below is on its compiled-in default - no fetch has succeeded on this install, " +
+                "none has completed since launch, or the ones that did returned no key listed here"
         private const val REASON_SIDELOADED = "installed outside an app store, not from Play"
         private const val POS_REASON_HINT =
             "Reason is logged - search application_log.txt for " +

@@ -48,7 +48,7 @@ a finding in itself; the second means we could not tell.
 | `OS` | Android release, with API level in brackets. | e.g. `Android 15 (API 35)` |
 | `Free space` | Available storage. | e.g. `12.4 GB` |
 | `Screen` | Screen size in density-independent pixels. Distinguishes phone from tablet, which matters for POS. | e.g. `411x914 dp` |
-| `Device locale` | The device's locale. | BCP-47 tag, e.g. `en-US`; `unknown` |
+| `Device locale` | The device's own locale, unaffected by a per-app language override. | BCP-47 tag, e.g. `en-US`; `unknown` |
 | `App language` | The in-app language override, which can differ from the device locale. | BCP-47 tag, e.g. `en-GB`; `unknown` |
 
 ## Connectivity `(app-wide)`
@@ -85,13 +85,17 @@ along with that store's alert settings.
 | --- | --- | --- |
 | `WPCom user ID` | The logged-in WordPress.com account. | Numeric ID; `not logged in` — expected for application-password logins, which have no WPCom account |
 | `Address given in the form` | The store address the merchant typed into the support form. Present only when they typed one. | A URL |
-| `Connected stores` | How many stores the app knows about. | Integer |
-| `All connected sites:` | One line per store: `<url>: <Type: ... Plan: ... Jetpack-version: ...>`. | — |
+| `Connected stores` | How many WooCommerce stores the app knows about. | Integer |
+| `All connected stores:` | One line per store: `<url>: <Type: ... Plan: ... Jetpack-version: ...>`. | — |
 
 `Address given in the form` is worth comparing against the selected store: when they differ, the merchant may be
 contacting us precisely because the app picked up the wrong store.
 
 The full store list is included because merchants often report a problem on a store other than the selected one.
+
+Both the count and the list cover WooCommerce stores only. The app holds every site on the merchant's WordPress.com
+account, so counting all of them would report a merchant with a handful of stores and a pile of unrelated personal
+blogs as having dozens of stores.
 
 ## Store Details `(selected store: <url>)`
 
@@ -218,16 +222,21 @@ evaluating, and a status report must not change what it reports. Search the atta
 
 | Field | Meaning | Values |
 | --- | --- | --- |
-| `Remote values loaded` | Whether a remote flag fetch has ever succeeded on this install. | `true`; `false (no remote fetch has ever succeeded on this install)` |
+| `Remote values loaded` | Whether any flag below carries a remote value. | `true`; `false (every flag below is on its compiled-in default - ...)` |
 | `<flag key>` | Effective value of each flag, with where that value came from. | `true (remote)`, `false (compiled-in default)`, `true (debug override)` |
 
 Every flag is listed, not only the enabled ones: an absent key would be ambiguous between disabled, renamed and
 deleted.
 
 The source matters as much as the value. A flag reads identically whether it was set by a remote rollout or is
-simply what the app shipped with, and those are very different findings when a rollout is misbehaving. Remote
-values are persisted and never cleared, so `Remote values loaded: false` means the merchant is running entirely
-on compiled-in defaults.
+simply what the app shipped with, and those are very different findings when a rollout is misbehaving.
+
+`Remote values loaded: false` says only that no flag listed here has a remote value, so all of them are on their
+compiled-in defaults. It does not tell you why, and the three causes are not distinguishable from the report:
+no fetch has ever succeeded on this install, none has completed since the app launched (the values are read
+through an in-memory cache the app fills asynchronously at startup), or the fetches that did succeed returned
+none of the keys listed here. Remote values are persisted and never cleared, so on a merchant who has used the
+app for a while the first cause is the least likely of the three.
 
 ## Experimental Features `(app-wide)`
 
