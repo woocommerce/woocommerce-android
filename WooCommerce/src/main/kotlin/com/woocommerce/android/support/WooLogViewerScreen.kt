@@ -90,7 +90,16 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.logviewer_activity_title),
-                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() }
+                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() },
+                actions = {
+                    IconButton(onClick = state.onShareAllClicked) {
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_share_24dp),
+                            contentDescription = stringResource(id = R.string.logviewer_share_all_logs),
+                            tint = colorResource(id = R.color.color_icon_menu)
+                        )
+                    }
+                }
             )
         },
         modifier = Modifier
@@ -399,7 +408,8 @@ private fun LogFilesListPreview() {
     )
     val state = WooLogViewerViewModel.UiState.LogFilesList(
         logFiles = logFiles,
-        onLogFileSelected = {}
+        onLogFileSelected = {},
+        onShareAllClicked = {}
     )
     WooTheme {
         LogFilesListScreen(state)

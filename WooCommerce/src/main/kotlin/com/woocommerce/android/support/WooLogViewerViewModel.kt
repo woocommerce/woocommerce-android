@@ -16,6 +16,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.text.SimpleDateFormat
@@ -74,8 +75,21 @@ class WooLogViewerViewModel @Inject constructor(
             },
             onLogFileSelected = { selectedFile ->
                 selectedLogFile.value = selectedFile
-            }
+            },
+            onShareAllClicked = { shareAllLogs() }
         )
+    }
+
+    private fun shareAllLogs() {
+        launch {
+            val archive = wooFileLogger.archiveLogFiles(deviceInfo = getDeviceInfo().toString())
+
+            if (archive != null) {
+                triggerEvent(ShareLogsArchive(archive))
+            } else {
+                triggerEvent(ShareLogsArchiveFailed)
+            }
+        }
     }
 
     private suspend fun prepareLogFileContentState(logFile: LogFile): UiState.LogFileContent {
@@ -111,7 +125,8 @@ class WooLogViewerViewModel @Inject constructor(
     sealed interface UiState {
         data class LogFilesList(
             val logFiles: List<LogFile>,
-            val onLogFileSelected: (LogFile) -> Unit
+            val onLogFileSelected: (LogFile) -> Unit,
+            val onShareAllClicked: () -> Unit
         ) : UiState
 
         data class LogFileContent(
@@ -132,6 +147,8 @@ class WooLogViewerViewModel @Inject constructor(
 
     data class ShareLogs(val logs: String) : MultiLiveEvent.Event()
     data class CopyLogs(val logs: String) : MultiLiveEvent.Event()
+    data class ShareLogsArchive(val archive: File) : MultiLiveEvent.Event()
+    object ShareLogsArchiveFailed : MultiLiveEvent.Event()
 
     companion object {
         // If we try to share very large number of entries, Android might throw TransactionTooLargeException

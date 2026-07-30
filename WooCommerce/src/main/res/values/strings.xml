@@ -2599,6 +2599,8 @@
     <string name="logviewer_log_files_list_header">Log files by created date</string>
     <string name="logviewer_log_files_list_footer">Up to seven day\'s worth of logs are stored.</string>
     <string name="logviewer_current_log_file">Current</string>
+    <string name="logviewer_share_all_logs">Share all logs</string>
+    <string name="logviewer_share_all_logs_error">Unable to prepare the logs for sharing</string>
 
     <!--
         Login Library Imported Strings
