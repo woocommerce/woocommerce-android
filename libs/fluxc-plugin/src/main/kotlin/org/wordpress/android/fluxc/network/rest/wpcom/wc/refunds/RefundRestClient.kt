@@ -4,11 +4,10 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.order.LineItem
+import org.wordpress.android.fluxc.model.refunds.ComputedRefundLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
@@ -54,41 +53,41 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     }
 
     /**
-     * Creates a refund through the simplified v4 endpoint (`POST /wc/v4/refunds`).
+     * Creates a server-computed refund (`POST /wc/v3/orders/<order_id>/refunds` with
+     * `compute_totals=true`).
      *
      * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
-     * lines) — the server computes all monetary values. No client-side amount calculation is sent.
+     * lines) — the server computes all monetary values, unless an explicit order-level [amount]
+     * override is given.
      *
-     * [restockItems] maps to the `api_restock` flag. v4 defaults restocking to `false` when the flag
-     * is omitted, so it must be sent explicitly to preserve the v3 behaviour of restocking refunded
-     * items.
+     * [apiRefund] and [apiRestock] are always sent explicitly: the v3 endpoint defaults both to
+     * `true` when omitted, and the caller must stay in control of gateway refunds and restocking.
      *
-     * When the v4 route is not registered (feature flag off) the request fails with HTTP 404
-     * `rest_no_route`, surfaced as [WooErrorType.API_NOT_FOUND] so callers can fall back to v3.
+     * On stores whose refund endpoint does not support `compute_totals`, the unknown param is
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock. Callers must therefore only use this method after a successful preview against the
+     * same store (see the availability cache in the POS refund flow).
      */
     @Suppress("LongParameterList")
-    suspend fun createSimplifiedRefund(
+    suspend fun createComputedRefund(
         site: SiteModel,
         orderId: Long,
         reason: String,
-        automaticRefund: Boolean,
-        restockItems: Boolean,
-        items: List<RefundV4LineItem>,
-    ): WooPayload<SimplifiedRefundResponse> {
+        apiRefund: Boolean,
+        apiRestock: Boolean,
+        amount: String?,
+        lineItems: List<ComputedRefundLineItem>,
+    ): WooPayload<RefundResponse> {
         val body = mapOf(
-            "order_id" to orderId,
+            "compute_totals" to true,
             "reason" to reason,
-            "api_refund" to automaticRefund.toString(),
-            "api_restock" to restockItems.toString(),
-            "line_items" to items,
-        )
-        val response = wooNetwork.executePostGsonRequest(
-            site = site,
-            path = WOOCOMMERCE.refunds.pathV4,
-            body = body,
-            clazz = SimplifiedRefundResponse::class.java,
-        )
-        return response.toWooPayload()
+            "amount" to amount,
+            "api_refund" to apiRefund.toString(),
+            "api_restock" to apiRestock.toString(),
+            "line_items" to lineItems,
+        ).filterNotNull()
+
+        return createRefund(site, orderId, body)
     }
 
     private suspend fun createRefund(
@@ -151,31 +150,4 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         @SerializedName("shipping_lines") val shippingLineItems: List<WCRefundShippingLine>?,
         @SerializedName("fee_lines") val feeLineItems: List<WCRefundFeeLine>?
     )
-
-    /**
-     * Response shape of the v4 refund endpoint (`POST /wc/v4/refunds`). Unlike v3, products, fees and
-     * shipping are returned combined in a single [lineItems] array, each entry keyed by
-     * `line_item_id` with its own `refund_total` (net subtotal) and `refund_tax` breakdown.
-     */
-    data class SimplifiedRefundResponse(
-        @SerializedName("id") val refundId: Long,
-        @SerializedName("date_created") val dateCreated: String?,
-        @SerializedName("amount") val amount: String?,
-        @SerializedName("reason") val reason: String?,
-        @SerializedName("refunded_payment") val refundedPayment: Boolean?,
-        @SerializedName("line_items") val lineItems: List<SimplifiedLineItem>?,
-    ) {
-        data class SimplifiedLineItem(
-            @SerializedName("id") val id: Long?,
-            @SerializedName("line_item_id") val lineItemId: Long?,
-            @SerializedName("quantity") val quantity: Int?,
-            @SerializedName("refund_total") val refundTotal: String?,
-            @SerializedName("refund_tax") val refundTax: List<SimplifiedLineItemTax>?,
-        )
-
-        data class SimplifiedLineItemTax(
-            @SerializedName("id") val taxId: Long?,
-            @SerializedName("refund_total") val refundTotal: String?,
-        )
-    }
 }
