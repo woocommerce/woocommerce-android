@@ -2268,6 +2268,9 @@
     <string name="remove_background_no_subject_detected">No clear subject detected. Try with a different image.</string>
     <string name="save_processed_image_error">Failed to save image</string>
     <string name="save_processed_image_success">Image saved successfully</string>
+    <string name="product_image_details_title">Image details</string>
+    <string name="product_image_details_alt_text_label">Alt text</string>
+    <string name="product_image_details_name_label">Title</string>
     <string name="discard_changes_question">Discard changes?</string>
     <string name="changes_not_saved_message">Your changes are not saved</string>
     <string name="save_copy">Save copy</string>

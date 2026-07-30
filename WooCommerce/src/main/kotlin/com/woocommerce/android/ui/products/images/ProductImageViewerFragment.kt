@@ -15,9 +15,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.woocommerce.android.R
+import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -79,6 +81,10 @@ class ProductImageViewerFragment :
             onCreateMenu = ::onCreateMenu
         )
 
+        handleResult<Product.Image>(ProductImageDetailsViewModel.KEY_IMAGE_DETAILS_RESULT) { updatedImage ->
+            viewModel.onImageDetailsUpdated(updatedImage)
+        }
+
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
                 confirmRemoveProductImage()
@@ -92,10 +98,17 @@ class ProductImageViewerFragment :
         }
         toolbar.inflateMenu(R.menu.menu_product_image)
         toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
+        toolbar.menu.findItem(R.id.menu_edit_image_details).isVisible =
+            navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
+            R.id.menu_edit_image_details -> {
+                navigateToImageDetails()
+                true
+            }
+
             R.id.menu_remove_background -> {
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_IMAGE_REMOVE_BACKGROUND_BUTTON_TAPPED)
                 navigateToRemoveBackground()
@@ -217,6 +230,17 @@ class ProductImageViewerFragment :
             .actionProductImageViewerFragmentToProductImageRemoveBackgroundFragment(
                 image = currentImage,
                 remoteProductId = navArgs.remoteId
+            )
+        findNavController().navigate(action)
+    }
+
+    private fun navigateToImageDetails() {
+        // Read from the view model instead of the adapter so an earlier edit isn't lost
+        val currentImage = viewModel.images.firstOrNull { it.id == remoteMediaId } ?: return
+
+        val action = ProductImageViewerFragmentDirections
+            .actionProductImageViewerFragmentToProductImageDetailsFragment(
+                image = currentImage
             )
         findNavController().navigate(action)
     }

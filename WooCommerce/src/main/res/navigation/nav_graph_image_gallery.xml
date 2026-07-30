@@ -61,6 +61,18 @@
         <action
             android:id="@+id/action_productImageViewerFragment_to_productImageRemoveBackgroundFragment"
             app:destination="@id/productImageRemoveBackgroundFragment" />
+        <action
+            android:id="@+id/action_productImageViewerFragment_to_productImageDetailsFragment"
+            app:destination="@id/productImageDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productImageDetailsFragment"
+        android:name="com.woocommerce.android.ui.products.images.ProductImageDetailsFragment"
+        android:label="ProductImageDetailsFragment">
+        <argument
+            android:name="image"
+            app:argType="com.woocommerce.android.model.Product$Image" />
     </fragment>
 
     <fragment
