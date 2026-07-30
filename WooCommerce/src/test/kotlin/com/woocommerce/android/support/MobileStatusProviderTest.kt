@@ -435,6 +435,39 @@ class MobileStatusProviderTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a Jetpack connected store, when the report is generated, then the auth method says so`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackConnected(true)
+            }
+
+            val report = sut(site)
+
+            assertThat(report).contains("Auth method: Jetpack")
+        }
+
+    /**
+     * `connectionType` answers `Jetpack` for this site in production, which the report would state as fact. It
+     * reads the nullable variant so an unclassifiable store is reported as such.
+     */
+    @Test
+    fun `given a store the app cannot classify, when the report is generated, then the auth method is unknown`() =
+        testBlocking {
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPCOM_REST
+                setIsJetpackConnected(false)
+                setIsJetpackCPConnected(false)
+            }
+
+            val report = sut(site)
+
+            assertThat(report).contains("Auth method: unknown")
+        }
+
+    @Test
     fun `given an application password site, when the report is generated, then blog id is reported as not set`() =
         testBlocking {
             // Application password sites never get a blog id assigned, so it stays 0

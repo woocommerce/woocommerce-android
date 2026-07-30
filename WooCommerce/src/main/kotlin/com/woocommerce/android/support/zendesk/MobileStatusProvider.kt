@@ -9,7 +9,7 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
-import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -173,8 +173,9 @@ class MobileStatusProvider @Inject constructor(
                     "Store ID",
                     appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { "$NOT_SET ($REASON_NO_STORE_ID)" }
                 ),
-                // On debug builds `connectionType` throws outright on a site it cannot classify.
-                safeEntry("Auth method") { connectionType.name },
+                // Reported through the nullable variant so a site the app could not classify says so, rather than
+                // inheriting the production fallback that answers `Jetpack` for it.
+                entry("Auth method", connectionTypeOrNull?.name ?: UNKNOWN),
                 entry("Site supports app passwords", isApplicationPasswordsSupported),
                 entry(
                     "Jetpack",
@@ -415,8 +416,8 @@ class MobileStatusProvider @Inject constructor(
 
     /**
      * Confines a failing lookup to the one field that caused it, instead of losing the whole section to
-     * [SECTION_UNAVAILABLE]. Used for the few values that can throw on their own account rather than only when
-     * something is badly wrong — the alternative is that one of them takes six healthy fields down with it.
+     * [SECTION_UNAVAILABLE]. Used for the values that can throw on their own account rather than only when
+     * something is badly wrong — the alternative is that one of them takes every healthy field beside it down too.
      */
     private suspend fun safeEntry(key: String, value: suspend () -> Any?) =
         runCatching { entry(key, value()) }

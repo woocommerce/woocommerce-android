@@ -103,7 +103,7 @@ blogs as having dozens of stores.
 | --- | --- | --- |
 | `Blog ID` | The WordPress.com blog ID. | Numeric; `not set (stores connected with application passwords do not have one)` |
 | `Store ID` | The store's own identifier, learned from a `system_status` fetch. | String; `not set (no store system status has been fetched yet)` |
-| `Auth method` | How the store is **connected**, which is not always how requests are **signed** — see below. | `Jetpack`, `JetpackConnectionPackage`, `ApplicationPasswords` |
+| `Auth method` | How the store is **connected**, which is not always how requests are **signed** — see below. | `Jetpack`, `JetpackConnectionPackage`, `ApplicationPasswords`, `unknown` |
 | `Site supports app passwords` | Whether the site advertises an application-passwords authorize URL. | `true`, `false` |
 | `Jetpack` | Jetpack install and connection state. | e.g. `installed=true connected=true CP=false` |
 | `Plan` | The store's plan, with its ID. | e.g. `Business (1008)`; `unknown` |
@@ -127,6 +127,11 @@ password whenever all three of these hold — the first two are app-wide, the th
 
 So a report showing `Auth method: Jetpack` alongside all three of those being true describes a store that is
 Jetpack-*connected* but application-password-*authenticated*. That is the expected state, not a fault.
+
+`unknown` means the app could not place the store in any of the three cases — a WordPress.com-origin site
+reporting neither a Jetpack nor a Jetpack Connection Package connection. It should not happen, so treat it as a
+finding rather than a gap in the report; `application_log.txt` on the same ticket carries the origin and both
+Jetpack flags. These values are shared with the iOS app, so a ticket from either platform reads the same.
 
 One case the report cannot show: after an application-password request fails, the app flags that site as
 unsupported for a period and silently falls back to the Jetpack tunnel. That flag is not reported, because
