@@ -22,6 +22,8 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
 
     fun generateVersionName(context: Context) = PackageUtils.getVersionName(context)
 
+    fun generateVersionCode(context: Context) = PackageUtils.getVersionCode(context)
+
     fun generateNetworkInformation(context: Context): String {
         val networkType = generateNetworkType(context)
         val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager?
