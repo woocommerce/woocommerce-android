@@ -206,11 +206,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         // restrict the allowed input chars to just numbers
         m2FaInput.getEditText().setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
-        // If we didn't get a list of supported auth types, then the flow is not using webauthn,
-        // We should treat it as if SMS is enabled for the user
-        boolean isSmsEnabled = mSupportedAuthTypes.isEmpty() || mSupportedAuthTypes.contains(SupportedAuthTypes.PUSH);
         mOtpButton = rootView.findViewById(R.id.login_otp_button);
-        mOtpButton.setVisibility(isSmsEnabled ? View.VISIBLE : View.GONE);
         mOtpButton.setText(mSentSmsCode ? R.string.login_text_otp_another : R.string.login_text_otp);
         mOtpButton.setOnClickListener(new OnClickListener() {
             @Override
