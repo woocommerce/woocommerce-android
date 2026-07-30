@@ -455,7 +455,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
-            whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.Error)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.Error())
             viewModel = createViewModel()
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
@@ -464,11 +464,72 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
 
-            // THEN
+            // THEN — no mapped code, so the UI falls back to the generic preview error copy.
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.previewFailed).isTrue()
             assertThat(content.isPreviewLoading).isFalse()
+            assertThat(content.previewErrorMessage).isNull()
+        }
+
+    @Test
+    fun `given preview fails with mapped error, when continue clicked, then specific message is surfaced`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_refund_error_quantity_exceeds_refundable))
+                .thenReturn("The selected quantity is more than what's left to refund")
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.QuantityExceedsRefundable)
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // THEN — the user stays on the selection step with the specific message and retry intact.
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(content.previewFailed).isTrue()
+            assertThat(content.isPreviewLoading).isFalse()
+            assertThat(content.previewErrorMessage)
+                .isEqualTo("The selected quantity is more than what's left to refund")
+        }
+
+    @Test
+    fun `given mapped preview error shown, when selection toggled, then message is cleared`() =
+        runTest {
+            // GIVEN — a mapped preview error is currently displayed.
+            val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
+            whenever(resourceProvider.getString(R.string.woopos_refund_error_item_already_refunded))
+                .thenReturn("This item has already been fully refunded")
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.LineItemAlreadyRefunded)
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            assertThat((viewModel.state.value as WooPosRefundState.Content).previewErrorMessage)
+                .isEqualTo("This item has already been fully refunded")
+
+            // WHEN — the cashier changes the selection, invalidating the shown error.
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(refundableItems.first().uniqueId))
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.previewFailed).isFalse()
+            assertThat(content.previewErrorMessage).isNull()
         }
 
     @Test

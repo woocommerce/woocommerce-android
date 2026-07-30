@@ -32,6 +32,9 @@ sealed class WooPosRefundState {
         // back to the local calculation and these stay at their defaults (no loading/no failure).
         val isPreviewLoading: Boolean = false,
         val previewFailed: Boolean = false,
+        // Refund-specific message for a failed preview (see [WooPosRefundApiError]); null when
+        // the failure has no mapped code, in which case the UI shows the generic preview error.
+        val previewErrorMessage: String? = null,
         val maxRefundable: BigDecimal? = null,
     ) : WooPosRefundState() {
 

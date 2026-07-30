@@ -49,9 +49,10 @@ class WooPosRefundPreview @Inject constructor(
                     WooLog.e(
                         WooLog.T.POS,
                         "WooPosRefund: preview failed orderId=$orderId, type=${response.error.type}, " +
+                            "apiErrorCode=${response.error.apiErrorCode}, " +
                             "message=${response.error.message}"
                     )
-                    Result.Error
+                    Result.Error(WooPosRefundApiError.fromWooErrorType(response.error.type))
                 }
             }
 
@@ -60,13 +61,19 @@ class WooPosRefundPreview @Inject constructor(
                 Result.ServerCalculated(preview)
             }
 
-            else -> Result.Error
+            else -> Result.Error()
         }
     }
 
     sealed interface Result {
         data class ServerCalculated(val preview: WCRefundPreview) : Result
         data object FallbackToLocal : Result
-        data object Error : Result
+
+        /**
+         * Preview failed. [apiError] carries the refund-specific error when the server returned
+         * one of the mapped refund error codes (see [WooPosRefundApiError]); null for network or
+         * unrecognized failures, which surface the generic preview error message.
+         */
+        data class Error(val apiError: WooPosRefundApiError? = null) : Result
     }
 }

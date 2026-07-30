@@ -725,7 +725,7 @@ private fun RefundContentStepButtons(
         WooPosRefundState.Content.RefundStep.SelectItems -> {
             if (state.previewFailed) {
                 WooPosText(
-                    text = stringResource(R.string.woopos_refund_preview_error),
+                    text = state.previewErrorMessage ?: stringResource(R.string.woopos_refund_preview_error),
                     style = WooPosTypography.BodyMedium,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.fillMaxWidth()
