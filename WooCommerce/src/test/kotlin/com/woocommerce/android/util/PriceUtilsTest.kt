@@ -1,14 +1,20 @@
 package com.woocommerce.android.util
 
+import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.ResourceProvider
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
@@ -25,6 +31,19 @@ class PriceUtilsTest {
         mock(),
         mock()
     )
+
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
+    @Before
+    fun setUpDateFormat() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+    }
+
+    @After
+    fun tearDownDateFormat() {
+        dateFormatMock.close()
+    }
 
     private val resourcesProviderMock = mock<ResourceProvider> {
         on { getString(R.string.product_sale_dates) }.thenReturn(SALE_DATES_PRICING_GROUP_KEY)

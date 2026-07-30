@@ -12,7 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToLocalizedMedium
-import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedMonthDay
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
@@ -396,7 +396,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 "$totalBudgetWithCurrency, " + resourceProvider.getString(
                     R.string.blaze_campaign_preview_days_duration,
                     durationInDays,
-                    startDate.formatToMMMdd()
+                    startDate.formatToLocalizedMonthDay()
                 )
         }
     }

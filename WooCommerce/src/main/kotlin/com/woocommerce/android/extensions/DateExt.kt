@@ -49,18 +49,16 @@ fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFo
     locale
 ).format(this)
 
-fun Date.formatToMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d",
+/**
+ * Formats the date to an abbreviated month and day string, e.g. "Aug 13" in English and "13 Ağu" in Turkish.
+ */
+fun Date.formatToLocalizedMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "MMMd"),
     locale
 ).format(this)
 
 fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "dd MMM yyyy",
-    locale
-).format(this)
-
-fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy",
     locale
 ).format(this)
 
@@ -71,10 +69,12 @@ fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String =
     .getDateInstance(SimpleDateFormat.MEDIUM, locale)
     .format(this)
 
-fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy hh:mm a",
-    locale
-).format(this)
+/**
+ * Formats the date and time to a string in the format "MMM d, yyyy, h:mm AM" considering the current locale.
+ */
+fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
+    .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
+    .format(this)
 
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     val symbols = DateFormatSymbols(locale)
