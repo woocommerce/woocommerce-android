@@ -136,7 +136,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     private val siteStore: SiteStore = mock {
-        on { sites } doReturn listOf(SiteModel(), SiteModel(), SiteModel())
+        on { sites } doReturn listOf(wooSite(), wooSite(), wooSite())
     }
 
     private val wooCommerceStore: WooCommerceStore = mock {
@@ -191,18 +191,18 @@ class MobileStatusProviderTest : BaseUnitTest() {
         val report = sut(SiteModel())
 
         assertThat(report).contains(
-            MobileStatusProvider.REPORT_HEADING,
-            MobileStatusProvider.HEADING_APP,
-            MobileStatusProvider.HEADING_DEVICE,
-            MobileStatusProvider.HEADING_CONNECTIVITY,
-            MobileStatusProvider.HEADING_NOTIFICATIONS,
-            MobileStatusProvider.HEADING_ACCOUNT,
-            MobileStatusProvider.HEADING_STORE,
-            MobileStatusProvider.HEADING_STORE_NOTIFICATIONS,
-            MobileStatusProvider.HEADING_PAYMENTS,
-            MobileStatusProvider.HEADING_POS,
-            MobileStatusProvider.HEADING_FEATURE_FLAGS,
-            MobileStatusProvider.HEADING_EXPERIMENTAL
+            "### Mobile Status Report generated via the WooCommerce Android app ###",
+            "## App",
+            "## Device",
+            "## Connectivity",
+            "## Notifications",
+            "## Account & Stores",
+            "## Store Details",
+            "## Store Notifications",
+            "## Payments",
+            "## Point of Sale",
+            "## Feature Flags",
+            "## Experimental Features"
         )
     }
 
@@ -213,7 +213,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         val headings = report.lines().filter { it.startsWith("## ") }
         assertThat(headings).isNotEmpty
         assertThat(headings).allMatch {
-            it.endsWith(MobileStatusProvider.SCOPE_APP_WIDE) || it.endsWith("(selected store: https://selected.com)")
+            it.endsWith("(app-wide)") || it.endsWith("(selected store: https://selected.com)")
         }
     }
 
@@ -221,32 +221,38 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `when the report is generated, then store scoped sections name the selected store`() = testBlocking {
         val report = sut(SiteModel().apply { url = "https://selected.com" })
 
-        assertThat(report).contains("${MobileStatusProvider.HEADING_STORE} (selected store: https://selected.com)")
-        assertThat(report).contains("${MobileStatusProvider.HEADING_PAYMENTS} (selected store: https://selected.com)")
-        assertThat(report).contains("${MobileStatusProvider.HEADING_POS} (selected store: https://selected.com)")
+        assertThat(report).contains("## Store Details (selected store: https://selected.com)")
+        assertThat(report).contains("## Payments (selected store: https://selected.com)")
+        assertThat(report).contains("## Point of Sale (selected store: https://selected.com)")
     }
 
     @Test
     fun `given no selected site, when the report is generated, then store scoped headings say so`() = testBlocking {
         val report = sut(null)
 
-        assertThat(report).contains("${MobileStatusProvider.HEADING_STORE} ${MobileStatusProvider.SCOPE_NO_STORE}")
-        assertThat(report).contains("${MobileStatusProvider.HEADING_PAYMENTS} ${MobileStatusProvider.SCOPE_NO_STORE}")
-        assertThat(report).contains("${MobileStatusProvider.HEADING_POS} ${MobileStatusProvider.SCOPE_NO_STORE}")
+        assertThat(report).contains("## Store Details (no store selected)")
+        assertThat(report).contains("## Payments (no store selected)")
+        assertThat(report).contains("## Point of Sale (no store selected)")
     }
 
     @Test
     fun `when the report is generated, then the scope legend is included`() = testBlocking {
         val report = sut(SiteModel())
 
-        assertThat(report).contains(MobileStatusProvider.SCOPE_LEGEND)
+        assertThat(report).contains(
+            "Scopes: (app-wide) values cover the whole app on this device. " +
+                "(selected store: ...) values cover only the named store."
+        )
     }
 
     @Test
     fun `when the report is generated, then it links to the field reference`() = testBlocking {
         val report = sut(SiteModel())
 
-        assertThat(report).contains(MobileStatusProvider.FIELD_REFERENCE)
+        assertThat(report).contains(
+            "Field reference: " +
+                "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
+        )
     }
 
     @Test
@@ -308,8 +314,47 @@ class MobileStatusProviderTest : BaseUnitTest() {
         assertThat(report).contains("Permission granted: true")
         assertThat(report).contains("Disabled channels: REVIEW")
         assertThat(report).contains("New order sound: changed from the default")
-        assertThat(report).contains("Data saver: true")
     }
+
+    /**
+     * One test per restriction, each with only that one on. A single combination cannot pin the three labels to the
+     * three fields: two of the lines would always share a value, so a swapped label would still pass.
+     */
+    @Test
+    fun `given only data saver is on, when the report is generated, then it is reported under its own label`() =
+        testBlocking {
+            stubRestrictions(isDataSaverEnabled = true)
+
+            val report = sut(SiteModel())
+
+            assertThat(report).contains("Data saver: true")
+            assertThat(report).contains("Power save mode: false")
+            assertThat(report).contains("Background restricted: false")
+        }
+
+    @Test
+    fun `given only power save mode is on, when the report is generated, then it is reported under its own label`() =
+        testBlocking {
+            stubRestrictions(isPowerSaveModeEnabled = true)
+
+            val report = sut(SiteModel())
+
+            assertThat(report).contains("Data saver: false")
+            assertThat(report).contains("Power save mode: true")
+            assertThat(report).contains("Background restricted: false")
+        }
+
+    @Test
+    fun `given only background restriction is on, when the report is generated, then it is under its own label`() =
+        testBlocking {
+            stubRestrictions(isBackgroundRestricted = true)
+
+            val report = sut(SiteModel())
+
+            assertThat(report).contains("Data saver: false")
+            assertThat(report).contains("Power save mode: false")
+            assertThat(report).contains("Background restricted: true")
+        }
 
     @Test
     fun `when the report is generated, then the per-store alert settings are included`() = testBlocking {
@@ -338,9 +383,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         testBlocking {
             val report = sut(null)
 
-            assertThat(report).contains(
-                "${MobileStatusProvider.HEADING_STORE_NOTIFICATIONS} ${MobileStatusProvider.SCOPE_NO_STORE}"
-            )
+            assertThat(report).contains("## Store Notifications (no store selected)")
             assertThat(report).doesNotContain("Push registration")
         }
 
@@ -350,11 +393,11 @@ class MobileStatusProviderTest : BaseUnitTest() {
             val report = sut(SiteModel().apply { url = "https://selected.com" })
 
             val storeNotifications = report
-                .substringAfter(MobileStatusProvider.HEADING_STORE_NOTIFICATIONS)
+                .substringAfter("## Store Notifications")
                 .substringBefore("\n## ")
             assertThat(storeNotifications).contains("Push registration: REGISTERED_BOTH")
             val appWideNotifications = report
-                .substringAfter(MobileStatusProvider.HEADING_NOTIFICATIONS)
+                .substringAfter("## Notifications")
                 .substringBefore("\n## ")
             assertThat(appWideNotifications).doesNotContain("Push registration")
         }
@@ -529,17 +572,36 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `when the report is generated, then every connected site is listed`() = testBlocking {
         siteStore.stub {
             on { sites } doReturn listOf(
-                SiteModel().apply { url = "https://first.com" },
-                SiteModel().apply { url = "https://second.com" }
+                wooSite().apply { url = "https://first.com" },
+                wooSite().apply { url = "https://second.com" }
             )
         }
 
         val report = sut(SiteModel())
 
-        assertThat(report).contains("All connected sites:")
+        assertThat(report).contains("All connected stores:")
         assertThat(report).contains("https://first.com")
         assertThat(report).contains("https://second.com")
     }
+
+    @Test
+    fun `given non Woo sites on the account, when the report is generated, then only stores are reported`() =
+        testBlocking {
+            siteStore.stub {
+                on { sites } doReturn listOf(
+                    wooSite().apply { url = "https://store.com" },
+                    SiteModel().apply { url = "https://personal-blog.com" },
+                    SiteModel().apply { url = "https://another-blog.com" }
+                )
+            }
+
+            val report = sut(SiteModel())
+
+            assertThat(report).contains("Connected stores: 1")
+            assertThat(report).contains("https://store.com")
+            assertThat(report).doesNotContain("https://personal-blog.com")
+            assertThat(report).doesNotContain("https://another-blog.com")
+        }
 
     @Test
     fun `given a site address from the form, when the report is generated, then it is included`() = testBlocking {
@@ -559,9 +621,9 @@ class MobileStatusProviderTest : BaseUnitTest() {
     fun `given no selected site, when the report is generated, then it is still produced`() = testBlocking {
         val report = sut(null)
 
-        assertThat(report).contains(MobileStatusProvider.SCOPE_NO_STORE)
+        assertThat(report).contains("(no store selected)")
         assertThat(report).contains("Connected stores: 3")
-        assertThat(report).contains(MobileStatusProvider.HEADING_DEVICE)
+        assertThat(report).contains("## Device")
     }
 
     @Test
@@ -618,8 +680,11 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             val report = sut(SiteModel())
 
-            assertThat(report)
-                .contains("Remote values loaded: false (no remote fetch has ever succeeded on this install)")
+            assertThat(report).contains(
+                "Remote values loaded: false (every flag below is on its compiled-in default - " +
+                    "no fetch has succeeded on this install, none has completed since launch, " +
+                    "or the ones that did returned no key listed here)"
+            )
         }
 
     @Test
@@ -638,9 +703,26 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             val report = sut(SiteModel())
 
-            assertThat(report).contains(MobileStatusProvider.SECTION_UNAVAILABLE)
+            val deviceSection = report.substringAfter("## Device").substringBefore("\n## ")
+            assertThat(deviceSection).contains("Info not found")
             assertThat(report).contains("Play Services: available")
             assertThat(report).contains("Product add-ons: true")
+        }
+
+    @Test
+    fun `given a single field fails, when the report is generated, then the rest of its section survives`() =
+        testBlocking {
+            syncTimestampManager.stub {
+                on { getProductsLastSyncTimestamp() } doThrow NumberFormatException("malformed")
+            }
+
+            val report = sut(SiteModel())
+
+            val posSection = report.substringAfter("## Point of Sale").substringBefore("\n## ")
+            assertThat(posSection).contains("Local catalog products sync: unknown")
+            assertThat(posSection).doesNotContain("Info not found")
+            assertThat(posSection).contains("POS tab visible: true")
+            assertThat(posSection).contains("Local catalog full sync: 2026-07-29T09:29:49Z")
         }
 
     /**
@@ -718,4 +800,18 @@ class MobileStatusProviderTest : BaseUnitTest() {
         authorName = "author",
         isActive = isActive
     )
+
+    private fun wooSite() = SiteModel().apply { hasWooCommerce = true }
+
+    private fun stubRestrictions(
+        isDataSaverEnabled: Boolean = false,
+        isPowerSaveModeEnabled: Boolean = false,
+        isBackgroundRestricted: Boolean = false
+    ) = getBackgroundRestrictions.stub {
+        on { invoke() } doReturn BackgroundRestrictions(
+            isDataSaverEnabled = isDataSaverEnabled,
+            isPowerSaveModeEnabled = isPowerSaveModeEnabled,
+            isBackgroundRestricted = isBackgroundRestricted
+        )
+    }
 }
