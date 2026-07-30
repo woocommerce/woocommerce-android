@@ -103,7 +103,6 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.reflect.KMutableProperty0
@@ -1409,10 +1408,9 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             controller.start()
 
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
                 siteId = eq(siteModel.siteId),
                 orderId = eq(ORDER_ID),
-                newStatusKey = eq(CoreOrderStatus.PROCESSING.value),
             )
         }
 

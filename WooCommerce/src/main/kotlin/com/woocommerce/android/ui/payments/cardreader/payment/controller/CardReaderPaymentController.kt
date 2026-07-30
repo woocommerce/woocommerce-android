@@ -85,7 +85,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.reflect.KMutableProperty0
 
@@ -469,10 +468,9 @@ class CardReaderPaymentController(
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
-        newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+        newOrderNotificationSuppressionCache.onOrderPaidRemotely(
             siteId = selectedSite.get().siteId,
             orderId = orderId,
-            newStatusKey = CoreOrderStatus.PROCESSING.value,
         )
 
         triggerEvent(CardReaderPaymentEvent.PlaySuccessfulPaymentSound)
