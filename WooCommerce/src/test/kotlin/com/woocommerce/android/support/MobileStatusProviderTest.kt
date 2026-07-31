@@ -2,6 +2,7 @@ package com.woocommerce.android.support
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.util.DeviceInfoWrapper
@@ -125,12 +126,13 @@ class MobileStatusProviderTest : BaseUnitTest() {
         const val PLAY_STORE = "com.android.vending"
         const val PACKAGE_NAME = "com.woocommerce.android"
 
+        // The flavour is whatever variant the tests run under - CI runs jalapeno, not wasabi.
         private val EXPECTED_REPORT = """
             ### Mobile Status Report generated via the WooCommerce Android app ###
 
             ## App
             Version: 21.3 (2103003)
-            Build: wasabi / debug
+            Build: ${BuildConfig.FLAVOR} / ${BuildConfig.BUILD_TYPE}
             Install source: unknown
 
             ## Device
