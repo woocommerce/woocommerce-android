@@ -26,7 +26,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
             if (listener.onRequestAllowBackPress()) {
                 continueBackNavigation()
             } else {
-                // Allowed presses are tracked by MainActivity when redispatched; consumed presses stop here.
+                // Consumed presses do not change the back stack, so BackPressTracker cannot observe them.
                 AnalyticsTracker.trackBackPressed(requireActivity())
             }
         }
