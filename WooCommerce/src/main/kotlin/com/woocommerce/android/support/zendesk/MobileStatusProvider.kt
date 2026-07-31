@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
@@ -22,6 +23,7 @@ import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
@@ -57,6 +59,7 @@ class MobileStatusProvider @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val posPreferencesRepository: WooPosPreferencesRepository,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported
 ) {
     /**
@@ -220,6 +223,9 @@ class MobileStatusProvider @Inject constructor(
             entry("POS tab visible", tabVisible),
             entry("POS launchable", launchable),
             entry("Catalog strategy", catalogStrategy(tabVisible, launchable)),
+            // The background full sync stops running once POS has gone unopened for long enough, so a catalog
+            // that is stale for no other visible reason is explained by this date rather than by a sync failure.
+            safeEntry("POS last opened") { posPreferencesRepository.getLastUsedTimestamp().asUtcOrNever() },
             // `unknown` rather than `0` on a failed query: an empty catalog and an unreadable one are
             // different findings, and the sync repository's own accessors collapse both to zero.
             safeEntry("Local catalog products") {
@@ -236,7 +242,12 @@ class MobileStatusProvider @Inject constructor(
             safeEntry("Variations timestamp") {
                 syncTimestampManager.getVariationsLastSyncTimestamp().asUtcOrNever()
             },
-            safeEntry("Catalog file blocked") { syncTimestampManager.isCatalogFileBlocked() }
+            safeEntry("Catalog file blocked") { syncTimestampManager.isCatalogFileBlocked() },
+            // Never disables the background sync, only narrows when it may run, so a merchant who turned this off
+            // on a device that is rarely on Wi-Fi has a catalog that falls behind without anything failing.
+            safeEntry("Full sync on cellular allowed") {
+                posPreferencesRepository.allowCellularDataUpdate.first()
+            }
         )
     }
 

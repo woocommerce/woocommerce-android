@@ -14,6 +14,7 @@ import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
@@ -23,6 +24,7 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -132,6 +134,11 @@ class MobileStatusProviderTest : BaseUnitTest() {
         on { isCatalogFileBlocked() } doReturn false
     }
 
+    private val posPreferencesRepository: WooPosPreferencesRepository = mock {
+        on { allowCellularDataUpdate } doReturn flowOf(true)
+        on { getLastUsedTimestamp() } doReturn POS_LAST_USED_MILLIS
+    }
+
     private val accountStore: AccountStore = mock {
         on { account } doReturn AccountModel().apply { userId = 12345678L }
     }
@@ -167,6 +174,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         wooCommerceStore = wooCommerceStore,
         posLocalCatalogStore = posLocalCatalogStore,
         syncTimestampManager = syncTimestampManager,
+        posPreferencesRepository = posPreferencesRepository,
         isLocalCatalogSupported = isLocalCatalogSupported
     )
 
@@ -381,6 +389,24 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given POS has never been opened, when the report is generated, then it says never`() = testBlocking {
+        posPreferencesRepository.stub { on { getLastUsedTimestamp() } doReturn null }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("POS last opened: never")
+    }
+
+    @Test
+    fun `given cellular full sync is off, when the report is generated, then it says so`() = testBlocking {
+        posPreferencesRepository.stub { on { allowCellularDataUpdate } doReturn flowOf(false) }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Full sync on cellular allowed: false")
+    }
+
+    @Test
     fun `given the catalog file is blocked, when the report is generated, then it says so`() = testBlocking {
         syncTimestampManager.stub { on { isCatalogFileBlocked() } doReturn true }
 
@@ -439,6 +465,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         wooCommerceStore = wooCommerceStore,
         posLocalCatalogStore = posLocalCatalogStore,
         syncTimestampManager = syncTimestampManager,
+        posPreferencesRepository = posPreferencesRepository,
         isLocalCatalogSupported = isLocalCatalogSupported
     )
 
@@ -568,18 +595,21 @@ class MobileStatusProviderTest : BaseUnitTest() {
             POS tab visible: true
             POS launchable: true
             Catalog strategy: local catalog
+            POS last opened: 2026-07-29T09:29:48Z
             Local catalog products: 1250
             Local catalog variations: 3420
             Local catalog full sync: 2026-07-29T09:29:49Z
             Products timestamp: 2026-07-29T09:29:50Z
             Variations timestamp: 2026-07-29T09:29:51Z
             Catalog file blocked: false
+            Full sync on cellular allowed: true
         """.trimIndent().trim()
 
         const val PLAY_STORE = "com.android.vending"
         const val PACKAGE_NAME = "com.woocommerce.android"
 
         // 2026-07-29T09:29:49Z, :50Z and :51Z
+        const val POS_LAST_USED_MILLIS = 1785317388000L
         const val FULL_SYNC_MILLIS = 1785317389000L
         const val PRODUCTS_SYNC_MILLIS = 1785317390000L
         const val VARIATIONS_SYNC_MILLIS = 1785317391000L
