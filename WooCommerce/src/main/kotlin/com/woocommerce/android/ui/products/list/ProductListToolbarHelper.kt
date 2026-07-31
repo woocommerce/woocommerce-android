@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.list
 
 import android.app.Activity
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -9,7 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.automattic.android.tracks.crashlogging.CrashLogging
@@ -17,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.WCProductSearchTabView
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
@@ -27,6 +29,7 @@ class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val crashLogging: CrashLogging,
+    private val backPressTracker: BackPressTracker,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
@@ -39,38 +42,36 @@ class ProductListToolbarHelper @Inject constructor(
     private var searchMenuItem: MenuItem? = null
     private var scanBarcodeMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
+    private var detailNavController: NavController? = null
+    private var isSearchExpanded = false
+
+    private val backPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            handleBackPressed()
+        }
+    }
+
+    private val detailDestinationChangedListener = NavController.OnDestinationChangedListener { _, _, _ ->
+        updateBackPressedCallbackState()
+    }
+
+    private val layoutChangeListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+        setupDetailNavController()
+        updateBackPressedCallbackState()
+    }
+
+    private val refreshBackPressedCallbackState = Runnable {
+        setupDetailNavController()
+        updateBackPressedCallbackState()
+    }
 
     private val refreshOptionsMenuCallback = Runnable {
         refreshOptionsMenu()
     }
 
     override fun onCreate(owner: LifecycleOwner) {
-        (activity as FragmentActivity).onBackPressedDispatcher.addCallback(
-            owner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (isWindowClassLargeThanCompact()) {
-                        val navHostFragment = binding?.detailNavContainer?.getFragment<NavHostFragment?>()
-                        if (navHostFragment?.findNavController()?.popBackStack() == false) {
-                            listFragment?.findNavController()?.popBackStack()
-                        }
-                    } else if (searchMenuItem?.isActionViewExpanded == true) {
-                        searchMenuItem?.collapseActionView()
-                    } else {
-                        val detailsPaneIsNotNavigationRoot =
-                            binding?.detailNavContainer?.findNavController()?.navigateUp() ?: false
-                        if (!detailsPaneIsNotNavigationRoot && binding?.productsRefreshLayout?.isVisible == false) {
-                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
-                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
-                            // In this case we need to switch panes – show the list pane instead of details pane.
-                            listFragment?.displayListPaneOnly()
-                        } else {
-                            listFragment?.findNavController()?.navigateUp()
-                        }
-                    }
-                }
-            }
-        )
+        (activity as FragmentActivity).onBackPressedDispatcher.addCallback(owner, backPressedCallback)
+        updateBackPressedCallbackState()
     }
 
     fun onViewCreated(
@@ -82,7 +83,10 @@ class ProductListToolbarHelper @Inject constructor(
         this.viewModel = productListViewModel
         this.binding = binding
 
+        binding.root.addOnLayoutChangeListener(layoutChangeListener)
         fragment.viewLifecycleOwner.lifecycle.addObserver(this)
+        setupDetailNavController()
+        binding.root.post(refreshBackPressedCallbackState)
 
         if (productListViewModel.isSearching()) {
             binding.productsSearchTabView.isVisible = true
@@ -95,10 +99,16 @@ class ProductListToolbarHelper @Inject constructor(
     override fun onDestroy(owner: LifecycleOwner) {
         disableSearchListeners()
         binding?.toolbar?.removeCallbacks(refreshOptionsMenuCallback)
+        binding?.root?.removeCallbacks(refreshBackPressedCallbackState)
+        binding?.root?.removeOnLayoutChangeListener(layoutChangeListener)
+        detailNavController?.removeOnDestinationChangedListener(detailDestinationChangedListener)
+        backPressedCallback.isEnabled = false
         listFragment = null
         searchMenuItem = null
         scanBarcodeMenuItem = null
         searchView = null
+        detailNavController = null
+        isSearchExpanded = false
         viewModel = null
         binding = null
     }
@@ -124,12 +134,16 @@ class ProductListToolbarHelper @Inject constructor(
         }
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+        isSearchExpanded = true
+        updateBackPressedCallbackState()
         viewModel?.onSearchOpened()
         binding?.productsSearchTabView?.show(this)
         return true
     }
 
     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+        isSearchExpanded = false
+        updateBackPressedCallbackState()
         viewModel?.onSearchClosed()
         binding?.productsSearchTabView?.hide()
         return true
@@ -189,6 +203,64 @@ class ProductListToolbarHelper @Inject constructor(
             }
         }
         scanBarcodeMenuItem?.isVisible = !(viewModel?.isSquarePluginActive() ?: false)
+        isSearchExpanded = searchMenuItem?.isActionViewExpanded == true
+        refreshBackPressedCallbackState.run()
+    }
+
+    private fun handleBackPressed() {
+        val consumed = when {
+            isSearchExpanded -> {
+                searchMenuItem?.collapseActionView()
+                true
+            }
+
+            isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
+
+            binding?.productsRefreshLayout?.isVisible == false -> {
+                if (detailNavController?.navigateUp() != true) {
+                    listFragment?.displayListPaneOnly()
+                }
+                true
+            }
+
+            else -> false
+        }
+
+        if (consumed) {
+            backPressTracker.trackBackPressed(activity)
+            updateBackPressedCallbackState()
+        } else {
+            continueBackNavigation()
+        }
+    }
+
+    private fun continueBackNavigation() {
+        backPressedCallback.isEnabled = false
+        try {
+            (activity as FragmentActivity).onBackPressedDispatcher.onBackPressed()
+        } finally {
+            updateBackPressedCallbackState()
+        }
+    }
+
+    private fun setupDetailNavController() {
+        val detailNavHost = listFragment?.childFragmentManager
+            ?.findFragmentById(R.id.detail_nav_container) as? NavHostFragment
+        val navController = detailNavHost?.navController
+        if (navController === detailNavController) return
+
+        detailNavController?.removeOnDestinationChangedListener(detailDestinationChangedListener)
+        detailNavController = navController
+        detailNavController?.addOnDestinationChangedListener(detailDestinationChangedListener)
+    }
+
+    private fun updateBackPressedCallbackState() {
+        val shouldHandlePaneBack = if (isWindowClassLargeThanCompact()) {
+            detailNavController?.previousBackStackEntry != null
+        } else {
+            binding?.productsRefreshLayout?.isVisible == false
+        }
+        backPressedCallback.isEnabled = isSearchExpanded || shouldHandlePaneBack
     }
 
     private fun getSearchQueryHint(): String {
