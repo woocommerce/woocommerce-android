@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.background.GetBackgroundRestrictions.BackgroundRestrictions
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -527,13 +528,14 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     private companion object {
+        // The flavour is whatever variant the tests run under - CI runs jalapeno, not wasabi.
         private val EXPECTED_REPORT = """
             ### Mobile Status Report generated via the WooCommerce Android app ###
             Field reference: https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md
 
             ## App
             Version: 21.3 (2103003)
-            Build: wasabi / debug
+            Build: ${BuildConfig.FLAVOR} / ${BuildConfig.BUILD_TYPE}
             Install source: unknown
 
             ## Device
