@@ -6,12 +6,12 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.extensions.logInformation
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
@@ -56,7 +56,8 @@ class MobileStatusProvider @Inject constructor(
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
-    private val syncTimestampManager: WooPosSyncTimestampManager
+    private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported
 ) {
     /**
      * @param siteAddress the address the merchant typed into the support form, which can differ from the selected
@@ -239,22 +240,8 @@ class MobileStatusProvider @Inject constructor(
         )
     }
 
-    /**
-     * Mirrors `WooPosIsLocalCatalogSupported`, which the report cannot call: it evaluates POS visibility and
-     * launchability (writing prefs as it goes) and can fall back to a network fetch for the Woo version. This
-     * reads the cached results of those same inputs instead, so it is the decision as of the last evaluation.
-     * `WooPosIsLocalCatalogSupported` logs its real verdict, so the log on the same ticket settles any
-     * disagreement between the two.
-     */
-    private fun catalogStrategy(tabVisible: Boolean, launchable: Boolean): String {
-        val wooVersion = getWooCorePluginCachedVersion()
-        val fileSyncSupported = wooVersion != null &&
-            wooVersion.semverCompareTo(WC_FILE_BASED_SYNC_MIN_VERSION) >= 0
-        val localCatalog = featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_M1) &&
-            appPrefs.wooPosLocalCatalogEnabled &&
-            fileSyncSupported && tabVisible && launchable
-        return if (localCatalog) "local catalog" else "remote"
-    }
+    private fun catalogStrategy(tabVisible: Boolean, launchable: Boolean) =
+        if (isLocalCatalogSupported.asOfLastEvaluation(tabVisible, launchable)) "local catalog" else "remote"
 
     private fun Long?.asUtcOrNever() =
         this?.let { DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(it)) } ?: NEVER
@@ -339,8 +326,5 @@ class MobileStatusProvider @Inject constructor(
         private const val NOT_LOGGED_IN = "not logged in"
         private const val NEVER = "never"
         private const val REDACTED_TOKEN_LENGTH = 6
-
-        // Kept in step with `WooPosIsLocalCatalogSupported`.
-        private const val WC_FILE_BASED_SYNC_MIN_VERSION = "10.5.0"
     }
 }

@@ -13,6 +13,7 @@ import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.DeviceFeatures
 import com.woocommerce.android.util.DeviceInfoWrapper
@@ -64,7 +65,6 @@ class MobileStatusProviderTest : BaseUnitTest() {
     }
 
     private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(any()) } doReturn true
         on { getFlagState(any()) } doAnswer { invocation ->
             FeatureFlagState(
                 flag = invocation.getArgument(0),
@@ -121,6 +121,10 @@ class MobileStatusProviderTest : BaseUnitTest() {
         on { getVariationCount(any()) } doReturn Result.success(3420)
     }
 
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock {
+        on { asOfLastEvaluation(any(), any()) } doReturn true
+    }
+
     private val syncTimestampManager: WooPosSyncTimestampManager = mock {
         on { getFullSyncLastCompletedTimestamp() } doReturn FULL_SYNC_MILLIS
         on { getProductsLastSyncTimestamp() } doReturn PRODUCTS_SYNC_MILLIS
@@ -162,7 +166,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
         posLocalCatalogStore = posLocalCatalogStore,
-        syncTimestampManager = syncTimestampManager
+        syncTimestampManager = syncTimestampManager,
+        isLocalCatalogSupported = isLocalCatalogSupported
     )
 
     /**
@@ -357,9 +362,9 @@ class MobileStatusProviderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given the local catalog toggle is off, when the report is generated, then the strategy is remote`() =
+    fun `given the local catalog is not supported, when the report is generated, then the strategy is remote`() =
         testBlocking {
-            appPrefs.stub { on { wooPosLocalCatalogEnabled } doReturn false }
+            isLocalCatalogSupported.stub { on { asOfLastEvaluation(any(), any()) } doReturn false }
 
             val report = sut(SiteModel().apply { url = "https://example.com" })
 
@@ -367,22 +372,12 @@ class MobileStatusProviderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given Woo is too old for file based sync, when the report is generated, then the strategy is remote`() =
-        testBlocking {
-            getWooCorePluginCachedVersion.stub { on { invoke() } doReturn "10.4.0" }
-
-            val report = sut(SiteModel().apply { url = "https://example.com" })
-
-            assertThat(report).contains("Catalog strategy: remote")
-        }
-
-    @Test
-    fun `given POS cannot be launched, when the report is generated, then the strategy is remote`() = testBlocking {
+    fun `given POS cannot be launched, when the report is generated, then it says so`() = testBlocking {
         appPrefs.stub { on { isPOSLaunchableForSite(any()) } doReturn false }
 
         val report = sut(SiteModel().apply { url = "https://example.com" })
 
-        assertThat(report).contains("Catalog strategy: remote")
+        assertThat(report).contains("POS launchable: false")
     }
 
     @Test
@@ -443,7 +438,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
         posLocalCatalogStore = posLocalCatalogStore,
-        syncTimestampManager = syncTimestampManager
+        syncTimestampManager = syncTimestampManager,
+        isLocalCatalogSupported = isLocalCatalogSupported
     )
 
     private fun sitePlugin(name: String, isActive: Boolean, version: String) = SitePluginModel(
