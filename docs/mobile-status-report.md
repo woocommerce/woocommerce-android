@@ -183,11 +183,12 @@ store's plugin list yet.
 | `Variations timestamp` | The same cursor for variations. Written alongside the products one, so they normally agree. | ISO-8601 UTC instant; `never` |
 | `Catalog file blocked` | The catalog file came back with a permissions error, so file-based sync cannot run. | `true`, `false` |
 
-`Catalog strategy` is derived from the cached values of the same inputs `WooPosIsLocalCatalogSupported` uses —
-the `woo_pos_local_catalog_m1` flag, the `POS local catalog` beta toggle, a Woo core version of at least 10.5.0,
-and POS being visible and launchable. The report cannot call that class directly, because evaluating it writes
-the POS preferences and can trigger a network fetch. It logs its real verdict instead, so if the report's
-derivation looks wrong, search `application_log.txt` on the same ticket for `Local Catalog`.
+`Catalog strategy` comes from `WooPosIsLocalCatalogSupported.asOfLastEvaluation`, which applies the same rule as
+the live check — the `woo_pos_local_catalog_m1` flag, the `POS local catalog` beta toggle, a Woo core version of
+at least 10.5.0, and POS being visible and launchable — to state already recorded. The live check cannot be run
+here, because evaluating it writes the POS preferences and can trigger a network fetch. It logs its real verdict
+instead, so if the report's answer looks wrong, search `application_log.txt` on the same ticket for
+`Local Catalog`.
 
 These timestamps cover the POS local catalog only — not general order or product sync.
 
