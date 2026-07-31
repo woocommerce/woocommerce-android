@@ -163,7 +163,7 @@ Woo token is registered per store, and the alert settings live on the store.
 
 | Field | Meaning | Values |
 | --- | --- | --- |
-| `Push registration` | Which push system holds a token for this store. `REGISTERED_WOO_ONLY` is Woo-driven, `REGISTERED_WPCOM_ONLY` is the legacy Jetpack-driven system, `REGISTERED_BOTH` means both hold one — a known duplicate-notification cause. See below for diagnosing an absent Woo registration. | `REGISTERED_BOTH`, `REGISTERED_WOO_ONLY`, `REGISTERED_WPCOM_ONLY`, `UNREGISTERED` |
+| `Push registration` | Which push system holds a token for this store. `REGISTERED_WOO_ONLY` is Woo-driven, `REGISTERED_WPCOM_ONLY` is the legacy Jetpack-driven system, `REGISTERED_BOTH` means the device holds a WPCom registration while this store also holds a Woo token. See below for diagnosing an absent Woo registration. | `REGISTERED_BOTH`, `REGISTERED_WOO_ONLY`, `REGISTERED_WPCOM_ONLY`, `UNREGISTERED` |
 | `New order alerts` | The stored `store_order` settings. | `enabled=<bool>, min amount=<amount>`; `not set` |
 | `Review alerts` | The stored `store_review` settings. | `enabled=<bool>, max rating=<n>`; `not set` |
 | `Stock alerts` | The stored `store_stock` settings. | `enabled=<bool>, low stock=<bool>, out of stock=<bool>, on backorder=<bool>`; `not set` |
@@ -201,7 +201,10 @@ Worked combinations:
   Updating Woo moves the store onto Woo-driven push.
 - **`UNREGISTERED`, Woo 10.9.2 or later, flag `true`, `Push token: present`** — the store is not the constraint.
   Registration was attempted and did not succeed; check the app log for the registration call.
-- **`REGISTERED_BOTH`** — both systems hold a token, the usual explanation for duplicate new-order notifications.
+- **`REGISTERED_BOTH`** — the ordinary state for a Jetpack store on a Woo new enough for Woo-driven push, not a
+  fault. The WPCom half is a device-wide registration that outlives the move to Woo-driven push, so it stays
+  while this store also holds a Woo token. It does not mean the merchant gets a notification twice:
+  `NotificationMessageHandler` drops any WPCom notification for a store already registered with Woo Core.
 
 Don't reach for "install Jetpack" on a store above the version gate — Woo-driven push needs only a site connection.
 
