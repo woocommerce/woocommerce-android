@@ -176,12 +176,14 @@ store's plugin list yet.
 | `POS tab visible` | Whether the POS tab is shown for this store. | `true`, `false` |
 | `POS launchable` | Whether POS can actually be opened. | `true`, `false` |
 | `Catalog strategy` | Which catalog POS is serving items from. | `local catalog`, `remote` |
+| `POS last opened` | When POS was last opened on this device, across all stores. | ISO-8601 UTC instant; `never` |
 | `Local catalog products` | How many products are in the on-device catalog. | Integer; `unknown` if the count could not be read |
 | `Local catalog variations` | How many variations are in the on-device catalog. | Integer; `unknown` if the count could not be read |
 | `Local catalog full sync` | When the POS local catalog last completed a full sync. | ISO-8601 UTC instant; `never` |
 | `Products timestamp` | The "changed since" cursor used for the next product fetch. Advanced by both a full sync (from the catalog file's date) and an incremental one (from the response date). | ISO-8601 UTC instant; `never` |
 | `Variations timestamp` | The same cursor for variations. Written alongside the products one, so they normally agree. | ISO-8601 UTC instant; `never` |
 | `Catalog file blocked` | The catalog file came back with a permissions error, so file-based sync cannot run. | `true`, `false` |
+| `Full sync on cellular allowed` | The merchant's setting for whether the background full sync may run off Wi-Fi. | `true`, `false` |
 
 `Catalog strategy` comes from `WooPosIsLocalCatalogSupported.asOfLastEvaluation`, which applies the same rule as
 the live check — the `woo_pos_local_catalog_m1` flag, the `POS local catalog` beta toggle, a Woo core version of
@@ -191,6 +193,11 @@ instead, so if the report's answer looks wrong, search `application_log.txt` on 
 `Local Catalog`.
 
 These timestamps cover the POS local catalog only — not general order or product sync.
+
+`POS last opened` and `Full sync on cellular allowed` explain a catalog that is stale with nothing else failing.
+The nightly background full sync stops running once POS has gone unopened for 30 days, and it only runs on an
+unmetered connection when cellular is not allowed, so a rarely-used or rarely-Wi-Fi device falls behind by
+design. Neither value is a fault on its own.
 
 When either flag is `false`, the report does not say why — the use cases that decide visibility and launchability
 write these preferences as a side effect of evaluating, and a status report must not change what it reports.
