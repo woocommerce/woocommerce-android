@@ -208,6 +208,9 @@ class MainActivity :
     @Inject
     lateinit var posTabController: WooPosTabController
 
+    @Inject
+    lateinit var backPressTracker: BackPressTracker
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private val appBackgroundObserver = object : DefaultLifecycleObserver {
@@ -395,6 +398,7 @@ class MainActivity :
             null
         }
         navController.setGraph(navGraph, startDestinationArgs)
+        backPressTracker.register(this, navHostFragment.childFragmentManager)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
