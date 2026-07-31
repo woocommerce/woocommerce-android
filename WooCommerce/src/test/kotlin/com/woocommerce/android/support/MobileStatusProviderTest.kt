@@ -9,6 +9,7 @@ import com.woocommerce.android.background.GetBackgroundRestrictions.BackgroundRe
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
@@ -37,10 +39,13 @@ import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import java.math.BigDecimal
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -85,6 +90,10 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
     private val notificationChannelsHandler: NotificationChannelsHandler = mock {
         on { checkNewOrderNotificationSound() } doReturn NewOrderNotificationSoundStatus.SOUND_MODIFIED
+    }
+
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
+        on { invoke(anyOrNull()) } doReturn PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
     }
 
     private val getBackgroundRestrictions: GetBackgroundRestrictions = mock {
@@ -157,6 +166,27 @@ class MobileStatusProviderTest : BaseUnitTest() {
         )
     }
 
+    private val wooPushNotificationsStore: WooPushNotificationsStore = mock {
+        on { observeNotificationPreferences(any()) } doReturn flowOf(
+            WooPushNotificationPreferences(
+                storeOrder = WooPushNotificationPreferences.StoreOrderPreferences(
+                    enabled = true,
+                    minAmount = BigDecimal("100.50")
+                ),
+                storeReview = WooPushNotificationPreferences.StoreReviewPreferences(
+                    enabled = false,
+                    maxRating = 3
+                ),
+                storeStock = WooPushNotificationPreferences.StoreStockPreferences(
+                    enabled = true,
+                    lowStock = true,
+                    outOfStock = false,
+                    onBackorder = null
+                )
+            )
+        )
+    }
+
     private val sut = MobileStatusProvider(
         context = mock(),
         envDataSource = envDataSource,
@@ -165,6 +195,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         featureFlagRepository = featureFlagRepository,
         notificationSystemStatusProvider = notificationSystemStatusProvider,
         notificationChannelsHandler = notificationChannelsHandler,
+        pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
         getBackgroundRestrictions = getBackgroundRestrictions,
         deviceFeatures = deviceFeatures,
         getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
@@ -175,7 +206,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
         posLocalCatalogStore = posLocalCatalogStore,
         syncTimestampManager = syncTimestampManager,
         posPreferencesRepository = posPreferencesRepository,
-        isLocalCatalogSupported = isLocalCatalogSupported
+        isLocalCatalogSupported = isLocalCatalogSupported,
+        wooPushNotificationsStore = wooPushNotificationsStore
     )
 
     /**
@@ -312,6 +344,18 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             assertThat(report).contains("Auth method: unknown")
         }
+
+    @Test
+    fun `given alert settings were never fetched, when the report is generated, then it says so`() = testBlocking {
+        wooPushNotificationsStore.stub { on { observeNotificationPreferences(any()) } doReturn flowOf(null) }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains(
+            "Alert settings: not fetched (the merchant has not opened notification settings yet)"
+        )
+        assertThat(report).doesNotContain("New order alerts")
+    }
 
     @Test
     fun `given no remote flag values, when the report is generated, then they are reported as not loaded`() =
@@ -485,6 +529,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         featureFlagRepository = featureFlagRepository,
         notificationSystemStatusProvider = notificationSystemStatusProvider,
         notificationChannelsHandler = notificationChannelsHandler,
+        pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
         getBackgroundRestrictions = getBackgroundRestrictions,
         deviceFeatures = deviceFeatures,
         getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
@@ -495,7 +540,8 @@ class MobileStatusProviderTest : BaseUnitTest() {
         posLocalCatalogStore = posLocalCatalogStore,
         syncTimestampManager = syncTimestampManager,
         posPreferencesRepository = posPreferencesRepository,
-        isLocalCatalogSupported = isLocalCatalogSupported
+        isLocalCatalogSupported = isLocalCatalogSupported,
+        wooPushNotificationsStore = wooPushNotificationsStore
     )
 
     private fun sitePlugin(name: String, isActive: Boolean, version: String) = SitePluginModel(
@@ -613,6 +659,12 @@ class MobileStatusProviderTest : BaseUnitTest() {
             Jetpack: installed=false connected=false CP=false
             Plan: unknown (0)
             Woo core version: 10.9.2
+
+            ## Store Notifications
+            Push registration: REGISTERED_BOTH
+            New order alerts: enabled=true, min amount=100.50
+            Review alerts: enabled=false, max rating=3
+            Stock alerts: enabled=true, low stock=true, out of stock=false, on backorder=not set
 
             ## Payments
             WooPayments: active 8.1.0

@@ -8,6 +8,7 @@ import com.woocommerce.android.background.GetBackgroundRestrictions
 import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
@@ -27,6 +28,8 @@ import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.model.pushnotifications.WooPushNotificationPreferences
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -51,6 +54,7 @@ class MobileStatusProvider @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
     private val notificationSystemStatusProvider: NotificationSystemStatusProvider,
     private val notificationChannelsHandler: NotificationChannelsHandler,
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val getBackgroundRestrictions: GetBackgroundRestrictions,
     private val deviceFeatures: DeviceFeatures,
     private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion,
@@ -61,7 +65,8 @@ class MobileStatusProvider @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val posPreferencesRepository: WooPosPreferencesRepository,
-    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val wooPushNotificationsStore: WooPushNotificationsStore
 ) {
     /**
      * @param siteAddress the address the merchant typed into the support form, which can differ from the selected
@@ -87,6 +92,7 @@ class MobileStatusProvider @Inject constructor(
         if (selectedSite == null) return@buildString
 
         appendSection(HEADING_STORE) { storeSection(selectedSite) }
+        appendSection(HEADING_STORE_NOTIFICATIONS) { storeNotificationsSection(selectedSite) }
         appendSection(HEADING_PAYMENTS) { paymentsSection(selectedSite) }
         appendSection(HEADING_POS) { posSection(selectedSite) }
     }
@@ -167,6 +173,37 @@ class MobileStatusProvider @Inject constructor(
             entry("Woo core version", getWooCorePluginCachedVersion() ?: UNKNOWN)
         )
     }
+
+    private suspend fun storeNotificationsSection(selectedSite: SiteModel) = listOf(
+        entry("Push registration", pushNotificationRegistrationStatus(selectedSite.siteId).name)
+    ) + alertSettings(selectedSite)
+
+    private suspend fun alertSettings(selectedSite: SiteModel): List<String> {
+        val preferences = wooPushNotificationsStore.observeNotificationPreferences(selectedSite).first()
+            ?: return listOf(entry("Alert settings", "$NOT_FETCHED ($REASON_NO_ALERT_SETTINGS)"))
+
+        return listOf(
+            entry("New order alerts", preferences.storeOrder.describeOrders()),
+            entry("Review alerts", preferences.storeReview.describeReviews()),
+            entry("Stock alerts", preferences.storeStock.describeStock())
+        )
+    }
+
+    private fun WooPushNotificationPreferences.StoreOrderPreferences?.describeOrders() =
+        if (this == null) NOT_SET else "enabled=${enabled.orNotSet()}, min amount=${minAmount.orNotSet()}"
+
+    private fun WooPushNotificationPreferences.StoreReviewPreferences?.describeReviews() =
+        if (this == null) NOT_SET else "enabled=${enabled.orNotSet()}, max rating=${maxRating.orNotSet()}"
+
+    private fun WooPushNotificationPreferences.StoreStockPreferences?.describeStock() =
+        if (this == null) {
+            NOT_SET
+        } else {
+            "enabled=${enabled.orNotSet()}, low stock=${lowStock.orNotSet()}, " +
+                "out of stock=${outOfStock.orNotSet()}, on backorder=${onBackorder.orNotSet()}"
+        }
+
+    private fun Any?.orNotSet() = this?.toString() ?: NOT_SET
 
     // Non-Woo sites are excluded here and from the count: the site store holds every site on the WPCom account.
     private fun wooSites() = siteStore.sites.filter { it.hasWooCommerce }
@@ -325,6 +362,10 @@ class MobileStatusProvider @Inject constructor(
     companion object {
         private const val REPORT_HEADING = "### Mobile Status Report generated via the WooCommerce Android app ###"
 
+        // What every field means, and what an absent value means, lives in the doc rather than in the report.
+        private const val FIELD_REFERENCE = "Field reference: " +
+            "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
+
         private const val HEADING_NO_STORE = "# No store selected"
         private const val HEADING_APP = "## App"
         private const val HEADING_DEVICE = "## Device"
@@ -332,6 +373,7 @@ class MobileStatusProvider @Inject constructor(
         private const val HEADING_NOTIFICATIONS = "## Notifications"
         private const val HEADING_ACCOUNT = "## Account & Stores"
         private const val HEADING_STORE = "## Store Details"
+        private const val HEADING_STORE_NOTIFICATIONS = "## Store Notifications"
         private const val HEADING_PAYMENTS = "## Payments"
         private const val HEADING_POS = "## Point of Sale"
         private const val HEADING_FEATURE_FLAGS = "## Feature Flags"
@@ -343,16 +385,14 @@ class MobileStatusProvider @Inject constructor(
         private const val NONE = "none"
         private const val MISSING = "missing"
         private const val NOT_SET = "not set"
+        private const val NOT_FETCHED = "not fetched"
         private const val NOT_LOGGED_IN = "not logged in"
         private const val NEVER = "never"
         private const val REDACTED_TOKEN_LENGTH = 6
 
-        // What every field means, and what an absent value means, lives in the doc rather than in the report.
-        private const val FIELD_REFERENCE = "Field reference: " +
-            "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
-
         // Why a value is absent, said in the report itself rather than left to the reader. A bare "not set" reads
         // as a fault in every one of these cases, when each is the expected state for some kind of store or setup.
+        private const val REASON_NO_ALERT_SETTINGS = "the merchant has not opened notification settings yet"
         private const val REASON_NO_BLOG_ID = "stores connected with application passwords do not have one"
         private const val REASON_NO_STORE_ID = "no store system status has been fetched yet"
         private const val REASON_NOT_CACHED = "none cached for this site"
