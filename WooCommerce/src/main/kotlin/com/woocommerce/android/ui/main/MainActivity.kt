@@ -381,7 +381,6 @@ class MainActivity :
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
-        setOnBackNavigationCallback(navHostFragment)
         val graphInflater = navHostFragment.navController.navInflater
 
         val navGraph = graphInflater.inflate(R.navigation.nav_graph_main)
@@ -433,15 +432,6 @@ class MainActivity :
         }
 
         viewModel.showFeatureAnnouncementIfNeeded()
-    }
-
-    private fun setOnBackNavigationCallback(navHostFragment: NavHostFragment) {
-        addBackNavigationCallbackAfterNavHost(navHostFragment) {
-            AnalyticsTracker.trackBackPressed(this@MainActivity)
-            supportFragmentManager.primaryNavigationFragment?.let {
-                updateAppBarVisibility(it)
-            }
-        }
     }
 
     private fun handleIncomingImages() {
