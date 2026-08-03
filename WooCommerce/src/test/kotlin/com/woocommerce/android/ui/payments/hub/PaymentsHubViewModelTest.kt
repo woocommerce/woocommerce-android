@@ -47,6 +47,7 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -55,6 +56,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -1793,6 +1795,40 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
         verify(paymentsFlowTracker, never()).trackSoftwareUpdateAlertInstallClicked()
     }
+
+    @Test
+    fun `given cod status is being fetched, when screen shown, then cash on delivery item is loading`() =
+        testBlocking {
+            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).doSuspendableAnswer {
+                awaitCancellation()
+            }
+
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
+                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    } as ToggleableListItem
+                    ).isLoading
+            ).isTrue
+        }
+
+    @Test
+    fun `given cod status fetched, when screen shown, then cash on delivery item is not loading`() =
+        testBlocking {
+            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(true)
+
+            initViewModel()
+
+            assertThat(
+                (
+                    viewModel.viewStateData.getOrAwaitValue().rows.find {
+                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
+                    } as ToggleableListItem
+                    ).isLoading
+            ).isFalse
+        }
 
     @Test
     fun `given TTP supported country, when user clicks on about ttp, then track proper event`() {

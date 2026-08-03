@@ -90,6 +90,7 @@ class PaymentsHubViewModel @Inject constructor(
             ),
             index = 2,
             isChecked = false,
+            isLoading = true,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
             onLearnMoreClicked = ::onLearnMoreCodClicked
         )
@@ -150,7 +151,8 @@ class PaymentsHubViewModel @Inject constructor(
         val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         updateCashOnDeliveryOptionState(
             cashOnDeliveryState.value?.copy(
-                isChecked = isCashOnDeliveryEnabled
+                isChecked = isCashOnDeliveryEnabled,
+                isLoading = false
             )!!
         )
     }

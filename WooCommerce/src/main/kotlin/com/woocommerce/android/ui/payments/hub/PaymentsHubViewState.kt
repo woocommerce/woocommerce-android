@@ -39,6 +39,7 @@ data class PaymentsHubViewState(
             val description: UiString,
             override var isEnabled: Boolean = true,
             val isChecked: Boolean,
+            val isLoading: Boolean = false,
             override val index: Int,
             override val onClick: (() -> Unit)? = null,
             val onToggled: (Boolean) -> Unit,
