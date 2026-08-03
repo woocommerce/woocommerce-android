@@ -140,6 +140,11 @@
             android:theme="@style/Theme.Woo.DayNight"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".support.MobileStatusReportActivity"
+            android:label="@string/support_mobile_status_report"
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".support.requests.SupportRequestFormActivity"
             android:label="@string/support_request"
             android:theme="@style/Theme.Woo.DayNight"
