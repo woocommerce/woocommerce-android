@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
@@ -12,17 +13,49 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.Settings
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
 class CashOnDeliverySettingsRepositoryTest {
+    private val site = SiteModel()
     private val selectedSite: SelectedSite = mock {
-        on(it.get()).thenReturn(SiteModel())
+        on(it.get()).thenReturn(site)
     }
     private val gatewayStore: WCGatewayStore = mock()
     private val cashOnDeliverySettingsRepository = CashOnDeliverySettingsRepository(
         gatewayStore,
         selectedSite
     )
+
+    @Test
+    fun `when cod is enabled, then title description and instructions are updated`() {
+        runTest {
+            cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(shouldEnable = true)
+
+            verify(gatewayStore).updateGateway(
+                site = site,
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = true,
+                title = "Pay in Person",
+                description = "Pay by card or another accepted payment method",
+                settings = Settings(instructions = "Pay by card or another accepted payment method")
+            )
+        }
+    }
+
+    @Test
+    fun `when cod is disabled, then title description and instructions are left untouched`() {
+        runTest {
+            cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(shouldEnable = false)
+
+            verify(gatewayStore).updateGateway(
+                site = site,
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = false
+            )
+        }
+    }
 
     @Test
     fun `when cod enabled, then return true when queried for cod status`() {
