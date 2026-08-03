@@ -5,10 +5,14 @@
 25.4
 -----
 - [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets
+- [*] Fixed fully refunded orders remaining visible in the Completed orders filter [https://github.com/woocommerce/woocommerce-android/pull/16313]
+- [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
+- [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
 
 25.3
 -----
+- [Internal] Remove XML-RPC site fetching and the XML-RPC login path [https://github.com/woocommerce/woocommerce-android/pull/16292]
 - [Internal] Send a persistent device id in remote feature flag requests so logins without a WordPress.com account are included in progressive rollouts [https://github.com/woocommerce/woocommerce-android/pull/16300]
 - [*] Improved product duplication to preserve product details managed by WooCommerce [https://github.com/woocommerce/woocommerce-android/pull/16262]
 - [*] Fixed the store login error message showing a placeholder instead of the status code [https://github.com/woocommerce/woocommerce-android/pull/16246]

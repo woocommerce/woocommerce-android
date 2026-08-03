@@ -68,7 +68,6 @@
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
     <ID>LongMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
     <ID>LongMethod:EditShippingLabelPaymentFragment.kt$EditShippingLabelPaymentFragment$private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding)</ID>
-    <ID>LongMethod:LoginNoJetpackFragment.kt$LoginNoJetpackFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:OrderDetailFragment.kt$OrderDetailFragment$private fun setupObservers(viewModel: OrderDetailViewModel)</ID>
     <ID>LongMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
     <ID>LongMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>

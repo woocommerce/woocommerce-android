@@ -5,8 +5,9 @@ import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import javax.inject.Inject
 
 class CouponUtils @Inject constructor(
@@ -56,9 +57,9 @@ class CouponUtils @Inject constructor(
         )
     }
 
-    fun formatExpirationDate(expirationDate: Date): String {
-        val dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG)
-        return resourceProvider.getString(R.string.coupon_details_expiration_date, dateFormat.format(expirationDate))
+    fun formatExpirationDate(expirationDate: LocalDate): String {
+        val formattedDate = expirationDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        return resourceProvider.getString(R.string.coupon_details_expiration_date, formattedDate)
     }
 
     fun formatUsageLimitPerUser(usageLimitPerUser: Int?) = usageLimitPerUser?.takeIf { it > 0 }?.let {

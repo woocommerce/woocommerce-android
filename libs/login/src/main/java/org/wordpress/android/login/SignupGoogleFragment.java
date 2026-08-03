@@ -205,7 +205,7 @@ public class SignupGoogleFragment extends GoogleFragment {
     private void dispatchSocialSignup(String idToken) {
         PushSocialPayload payload = new PushSocialPayload(idToken, SERVICE_TYPE_GOOGLE);
         mDispatcher.dispatch(AccountActionBuilder.newPushSocialSignupAction(payload));
-        mOldSitesIds = SiteUtils.getCurrentSiteIds(mSiteStore, false);
+        mOldSitesIds = SiteUtils.getCurrentSiteIds(mSiteStore);
     }
 
     @SuppressWarnings("unused")

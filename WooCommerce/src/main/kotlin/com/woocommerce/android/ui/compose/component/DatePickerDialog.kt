@@ -37,12 +37,50 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
+import java.util.TimeZone
 
 private const val DEFAULT_MIN_YEAR = 1900
 private const val DEFAULT_MAX_YEAR = 2100
+
+@Composable
+fun LocalDatePickerDialog(
+    currentDate: LocalDate?,
+    onDateSelected: (LocalDate) -> Unit,
+    onDismissRequest: () -> Unit,
+    neutralButton: (@Composable () -> Unit)? = null,
+) {
+    val dateFormat = remember {
+        SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+    }
+    DatePickerDialog(
+        currentDate = currentDate?.toUtcDatePickerCalendar(),
+        onDateSelected = { onDateSelected(it.timeInMillis.toUtcLocalDate()) },
+        onDismissRequest = onDismissRequest,
+        neutralButton = neutralButton,
+        dateFormat = dateFormat
+    )
+}
+
+internal fun LocalDate.toUtcDatePickerCalendar(): Calendar =
+    GregorianCalendar(TimeZone.getTimeZone("UTC")).apply {
+        clear()
+        set(
+            this@toUtcDatePickerCalendar.year,
+            this@toUtcDatePickerCalendar.monthValue - 1,
+            this@toUtcDatePickerCalendar.dayOfMonth
+        )
+    }
+
+internal fun Long.toUtcLocalDate(): LocalDate =
+    Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()
 
 @Composable
 fun DatePickerDialog(

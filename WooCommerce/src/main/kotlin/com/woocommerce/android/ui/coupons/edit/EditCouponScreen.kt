@@ -45,7 +45,7 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Coupon.Type
 import com.woocommerce.android.model.Coupon.Type.Percent
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
-import com.woocommerce.android.ui.compose.component.DatePickerDialog
+import com.woocommerce.android.ui.compose.component.LocalDatePickerDialog
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -58,8 +58,9 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.coupons.edit.EditCouponViewModel.ViewState
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
-import java.util.Date
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun EditCouponScreen(viewModel: EditCouponViewModel) {
@@ -88,7 +89,7 @@ fun EditCouponScreen(
     onCouponCodeChanged: (String) -> Unit = {},
     onRegenerateCodeClick: () -> Unit = {},
     onDescriptionButtonClick: () -> Unit = {},
-    onExpiryDateChanged: (Date?) -> Unit = {},
+    onExpiryDateChanged: (LocalDate?) -> Unit = {},
     onFreeShippingChanged: (Boolean) -> Unit = {},
     onUsageRestrictionsClick: () -> Unit = {},
     onSelectProductsButtonClick: () -> Unit = {},
@@ -152,7 +153,7 @@ private fun DetailsSection(
     onCouponCodeChanged: (String) -> Unit,
     onRegenerateCodeClick: () -> Unit,
     onDescriptionButtonClick: () -> Unit,
-    onExpiryDateChanged: (Date?) -> Unit,
+    onExpiryDateChanged: (LocalDate?) -> Unit,
     onFreeShippingChanged: (Boolean) -> Unit
 ) {
     val couponDraft = viewState.couponDraft
@@ -186,7 +187,7 @@ private fun DetailsSection(
             text = stringResource(id = R.string.coupon_edit_regenerate_coupon)
         )
         DescriptionButton(viewState.couponDraft.description, onDescriptionButtonClick)
-        ExpiryField(viewState.couponDraft.dateExpires, onExpiryDateChanged)
+        ExpiryField(viewState.couponDraft.dateExpiresLocal, onExpiryDateChanged)
         WCSwitch(
             text = stringResource(id = R.string.coupon_edit_free_shipping),
             checked = viewState.couponDraft.isShippingFree ?: false,
@@ -361,20 +362,20 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
 
 @Suppress("LongMethod")
 @Composable
-private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit) {
-    val dateFormat = remember { SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM) }
+private fun ExpiryField(dateExpires: LocalDate?, onExpiryDateChanged: (LocalDate?) -> Unit) {
+    val dateFormat = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM) }
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
     WCOutlinedSpinner(
         onClick = { showDatePicker = true },
-        value = dateExpires?.let { dateFormat.format(it) }
+        value = dateExpires?.format(dateFormat)
             ?: stringResource(id = R.string.coupon_edit_expiry_date_none),
         label = stringResource(id = R.string.coupon_edit_expiry_date),
         modifier = Modifier.fillMaxWidth()
     )
 
     if (showDatePicker) {
-        DatePickerDialog(
+        LocalDatePickerDialog(
             currentDate = dateExpires,
             onDateSelected = {
                 showDatePicker = false
@@ -388,8 +389,7 @@ private fun ExpiryField(dateExpires: Date?, onExpiryDateChanged: (Date?) -> Unit
                 }) {
                     Text(stringResource(id = R.string.coupon_edit_expiry_clear_expiry_date))
                 }
-            },
-            dateFormat = dateFormat
+            }
         )
     }
 }
