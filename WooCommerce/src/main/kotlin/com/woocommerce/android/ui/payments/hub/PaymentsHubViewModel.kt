@@ -457,6 +457,7 @@ class PaymentsHubViewModel @Inject constructor(
                 } else {
                     R.string.card_reader_disable_pay_in_person_dialog_button
                 },
+                negativeButton = R.string.cancel,
                 onConfirmed = { updateCashOnDeliveryOption(isChecked) }
             )
         )
@@ -628,6 +629,7 @@ class PaymentsHubViewModel @Inject constructor(
             @StringRes val title: Int,
             val message: UiString,
             @StringRes val positiveButton: Int,
+            @StringRes val negativeButton: Int,
             val onConfirmed: () -> Unit,
         ) : PaymentsHubEvents()
 

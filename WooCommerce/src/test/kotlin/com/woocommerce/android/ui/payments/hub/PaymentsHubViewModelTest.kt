@@ -898,6 +898,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 )
             )
             assertThat(event.positiveButton).isEqualTo(R.string.card_reader_enable_pay_in_person_dialog_button)
+            assertThat(event.negativeButton).isEqualTo(R.string.cancel)
         }
 
     @Test
@@ -947,6 +948,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 UiStringRes(R.string.card_reader_disable_pay_in_person_dialog_message)
             )
             assertThat(event.positiveButton).isEqualTo(R.string.card_reader_disable_pay_in_person_dialog_button)
+            assertThat(event.negativeButton).isEqualTo(R.string.cancel)
         }
 
     @Test

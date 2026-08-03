@@ -126,7 +126,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         .setTitle(event.title)
                         .setMessage(UiHelpers.getTextOfUiString(requireContext(), event.message))
                         .setPositiveButton(event.positiveButton) { _, _ -> event.onConfirmed() }
-                        .setNegativeButton(R.string.cancel, null)
+                        .setNegativeButton(event.negativeButton, null)
                         .show()
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.ShowToastString -> {
