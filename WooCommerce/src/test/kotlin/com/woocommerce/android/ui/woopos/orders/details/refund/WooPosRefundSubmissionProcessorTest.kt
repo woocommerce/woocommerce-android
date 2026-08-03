@@ -531,7 +531,7 @@ class WooPosRefundSubmissionProcessorTest {
         ).thenReturn(
             WooResult(
                 error = WooError(
-                    type = WooErrorType.ORDER_NOT_REFUNDABLE,
+                    type = WooErrorType.GENERIC_ERROR,
                     original = GenericErrorType.UNKNOWN,
                     message = "Order is not refundable.",
                     apiErrorCode = "order_not_refundable"

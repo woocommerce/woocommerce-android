@@ -121,7 +121,7 @@ class WooPosRefundPreviewTest {
             .thenReturn(
                 WooResult(
                     WooError(
-                        type = WooErrorType.REFUND_EXCEEDS_REMAINING,
+                        type = WooErrorType.GENERIC_ERROR,
                         original = GenericErrorType.UNKNOWN,
                         apiErrorCode = "preview_exceeds_max_refundable"
                     )
@@ -145,7 +145,7 @@ class WooPosRefundPreviewTest {
             .thenReturn(
                 WooResult(
                     WooError(
-                        type = WooErrorType.ORDER_NOT_REFUNDABLE,
+                        type = WooErrorType.GENERIC_ERROR,
                         original = GenericErrorType.UNKNOWN,
                         apiErrorCode = "order_not_refundable"
                     )

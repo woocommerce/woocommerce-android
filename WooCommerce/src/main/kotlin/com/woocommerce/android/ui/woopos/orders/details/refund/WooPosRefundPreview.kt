@@ -52,7 +52,7 @@ class WooPosRefundPreview @Inject constructor(
                             "apiErrorCode=${response.error.apiErrorCode}, " +
                             "message=${response.error.message}"
                     )
-                    Result.Error(WooPosRefundApiError.fromWooErrorType(response.error.type))
+                    Result.Error(WooPosRefundApiError.fromCode(response.error.apiErrorCode))
                 }
             }
 

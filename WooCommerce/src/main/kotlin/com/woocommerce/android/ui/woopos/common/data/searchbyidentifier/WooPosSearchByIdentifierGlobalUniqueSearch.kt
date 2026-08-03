@@ -12,15 +12,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ER
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_COUPON
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_PARAM
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_REFUND_AMOUNT
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_VARIATION_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.NO_CONNECTION
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.ORDER_NOT_REFUNDABLE
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REFUND_EXCEEDS_LINE_TOTAL
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REFUND_EXCEEDS_REMAINING
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REFUND_LINE_ITEM_ALREADY_REFUNDED
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REFUND_QUANTITY_EXCEEDS_REFUNDABLE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.RESOURCE_ALREADY_EXISTS
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.REST_INVALID_SIGNATURE
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
@@ -83,14 +77,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             EMPTY_RESPONSE,
             INVALID_VARIATION_ID -> WooPosSearchByIdentifierResult.Error.NotFound
 
-            // The refund-specific types are never returned by the product search endpoint.
-            GENERIC_ERROR,
-            ORDER_NOT_REFUNDABLE,
-            REFUND_QUANTITY_EXCEEDS_REFUNDABLE,
-            REFUND_LINE_ITEM_ALREADY_REFUNDED,
-            REFUND_EXCEEDS_REMAINING,
-            REFUND_EXCEEDS_LINE_TOTAL,
-            INVALID_REFUND_AMOUNT -> WooPosSearchByIdentifierResult.Error.UnknownError(
+            GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(
                 message?.ifEmpty { null } ?: "Generic error occurred"
             )
 

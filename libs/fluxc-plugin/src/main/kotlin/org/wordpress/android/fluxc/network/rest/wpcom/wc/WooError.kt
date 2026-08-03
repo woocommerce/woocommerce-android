@@ -50,17 +50,7 @@ enum class WooErrorType {
     INVALID_COUPON,
     INVALID_VARIATION_ID,
     RESOURCE_ALREADY_EXISTS,
-    REST_INVALID_SIGNATURE,
-
-    // Errors returned by the wc/v3 order refund endpoints (preview and create with computed
-    // totals). They usually mean the order changed since it was loaded, for example another
-    // client refunded part of the order in the meantime.
-    ORDER_NOT_REFUNDABLE,
-    REFUND_QUANTITY_EXCEEDS_REFUNDABLE,
-    REFUND_LINE_ITEM_ALREADY_REFUNDED,
-    REFUND_EXCEEDS_REMAINING,
-    REFUND_EXCEEDS_LINE_TOTAL,
-    INVALID_REFUND_AMOUNT
+    REST_INVALID_SIGNATURE
 }
 
 fun WPComGsonNetworkError.toWooError() = WooError(
@@ -109,14 +99,6 @@ private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
             "woocommerce_rest_invalid_coupon" -> WooErrorType.INVALID_COUPON
             "order_item_product_invalid_variation_id" -> WooErrorType.INVALID_VARIATION_ID
             WooError.REST_INVALID_SIGNATURE_CODE -> WooErrorType.REST_INVALID_SIGNATURE
-            // wc/v3 order refund endpoints (preview and create with computed totals).
-            "order_not_refundable" -> WooErrorType.ORDER_NOT_REFUNDABLE
-            "quantity_exceeds_refundable" -> WooErrorType.REFUND_QUANTITY_EXCEEDS_REFUNDABLE
-            "line_item_already_refunded" -> WooErrorType.REFUND_LINE_ITEM_ALREADY_REFUNDED
-            "preview_exceeds_max_refundable",
-            "refund_exceeds_remaining" -> WooErrorType.REFUND_EXCEEDS_REMAINING
-            "refund_total_exceeds_line" -> WooErrorType.REFUND_EXCEEDS_LINE_TOTAL
-            "invalid_refund_amount" -> WooErrorType.INVALID_REFUND_AMOUNT
             else -> WooErrorType.GENERIC_ERROR
         }
     }
