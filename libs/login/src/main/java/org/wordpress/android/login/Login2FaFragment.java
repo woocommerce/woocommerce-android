@@ -206,7 +206,11 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         // restrict the allowed input chars to just numbers
         m2FaInput.getEditText().setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
+        // The legacy token endpoint omits supported auth types, so keep SMS available when the list is empty.
+        boolean isSmsEnabled = mSupportedAuthTypes.isEmpty() ||
+                mSupportedAuthTypes.contains(SupportedAuthTypes.SMS);
         mOtpButton = rootView.findViewById(R.id.login_otp_button);
+        mOtpButton.setVisibility(isSmsEnabled ? View.VISIBLE : View.GONE);
         mOtpButton.setText(mSentSmsCode ? R.string.login_text_otp_another : R.string.login_text_otp);
         mOtpButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -674,6 +678,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         BACKUP,
         AUTHENTICATOR,
         PUSH,
+        SMS,
         UNKNOWN;
 
         static SupportedAuthTypes fromString(String value) {
@@ -686,6 +691,8 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
                     return AUTHENTICATOR;
                 case "push":
                     return PUSH;
+                case "sms":
+                    return SMS;
                 default:
                     return UNKNOWN;
             }
