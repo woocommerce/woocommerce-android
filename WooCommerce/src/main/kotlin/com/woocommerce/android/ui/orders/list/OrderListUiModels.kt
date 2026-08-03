@@ -31,7 +31,7 @@ internal data class OrderListScreenState(
         )
 
     val shouldShowCreateOrderFab: Boolean
-        get() = showCreateOrderFab && headerMode != OrderListHeaderMode.Selection
+        get() = showCreateOrderFab && headerMode == OrderListHeaderMode.Browsing
 }
 
 internal data class OrderListHeaderContent(
