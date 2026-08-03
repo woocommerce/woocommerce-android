@@ -66,23 +66,16 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             binding.paymentsHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
-            binding.paymentsHubSwitch.setOnCheckedChangeListener(null)
             binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
-            binding.paymentsHubSwitch.isClickable = uiState.isEnabled
             binding.paymentsHubSwitch.isChecked = uiState.isChecked
             binding.paymentsHubSwitch.isInvisible = uiState.isLoading
             binding.paymentsHubSwitchProgressBar.isVisible = uiState.isLoading
-            binding.paymentsHubSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (uiState.isEnabled) {
-                    uiState.onToggled(isChecked)
-                }
-            }
             binding.paymentsHubListItemDescriptionTv.setOnClickListener {
                 uiState.onLearnMoreClicked()
             }
             binding.root.setOnClickListener {
-                if (!uiState.isLoading) {
-                    binding.paymentsHubSwitch.isChecked = !uiState.isChecked
+                if (uiState.isEnabled && !uiState.isLoading) {
+                    uiState.onToggled(!uiState.isChecked)
                 }
             }
         }

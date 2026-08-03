@@ -15,6 +15,7 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedC
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowCashOnDeliveryConfirmation
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
@@ -84,7 +86,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         on { getOnboardingState() } doReturn mock<CardReaderOnboardingState.OnboardingCompleted>()
     }
     private val cashOnDeliverySettingsRepository: CashOnDeliverySettingsRepository = mock {
-        on { isCashOnDeliveryEnabled() } doReturn false
+        on { fetchCashOnDeliveryGateway() } doReturn null
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
@@ -832,7 +834,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given cash on delivery enabled, when screen shown, then cash on delivery state is enabled`() =
         testBlocking {
-            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(true)
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = true))
 
             initViewModel()
 
@@ -849,7 +852,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given cash on delivery disabled, when screen shown, then cash on delivery state is disabled`() =
         testBlocking {
-            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(false)
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = false))
 
             initViewModel()
 
@@ -861,6 +865,109 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                         as ToggleableListItem
                     ).isChecked
             ).isFalse
+        }
+
+    @Test
+    fun `when cod toggled, then the gateway is not updated before the user confirms`() =
+        testBlocking {
+            // WHEN
+            toggleCashOnDelivery(isChecked = true)
+
+            // THEN
+            verify(cashOnDeliverySettingsRepository, never()).toggleCashOnDeliveryOption(true)
+        }
+
+    @Test
+    fun `given custom cod title, when cod enabled, then confirmation warns about renaming that title`() =
+        testBlocking {
+            // GIVEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = false, title = "Cash on delivery"))
+            initViewModel()
+
+            // WHEN
+            toggleCashOnDelivery(isChecked = true)
+
+            // THEN
+            val event = viewModel.event.value as ShowCashOnDeliveryConfirmation
+            assertThat(event.title).isEqualTo(R.string.card_reader_enable_pay_in_person_dialog_title)
+            assertThat(event.message).isEqualTo(
+                UiStringRes(
+                    R.string.card_reader_enable_pay_in_person_dialog_message_rename,
+                    listOf(UiStringText("Cash on delivery"))
+                )
+            )
+            assertThat(event.positiveButton).isEqualTo(R.string.card_reader_enable_pay_in_person_dialog_button)
+        }
+
+    @Test
+    fun `given cod title is already pay in person, when cod enabled, then confirmation omits the renaming`() =
+        testBlocking {
+            // GIVEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = false, title = "Pay in Person"))
+            initViewModel()
+
+            // WHEN
+            toggleCashOnDelivery(isChecked = true)
+
+            // THEN
+            assertThat((viewModel.event.value as ShowCashOnDeliveryConfirmation).message).isEqualTo(
+                UiStringRes(R.string.card_reader_enable_pay_in_person_dialog_message)
+            )
+        }
+
+    @Test
+    fun `given cod could not be fetched, when cod enabled, then confirmation omits the renaming`() =
+        testBlocking {
+            // WHEN
+            toggleCashOnDelivery(isChecked = true)
+
+            // THEN
+            assertThat((viewModel.event.value as ShowCashOnDeliveryConfirmation).message).isEqualTo(
+                UiStringRes(R.string.card_reader_enable_pay_in_person_dialog_message)
+            )
+        }
+
+    @Test
+    fun `when cod disabled, then confirmation warns that the method is turned off at checkout`() =
+        testBlocking {
+            // GIVEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = true))
+            initViewModel()
+
+            // WHEN
+            toggleCashOnDelivery(isChecked = false)
+
+            // THEN
+            val event = viewModel.event.value as ShowCashOnDeliveryConfirmation
+            assertThat(event.title).isEqualTo(R.string.card_reader_disable_pay_in_person_dialog_title)
+            assertThat(event.message).isEqualTo(
+                UiStringRes(R.string.card_reader_disable_pay_in_person_dialog_message)
+            )
+            assertThat(event.positiveButton).isEqualTo(R.string.card_reader_disable_pay_in_person_dialog_button)
+        }
+
+    @Test
+    fun `given cod was just enabled, when cod enabled again, then confirmation omits the renaming`() =
+        testBlocking {
+            // GIVEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = false, title = "Cash on delivery"))
+            whenever(cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true))
+                .thenReturn(WooResult(codGateway(isEnabled = true, title = "Pay in Person")))
+            initViewModel()
+            toggleCashOnDelivery(isChecked = true)
+            confirmCashOnDeliveryToggle()
+
+            // WHEN
+            toggleCashOnDelivery(isChecked = true)
+
+            // THEN
+            assertThat((viewModel.event.value as ShowCashOnDeliveryConfirmation).message).isEqualTo(
+                UiStringRes(R.string.card_reader_enable_pay_in_person_dialog_message)
+            )
         }
 
     @Test
@@ -884,6 +991,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(
@@ -917,6 +1025,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(
@@ -950,6 +1059,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(
@@ -983,6 +1093,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(
@@ -1016,6 +1127,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(
@@ -1045,6 +1157,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
@@ -1067,6 +1180,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryEnabledFailure(
@@ -1092,6 +1206,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(false)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
@@ -1114,6 +1229,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(false)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledFailure(
@@ -1139,6 +1255,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(false)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryDisabledFailure(
@@ -1164,6 +1281,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(false)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryDisabledSuccess(
@@ -1188,6 +1306,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isInstanceOf(ShowToastString::class.java)
@@ -1210,6 +1329,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -1236,6 +1356,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -1260,6 +1381,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 }
                     as ToggleableListItem
                 ).onToggled.invoke(true)
+            confirmCashOnDeliveryToggle()
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -1799,7 +1921,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given cod status is being fetched, when screen shown, then cash on delivery item is loading`() =
         testBlocking {
-            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).doSuspendableAnswer {
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).doSuspendableAnswer {
                 awaitCancellation()
             }
 
@@ -1817,7 +1939,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given cod status fetched, when screen shown, then cash on delivery item is not loading`() =
         testBlocking {
-            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(true)
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGateway(isEnabled = true))
 
             initViewModel()
 
@@ -1861,6 +1984,29 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     //endregion
+
+    private fun toggleCashOnDelivery(isChecked: Boolean) {
+        (
+            viewModel.viewStateData.getOrAwaitValue().rows.find {
+                it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
+            } as ToggleableListItem
+            ).onToggled.invoke(isChecked)
+    }
+
+    private fun confirmCashOnDeliveryToggle() {
+        (viewModel.event.value as ShowCashOnDeliveryConfirmation).onConfirmed()
+    }
+
+    private fun codGateway(isEnabled: Boolean, title: String = "Pay in Person") = WCGatewayModel(
+        id = "cod",
+        title = title,
+        description = "",
+        order = 0,
+        isEnabled = isEnabled,
+        methodTitle = "",
+        methodDescription = "",
+        features = emptyList()
+    )
 
     private fun getSuccessWooResult() = WooResult(
         model = WCGatewayModel(
