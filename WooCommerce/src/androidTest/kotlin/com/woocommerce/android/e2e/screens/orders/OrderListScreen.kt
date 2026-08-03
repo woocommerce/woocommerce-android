@@ -63,13 +63,7 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
             return this
         } // to support test on phones
         else if (device.findObject(SEARCH_FIELD_SELECTOR) != null) {
-            Espresso.pressBack()
-            if (!waitForSearchModeToClose(SEARCH_BACK_TIMEOUT_MS)) {
-                Espresso.pressBack()
-                check(waitForSearchModeToClose(NODE_TIMEOUT_MS)) {
-                    "Orders search mode did not close"
-                }
-            }
+            closeSearchMode()
         }
         return this
     }
@@ -141,11 +135,14 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         return device.findObject(SEARCH_FIELD_SELECTOR)?.findObject(SEARCH_TEXT_FIELD_SELECTOR)
     }
 
-    private fun waitForSearchModeToClose(timeoutMs: Long): Boolean {
-        return device.wait(
-            Condition<UiDevice, Boolean> { device.findObject(SEARCH_FIELD_SELECTOR) == null },
-            timeoutMs,
+    private fun closeSearchMode() {
+        val searchField = waitFor(SEARCH_FIELD_SELECTOR, "Orders search field")
+        val cancelText = getInstrumentation().targetContext.getString(R.string.cancel)
+        val cancelAction = searchField.findObject(
+            By.clickable(true).hasDescendant(By.text(cancelText))
         )
+        checkNotNull(cancelAction) { "Orders search cancel action was not found" }.click()
+        waitFor(By.res(OrderListTestTags.SEARCH_ACTION), "Orders search action")
     }
 
     private fun scrollToOrder(orderId: Int) {
@@ -193,7 +190,6 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
 
     private companion object {
         const val NODE_TIMEOUT_MS = 10_000L
-        const val SEARCH_BACK_TIMEOUT_MS = 1_000L
         val SEARCH_FIELD_SELECTOR: BySelector = By.res(OrderListTestTags.SEARCH_FIELD)
         val SEARCH_TEXT_FIELD_SELECTOR: BySelector = By.clazz(EditText::class.java)
         val ORDER_ROW_SELECTOR: BySelector = By.res(
