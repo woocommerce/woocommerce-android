@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.orders.list
 
 import androidx.paging.PagedList
+import com.woocommerce.android.ui.orders.list.OrderListItemUIType.LoadingItem
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType.OrderListItemUI
+import com.woocommerce.android.util.runAndCaptureValues
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -13,6 +18,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class OrderListPaging2PresenterTest {
     @Test
     fun `given a same-instance item mutation, when content changes, then snapshot generation and key stay stable`() {
@@ -38,6 +44,25 @@ class OrderListPaging2PresenterTest {
         assertThat(presenter.keyAt(updatedState, 0)).isEqualTo(initialKey)
 
         presenter.close()
+    }
+
+    @Test
+    fun `given an active list, when the same instance is submitted, then state and callback stay unchanged`() {
+        // GIVEN
+        val pagedList = pagedList(listOf(order(1L)))
+        val presenter = OrderListPaging2Presenter()
+        presenter.submit(pagedList)
+        val initialState = presenter.state.value
+
+        // WHEN
+        presenter.submit(pagedList)
+        val callback = callbackFor(pagedList)
+
+        // THEN
+        assertThat(presenter.state.value).isSameAs(initialState)
+
+        presenter.close()
+        verify(pagedList).removeWeakCallback(callback)
     }
 
     @Test
@@ -69,6 +94,30 @@ class OrderListPaging2PresenterTest {
     }
 
     @Test
+    fun `given an active list, when null is submitted, then the callback is removed and empty state is published`() {
+        // GIVEN
+        val pagedList = pagedList(listOf(order(1L)))
+        val presenter = OrderListPaging2Presenter()
+        presenter.submit(pagedList)
+        val populatedState = presenter.state.value
+        val callback = callbackFor(pagedList)
+
+        // WHEN
+        presenter.submit(null)
+        val emptyState = presenter.state.value
+        presenter.submit(null)
+
+        // THEN
+        assertThat(emptyState.generation).isEqualTo(populatedState.generation + 1)
+        assertThat(emptyState.contentRevision).isEqualTo(populatedState.contentRevision + 1)
+        assertThat(emptyState.itemCount).isZero()
+        assertThat(presenter.state.value).isSameAs(emptyState)
+        verify(pagedList).removeWeakCallback(callback)
+
+        presenter.close()
+    }
+
+    @Test
     fun `given a valid placeholder, when its key is read, then identity is saveable without loading`() {
         // GIVEN
         val pagedList = pagedList(listOf(order(1L), null))
@@ -83,8 +132,37 @@ class OrderListPaging2PresenterTest {
         assertThat(state.itemCount).isEqualTo(2)
         assertThat(state.generation).isEqualTo(1L)
         assertThat(key).isEqualTo("order-list-placeholder:1:1")
-        assertThat(key).isInstanceOf(String::class.java)
         verify(pagedList, never()).loadAround(any())
+
+        presenter.close()
+    }
+
+    @Test
+    fun `given loaded and unresolved items, when order helpers run, then only loaded orders are returned`() {
+        // GIVEN
+        val pagedList = pagedList(
+            listOf(
+                LoadingItem(1L),
+                order(2L),
+                null,
+                order(3L),
+            ),
+        )
+        val presenter = OrderListPaging2Presenter()
+        presenter.submit(pagedList)
+        val state = presenter.state.value
+
+        // WHEN
+        val firstLoadedIndex = presenter.indexOfOrder(state, 2L)
+        val loadingIndex = presenter.indexOfOrder(state, 1L)
+        val missingIndex = presenter.indexOfOrder(state, 4L)
+        val loadedOrderIds = presenter.loadedOrderIds(state)
+
+        // THEN
+        assertThat(firstLoadedIndex).isEqualTo(1)
+        assertThat(loadingIndex).isNull()
+        assertThat(missingIndex).isNull()
+        assertThat(loadedOrderIds).containsExactly(2L, 3L)
 
         presenter.close()
     }
@@ -122,6 +200,52 @@ class OrderListPaging2PresenterTest {
         verify(replacementList).removeWeakCallback(replacementCallback)
         verify(initialList, never()).loadAround(any())
         verify(replacementList).loadAround(0)
+    }
+
+    @Test
+    fun `given an active presenter, when closed, then its terminal state rejects later changes`() {
+        // GIVEN
+        val initialList = pagedList(listOf(order(1L)))
+        val replacementList = pagedList(listOf(order(2L)))
+        val presenter = OrderListPaging2Presenter()
+        presenter.submit(initialList)
+        val activeState = presenter.state.value
+        val callback = callbackFor(initialList)
+
+        // WHEN
+        presenter.close()
+        val closedState = presenter.state.value
+        presenter.close()
+        presenter.submit(replacementList)
+        presenter.markContentChanged()
+        callback.onChanged(0, 1)
+
+        // THEN
+        assertThat(closedState.generation).isEqualTo(activeState.generation + 1)
+        assertThat(closedState.contentRevision).isEqualTo(activeState.contentRevision + 1)
+        assertThat(closedState.itemCount).isZero()
+        assertThat(presenter.state.value).isSameAs(closedState)
+        verify(initialList).removeWeakCallback(callback)
+        verify(replacementList, never()).addWeakCallback(anyOrNull(), any())
+    }
+
+    @Test
+    fun `when content changes, then state flow emits a new revision`() = runTest(UnconfinedTestDispatcher()) {
+        // GIVEN
+        val presenter = OrderListPaging2Presenter()
+
+        // WHEN
+        val states = presenter.state.runAndCaptureValues {
+            presenter.markContentChanged()
+        }
+
+        // THEN
+        assertThat(states).hasSize(2)
+        assertThat(states[1]).isNotSameAs(states[0])
+        assertThat(states[1].generation).isEqualTo(states[0].generation)
+        assertThat(states[1].contentRevision).isEqualTo(states[0].contentRevision + 1)
+
+        presenter.close()
     }
 
     private fun callbackFor(pagedList: PagedList<OrderListItemUIType>): PagedList.Callback {

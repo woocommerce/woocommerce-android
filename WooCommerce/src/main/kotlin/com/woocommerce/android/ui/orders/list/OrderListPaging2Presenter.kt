@@ -28,16 +28,16 @@ internal class OrderListPaging2Presenter : AutoCloseable {
         val generation = previousState.generation + 1
         val contentRevision = previousState.contentRevision + 1
 
+        mutableState.value = pagedList.toState(
+            generation = generation,
+            contentRevision = contentRevision,
+        )
+
         if (pagedList != null) {
             val callback = callbackFor(pagedList)
             currentCallback = callback
             pagedList.addWeakCallback(null, callback)
         }
-
-        mutableState.value = pagedList.toState(
-            generation = generation,
-            contentRevision = contentRevision,
-        )
     }
 
     fun itemAt(capturedState: State, index: Int): OrderListItemUIType? {
@@ -54,12 +54,6 @@ internal class OrderListPaging2Presenter : AutoCloseable {
     fun keyAt(capturedState: State, index: Int): String? {
         if (index !in 0 until capturedState.itemCount) return null
         return capturedState.items[index].stableKey(capturedState.generation, index)
-    }
-
-    fun indexOfKey(capturedState: State, key: String): Int? {
-        return (0 until capturedState.itemCount).firstOrNull { index ->
-            capturedState.items[index].stableKey(capturedState.generation, index) == key
-        }
     }
 
     fun indexOfOrder(capturedState: State, orderId: Long): Int? {
