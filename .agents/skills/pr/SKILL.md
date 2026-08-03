@@ -35,7 +35,7 @@ Create a pull request following the project's PR conventions.
 
 8. **Create the PR.** Read `.github/PULL_REQUEST_TEMPLATE.md` and use it as the body. Strip the HTML comments and fill in each section, following the conventions from the guidelines doc above:
    - **Description**: start with `Fixes WOOMOB-XYZ` on its own line, then a short summary of what changed and why.
-     - Keep it to what a reviewer needs: what was wrong, what this changes, and anything they can't see in the diff. A couple of sentences of plain prose is usually right — no section headers beyond the template's.
+     - Keep it to what a reviewer needs: what was wrong, what this changes, and anything they can't see in the diff. A couple of sentences of plain prose is usually right — no section headers beyond the template's. If the PR fixes several distinct things, one line each is fine.
      - The conversation that produced the PR is not the PR. Don't retell the investigation — no measurements, no debugging path, no narrative of how you got there.
      - Do pre-empt what a reviewer would actually raise: a decision they'd disagree with, or an obvious alternative they'd ask "why not X?" about. A sentence or a clause each, in prose. The bar is "they'd bring this up in review", not "this was interesting to figure out". Most PRs have nothing that clears it; if you end up with a list, you're padding.
      - Write so a reviewer who never saw this branch can follow it — carry the context, not the derivation.
