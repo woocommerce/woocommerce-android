@@ -74,7 +74,7 @@ class ZendeskTicketRepository @Inject constructor(
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
-        val msr = mobileStatusProvider(selectedSite)
+        val msr = mobileStatusProvider(selectedSite, siteAddress)
 
         val deviceLogs = envDataSource.getFullDeviceLogs()
 

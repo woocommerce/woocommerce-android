@@ -58,7 +58,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
     }
     private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite = mock()
     private val mobileStatusProvider: MobileStatusProvider = mock {
-        on { invoke(anyOrNull()) } doReturn MSR_REPORT
+        on { invoke(anyOrNull(), anyOrNull()) } doReturn MSR_REPORT
     }
 
     @Before
