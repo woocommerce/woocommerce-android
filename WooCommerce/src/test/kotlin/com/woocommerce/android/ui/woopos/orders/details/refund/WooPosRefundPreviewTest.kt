@@ -31,6 +31,7 @@ class WooPosRefundPreviewTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val availabilityCache = WooPosServerRefundAvailabilityCache()
+
     // Defaults to a version that supports server refunds; version-gating tests override it.
     // An unknown (null) version fails closed to the local flow.
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
