@@ -100,6 +100,69 @@ class WooPosBuildRefundLineItemsTest {
         assertThat(feeLine.refundTotal).isEqualByComparingTo(BigDecimal("11.50"))
     }
 
+    @Test
+    fun `given a zero-total fee row, when built for preview, then the line is not sent`() {
+        // GIVEN — a zeroed fee alongside a product and a nonzero fee. The server rejects a gross
+        // line refund of zero with invalid_refund_total, so the zero line must be dropped.
+        val items = listOf(
+            productRow(orderItemId = 1L, rowIndex = 0),
+            feeRow(orderItemId = 98L, unitPrice = BigDecimal("0.00"), unitTax = BigDecimal.ZERO),
+            feeRow(orderItemId = 99L, unitPrice = BigDecimal("10.00"), unitTax = BigDecimal("1.50")),
+        )
+
+        // WHEN
+        val result = sut.forPreview(items)
+
+        // THEN
+        assertThat(result.map { it.lineItemId }).containsExactly(1L, 99L)
+    }
+
+    @Test
+    fun `given a fee row whose only amount is tax, when built for preview, then the line is sent`() {
+        // GIVEN — zero price but nonzero tax still has a nonzero gross amount
+        val items = listOf(
+            feeRow(orderItemId = 98L, unitPrice = BigDecimal.ZERO, unitTax = BigDecimal("0.10")),
+        )
+
+        // WHEN
+        val result = sut.forPreview(items)
+
+        // THEN
+        assertThat(result).hasSize(1)
+        assertThat(result.first().refundTotal).isEqualByComparingTo(BigDecimal("0.10"))
+    }
+
+    @Test
+    fun `given only zero-total fee rows, when built for preview, then the result is empty`() {
+        // GIVEN — an empty result makes the preview fall back to the local flow instead of
+        // sending a request the server would reject.
+        val items = listOf(
+            feeRow(orderItemId = 98L, unitPrice = BigDecimal("0.00"), unitTax = BigDecimal.ZERO),
+        )
+
+        // WHEN
+        val result = sut.forPreview(items)
+
+        // THEN
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `given a zero-total fee row, when built for computed create, then the line is not sent`() {
+        // GIVEN — the create must send exactly what was previewed, so both builders filter alike
+        val items = listOf(
+            productRow(orderItemId = 1L, rowIndex = 0),
+            feeRow(orderItemId = 98L, unitPrice = BigDecimal("0.00"), unitTax = BigDecimal.ZERO),
+            feeRow(orderItemId = 99L, unitPrice = BigDecimal("10.00"), unitTax = BigDecimal("1.50")),
+        )
+
+        // WHEN
+        val result = sut.forComputedCreate(items)
+
+        // THEN
+        assertThat(result.map { it.lineItemId }).containsExactly(1L, 99L)
+    }
+
     private fun productRow(orderItemId: Long, rowIndex: Int) = WooPosRefundableItem(
         orderItemId = orderItemId,
         productId = 10L,
