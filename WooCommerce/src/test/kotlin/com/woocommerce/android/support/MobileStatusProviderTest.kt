@@ -330,18 +330,22 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             val report = sut(SiteModel().apply { url = "https://example.com" })
 
-            assertThat(report).contains("Remote values loaded: false")
+            assertThat(report).contains(
+                "Remote values loaded: false (every flag below is on its compiled-in default - " +
+                    "no fetch has succeeded on this install, none has completed since launch, " +
+                    "or the ones that did returned no key listed here)"
+            )
             assertThat(report).contains("ai_support_chat: false (compiled-in default)")
         }
 
     @Test
-    fun `given no plugins are cached, when the report is generated, then the plugins are unknown`() =
+    fun `given no plugins are cached, when the report is generated, then it says none are cached`() =
         testBlocking {
             wooCommerceStore.stub { on { getSitePlugins(any<SiteModel>()) } doReturn emptyList() }
 
             val report = sut(SiteModel().apply { url = "https://example.com" })
 
-            assertThat(report).contains("Payment plugins: unknown")
+            assertThat(report).contains("Payment plugins: unknown (none cached for this site)")
         }
 
     @Test
@@ -357,7 +361,9 @@ class MobileStatusProviderTest : BaseUnitTest() {
         testBlocking {
             val report = providerWithInstaller { null }(SiteModel().apply { url = "https://example.com" })
 
-            assertThat(report).contains("Install source: sideloaded")
+            assertThat(report).contains(
+                "Install source: sideloaded (installed outside an app store, not from Play)"
+            )
         }
 
     @Test
@@ -371,6 +377,38 @@ class MobileStatusProviderTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given no store id has been fetched, when the report is generated, then it says why`() = testBlocking {
+        appPrefs.stub { on { getWCStoreID(any()) } doReturn null }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains("Store ID: not set (no store system status has been fetched yet)")
+    }
+
+    /**
+     * The reason POS is unavailable is deliberately not computed here, so the report points at the log that has
+     * it. That pointer is the only actionable thing an HE gets on this field, so it is pinned.
+     */
+    @Test
+    fun `given POS cannot be launched, when the report is generated, then it points at the log`() = testBlocking {
+        appPrefs.stub { on { isPOSLaunchableForSite(any()) } doReturn false }
+
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).contains(
+            "Reason is logged - search application_log.txt for " +
+                "\"POS Tab Not visible reason\" or \"POS cannot be launched\""
+        )
+    }
+
+    @Test
+    fun `given POS is available, when the report is generated, then no log pointer is added`() = testBlocking {
+        val report = sut(SiteModel().apply { url = "https://example.com" })
+
+        assertThat(report).doesNotContain("Reason is logged")
+    }
+
+    @Test
     fun `given the local catalog is not supported, when the report is generated, then the strategy is remote`() =
         testBlocking {
             isLocalCatalogSupported.stub { on { asOfLastEvaluation(any(), any()) } doReturn false }
@@ -379,15 +417,6 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
             assertThat(report).contains("Catalog strategy: remote")
         }
-
-    @Test
-    fun `given POS cannot be launched, when the report is generated, then it says so`() = testBlocking {
-        appPrefs.stub { on { isPOSLaunchableForSite(any()) } doReturn false }
-
-        val report = sut(SiteModel().apply { url = "https://example.com" })
-
-        assertThat(report).contains("POS launchable: false")
-    }
 
     @Test
     fun `given POS has never been opened, when the report is generated, then it says never`() = testBlocking {
@@ -502,6 +531,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         // The flavour is whatever variant the tests run under - CI runs jalapeno, not wasabi.
         private val EXPECTED_REPORT = """
             ### Mobile Status Report generated via the WooCommerce Android app ###
+            Field reference: https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md
 
             ## App
             Version: 21.3 (2103003)
@@ -578,7 +608,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             # Selected store: https://example.com
 
             ## Store Details
-            Blog ID: not set
+            Blog ID: not set (stores connected with application passwords do not have one)
             Store ID: store-uuid
             Auth method: ApplicationPasswords
             Site supports app passwords: false

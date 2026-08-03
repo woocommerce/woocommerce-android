@@ -37,7 +37,8 @@ import javax.inject.Inject
 
 /**
  * Builds the Mobile Status Report attached to support tickets — the app-level counterpart to the server-side
- * System Status Report, which carries no device or app information.
+ * System Status Report, which carries no device or app information. `docs/mobile-status-report.md` is the
+ * reference for what every field means and how to read an absent value; keep it in step with this class.
  *
  * Every section is best-effort: a failing lookup degrades to [SECTION_UNAVAILABLE] rather than failing the report,
  * because this runs on the ticket creation path and must never block a merchant from contacting support.
@@ -69,6 +70,7 @@ class MobileStatusProvider @Inject constructor(
      */
     suspend operator fun invoke(selectedSite: SiteModel?, siteAddress: String? = null): String = buildString {
         appendLine(REPORT_HEADING)
+        appendLine(FIELD_REFERENCE)
 
         appendSection(HEADING_APP) { appSection() }
         appendSection(HEADING_DEVICE) { deviceSection() }
@@ -153,8 +155,11 @@ class MobileStatusProvider @Inject constructor(
 
     private suspend fun storeSection(selectedSite: SiteModel) = with(selectedSite) {
         listOf(
-            entry("Blog ID", siteId.takeIf { it != 0L } ?: NOT_SET),
-            entry("Store ID", appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { NOT_SET }),
+            entry("Blog ID", siteId.takeIf { it != 0L } ?: "$NOT_SET ($REASON_NO_BLOG_ID)"),
+            entry(
+                "Store ID",
+                appPrefs.getWCStoreID(siteId).orEmpty().ifEmpty { "$NOT_SET ($REASON_NO_STORE_ID)" }
+            ),
             entry("Auth method", connectionTypeOrNull?.name ?: UNKNOWN),
             entry("Site supports app passwords", isApplicationPasswordsSupported),
             entry("Jetpack", "installed=$isJetpackInstalled connected=$isJetpackConnected CP=$isJetpackCPConnected"),
@@ -176,7 +181,7 @@ class MobileStatusProvider @Inject constructor(
         // Read from the plugin cache rather than fetching, to keep ticket creation off the network.
         val plugins = wooCommerceStore.getSitePlugins(selectedSite)
         val installState = if (plugins.isEmpty()) {
-            listOf(entry("Payment plugins", UNKNOWN))
+            listOf(entry("Payment plugins", "$UNKNOWN ($REASON_NOT_CACHED)"))
         } else {
             listOf(
                 entry("WooPayments", plugins.stateOf(PluginType.WOOCOMMERCE_PAYMENTS)),
@@ -247,7 +252,8 @@ class MobileStatusProvider @Inject constructor(
             // on a device that is rarely on Wi-Fi has a catalog that falls behind without anything failing.
             safeEntry("Full sync on cellular allowed") {
                 posPreferencesRepository.allowCellularDataUpdate.first()
-            }
+            },
+            POS_REASON_HINT.takeIf { !tabVisible || !launchable }
         )
     }
 
@@ -259,7 +265,10 @@ class MobileStatusProvider @Inject constructor(
 
     private fun featureFlagsSection(): List<String> {
         val states = FeatureFlag.entries.map { featureFlagRepository.getFlagState(it) }
-        return listOf(entry("Remote values loaded", states.any { it.remoteValue != null })) +
+        val remoteValuesLoaded = states.any { it.remoteValue != null }
+        return listOf(
+            entry("Remote values loaded", if (remoteValuesLoaded) true else "false ($REASON_NO_REMOTE_FLAGS)")
+        ) +
             states
                 .sortedBy { it.flag.remoteFlagKey }
                 .map { entry(it.flag.remoteFlagKey, "${it.effectiveValue} (${it.source()})") }
@@ -288,7 +297,7 @@ class MobileStatusProvider @Inject constructor(
             packageManager.getInstallerPackageName(context.packageName)
         }
     }.fold(
-        onSuccess = { installer -> installer ?: SIDELOADED },
+        onSuccess = { installer -> installer ?: "$SIDELOADED ($REASON_SIDELOADED)" },
         onFailure = { UNKNOWN }
     )
 
@@ -337,5 +346,22 @@ class MobileStatusProvider @Inject constructor(
         private const val NOT_LOGGED_IN = "not logged in"
         private const val NEVER = "never"
         private const val REDACTED_TOKEN_LENGTH = 6
+
+        // What every field means, and what an absent value means, lives in the doc rather than in the report.
+        private const val FIELD_REFERENCE = "Field reference: " +
+            "https://github.com/woocommerce/woocommerce-android/blob/trunk/docs/mobile-status-report.md"
+
+        // Why a value is absent, said in the report itself rather than left to the reader. A bare "not set" reads
+        // as a fault in every one of these cases, when each is the expected state for some kind of store or setup.
+        private const val REASON_NO_BLOG_ID = "stores connected with application passwords do not have one"
+        private const val REASON_NO_STORE_ID = "no store system status has been fetched yet"
+        private const val REASON_NOT_CACHED = "none cached for this site"
+        private const val REASON_NO_REMOTE_FLAGS =
+            "every flag below is on its compiled-in default - no fetch has succeeded on this install, " +
+                "none has completed since launch, or the ones that did returned no key listed here"
+        private const val REASON_SIDELOADED = "installed outside an app store, not from Play"
+        private const val POS_REASON_HINT =
+            "Reason is logged - search application_log.txt for " +
+                "\"POS Tab Not visible reason\" or \"POS cannot be launched\""
     }
 }
