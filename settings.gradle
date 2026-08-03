@@ -57,6 +57,9 @@ static def readPropertiesFromFile(File file) {
     return properties
 }
 
+def remoteCacheRequested = gradle.ext.developerProperties.get(USE_REMOTE_BUILD_CACHE_LOCALLY).toBoolean()
+def remoteCacheIsOwnChoice = file("${rootDir}/developer.properties").exists()
+
 buildCache {
     if (!gradle.ext.isCi && !gradle.ext.developerProperties.getProperty("store_local_build_cache", "false").toBoolean()) {
         /*
@@ -80,27 +83,25 @@ buildCache {
                 password = System.getenv('GRADLE_CACHE_NODE_PASSWORD')
             }
         }
-    } else if (gradle.ext.developerProperties.get(USE_REMOTE_BUILD_CACHE_LOCALLY).toBoolean() == true) {
-        if (secretsApplied()) {
-            checkForRemoteBuildCacheOptimizedExperience()
+    } else if (remoteCacheRequested && secretsApplied()) {
+        checkForRemoteBuildCacheOptimizedExperience()
 
-            remote(HttpBuildCache) {
-                url = gradle.ext.secretProperties.get('gradleCacheNodeUrl')
-                push = false
-                credentials {
-                    username = "developer"
-                    password = gradle.ext.secretProperties.get('gradleCacheNodePassword')
-                }
+        remote(HttpBuildCache) {
+            url = gradle.ext.secretProperties.get('gradleCacheNodeUrl')
+            push = false
+            credentials {
+                username = "developer"
+                password = gradle.ext.secretProperties.get('gradleCacheNodePassword')
             }
-        } else if (file("${rootDir}/developer.properties").exists()) {
-            // The developer explicitly opted in to the remote build cache via their own
-            // developer.properties file, so they are expected to have secrets applied.
-            throwSecretsNotApplied()
-        } else {
-            // The flag is only true via the developer.properties-example fallback (a fresh
-            // clone) — skip the remote build cache instead of failing.
-            logger.warn("\n⚠️ The build requested remote build cache, but secrets are not applied on this machine, so it stays disabled. The build continues without it; this only affects build speed. Run `bundle exec fastlane run configure_apply` to apply secrets and enable it.")
         }
+    } else if (remoteCacheRequested && remoteCacheIsOwnChoice) {
+        // The developer explicitly opted in to the remote build cache via their own
+        // developer.properties file, so they are expected to have secrets applied.
+        throwSecretsNotApplied()
+    } else if (remoteCacheRequested) {
+        // The flag is only true via the developer.properties-example fallback (a fresh
+        // clone) — skip the remote build cache instead of failing.
+        logger.warn("\n⚠️ The build requested remote build cache, but secrets are not applied on this machine, so it stays disabled. The build continues without it; this only affects build speed. Run `bundle exec fastlane run configure_apply` to apply secrets and enable it.")
     } else {
         logger.warn("\nℹ️ Remote build cache is disabled. If you have stable internet connection, consider enabling it via `developer.properties`.")
     }
