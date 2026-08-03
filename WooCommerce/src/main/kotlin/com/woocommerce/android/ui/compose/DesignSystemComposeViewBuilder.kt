@@ -13,6 +13,16 @@ fun Fragment.designSystemComposeView(
     compositionStrategy: ViewCompositionStrategy = ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
     content: @Composable () -> Unit
 ) = ComposeView(requireContext()).apply {
+    setDesignSystemContent(compositionStrategy, content)
+}
+
+/**
+ * Configures this [ComposeView] with the Store design-system theme root.
+ */
+fun ComposeView.setDesignSystemContent(
+    compositionStrategy: ViewCompositionStrategy = ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
+    content: @Composable () -> Unit
+) {
     setViewCompositionStrategy(compositionStrategy)
 
     setContent {

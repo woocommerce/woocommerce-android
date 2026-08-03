@@ -23,7 +23,6 @@ class SingleProductScreen : Screen {
             .screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
         if (!isTablet) {
             pressBack()
-            waitForElementToBeDisplayed(R.id.productsRecycler)
         }
         return ProductListScreen()
     }
