@@ -177,7 +177,15 @@ class OrderListScreen : Screen(R.id.order_list_compose_container) {
         condition: () -> Boolean,
         failureMessage: () -> String,
     ) {
-        check(device.wait(Condition<UiDevice, Boolean> { condition() }, NODE_TIMEOUT_MS)) {
+        check(
+            device.wait(
+                Condition<UiDevice, Boolean> {
+                    Espresso.onIdle()
+                    condition()
+                },
+                NODE_TIMEOUT_MS,
+            )
+        ) {
             failureMessage()
         }
     }
