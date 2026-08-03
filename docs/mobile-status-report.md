@@ -17,7 +17,7 @@ The report is split in two by a single band:
 ## Account & Stores … ## Feature Flags … ## Experimental Features
 
 # Selected store: https://merchants-store.com
-## Store Details … ## Payments … ## Point of Sale
+## Store Details … ## Store Notifications … ## Payments … ## Point of Sale
 ```
 
 Everything **above** the band describes the whole app on this device, whichever store is selected. Everything
@@ -95,6 +95,9 @@ Duplicated on purpose — the report has to stand on its own when a merchant rea
 | `Power save mode` | Battery saver is on device-wide. | `true`, `false` |
 | `Data saver` | Data saver is on, which blocks background network use. | `true`, `false` |
 
+Push registration is **not** here — it is keyed on a single store, so it is reported under Store Notifications
+along with that store's alert settings.
+
 ## Account & Stores
 
 | Field | Meaning | Values |
@@ -152,6 +155,62 @@ Jetpack flags. These values are shared with the iOS app, so a ticket from either
 One case the report cannot show: after an application-password request fails, the app flags that site as
 unsupported for a period and silently falls back to the Jetpack tunnel. That flag is not reported, because
 reading it clears it once it has expired, and a status report must not change what it reports.
+
+## Store Notifications
+
+Which of the two push systems serves this store, and the store's own alert settings. Both are store-scoped — the
+Woo token is registered per store, and the alert settings live on the store.
+
+| Field | Meaning | Values |
+| --- | --- | --- |
+| `Push registration` | Which push system holds a token for this store. `REGISTERED_WOO_ONLY` is Woo-driven, `REGISTERED_WPCOM_ONLY` is the legacy Jetpack-driven system, `REGISTERED_BOTH` means the device holds a WPCom registration while this store also holds a Woo token. See below for diagnosing an absent Woo registration. | `REGISTERED_BOTH`, `REGISTERED_WOO_ONLY`, `REGISTERED_WPCOM_ONLY`, `UNREGISTERED` |
+| `New order alerts` | The stored `store_order` settings. | `enabled=<bool>, min amount=<amount>`; `not set` |
+| `Review alerts` | The stored `store_review` settings. | `enabled=<bool>, max rating=<n>`; `not set` |
+| `Stock alerts` | The stored `store_stock` settings. | `enabled=<bool>, low stock=<bool>, out of stock=<bool>, on backorder=<bool>`; `not set` |
+
+The fields are printed as stored, without interpreting them. What they mean, in the settings screen's own words:
+
+| Field | Meaning |
+| --- | --- |
+| `min amount` | The "Only high-value orders" filter — the screen describes it as **orders over** this value. `not set` means every order qualifies. |
+| `max rating` | The "Only low-rated reviews" filter — a rating ceiling. `not set` means every review qualifies. |
+| `low stock` | A product variant reaching its low stock threshold, which can be per-product or store-wide. |
+| `out of stock` | A product variant hitting zero. |
+| `on backorder` | A customer ordering an item that is currently out of stock. |
+
+An individual field reading `not set` means the API did not return it, which is not the same as `false`.
+| `Alert settings` | Replaces the three rows above when no settings have been fetched. | `not fetched (the merchant has not opened notification settings yet)` |
+
+### Diagnosing a missing Woo registration
+
+The report states the registration status and nothing more — it does not try to work out *why*. The inputs that
+decide it are all reported elsewhere as their own fields, and reading them together is the diagnosis:
+
+| Check | Where it is in the report | What it means |
+| --- | --- | --- |
+| Is there a push token at all? | `Push token` (Notifications) | `missing` blocks both systems — nothing can register. Start here. |
+| Is Woo-driven push switched on? | `woo_self_driven_push_notifications_m1` (Feature Flags) | `false` means the Woo-driven path is never attempted, whatever the store supports. |
+| Is the plugin new enough? | `Woo core version` (Store Details) | Woo-driven push needs **10.9.2 or later**. Below that, only the legacy WPCom system can serve the store. |
+| Can the legacy system serve it? | `Auth method` (Store Details) | The legacy system needs a WPCom account and a full Jetpack connection. `ApplicationPasswords` has neither, so a store below the version gate on an application-password login receives nothing at all. |
+
+Worked combinations:
+
+- **`UNREGISTERED`, Woo below 10.9.2, `Auth method: ApplicationPasswords`** — nothing will arrive. Woo-driven is
+  unavailable and there is no legacy fallback for this merchant. Updating Woo is the only fix.
+- **`REGISTERED_WPCOM_ONLY`, Woo below 10.9.2, `Auth method: Jetpack`** — working as designed on the legacy system.
+  Updating Woo moves the store onto Woo-driven push.
+- **`UNREGISTERED`, Woo 10.9.2 or later, flag `true`, `Push token: present`** — the store is not the constraint.
+  Registration was attempted and did not succeed; check the app log for the registration call.
+- **`REGISTERED_BOTH`** — the ordinary state for a Jetpack store on a Woo new enough for Woo-driven push, not a
+  fault. The WPCom half is a device-wide registration that outlives the move to Woo-driven push, so it stays
+  while this store also holds a Woo token. It does not mean the merchant gets a notification twice:
+  `NotificationMessageHandler` drops any WPCom notification for a store already registered with Woo Core.
+
+Don't reach for "install Jetpack" on a store above the version gate — Woo-driven push needs only a site connection.
+
+`not fetched` is not the same as disabled: the settings are persisted by the last successful fetch, so they are
+absent until the merchant has opened notification settings at least once. A merchant reporting a missing alert
+with `not fetched` here has never changed these settings, so the store defaults apply.
 
 ## Payments
 
