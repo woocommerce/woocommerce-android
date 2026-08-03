@@ -46,7 +46,13 @@ class WooPosBuildRefundLineItems @Inject constructor() {
             .groupBy { it.orderItemId }
             .map { (orderItemId, rows) -> quantityBased(orderItemId, rows.size) }
 
-        val feeLineItems = feeItems.map { fee -> amountBased(fee.orderItemId, fee.unitPrice + fee.unitTax) }
+        // The server rejects a gross line refund of zero with `invalid_refund_total`, and a zero
+        // line contributes nothing to the refund, so zero-total fees are never sent. Filtered in
+        // the shared builder so the preview and the computed create stay identical.
+        val feeLineItems = feeItems.mapNotNull { fee ->
+            val refundTotal = fee.unitPrice + fee.unitTax
+            if (refundTotal.signum() == 0) null else amountBased(fee.orderItemId, refundTotal)
+        }
 
         return productLineItems + feeLineItems
     }
