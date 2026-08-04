@@ -1,4 +1,5 @@
 import io.sentry.android.gradle.extensions.InstrumentationFeature
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.application)
@@ -13,6 +14,14 @@ plugins {
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
+}
+
+// SafeArgs codegen still suppresses this cast warning under its pre-Kotlin-2.4 name
+// (CAST_NEVER_SUCCEEDS), so it leaks through allWarningsAsErrors in the generated sources.
+tasks.withType(KotlinCompile).configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-Xwarning-level=UNSAFE_CAST_RELYING_ON_NULL:disabled")
+    }
 }
 
 def isComposeScreenshotTestsEnabled = providers

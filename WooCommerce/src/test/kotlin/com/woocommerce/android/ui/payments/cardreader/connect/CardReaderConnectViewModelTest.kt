@@ -68,6 +68,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -93,7 +94,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(CardReaderStatus.NotConnected())
     private val cardReaderManager: CardReaderManager = mock {
         on { readerStatus }.thenReturn(readerStatusFlow)
-        on { softwareUpdateStatus }.thenReturn(flow { SoftwareUpdateStatus.Unknown })
+        on { softwareUpdateStatus }.thenReturn(flowOf(SoftwareUpdateStatus.Unknown))
     }
     private val appPrefs: AppPrefsWrapper = mock()
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }

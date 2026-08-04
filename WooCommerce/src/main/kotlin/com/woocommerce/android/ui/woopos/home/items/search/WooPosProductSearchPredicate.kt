@@ -24,8 +24,6 @@ class WooPosProductSearchPredicate @Inject constructor(
         val terms: List<String> = query.split(whitespaceRegex).filter { it.isNotBlank() }.map { it.lowercase() }
 
         return { product ->
-            if (terms.isEmpty()) true
-
             val searchable = listOf(
                 product.name,
                 product.description,

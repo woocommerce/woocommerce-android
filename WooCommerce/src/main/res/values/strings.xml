@@ -2497,6 +2497,14 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+    <string name="support_mobile_status_report">Mobile status report</string>
+    <string name="support_mobile_status_report_detail">App, device and store information from this app</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce mobile status report</string>
+    <string name="support_mobile_status_report_copy_label">Copy mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_label">Share mobile status report</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobile status report copied to clipboard</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Error copying mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_error">Unable to share mobile status report</string>
 
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
