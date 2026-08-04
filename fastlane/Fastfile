@@ -274,22 +274,46 @@ platform :android do
     ensure_git_status_clean
 
     app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
+
+    screenshot_comment = <<~COMMENT.chomp
+      translators: This is a promo message that will be attached on top of a screenshot in the App Store.
+      No specified characters limit here, but try to keep as short as the source one.
+    COMMENT
+
+    # <key in the .pot file> => <path to the .txt file>, or a { path:, comment: } hash to carry a translator comment
     files = {
-      release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP],
-      wear_release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP],
-      play_store_promo: File.join(app_metadata_source_path, 'short_description.txt'),
-      play_store_desc: File.join(app_metadata_source_path, 'full_description.txt'),
-      play_store_app_title: File.join(app_metadata_source_path, 'title.txt'),
-      play_store_screenshot_1: File.join(app_metadata_source_path, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(app_metadata_source_path, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(app_metadata_source_path, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(app_metadata_source_path, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(app_metadata_source_path, 'promo_screenshot_5.txt')
+      release_note: {
+        path: METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP],
+        comment: 'translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!'
+      },
+      wear_release_note: {
+        path: METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP],
+        comment: 'translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!'
+      },
+      play_store_promo: {
+        path: File.join(app_metadata_source_path, 'short_description.txt'),
+        comment: 'translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!'
+      },
+      play_store_desc: {
+        path: File.join(app_metadata_source_path, 'full_description.txt'),
+        comment: 'translators: Multi-paragraph text used to display in the Play Store.'
+      },
+      play_store_app_title: {
+        path: File.join(app_metadata_source_path, 'title.txt'),
+        comment: 'translators: Title to be displayed in the Play Store. Limit to 50 characters including spaces and commas!'
+      }
     }
+    # The promo screenshot captions all share the same translator comment
+    (1..5).each do |index|
+      files[:"play_store_screenshot_#{index}"] = {
+        path: File.join(app_metadata_source_path, "promo_screenshot_#{index}.txt"),
+        comment: screenshot_comment
+      }
+    end
 
     po_path = File.join('fastlane', 'metadata', 'PlayStoreStrings.pot')
 
-    an_update_metadata_source(
+    gp_update_metadata_source(
       po_file_path: po_path,
       source_files: files,
       release_version: version
