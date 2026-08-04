@@ -4027,6 +4027,10 @@
     <string name="woopos_scan_to_pay_retry">Try again</string>
     <string name="woopos_scan_to_pay_cancel">Cancel</string>
     <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Customer chose to pay in person</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">No payment was taken online. Collect it on the register, or show the code again.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Collect on the register</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Show the code again</string>
     <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
     <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>

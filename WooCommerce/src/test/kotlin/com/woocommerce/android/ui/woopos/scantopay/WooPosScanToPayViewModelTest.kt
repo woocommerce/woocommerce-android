@@ -184,7 +184,7 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
-    fun `given QR shown, when customer picks Pay in Person, then payment not detected`() = runTest {
+    fun `given QR shown, when customer picks Pay in Person, then PayInPersonSelected shown`() = runTest {
         // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
@@ -210,7 +210,8 @@ class WooPosScanToPayViewModelTest {
 
         // THEN
         verify(tracker, never()).track(ScanToPayPaymentDetectedViaPolling)
-        assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
+        verify(tracker, never()).track(ScanToPayPaymentFailed)
+        assertThat(viewModel.state.value).isEqualTo(WooPosScanToPayState.PayInPersonSelected)
     }
 
     @Test

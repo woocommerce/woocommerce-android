@@ -60,6 +60,7 @@ class WooPosScanToPayViewModel @Inject constructor(
                 WooPosScanToPayState.Loading -> prepareAndShowQr()
                 is WooPosScanToPayState.ShowingQR -> startPolling()
                 WooPosScanToPayState.PaymentDetected -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+                WooPosScanToPayState.PayInPersonSelected,
                 is WooPosScanToPayState.Failed -> Unit
             }
         }
@@ -130,6 +131,10 @@ class WooPosScanToPayViewModel @Inject constructor(
                     onPaymentDetected()
                     return@launch
                 }
+                if (snapshot.isPaidInPerson()) {
+                    _state.value = WooPosScanToPayState.PayInPersonSelected
+                    return@launch
+                }
             }
             failAndTrack()
         }
@@ -139,6 +144,8 @@ class WooPosScanToPayViewModel @Inject constructor(
     // WooCommerce stamp `datePaid` even though no money has been collected. Only an online gateway
     // means the customer actually paid through the QR code.
     private fun Order.isPaidOnline(): Boolean = isOrderPaid && !isCashPayment
+
+    private fun Order.isPaidInPerson(): Boolean = isOrderPaid && isCashPayment
 
     private suspend fun onPaymentDetected() {
         _state.value = WooPosScanToPayState.PaymentDetected
