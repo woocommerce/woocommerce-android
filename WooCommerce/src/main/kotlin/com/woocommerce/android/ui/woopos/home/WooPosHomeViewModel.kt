@@ -196,6 +196,10 @@ class WooPosHomeViewModel @Inject constructor(
                         PaymentMethod.EXTERNAL
                     )
 
+                    is ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay -> onOrderSuccessfullyPaid(
+                        PaymentMethod.SCAN_TO_PAY
+                    )
+
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals

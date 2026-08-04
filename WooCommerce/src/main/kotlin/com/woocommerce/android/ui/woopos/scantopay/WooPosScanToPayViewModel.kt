@@ -4,9 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayCollectPaymentSuccess
@@ -29,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosScanToPayViewModel @Inject constructor(
     private val repository: WooPosScanToPayRepository,
-    private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val priceFormat: WooPosFormatPrice,
@@ -138,9 +137,7 @@ class WooPosScanToPayViewModel @Inject constructor(
         _state.value = WooPosScanToPayState.PaymentDetected
         analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         analyticsTracker.track(ScanToPayCollectPaymentSuccess)
-        parentToChildrenEventSender.sendToChildren(
-            ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY),
-        )
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay)
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         viewModelScope.launch {
             repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))

@@ -5,9 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
@@ -46,7 +45,7 @@ class WooPosScanToPayViewModelTest {
     val instantTaskRule = InstantTaskExecutorRule()
 
     private val repository: WooPosScanToPayRepository = mock()
-    private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock()
@@ -66,7 +65,7 @@ class WooPosScanToPayViewModelTest {
 
     private fun createViewModel() = WooPosScanToPayViewModel(
         repository = repository,
-        parentToChildrenEventSender = parentToChildrenEventSender,
+        childrenToParentEventSender = childrenToParentEventSender,
         analyticsTracker = tracker,
         resourceProvider = resourceProvider,
         priceFormat = priceFormat,
@@ -162,9 +161,7 @@ class WooPosScanToPayViewModelTest {
             // THEN
             verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
             verify(tracker).track(ScanToPayCollectPaymentSuccess)
-            verify(parentToChildrenEventSender).sendToChildren(
-                eq(ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)),
-            )
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay)
             verify(repository).addOrderNote(orderId, "Customer paid via Scan to Pay")
         }
 
@@ -307,7 +304,7 @@ class WooPosScanToPayViewModelTest {
         // WHEN
         val viewModel = WooPosScanToPayViewModel(
             repository = repository,
-            parentToChildrenEventSender = parentToChildrenEventSender,
+            childrenToParentEventSender = childrenToParentEventSender,
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
@@ -333,7 +330,7 @@ class WooPosScanToPayViewModelTest {
             // GIVEN
             val viewModel = WooPosScanToPayViewModel(
                 repository = repository,
-                parentToChildrenEventSender = parentToChildrenEventSender,
+                childrenToParentEventSender = childrenToParentEventSender,
                 analyticsTracker = tracker,
                 resourceProvider = resourceProvider,
                 priceFormat = priceFormat,
@@ -358,7 +355,7 @@ class WooPosScanToPayViewModelTest {
         // GIVEN
         val viewModel = WooPosScanToPayViewModel(
             repository = repository,
-            parentToChildrenEventSender = parentToChildrenEventSender,
+            childrenToParentEventSender = childrenToParentEventSender,
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,

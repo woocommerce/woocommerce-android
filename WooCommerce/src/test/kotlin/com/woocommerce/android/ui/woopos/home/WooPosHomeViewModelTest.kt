@@ -146,6 +146,26 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
+    fun `when OrderSuccessfullyPaidViaScanToPay received, then totals go fullscreen and sound played`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay)
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(
+                ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
+            )
+            verify(soundHelper).playChaChing()
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
+        }
+
+    @Test
     fun `given state is Checkout NotPaid, when ExitConfirmationDialogDismissed passed, then exit confirmation dialog should be dismissed`() =
         runTest {
             // GIVEN
