@@ -2553,32 +2553,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
                 .isInstanceOf(CardReaderPaymentState.ProcessingPayment::class.java)
         }
 
-    private suspend fun stubPaymentThatThrowsOnCancellation() {
-        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-            flow<CardPaymentStatus> {
-                suspendCancellableCoroutine<Unit> { continuation ->
-                    continuation.invokeOnCancellation {
-                        throw IllegalStateException(
-                            "Cannot cancel this operation while it is waiting for a network response"
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun captureUncaughtExceptions(block: () -> Unit): List<Throwable> {
-        val captured = mutableListOf<Throwable>()
-        val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { _, throwable -> captured.add(throwable) }
-        try {
-            block()
-        } finally {
-            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
-        }
-        return captured
-    }
-
     @Test
     fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
         testBlocking {
@@ -3882,6 +3856,32 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             verify(cardReaderManager, never()).collectPayment(any())
         }
+
+    private suspend fun stubPaymentThatThrowsOnCancellation() {
+        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+            flow<CardPaymentStatus> {
+                suspendCancellableCoroutine<Unit> { continuation ->
+                    continuation.invokeOnCancellation {
+                        throw IllegalStateException(
+                            "Cannot cancel this operation while it is waiting for a network response"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureUncaughtExceptions(block: () -> Unit): List<Throwable> {
+        val captured = mutableListOf<Throwable>()
+        val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable -> captured.add(throwable) }
+        try {
+            block()
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
+        return captured
+    }
 
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
