@@ -85,15 +85,19 @@ class WooLogViewerViewModel @Inject constructor(
     }
 
     private fun shareAllLogs() {
-        launch {
-            isPreparingArchive.value = true
-            val archive = wooFileLogger.archiveLogFiles(deviceInfo = getDeviceInfo().toString())
-            isPreparingArchive.value = false
+        if (!isPreparingArchive.compareAndSet(expect = false, update = true)) return
 
-            if (archive != null) {
-                triggerEvent(ShareLogsArchive(archive))
-            } else {
-                triggerEvent(ShareLogsArchiveFailed)
+        launch {
+            try {
+                val archive = wooFileLogger.archiveLogFiles(deviceInfo = getDeviceInfo().toString())
+
+                if (archive != null) {
+                    triggerEvent(ShareLogsArchive(archive))
+                } else {
+                    triggerEvent(ShareLogsArchiveFailed)
+                }
+            } finally {
+                isPreparingArchive.value = false
             }
         }
     }

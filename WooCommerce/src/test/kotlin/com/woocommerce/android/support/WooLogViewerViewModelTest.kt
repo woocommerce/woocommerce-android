@@ -16,6 +16,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.File
@@ -63,6 +64,23 @@ class WooLogViewerViewModelTest : BaseUnitTest() {
         assertThat(states.map { it.isPreparingArchive }).contains(true)
         assertThat(states.last().isPreparingArchive).isFalse()
     }
+
+    @Test
+    fun `given the archive is being prepared, when share all is clicked again, then it is archived once`() =
+        testBlocking {
+            setup()
+            whenever(wooFileLogger.archiveLogFiles(any())).doSuspendableAnswer {
+                delay(1000)
+                File("woocommerce-logs.zip")
+            }
+            val state = filesListState()
+
+            state.onShareAllClicked()
+            state.onShareAllClicked()
+            advanceUntilIdle()
+
+            verify(wooFileLogger, times(1)).archiveLogFiles(any())
+        }
 
     @Test
     fun `when share all is clicked, then the archive is shared`() = testBlocking {
