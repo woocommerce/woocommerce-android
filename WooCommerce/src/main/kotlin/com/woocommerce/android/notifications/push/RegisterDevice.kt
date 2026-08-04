@@ -108,7 +108,7 @@ class RegisterDevice @Inject constructor(
                             pushNotificationRepository.registerPushTokenInWooCoreSystem(
                                 token = token,
                                 selectedSite = site,
-                                allowWpComFallback = false
+                                allowWpComFallback = trigger != Trigger.SITE_SWITCH
                             )
                         }
                     }
