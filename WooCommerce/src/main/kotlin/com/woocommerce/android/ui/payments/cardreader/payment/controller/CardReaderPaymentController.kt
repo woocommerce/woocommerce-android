@@ -136,6 +136,11 @@ class CardReaderPaymentController(
     }
 
     fun start() {
+        // The view can be recreated while a payment is in flight (rotation, dialog recreation). Cancelling the
+        // scope here would kill the running flow without restarting it, and cancelling an in-flight Stripe
+        // operation throws from its cancellation handler.
+        if (paymentFlowJob?.isActive == true || refundFlowJob?.isActive == true) return
+
         scope.cancel()
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {

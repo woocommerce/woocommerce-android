@@ -2526,6 +2526,63 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given payment in flight, when the flow is restarted, then cancellation handler does not crash`() =
+        testBlocking {
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
+            controller.start()
+
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.start() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
+        }
+
+    @Test
+    fun `given payment in flight, when the flow is restarted, then payment updates are still delivered`() =
+        testBlocking {
+            // GIVEN
+            val paymentStatus = MutableStateFlow<CardPaymentStatus>(InitializingPayment)
+            whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
+            controller.start()
+
+            // WHEN
+            controller.start()
+            paymentStatus.value = ProcessingPayment
+
+            // THEN
+            assertThat(controller.paymentState.value)
+                .isInstanceOf(CardReaderPaymentState.ProcessingPayment::class.java)
+        }
+
+    private suspend fun stubPaymentThatThrowsOnCancellation() {
+        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+            flow<CardPaymentStatus> {
+                suspendCancellableCoroutine<Unit> { continuation ->
+                    continuation.invokeOnCancellation {
+                        throw IllegalStateException(
+                            "Cannot cancel this operation while it is waiting for a network response"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureUncaughtExceptions(block: () -> Unit): List<Throwable> {
+        val captured = mutableListOf<Throwable>()
+        val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable -> captured.add(throwable) }
+        try {
+            block()
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
+        return captured
+    }
+
+    @Test
     fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
         testBlocking {
             whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
