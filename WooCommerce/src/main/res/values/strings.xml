@@ -618,6 +618,8 @@
     <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
+    <string name="orderlist_select_order">Select order %1$s</string>
+    <string name="orderlist_deselect_order">Deselect order %1$s</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
     <string name="orderlist_mark_completed">Mark\ncompleted</string>
