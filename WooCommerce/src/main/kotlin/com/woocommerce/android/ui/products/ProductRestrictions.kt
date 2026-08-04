@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -37,6 +38,7 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
             ProductRestriction.NonPurchasableProducts,
             ProductRestriction.VariableProductsWithNoVariations,
             ProductRestriction.ProductWithPriceNotSpecified,
+            ProductRestriction.SubscriptionProducts,
         )
 }
 
@@ -83,6 +85,16 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     object ProductWithPriceNotSpecified : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
             return product.price == null
+        }
+    }
+
+    @Parcelize
+    object SubscriptionProducts : ProductRestriction() {
+        override val nonSelectableReason: Int
+            get() = R.string.product_selector_subscription_not_supported
+
+        override fun invoke(product: Product): Boolean {
+            return product.productType.isSubscriptionProduct()
         }
     }
 }

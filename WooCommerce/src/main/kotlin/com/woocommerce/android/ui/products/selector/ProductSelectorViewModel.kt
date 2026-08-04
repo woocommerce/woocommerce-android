@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
@@ -265,14 +264,10 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
+        productRestrictions.getNonSelectableRestriction(product = this)?.nonSelectableReason?.let { reason ->
+            return SelectionState.DISABLED(resourceProvider.getString(reason))
+        }
         return when {
-            productType == SUBSCRIPTION ||
-                productType == VARIABLE_SUBSCRIPTION -> {
-                SelectionState.DISABLED(
-                    resourceProvider.getString(R.string.product_selector_subscription_not_supported)
-                )
-            }
-
             isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
