@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -125,7 +126,7 @@ class WooPosScanToPayViewModel @Inject constructor(
                 delay(intervalMs)
 
                 val snapshot = repository.fetchOrderSnapshot(orderId) ?: continue
-                if (snapshot.isOrderPaid) {
+                if (snapshot.isPaidOnline()) {
                     onPaymentDetected()
                     return@launch
                 }
@@ -133,6 +134,11 @@ class WooPosScanToPayViewModel @Inject constructor(
             failAndTrack()
         }
     }
+
+    // Offline gateways such as "Pay in Person" (cod) still move the order to processing, which makes
+    // WooCommerce stamp `datePaid` even though no money has been collected. Only an online gateway
+    // means the customer actually paid through the QR code.
+    private fun Order.isPaidOnline(): Boolean = isOrderPaid && !isCashPayment
 
     private suspend fun onPaymentDetected() {
         _state.value = WooPosScanToPayState.PaymentDetected

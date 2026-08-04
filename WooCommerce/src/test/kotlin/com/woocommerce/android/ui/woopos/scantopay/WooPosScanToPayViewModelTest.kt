@@ -184,20 +184,22 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
-    fun `given QR shown, when polling sees Processing status without datePaid, then payment not detected`() = runTest {
+    fun `given QR shown, when customer picks Pay in Person, then payment not detected`() = runTest {
         // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
             status = Order.Status.Pending,
         )
-        val processingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+        val codOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
-            datePaid = null,
+            datePaid = Date(),
             status = Order.Status.Processing,
+            paymentMethod = "cod",
+            isCashPayment = true,
         )
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
-        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, processingOrder)
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, codOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
 
         // WHEN
