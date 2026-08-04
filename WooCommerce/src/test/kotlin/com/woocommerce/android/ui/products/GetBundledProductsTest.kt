@@ -101,7 +101,7 @@ class GetBundledProductsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a variable bundled product, when the products are processed, then it is marked as variable`() =
+    fun `given bundled products, when the products are processed, then the product type is resolved`() =
         testBlocking {
             // given
             val remoteProductId = 5L
@@ -109,7 +109,7 @@ class GetBundledProductsTest : BaseUnitTest() {
             whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(
                 listOf(
                     WCProductModel().copy(remoteId = RemoteId(25), type = "variable"),
-                    WCProductModel().copy(remoteId = RemoteId(26), type = "simple"),
+                    WCProductModel().copy(remoteId = RemoteId(26), type = "variable-subscription"),
                     WCProductModel().copy(remoteId = RemoteId(27), type = "simple")
                 )
             )
@@ -118,6 +118,10 @@ class GetBundledProductsTest : BaseUnitTest() {
             val result = sut.invoke(remoteProductId).first().associateBy { it.id }
 
             // then
+            assertThat(result.getValue(1).productType).isEqualTo(ProductType.VARIABLE)
+            assertThat(result.getValue(2).productType).isEqualTo(ProductType.VARIABLE_SUBSCRIPTION)
+            assertThat(result.getValue(3).productType).isEqualTo(ProductType.SIMPLE)
+
             assertThat(result.getValue(1).isVariable).isTrue
             assertThat(result.getValue(2).isVariable).isFalse
             assertThat(result.getValue(3).isVariable).isFalse

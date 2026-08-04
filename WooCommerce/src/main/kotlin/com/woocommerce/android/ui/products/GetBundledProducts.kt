@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
@@ -45,7 +44,7 @@ class GetBundledProducts @Inject constructor(
                             attributesDefault = entity.attributesDefault?.map { VariantOption(it) },
                             variationIds = entity.variationIds
                         ),
-                        isVariable = product?.type == CoreProductType.VARIABLE.value
+                        productType = ProductType.fromString(product?.type.orEmpty())
                     )
                 }
             }
