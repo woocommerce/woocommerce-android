@@ -58,6 +58,7 @@ fun WooPosScanToPayScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         state = state,
         onCancelClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CancelClicked) },
         onRetryClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.RetryClicked) },
+        onCollectOnRegisterClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CollectOnRegisterClicked) },
     )
     BackHandler(enabled = state !is WooPosScanToPayState.PaymentDetected) { viewModel.onBackClicked() }
 }
@@ -67,6 +68,7 @@ private fun WooPosScanToPayScreen(
     state: WooPosScanToPayState,
     onCancelClicked: () -> Unit,
     onRetryClicked: () -> Unit,
+    onCollectOnRegisterClicked: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         WooPosToolbar(
@@ -86,7 +88,7 @@ private fun WooPosScanToPayScreen(
                 is WooPosScanToPayState.ShowingQR -> ShowingQR(state = state, onCancelClicked = onCancelClicked)
 
                 WooPosScanToPayState.PayInPersonSelected -> PayInPersonSelected(
-                    onCollectOnRegisterClicked = onCancelClicked,
+                    onCollectOnRegisterClicked = onCollectOnRegisterClicked,
                     onShowQrAgainClicked = onRetryClicked,
                 )
 
@@ -243,6 +245,7 @@ private fun WooPosScanToPayLoadingPreview() {
             state = WooPosScanToPayState.Loading,
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }
@@ -258,6 +261,7 @@ private fun WooPosScanToPayShowingQrPreview() {
             ),
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }
@@ -270,6 +274,7 @@ private fun WooPosScanToPayPayInPersonPreview() {
             state = WooPosScanToPayState.PayInPersonSelected,
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }
@@ -284,6 +289,7 @@ private fun WooPosScanToPayFailedPreview() {
             ),
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }

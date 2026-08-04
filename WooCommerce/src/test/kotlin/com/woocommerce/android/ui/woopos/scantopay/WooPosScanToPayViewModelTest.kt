@@ -184,6 +184,21 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
+    fun `when collect on register clicked, then cart is restored and GoBack emitted`() = runTest {
+        // GIVEN
+        whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.failure(Exception("boom")))
+        val viewModel = createViewModel()
+        runCurrent()
+
+        // WHEN / THEN
+        viewModel.navigationEvent.test {
+            viewModel.onUIEvent(WooPosScanToPayUIEvent.CollectOnRegisterClicked)
+            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+        }
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+    }
+
+    @Test
     fun `given QR shown, when customer picks Pay in Person, then PayInPersonSelected shown`() = runTest {
         // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
@@ -193,10 +208,9 @@ class WooPosScanToPayViewModelTest {
         )
         val codOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
-            datePaid = Date(),
+            datePaid = null,
             status = Order.Status.Processing,
             paymentMethod = "cod",
-            isCashPayment = true,
         )
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, codOrder)

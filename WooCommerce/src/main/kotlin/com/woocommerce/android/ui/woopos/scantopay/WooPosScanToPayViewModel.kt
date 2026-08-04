@@ -73,6 +73,13 @@ class WooPosScanToPayViewModel @Inject constructor(
                 prepareAndShowQr()
             }
             WooPosScanToPayUIEvent.CancelClicked -> onBackClicked()
+            // The customer already placed the order through the QR page, so the cart is sent back to
+            // the register rather than to checkout: the merchant starts a fresh order to collect on.
+            WooPosScanToPayUIEvent.CollectOnRegisterClicked -> viewModelScope.launch {
+                pollingJob?.cancel()
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            }
         }
     }
 
@@ -127,11 +134,14 @@ class WooPosScanToPayViewModel @Inject constructor(
                 delay(intervalMs)
 
                 val snapshot = repository.fetchOrderSnapshot(orderId) ?: continue
-                if (snapshot.isPaidOnline()) {
+                if (snapshot.isOrderPaid) {
                     onPaymentDetected()
                     return@launch
                 }
-                if (snapshot.isPaidInPerson()) {
+                // Online gateways stamp `datePaid` when the money arrives. Offline ones such as
+                // "Pay in Person" only advance the status, so a paid status without `datePaid`
+                // means the customer picked an offline method instead of paying through the QR.
+                if (snapshot.status in OFFLINE_PAYMENT_STATUSES) {
                     _state.value = WooPosScanToPayState.PayInPersonSelected
                     return@launch
                 }
@@ -139,13 +149,6 @@ class WooPosScanToPayViewModel @Inject constructor(
             failAndTrack()
         }
     }
-
-    // Offline gateways such as "Pay in Person" (cod) still move the order to processing, which makes
-    // WooCommerce stamp `datePaid` even though no money has been collected. Only an online gateway
-    // means the customer actually paid through the QR code.
-    private fun Order.isPaidOnline(): Boolean = isOrderPaid && !isCashPayment
-
-    private fun Order.isPaidInPerson(): Boolean = isOrderPaid && isCashPayment
 
     private suspend fun onPaymentDetected() {
         _state.value = WooPosScanToPayState.PaymentDetected
@@ -177,5 +180,10 @@ class WooPosScanToPayViewModel @Inject constructor(
         const val SLOW_POLL_INTERVAL_MS = 5_000L
         const val FAST_POLL_ATTEMPTS = 15
         const val MAX_POLL_ATTEMPTS = 75
+
+        val OFFLINE_PAYMENT_STATUSES: Set<Order.Status> = setOf(
+            Order.Status.Processing,
+            Order.Status.Completed,
+        )
     }
 }
