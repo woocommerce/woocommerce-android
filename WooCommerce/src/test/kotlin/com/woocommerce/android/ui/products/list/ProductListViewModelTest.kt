@@ -16,10 +16,12 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +29,7 @@ import org.mockito.internal.verification.AtLeast
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -144,9 +147,9 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Shows and hides add product button correctly when loading list of products`() =
+    fun `given displayed products, when refreshing, then add product button remains visible`() =
         testBlocking {
-            // when
+            // GIVEN
             doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
 
             createViewModel()
@@ -158,10 +161,11 @@ class ProductListViewModelTest : BaseUnitTest() {
                 }
             }
 
+            // WHEN
             viewModel.loadProducts()
 
-            // then
-            assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
+            // THEN
+            assertThat(isAddProductButtonVisible).containsExactly(true)
         }
 
     @Test
@@ -207,28 +211,34 @@ class ProductListViewModelTest : BaseUnitTest() {
             assertThat(isAddProductButtonVisible).containsExactly(false)
         }
 
-    /* We show the Add Product FAB after searching is completed. */
     @Test
-    fun `Shows add product button after opening and closing search`() =
+    fun `given cached products, when search closes during refresh, then add product button remains visible`() =
         testBlocking {
-            // when
-            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
+            // GIVEN
+            val fetchResult = CompletableDeferred<Result<List<Product>>>()
+            doReturn(false).whenever(networkStatus).isConnected()
+            doReturn(productList).whenever(productRepository).getProductList()
+            whenever(productRepository.fetchProductList()).doSuspendableAnswer { fetchResult.await() }
 
             createViewModel()
+            doReturn(true).whenever(networkStatus).isConnected()
 
-            val isAddProductButtonVisible = ArrayList<Boolean>()
-            viewModel.viewStateLiveData.observeForever { old, new ->
-                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
-                    isAddProductButtonVisible.add(it)
-                }
-            }
+            lateinit var latestViewState: ProductListViewState
+            viewModel.viewStateLiveData.observeForever { _, new -> latestViewState = new }
 
-            viewModel.loadProducts()
+            // WHEN
             viewModel.onSearchOpened()
             viewModel.onSearchClosed()
+            runCurrent()
 
-            // then
-            assertThat(isAddProductButtonVisible).containsExactly(false, true, false)
+            // THEN
+            assertThat(viewModel.productList.value).isEqualTo(productList)
+            assertThat(latestViewState.isLoading).isTrue()
+            assertThat(latestViewState.isAddProductButtonVisible).isTrue()
+
+            fetchResult.complete(Result.success(productList))
+            advanceUntilIdle()
+            assertThat(latestViewState.isAddProductButtonVisible).isTrue()
         }
 
     /* We hide the filters when searching. */
