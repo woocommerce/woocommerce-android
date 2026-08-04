@@ -121,14 +121,10 @@ class CardReaderPaymentController(
 ) {
     @OptIn(InternalCoroutinesApi::class)
     private val scopeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        // Stripe Terminal throws from its coroutine cancellation handler when the operation is still waiting for
-        // a network response. Coroutines report that as CompletionHandlerException through this handler instead
-        // of throwing it to the caller, so it cannot be caught around scope.cancel(). Anything else reaching
-        // here is a real failure and has to keep crashing.
+        // Stripe throws from its cancellation handler while an operation awaits the network. Coroutines route
+        // that here rather than to the caller, so it cannot be caught around scope.cancel().
         if (throwable !is CompletionHandlerException) throw throwable
         WooLog.e(WooLog.T.CARD_READER, SCOPE_CANCELLATION_FAILURE_MESSAGE, throwable)
-        // CompletionHandlerException is not a Stripe type, so it can also come from a handler we do not know
-        // about. Report it as a non-fatal to keep those visible instead of silently swallowing them.
         crashLogging.sendReport(exception = throwable, message = SCOPE_CANCELLATION_FAILURE_MESSAGE)
     }
 
@@ -155,9 +151,7 @@ class CardReaderPaymentController(
     private fun createScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + scopeExceptionHandler)
 
     fun start() {
-        // The view can be recreated while a payment is in flight (rotation, dialog recreation). Cancelling the
-        // scope here would kill the running flow without restarting it, and cancelling an in-flight Stripe
-        // operation throws from its cancellation handler.
+        // The view can be recreated mid-payment (rotation), and the cancel below would kill the flow for good.
         if (paymentFlowJob?.isActive == true || refundFlowJob?.isActive == true) return
 
         scope.cancel()
