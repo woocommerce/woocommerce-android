@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -130,6 +131,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val crashLogging: CrashLogging = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -225,6 +227,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            crashLogging = crashLogging,
         )
     }
 
@@ -3920,6 +3923,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            crashLogging = crashLogging,
         )
     }
 

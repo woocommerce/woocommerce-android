@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -89,6 +90,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.reflect.KMutableProperty0
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
+private const val SCOPE_CANCELLATION_FAILURE_MESSAGE = "Failed to cancel the card reader payment scope"
 
 @Suppress("LongParameterList", "LargeClass")
 class CardReaderPaymentController(
@@ -114,6 +116,7 @@ class CardReaderPaymentController(
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
+    private val crashLogging: CrashLogging,
     private val allowCancelledStatus: Boolean = false,
 ) {
     @OptIn(InternalCoroutinesApi::class)
@@ -123,7 +126,10 @@ class CardReaderPaymentController(
         // of throwing it to the caller, so it cannot be caught around scope.cancel(). Anything else reaching
         // here is a real failure and has to keep crashing.
         if (throwable !is CompletionHandlerException) throw throwable
-        WooLog.e(WooLog.T.CARD_READER, "Failed to cancel the card reader payment scope", throwable)
+        WooLog.e(WooLog.T.CARD_READER, SCOPE_CANCELLATION_FAILURE_MESSAGE, throwable)
+        // CompletionHandlerException is not a Stripe type, so it can also come from a handler we do not know
+        // about. Report it as a non-fatal to keep those visible instead of silently swallowing them.
+        crashLogging.sendReport(exception = throwable, message = SCOPE_CANCELLATION_FAILURE_MESSAGE)
     }
 
     private var scope: CoroutineScope = createScope()
