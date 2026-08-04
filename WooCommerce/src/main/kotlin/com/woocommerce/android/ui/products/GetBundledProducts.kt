@@ -8,6 +8,8 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductType
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -22,8 +24,7 @@ class GetBundledProducts @Inject constructor(
         return productStore.observeBundledProducts(siteModel, productId)
             .map { list ->
                 val remoteIds = list.map { it.bundledProductId }.distinct()
-                val products =
-                    productStore.getProductsByRemoteIds(siteModel, remoteIds).associateBy { it.remoteProductId }
+                val products = getBundledProductsDetails(siteModel, remoteIds)
 
                 list.map { entity ->
                     val product = products[entity.bundledProductId]
@@ -49,5 +50,24 @@ class GetBundledProducts @Inject constructor(
                 }
             }
             .flowOn(dispatchers.io)
+    }
+
+    /**
+     * The bundled products are not necessarily part of the cached product list, so any missing one is fetched to
+     * make sure details such as the product type are available.
+     */
+    private suspend fun getBundledProductsDetails(
+        siteModel: SiteModel,
+        remoteIds: List<Long>
+    ): Map<Long, WCProductModel> {
+        val cachedProducts = productStore.getProductsByRemoteIds(siteModel, remoteIds)
+            .associateBy { it.remoteProductId }
+        val missingIds = remoteIds - cachedProducts.keys
+        if (missingIds.isEmpty()) return cachedProducts
+
+        val fetchedProducts = productStore.fetchProductListSynced(siteModel, missingIds)
+            ?.associateBy { it.remoteProductId }
+            .orEmpty()
+        return cachedProducts + fetchedProducts
     }
 }
