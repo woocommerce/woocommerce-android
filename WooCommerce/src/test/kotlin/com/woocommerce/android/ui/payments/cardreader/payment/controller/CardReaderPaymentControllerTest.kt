@@ -2511,18 +2511,15 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @Test
     fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
         testBlocking {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow<CardPaymentStatus> {
-                    suspendCancellableCoroutine<Unit> { continuation ->
-                        continuation.invokeOnCancellation {
-                            throw IllegalStateException("Cancellation race")
-                        }
-                    }
-                }
-            }
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
             controller.start()
 
-            controller.stop()
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.stop() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
         }
 
     @Test

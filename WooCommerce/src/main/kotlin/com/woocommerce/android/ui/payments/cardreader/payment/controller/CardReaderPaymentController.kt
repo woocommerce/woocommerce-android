@@ -71,6 +71,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CompletionHandlerException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -115,7 +116,17 @@ class CardReaderPaymentController(
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
     private val allowCancelledStatus: Boolean = false,
 ) {
-    private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    @OptIn(InternalCoroutinesApi::class)
+    private val scopeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        // Stripe Terminal throws from its coroutine cancellation handler when the operation is still waiting for
+        // a network response. Coroutines report that as CompletionHandlerException through this handler instead
+        // of throwing it to the caller, so it cannot be caught around scope.cancel(). Anything else reaching
+        // here is a real failure and has to keep crashing.
+        if (throwable !is CompletionHandlerException) throw throwable
+        WooLog.e(WooLog.T.CARD_READER, "Failed to cancel the card reader payment scope", throwable)
+    }
+
+    private var scope: CoroutineScope = createScope()
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     private val _paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> =
@@ -135,6 +146,8 @@ class CardReaderPaymentController(
         _event.emit(event)
     }
 
+    private fun createScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + scopeExceptionHandler)
+
     fun start() {
         // The view can be recreated while a payment is in flight (rotation, dialog recreation). Cancelling the
         // scope here would kill the running flow without restarting it, and cancelling an in-flight Stripe
@@ -142,7 +155,7 @@ class CardReaderPaymentController(
         if (paymentFlowJob?.isActive == true || refundFlowJob?.isActive == true) return
 
         scope.cancel()
-        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        scope = createScope()
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             startFlowWhenReaderConnected()
         } else {
@@ -795,7 +808,6 @@ class CardReaderPaymentController(
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     fun stop() {
         try {
             paymentDataForRetry?.let {
@@ -804,13 +816,7 @@ class CardReaderPaymentController(
         } catch (e: IllegalStateException) {
             WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
         } finally {
-            try {
-                // Stripe Terminal can throw from a coroutine cancellation handler while it is waiting for
-                // a network response; coroutines wrap that in CompletionHandlerException.
-                scope.cancel()
-            } catch (e: CompletionHandlerException) {
-                WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
-            }
+            scope.cancel()
         }
     }
 
