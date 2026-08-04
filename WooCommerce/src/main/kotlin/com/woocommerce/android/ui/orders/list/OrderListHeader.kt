@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
@@ -323,7 +322,7 @@ private fun OrderListBrowsingControls(
                 lastUpdate?.takeIf(String::isNotBlank)?.let { value ->
                     Text(
                         text = value,
-                        color = colorResource(R.color.color_on_surface_medium),
+                        color = WooTheme.colors.surface.onVariant,
                         style = WooTheme.text.bodySmall.regular,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
