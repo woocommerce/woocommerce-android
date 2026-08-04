@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 interface ProductRestrictions {
     val restrictions: List<ProductRestriction>
-    fun isProductRestricted(product: Product): Boolean {
+    fun isProductBlocked(product: Product): Boolean {
         return restrictions.map { restriction -> restriction(product) }
             .fold(false) { acc, result -> acc || result }
     }

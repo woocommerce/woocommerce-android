@@ -21,7 +21,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertTrue {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -34,7 +34,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -48,7 +48,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertTrue {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -62,7 +62,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -75,7 +75,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertTrue {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -88,7 +88,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = OrderCreationProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -159,7 +159,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = ProductFilterProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -173,7 +173,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = ProductFilterProductRestrictions()
 
         assertTrue {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -187,7 +187,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = ProductFilterProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -200,7 +200,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = ProductFilterProductRestrictions()
 
         assertTrue {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
 
@@ -213,7 +213,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
         val sut = ProductFilterProductRestrictions()
 
         assertFalse {
-            sut.isProductRestricted(product)
+            sut.isProductBlocked(product)
         }
     }
     //endregion
