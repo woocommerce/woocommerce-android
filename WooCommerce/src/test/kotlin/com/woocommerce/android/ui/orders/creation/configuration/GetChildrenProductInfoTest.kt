@@ -5,6 +5,7 @@ import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.ui.products.GetBundledProducts
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,7 +50,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
             stockStatus = ProductStockStatus.InStock,
             rules = BundleProductRules(),
             imageUrl = "image2.jpg",
-            isVariable = false
+            productType = ProductType.SIMPLE
         )
         val childProduct2 = BundledProduct(
             id = 3L,
@@ -58,7 +59,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
             title = "Child product 2",
             stockStatus = ProductStockStatus.InStock,
             rules = BundleProductRules(),
-            isVariable = false
+            productType = ProductType.SIMPLE
         )
         val bundledProducts = listOf(childProduct1, childProduct2)
 
