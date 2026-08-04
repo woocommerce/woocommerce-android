@@ -718,7 +718,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -774,7 +774,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -805,7 +805,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -832,7 +832,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -863,7 +863,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -888,7 +888,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -921,7 +921,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -953,7 +953,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -979,7 +979,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1006,7 +1006,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1030,7 +1030,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.isProductBlocked(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 

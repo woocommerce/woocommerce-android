@@ -1000,7 +1000,7 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (productRestrictions.isProductRestricted(product)) {
+        if (productRestrictions.isProductBlocked(product)) {
             handleProductRestrictions(product, source, barcodeFormat)
         } else if (product.isVariable()) {
             handleVariableProduct(product, source, barcodeFormat, selectedItems)
