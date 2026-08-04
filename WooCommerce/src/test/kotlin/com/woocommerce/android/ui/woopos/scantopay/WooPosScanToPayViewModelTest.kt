@@ -184,7 +184,7 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
-    fun `given QR shown, when polling sees Processing status, then payment detected`() = runTest {
+    fun `given QR shown, when polling sees Processing status without datePaid, then payment not detected`() = runTest {
         // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
@@ -199,17 +199,16 @@ class WooPosScanToPayViewModelTest {
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
         whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, processingOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
-        whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
 
         // WHEN
         val viewModel = createViewModel()
         runCurrent()
+        advanceTimeBy(2_500)
+        runCurrent()
 
         // THEN
-        viewModel.navigationEvent.test {
-            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-        }
-        verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
+        verify(tracker, never()).track(ScanToPayPaymentDetectedViaPolling)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosScanToPayState.ShowingQR::class.java)
     }
 
     @Test

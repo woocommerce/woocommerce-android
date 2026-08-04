@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
@@ -126,7 +125,7 @@ class WooPosScanToPayViewModel @Inject constructor(
                 delay(intervalMs)
 
                 val snapshot = repository.fetchOrderSnapshot(orderId) ?: continue
-                if (snapshot.isPaid()) {
+                if (snapshot.isOrderPaid) {
                     onPaymentDetected()
                     return@launch
                 }
@@ -152,11 +151,6 @@ class WooPosScanToPayViewModel @Inject constructor(
         message = resourceProvider.getString(R.string.woopos_scan_to_pay_error_message),
     )
 
-    // `isOrderPaid` only checks `datePaid`; treat Processing/Completed as paid even when the
-    // backend hasn't populated `datePaid` yet, so polling can detect payment as soon as the
-    // status transitions.
-    private fun Order.isPaid(): Boolean = isOrderPaid || status in PAID_STATUSES
-
     override fun onCleared() {
         pollingJob?.cancel()
         super.onCleared()
@@ -170,10 +164,5 @@ class WooPosScanToPayViewModel @Inject constructor(
         const val SLOW_POLL_INTERVAL_MS = 5_000L
         const val FAST_POLL_ATTEMPTS = 15
         const val MAX_POLL_ATTEMPTS = 75
-
-        val PAID_STATUSES: Set<Order.Status> = setOf(
-            Order.Status.Processing,
-            Order.Status.Completed,
-        )
     }
 }
