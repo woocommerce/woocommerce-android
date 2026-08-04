@@ -323,10 +323,11 @@ private fun displayProductsSection(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                enabled = state.selectionEnabled && product.enabled,
+                enabled = state.isSelectable(product),
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
-                }
+                },
+                isLoading = state.isLoading(product)
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -445,10 +446,11 @@ private fun ProductList(
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                    enabled = state.selectionEnabled && product.enabled,
+                    enabled = state.isSelectable(product),
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
-                    }
+                    },
+                    isLoading = state.isLoading(product)
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -515,6 +517,11 @@ private fun ListItem.hasVariations() =
 
 private val ListItem.enabled: Boolean
     get() = selectionState !is SelectionState.DISABLED
+
+private fun ViewState.isSelectable(item: ListItem) =
+    selectionEnabled && item.enabled && !isLoading(item)
+
+private fun ViewState.isLoading(item: ListItem) = loadingItemId == item.id
 
 private val ListItem.disabledReason: String?
     get() = (selectionState as? SelectionState.DISABLED)?.reason
