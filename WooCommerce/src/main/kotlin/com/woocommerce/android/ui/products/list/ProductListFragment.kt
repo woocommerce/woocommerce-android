@@ -334,10 +334,14 @@ class ProductListFragment :
             R.id.products,
         ) { result ->
             when (result) {
-                UpdateStockStatusExitState.Success -> productListViewModel.onRefreshRequested()
-                UpdateStockStatusExitState.Error, UpdateStockStatusExitState.NoChange -> Unit
+                UpdateStockStatusExitState.Success -> {
+                    productListViewModel.onRefreshRequested()
+                    productListViewModel.exitSelectionMode()
+                }
+
+                UpdateStockStatusExitState.Error -> productListViewModel.exitSelectionMode()
+                UpdateStockStatusExitState.NoChange -> Unit
             }
-            productListViewModel.exitSelectionMode()
         }
     }
 
