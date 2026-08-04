@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -77,7 +78,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
     private val productsMapper: ProductsMapper,
-    private val productRestrictions: OrderCreationProductRestrictions
+    private val productRestrictions: OrderCreationProductRestrictions,
+    private val hasUnsupportedBundledProducts: HasUnsupportedBundledProducts
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -110,6 +112,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val selectionEnabled: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, true, "key_selection_enabled")
 
+    private val loadingItemId = MutableStateFlow<Long?>(null)
+
     private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
     private var fetchProductsJob: Job? = null
@@ -133,7 +137,9 @@ class ProductSelectorViewModel @Inject constructor(
         flow6 = filterState,
         flow7 = searchState,
         flow8 = selectionEnabled,
-    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled ->
+        flow9 = loadingItemId,
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled,
+        loadingItemId ->
         ViewState(
             loadingState = loadingState,
             products = products.map {
@@ -145,6 +151,7 @@ class ProductSelectorViewModel @Inject constructor(
             filterState = filterState,
             searchState = searchState,
             selectionMode = navArgs.selectionMode,
+            loadingItemId = loadingItemId,
             productFlow = navArgs.productSelectorFlow,
             screenTitleOverride = navArgs.screenTitleOverride,
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
@@ -377,30 +384,63 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        if (
-            navArgs.productSelectorFlow == OrderListFilter &&
-            _selectedItems.value.containsItemWith(item.id)
-        ) {
-            selectedItemsSource.remove(item.id)
-            _selectedItems.update { it.filter { selectedItem -> selectedItem.id != item.id } }
-        } else {
-            when (item) {
-                is ListItem.ProductListItem -> {
-                    handleProductTap(item, productSource)
-                }
 
-                is ListItem.VariationListItem -> {
-                    handleVariationItemTap(item, productSource)
-                }
+        if (navArgs.productSelectorFlow == OrderListFilter && _selectedItems.value.containsItemWith(item.id)) {
+            deselectItem(item)
+            return
+        }
 
-                is ListItem.ConfigurableListItem -> {
-                    handleConfigurableItemTap(item)
-                }
+        unlessBundleIsUnsellable(item) { selectItem(item, productSource) }
+    }
+
+    private fun deselectItem(item: ListItem) {
+        selectedItemsSource.remove(item.id)
+        _selectedItems.update { items -> items.filter { it.id != item.id } }
+    }
+
+    private fun selectItem(item: ListItem, productSource: ProductSourceForTracking) {
+        when (item) {
+            is ListItem.ProductListItem -> handleProductTap(item, productSource)
+            is ListItem.VariationListItem -> handleVariationItemTap(item, productSource)
+            is ListItem.ConfigurableListItem -> handleConfigurableItemTap(item)
+        }
+    }
+
+    /**
+     * Runs [onSellable], unless [item] is a bundle holding a product which can't be added to an order.
+     *
+     * Anything other than a bundle runs straight away. A bundle takes a request to check, so it runs once that comes
+     * back: the item reports itself as loading in the meantime, and taps arriving before it does are dropped, so a
+     * merchant tapping again can't run [onSellable] twice.
+     */
+    private fun unlessBundleIsUnsellable(item: ListItem, onSellable: () -> Unit) {
+        if (item.type != ProductType.BUNDLE) {
+            onSellable()
+            return
+        }
+        if (loadingItemId.value != null) return
+
+        launch {
+            loadingItemId.value = item.id
+            val isUnsellable = try {
+                hasUnsupportedBundledProducts(item.id)
+            } finally {
+                loadingItemId.value = null
+            }
+
+            if (isUnsellable) {
+                triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
+            } else {
+                onSellable()
             }
         }
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
+        unlessBundleIsUnsellable(item) { editConfiguration(item) }
+    }
+
+    private fun editConfiguration(item: ListItem.ConfigurableListItem) {
         val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
         selectedItem?.configuration?.let {
             triggerEvent(
@@ -700,7 +740,8 @@ class ProductSelectorViewModel @Inject constructor(
         val productFlow: ProductSelectorFlow,
         val screenTitleOverride: String? = null,
         val ctaButtonTextOverride: String? = null,
-        val selectionEnabled: Boolean = true
+        val selectionEnabled: Boolean = true,
+        val loadingItemId: Long? = null
     ) {
         val isDoneButtonEnabled: Boolean =
             selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0 || productFlow == OrderListFilter
