@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
@@ -137,7 +138,9 @@ class WooPosScanToPayViewModel @Inject constructor(
         _state.value = WooPosScanToPayState.PaymentDetected
         analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         analyticsTracker.track(ScanToPayCollectPaymentSuccess)
-        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay)
+        childrenToParentEventSender.sendToParent(
+            ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
+        )
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         viewModelScope.launch {
             repository.addOrderNote(orderId, resourceProvider.getString(R.string.woopos_scan_to_pay_order_note))

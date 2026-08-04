@@ -108,7 +108,7 @@ class WooPosHomeViewModelTest {
         runTest {
             // GIVEN
             whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.OrderSuccessfullyPaidByCard)
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
             )
             val viewModel = createViewModel()
 
@@ -126,11 +126,11 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when OrderSuccessfullyPaidExternally received, then OrderSuccessfullyPaid with EXTERNAL is sent and sound played`() =
+    fun `when OrderSuccessfullyPaid with EXTERNAL received, then event forwarded and sound played`() =
         runTest {
             // GIVEN
             whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.OrderSuccessfullyPaidExternally)
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL))
             )
 
             // WHEN
@@ -146,11 +146,11 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `when OrderSuccessfullyPaidViaScanToPay received, then totals go fullscreen and sound played`() =
+    fun `when OrderSuccessfullyPaid with SCAN_TO_PAY received, then totals go fullscreen and sound played`() =
         runTest {
             // GIVEN
             whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.OrderSuccessfullyPaidViaScanToPay)
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY))
             )
 
             // WHEN
