@@ -81,8 +81,6 @@ class ZendeskTicketRepository @Inject constructor(
 
         val deviceLogs = envDataSource.getFullDeviceLogs()
 
-        // The uploads are independent, so we run them concurrently to wait for the slowest one instead of
-        // the sum of all of them. Failed uploads yield null and are dropped, without affecting the others.
         val attachmentTokens = coroutineScope {
             listOfNotNull(
                 diagnosticLog?.let { async { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) } },
