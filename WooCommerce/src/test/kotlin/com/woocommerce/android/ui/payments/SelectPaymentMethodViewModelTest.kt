@@ -495,6 +495,25 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given share payment url flow, when completed, then stock change is not signalled`() =
+        testBlocking {
+            // GIVEN sharing the link only moves the order to Pending, which does not reduce stock
+            whenever(
+                orderStore.updateOrderStatus(any(), any(), any())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onSharePaymentUrlCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(productStockChangedSignal, never()).notifyStockChanged(any())
+        }
+
+    @Test
     fun `given order payment flow, when on bt reader clicked, then collect tracked with order payment flow`() =
         testBlocking {
             // GIVEN

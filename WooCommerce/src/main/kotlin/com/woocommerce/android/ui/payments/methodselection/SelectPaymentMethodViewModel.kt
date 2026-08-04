@@ -286,7 +286,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             Order.Status.Completed.value,
             CASH_ON_DELIVERY_PAYMENT_TYPE,
             codGateway?.title ?: "Pay in Person",
-        ).handleOrderUpdateResultBeforeExit()
+        ).handleOrderUpdateResultBeforeExit(notifyStockChange = true)
     }
 
     fun onSharePaymentUrlClicked() {
@@ -440,7 +440,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ?: WCOrderStatusModel(statusKey = statusKey, label = statusKey)
     }
 
-    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit(
+        notifyStockChange: Boolean = false
+    ) {
         collect { result ->
             when (result) {
                 is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult ->
@@ -448,7 +450,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                     if (result.event.isError) {
                         withContext(dispatchers.main) { handleUpdateOrderStatusError() }
-                    } else {
+                    } else if (notifyStockChange) {
                         // Emit only after the server confirms so the products' fetch sees the reduced stock.
                         productStockChangedSignal.notifyStockChanged(order.first().getProductIds())
                     }
