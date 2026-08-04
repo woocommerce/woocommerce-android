@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.WooLog
 import javax.inject.Inject
 
 /**
@@ -13,12 +14,18 @@ import javax.inject.Inject
  * [ServerComputed] means the store is eligible for server-calculated refunds: the preview endpoint
  * (`POST /wc/v3/orders/<order_id>/refunds/preview`) resolves the totals and the refund is created
  * with `compute_totals=true`. [LocalComputed] is the legacy flow where totals are calculated
- * on-device and the classic v3 item refund is sent; it exists only for stores below
- * [WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS] and is meant to be deleted once
- * those stores are no longer supported.
+ * on-device and the classic v3 item refund is sent. It is the flow for stores below
+ * [WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS], and also for a disabled feature
+ * flag, an unknown store version, or a store already probed as lacking the server endpoints. It is
+ * meant to be deleted once every supported store ships the server endpoints.
  */
 sealed interface WooPosRefundFlow {
-    data object ServerComputed : WooPosRefundFlow
+    /**
+     * [wooVersion] is the store's WooCommerce version this decision was made against. Callers pass
+     * it back when reading or writing [WooPosServerRefundAvailabilityCache], so a probe result is
+     * never applied to a store running a different version than the one probed.
+     */
+    data class ServerComputed(val wooVersion: String) : WooPosRefundFlow
     data object LocalComputed : WooPosRefundFlow
 }
 
@@ -48,23 +55,34 @@ class WooPosResolveRefundFlow @Inject constructor(
     private val featureFlagRepository: FeatureFlagRepository,
 ) {
     operator fun invoke(): WooPosRefundFlow {
-        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4)) {
-            return WooPosRefundFlow.LocalComputed
+        val wooVersion = getWooCoreVersion()
+        val eligibleVersion = when {
+            !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4) ->
+                fallBackToLocal("feature flag disabled")
+            // Unknown version fails closed: eligibility must never rest on the preview probe alone,
+            // because the preview route does not prove `compute_totals` create support.
+            wooVersion == null -> fallBackToLocal("WooCommerce version unknown")
+            wooVersion.semverCompareTo(MIN_WC_VERSION_FOR_SERVER_REFUNDS) < 0 ->
+                fallBackToLocal("WooCommerce $wooVersion is below $MIN_WC_VERSION_FOR_SERVER_REFUNDS")
+            availabilityCache.isAvailable(selectedSite.get().localId().value, wooVersion) == false ->
+                fallBackToLocal("a preview probe found no server refund support on WooCommerce $wooVersion")
+            else -> wooVersion
         }
-        if (isWooVersionBelowServerRefundSupport()) {
-            return WooPosRefundFlow.LocalComputed
-        }
-        if (availabilityCache.isAvailable(selectedSite.get().localId().value) == false) {
-            return WooPosRefundFlow.LocalComputed
-        }
-        return WooPosRefundFlow.ServerComputed
+
+        return eligibleVersion?.let {
+            WooLog.i(WooLog.T.POS, "WooPosRefund: server calculation eligible on WooCommerce $it")
+            WooPosRefundFlow.ServerComputed(it)
+        } ?: WooPosRefundFlow.LocalComputed
     }
 
-    private fun isWooVersionBelowServerRefundSupport(): Boolean {
-        // Unknown version fails closed: eligibility must never rest on the preview probe alone,
-        // because the preview route does not prove `compute_totals` create support.
-        val version = getWooCoreVersion() ?: return true
-        return version.semverCompareTo(MIN_WC_VERSION_FOR_SERVER_REFUNDS) < 0
+    /**
+     * Logs why the store falls back, then reports "no eligible version" to the caller. Without this
+     * a store on local calculation leaves no trace of the reason, which makes "why are this store's
+     * totals local?" reports hard to answer — especially since an unknown version fails closed.
+     */
+    private fun fallBackToLocal(reason: String): String? {
+        WooLog.i(WooLog.T.POS, "WooPosRefund: using local calculation, $reason")
+        return null
     }
 
     companion object {

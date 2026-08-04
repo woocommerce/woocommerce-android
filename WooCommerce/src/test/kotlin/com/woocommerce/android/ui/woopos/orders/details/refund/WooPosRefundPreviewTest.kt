@@ -69,7 +69,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID)).isNull()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
@@ -84,7 +84,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID)).isTrue()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isTrue()
     }
 
     @Test
@@ -98,7 +98,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID)).isFalse()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isFalse()
     }
 
     @Test
@@ -135,7 +135,7 @@ class WooPosRefundPreviewTest {
         assertThat(result).isEqualTo(
             WooPosRefundPreview.Result.Error(apiError = WooPosRefundApiError.AmountExceedsOrderRemaining)
         )
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID)).isNull()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
     }
 
     @Test
@@ -157,7 +157,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosRefundPreview.Result.Error::class.java)
-        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID)).isNull()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
     }
 
     @Test
@@ -204,7 +204,7 @@ class WooPosRefundPreviewTest {
     @Test
     fun `given server refunds known unavailable, when invoked, then falls back without probing`() = runTest {
         // GIVEN
-        availabilityCache.markUnavailable(LOCAL_SITE_ID)
+        availabilityCache.markUnavailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // WHEN
         val result = sut(ORDER_ID, lineItems)
@@ -236,7 +236,7 @@ class WooPosRefundPreviewTest {
                 id = 102
                 siteId = 0L
             }
-            availabilityCache.markUnavailable(siteA.localId().value)
+            availabilityCache.markUnavailable(siteA.localId().value, MIN_VERSION)
 
             val selectedSiteB: SelectedSite = mock()
             whenever(selectedSiteB.get()).thenReturn(siteB)
@@ -254,7 +254,7 @@ class WooPosRefundPreviewTest {
 
             // THEN siteA's verdict does not poison siteB — it probes the route and is marked available.
             assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
-            assertThat(availabilityCache.isAvailable(siteB.localId().value)).isTrue()
+            assertThat(availabilityCache.isAvailable(siteB.localId().value, MIN_VERSION)).isTrue()
             verify(refundStore).previewRefund(eq(siteB), eq(ORDER_ID), eq(lineItems))
         }
 
@@ -281,5 +281,6 @@ class WooPosRefundPreviewTest {
         private const val LOCAL_SITE_ID = 11
         private const val SITE_ID = 7L
         private const val ORDER_ID = 123L
+        private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
 }
