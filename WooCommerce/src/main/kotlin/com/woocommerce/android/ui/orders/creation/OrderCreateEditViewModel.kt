@@ -1058,6 +1058,7 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
+        val nonSelectableReason = productRestrictions.getNonSelectableRestriction(product)?.nonSelectableReason
         when {
             product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
@@ -1082,6 +1083,17 @@ class OrderCreateEditViewModel @Inject constructor(
                     source,
                     barcodeFormat,
                     "Failed to add a product whose price is not specified"
+                )
+            }
+
+            nonSelectableReason != null -> {
+                sendAddingProductsViaScanningFailedEvent(
+                    message = resourceProvider.getString(nonSelectableReason)
+                )
+                trackProductSearchViaSKUFailureEvent(
+                    source,
+                    barcodeFormat,
+                    "Failed to add a product which is not supported for order creation"
                 )
             }
         }
