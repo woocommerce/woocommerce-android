@@ -1831,6 +1831,38 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given onboarding check completed but cod status fetching, when screen shown, then loading state shown`() =
+        testBlocking {
+            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).doSuspendableAnswer {
+                awaitCancellation()
+            }
+
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.getOrAwaitValue().isLoading).isTrue
+        }
+
+    @Test
+    fun `given cod status fetched but onboarding check in progress, when screen shown, then loading state shown`() =
+        testBlocking {
+            whenever(cardReaderChecker.getOnboardingState()).doSuspendableAnswer {
+                awaitCancellation()
+            }
+
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.getOrAwaitValue().isLoading).isTrue
+        }
+
+    @Test
+    fun `given cod status fetched and onboarding check completed, when screen shown, then loading state hidden`() =
+        testBlocking {
+            initViewModel()
+
+            assertThat(viewModel.viewStateData.getOrAwaitValue().isLoading).isFalse
+        }
+
+    @Test
     fun `given TTP supported country, when user clicks on about ttp, then track proper event`() {
         val supportedCountry: CardReaderConfig = CardReaderConfigForCanada
         whenever(cardReaderCountryConfigProvider.provideCountryConfigFor("CA")).thenReturn(supportedCountry)
