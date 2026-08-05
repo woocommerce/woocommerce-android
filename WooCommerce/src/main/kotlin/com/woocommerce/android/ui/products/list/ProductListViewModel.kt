@@ -245,8 +245,7 @@ class ProductListViewModel @Inject constructor(
                 query = null,
                 isSearchActive = false,
                 isEmptyViewVisible = false,
-                displaySortAndFilterCard = true,
-                isAddProductButtonVisible = true
+                displaySortAndFilterCard = true
             )
             loadProducts()
         }
@@ -386,7 +385,7 @@ class ProductListViewModel @Inject constructor(
                     isEmptyViewVisible = false,
                     isRefreshing = isRefreshing,
                     displaySortAndFilterCard = !showSkeleton,
-                    isAddProductButtonVisible = false
+                    isAddProductButtonVisible = shouldShowAddProductButton()
                 )
                 fetchProductList(loadMore = loadMore, scrollToTop = scrollToTop)
             } else {
@@ -405,17 +404,6 @@ class ProductListViewModel @Inject constructor(
         // - in search/filter result view, show the Add Product FAB, because the empty view doesn't have add button.
         //
         // If there is at least one product in default or search/filter result view, show the Add Product FAB.
-        val shouldShowAddProductButton =
-            if (_productList.value?.isEmpty() == true) {
-                when {
-                    viewState.query != null -> true
-                    productFilterOptions.isNotEmpty() -> true
-                    else -> false
-                }
-            } else {
-                !isSearching()
-            }
-
         val shouldShowEmptyView = if (isSearching()) {
             viewState.query?.isNotEmpty() == true && _productList.value?.isEmpty() == true
         } else {
@@ -429,11 +417,18 @@ class ProductListViewModel @Inject constructor(
             isRefreshing = false,
             canLoadMore = productRepository.canLoadMoreProducts,
             isEmptyViewVisible = shouldShowEmptyView,
-            isAddProductButtonVisible = shouldShowAddProductButton,
+            isAddProductButtonVisible = shouldShowAddProductButton(),
             displaySortAndFilterCard = !isSearching() &&
                 (productFilterOptions.isNotEmpty() || _productList.value?.isNotEmpty() == true)
         )
     }
+
+    private fun shouldShowAddProductButton(): Boolean =
+        if (_productList.value.isNullOrEmpty()) {
+            viewState.query != null || productFilterOptions.isNotEmpty()
+        } else {
+            !isSearching()
+        }
 
     /**
      * If products are already being fetched, wait for the existing job to finish

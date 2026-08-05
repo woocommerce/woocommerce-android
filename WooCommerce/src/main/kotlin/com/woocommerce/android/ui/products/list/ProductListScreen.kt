@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.list
 
 import android.content.Context
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -141,6 +142,17 @@ internal fun ProductListScreen(
         onProductTapped = viewModel::onProductTapped,
         onProductLongPressed = viewModel::onProductLongPressed,
         onProductSelectionToggled = viewModel::toggleProductSelection,
+        onSelectionCloseClicked = viewModel::exitSelectionMode,
+        onSelectionUpdateStatusClicked = {
+            viewModel.onBulkUpdateStatusClicked(selectedProductIds.toList())
+        },
+        onSelectionUpdatePriceClicked = {
+            viewModel.onBulkUpdatePriceClicked(selectedProductIds.toList())
+        },
+        onSelectionUpdateStockStatusClicked = {
+            viewModel.onBulkUpdateStockStatusClicked(selectedProductIds.toList())
+        },
+        onSelectionSelectAllClicked = viewModel::onSelectAllProductsClicked,
         onListAtTopChanged = onListAtTopChanged,
         modifier = modifier,
     )
@@ -191,12 +203,19 @@ internal fun ProductListScreen(
     onProductTapped: (Long) -> Unit,
     onProductLongPressed: (Long) -> Unit,
     onProductSelectionToggled: (Long) -> Unit,
+    onSelectionCloseClicked: () -> Unit,
+    onSelectionUpdateStatusClicked: () -> Unit,
+    onSelectionUpdatePriceClicked: () -> Unit,
+    onSelectionUpdateStockStatusClicked: () -> Unit,
+    onSelectionSelectAllClicked: () -> Unit,
     onListAtTopChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     val showAddProductFab = state.isAddProductAvailable && !state.isSelecting
-    val showBrowsingControls = state.showBrowsingControls && !state.isSearchActive && !state.isSelecting
+    val showBrowsingControls =
+        state.showBrowsingControls && state.headerMode == ProductListHeaderMode.Browsing
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(scrollToTopRequests, listState) {
         scrollToTopRequests.collect { listState.animateScrollToItem(0) }
@@ -206,6 +225,11 @@ internal fun ProductListScreen(
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
         }.collect(onListAtTopChanged)
     }
+    LaunchedEffect(state.headerMode) {
+        if (state.headerMode == ProductListHeaderMode.Selection) {
+            keyboardController?.hide()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -213,27 +237,41 @@ internal fun ProductListScreen(
             .testTag(ProductListTestTags.SCREEN),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (state.isSearchActive) {
-                ProductSearch(
-                    query = state.searchQuery,
-                    isSkuSearch = state.isSkuSearch,
-                    filterCount = state.filterCount,
-                    onQueryChanged = onSearchQueryChanged,
-                    onSearchSubmitted = onSearchSubmitted,
-                    onSearchClosed = onSearchClosed,
-                    onSearchTypeChanged = onSearchTypeChanged,
-                )
-            } else {
-                ProductListHeader(
-                    showActions = !state.isSelecting,
-                    showBarcode = state.isBarcodeScanningAvailable,
-                    showDivider = !showBrowsingControls,
-                    onSearchClicked = onSearchClicked,
-                    onBarcodeClicked = onBarcodeClicked,
-                )
+            AnimatedContent(
+                targetState = state.headerContent,
+                contentKey = ProductListHeaderContent::mode,
+                label = "product-list-header-mode",
+            ) { headerContent ->
+                when (headerContent.mode) {
+                    ProductListHeaderMode.Selection -> ProductSelectionHeader(
+                        selectedProductCount = headerContent.selectedProductCount,
+                        onCloseClicked = onSelectionCloseClicked,
+                        onUpdateStatusClicked = onSelectionUpdateStatusClicked,
+                        onUpdatePriceClicked = onSelectionUpdatePriceClicked,
+                        onUpdateStockStatusClicked = onSelectionUpdateStockStatusClicked,
+                        onSelectAllClicked = onSelectionSelectAllClicked,
+                    )
+                    ProductListHeaderMode.Search -> ProductSearch(
+                        query = state.searchQuery,
+                        isSkuSearch = state.isSkuSearch,
+                        filterCount = state.filterCount,
+                        onQueryChanged = onSearchQueryChanged,
+                        onSearchSubmitted = onSearchSubmitted,
+                        onSearchClosed = onSearchClosed,
+                        onSearchTypeChanged = onSearchTypeChanged,
+                    )
+                    ProductListHeaderMode.Browsing -> ProductListHeader(
+                        showBarcode = state.isBarcodeScanningAvailable,
+                        showDivider = !showBrowsingControls,
+                        onSearchClicked = onSearchClicked,
+                        onBarcodeClicked = onBarcodeClicked,
+                    )
+                }
             }
 
-            if (showBrowsingControls) {
+            AnimatedVisibility(
+                visible = showBrowsingControls,
+            ) {
                 ProductBrowsingControls(
                     sortingTitle = state.sortingTitle,
                     filterCount = state.filterCount,
@@ -282,7 +320,6 @@ internal fun ProductListScreen(
 
 @Composable
 private fun ProductListHeader(
-    showActions: Boolean,
     showBarcode: Boolean,
     showDivider: Boolean,
     onSearchClicked: () -> Unit,
@@ -292,21 +329,19 @@ private fun ProductListHeader(
         title = stringResource(R.string.products),
         showDivider = showDivider,
         actions = {
-            if (showActions) {
+            WooOutlinedIconButton(
+                imageVector = WooIcons.Regular.MagnifyingGlass,
+                contentDescription = stringResource(R.string.product_search_hint),
+                onClick = onSearchClicked,
+                modifier = Modifier.testTag(ProductListTestTags.SEARCH_ACTION),
+            )
+            if (showBarcode) {
                 WooOutlinedIconButton(
-                    imageVector = WooIcons.Regular.MagnifyingGlass,
-                    contentDescription = stringResource(R.string.product_search_hint),
-                    onClick = onSearchClicked,
-                    modifier = Modifier.testTag(ProductListTestTags.SEARCH_ACTION),
+                    imageVector = WooIcons.Regular.BarcodeScan,
+                    contentDescription = stringResource(R.string.scan_barcode),
+                    onClick = onBarcodeClicked,
+                    modifier = Modifier.testTag(ProductListTestTags.BARCODE_ACTION),
                 )
-                if (showBarcode) {
-                    WooOutlinedIconButton(
-                        imageVector = WooIcons.Regular.BarcodeScan,
-                        contentDescription = stringResource(R.string.scan_barcode),
-                        onClick = onBarcodeClicked,
-                        modifier = Modifier.testTag(ProductListTestTags.BARCODE_ACTION),
-                    )
-                }
             }
         },
     )
@@ -512,6 +547,11 @@ private fun ProductListPreview(state: ProductListScreenState) {
             onProductTapped = {},
             onProductLongPressed = {},
             onProductSelectionToggled = {},
+            onSelectionCloseClicked = {},
+            onSelectionUpdateStatusClicked = {},
+            onSelectionUpdatePriceClicked = {},
+            onSelectionUpdateStockStatusClicked = {},
+            onSelectionSelectAllClicked = {},
             onListAtTopChanged = {},
         )
     }

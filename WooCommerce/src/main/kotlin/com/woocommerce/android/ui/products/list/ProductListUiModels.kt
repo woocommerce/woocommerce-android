@@ -26,6 +26,30 @@ internal data class ProductListScreenState(
 
     val selectedProductCount: Int
         get() = selectedProductIds.size
+
+    val headerMode: ProductListHeaderMode
+        get() = when {
+            isSelecting -> ProductListHeaderMode.Selection
+            isSearchActive -> ProductListHeaderMode.Search
+            else -> ProductListHeaderMode.Browsing
+        }
+
+    val headerContent: ProductListHeaderContent
+        get() = ProductListHeaderContent(
+            mode = headerMode,
+            selectedProductCount = selectedProductCount,
+        )
+}
+
+internal data class ProductListHeaderContent(
+    val mode: ProductListHeaderMode,
+    val selectedProductCount: Int,
+)
+
+internal enum class ProductListHeaderMode {
+    Selection,
+    Search,
+    Browsing,
 }
 
 internal data class ProductListItemUiModel(
