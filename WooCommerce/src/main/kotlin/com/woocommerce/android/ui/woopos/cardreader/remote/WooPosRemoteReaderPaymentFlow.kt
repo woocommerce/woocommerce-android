@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
+import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
@@ -39,7 +40,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         val result = collectInternal(order, onCaptureStarting)
         when (result) {
             Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded()
-            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.message)
+            is Result.Failed -> paymentsFlowTracker.trackPaymentFailed(result.errorDescription)
         }
         return result
     }
@@ -52,7 +53,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         val site = selectedSite.get()
         val countryCode = wooStore.getStoreCountryCode(site) ?: run {
             logger.e("Remote payment aborted: store country code unavailable")
-            return Result.Failed(genericFailureMessage())
+            return Result.Failed(genericFailureMessage(), "store_country_code_unavailable")
         }
 
         val paymentInfo = PaymentInfo(
@@ -105,15 +106,24 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
             }
             is CollectPaymentOutcome.Rejected -> {
                 logger.e("Remote payment rejected: ${outcome.code} - ${outcome.description}")
-                Result.Failed(genericFailureMessage())
+                Result.Failed(
+                    message = genericFailureMessage(),
+                    errorDescription = "remote_rejected: ${outcome.code} - ${outcome.description}",
+                )
             }
             CollectPaymentOutcome.TimedOut -> {
                 logger.e("Remote payment timed out waiting for phone reader")
-                Result.Failed(genericFailureMessage())
+                Result.Failed(
+                    message = genericFailureMessage(),
+                    errorDescription = "remote_timed_out: phone reader did not reply in time",
+                )
             }
             is CollectPaymentOutcome.Failed -> {
                 logger.e("Remote payment failed - ${outcome.cause.message}", outcome.cause)
-                Result.Failed(mapFailureToUserMessage(outcome.cause))
+                Result.Failed(
+                    message = mapFailureToUserMessage(outcome.cause),
+                    errorDescription = "remote_failed: ${outcome.cause.describeWithCauses()}",
+                )
             }
         }
     }
@@ -140,7 +150,10 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private suspend fun capture(orderId: Long, paymentIntentId: String): Result =
         when (val response = cardReaderStore.capturePaymentIntent(orderId, paymentIntentId)) {
             is CapturePaymentResponse.Successful -> Result.Completed
-            is CapturePaymentResponse.Error -> Result.Failed(response.message)
+            is CapturePaymentResponse.Error -> Result.Failed(
+                message = response.message,
+                errorDescription = "capture_failed: ${response::class.java.simpleName} - ${response.message}",
+            )
         }
 
     private suspend fun simulatePayment(onCaptureStarting: suspend () -> Unit): Result {
@@ -151,7 +164,14 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
 
     sealed class Result {
         data object Completed : Result()
-        data class Failed(val message: String) : Result()
+
+        /**
+         * [message] is shown to the merchant, [errorDescription] is the diagnostic sent to analytics.
+         */
+        data class Failed(
+            val message: String,
+            val errorDescription: String = message,
+        ) : Result()
     }
 
     private companion object {

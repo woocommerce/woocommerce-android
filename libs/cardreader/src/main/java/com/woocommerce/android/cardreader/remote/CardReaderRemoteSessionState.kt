@@ -14,5 +14,11 @@ sealed class CardReaderRemoteSessionState {
         val tabletName: String?,
     ) : CardReaderRemoteSessionState()
 
-    data class Error(val message: String?) : CardReaderRemoteSessionState()
+    /**
+     * [message] is shown to the merchant, [errorDescription] carries the full cause chain for analytics.
+     */
+    data class Error(
+        val message: String?,
+        val errorDescription: String? = null,
+    ) : CardReaderRemoteSessionState()
 }

@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.RemoteTokenChannelProvider
+import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
@@ -93,8 +94,11 @@ class CardReaderRemoteSession internal constructor(
                 _state.value = CardReaderRemoteSessionState.Idle
                 throw c
             } catch (t: Throwable) {
-                logWrapper.e(LOG_TAG, "Session ended with error: ${t::class.java.name}: ${t.message}")
-                _state.value = CardReaderRemoteSessionState.Error(message = t.toString())
+                logWrapper.e(LOG_TAG, "Session ended with error: ${t.describeWithCauses()}")
+                _state.value = CardReaderRemoteSessionState.Error(
+                    message = t.toString(),
+                    errorDescription = t.describeWithCauses(),
+                )
             } finally {
                 cleanupSync()
                 if (sessionScope === scope) {
