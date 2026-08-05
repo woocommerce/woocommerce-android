@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.list.OrderListItemUIType.SectionHeader
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.Collections
 
 @MainThread
 internal class OrderListPaging2Presenter : AutoCloseable {
@@ -64,13 +63,9 @@ internal class OrderListPaging2Presenter : AutoCloseable {
     }
 
     fun loadedOrderIds(capturedState: State): List<Long> {
-        val orderIds = ArrayList<Long>()
-        capturedState.items.forEach { item ->
-            if (item is OrderListItemUI) {
-                orderIds += item.orderId
-            }
-        }
-        return Collections.unmodifiableList(orderIds)
+        return capturedState.items
+            .filterIsInstance<OrderListItemUI>()
+            .map { it.orderId }
     }
 
     fun markContentChanged() {
