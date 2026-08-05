@@ -237,16 +237,33 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given an unchanged descriptor, when orders reload after search opens, then cached list is restored`() {
+    fun `given an empty active search, when orders reload, then the list presentation stays cleared`() {
         val pagedList = mock<PagedList<OrderListItemUIType>>()
         whenever(pagedListWrapper.data).thenReturn(MutableLiveData(pagedList))
         viewModel.pagedListData.observeForever { }
         viewModel.loadOrders()
+        clearInvocations(getWCOrderListDescriptorWithFilters)
         viewModel.onSearchOpened()
 
         viewModel.loadOrders()
 
-        assertThat(viewModel.pagedListData.value).isSameAs(pagedList)
+        assertThat(viewModel.pagedListData.value).isNull()
+        assertThat(viewModel.emptyViewType.value).isNull()
+        verify(getWCOrderListDescriptorWithFilters, never()).invoke()
+    }
+
+    @Test
+    fun `given a cleared search presentation, when the browsing list emits, then it stays hidden`() {
+        val browsingListData = MutableLiveData<PagedList<OrderListItemUIType>>()
+        whenever(pagedListWrapper.data).thenReturn(browsingListData)
+        viewModel.pagedListData.observeForever { }
+        viewModel.loadOrders()
+        viewModel.onSearchOpened()
+
+        browsingListData.value = mock()
+
+        assertThat(viewModel.pagedListData.value).isNull()
+        assertThat(viewModel.emptyViewType.value).isNull()
     }
 
     @Test
@@ -365,7 +382,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given an active search, when cleared, then normal orders reload and search stays open`() = testBlocking {
+    fun `given an active search, when cleared, then presentation clears and search stays open`() = testBlocking {
         // GIVEN
         clearInvocations(
             getWCOrderListDescriptorWithFilters,
@@ -382,7 +399,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         // THEN
         assertThat(viewModel.viewState.isSearching).isTrue()
         assertThat(viewModel.viewState.searchQuery).isEmpty()
-        verify(getWCOrderListDescriptorWithFilters).invoke()
+        assertThat(viewModel.pagedListData.value).isNull()
+        assertThat(viewModel.emptyViewType.value).isNull()
+        verify(getWCOrderListDescriptorWithFilters, never()).invoke()
         verify(getWCOrderListDescriptorWithFiltersAndSearchQuery, never()).invoke(anyString(), anyBoolean())
         verify(analyticsTracker, never()).track(
             eq(AnalyticsEvent.ORDERS_LIST_SEARCH),

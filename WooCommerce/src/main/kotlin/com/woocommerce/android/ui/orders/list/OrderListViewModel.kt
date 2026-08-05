@@ -200,6 +200,7 @@ class OrderListViewModel @Inject constructor(
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
     private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
+    private var isOrderListPresentationSuppressed = false
 
     private var dismissListErrors = false
     private var searchJob: Job? = null
@@ -271,7 +272,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
-        if (viewState.isSearching && viewState.searchQuery.isNotEmpty()) {
+        if (viewState.isSearching) {
             cancelPendingSearch()
             if (viewState.searchQuery.length < MIN_SEARCH_QUERY_LENGTH) {
                 clearOrderListPresentation()
@@ -319,6 +320,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun restoreClearedOrderListPresentation() {
+        isOrderListPresentationSuppressed = false
         if (_pagedListData.value != null) return
 
         ordersPagedListWrapper?.let { wrapper ->
@@ -417,6 +419,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun clearOrderListPresentation() {
+        isOrderListPresentationSuppressed = true
         _pagedListData.value = null
         _emptyViewType.value = null
     }
@@ -584,6 +587,8 @@ class OrderListViewModel @Inject constructor(
         // This flag is used to ensure that we only retry the first time a timeout happens
         var noTimeoutHappened = true
 
+        isOrderListPresentationSuppressed = false
+
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
         clearLiveDataSources(this.activePagedListWrapper)
@@ -591,6 +596,8 @@ class OrderListViewModel @Inject constructor(
         listenToEmptyViewStateLiveData(pagedListWrapper)
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
+            if (isOrderListPresentationSuppressed) return@addSource
+
             viewState = viewState.copy(isBulkUpdating = false)
             pagedList?.let {
                 displayOrdersBannerOrJitm()
@@ -690,6 +697,11 @@ class OrderListViewModel @Inject constructor(
         val isError = wrapper.listError.value != null
 
         viewModelScope.launch {
+            if (isOrderListPresentationSuppressed) {
+                _emptyViewType.postValue(null)
+                return@launch
+            }
+
             val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
                 when {
                     isError -> EmptyViewType.NETWORK_ERROR
