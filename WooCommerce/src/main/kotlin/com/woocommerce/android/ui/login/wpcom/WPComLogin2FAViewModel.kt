@@ -8,8 +8,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.notifications.push.RegisterDevice
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -56,12 +57,22 @@ class WPComLogin2FAViewModel @Inject constructor(
     private val errorMessage =
         savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = 0, key = "error-message")
 
+    private val hasRequestedSms =
+        savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = false, key = "has-requested-sms")
+
+    private val isRequestingSms = MutableStateFlow(false)
+
+    private val smsRequestState = combine(hasRequestedSms, isRequestingSms) { hasRequestedSms, isRequestingSms ->
+        SmsRequestState(hasRequestedSms, isRequestingSms)
+    }
+
     val viewState = combine(
         flowOf(Pair(navArgs.emailOrUsername, navArgs.password)),
         otp,
         errorMessage,
         loadingMessage,
-    ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, ->
+        smsRequestState
+    ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, smsRequestState ->
         ViewState(
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             emailOrUsername = emailOrUsername,
@@ -69,7 +80,9 @@ class WPComLogin2FAViewModel @Inject constructor(
             otp = otp,
             isSecurityKeySupported = isSecurityKeySupported,
             errorMessage = errorMessage.takeIf { it != 0 },
-            loadingMessage = loadingMessage.takeIf { it != 0 }
+            loadingMessage = loadingMessage.takeIf { it != 0 },
+            hasRequestedSms = smsRequestState.hasRequestedSms,
+            isRequestingSms = smsRequestState.isRequestingSms
         )
     }.asLiveData()
 
@@ -85,24 +98,31 @@ class WPComLogin2FAViewModel @Inject constructor(
         )
     }
 
-    fun onSMSLinkClick() = launch {
-        loadingMessage.value = R.string.requesting_otp
-        wpComLoginRepository.requestTwoStepSMS(
-            emailOrUsername = navArgs.emailOrUsername,
-            password = navArgs.password
-        ).fold(
-            onSuccess = { result ->
-                when (result) {
-                    WPComLoginRepository.SMSRequestResult.UserSignedIn -> fetchAccount()
-                    WPComLoginRepository.SMSRequestResult.SMSRequested ->
-                        triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
+    fun onSmsButtonClick() = launch {
+        if (isRequestingSms.value) return@launch
+
+        isRequestingSms.value = true
+        try {
+            wpComLoginRepository.requestTwoStepSMS(
+                emailOrUsername = navArgs.emailOrUsername,
+                password = navArgs.password
+            ).fold(
+                onSuccess = { result ->
+                    when (result) {
+                        WPComLoginRepository.SMSRequestResult.UserSignedIn -> fetchAccount()
+                        WPComLoginRepository.SMSRequestResult.SMSRequested -> {
+                            hasRequestedSms.value = true
+                            triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_success))
+                        }
+                    }
+                },
+                onFailure = {
+                    triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_failure))
                 }
-            },
-            onFailure = {
-                triggerEvent(ShowSnackbar(R.string.requesting_sms_otp_failure))
-            }
-        )
-        loadingMessage.value = 0
+            )
+        } finally {
+            isRequestingSms.value = false
+        }
     }
 
     fun onContinueClick() = launch {
@@ -213,10 +233,18 @@ class WPComLogin2FAViewModel @Inject constructor(
         val otp: String,
         val isSecurityKeySupported: Boolean = false,
         val errorMessage: Int? = null,
-        val loadingMessage: Int? = null
+        val loadingMessage: Int? = null,
+        val hasRequestedSms: Boolean = false,
+        val isRequestingSms: Boolean = false
     ) {
-        val enableSubmit = otp.isNotBlank()
+        val enableSubmit = otp.isNotBlank() && !isRequestingSms && loadingMessage == null
+        val canUseAlternateMethods = !isRequestingSms && loadingMessage == null
     }
+
+    private data class SmsRequestState(
+        val hasRequestedSms: Boolean,
+        val isRequestingSms: Boolean
+    )
 
     data class StartPasskeyAuthentication(
         val userId: String,
