@@ -6,10 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentActivity
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONTEXT
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.main.BackPressTracker
+import com.woocommerce.android.ui.main.BackPressTrackerOwner
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -28,6 +35,10 @@ class BaseFragmentTest {
         // THEN
         assertThat(setup.fragment.backPressCalls).isEqualTo(1)
         assertThat(setup.hostBackPressCalls()).isZero()
+        verify(setup.analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.BACK_PRESSED,
+            properties = mapOf(KEY_CONTEXT to BackPressTestActivity::class.java.simpleName)
+        )
     }
 
     @Test
@@ -58,7 +69,9 @@ class BaseFragmentTest {
     }
 
     private fun givenBackPressSetup(allowBackPress: Boolean): BackPressSetup {
-        val activity = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
+        val activity = Robolectric.buildActivity(BackPressTestActivity::class.java).setup().get()
+        val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+        activity.backPressTracker = BackPressTracker(analyticsTrackerWrapper)
         var hostBackPressCalls = 0
         activity.onBackPressedDispatcher.addCallback(
             activity,
@@ -74,7 +87,11 @@ class BaseFragmentTest {
         activity.supportFragmentManager.beginTransaction()
             .add(android.R.id.content, fragment)
             .commitNow()
-        return BackPressSetup(activity, fragment) { hostBackPressCalls }
+        return BackPressSetup(activity, fragment, analyticsTrackerWrapper) { hostBackPressCalls }
+    }
+
+    class BackPressTestActivity : FragmentActivity(), BackPressTrackerOwner {
+        override lateinit var backPressTracker: BackPressTracker
     }
 
     class TestBackPressFragment : BaseFragment(), BackPressListener {
@@ -95,8 +112,9 @@ class BaseFragmentTest {
     }
 
     private data class BackPressSetup(
-        val activity: FragmentActivity,
+        val activity: BackPressTestActivity,
         val fragment: TestBackPressFragment,
+        val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
         val hostBackPressCalls: () -> Int
     )
 }

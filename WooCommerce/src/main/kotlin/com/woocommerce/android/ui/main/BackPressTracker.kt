@@ -2,17 +2,27 @@ package com.woocommerce.android.ui.main
 
 import android.app.Activity
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.window.OnBackInvokedDispatcher
+import androidx.annotation.MainThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONTEXT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
+@ActivityScoped
 class BackPressTracker @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) {
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    // A consumed callback can enqueue a pop, so both tracking reports arrive before the main queue advances.
+    private var trackedInCurrentMainLoop = false
+
     fun register(activity: Activity, fragmentManager: FragmentManager) {
         fragmentManager.addOnBackStackChangedListener(backStackChangedListener(activity))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
@@ -24,7 +34,14 @@ class BackPressTracker @Inject constructor(
         }
     }
 
+    @MainThread
     internal fun trackBackPressed(view: Any) {
+        if (trackedInCurrentMainLoop) return
+
+        trackedInCurrentMainLoop = true
+        mainHandler.post {
+            trackedInCurrentMainLoop = false
+        }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.BACK_PRESSED,
             properties = mapOf(KEY_CONTEXT to view::class.java.simpleName)
@@ -45,4 +62,8 @@ class BackPressTracker @Inject constructor(
             trackedCurrentPop = false
         }
     }
+}
+
+interface BackPressTrackerOwner {
+    val backPressTracker: BackPressTracker
 }

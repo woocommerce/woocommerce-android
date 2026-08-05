@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.main
 
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -10,10 +11,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -21,6 +24,7 @@ import org.robolectric.annotation.Config
 class BackPressTrackerTest {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private lateinit var activity: FragmentActivity
+    private lateinit var backPressTracker: BackPressTracker
     private lateinit var fragmentManager: FragmentManager
 
     @Before
@@ -30,7 +34,8 @@ class BackPressTrackerTest {
         fragmentManager.beginTransaction()
             .add(Fragment(), INITIAL_FRAGMENT_TAG)
             .commitNow()
-        BackPressTracker(analyticsTrackerWrapper).register(activity, fragmentManager)
+        backPressTracker = BackPressTracker(analyticsTrackerWrapper)
+        backPressTracker.register(activity, fragmentManager)
     }
 
     @Test
@@ -55,6 +60,38 @@ class BackPressTrackerTest {
 
         // THEN
         verifyNoInteractions(analyticsTrackerWrapper)
+    }
+
+    @Test
+    fun `given consumed back is tracked, when it also pops, then back press is tracked exactly once`() {
+        // GIVEN
+        givenForwardNavigation()
+        backPressTracker.trackBackPressed(activity)
+
+        // WHEN
+        fragmentManager.popBackStackImmediate()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            stat = AnalyticsEvent.BACK_PRESSED,
+            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
+        )
+    }
+
+    @Test
+    fun `given previous tracking completed, when back is pressed again, then both presses are tracked`() {
+        // GIVEN
+        backPressTracker.trackBackPressed(activity)
+        shadowOf(Looper.getMainLooper()).idle()
+
+        // WHEN
+        backPressTracker.trackBackPressed(activity)
+
+        // THEN
+        verify(analyticsTrackerWrapper, times(2)).track(
+            stat = AnalyticsEvent.BACK_PRESSED,
+            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
+        )
     }
 
     private fun givenForwardNavigation() {

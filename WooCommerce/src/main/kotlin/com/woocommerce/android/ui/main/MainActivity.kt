@@ -148,6 +148,7 @@ class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
+    BackPressTrackerOwner,
     MainBottomNavigationView.MainNavigationListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
@@ -209,7 +210,7 @@ class MainActivity :
     lateinit var posTabController: WooPosTabController
 
     @Inject
-    lateinit var backPressTracker: BackPressTracker
+    override lateinit var backPressTracker: BackPressTracker
 
     private val viewModel: MainActivityViewModel by viewModels()
 

@@ -6,6 +6,7 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BackPressTrackerOwner
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -26,8 +27,7 @@ open class BaseFragment : Fragment, BaseFragmentView {
             if (listener.onRequestAllowBackPress()) {
                 continueBackNavigation()
             } else {
-                // Consumed presses do not change the back stack, so BackPressTracker cannot observe them.
-                AnalyticsTracker.trackBackPressed(requireActivity())
+                trackConsumedBackPress()
             }
         }
     }
@@ -58,6 +58,12 @@ open class BaseFragment : Fragment, BaseFragmentView {
         } finally {
             backPressedCallback.isEnabled = true
         }
+    }
+
+    private fun trackConsumedBackPress() {
+        val activity = requireActivity()
+        (activity as? BackPressTrackerOwner)?.backPressTracker?.trackBackPressed(activity)
+            ?: AnalyticsTracker.trackBackPressed(activity)
     }
 
     fun updateActivityTitle() {
