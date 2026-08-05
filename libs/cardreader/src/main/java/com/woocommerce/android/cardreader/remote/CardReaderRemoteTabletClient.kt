@@ -95,7 +95,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
                 logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
                 val reply = opened.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
+                    ?: throw IllegalStateException(CONNECT_FAILED_MESSAGE)
                 when (reply) {
                     is ConnectAck -> {
                         bridgeClosedSignal(opened)
@@ -126,15 +126,15 @@ internal class DefaultCardReaderRemoteTabletClient(
             throw cancel
         } catch (cause: IOException) {
             disconnect()
-            ConnectOutcome.Failed(IllegalStateException(CONNECTION_LOST_MESSAGE, cause))
+            ConnectOutcome.Failed(IllegalStateException(CONNECT_FAILED_MESSAGE, cause))
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
-            ConnectOutcome.Failed(mapToConnectionLostIfIo(cause))
+            ConnectOutcome.Failed(mapToConnectFailedIfIo(cause))
         }
     }
 
-    private fun mapToConnectionLostIfIo(cause: Exception): Exception =
-        if (cause is java.io.IOException) IllegalStateException(CONNECTION_LOST_MESSAGE, cause) else cause
+    private fun mapToConnectFailedIfIo(cause: Exception): Exception =
+        if (cause is IOException) IllegalStateException(CONNECT_FAILED_MESSAGE, cause) else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
@@ -203,6 +203,11 @@ internal class DefaultCardReaderRemoteTabletClient(
     private companion object {
         const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
         const val TAG = "CardReaderRemoteTabletClient"
+
+        // Reported while establishing a session — the reader was never connected.
+        const val CONNECT_FAILED_MESSAGE = "Could not connect to phone reader"
+
+        // Reported once a session was established and then dropped.
         const val CONNECTION_LOST_MESSAGE = "Connection to phone reader was lost"
     }
 }
