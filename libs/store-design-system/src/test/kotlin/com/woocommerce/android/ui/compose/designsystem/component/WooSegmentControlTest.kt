@@ -63,6 +63,20 @@ class WooSegmentControlTest {
     }
 
     @Test
+    fun `given controlled selection, when selected segment is clicked, then callback receives selected index`() {
+        // GIVEN
+        var callbackIndex: Int? = null
+        givenSegmentControl(selectedIndex = 1, onSelectedIndexChange = { callbackIndex = it })
+
+        // WHEN
+        composeTestRule.onNodeWithText(OPTIONS[1]).performClick()
+
+        // THEN
+        composeTestRule.runOnIdle { assertThat(callbackIndex).isEqualTo(1) }
+        composeTestRule.onNodeWithText(OPTIONS[1]).assertIsSelected()
+    }
+
+    @Test
     fun `given disabled control, when a segment is clicked, then items are disabled and callback is suppressed`() {
         // GIVEN
         var callbackCount = 0

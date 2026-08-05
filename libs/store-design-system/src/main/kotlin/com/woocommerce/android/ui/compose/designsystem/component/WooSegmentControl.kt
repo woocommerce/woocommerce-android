@@ -13,7 +13,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -125,7 +124,6 @@ private fun WooSegmentControlItem(
 
     Box(
         modifier = modifier
-            .minimumInteractiveComponentSize()
             .height(MIN_INTERACTIVE_SIZE)
             .selectable(
                 selected = selected,
@@ -147,18 +145,16 @@ private fun WooSegmentControlItem(
                     interactionSource = interactionSource,
                     indication = ripple(bounded = true),
                 ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = label,
-                color = contentColor,
-                style = textStyle,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                softWrap = false,
-                modifier = Modifier.padding(horizontal = LABEL_HORIZONTAL_PADDING),
-            )
-        }
+        )
+        Text(
+            text = label,
+            color = contentColor,
+            style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
+            modifier = Modifier.padding(horizontal = LABEL_HORIZONTAL_PADDING),
+        )
     }
 }
 

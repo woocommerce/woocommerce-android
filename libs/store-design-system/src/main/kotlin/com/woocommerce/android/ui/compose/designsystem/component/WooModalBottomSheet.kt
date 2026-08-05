@@ -2,12 +2,16 @@
 
 package com.woocommerce.android.ui.compose.designsystem.component
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,9 +20,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
@@ -30,36 +37,72 @@ fun WooModalBottomSheet(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val colors = WooTheme.colors
+    val boundaryWidth = WooTheme.stroke.thin
+    val boundaryColor = colors.surface.onVariantLowest
+    val surfaceColor = colors.surface.bright
     val shape = RoundedCornerShape(
         topStart = WooTheme.radius.extraLarge,
         topEnd = WooTheme.radius.extraLarge,
     )
+    val contentWindowInsets = BottomSheetDefaults.windowInsets
 
     ModalBottomSheet(
         sheetState = state.materialState,
         onDismissRequest = onDismissRequest,
-        modifier = modifier.border(
-            width = WooTheme.stroke.thin,
-            color = WooTheme.colors.surface.onVariantLowest,
-            shape = shape,
-        ),
+        modifier = modifier,
         shape = shape,
-        containerColor = WooTheme.colors.surface.bright,
-        contentColor = WooTheme.colors.surface.onDefault,
+        // The Material Surface moves with its anchored placement, so its exposed edge is the boundary.
+        containerColor = boundaryColor,
+        contentColor = colors.surface.onDefault,
         tonalElevation = 0.dp,
-        dragHandle = { WooModalBottomSheetDragHandle() },
-        content = content,
-    )
+        dragHandle = {
+            WooModalBottomSheetDragHandle(
+                contentWindowInsets = contentWindowInsets,
+                boundaryWidth = boundaryWidth,
+                surfaceColor = surfaceColor,
+            )
+        },
+        contentWindowInsets = { WindowInsets(0) },
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = boundaryWidth, end = boundaryWidth, bottom = boundaryWidth)
+                .background(surfaceColor)
+                .windowInsetsPadding(contentWindowInsets.only(WindowInsetsSides.Bottom)),
+            content = content,
+        )
+    }
 }
 
 @Composable
-private fun WooModalBottomSheetDragHandle() {
-    BottomSheetDefaults.DragHandle(
-        width = 32.dp,
-        height = 4.dp,
-        shape = RoundedCornerShape(WooTheme.radius.full),
-        color = WooTheme.colors.surface.onVariantLowest,
+private fun WooModalBottomSheetDragHandle(
+    contentWindowInsets: WindowInsets,
+    boundaryWidth: Dp,
+    surfaceColor: Color,
+) {
+    val innerCornerRadius = WooTheme.radius.extraLarge - boundaryWidth
+    val innerShape = RoundedCornerShape(
+        topStart = innerCornerRadius,
+        topEnd = innerCornerRadius,
     )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = boundaryWidth, top = boundaryWidth, end = boundaryWidth)
+            .background(surfaceColor, innerShape)
+            .windowInsetsPadding(contentWindowInsets.only(WindowInsetsSides.Top)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        BottomSheetDefaults.DragHandle(
+            width = 32.dp,
+            height = 4.dp,
+            shape = RoundedCornerShape(WooTheme.radius.full),
+            color = WooTheme.colors.surface.onVariantLowest,
+        )
+    }
 }
 
 @PreviewLightDark
