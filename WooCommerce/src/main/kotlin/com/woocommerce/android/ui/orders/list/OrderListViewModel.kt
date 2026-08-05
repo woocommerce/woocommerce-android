@@ -1043,7 +1043,10 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(
             Event.ShowUndoSnackbar(
                 message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
-                undoAction = { cancelExcludingOrder() },
+                undoAction = {
+                    viewState = viewState.copy(restoredOrderIdPendingReveal = orderId)
+                    cancelExcludingOrder()
+                },
                 dismissAction = object : Snackbar.Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                         if (event != DISMISS_EVENT_ACTION) {
@@ -1053,6 +1056,12 @@ class OrderListViewModel @Inject constructor(
                 }
             )
         )
+    }
+
+    fun onRestoredOrderRevealHandled(orderId: Long) {
+        if (viewState.restoredOrderIdPendingReveal != orderId) return
+
+        viewState = viewState.copy(restoredOrderIdPendingReveal = null)
     }
 
     fun onOrderLongPressed(orderId: Long): Boolean {
@@ -1315,6 +1324,7 @@ class OrderListViewModel @Inject constructor(
         val isSearching: Boolean = false,
         val searchQuery: String = "",
         val isBulkUpdating: Boolean = false,
+        val restoredOrderIdPendingReveal: Long? = null,
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

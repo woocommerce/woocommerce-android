@@ -1366,6 +1366,34 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         assertThat(event).isInstanceOf(ShowErrorSnack::class.java)
     }
+
+    @Test
+    fun `when order trash is undone, then restored order stays pending until its reveal is handled`() = testBlocking {
+        // GIVEN
+        viewModel.loadOrders()
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+
+        // WHEN
+        undoSnackbar.undoAction.onClick(mock())
+
+        // THEN
+        assertThat(viewModel.viewState.restoredOrderIdPendingReveal).isEqualTo(1L)
+        verify(orderListRepository, never()).trashOrder(any())
+
+        // WHEN
+        viewModel.onRestoredOrderRevealHandled(2L)
+
+        // THEN
+        assertThat(viewModel.viewState.restoredOrderIdPendingReveal).isEqualTo(1L)
+
+        // WHEN
+        viewModel.onRestoredOrderRevealHandled(1L)
+
+        // THEN
+        assertThat(viewModel.viewState.restoredOrderIdPendingReveal).isNull()
+    }
     //endregion
 
     @Test

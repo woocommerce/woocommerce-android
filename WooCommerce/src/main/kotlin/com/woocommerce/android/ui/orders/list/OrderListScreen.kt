@@ -165,6 +165,19 @@ internal fun OrderListScreen(
             currentCreatedOrderHandled.value()
         }
     }
+    LaunchedEffect(
+        viewState.restoredOrderIdPendingReveal,
+        presentation.generation,
+        presentation.contentRevision,
+    ) {
+        val restoredOrderId = viewState.restoredOrderIdPendingReveal ?: return@LaunchedEffect
+        val restoredOrderIndex = presenter.indexOfOrder(presentation, restoredOrderId)
+            ?: return@LaunchedEffect
+        runProgrammaticScroll {
+            listState.scrollToItem(restoredOrderIndex)
+        }
+        viewModel.onRestoredOrderRevealHandled(restoredOrderId)
+    }
     LaunchedEffect(listState) {
         snapshotFlow {
             listState.isScrollInProgress to programmaticScrollCount
