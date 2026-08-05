@@ -32,6 +32,8 @@ The current module exposes Figma-backed production Compose APIs for:
 - Static notice banners.
 - Page headers.
 - Controlled search fields.
+- Label-only segment controls with two to five options.
+- Modal bottom sheets with Woo-owned styling and caller-owned state/content.
 - Top text tabs.
 - Design-system top app bars with descriptor actions.
 
@@ -129,8 +131,8 @@ component split does not add module screenshot infrastructure.
 | Switch Settings Row | `WooSwitchSettingsRow` | material_adapter | Composes the Figma-backed cell layout with the `WooSwitch` Material 3 / token adapter. Keep one row-level toggle action and avoid duplicate child semantics. |
 | Tabs | `WooTabRow`, `WooTab` | production | Surface Bright top text tabs with Tint On Surface 16 dividers; bottom tab bar parity remains preview-only and app-shell-owned. |
 | Top App Bar | `WooTopAppBar`, `WooTopAppBarAction`, `WooDesignSystemToolbar` | production | Surface Bright Android API for Figma's `Top Navigation Bar`. `WooDesignSystemToolbar` applies matching XML chrome without replacing `MenuItem.actionView`, preserving `SearchView`, custom action views, ActionMode, collapsing behavior, overflow, and menu ownership. |
-| Segment Control | Private catalog sample | preview_only | Surface Bright selected segment on a Primary Container Tint 16 track; no public API yet. |
-| Sheets | Private catalog sample | preview_only | Surface Bright body with On Surface Variant Lowest thin boundary/handle. Requires real screen decisions for state, dismissal, navigation, and semantics. |
+| Segment Control | `WooSegmentControl` | production | Controlled, label-only radio group for two to five nonblank options. The caller owns selection. Figma has no disabled variant, so Android uses established disabled state-layer/content tokens for the whole-control fallback. |
+| Modal Bottom Sheet | `WooModalBottomSheet`, `WooModalBottomSheetState`, `rememberWooModalBottomSheetState` | production | Narrow Store adapter with Surface Bright, On Surface content, 16dp top corners, thin lowest-variant boundary, and a 32x4dp lowest-variant handle. The caller owns composition, state, dismissal, and content; Material owns modal/platform behavior. |
 | Bottom Tab Bar | Private catalog sample | preview_only | App-shell navigation ownership remains out of component split scope. |
 | Table | Private catalog sample | preview_only | Explicit Surface Bright shell with a thin outer boundary and tint-layer row dividers. Requires data model, scrolling, sorting/selection, and accessibility semantics before a public API. |
 
@@ -158,3 +160,6 @@ Preview-only components may exist only as private/internal catalog or preview im
 Do not expose preview-only components as reusable public APIs. This keeps product-screen migrations
 and AI agents from importing components whose API would encode unstable design, navigation, or data
 semantics.
+
+Bottom Tab Bar and Table remain preview-only. Segment Control and Modal Bottom Sheet are production
+APIs and their interactive catalog examples must use the public components.

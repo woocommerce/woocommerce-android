@@ -165,6 +165,21 @@ The current toolbar direction is a unified design-system visual look, not one fo
 13. Before final merge, verify the controlled root-API rename boundary with the strict `rg` audits
     defined in [rollout-direction.md](rollout-direction.md).
 
+### Segment Control and Modal Bottom Sheet adoption
+
+- Use `WooSegmentControl` only for controlled, label-only selection with two to five options. Pass
+  the selected index and update it in the caller; do not add internal selection or per-item enabled
+  state. The whole-control disabled treatment is an Android fallback because Figma has no disabled
+  variant.
+- Keep modal sheet composition, `WooModalBottomSheetState`, dismissal callbacks, and business
+  content in the screen. Use `rememberWooModalBottomSheetState()` and `WooModalBottomSheet` without
+  reaching through to Material sheet types or adding screen-specific styling knobs.
+- Material owns modal gestures, scrim, back handling, focus/pane/traversal semantics, maximum width,
+  insets, IME, and platform behavior. Screen code must not reproduce those behaviors around the Woo
+  wrapper.
+- Migrating a sheet or segment control does not authorize copy, analytics, navigation, ViewModel,
+  loading/error, or merchant-action changes.
+
 ## Android Migration Skill
 
 When migrating XML/View layouts to Compose, use the Android skill as a workflow reference:

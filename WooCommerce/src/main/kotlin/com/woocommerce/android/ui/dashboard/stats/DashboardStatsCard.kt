@@ -14,17 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -56,6 +48,9 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -330,7 +325,6 @@ private fun StatsChart(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RevenueStatsTypeSelector(
     selectedType: DashboardStatsViewModel.RevenueStatsType,
@@ -338,34 +332,14 @@ private fun RevenueStatsTypeSelector(
     modifier: Modifier = Modifier
 ) {
     val options = DashboardStatsViewModel.RevenueStatsType.OPTIONS
-    val segmentedButtonColors = SegmentedButtonDefaults.colors(
-        activeContainerColor = WooTheme.colors.primary,
-        activeContentColor = WooTheme.colors.onPrimary,
+    WooSegmentControl(
+        options = options.map { stringResource(id = it.labelRes) },
+        selectedIndex = options.indexOf(selectedType),
+        onSelectedIndexChange = { onTypeSelected(options[it]) },
+        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp),
     )
-
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp)
-    ) {
-        options.forEachIndexed { index, type ->
-            SegmentedButton(
-                selected = selectedType == type,
-                onClick = { onTypeSelected(type) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                colors = segmentedButtonColors,
-                icon = {},
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(id = type.labelRes),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderDateTypeBottomSheet(
     state: DashboardStatsViewModel.OrderDateTypeUiState,
@@ -373,21 +347,12 @@ private fun OrderDateTypeBottomSheet(
     onSelect: (WCAnalyticsOrderDateType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
 
-    ModalBottomSheet(
-        sheetState = sheetState,
+    WooModalBottomSheet(
+        state = sheetState,
         onDismissRequest = onDismiss,
         modifier = modifier,
-        shape = RoundedCornerShape(
-            topStart = WooTheme.radius.extraLarge,
-            topEnd = WooTheme.radius.extraLarge,
-        ),
-        containerColor = WooTheme.colors.surface.default,
-        contentColor = WooTheme.colors.surface.onDefault,
-        dragHandle = {
-            BottomSheetDefaults.DragHandle(color = WooTheme.colors.outline)
-        },
     ) {
         Column(
             modifier = Modifier

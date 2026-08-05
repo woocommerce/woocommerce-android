@@ -316,8 +316,8 @@ overrides stale resolved values in the published library.
 | Top Navigation Bar and XML toolbar | `surface.bright` shell; global divider tint; navigation-button borders use `outlineVariant` at regular stroke | XML ownership and behavior remain unchanged. |
 | Page Header | `surface.bright` shell and global divider tint | No geometry change. |
 | Search | `surface.bright` shell; `stateLayers.onSurface.opacity24` placeholder | Active search and clear icons use `surface.onDefault`; the inner field remains `surface.surfaceDim`. |
-| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Preview-only API boundary is unchanged. |
-| Sheet | `surface.bright` body; `surface.onVariantLowest` thin boundary and handle | Preview-only geometry/API remains unchanged. |
+| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Production label-only control. Selected text uses `surface.onDefault`; unselected text uses `container.onPrimaryContainer`. Because Figma has no disabled variant, the Android whole-control fallback uses `stateLayers.onSurface.opacity08` / `opacity16` containers and `opacity24` content. |
+| Modal Bottom Sheet | `surface.bright` body; `surface.onVariantLowest` thin boundary and handle | Production narrow wrapper. Material continues to own scrim, width, insets, gestures, focus, semantics, and platform behavior. |
 | Tab Bar and Tabs | `surface.bright` shell and global divider tint | Tab Bar remains preview-only. |
 | Table | Explicit `surface.bright` shell with thin outer stroke and global divider tint | Preview-only data/API boundary is unchanged. |
 | Divider | `tintLayers.onSurface.opacity16` | Applies to standalone, vertical, navigation, page-header, tab, and table dividers. |
