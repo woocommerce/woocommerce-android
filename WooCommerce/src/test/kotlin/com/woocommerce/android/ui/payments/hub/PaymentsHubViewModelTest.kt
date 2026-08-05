@@ -1958,7 +1958,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `given onboarding check completed but cod status fetching, when screen shown, then loading state shown`() =
         testBlocking {
-            whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).doSuspendableAnswer {
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).doSuspendableAnswer {
                 awaitCancellation()
             }
 
