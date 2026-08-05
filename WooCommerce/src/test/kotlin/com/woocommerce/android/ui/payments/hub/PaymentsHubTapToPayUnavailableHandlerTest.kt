@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.hub
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.taptopay.TapToPayUnsupportedReason
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -88,9 +87,7 @@ class PaymentsHubTapToPayUnavailableHandlerTest {
     @Test
     fun `given DeviceNotSupported, when handleTTPUnavailable, then dialog points at requirements action`() {
         // GIVEN
-        val status = TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported(
-            TapToPayUnsupportedReason.Unspecified("no TEE")
-        )
+        val status = TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported
         val captor = argumentCaptor<MultiLiveEvent.Event.ShowDialog>()
 
         // WHEN
@@ -113,28 +110,6 @@ class PaymentsHubTapToPayUnavailableHandlerTest {
 
         captor.firstValue.positiveBtnAction!!.onClick(mock(), 0)
         verify(positiveButtonClick).invoke(PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS)
-    }
-
-    @Test
-    fun `given outdated security patch, when handleTTPUnavailable, then dialog asks for a security update`() {
-        // GIVEN
-        val status = TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported(
-            TapToPayUnsupportedReason.OutdatedSecurityPatch
-        )
-        val captor = argumentCaptor<MultiLiveEvent.Event.ShowDialog>()
-
-        // WHEN
-        handler.handleTTPUnavailable(
-            status = status,
-            triggerEvent = triggerEvent,
-            positiveButtonClick = positiveButtonClick
-        )
-
-        // THEN
-        verify(triggerEvent).invoke(captor.capture())
-        assertThat(captor.firstValue.messageId).isEqualTo(
-            R.string.card_reader_tap_to_pay_not_available_error_device_security_patch
-        )
     }
 
     @Test

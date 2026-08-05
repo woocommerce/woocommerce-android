@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.hub
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.taptopay.TapToPayUnsupportedReason
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import javax.inject.Inject
 
@@ -46,15 +45,9 @@ class PaymentsHubTapToPayUnavailableHandler @Inject constructor() {
                 ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }
             }
 
-            is TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported -> {
+            TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported -> {
                 showDialog(
-                    when (status.reason) {
-                        TapToPayUnsupportedReason.OutdatedSecurityPatch ->
-                            R.string.card_reader_tap_to_pay_not_available_error_device_security_patch
-
-                        is TapToPayUnsupportedReason.Unspecified ->
-                            R.string.card_reader_tap_to_pay_not_available_error_device
-                    },
+                    R.string.card_reader_tap_to_pay_not_available_error_device,
                     R.string.card_reader_tap_to_pay_not_available_error_check_requirements_button,
                     triggerEvent
                 ) { positiveButtonClick(ActionType.TAP_TO_PAY_REQUIREMENTS) }

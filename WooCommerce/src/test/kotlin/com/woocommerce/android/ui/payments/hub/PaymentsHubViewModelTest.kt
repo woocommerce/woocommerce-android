@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.GooglePlayServicesNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
-import com.woocommerce.android.ui.payments.taptopay.TapToPayUnsupportedReason
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
@@ -92,7 +91,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         on { invoke() }.thenReturn(Available)
     }
     private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
-    private val deviceNotSupported = DeviceNotSupported(TapToPayUnsupportedReason.Unspecified("no TEE"))
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
     private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(
@@ -1384,7 +1382,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(deviceNotSupported)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
                     preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
@@ -1417,7 +1415,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(wooStore.getStoreCountryCode(selectedSite.get())).thenReturn("US")
-            whenever(tapToPayAvailabilityStatus()).thenReturn(deviceNotSupported)
+            whenever(tapToPayAvailabilityStatus()).thenReturn(DeviceNotSupported)
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(
                 CardReaderOnboardingState.OnboardingCompleted(
                     preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
@@ -1436,8 +1434,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onClick.invoke()
 
             // THEN
-            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(eq(deviceNotSupported), any())
-            verify(paymentsHubTapToPayUnavailableHandler).handleTTPUnavailable(eq(deviceNotSupported), any(), any())
+            verify(paymentsFlowTracker).trackTapToPayNotAvailableReason(eq(DeviceNotSupported), any())
+            verify(paymentsHubTapToPayUnavailableHandler).handleTTPUnavailable(eq(DeviceNotSupported), any(), any())
         }
 
     @Test

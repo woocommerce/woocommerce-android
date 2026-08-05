@@ -15,20 +15,18 @@ import javax.inject.Singleton
 class TapToPayDeviceSupportChecker @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
-    private val resolveTapToPayUnsupportedReason: ResolveTapToPayUnsupportedReason,
 ) {
-    private val cached = ConcurrentHashMap<Boolean, TapToPaySupportResult>()
+    private val cached = ConcurrentHashMap<Boolean, TapToPayDeviceSupport>()
 
     fun checkSupport(): TapToPayDeviceSupport {
         val isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
-        val result = cached[isSimulated] ?: cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)
-            .also { if (it != TapToPaySupportResult.TerminalNotInitialized) cached[isSimulated] = it }
-
-        return when (result) {
-            TapToPaySupportResult.Supported -> TapToPayDeviceSupport.Supported
+        cached[isSimulated]?.let { return it }
+        return when (cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)) {
+            TapToPaySupportResult.Supported ->
+                TapToPayDeviceSupport.Supported.also { cached[isSimulated] = it }
 
             is TapToPaySupportResult.NotSupported ->
-                TapToPayDeviceSupport.NotSupported(resolveTapToPayUnsupportedReason(result.reason))
+                TapToPayDeviceSupport.NotSupported.also { cached[isSimulated] = it }
 
             TapToPaySupportResult.TerminalNotInitialized -> TapToPayDeviceSupport.Unknown
         }
@@ -37,11 +35,6 @@ class TapToPayDeviceSupportChecker @Inject constructor(
 
 sealed class TapToPayDeviceSupport {
     object Supported : TapToPayDeviceSupport()
-    data class NotSupported(val reason: TapToPayUnsupportedReason) : TapToPayDeviceSupport()
+    object NotSupported : TapToPayDeviceSupport()
     object Unknown : TapToPayDeviceSupport()
-}
-
-sealed class TapToPayUnsupportedReason {
-    object OutdatedSecurityPatch : TapToPayUnsupportedReason()
-    data class Unspecified(val message: String) : TapToPayUnsupportedReason()
 }
