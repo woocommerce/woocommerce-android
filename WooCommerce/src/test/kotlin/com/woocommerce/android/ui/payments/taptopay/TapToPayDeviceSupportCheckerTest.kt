@@ -15,71 +15,86 @@ class TapToPayDeviceSupportCheckerTest {
     private val checker = TapToPayDeviceSupportChecker(cardReaderManager, developerOptionsRepository)
 
     @Test
-    fun `given Stripe reports supported, when isSupported, then true returned`() {
+    fun `given Stripe reports supported, when checking support, then supported returned`() {
+        // GIVEN
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.Supported)
 
-        val result = checker.isSupported()
+        // WHEN
+        val result = checker.checkSupport()
 
-        assertThat(result).isTrue
+        // THEN
+        assertThat(result).isEqualTo(TapToPayDeviceSupport.Supported)
     }
 
     @Test
-    fun `given Stripe reports not supported, when isSupported, then false returned`() {
+    fun `given Stripe reports not supported, when checking support, then not supported returned`() {
+        // GIVEN
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.NotSupported("no TEE"))
 
-        val result = checker.isSupported()
+        // WHEN
+        val result = checker.checkSupport()
 
-        assertThat(result).isFalse
+        // THEN
+        assertThat(result).isEqualTo(TapToPayDeviceSupport.NotSupported)
     }
 
     @Test
-    fun `given Terminal not initialized, when isSupported, then null returned`() {
+    fun `given Terminal not initialized, when checking support, then unknown returned`() {
+        // GIVEN
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.TerminalNotInitialized)
 
-        val result = checker.isSupported()
+        // WHEN
+        val result = checker.checkSupport()
 
-        assertThat(result).isNull()
+        // THEN
+        assertThat(result).isEqualTo(TapToPayDeviceSupport.Unknown)
     }
 
     @Test
-    fun `given Stripe answered once, when isSupported called again, then result is cached`() {
+    fun `given Stripe answered once, when checking support again, then result is cached`() {
+        // GIVEN
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.Supported)
 
-        checker.isSupported()
-        checker.isSupported()
-        checker.isSupported()
+        // WHEN
+        checker.checkSupport()
+        checker.checkSupport()
+        checker.checkSupport()
 
+        // THEN
         verify(cardReaderManager).isTapToPaySupportedOnDevice(false)
     }
 
     @Test
-    fun `given simulated reader enabled, when isSupported, then Stripe is asked about the simulated reader`() {
+    fun `given simulated reader enabled, when checking support, then Stripe is asked about the simulated reader`() {
         // GIVEN
         whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(true))
             .thenReturn(TapToPaySupportResult.Supported)
 
         // WHEN
-        val result = checker.isSupported()
+        val result = checker.checkSupport()
 
         // THEN
-        assertThat(result).isTrue
+        assertThat(result).isEqualTo(TapToPayDeviceSupport.Supported)
         verify(cardReaderManager).isTapToPaySupportedOnDevice(true)
     }
 
     @Test
-    fun `given Terminal not initialized, when isSupported called again, then result is not cached`() {
+    fun `given Terminal not initialized, when checking support again, then result is not cached`() {
+        // GIVEN
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.TerminalNotInitialized)
             .thenReturn(TapToPaySupportResult.Supported)
 
-        checker.isSupported()
-        val secondCall = checker.isSupported()
+        // WHEN
+        checker.checkSupport()
+        val secondCall = checker.checkSupport()
 
-        assertThat(secondCall).isTrue
+        // THEN
+        assertThat(secondCall).isEqualTo(TapToPayDeviceSupport.Supported)
     }
 }

@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Pay
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.taptopay.isAvailable
+import com.woocommerce.android.ui.payments.taptopay.isAvailableOrUnknown
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
@@ -211,12 +211,12 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private val isPhoneEligibleAsCardReader: Boolean
-        get() = tapToPayAvailabilityStatus().isAvailable
+        get() = tapToPayAvailabilityStatus().isAvailableOrUnknown
 
     private fun MutableList<ListItem>.addTapToPay() {
         val status = tapToPayAvailabilityStatus()
         when {
-            status.isAvailable -> {
+            status.isAvailableOrUnknown -> {
                 add(
                     HeaderItem(
                         label = UiStringRes(R.string.card_reader_tap_to_pay_header),

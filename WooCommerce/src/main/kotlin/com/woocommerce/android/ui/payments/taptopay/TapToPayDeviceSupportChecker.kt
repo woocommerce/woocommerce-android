@@ -13,23 +13,39 @@ import javax.inject.Singleton
  * answers differently for the simulated and the production reader, and the simulated reader can
  * be toggled from developer options while the process is alive.
  *
- * Returns `null` when Terminal is not yet initialized; callers should treat that as "unknown"
- * and rely on their pre-init heuristics until Stripe can answer.
+ * Stripe can only answer once Terminal is initialized, which happens lazily when a card reader
+ * flow is entered, so [TapToPayDeviceSupport.Unknown] is the normal answer on a cold start.
  */
 @Singleton
 class TapToPayDeviceSupportChecker @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
 ) {
-    private val cached = ConcurrentHashMap<Boolean, Boolean>()
+    private val cached = ConcurrentHashMap<Boolean, TapToPayDeviceSupport>()
 
-    fun isSupported(): Boolean? {
+    fun checkSupport(): TapToPayDeviceSupport {
         val isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
         cached[isSimulated]?.let { return it }
         return when (cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)) {
-            TapToPaySupportResult.Supported -> true.also { cached[isSimulated] = it }
-            is TapToPaySupportResult.NotSupported -> false.also { cached[isSimulated] = it }
-            TapToPaySupportResult.TerminalNotInitialized -> null
+            TapToPaySupportResult.Supported ->
+                TapToPayDeviceSupport.Supported.also { cached[isSimulated] = it }
+
+            is TapToPaySupportResult.NotSupported ->
+                TapToPayDeviceSupport.NotSupported.also { cached[isSimulated] = it }
+
+            TapToPaySupportResult.TerminalNotInitialized -> TapToPayDeviceSupport.Unknown
         }
     }
+}
+
+sealed class TapToPayDeviceSupport {
+    object Supported : TapToPayDeviceSupport()
+    object NotSupported : TapToPayDeviceSupport()
+
+    /**
+     * Stripe Terminal has not been initialized yet, so the device's capability is not known. It is
+     * not an answer of its own — see [TapToPayAvailabilityStatus.Result.Unknown] for how the UI
+     * treats it.
+     */
+    object Unknown : TapToPayDeviceSupport()
 }
