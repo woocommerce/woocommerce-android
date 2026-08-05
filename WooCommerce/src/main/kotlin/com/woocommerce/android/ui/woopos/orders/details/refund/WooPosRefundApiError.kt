@@ -9,9 +9,9 @@ import com.woocommerce.android.R
  * loaded, for example another register refunded part of the order in the meantime.
  *
  * Matched on the raw API error code carried by `WooError.apiErrorCode` rather than on a
- * `WooErrorType`: the codes are unprefixed and refund-specific, so typing them in FluxC's shared
- * error enum would give them app-wide meaning and force every exhaustive `when` over
- * `WooErrorType` to enumerate refund cases.
+ * `WooErrorType`: the codes are refund-specific, so typing them in FluxC's shared error enum
+ * would give them app-wide meaning and force every exhaustive `when` over `WooErrorType` to
+ * enumerate refund cases.
  *
  * Programming-error codes (invalid line item ids, malformed payloads, etc.) intentionally have
  * no entry here: they indicate a client bug and keep the generic error message.
@@ -26,13 +26,14 @@ enum class WooPosRefundApiError(@StringRes val messageRes: Int) {
 
     companion object {
         fun fromCode(code: String?): WooPosRefundApiError? = when (code) {
-            "quantity_exceeds_refundable" -> QuantityExceedsRefundable
-            "line_item_already_refunded" -> LineItemAlreadyRefunded
-            "order_not_refundable" -> OrderNotRefundable
+            "woocommerce_rest_quantity_exceeds_refundable" -> QuantityExceedsRefundable
+            "woocommerce_rest_line_item_already_refunded" -> LineItemAlreadyRefunded
+            "woocommerce_rest_order_not_refundable" -> OrderNotRefundable
             // The preview and the create report the same condition under different codes.
-            "preview_exceeds_max_refundable", "refund_exceeds_remaining" -> AmountExceedsOrderRemaining
-            "refund_total_exceeds_line" -> AmountExceedsItemRemaining
-            "invalid_refund_amount" -> InvalidAmount
+            "woocommerce_rest_preview_exceeds_max_refundable",
+            "woocommerce_rest_refund_exceeds_remaining" -> AmountExceedsOrderRemaining
+            "woocommerce_rest_refund_total_exceeds_line" -> AmountExceedsItemRemaining
+            "woocommerce_rest_invalid_refund_amount" -> InvalidAmount
             else -> null
         }
     }

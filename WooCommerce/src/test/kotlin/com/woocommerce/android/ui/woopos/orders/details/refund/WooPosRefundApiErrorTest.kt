@@ -9,13 +9,13 @@ class WooPosRefundApiErrorTest {
     @Test
     fun `given refund api error codes, when mapped, then each resolves to its cashier-facing message`() {
         val expectedMappings = mapOf(
-            "order_not_refundable" to WooPosRefundApiError.OrderNotRefundable,
-            "quantity_exceeds_refundable" to WooPosRefundApiError.QuantityExceedsRefundable,
-            "line_item_already_refunded" to WooPosRefundApiError.LineItemAlreadyRefunded,
-            "preview_exceeds_max_refundable" to WooPosRefundApiError.AmountExceedsOrderRemaining,
-            "refund_exceeds_remaining" to WooPosRefundApiError.AmountExceedsOrderRemaining,
-            "refund_total_exceeds_line" to WooPosRefundApiError.AmountExceedsItemRemaining,
-            "invalid_refund_amount" to WooPosRefundApiError.InvalidAmount,
+            "woocommerce_rest_order_not_refundable" to WooPosRefundApiError.OrderNotRefundable,
+            "woocommerce_rest_quantity_exceeds_refundable" to WooPosRefundApiError.QuantityExceedsRefundable,
+            "woocommerce_rest_line_item_already_refunded" to WooPosRefundApiError.LineItemAlreadyRefunded,
+            "woocommerce_rest_preview_exceeds_max_refundable" to WooPosRefundApiError.AmountExceedsOrderRemaining,
+            "woocommerce_rest_refund_exceeds_remaining" to WooPosRefundApiError.AmountExceedsOrderRemaining,
+            "woocommerce_rest_refund_total_exceeds_line" to WooPosRefundApiError.AmountExceedsItemRemaining,
+            "woocommerce_rest_invalid_refund_amount" to WooPosRefundApiError.InvalidAmount,
         )
 
         expectedMappings.forEach { (code, expected) ->
@@ -28,13 +28,13 @@ class WooPosRefundApiErrorTest {
     @Test
     fun `given refund programming error codes, when mapped, then they stay unmapped for the generic message`() {
         val programmingErrorCodes = listOf(
-            "invalid_line_item",
-            "invalid_quantity",
-            "invalid_refund_total",
-            "missing_quantity_or_refund_total",
-            "duplicate_line_item",
-            "line_item_not_found",
-            "missing_line_items",
+            "woocommerce_rest_invalid_line_item",
+            "woocommerce_rest_invalid_quantity",
+            "woocommerce_rest_invalid_refund_total",
+            "woocommerce_rest_missing_quantity_or_refund_total",
+            "woocommerce_rest_duplicate_line_item",
+            "woocommerce_rest_line_item_not_found",
+            "woocommerce_rest_missing_line_items",
         )
 
         programmingErrorCodes.forEach { code ->
@@ -54,9 +54,9 @@ class WooPosRefundApiErrorTest {
     fun `given the two remaining-amount codes, when mapped, then they share one message`() {
         // The preview and the create report the same condition under different codes, so the
         // cashier sees identical copy either way.
-        assertThat(WooPosRefundApiError.fromCode("preview_exceeds_max_refundable")?.messageRes)
+        assertThat(WooPosRefundApiError.fromCode("woocommerce_rest_preview_exceeds_max_refundable")?.messageRes)
             .isEqualTo(R.string.woopos_refund_error_amount_exceeds_order_remaining)
-        assertThat(WooPosRefundApiError.fromCode("refund_exceeds_remaining")?.messageRes)
+        assertThat(WooPosRefundApiError.fromCode("woocommerce_rest_refund_exceeds_remaining")?.messageRes)
             .isEqualTo(R.string.woopos_refund_error_amount_exceeds_order_remaining)
     }
 }
