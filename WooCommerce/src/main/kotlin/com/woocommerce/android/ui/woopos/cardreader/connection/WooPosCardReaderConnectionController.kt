@@ -392,7 +392,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownPhone = findLastKnownPhone(phones)
         if (lastKnownPhone != null) {
             logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
-            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+            markPhoneReaderSelected()
             tracker.trackAutoConnectionStarted()
             onPhoneConnectClicked(lastKnownPhone)
             return
@@ -464,9 +464,7 @@ class WooPosCardReaderConnectionController(
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
-        // The phone acts as the reader, so any model left over from a previous Bluetooth connection is stale.
-        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+        markPhoneReaderSelected()
         tracker.trackOnConnectTapped()
         discoveryJob?.cancel()
         selectedReader = null
@@ -481,6 +479,15 @@ class WooPosCardReaderConnectionController(
 
     private fun clearReaderTrackingInfo() {
         cardReaderTrackingInfoKeeper.setTransport(null)
+        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
+    }
+
+    /**
+     * Must run before any event is tracked for the phone: the phone acts as the reader, so a model left over
+     * from a previous Bluetooth connection would otherwise be reported against this wifi_lan session.
+     */
+    private fun markPhoneReaderSelected() {
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
     }
 

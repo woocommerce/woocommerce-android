@@ -154,6 +154,7 @@ class CardReaderModeViewModel @Inject constructor(
         super.onCleared()
     }
 
+    // An error outranks the user closing the error screen: the error is why the session ended.
     private fun sessionEndReason(): String = when {
         lastSessionState is CardReaderRemoteSessionState.Error -> REASON_ERROR
         exitRequestedByUser -> REASON_USER_EXIT

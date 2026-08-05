@@ -283,24 +283,24 @@ class CardReaderRemoteSession internal constructor(
                         )
                     )
                     is RetrieveAndCollectResult.Failed -> {
-                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.message}")
+                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.describeWithCauses()}")
                         accepted.send(
                             ErrorMessage(
                                 requestId = request.requestId,
                                 code = CODE_COLLECT_FAILED,
-                                description = collectResult.cause.message.orEmpty(),
+                                description = collectResult.cause.describeWithCauses(),
                             )
                         )
                     }
                 }
             }
             is CreatePaymentIntentResult.Failed -> {
-                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.message}")
+                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.describeWithCauses()}")
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
                         code = CODE_CREATE_INTENT_FAILED,
-                        description = createResult.cause.message.orEmpty(),
+                        description = createResult.cause.describeWithCauses(),
                     )
                 )
             }
