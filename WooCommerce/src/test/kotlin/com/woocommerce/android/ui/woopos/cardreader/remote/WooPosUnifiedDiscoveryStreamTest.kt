@@ -132,7 +132,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
 
     @Test
-    fun `given phone advertises different site hash, when discovered, then phone is not surfaced`() = runTest {
+    fun `given phone advertises different site hash, when discovered, then mismatch is surfaced instead`() = runTest {
         // GIVEN
         whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
             flowOf(CardReaderDiscoveryEvents.Started)
@@ -152,6 +152,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         // WHEN / THEN
         sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.PhoneFromAnotherStoreFound)
             awaitComplete()
         }
     }

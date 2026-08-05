@@ -46,6 +46,7 @@ sealed interface WooPosDiscoveryTransport {
 sealed class WooPosUnifiedDiscoveryEvent {
     data object Started : WooPosUnifiedDiscoveryEvent()
     data class ReadersFound(val readers: List<WooPosDiscoveredReader>) : WooPosUnifiedDiscoveryEvent()
+    data object PhoneFromAnotherStoreFound : WooPosUnifiedDiscoveryEvent()
     data class Failed(val msg: String) : WooPosUnifiedDiscoveryEvent()
     data object Succeeded : WooPosUnifiedDiscoveryEvent()
 }
@@ -114,8 +115,13 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     ) {
         mutex.withLock {
             val expectedSiteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash)
-            if (expectedSiteHash == null || phone.siteHash != expectedSiteHash) {
+            if (expectedSiteHash == null) {
+                logger.d("Dropping NSD phone, no site is selected")
+                return@withLock
+            }
+            if (phone.siteHash != expectedSiteHash) {
                 logger.d("Dropping NSD phone with site mismatch")
+                send(WooPosUnifiedDiscoveryEvent.PhoneFromAnotherStoreFound)
                 return@withLock
             }
 

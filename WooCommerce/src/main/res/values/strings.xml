@@ -4322,6 +4322,7 @@
     <string name="woopos_card_reader_close_content_description">Close</string>
     <string name="woopos_card_reader_scanning_title">Scanning for reader</string>
     <string name="woopos_card_reader_scanning_instruction">Make sure your reader is charged and turned on</string>
+    <string name="woopos_card_reader_scanning_phone_from_another_store">A nearby phone is set up for a different store. Sign in to the same store on both devices to use it as a card reader.</string>
     <string name="woopos_card_reader_scanning_failed_title">Scanning failed</string>
     <string name="woopos_card_reader_found_title">%s found</string>
     <string name="woopos_card_reader_found_description">Do you want to connect to this reader?</string>
