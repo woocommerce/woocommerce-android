@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.requestFocus
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -271,6 +272,7 @@ private fun OrderListSwipeBackground(
                     text = stringResource(R.string.orderlist_mark_completed),
                     color = WooTheme.colors.onPrimary,
                     style = WooTheme.text.bodyLarge.regular,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
