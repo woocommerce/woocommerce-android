@@ -44,7 +44,15 @@ fun WooSegmentControl(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    validateWooSegmentControl(options = options, selectedIndex = selectedIndex)
+    require(options.size in MIN_OPTION_COUNT..MAX_OPTION_COUNT) {
+        "WooSegmentControl requires between $MIN_OPTION_COUNT and $MAX_OPTION_COUNT options."
+    }
+    require(selectedIndex in options.indices) {
+        "WooSegmentControl selectedIndex must identify an option."
+    }
+    require(options.all(String::isNotBlank)) {
+        "WooSegmentControl options must have nonblank labels."
+    }
 
     val colors = WooTheme.colors
     val trackColor = if (enabled) {
@@ -84,18 +92,6 @@ fun WooSegmentControl(
                 )
             }
         }
-    }
-}
-
-internal fun validateWooSegmentControl(options: List<String>, selectedIndex: Int) {
-    require(options.size in MIN_OPTION_COUNT..MAX_OPTION_COUNT) {
-        "WooSegmentControl requires between $MIN_OPTION_COUNT and $MAX_OPTION_COUNT options."
-    }
-    require(selectedIndex in options.indices) {
-        "WooSegmentControl selectedIndex must identify an option."
-    }
-    require(options.all(String::isNotBlank)) {
-        "WooSegmentControl options must have nonblank labels."
     }
 }
 
