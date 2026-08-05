@@ -8,7 +8,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
@@ -71,7 +70,6 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             binding.paymentsHubSwitch.isClickable = uiState.isEnabled
             binding.paymentsHubSwitch.isChecked = uiState.isChecked
             binding.paymentsHubSwitch.isInvisible = uiState.isLoading
-            binding.paymentsHubSwitchProgressBar.isVisible = uiState.isLoading
             binding.paymentsHubSwitch.setOnCheckedChangeListener { _, isChecked ->
                 if (uiState.isEnabled) {
                     uiState.onToggled(isChecked)

@@ -60,18 +60,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/paymentsHubSwitchProgressBar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/paymentsHubSwitch"
-        app:layout_constraintEnd_toEndOf="@id/paymentsHubSwitch"
-        app:layout_constraintStart_toStartOf="@id/paymentsHubSwitch"
-        app:layout_constraintTop_toTopOf="@id/paymentsHubSwitch"
-        tools:visibility="visible" />
-
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/paymentsHubListItemDivider"
         android:layout_width="match_parent"
