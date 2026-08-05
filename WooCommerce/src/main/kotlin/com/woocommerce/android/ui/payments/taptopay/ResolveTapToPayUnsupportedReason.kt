@@ -7,11 +7,8 @@ import java.time.format.DateTimeParseException
 import javax.inject.Inject
 
 /**
- * Turns Stripe's rejection into a reason the merchant can act on.
- *
- * Stripe only reports that attestation failed, most often with its Trusted Execution Environment
- * message, while the actual cause is frequently a security patch older than the 12 months Stripe
- * requires. That one we can check ourselves, so it is reported separately.
+ * Stripe only reports that attestation failed, while the actual cause is frequently a security patch
+ * older than the 12 months it requires — that one we can check ourselves.
  */
 class ResolveTapToPayUnsupportedReason @Inject constructor(
     private val deviceSecurityPatchProvider: DeviceSecurityPatchProvider,
