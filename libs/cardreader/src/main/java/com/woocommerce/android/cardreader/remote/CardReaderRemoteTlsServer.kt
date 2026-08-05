@@ -66,10 +66,8 @@ internal class CardReaderRemoteTlsServer(
         keyType = identity.keyType
     }
 
-    // okhttp-tls encodes the certificate DER itself and then round-trips it back through the
-    // platform CertificateFactory. On a few devices Conscrypt refuses to parse the EC certificate
-    // okhttp just generated, which used to kill the session before it ever opened a socket.
-    // RSA-2048 resolves a different provider path, so retry with it before giving up.
+    // Some devices' Conscrypt rejects the EC certificate okhttp-tls generates, which killed the
+    // session before it opened a socket. RSA-2048 resolves a different provider path.
     private fun buildIdentity(): Identity {
         val ecdsaFailure = try {
             return Identity(heldCertificateFactory.create(ECDSA_256), ECDSA_256)
@@ -136,8 +134,7 @@ internal class CardReaderRemoteTlsServer(
                 .build()
         }
 
-        // The reason Conscrypt rejected the certificate only lives in the cause of the
-        // IllegalArgumentException okhttp wraps it in, so flatten the chain into the message.
+        // Conscrypt's actual reason only lives in the cause okhttp wraps, so flatten the chain.
         private fun Throwable.describeCauseChain(): String =
             generateSequence(this) { previous -> previous.cause.takeIf { it !== previous } }
                 .take(CAUSE_CHAIN_LIMIT)
