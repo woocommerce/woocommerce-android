@@ -281,7 +281,7 @@ class WooPosCardReaderConnectionController(
         remoteConnectionJob?.cancel()
         selectedReader = null
         if (!wasAlreadyConnected) {
-            cardReaderTrackingInfoKeeper.setTransport(null)
+            clearReaderTrackingInfo()
             scope.launch { remoteReaderSession.disconnect() }
         }
         enterScanningState()
@@ -293,7 +293,7 @@ class WooPosCardReaderConnectionController(
             logger.d("disconnect(): clearing prefs")
             appPrefsWrapper.removeLastConnectedCardReaderId()
             appPrefsWrapper.removeLastConnectedPhoneDeviceId()
-            cardReaderTrackingInfoKeeper.setTransport(null)
+            clearReaderTrackingInfo()
 
             logger.d("disconnect(): stopping remote session")
             runCatching { remoteReaderSession.disconnect() }
@@ -464,6 +464,8 @@ class WooPosCardReaderConnectionController(
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
+        // The phone acts as the reader, so any model left over from a previous Bluetooth connection is stale.
+        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
         cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
         tracker.trackOnConnectTapped()
         discoveryJob?.cancel()
@@ -475,6 +477,11 @@ class WooPosCardReaderConnectionController(
             val result = remoteReaderSession.connect(phone)
             handleRemoteConnectionResult(phone, result)
         }
+    }
+
+    private fun clearReaderTrackingInfo() {
+        cardReaderTrackingInfoKeeper.setTransport(null)
+        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
     }
 
     private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
