@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -95,20 +96,23 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
         }
 
     @Test
-    fun `given remote update succeeds, when markOrderAsComplete, then order is recorded as paid`() =
+    fun `given remote update succeeds, when markOrderAsComplete, then the status change is recorded`() =
         runTest {
             // GIVEN
             val orderId = 123L
             val siteId = 999L
+            val storedOrder: OrderEntity = mock { on { status }.thenReturn(Order.Status.Pending.value) }
             whenever(site.siteId).thenReturn(siteId)
+            whenever(orderStore.getOrderByIdAndSite(orderId, site)).thenReturn(storedOrder)
 
             // WHEN
             repository.markOrderAsComplete(orderId, customerNote = null)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
                 siteId = siteId,
                 orderId = orderId,
+                previousStatusKey = Order.Status.Pending.value,
                 newStatusKey = Order.Status.Completed.value,
             )
         }

@@ -36,6 +36,8 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
             label = Order.Status.Completed.value,
         )
 
+        val previousStatusKey = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.status
+
         val updateResult = orderStore.updateOrderStatusAndPaymentDetails(
             orderId = orderId,
             site = selectedSite.get(),
@@ -51,9 +53,10 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
             return@withContext MarkOrderAsCompleteOutcome.Failure
         }
 
-        newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+        newOrderNotificationSuppressionCache.recordOrderStatusChanged(
             siteId = selectedSite.get().siteId,
             orderId = orderId,
+            previousStatusKey = previousStatusKey,
             newStatusKey = Order.Status.Completed.value,
         )
 

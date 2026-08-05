@@ -165,16 +165,18 @@ class WooPosCashPaymentRepositoryTest {
     }
 
     @Test
-    fun `given order completion succeeds, when completeOrder, then order is recorded as paid`() = runTest {
+    fun `given order completion succeeds, when completeOrder, then the status change is recorded`() = runTest {
         // GIVEN
         val orderId = 123L
         val siteId = 999L
         val site: SiteModel = mock { on { this.siteId }.thenReturn(siteId) }
         val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
         val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
+        val storedOrder: OrderEntity = mock { on { status }.thenReturn(Order.Status.Pending.value) }
 
         whenever(selectedSite.get()).thenReturn(site)
         whenever(gatewayStore.getGateway(site, "cod")).thenReturn(null)
+        whenever(orderStore.getOrderByIdAndSite(orderId, site)).thenReturn(storedOrder)
         whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
         whenever(
             orderStore.updateOrderStatusAndPaymentDetails(
@@ -191,9 +193,10 @@ class WooPosCashPaymentRepositoryTest {
         repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
 
         // THEN
-        verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+        verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
             siteId = siteId,
             orderId = orderId,
+            previousStatusKey = Order.Status.Pending.value,
             newStatusKey = Order.Status.Completed.value,
         )
     }
