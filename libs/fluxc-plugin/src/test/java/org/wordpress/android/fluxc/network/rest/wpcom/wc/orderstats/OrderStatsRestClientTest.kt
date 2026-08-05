@@ -92,13 +92,13 @@ class OrderStatsRestClientTest {
     }
 
     @Test
-    fun `given missing Jetpack signature, when visitor stats are fetched, then notify and preserve error mapping`() =
+    fun `given missing Jetpack signature, when visitor stats are fetched, then notify the site invalidation listener and preserve error mapping`() =
         runTest {
             assertSiteInvalidation(createNetworkError())
         }
 
     @Test
-    fun `given trivial missing Jetpack message variation, when visitor stats are fetched, then notify`() = runTest {
+    fun `given trivial missing Jetpack message variation, when visitor stats are fetched, then notify the site invalidation listener`() = runTest {
         listOf(
             "$JETPACK_CONNECTION_MISSING_MESSAGE.",
             "  $JETPACK_CONNECTION_MISSING_MESSAGE  ",
@@ -109,19 +109,19 @@ class OrderStatsRestClientTest {
     }
 
     @Test
-    fun `given Stats module is disabled, when visitor stats are fetched, then do not notify`() = runTest {
+    fun `given Stats module is disabled, when visitor stats are fetched, then do not notify the site invalidation listener`() = runTest {
         assertNoSiteInvalidation(
             createNetworkError(message = STATS_MODULE_DISABLED_MESSAGE)
         )
     }
 
     @Test
-    fun `given non-404 missing Jetpack signature, when visitor stats are fetched, then do not notify`() = runTest {
+    fun `given non-404 missing Jetpack signature, when visitor stats are fetched, then do not notify the site invalidation listener`() = runTest {
         assertNoSiteInvalidation(createNetworkError(statusCode = 400))
     }
 
     @Test
-    fun `given different error code or message, when visitor stats are fetched, then do not notify`() = runTest {
+    fun `given different error code or message, when visitor stats are fetched, then do not notify the site invalidation listener`() = runTest {
         listOf(
             createNetworkError(apiError = "unknown_blog"),
             createNetworkError(message = "This blog does not have Jetpack installed")
@@ -131,7 +131,7 @@ class OrderStatsRestClientTest {
     }
 
     @Test
-    fun `given successful visitor stats response, when visitor stats are fetched, then do not notify`() = runTest {
+    fun `given successful visitor stats response, when visitor stats are fetched, then do not notify the site invalidation listener`() = runTest {
         VisitorStatsEndpoint.entries.forEach { endpoint ->
             clearInvocations(wpComSiteInvalidationListener)
             stubVisitorStatsSuccess(endpoint)
