@@ -11,6 +11,7 @@
 - [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
 - [*] Fixed a crash when the payment screen was recreated, such as rotating the device, while an in-person card payment was being processed — the payment now keeps running instead of freezing [https://github.com/woocommerce/woocommerce-android/pull/16359]
 - [*] The application log screen can now share all stored logs at once as a single zip, instead of one day at a time [https://github.com/woocommerce/woocommerce-android/pull/16337]
+- [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
 
 25.3
 -----
