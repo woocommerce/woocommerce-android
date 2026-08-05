@@ -121,7 +121,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 WOO_POS -> error("Unsupported card reader flow param: $param")
                             }
                         }
-                        Unit
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
