@@ -5,6 +5,8 @@ import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -12,7 +14,14 @@ import org.mockito.kotlin.whenever
 class TapToPayDeviceSupportCheckerTest {
     private val cardReaderManager: CardReaderManager = mock()
     private val developerOptionsRepository: DeveloperOptionsRepository = mock()
-    private val checker = TapToPayDeviceSupportChecker(cardReaderManager, developerOptionsRepository)
+    private val resolveTapToPayUnsupportedReason: ResolveTapToPayUnsupportedReason = mock {
+        on { invoke(any()) } doAnswer { TapToPayUnsupportedReason.Unspecified(it.getArgument(0)) }
+    }
+    private val checker = TapToPayDeviceSupportChecker(
+        cardReaderManager,
+        developerOptionsRepository,
+        resolveTapToPayUnsupportedReason,
+    )
 
     @Test
     fun `given Stripe reports supported, when checking support, then supported returned`() {
@@ -37,7 +46,9 @@ class TapToPayDeviceSupportCheckerTest {
         val result = checker.checkSupport()
 
         // THEN
-        assertThat(result).isEqualTo(TapToPayDeviceSupport.NotSupported)
+        assertThat(result).isEqualTo(
+            TapToPayDeviceSupport.NotSupported(TapToPayUnsupportedReason.Unspecified("no TEE"))
+        )
     }
 
     @Test

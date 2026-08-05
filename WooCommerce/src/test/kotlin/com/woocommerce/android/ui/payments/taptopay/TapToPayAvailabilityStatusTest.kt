@@ -101,15 +101,23 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given Stripe reports device unsupported, when invoking, then device not supported returned`() {
+    fun `given Stripe reports device unsupported, when invoking, then reason is passed on`() {
+        // GIVEN
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.NotSupported)
+        whenever(tapToPayDeviceSupportChecker.checkSupport())
+            .thenReturn(TapToPayDeviceSupport.NotSupported(TapToPayUnsupportedReason.OutdatedSecurityPatch))
 
+        // WHEN
         val result = availabilityStatus.invoke()
 
-        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported)
+        // THEN
+        assertThat(result).isEqualTo(
+            TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported(
+                TapToPayUnsupportedReason.OutdatedSecurityPatch
+            )
+        )
     }
 
     @Test
@@ -148,7 +156,8 @@ class TapToPayAvailabilityStatusTest {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.NotSupported)
+        whenever(tapToPayDeviceSupportChecker.checkSupport())
+            .thenReturn(TapToPayDeviceSupport.NotSupported(TapToPayUnsupportedReason.OutdatedSecurityPatch))
 
         // WHEN
         val result = availabilityStatus.invoke()

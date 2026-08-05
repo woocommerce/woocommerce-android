@@ -25,9 +25,9 @@ class TapToPayAvailabilityStatus @Inject constructor(
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry() -> Result.NotAvailable.CountryNotSupported
 
-            else -> when (tapToPayDeviceSupportChecker.checkSupport()) {
+            else -> when (val support = tapToPayDeviceSupportChecker.checkSupport()) {
                 TapToPayDeviceSupport.Supported -> Result.Available
-                TapToPayDeviceSupport.NotSupported -> Result.NotAvailable.DeviceNotSupported
+                is TapToPayDeviceSupport.NotSupported -> Result.NotAvailable.DeviceNotSupported(support.reason)
                 TapToPayDeviceSupport.Unknown -> Result.Unknown
             }
         }
@@ -55,7 +55,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
             object GooglePlayServicesNotAvailable : NotAvailable()
             object NfcNotAvailable : NotAvailable()
             object CountryNotSupported : NotAvailable()
-            object DeviceNotSupported : NotAvailable()
+            data class DeviceNotSupported(val reason: TapToPayUnsupportedReason) : NotAvailable()
         }
     }
 }
