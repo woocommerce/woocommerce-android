@@ -66,6 +66,11 @@ class OrderCreateEditRepository @Inject constructor(
             createdVia = source.value,
             giftCard = giftCard.orNullIfEmpty(),
         )
+        val previousStatusKey = if (order.id != 0L) {
+            orderStore.getOrderByIdAndSite(order.id, selectedSite.get())?.status
+        } else {
+            null
+        }
         val result = if (order.id == 0L) {
             orderUpdateStore.createOrder(
                 site = selectedSite.get(),
@@ -85,11 +90,20 @@ class OrderCreateEditRepository @Inject constructor(
             result.isError -> Result.failure(WooException(result.error))
             else -> {
                 val updatedOrder = orderMapper.toAppModel(result.model!!)
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
-                    siteId = selectedSite.get().siteId,
-                    orderId = updatedOrder.id,
-                    newStatusKey = updatedOrder.status.value,
-                )
+                if (order.id == 0L) {
+                    newOrderNotificationSuppressionCache.recordOrderCreated(
+                        siteId = selectedSite.get().siteId,
+                        orderId = updatedOrder.id,
+                        statusKey = updatedOrder.status.value,
+                    )
+                } else {
+                    newOrderNotificationSuppressionCache.recordOrderStatusChanged(
+                        siteId = selectedSite.get().siteId,
+                        orderId = updatedOrder.id,
+                        previousStatusKey = previousStatusKey,
+                        newStatusKey = updatedOrder.status.value,
+                    )
+                }
                 Result.success(updatedOrder)
             }
         }

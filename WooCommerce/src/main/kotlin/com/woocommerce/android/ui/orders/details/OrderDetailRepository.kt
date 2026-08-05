@@ -131,15 +131,17 @@ class OrderDetailRepository @Inject constructor(
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
                 ?: WCOrderStatusModel(statusKey = newStatus)
         }
+        val previousStatusKey = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.status
         return orderStore.updateOrderStatus(
             orderId,
             selectedSite.get(),
             status
         ).onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.recordOrderStatusChanged(
                     siteId = selectedSite.get().siteId,
                     orderId = orderId,
+                    previousStatusKey = previousStatusKey,
                     newStatusKey = newStatus,
                 )
             }

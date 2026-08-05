@@ -460,9 +460,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given cash payment confirmed, when order update succeeds, then order is recorded as paid`() =
+    fun `given cash payment confirmed, when order update succeeds, then the status change is recorded`() =
         testBlocking {
             // GIVEN
+            whenever(orderEntity.status).thenReturn(Order.Status.Pending.value)
             val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
             whenever(gatewayStore.getGateway(any(), any())).thenReturn(null)
 
@@ -470,9 +471,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
                 siteId = site.siteId,
                 orderId = 1L,
+                previousStatusKey = Order.Status.Pending.value,
                 newStatusKey = Order.Status.Completed.value,
             )
         }

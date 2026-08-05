@@ -37,6 +37,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
@@ -60,6 +61,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
     }
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
+    private val orderStore: WCOrderStore = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -82,7 +84,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         sut = OrderCreateEditRepository(
             selectedSite = selectedSite,
-            orderStore = mock(),
+            orderStore = orderStore,
             orderUpdateStore = orderUpdateStore,
             orderMapper = orderMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
@@ -254,12 +256,14 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given an order update succeeds, when it moves to a paid status, then the order is recorded as paid`() =
+    fun `given an order in a non-notifiable status, when an update moves it to a notifiable one, then it is recorded`() =
         testBlocking {
             // GIVEN
             val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
             whenever(isCurrencyQueryParamSupported()).thenReturn(false)
             whenever(orderMapper.toAppModel(any())).thenReturn(paidOrder)
+            whenever(orderStore.getOrderByIdAndSite(123L, defaultSiteModel))
+                .thenReturn(OrderTestUtils.generateOrder().copy(status = "pending"))
             whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull()))
                 .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
@@ -267,15 +271,16 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
                 siteId = defaultSiteModel.siteId,
                 orderId = 123L,
+                previousStatusKey = "pending",
                 newStatusKey = Order.Status.Processing.value,
             )
         }
 
     @Test
-    fun `given an order update fails, when it moves to a paid status, then the order is not recorded as paid`() =
+    fun `given an order update fails, when it moves to a notifiable status, then the order is not recorded`() =
         testBlocking {
             // GIVEN
             whenever(isCurrencyQueryParamSupported()).thenReturn(false)
@@ -291,6 +296,26 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
             // THEN
             verifyNoInteractions(newOrderNotificationSuppressionCache)
+        }
+
+    @Test
+    fun `given a new order with a notifiable status, when the creation succeeds, then it is recorded as created`() =
+        testBlocking {
+            // GIVEN
+            val createdOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+            whenever(orderMapper.toAppModel(any())).thenReturn(createdOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+            // WHEN
+            sut.createOrUpdateOrder(createdOrder.copy(id = 0L), source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(newOrderNotificationSuppressionCache).recordOrderCreated(
+                siteId = defaultSiteModel.siteId,
+                orderId = 123L,
+                statusKey = Order.Status.Processing.value,
+            )
         }
 
     @Test

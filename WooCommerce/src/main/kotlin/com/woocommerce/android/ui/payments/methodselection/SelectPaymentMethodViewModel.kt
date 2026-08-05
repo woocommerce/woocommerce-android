@@ -415,6 +415,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         paymentMethodTitle: String?
     ): Flow<WCOrderStore.UpdateOrderResult> {
         val statusModel = getStatusModel(statusKey)
+        val previousStatusKey =
+            orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
 
         return if (paymentMethod == null && paymentMethodTitle == null) {
             orderStore.updateOrderStatus(
@@ -432,9 +434,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
             )
         }.onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.recordOrderStatusChanged(
                     siteId = selectedSite.get().siteId,
                     orderId = cardReaderPaymentFlowParam.orderId,
+                    previousStatusKey = previousStatusKey,
                     newStatusKey = statusKey
                 )
             }

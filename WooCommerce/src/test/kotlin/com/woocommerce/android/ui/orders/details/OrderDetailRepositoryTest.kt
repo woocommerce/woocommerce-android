@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -39,24 +40,27 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given the remote update succeeds, when the status moves to paid, then the order is recorded as paid`() =
+    fun `given an order in a non-notifiable status, when the remote update succeeds, then the transition is recorded`() =
         testBlocking {
             // GIVEN
             givenUpdateResult(UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            whenever(orderStore.getOrderByIdAndSite(ORDER_ID, site))
+                .thenReturn(OrderTestUtils.generateOrder().copy(status = "pending"))
 
             // WHEN
             sut.updateOrderStatus(ORDER_ID, Order.Status.Completed.value).collect { }
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
-                SITE_ID,
-                ORDER_ID,
-                Order.Status.Completed.value,
+            verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
+                siteId = SITE_ID,
+                orderId = ORDER_ID,
+                previousStatusKey = "pending",
+                newStatusKey = Order.Status.Completed.value,
             )
         }
 
     @Test
-    fun `given the remote update fails, when the status moves to paid, then the order is not recorded as paid`() =
+    fun `given the remote update fails, when the status changes, then the order is not recorded`() =
         testBlocking {
             // GIVEN
             givenUpdateResult(

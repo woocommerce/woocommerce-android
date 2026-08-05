@@ -7,9 +7,9 @@ class NewOrderNotificationSuppressionCacheTest {
     private val cache = NewOrderNotificationSuppressionCache()
 
     @Test
-    fun `given order moved to a notifiable status, when consumed, then the entry is dropped`() {
+    fun `given order created with a notifiable status, when consumed, then the entry is dropped`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "processing")
+        cache.recordOrderCreated(SITE_ID, ORDER_ID, "processing")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
@@ -17,14 +17,51 @@ class NewOrderNotificationSuppressionCacheTest {
     }
 
     @Test
-    fun `given order moved to a non notifiable status, when consume, then no entry is found`() {
+    fun `given order created with a non notifiable status, when consume, then no entry is found`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "pending")
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "cancelled")
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "auto-draft")
+        cache.recordOrderCreated(SITE_ID, ORDER_ID, "pending")
+        cache.recordOrderCreated(SITE_ID, ORDER_ID, "auto-draft")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
+    }
+
+    @Test
+    fun `given order moved from a non notifiable to a notifiable status, when consumed, then the entry is dropped`() {
+        // GIVEN
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "processing")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
+    }
+
+    @Test
+    fun `given order was already in a notifiable status, when consume, then no entry is found`() {
+        // GIVEN
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "on-hold", newStatusKey = "completed")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
+    }
+
+    @Test
+    fun `given order moved to a non notifiable status, when consume, then no entry is found`() {
+        // GIVEN
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "cancelled")
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "processing", newStatusKey = "refunded")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
+    }
+
+    @Test
+    fun `given an unknown previous status, when order moves to a notifiable status, then the entry is recorded`() {
+        // GIVEN
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = null, newStatusKey = "processing")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
     }
 
     @Test
@@ -40,7 +77,12 @@ class NewOrderNotificationSuppressionCacheTest {
 
         notifiableStatuses.forEachIndexed { index, status ->
             // WHEN
-            cache.onOrderMovedToPaidStatus(SITE_ID, index.toLong(), status)
+            cache.recordOrderStatusChanged(
+                SITE_ID,
+                index.toLong(),
+                previousStatusKey = "pending",
+                newStatusKey = status,
+            )
 
             // THEN
             assertThat(cache.consume(SITE_ID, index.toLong()))
@@ -52,7 +94,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given an entry for another order, when consume, then no entry is found`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "completed")
+        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "completed")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID + 1)).isFalse()
