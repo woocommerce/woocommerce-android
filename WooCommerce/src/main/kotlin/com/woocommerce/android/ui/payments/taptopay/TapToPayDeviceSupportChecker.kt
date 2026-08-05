@@ -9,9 +9,10 @@ import javax.inject.Singleton
 
 /**
  * Wraps Stripe Terminal's device-capability check (`Terminal.supportsReadersOfType`) and caches
- * the result per reader kind — the device's TTP capability cannot change at runtime, but Stripe
+ * its answer per reader kind — the device's TTP capability cannot change at runtime, but Stripe
  * answers differently for the simulated and the production reader, and the simulated reader can
- * be toggled from developer options while the process is alive.
+ * be toggled from developer options while the process is alive. Only Stripe's answer is cached;
+ * the unsupported reason is resolved on every read because it depends on the current date.
  *
  * Stripe can only answer once Terminal is initialized, which happens lazily when a card reader
  * flow is entered, so [TapToPayDeviceSupport.Unknown] is the normal answer on a cold start.
@@ -22,18 +23,18 @@ class TapToPayDeviceSupportChecker @Inject constructor(
     private val developerOptionsRepository: DeveloperOptionsRepository,
     private val resolveTapToPayUnsupportedReason: ResolveTapToPayUnsupportedReason,
 ) {
-    private val cached = ConcurrentHashMap<Boolean, TapToPayDeviceSupport>()
+    private val cached = ConcurrentHashMap<Boolean, TapToPaySupportResult>()
 
     fun checkSupport(): TapToPayDeviceSupport {
         val isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
-        cached[isSimulated]?.let { return it }
-        return when (val result = cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)) {
-            TapToPaySupportResult.Supported ->
-                TapToPayDeviceSupport.Supported.also { cached[isSimulated] = it }
+        val result = cached[isSimulated] ?: cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)
+            .also { if (it != TapToPaySupportResult.TerminalNotInitialized) cached[isSimulated] = it }
+
+        return when (result) {
+            TapToPaySupportResult.Supported -> TapToPayDeviceSupport.Supported
 
             is TapToPaySupportResult.NotSupported ->
                 TapToPayDeviceSupport.NotSupported(resolveTapToPayUnsupportedReason(result.reason))
-                    .also { cached[isSimulated] = it }
 
             TapToPaySupportResult.TerminalNotInitialized -> TapToPayDeviceSupport.Unknown
         }
