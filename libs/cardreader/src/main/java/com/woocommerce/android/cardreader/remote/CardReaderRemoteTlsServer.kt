@@ -134,7 +134,6 @@ internal class CardReaderRemoteTlsServer(
                 .build()
         }
 
-        // Conscrypt's actual reason only lives in the cause okhttp wraps, so flatten the chain.
         private fun Throwable.describeCauseChain(): String =
             generateSequence(this) { previous -> previous.cause.takeIf { it !== previous } }
                 .take(CAUSE_CHAIN_LIMIT)
