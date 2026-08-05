@@ -9,7 +9,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order created with a notifiable status, when consumed, then the entry is dropped`() {
         // GIVEN
-        cache.recordOrderCreated(SITE_ID, ORDER_ID, "processing")
+        cache.onOrderCreated(SITE_ID, ORDER_ID, "processing")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
@@ -19,8 +19,8 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order created with a non notifiable status, when consume, then no entry is found`() {
         // GIVEN
-        cache.recordOrderCreated(SITE_ID, ORDER_ID, "pending")
-        cache.recordOrderCreated(SITE_ID, ORDER_ID, "auto-draft")
+        cache.onOrderCreated(SITE_ID, ORDER_ID, "pending")
+        cache.onOrderCreated(SITE_ID, ORDER_ID, "auto-draft")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
@@ -29,7 +29,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order moved from a non notifiable to a notifiable status, when consumed, then the entry is dropped`() {
         // GIVEN
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "processing")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "processing")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
@@ -39,7 +39,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order was already in a notifiable status, when consume, then no entry is found`() {
         // GIVEN
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "on-hold", newStatusKey = "completed")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "on-hold", newStatusKey = "completed")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
@@ -48,8 +48,8 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order moved to a non notifiable status, when consume, then no entry is found`() {
         // GIVEN
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "cancelled")
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "processing", newStatusKey = "refunded")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "cancelled")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "processing", newStatusKey = "refunded")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
@@ -58,7 +58,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given an unknown previous status, when order moves to a notifiable status, then the entry is recorded`() {
         // GIVEN
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = null, newStatusKey = "processing")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = null, newStatusKey = "processing")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
@@ -77,7 +77,7 @@ class NewOrderNotificationSuppressionCacheTest {
 
         notifiableStatuses.forEachIndexed { index, status ->
             // WHEN
-            cache.recordOrderStatusChanged(
+            cache.onOrderStatusChanged(
                 SITE_ID,
                 index.toLong(),
                 previousStatusKey = "pending",
@@ -94,7 +94,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given an entry for another order, when consume, then no entry is found`() {
         // GIVEN
-        cache.recordOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "completed")
+        cache.onOrderStatusChanged(SITE_ID, ORDER_ID, previousStatusKey = "pending", newStatusKey = "completed")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID + 1)).isFalse()

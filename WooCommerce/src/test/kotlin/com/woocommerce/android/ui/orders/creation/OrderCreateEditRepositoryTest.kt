@@ -271,7 +271,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
+            verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
                 siteId = defaultSiteModel.siteId,
                 orderId = 123L,
                 previousStatusKey = "pending",
@@ -311,7 +311,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(createdOrder.copy(id = 0L), source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).recordOrderCreated(
+            verify(newOrderNotificationSuppressionCache).onOrderCreated(
                 siteId = defaultSiteModel.siteId,
                 orderId = 123L,
                 statusKey = Order.Status.Processing.value,
