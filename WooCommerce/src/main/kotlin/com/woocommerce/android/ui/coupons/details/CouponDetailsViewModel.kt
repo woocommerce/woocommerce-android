@@ -80,7 +80,7 @@ class CouponDetailsViewModel @Inject constructor(
                 CouponSummaryUi(
                     code = coupon.code,
                     isEditable = coupon.type?.let { it !is Coupon.Type.Custom } ?: false,
-                    isActive = coupon.dateExpires?.after(Date()) ?: true,
+                    isActive = coupon.dateExpiresGmt?.after(Date()) ?: true,
                     description = coupon.description,
                     summary = couponUtils.generateSummary(coupon, currencyCode),
                     isForIndividualUse = coupon.restrictions.isForIndividualUse ?: false,
@@ -98,7 +98,7 @@ class CouponDetailsViewModel @Inject constructor(
                     usageLimitPerUser = couponUtils.formatUsageLimitPerUser(coupon.restrictions.usageLimitPerUser),
                     usageLimitPerCoupon = couponUtils.formatUsageLimitPerCoupon(coupon.restrictions.usageLimit),
                     usageLimitPerItems = couponUtils.formatUsageLimitPerItems(coupon.restrictions.limitUsageToXItems),
-                    expiration = coupon.dateExpires?.let { couponUtils.formatExpirationDate(it) },
+                    expiration = coupon.dateExpiresLocal?.let { couponUtils.formatExpirationDate(it) },
                     emailRestrictions = couponUtils.formatRestrictedEmails(coupon.restrictions.restrictedEmails)
                 )
             }

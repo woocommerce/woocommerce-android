@@ -55,15 +55,6 @@ class SiteSqlUtils @Inject constructor() {
         return WellSql.delete(SiteModel::class.java).execute()
     }
 
-    /**
-     * @return A selectQuery to get all the sites accessed via the XMLRPC, this includes: pure self hosted sites,
-     * but also Jetpack sites connected via XMLRPC.
-     */
-    val sitesAccessedViaXMLRPC: SelectQuery<SiteModel>
-        get() = WellSql.select(SiteModel::class.java)
-                .where().beginGroup()
-                .equals(SiteModelTable.ORIGIN, SiteModel.ORIGIN_XMLRPC)
-                .endGroup().endWhere()
     val sitesAccessedViaWPComRest: SelectQuery<SiteModel>
         get() = WellSql.select(SiteModel::class.java)
                 .where().beginGroup()

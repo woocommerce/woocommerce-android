@@ -40,6 +40,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettings
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class CouponDetailsViewModelTest : BaseUnitTest() {
@@ -89,7 +91,11 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when the screen loads, then show coupon details`() = testBlocking {
-        val coupon = CouponTestUtils.generateTestCoupon(COUPON_ID)
+        val localExpiryDate = LocalDate.of(2099, 1, 1)
+        val coupon = CouponTestUtils.generateTestCoupon(COUPON_ID).copy(
+            dateExpiresGmt = Date(0),
+            dateExpiresLocal = localExpiryDate
+        )
 
         setup()
 
@@ -115,6 +121,8 @@ class CouponDetailsViewModelTest : BaseUnitTest() {
                 "USD"
             )
         )
+        assertThat(state?.couponSummary?.expiration).isEqualTo(couponUtils.formatExpirationDate(localExpiryDate))
+        assertThat(state?.couponSummary?.isActive).isFalse()
     }
 
     @Test

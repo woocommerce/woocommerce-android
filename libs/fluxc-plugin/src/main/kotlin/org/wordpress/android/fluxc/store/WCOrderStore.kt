@@ -569,7 +569,12 @@ class WCOrderStore @Inject internal constructor(
             return@withDefaultContext if (result.isError) {
                 OnOrderChanged(orderError = result.error)
             } else {
+                val cachedOrder = ordersDaoDecorator.getOrder(remoteOrderId, site.localId())
                 insertOrder(site.localId(), result.orderWithMeta)
+                if (cachedOrder != null && cachedOrder.status != result.order.status) {
+                    val listTypeIdentifier = WCOrderListDescriptor.calculateTypeIdentifier(site.id)
+                    mDispatcher.dispatch(ListActionBuilder.newListRequiresRefreshAction(listTypeIdentifier))
+                }
                 OnOrderChanged()
             }
         }
