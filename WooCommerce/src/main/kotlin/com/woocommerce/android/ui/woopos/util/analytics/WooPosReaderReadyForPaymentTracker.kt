@@ -3,10 +3,6 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoProvider
 import javax.inject.Inject
 
-/**
- * The event goes through [WooPosAnalyticsTracker], so it never passes PaymentsFlowTracker and has to
- * read the transport from the shared tracking info itself.
- */
 class WooPosReaderReadyForPaymentTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,

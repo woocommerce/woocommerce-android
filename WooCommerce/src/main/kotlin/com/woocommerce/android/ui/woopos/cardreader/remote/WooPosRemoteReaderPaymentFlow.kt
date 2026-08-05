@@ -165,9 +165,6 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     sealed class Result {
         data object Completed : Result()
 
-        /**
-         * [message] is shown to the merchant, [errorDescription] is the diagnostic sent to analytics.
-         */
         data class Failed(
             val message: String,
             val errorDescription: String = message,
