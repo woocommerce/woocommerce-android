@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -172,7 +173,7 @@ class WooPosCashPaymentRepositoryTest {
         val site: SiteModel = mock { on { this.siteId }.thenReturn(siteId) }
         val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
         val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
-        val storedOrder: OrderEntity = mock { on { status }.thenReturn(Order.Status.Pending.value) }
+        val storedOrder = OrderTestUtils.generateOrder().copy(status = Order.Status.Pending.value)
 
         whenever(selectedSite.get()).thenReturn(site)
         whenever(gatewayStore.getGateway(site, "cod")).thenReturn(null)

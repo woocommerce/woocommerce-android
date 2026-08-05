@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -25,7 +26,6 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
@@ -101,7 +101,7 @@ class WooPosMarkOrderAsCompleteRepositoryTest {
             // GIVEN
             val orderId = 123L
             val siteId = 999L
-            val storedOrder: OrderEntity = mock { on { status }.thenReturn(Order.Status.Pending.value) }
+            val storedOrder = OrderTestUtils.generateOrder().copy(status = Order.Status.Pending.value)
             whenever(site.siteId).thenReturn(siteId)
             whenever(orderStore.getOrderByIdAndSite(orderId, site)).thenReturn(storedOrder)
 
