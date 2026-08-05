@@ -101,6 +101,8 @@ class PaymentsHubViewModel @Inject constructor(
 
     private var cashOnDeliveryTitle: String? = null
 
+    private var isOnboardingCheckInProgress = false
+
     private fun listenForSoftwareUpdateAvailability() {
         launch {
             cardReaderManager.softwareUpdateAvailability.collect(
@@ -164,12 +166,15 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     fun onViewVisible() {
+        isOnboardingCheckInProgress = true
         viewState.value = initialState
         launch {
             checkAndUpdateCashOnDeliveryOptionState()
         }
         launch {
-            viewState.value = when (val state = cardReaderChecker.getOnboardingState()) {
+            val state = cardReaderChecker.getOnboardingState()
+            isOnboardingCheckInProgress = false
+            viewState.value = when (state) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
                 is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
                 else -> createOnboardingFailedState(state)
@@ -330,7 +335,8 @@ class PaymentsHubViewModel @Inject constructor(
     private fun updateCashOnDeliveryOptionState(cashOnDeliveryListItem: ToggleableListItem) {
         cashOnDeliveryState.value = cashOnDeliveryListItem
         viewState.value = viewState.value?.copy(
-            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem)
+            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem),
+            isLoading = isOnboardingCheckInProgress || cashOnDeliveryListItem.isLoading
         )
     }
 
@@ -350,7 +356,7 @@ class PaymentsHubViewModel @Inject constructor(
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
-            isLoading = false,
+            isLoading = cashOnDeliveryState.value!!.isLoading,
             onboardingErrorAction = null,
         )
     }
@@ -366,7 +372,7 @@ class PaymentsHubViewModel @Inject constructor(
     private fun createOnboardingFailedState(state: CardReaderOnboardingState): PaymentsHubViewState {
         return PaymentsHubViewState(
             rows = createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!),
-            isLoading = false,
+            isLoading = cashOnDeliveryState.value!!.isLoading,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }

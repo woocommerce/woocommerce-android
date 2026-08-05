@@ -106,7 +106,7 @@ abstract class BaseAddressEditingFragment :
 
     private fun setupToolbarMenu() {
         binding.toolbar.setNavigationOnClickListener {
-            navigateUp()
+            onExitRequested()
         }
     }
 

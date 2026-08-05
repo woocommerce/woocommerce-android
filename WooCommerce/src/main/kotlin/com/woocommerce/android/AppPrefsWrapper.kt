@@ -53,6 +53,10 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
 
+    var isProductAddonsEnabled by AppPrefs::isProductAddonsEnabled
+
+    var wooPosLocalCatalogEnabled by AppPrefs::wooPosLocalCatalogEnabled
+
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
 
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
@@ -74,6 +78,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun getCardReaderOnboardingStatus(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.getCardReaderOnboardingStatus(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun isPOSTabVisibleForSite(localSiteId: Int) = AppPrefs.isPOSTabVisibleForSite(localSiteId)
+
+    fun isPOSLaunchableForSite(localSiteId: Int) = AppPrefs.isPOSLaunchableForSite(localSiteId)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,

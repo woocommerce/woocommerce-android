@@ -51,7 +51,7 @@ sealed class WooPosItemSelectionViewState(
         val expiredState: ExpiredState,
     ) : WooPosItemSelectionViewState(id, name) {
         sealed class ExpiredState {
-            data class Expired(val formattedDate: String) : ExpiredState()
+            data class Expired(val formattedDate: String?) : ExpiredState()
             data object NotExpired : ExpiredState()
         }
     }
