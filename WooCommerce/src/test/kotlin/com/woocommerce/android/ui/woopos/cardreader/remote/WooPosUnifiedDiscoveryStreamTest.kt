@@ -231,6 +231,45 @@ class WooPosUnifiedDiscoveryStreamTest {
             }
         }
 
+    @Test
+    fun `given discovered phone re-advertises for another store, when discovered, then its old entry is dropped`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+                flowOf(CardReaderDiscoveryEvents.Started)
+            )
+            val sameStoreSession = phone(name = "Pixel 7", deviceId = "device-1", fingerprintBase64 = "AB4F")
+            val otherStoreSession = phone(
+                name = "Pixel 7",
+                deviceId = "device-1",
+                fingerprintBase64 = "CD8E",
+                siteHash = siteIdHash(OTHER_SITE_ID),
+            )
+            whenever(remoteDiscovery.discover()).thenReturn(
+                flowOf(
+                    WooPosPhoneDiscoveryEvent.Added(sameStoreSession),
+                    WooPosPhoneDiscoveryEvent.Added(otherStoreSession),
+                )
+            )
+            val sut = WooPosUnifiedDiscoveryStream(
+                cardReaderManager,
+                remoteDiscovery,
+                simulatedRemoteDiscovery,
+                selectedSite,
+                logger,
+            )
+
+            // WHEN / THEN
+            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+                assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+                assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers)
+                    .containsExactly(sameStoreSession)
+                assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers).isEmpty()
+                assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.PhoneFromAnotherStoreFound)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun phone(
         name: String,
         siteHash: String = siteIdHash(TABLET_SITE_ID),

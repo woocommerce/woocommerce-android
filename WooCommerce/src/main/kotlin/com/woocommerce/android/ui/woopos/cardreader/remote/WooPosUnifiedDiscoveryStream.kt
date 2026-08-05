@@ -114,36 +114,30 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         phone: WooPosDiscoveredReader.Phone,
     ) {
         mutex.withLock {
+            // A fresh advertisement means the device's previous session is gone, whichever store it
+            // now serves, so drop the earlier entries before deciding whether to keep this one.
+            val droppedStaleEntry = state.dropEarlierSessionsOf(phone)
+
             val expectedSiteHash = selectedSite.getOrNull()?.remoteId()?.value?.let(::siteIdHash)
             if (expectedSiteHash == null) {
                 logger.d("Dropping NSD phone, no site is selected")
+                if (droppedStaleEntry) send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
                 return@withLock
             }
             if (phone.siteHash != expectedSiteHash) {
                 logger.d("Dropping NSD phone with site mismatch")
+                if (droppedStaleEntry) send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
                 send(WooPosUnifiedDiscoveryEvent.PhoneFromAnotherStoreFound)
                 return@withLock
             }
 
             val fingerprint = phone.fingerprintBase64
-
-            // The phone re-registers with a new fingerprint, name and port every session, and we
-            // may not receive the Lost event for the previous one (Android NSD goodbye is
-            // unreliable). Drop any earlier entries for the same device — deviceId is the only
-            // identifier that survives a session restart — so we don't show it twice or keep
-            // handing out its previous address.
-            val staleServiceNames = state.phonesByFingerprint.values
-                .filter { it.deviceId == phone.deviceId && it.fingerprintBase64 != fingerprint }
-                .map { it.serviceName }
-            staleServiceNames.forEach { serviceName ->
-                val staleFp = state.fingerprintByServiceName.remove(serviceName)
-                if (staleFp != null) state.phonesByFingerprint.remove(staleFp)
-            }
-
             val isUpdate = state.phonesByFingerprint.containsKey(fingerprint)
             if (isUpdate || state.phonesByFingerprint.size < MAX_DISCOVERED_PHONES) {
                 state.phonesByFingerprint[fingerprint] = phone
                 state.fingerprintByServiceName[phone.serviceName] = fingerprint
+                send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
+            } else if (droppedStaleEntry) {
                 send(WooPosUnifiedDiscoveryEvent.ReadersFound(state.snapshot()))
             }
         }
@@ -165,6 +159,23 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
         var bluetoothReaders: List<CardReader> = emptyList()
         val phonesByFingerprint: LinkedHashMap<String, WooPosDiscoveredReader.Phone> = linkedMapOf()
         val fingerprintByServiceName: MutableMap<String, String> = mutableMapOf()
+
+        /**
+         * The phone re-registers with a new fingerprint, name and port every session, and we may
+         * not receive the Lost event for the previous one (Android NSD goodbye is unreliable). Drop
+         * any earlier entries for the same device — deviceId is the only identifier that survives a
+         * session restart — so we don't show it twice or keep handing out its previous address.
+         */
+        fun dropEarlierSessionsOf(phone: WooPosDiscoveredReader.Phone): Boolean {
+            val staleServiceNames = phonesByFingerprint.values
+                .filter { it.deviceId == phone.deviceId && it.fingerprintBase64 != phone.fingerprintBase64 }
+                .map { it.serviceName }
+            staleServiceNames.forEach { serviceName ->
+                val staleFingerprint = fingerprintByServiceName.remove(serviceName)
+                if (staleFingerprint != null) phonesByFingerprint.remove(staleFingerprint)
+            }
+            return staleServiceNames.isNotEmpty()
+        }
 
         fun snapshot(): List<WooPosDiscoveredReader> =
             bluetoothReaders.map(WooPosDiscoveredReader::Bluetooth) + phonesByFingerprint.values
