@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -133,6 +134,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
+    private val crashLogging: CrashLogging = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -230,6 +232,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            crashLogging = crashLogging,
         )
     }
 
@@ -2563,18 +2566,46 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @Test
     fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
         testBlocking {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow<CardPaymentStatus> {
-                    suspendCancellableCoroutine<Unit> { continuation ->
-                        continuation.invokeOnCancellation {
-                            throw IllegalStateException("Cancellation race")
-                        }
-                    }
-                }
-            }
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
             controller.start()
 
-            controller.stop()
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.stop() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
+        }
+
+    @Test
+    fun `given payment in flight, when the flow is restarted, then cancellation handler does not crash`() =
+        testBlocking {
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
+            controller.start()
+
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.start() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
+        }
+
+    @Test
+    fun `given payment in flight, when the flow is restarted, then payment updates are still delivered`() =
+        testBlocking {
+            // GIVEN
+            val paymentStatus = MutableStateFlow<CardPaymentStatus>(InitializingPayment)
+            whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
+            controller.start()
+
+            // WHEN
+            controller.start()
+            paymentStatus.value = ProcessingPayment
+
+            // THEN
+            assertThat(controller.paymentState.value)
+                .isInstanceOf(CardReaderPaymentState.ProcessingPayment::class.java)
         }
 
     @Test
@@ -3881,6 +3912,32 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             verify(cardReaderManager, never()).collectPayment(any())
         }
 
+    private suspend fun stubPaymentThatThrowsOnCancellation() {
+        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+            flow<CardPaymentStatus> {
+                suspendCancellableCoroutine<Unit> { continuation ->
+                    continuation.invokeOnCancellation {
+                        throw IllegalStateException(
+                            "Cannot cancel this operation while it is waiting for a network response"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureUncaughtExceptions(block: () -> Unit): List<Throwable> {
+        val captured = mutableListOf<Throwable>()
+        val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable -> captured.add(throwable) }
+        try {
+            block()
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
+        return captured
+    }
+
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
             whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
@@ -3919,6 +3976,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            crashLogging = crashLogging,
         )
     }
 

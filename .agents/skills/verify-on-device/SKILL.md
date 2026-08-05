@@ -68,6 +68,9 @@ Unless the task explicitly mentions **POS**, **Point of Sale**, or **WooPos**, a
 
 Do NOT attempt to recover from the current screen state when you start a task. Always force-stop the app and relaunch it to start from a known state (the dashboard or POS). This avoids wasted time navigating out of unknown screens.
 
+Restarting is not resetting. Preserve and reuse a coherent authenticated session whenever one exists. Never uninstall
+the app or clear its data merely to begin verification, and install APK updates without clearing app data.
+
 ```bash
 adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.main.MainActivity
@@ -233,17 +236,35 @@ When `mobile_list_elements_on_screen` does not return the element you expect, it
 
 **Compose vs View elements:** View-based screens have stable `com.woocommerce.android.dev:id/*` identifiers. Compose-based screens (Dashboard cards, Settings, newer screens) may lack resource IDs — rely on `contentDescription` or display text instead.
 
-## Fresh Install vs. Upgrade
+## Authentication and Session Preservation
 
-- **Fresh install** (app not previously installed, or after `mobile_uninstall_app`): Always shows the login screen. The agent cannot proceed past login without user credentials.
-- **Upgrade/reinstall** (`mobile_install_app` when already installed): Session is preserved. App goes directly to the dashboard.
-- **After clearing data** (`adb shell pm clear com.woocommerce.android.dev`): Same as fresh install — session destroyed, login required.
+Prefer an already coherent, authenticated app session. Upgrade/reinstall the APK in place so app data is preserved;
+do not call `mobile_uninstall_app` or `pm clear` unless the task explicitly requires destructive clean-state testing.
 
-Plan your verification flow accordingly. If the user wants to test post-login features, ensure the app is already logged in.
+After launch, inspect the screen:
+
+- If the dashboard for the expected target appears, preserve and reuse that session.
+- If login is required, the target is not the expected store, or the session cannot be confirmed, invoke
+  `tools/agent-login/agent-login.sh` with the target flavor, selected serial, and Android user. It uses the
+  deterministic `default` profile. Add `--profile <name>` only when the user or task explicitly supplies that
+  nonsecret override. Do not list, open, read, or print profile files. Report only the script's sanitized outcome.
+- On `PROFILE_ERROR`, ask the user to complete the one-time profile setup documented in
+  `references/agent-auto-login.md`, or to log in manually on the device. Never ask for credentials in chat.
+
+`ALREADY_ACTIVE` means the selected session matches the requested target and connection. A different selected store or
+connection returns `CONFLICT`; auto-login never replaces it. The dev tool assumes the configured target is connected,
+the account has the correct role and eligibility, and WordPress.com does not require 2FA. The app may surface store
+configuration errors after login. Do not run agent auto-login concurrently with manual login or another login flow;
+it reuses production WordPress.com and Jetpack repositories, whose global auth events are not request-correlated.
+Never synthesize or modify a credential profile to work around a failure, and never retry `OUTCOME_UNKNOWN`
+automatically. See
+[`references/agent-auto-login.md`](references/agent-auto-login.md) and load
+[`references/main-app-login.md`](references/main-app-login.md) when login is encountered.
 
 ## Steps
 
-**Shortcut:** If the app is already installed and logged in, skip to step 6 (Set Up API Mocks) to cover cases where a mock response is required.
+**Shortcut:** If the app is already installed with a coherent session, preserve it and skip to step 6 (Set Up API
+Mocks) when a mock response is required.
 
 ### 0. Provision an Emulator (Optional, macOS/Linux only — Experimental)
 
@@ -341,7 +362,10 @@ If the build fails with "SDK location not found", check that `local.properties` 
 
 **Preferred path (`USE_ANDROID_CLI=1`):** skip this step. The single `android run` call in step 7 installs and launches in one shot — APK resolution and the install itself happen there.
 
-**Fallback (no `android` CLI):** install via mobile-mcp.
+Both paths must install in place without clearing app data. Do not uninstall first.
+
+**Fallback (no `android` CLI):** install via mobile-mcp; its install operation must replace the APK while preserving
+the existing app data.
 
 Use `mobile_install_app` with:
 - **path:** `WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk`
@@ -404,9 +428,13 @@ adb -s <device_id> shell am force-stop com.woocommerce.android.dev
 adb -s <device_id> shell am start -n com.woocommerce.android.dev/com.woocommerce.android.ui.woopos.root.WooPosActivity
 ```
 
-### 8. Handle Post-Launch Dialogs
+### 8. Handle Authentication and Post-Launch Dialogs
 
-Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
+Call `mobile_list_elements_on_screen` to check what appeared. If login is shown, follow "Authentication and Session
+Preservation" and [`references/agent-auto-login.md`](references/agent-auto-login.md).
+
+If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above.
+Repeat until you reach the dashboard or the expected screen.
 
 ### 9. Start Screen Recording (Optional)
 
@@ -594,7 +622,7 @@ The app has two distinct navigation domains with different architectures. **Only
 | **App not responding / blank screen** | Call `mobile_terminate_app` then `mobile_launch_app` to restart. |
 | **Element not found on screen** | The screen may still be loading — follow the "Waiting for Screen Transitions" protocol. If stable, try scrolling (see "Finding Elements That Require Scrolling"). |
 | **Tap lands on wrong element** | You likely used screenshot coordinates instead of element coordinates. Always use `mobile_list_elements_on_screen` and compute the center of the bounding rect. |
-| **Login screen appears** | The app requires authentication. The login screen shows elements with text like "Log in" or "Enter your store address". The agent CANNOT complete login autonomously without credentials. Stop and ask the user to provide test credentials or log in manually on the emulator. |
+| **Login screen appears** | Follow "Authentication and Session Preservation" and [`references/agent-auto-login.md`](references/agent-auto-login.md). |
 | **App crashes on launch** | Run `adb logcat -d *:E` via Bash to check crash logs. Common cause: missing FluxC database migration. |
 | **No devices found** | Run `adb devices` via Bash to check ADB connectivity. Ensure the emulator is booted or the physical device has USB debugging enabled. |
 | **Recording MP4 is unplayable** | Stopped with SIGKILL instead of SIGINT. Always use `pkill -l SIGINT screenrecord` and wait 2s before pulling. |
@@ -610,7 +638,7 @@ When mobile-mcp tools are not giving enough information:
 | `adb -s <device> shell dumpsys window \| grep mCurrentFocus` | Get the current window/dialog in focus |
 | `adb -s <device> logcat -d *:E \| tail -30` | Check recent error logs |
 | `adb -s <device> shell am force-stop com.woocommerce.android.dev` | Force kill the app |
-| `adb -s <device> shell pm clear com.woocommerce.android.dev` | Clear app data (full reset — will require re-login) |
+| `adb -s <device> shell pm clear com.woocommerce.android.dev` | Clear app data only for explicitly requested clean-state testing; it destroys the preserved session. |
 
 ### Android Knowledge Base (`USE_ANDROID_CLI=1`)
 

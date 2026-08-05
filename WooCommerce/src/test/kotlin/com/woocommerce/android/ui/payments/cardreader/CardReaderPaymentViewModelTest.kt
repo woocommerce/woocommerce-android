@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -175,6 +176,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val crashLogging: CrashLogging = mock()
     private val paymentStateMapper = CardReaderPaymentStateToViewStateMapper(
         cardReaderPaymentReaderTypeStateProvider
     )
@@ -205,6 +207,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -2702,6 +2705,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
@@ -2741,6 +2745,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
