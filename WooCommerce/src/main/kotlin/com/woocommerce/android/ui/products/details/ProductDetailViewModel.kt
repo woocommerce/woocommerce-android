@@ -115,6 +115,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -197,7 +198,6 @@ class ProductDetailViewModel @Inject constructor(
     ) { old, new ->
         if (old?.productAggregateDraft != new.productAggregateDraft) {
             new.productAggregateDraft?.let {
-                updateCards(it)
                 draftChanges.value = it
             }
         }
@@ -424,6 +424,27 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
+        observeCardData()
+    }
+
+    /**
+     * The detail cards and the "add more details" section depend on two independent sources: the product draft
+     * and the product's displayable custom fields (stored separately from the product). Combining them here
+     * rebuilds the cards whenever either changes, so the section reflects the latest state regardless of the
+     * order in which the product and its custom fields load.
+     */
+    private fun observeCardData() {
+        val hasDisplayableCustomFields = (navArgs.mode as? ProductDetailFragment.Mode.ShowProduct)
+            ?.let { mode ->
+                customFieldsRepository.observeDisplayableCustomFields(mode.remoteProductId)
+                    .map { it.isNotEmpty() }
+            }
+            ?: flowOf(false)
+
+        draftChanges.filterNotNull()
+            .combine(hasDisplayableCustomFields.distinctUntilChanged()) { draft, _ -> draft }
+            .onEach { updateCards(it) }
+            .launchIn(viewModelScope)
     }
 
     private fun initializeViewState() {
