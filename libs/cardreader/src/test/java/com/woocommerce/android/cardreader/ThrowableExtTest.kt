@@ -3,7 +3,7 @@ package com.woocommerce.android.cardreader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class ThrowableExtensionsTest {
+class ThrowableExtTest {
     @Test
     fun `given a throwable without a cause, when described, then only the throwable is rendered`() {
         // GIVEN

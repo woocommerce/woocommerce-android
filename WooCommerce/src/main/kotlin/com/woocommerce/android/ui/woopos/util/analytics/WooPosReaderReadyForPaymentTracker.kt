@@ -4,9 +4,8 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoProvid
 import javax.inject.Inject
 
 /**
- * Tracks `reader_ready_for_card_payment`, which is dispatched through [WooPosAnalyticsTracker] and so never
- * passes through PaymentsFlowTracker. The transport is read from the shared card reader tracking info so
- * remote (wifi_lan) sessions are distinguishable from local ones.
+ * The event goes through [WooPosAnalyticsTracker], so it never passes PaymentsFlowTracker and has to
+ * read the transport from the shared tracking info itself.
  */
 class WooPosReaderReadyForPaymentTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,

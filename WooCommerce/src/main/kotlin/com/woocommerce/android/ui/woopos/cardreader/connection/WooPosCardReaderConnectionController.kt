@@ -482,10 +482,8 @@ class WooPosCardReaderConnectionController(
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
     }
 
-    /**
-     * Must run before any event is tracked for the phone: the phone acts as the reader, so a model left over
-     * from a previous Bluetooth connection would otherwise be reported against this wifi_lan session.
-     */
+    // Must run before any phone event is tracked, or a model left over from a previous Bluetooth
+    // connection gets reported against this wifi_lan session.
     private fun markPhoneReaderSelected() {
         cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
