@@ -960,8 +960,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             whenever(cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true))
                 .thenReturn(WooResult(codGateway(isEnabled = true, title = "Pay in Person")))
             initViewModel()
-            toggleCashOnDelivery(isChecked = true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // WHEN
             toggleCashOnDelivery(isChecked = true)
@@ -987,13 +986,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             }
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(
@@ -1021,13 +1014,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             }
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(
@@ -1055,13 +1042,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             }
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(
@@ -1089,13 +1070,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             }
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(
@@ -1123,13 +1098,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             }
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(
@@ -1153,13 +1122,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
@@ -1176,13 +1139,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryEnabledFailure(
@@ -1202,13 +1159,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(false)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(false)
 
             // THEN
             verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledSuccess(PAYMENTS_HUB)
@@ -1225,13 +1176,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(false)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(false)
 
             // THEN
             verify(paymentsFlowTracker, never()).trackCashOnDeliveryEnabledFailure(
@@ -1251,13 +1196,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(false)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(false)
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryDisabledFailure(
@@ -1277,13 +1216,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(false)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(false)
 
             // THEN
             verify(paymentsFlowTracker).trackCashOnDeliveryDisabledSuccess(
@@ -1302,13 +1235,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isInstanceOf(ShowToastString::class.java)
@@ -1325,13 +1252,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -1352,13 +1273,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -1377,13 +1292,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             )
 
             // WHEN
-            (
-                viewModel.viewStateData.getOrAwaitValue().rows.find {
-                    it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                }
-                    as ToggleableListItem
-                ).onToggled.invoke(true)
-            confirmCashOnDeliveryToggle()
+            toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
@@ -2029,6 +1938,11 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
     private fun confirmCashOnDeliveryToggle() {
         (viewModel.event.value as ShowCashOnDeliveryConfirmation).onConfirmed()
+    }
+
+    private fun toggleCashOnDeliveryAndConfirm(isChecked: Boolean) {
+        toggleCashOnDelivery(isChecked)
+        confirmCashOnDeliveryToggle()
     }
 
     private fun codGateway(isEnabled: Boolean, title: String = "Pay in Person") = WCGatewayModel(
