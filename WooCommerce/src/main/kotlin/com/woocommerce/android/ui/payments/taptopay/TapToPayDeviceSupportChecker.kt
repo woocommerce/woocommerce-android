@@ -8,33 +8,28 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Stripe can only answer once Terminal is initialized, which happens lazily when a card reader
- * flow is entered, so [TapToPayDeviceSupport.Unknown] is the normal answer on a cold start.
+ * Wraps Stripe Terminal's device-capability check (`Terminal.supportsReadersOfType`) and caches
+ * the result per reader kind — the device's TTP capability cannot change at runtime, but Stripe
+ * answers differently for the simulated and the production reader, and the simulated reader can
+ * be toggled from developer options while the process is alive.
+ *
+ * Returns `null` when Terminal is not yet initialized; callers should treat that as "unknown"
+ * and rely on their pre-init heuristics until Stripe can answer.
  */
 @Singleton
 class TapToPayDeviceSupportChecker @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val developerOptionsRepository: DeveloperOptionsRepository,
 ) {
-    private val cached = ConcurrentHashMap<Boolean, TapToPayDeviceSupport>()
+    private val cached = ConcurrentHashMap<Boolean, Boolean>()
 
-    fun checkSupport(): TapToPayDeviceSupport {
+    fun isSupported(): Boolean? {
         val isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
         cached[isSimulated]?.let { return it }
         return when (cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)) {
-            TapToPaySupportResult.Supported ->
-                TapToPayDeviceSupport.Supported.also { cached[isSimulated] = it }
-
-            is TapToPaySupportResult.NotSupported ->
-                TapToPayDeviceSupport.NotSupported.also { cached[isSimulated] = it }
-
-            TapToPaySupportResult.TerminalNotInitialized -> TapToPayDeviceSupport.Unknown
+            TapToPaySupportResult.Supported -> true.also { cached[isSimulated] = it }
+            is TapToPaySupportResult.NotSupported -> false.also { cached[isSimulated] = it }
+            TapToPaySupportResult.TerminalNotInitialized -> null
         }
     }
-}
-
-sealed class TapToPayDeviceSupport {
-    object Supported : TapToPayDeviceSupport()
-    object NotSupported : TapToPayDeviceSupport()
-    object Unknown : TapToPayDeviceSupport()
 }

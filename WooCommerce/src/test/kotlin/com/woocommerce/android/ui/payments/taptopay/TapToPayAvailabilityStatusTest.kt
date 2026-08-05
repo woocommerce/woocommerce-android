@@ -32,7 +32,7 @@ class TapToPayAvailabilityStatusTest {
     }
     private val deviceFeatures = mock<DeviceFeatures>()
     private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker = mock {
-        on { checkSupport() }.thenReturn(TapToPayDeviceSupport.Supported)
+        on { isSupported() }.thenReturn(true)
     }
 
     private val availabilityStatus = TapToPayAvailabilityStatus(
@@ -102,61 +102,25 @@ class TapToPayAvailabilityStatusTest {
 
     @Test
     fun `given Stripe reports device unsupported, when invoking, then device not supported returned`() {
-        // GIVEN
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.NotSupported)
+        whenever(tapToPayDeviceSupportChecker.isSupported()).thenReturn(false)
 
-        // WHEN
         val result = availabilityStatus.invoke()
 
-        // THEN
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.NotAvailable.DeviceNotSupported)
     }
 
     @Test
-    fun `given Stripe has not answered yet, when invoking, then unknown returned`() {
-        // GIVEN
+    fun `given Stripe support check unknown, when invoking, then tpp available returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
         whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.Unknown)
+        whenever(tapToPayDeviceSupportChecker.isSupported()).thenReturn(null)
 
-        // WHEN
         val result = availabilityStatus.invoke()
 
-        // THEN
-        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Unknown)
-    }
-
-    @Test
-    fun `given Stripe has not answered yet, when checking entry points, then they are shown`() {
-        // GIVEN
-        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
-        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.Unknown)
-
-        // WHEN
-        val result = availabilityStatus.invoke()
-
-        // THEN
-        assertThat(result.isAvailableOrUnknown).isTrue
-    }
-
-    @Test
-    fun `given Stripe reports device unsupported, when checking entry points, then they are hidden`() {
-        // GIVEN
-        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
-        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
-        whenever(tapToPayDeviceSupportChecker.checkSupport()).thenReturn(TapToPayDeviceSupport.NotSupported)
-
-        // WHEN
-        val result = availabilityStatus.invoke()
-
-        // THEN
-        assertThat(result.isAvailableOrUnknown).isFalse
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
     }
 }

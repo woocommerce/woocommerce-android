@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.moremenu
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeature.Payments
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.taptopay.isAvailableOrUnknown
+import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import dagger.Reusable
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -19,7 +19,7 @@ class MoreMenuNewFeatureHandler @Inject constructor(
         .map {
             when {
                 appPrefsWrapper.isUserSeenNewFeatureOnMoreScreen() -> emptyList()
-                tapToPayAvailabilityStatus().isAvailableOrUnknown -> listOf(Payments)
+                tapToPayAvailabilityStatus().isAvailable -> listOf(Payments)
                 else -> emptyList()
             }
         }

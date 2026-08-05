@@ -15,86 +15,71 @@ class TapToPayDeviceSupportCheckerTest {
     private val checker = TapToPayDeviceSupportChecker(cardReaderManager, developerOptionsRepository)
 
     @Test
-    fun `given Stripe reports supported, when checking support, then supported returned`() {
-        // GIVEN
+    fun `given Stripe reports supported, when isSupported, then true returned`() {
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.Supported)
 
-        // WHEN
-        val result = checker.checkSupport()
+        val result = checker.isSupported()
 
-        // THEN
-        assertThat(result).isEqualTo(TapToPayDeviceSupport.Supported)
+        assertThat(result).isTrue
     }
 
     @Test
-    fun `given Stripe reports not supported, when checking support, then not supported returned`() {
-        // GIVEN
+    fun `given Stripe reports not supported, when isSupported, then false returned`() {
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.NotSupported("no TEE"))
 
-        // WHEN
-        val result = checker.checkSupport()
+        val result = checker.isSupported()
 
-        // THEN
-        assertThat(result).isEqualTo(TapToPayDeviceSupport.NotSupported)
+        assertThat(result).isFalse
     }
 
     @Test
-    fun `given Terminal not initialized, when checking support, then unknown returned`() {
-        // GIVEN
+    fun `given Terminal not initialized, when isSupported, then null returned`() {
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.TerminalNotInitialized)
 
-        // WHEN
-        val result = checker.checkSupport()
+        val result = checker.isSupported()
 
-        // THEN
-        assertThat(result).isEqualTo(TapToPayDeviceSupport.Unknown)
+        assertThat(result).isNull()
     }
 
     @Test
-    fun `given Stripe answered once, when checking support again, then result is cached`() {
-        // GIVEN
+    fun `given Stripe answered once, when isSupported called again, then result is cached`() {
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.Supported)
 
-        // WHEN
-        checker.checkSupport()
-        checker.checkSupport()
-        checker.checkSupport()
+        checker.isSupported()
+        checker.isSupported()
+        checker.isSupported()
 
-        // THEN
         verify(cardReaderManager).isTapToPaySupportedOnDevice(false)
     }
 
     @Test
-    fun `given simulated reader enabled, when checking support, then Stripe is asked about the simulated reader`() {
+    fun `given simulated reader enabled, when isSupported, then Stripe is asked about the simulated reader`() {
         // GIVEN
         whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(true))
             .thenReturn(TapToPaySupportResult.Supported)
 
         // WHEN
-        val result = checker.checkSupport()
+        val result = checker.isSupported()
 
         // THEN
-        assertThat(result).isEqualTo(TapToPayDeviceSupport.Supported)
+        assertThat(result).isTrue
         verify(cardReaderManager).isTapToPaySupportedOnDevice(true)
     }
 
     @Test
-    fun `given Terminal not initialized, when checking support again, then result is not cached`() {
-        // GIVEN
+    fun `given Terminal not initialized, when isSupported called again, then result is not cached`() {
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(false))
             .thenReturn(TapToPaySupportResult.TerminalNotInitialized)
             .thenReturn(TapToPaySupportResult.Supported)
 
-        // WHEN
-        checker.checkSupport()
-        val secondCall = checker.checkSupport()
+        checker.isSupported()
+        val secondCall = checker.isSupported()
 
-        // THEN
-        assertThat(secondCall).isEqualTo(TapToPayDeviceSupport.Supported)
+        assertThat(secondCall).isTrue
     }
 }

@@ -18,18 +18,15 @@ class TapToPayAvailabilityStatus @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val tapToPayDeviceSupportChecker: TapToPayDeviceSupportChecker,
 ) {
-    operator fun invoke(): Result =
+    operator fun invoke() =
         when {
             !systemVersionUtilsWrapper.isAtLeastR() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
             !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry() -> Result.NotAvailable.CountryNotSupported
+            tapToPayDeviceSupportChecker.isSupported() == false -> Result.NotAvailable.DeviceNotSupported
 
-            else -> when (tapToPayDeviceSupportChecker.checkSupport()) {
-                TapToPayDeviceSupport.Supported -> Result.Available
-                TapToPayDeviceSupport.NotSupported -> Result.NotAvailable.DeviceNotSupported
-                TapToPayDeviceSupport.Unknown -> Result.Unknown
-            }
+            else -> Result.Available
         }
 
     private fun isTppSupportedInCountry(): Boolean {
@@ -43,8 +40,6 @@ class TapToPayAvailabilityStatus @Inject constructor(
 
     sealed class Result {
         object Available : Result()
-        object Unknown : Result()
-
         sealed class NotAvailable : Result() {
             object SystemVersionNotSupported : NotAvailable()
             object GooglePlayServicesNotAvailable : NotAvailable()
@@ -55,9 +50,4 @@ class TapToPayAvailabilityStatus @Inject constructor(
     }
 }
 
-/**
- * Unknown counts as available: Stripe Terminal is only initialized from the flows these entry points
- * lead to, so hiding them until Stripe answers would keep the answer unknown forever.
- */
-val TapToPayAvailabilityStatus.Result.isAvailableOrUnknown
-    get() = this !is TapToPayAvailabilityStatus.Result.NotAvailable
+val TapToPayAvailabilityStatus.Result.isAvailable get() = this is TapToPayAvailabilityStatus.Result.Available

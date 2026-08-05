@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
-import com.woocommerce.android.ui.payments.taptopay.isAvailableOrUnknown
+import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.WooLog
@@ -248,7 +248,7 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
-        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailableOrUnknown) {
+        if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
             BadgeState(
                 badgeSize = R.dimen.major_110,
                 backgroundColor = R.color.color_secondary,
