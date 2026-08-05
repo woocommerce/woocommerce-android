@@ -2820,6 +2820,7 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = WooPosAnalyticsTrackingDataKeeper(),
             productsDataSource = productsDataSource,
+            readerReadyForPaymentTracker = mock(),
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,
