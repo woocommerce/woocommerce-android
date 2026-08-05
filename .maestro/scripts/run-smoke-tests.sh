@@ -16,7 +16,10 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FLOWS_DIR="$REPO_ROOT/.maestro/flows"
 ENV_FILE="$REPO_ROOT/.maestro/.env.local"
 STRINGS_ENV_FILE="$REPO_ROOT/.maestro/strings.env"
-SEED_SCRIPT="$REPO_ROOT/.maestro/scripts/seed-fixtures.py"
+SEED_SCRIPT="${WOO_MAESTRO_SEED_SCRIPT:-$REPO_ROOT/.maestro/scripts/seed-fixtures.py}"
+PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
+CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
+SHARED_STORE_HOST="inpersonpayments.wpcomstaging.com"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
 RUN_HASH="$(printf '%s-%s-%s' "$RUN_STAMP" "$$" "${RANDOM:-0}" | cksum | awk '{print $1}')"
@@ -41,6 +44,8 @@ INCLUDE_TAGS=("smoke_core")
 EXCLUDE_TAGS=("flaky_quarantine")
 INCLUDE_TAGS_EXPLICIT="no"
 EXCLUDE_TAGS_EXPLICIT="no"
+INCLUDE_QUARANTINE="no"
+PLAN="no"
 
 usage() {
   cat <<'USAGE'
@@ -58,7 +63,7 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh
   .maestro/scripts/run-smoke-tests.sh --profile core
   .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
-  .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
+  .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
   .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
   .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --apk path/to/app.apk
   .maestro/scripts/run-smoke-tests.sh --repeat 5 --store shared --include-tags smoke_core,smoke_extended
@@ -74,6 +79,7 @@ Options:
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
   --exclude-tags a,b          Exclude flows with any listed tag. Default: flaky_quarantine.
+  --include-quarantine        Remove flaky_quarantine from the active exclusions.
   --rerun-failed report.xml   Rerun only testcases with failure/error in a previous JUnit report.
   --seed                      Run REST fixture seed/cleanup. Requires Woo REST API credentials.
   --no-seed                   Skip REST fixture seed/cleanup.
@@ -82,12 +88,14 @@ Options:
   --no-record                 Disable failure videos.
   --no-open                   Do not open the HTML report on macOS.
   --output-dir path           Override output root.
+  --plan                      Print the resolved selection without touching tools, credentials, or devices.
 USAGE
 }
 
 add_csv_tags() {
   local target_name="$1"
   local csv="$2"
+  [[ -z "$csv" ]] && return
   local old_ifs="$IFS"
   IFS=","
   read -r -a parts <<< "$csv"
@@ -102,49 +110,20 @@ add_csv_tags() {
 
 apply_profile() {
   PROFILE="$1"
-  case "$PROFILE" in
-    core)
-      STORE="lab"
-      REPEAT=1
-      INCLUDE_TAGS=("smoke_core")
-      EXCLUDE_TAGS=("flaky_quarantine" "android_system")
-      ;;
-    phone-full)
-      STORE="lab"
-      REPEAT=1
-      INCLUDE_TAGS=("smoke_core" "smoke_extended")
-      EXCLUDE_TAGS=("pos_tablet" "android_system")
-      ;;
-    release)
-      STORE="shared"
-      REPEAT=1
-      INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
-      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet" "android_system")
-      ;;
-    burst)
-      STORE="shared"
-      REPEAT=3
-      INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
-      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet" "android_system")
-      ;;
-    pos-tablet)
-      STORE="lab"
-      REPEAT=1
-      INCLUDE_TAGS=("pos_tablet")
-      EXCLUDE_TAGS=()
-      ;;
-    android-system)
-      STORE="lab"
-      REPEAT=1
-      INCLUDE_TAGS=("android_system")
-      EXCLUDE_TAGS=()
-      ;;
-    *)
-      echo "Unknown --profile: $PROFILE" >&2
-      echo "Valid profiles: core, phone-full, release, burst, pos-tablet, android-system" >&2
-      exit 2
-      ;;
-  esac
+  local profile_output key value
+  if ! profile_output="$(python3 "$PLAN_SCRIPT" profile "$PROFILE")"; then
+    exit 2
+  fi
+  INCLUDE_TAGS=()
+  EXCLUDE_TAGS=()
+  while IFS=$'\t' read -r key value; do
+    case "$key" in
+      store) STORE="$value" ;;
+      repeat) REPEAT="$value" ;;
+      include) add_csv_tags INCLUDE_TAGS "$value" ;;
+      exclude) add_csv_tags EXCLUDE_TAGS "$value" ;;
+    esac
+  done <<< "$profile_output"
   INCLUDE_TAGS_EXPLICIT="yes"
   EXCLUDE_TAGS_EXPLICIT="yes"
 }
@@ -179,6 +158,10 @@ while [[ $# -gt 0 ]]; do
       OUTPUT_ROOT="${2:?--output-dir requires a path}"
       shift 2
       ;;
+    --plan)
+      PLAN="yes"
+      shift
+      ;;
     -t|--tag|--include-tags)
       if [[ "$INCLUDE_TAGS_EXPLICIT" == "no" ]]; then
         INCLUDE_TAGS=()
@@ -194,6 +177,10 @@ while [[ $# -gt 0 ]]; do
       fi
       add_csv_tags EXCLUDE_TAGS "${2:?--exclude-tags requires a tag}"
       shift 2
+      ;;
+    --include-quarantine)
+      INCLUDE_QUARANTINE="yes"
+      shift
       ;;
     --no-seed)
       SEED="no"
@@ -253,6 +240,52 @@ if [[ "$INCLUDE_TAGS_EXPLICIT" == "yes" ]]; then
     fi
   done
 fi
+if [[ "$INCLUDE_QUARANTINE" == "yes" ]]; then
+  FILTERED_EXCLUDE_TAGS_CSV=""
+  for tag in "${EXCLUDE_TAGS[@]}"; do
+    if [[ "$tag" != "flaky_quarantine" ]]; then
+      FILTERED_EXCLUDE_TAGS_CSV="${FILTERED_EXCLUDE_TAGS_CSV:+$FILTERED_EXCLUDE_TAGS_CSV,}$tag"
+    fi
+  done
+  EXCLUDE_TAGS=()
+  if [[ -n "$FILTERED_EXCLUDE_TAGS_CSV" ]]; then
+    add_csv_tags EXCLUDE_TAGS "$FILTERED_EXCLUDE_TAGS_CSV"
+  fi
+fi
+
+join_tags_csv() {
+  local old_ifs="$IFS"
+  IFS=","
+  printf '%s' "$*"
+  IFS="$old_ifs"
+}
+
+if [[ "$PLAN" == "yes" ]]; then
+  if [[ -n "$RERUN_FAILED_FILE" || -n "$TARGET" ]]; then
+    echo "--plan currently supports profile/tag selections only." >&2
+    exit 2
+  fi
+  INCLUDE_TAGS_CSV=""
+  EXCLUDE_TAGS_CSV=""
+  if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]]; then
+    INCLUDE_TAGS_CSV="$(join_tags_csv "${INCLUDE_TAGS[@]}")"
+  fi
+  if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]]; then
+    EXCLUDE_TAGS_CSV="$(join_tags_csv "${EXCLUDE_TAGS[@]}")"
+  fi
+  plan_args=(
+    plan
+    --profile-label "$PROFILE"
+    --store "$STORE"
+    --repeat "$REPEAT"
+    --include-tags "$INCLUDE_TAGS_CSV"
+    --exclude-tags "$EXCLUDE_TAGS_CSV"
+  )
+  if [[ "$SEED" == "yes" ]]; then
+    plan_args+=(--seed)
+  fi
+  exec python3 "$PLAN_SCRIPT" "${plan_args[@]}"
+fi
 
 OUTPUT_ROOT="${OUTPUT_ROOT:-$DEFAULT_OUTPUT_ROOT}"
 OUTPUT_DIR="$OUTPUT_ROOT/$TIMESTAMP"
@@ -269,52 +302,16 @@ SWEEP_REPORT="$TMP_DIR/orphan-sweep.json"
 export MAESTRO_SUITE_RUN_ID="$SUITE_RUN_ID"
 mkdir -p "$LOGS_DIR" "$TMP_DIR" "$SCREENSHOTS_DIR"
 
-P2_ORDERED_FLOWS=(
-  login_not_wp_site.yaml
-  login_wrong_credentials.yaml
-  login_help.yaml
-  login_not_woo_store.yaml
-  login_wrong_account.yaml
-  login_no_jetpack.yaml
-  login_google.yaml
-  login_successful.yaml
-  dashboard_stats.yaml
-  dashboard_view_all_analytics.yaml
-  dashboard_customize.yaml
-  orders_list_and_search.yaml
-  orders_create.yaml
-  orders_details_and_actions.yaml
-  orders_mark_complete.yaml
-  orders_cash_payment.yaml
-  orders_barcode_scanner_opens.yaml
-  orders_payment_qr_and_share.yaml
-  orders_refund.yaml
-  products_list_and_sort.yaml
-  products_detail.yaml
-  products_variations_and_tags.yaml
-  products_create.yaml
-  products_media_upload.yaml
-  hub_menu_settings.yaml
-  hub_menu_payments.yaml
-  hub_menu_coupons.yaml
-  hub_menu_customers_inbox.yaml
-  hub_menu_admin_and_store.yaml
-  blaze_campaign.yaml
-  google_for_woo.yaml
-  pos_search_and_coupons.yaml
-  pos_cash_payment.yaml
-  android_quick_actions.yaml
-)
-
 echo "--- Pre-flight checks"
 if ! command -v maestro >/dev/null 2>&1; then
-  echo "maestro CLI not found. Install: curl -fsSL \"https://get.maestro.mobile.dev\" | bash" >&2
+  echo "maestro CLI not found. Install the repository pin: MAESTRO_VERSION=2.8.0 (see .maestro/README.md)." >&2
   exit 1
 fi
 if ! command -v adb >/dev/null 2>&1; then
   echo "adb not found. Ensure Android SDK platform-tools is on PATH." >&2
   exit 1
 fi
+python3 "$CHECK_TOOLCHAIN_SCRIPT"
 
 if [[ -f "$ENV_FILE" ]]; then
   set -a
@@ -353,6 +350,15 @@ alias_env() {
 select_store_env() {
   local upper
   upper="$(printf '%s' "$STORE" | tr '[:lower:]' '[:upper:]')"
+  unset \
+    MAESTRO_WOO_JETPACK_STORE_URL \
+    MAESTRO_WOO_WPCOM_EMAIL \
+    MAESTRO_WOO_WPCOM_PASSWORD \
+    MAESTRO_WOO_STORE_URL \
+    MAESTRO_WOO_EMAIL \
+    MAESTRO_WOO_PASSWORD \
+    MAESTRO_WOO_CONSUMER_KEY \
+    MAESTRO_WOO_CONSUMER_SECRET
   map_store_env \
     MAESTRO_WOO_JETPACK_STORE_URL \
     "MAESTRO_WOO_${upper}_JETPACK_STORE_URL" \
@@ -511,17 +517,24 @@ elif [[ -n "$TARGET" ]]; then
   fi
   ORDERED_FLOWS+=("$(cd "$(dirname "$TARGET")" && pwd)/$(basename "$TARGET")")
 else
-  for name in "${P2_ORDERED_FLOWS[@]}"; do
-    flow_path="$FLOWS_DIR/$name"
-    [[ -f "$flow_path" ]] || continue
-    if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]] && ! flow_has_any_tag "$flow_path" "${INCLUDE_TAGS[@]}"; then
-      continue
-    fi
-    if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]] && flow_has_any_tag "$flow_path" "${EXCLUDE_TAGS[@]}"; then
-      continue
-    fi
-    ORDERED_FLOWS+=("$flow_path")
-  done
+  INCLUDE_TAGS_CSV=""
+  EXCLUDE_TAGS_CSV=""
+  if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]]; then
+    INCLUDE_TAGS_CSV="$(join_tags_csv "${INCLUDE_TAGS[@]}")"
+  fi
+  if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]]; then
+    EXCLUDE_TAGS_CSV="$(join_tags_csv "${EXCLUDE_TAGS[@]}")"
+  fi
+  if ! SELECTION_OUTPUT="$(
+    python3 "$PLAN_SCRIPT" select \
+      --include-tags "$INCLUDE_TAGS_CSV" \
+      --exclude-tags "$EXCLUDE_TAGS_CSV"
+  )"; then
+    exit 1
+  fi
+  while IFS= read -r flow_path; do
+    [[ -n "$flow_path" ]] && ORDERED_FLOWS+=("$flow_path")
+  done <<< "$SELECTION_OUTPUT"
 fi
 if [[ ${#ORDERED_FLOWS[@]} -eq 0 ]]; then
   echo "No flows matched the current filters." >&2
@@ -535,11 +548,50 @@ for flow in "${ORDERED_FLOWS[@]}"; do
     SUITE_HAS_DESTRUCTIVE="yes"
   fi
 done
+if [[ "$SEED" == "yes" && "$SUITE_HAS_DESTRUCTIVE" != "yes" ]]; then
+  echo "No destructive flows selected; skipping fixture seeding."
+  SEED="no"
+fi
 if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && -z "${CI:-}" && -z "${BUILDKITE:-}" ]]; then
   echo "Refusing to run destructive flows against the shared store outside CI." >&2
   echo "Use --store lab for destructive iteration, or remove destructive flows from the selection." >&2
   exit 1
 fi
+if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && "$SEED" != "yes" ]]; then
+  echo "Shared destructive runs require --seed so fixtures and the store lock are mandatory." >&2
+  exit 1
+fi
+
+validate_shared_destructive_config() {
+  [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]] || return 0
+
+  local required missing=() name
+  for required in \
+    MAESTRO_WOO_SHARED_JETPACK_STORE_URL \
+    MAESTRO_WOO_SHARED_WPCOM_EMAIL \
+    MAESTRO_WOO_SHARED_WPCOM_PASSWORD \
+    MAESTRO_WOO_SHARED_CONSUMER_KEY \
+    MAESTRO_WOO_SHARED_CONSUMER_SECRET; do
+    if [[ -z "${!required:-}" ]]; then
+      missing+=("$required")
+    fi
+  done
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    echo "Missing scoped shared store configuration:" >&2
+    for name in "${missing[@]}"; do
+      echo "  - $name" >&2
+    done
+    exit 1
+  fi
+
+  local configured_host
+  configured_host="$(url_host "$MAESTRO_WOO_SHARED_JETPACK_STORE_URL")"
+  if [[ "$configured_host" != "$SHARED_STORE_HOST" ]]; then
+    echo "Shared destructive runs require host $SHARED_STORE_HOST; configured host is ${configured_host:-<empty>}." >&2
+    exit 1
+  fi
+}
+validate_shared_destructive_config
 
 is_optional_flow_env_ref() {
   local flow="$1"
@@ -562,6 +614,13 @@ validate_referenced_env() {
       fi
     done < <(grep -Eoh '\$\{WOO_[A-Z0-9_]+\}' "$flow" | sed 's/[${}]//g' | sort -u)
   done
+  if flow_uses_wpcom_credentials; then
+    for var in MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD; do
+      if [[ -z "${!var:-}" ]]; then
+        missing+=("$var")
+      fi
+    done
+  fi
   if [[ ${#missing[@]} -gt 0 ]]; then
     printf '%s\n' "${missing[@]}" | sort -u | sed 's/^/Missing required env var: /' >&2
     echo "Populate $ENV_FILE from .maestro/env.example. Values are intentionally not echoed." >&2
@@ -588,6 +647,31 @@ validate_optional_not_woo_wpcom_env() {
   fi
 }
 validate_optional_not_woo_wpcom_env
+
+LOCK_ACQUIRED="no"
+SETTINGS_CAPTURED="no"
+RECORDER_PID=""
+CLEANUP_DONE="no"
+CLEANUP_STATUS="NOT_REQUESTED"
+CLEANUP_ERROR=""
+
+release_shared_lock() {
+  if [[ "$LOCK_ACQUIRED" == "yes" && -f "$MANIFEST_FILE" ]]; then
+    "$SEED_SCRIPT" unlock --manifest "$MANIFEST_FILE" --store shared || true
+    LOCK_ACQUIRED="no"
+  fi
+}
+
+trap release_shared_lock EXIT
+if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
+  if [[ ! -x "$SEED_SCRIPT" ]]; then
+    echo "Shared destructive lock helper is not executable: $SEED_SCRIPT" >&2
+    exit 1
+  fi
+  echo "--- Acquiring shared-store destructive lock"
+  "$SEED_SCRIPT" lock --store shared --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" >/dev/null
+  LOCK_ACQUIRED="yes"
+fi
 
 DEVICE_SERIALS=()
 while read -r serial state _rest; do
@@ -647,9 +731,6 @@ echo "Device: $DEVICE_SERIAL"
 
 ANIMATION_KEYS=(window_animation_scale transition_animation_scale animator_duration_scale)
 ORIGINAL_ANIMATION_VALUES=()
-SETTINGS_CAPTURED="no"
-LOCK_ACQUIRED="no"
-RECORDER_PID=""
 
 capture_animation_settings() {
   local key value
@@ -688,12 +769,12 @@ cleanup_on_exit() {
     stop_screenrecord
     wait "$RECORDER_PID" 2>/dev/null || true
   fi
-  if [[ "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE" || true
+  if [[ "$CLEANUP_DONE" != "yes" && "$CLEANUP" == "yes" && "$SEED" == "yes" && -f "$MANIFEST_FILE" ]]; then
+    if ! "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE"; then
+      exit_code=1
+    fi
   fi
-  if [[ "$LOCK_ACQUIRED" == "yes" && -f "$MANIFEST_FILE" ]]; then
-    "$SEED_SCRIPT" unlock --manifest "$MANIFEST_FILE" --store shared || true
-  fi
+  release_shared_lock
   restore_animation_settings
   exit "$exit_code"
 }
@@ -797,22 +878,31 @@ if [[ "$SEED" == "yes" ]]; then
   fi
   "$SEED_SCRIPT" "${sweep_args[@]}"
 
-  if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" ]]; then
-    echo "--- Acquiring shared-store destructive lock"
-    "$SEED_SCRIPT" lock --store shared --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" >/dev/null
-    LOCK_ACQUIRED="yes"
-  fi
-
   echo "--- Seeding deterministic fixtures"
   "$SEED_SCRIPT" seed --store "$STORE" --run-id "$SUITE_RUN_ID" --manifest "$MANIFEST_FILE" --env-file "$RUN_ENV_FILE"
   # shellcheck disable=SC1090
   source "$RUN_ENV_FILE"
 fi
 
-MAESTRO_ENV_ARGS=()
-while IFS='=' read -r name value; do
-  [[ -n "$name" ]] && MAESTRO_ENV_ARGS+=(-e "${name#MAESTRO_}=${value}")
-done < <(env | grep '^MAESTRO_' || true)
+MAESTRO_ENV_ARGS=(-e "SUITE_RUN_ID=$SUITE_RUN_ID")
+MAESTRO_PROCESS_ENV_ARGS=(env)
+while IFS='=' read -r name _value; do
+  [[ -n "$name" ]] && MAESTRO_PROCESS_ENV_ARGS+=(-u "$name")
+done < <(env | grep '^MAESTRO_WOO_' || true)
+
+FLOW_ENV_REFS=()
+while IFS= read -r ref; do
+  [[ -n "$ref" ]] && FLOW_ENV_REFS+=("$ref")
+done < <(grep -Eoh '\$\{WOO_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" | sed 's/[${}]//g' | sort -u || true)
+if flow_uses_wpcom_credentials; then
+  FLOW_ENV_REFS+=(WOO_JETPACK_STORE_URL WOO_WPCOM_EMAIL WOO_WPCOM_PASSWORD)
+fi
+while IFS= read -r ref; do
+  [[ -z "$ref" ]] && continue
+  source_name="MAESTRO_$ref"
+  value="${!source_name:-}"
+  [[ -n "$value" ]] && MAESTRO_PROCESS_ENV_ARGS+=("$ref=$value")
+done < <(printf '%s\n' "${FLOW_ENV_REFS[@]}" | sort -u)
 
 # Forward only the STRING_* variables the selected flows reference; forwarding
 # all generated strings would risk exceeding ARG_MAX.
@@ -878,8 +968,15 @@ selection_args() {
   if [[ -n "$PROFILE" ]]; then
     printf '%s\0%s\0' --profile "$PROFILE"
   else
-    printf '%s\0%s\0' --include-tags "$(join_csv "${INCLUDE_TAGS[@]}")"
-    printf '%s\0%s\0' --exclude-tags "$(join_csv "${EXCLUDE_TAGS[@]}")"
+    local include_csv="" exclude_csv=""
+    if [[ ${#INCLUDE_TAGS[@]} -gt 0 ]]; then
+      include_csv="$(join_csv "${INCLUDE_TAGS[@]}")"
+    fi
+    if [[ ${#EXCLUDE_TAGS[@]} -gt 0 ]]; then
+      exclude_csv="$(join_csv "${EXCLUDE_TAGS[@]}")"
+    fi
+    printf '%s\0%s\0' --include-tags "$include_csv"
+    printf '%s\0%s\0' --exclude-tags "$exclude_csv"
   fi
 }
 
@@ -989,7 +1086,7 @@ run_one_attempt() {
   local started ended exit_code
   started=$(date +%s)
   set +e
-  maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" "$flow" >"$log_file" 2>&1
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
   ended=$(date +%s)
@@ -1062,21 +1159,27 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     recovery="$first_recovery"
 
     if [[ "$first_exit" -ne 0 ]]; then
-      echo "  first attempt failed; retrying once"
-      retry="$(run_one_attempt "$flow" "$base" 2 "$repeat_index")"
-      IFS='|' read -r retry_exit retry_duration retry_media retry_log retry_error retry_recovery <<< "$retry"
-      duration=$((first_duration + retry_duration))
-      if [[ "$retry_exit" -eq 0 ]]; then
-        status="FLAKY"
-        FLAKY=$((FLAKY + 1))
-      else
+      if flow_has_any_tag "$flow" destructive; then
+        echo "  destructive flow failed; automatic retry is disabled"
         status="FAIL"
         FAILED=$((FAILED + 1))
-        media="${retry_media:-$first_media}"
-        log_rel="$retry_log"
-        error="${retry_error:-$first_error}"
+      else
+        echo "  first attempt failed; retrying once"
+        retry="$(run_one_attempt "$flow" "$base" 2 "$repeat_index")"
+        IFS='|' read -r retry_exit retry_duration retry_media retry_log retry_error retry_recovery <<< "$retry"
+        duration=$((first_duration + retry_duration))
+        if [[ "$retry_exit" -eq 0 ]]; then
+          status="FLAKY"
+          FLAKY=$((FLAKY + 1))
+        else
+          status="FAIL"
+          FAILED=$((FAILED + 1))
+          media="${retry_media:-$first_media}"
+          log_rel="$retry_log"
+          error="${retry_error:-$first_error}"
+        fi
+        recovery=$((first_recovery + retry_recovery))
       fi
-      recovery=$((first_recovery + retry_recovery))
     elif [[ "${first_recovery:-0}" -gt 0 ]]; then
       status="FLAKY_RECOVERY"
       FLAKY=$((FLAKY + 1))
@@ -1094,11 +1197,29 @@ done
 SUITE_END=$(date +%s)
 SUITE_DURATION=$((SUITE_END - SUITE_START))
 
+CLEANUP_FAILED=0
+if [[ "$SEED" == "yes" && "$CLEANUP" == "yes" && -f "$MANIFEST_FILE" ]]; then
+  echo "--- Cleaning run-owned fixtures"
+  CLEANUP_LOG="$LOGS_DIR/fixture-cleanup.log"
+  if "$SEED_SCRIPT" cleanup --manifest "$MANIFEST_FILE" --store "$STORE" >"$CLEANUP_LOG" 2>&1; then
+    CLEANUP_STATUS="PASS"
+  else
+    CLEANUP_STATUS="FAIL"
+    CLEANUP_FAILED=1
+    CLEANUP_ERROR="$(tail -n 1 "$CLEANUP_LOG" | tr '|' '/' || true)"
+  fi
+  CLEANUP_DONE="yes"
+elif [[ "$SEED" == "yes" ]]; then
+  CLEANUP_STATUS="SKIPPED"
+fi
+REPORT_TOTAL_RUNS=$((TOTAL_RUNS + CLEANUP_FAILED))
+REPORT_FAILURES=$((FAILED + FLAKY + CLEANUP_FAILED))
+
 echo "--- Generating reports"
 {
   printf '<?xml version="1.0" encoding="UTF-8"?>\n'
   printf '<testsuite name="woocommerce-android-maestro-smoke" tests="%d" failures="%d" time="%d">\n' \
-    "$TOTAL_RUNS" "$((FAILED + FLAKY))" "$SUITE_DURATION"
+    "$REPORT_TOTAL_RUNS" "$REPORT_FAILURES" "$SUITE_DURATION"
   for result in "${RESULTS[@]}"; do
     IFS='|' read -r status repeat_index name duration media log_rel error recovery <<< "$result"
     printf '  <testcase classname="maestro.%s" name="%s" time="%s">' "$repeat_index" "$name" "$duration"
@@ -1108,6 +1229,10 @@ echo "--- Generating reports"
     fi
     printf '</testcase>\n'
   done
+  if [[ "$CLEANUP_FAILED" -ne 0 ]]; then
+    cleanup_message="$(printf '%s' "${CLEANUP_ERROR:-Fixture cleanup failed}" | xml_escape)"
+    printf '  <testcase classname="maestro.teardown" name="fixture_cleanup"><failure message="SETUP_ERROR">%s</failure></testcase>\n' "$cleanup_message"
+  fi
   printf '</testsuite>\n'
 } > "$JUNIT_FILE"
 
@@ -1141,7 +1266,7 @@ pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; paddin
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
 <p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $STORE | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
-<p><strong>Result:</strong> $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS executions.</p>
+<p><strong>Result:</strong> $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
 <section class="commands">
   <div class="command-card">
     <h2>Run the same selection</h2>
@@ -1177,6 +1302,10 @@ HTML_HEAD
     printf '<tr><td>%s</td><td><code>%s</code></td><td class="%s">%s</td><td>%ss</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' \
       "$repeat_index" "$name" "$status" "$status" "$duration" "${recovery:-0}" "$artifact" "$error_html"
   done
+  if [[ "$CLEANUP_FAILED" -ne 0 ]]; then
+    error_html="$(printf '%s' "${CLEANUP_ERROR:-Fixture cleanup failed}" | xml_escape)"
+    printf '<tr><td>-</td><td><code>fixture_cleanup</code></td><td class="FAIL">SETUP_ERROR</td><td>-</td><td>0</td><td><a href="logs/fixture-cleanup.log">log</a></td><td>%s</td></tr>\n' "$error_html"
+  fi
   cat <<HTML_FOOT
 </tbody>
 </table>
@@ -1188,13 +1317,13 @@ HTML_FOOT
 
 echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
-echo "Result: $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS executions (${SUITE_DURATION}s)"
+echo "Result: $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
 
 if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
   open "$REPORT_FILE" || true
 fi
 
-if [[ "$FAILED" -gt 0 || "$FLAKY" -gt 0 ]]; then
+if [[ "$FAILED" -gt 0 || "$FLAKY" -gt 0 || "$CLEANUP_FAILED" -gt 0 ]]; then
   exit 1
 fi
 exit 0

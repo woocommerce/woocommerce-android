@@ -12,57 +12,20 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from smoke_plan import PROFILES, flow_tags, selected_flows
+
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent.parent
-FLOWS_DIR = REPO_ROOT / ".maestro" / "flows"
-RUNNER = SCRIPT_DIR / "run-smoke-tests.sh"
 DEFAULT_ENV_FILE = REPO_ROOT / ".maestro" / ".env.local"
 LINT_ENV = SCRIPT_DIR / "lint-env.py"
+SEED_SCRIPT = SCRIPT_DIR / "seed-fixtures.py"
+CHECK_TOOLCHAIN = SCRIPT_DIR / "check-toolchain.py"
+SHARED_STORE_HOST = "inpersonpayments.wpcomstaging.com"
 
 ASSIGNMENT_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
 REF_RE = re.compile(r"\$\{(WOO_[A-Z0-9_]+)\}")
 SUBFLOW_LOGIN_RE = re.compile(r"subflows/(ensure_logged_in|login)\.yaml")
-
-PROFILES = {
-    "core": {
-        "store": "lab",
-        "include": ["smoke_core"],
-        "exclude": ["flaky_quarantine", "android_system"],
-        "repeat": 1,
-    },
-    "phone-full": {
-        "store": "lab",
-        "include": ["smoke_core", "smoke_extended"],
-        "exclude": ["pos_tablet", "android_system"],
-        "repeat": 1,
-    },
-    "release": {
-        "store": "shared",
-        "include": ["smoke_core", "smoke_extended", "destructive"],
-        "exclude": ["flaky_quarantine", "pos_tablet", "android_system"],
-        "repeat": 1,
-    },
-    "burst": {
-        "store": "shared",
-        "include": ["smoke_core", "smoke_extended", "destructive"],
-        "exclude": ["flaky_quarantine", "pos_tablet", "android_system"],
-        "repeat": 3,
-    },
-    "pos-tablet": {
-        "store": "lab",
-        "include": ["pos_tablet"],
-        "exclude": [],
-        "repeat": 1,
-    },
-    "android-system": {
-        "store": "lab",
-        "include": ["android_system"],
-        "exclude": [],
-        "repeat": 1,
-    },
-}
-
 
 @dataclass
 class Check:
@@ -95,44 +58,6 @@ def parse_env_file(path: Path) -> dict[str, str]:
     return values
 
 
-def p2_ordered_flow_names() -> list[str]:
-    text = RUNNER.read_text(errors="replace")
-    match = re.search(r"P2_ORDERED_FLOWS=\((.*?)\)", text, re.S)
-    if not match:
-        return sorted(path.name for path in FLOWS_DIR.glob("*.yaml"))
-    return re.findall(r"([A-Za-z0-9_]+\.yaml)", match.group(1))
-
-
-def flow_tags(path: Path) -> list[str]:
-    tags: list[str] = []
-    in_tags = False
-    header = path.read_text(errors="replace").split("---", 1)[0]
-    for line in header.splitlines():
-        if line.strip() == "tags:":
-            in_tags = True
-            continue
-        if in_tags and line.lstrip().startswith("-"):
-            tags.append(line.split("-", 1)[1].strip())
-        elif in_tags and line and not line.startswith((" ", "\t")):
-            in_tags = False
-    return tags
-
-
-def selected_flows(include_tags: list[str], exclude_tags: list[str]) -> list[Path]:
-    flows: list[Path] = []
-    for name in p2_ordered_flow_names():
-        path = FLOWS_DIR / name
-        if not path.exists():
-            continue
-        tags = set(flow_tags(path))
-        if include_tags and not tags.intersection(include_tags):
-            continue
-        if exclude_tags and tags.intersection(exclude_tags):
-            continue
-        flows.append(path)
-    return flows
-
-
 def referenced_env(flows: list[Path], seed: bool) -> set[str]:
     refs: set[str] = set()
     for flow in flows:
@@ -154,32 +79,25 @@ def candidates_for(ref: str, store: str) -> list[str]:
     upper = store.upper()
     mapped = {
         "WOO_JETPACK_STORE_URL": [
-            "MAESTRO_WOO_JETPACK_STORE_URL",
             f"MAESTRO_WOO_{upper}_JETPACK_STORE_URL",
             f"MAESTRO_WOO_{upper}_STORE_URL",
         ],
         "WOO_STORE_URL": [
-            "MAESTRO_WOO_STORE_URL",
-            "MAESTRO_WOO_JETPACK_STORE_URL",
             f"MAESTRO_WOO_{upper}_JETPACK_STORE_URL",
             f"MAESTRO_WOO_{upper}_STORE_URL",
         ],
         "WOO_WPCOM_EMAIL": [
-            "MAESTRO_WOO_WPCOM_EMAIL",
             f"MAESTRO_WOO_{upper}_WPCOM_EMAIL",
             f"MAESTRO_WOO_{upper}_EMAIL",
         ],
         "WOO_WPCOM_PASSWORD": [
-            "MAESTRO_WOO_WPCOM_PASSWORD",
             f"MAESTRO_WOO_{upper}_WPCOM_PASSWORD",
             f"MAESTRO_WOO_{upper}_PASSWORD",
         ],
         "WOO_CONSUMER_KEY": [
-            "MAESTRO_WOO_CONSUMER_KEY",
             f"MAESTRO_WOO_{upper}_CONSUMER_KEY",
         ],
         "WOO_CONSUMER_SECRET": [
-            "MAESTRO_WOO_CONSUMER_SECRET",
             f"MAESTRO_WOO_{upper}_CONSUMER_SECRET",
         ],
         "WOO_NO_JETPACK_SITE_URL": ["MAESTRO_WOO_NO_JETPACK_SITE_URL", "MAESTRO_WOO_JN_SITE_URL"],
@@ -223,29 +141,50 @@ def adb_devices() -> list[str]:
     return devices
 
 
+def toolchain_check() -> Check:
+    result = subprocess.run(
+        [sys.executable, str(CHECK_TOOLCHAIN)],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode == 0:
+        return Check("ok", "Maestro toolchain matches the repository pin")
+    details = [line.strip() for line in result.stderr.splitlines() if line.strip()]
+    message = details[-1] if details else "Maestro toolchain check failed"
+    return Check("fail", message)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Maestro smoke-test prerequisites without running flows.")
     parser.add_argument("--profile", choices=sorted(PROFILES), default="core")
     parser.add_argument("--store", choices=("lab", "shared"))
     parser.add_argument("--include-tags")
     parser.add_argument("--exclude-tags")
+    parser.add_argument("--include-quarantine", action="store_true")
     parser.add_argument("--device", help="Expected adb serial. AVD-name matching is handled by the runner.")
     parser.add_argument("--env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--seed", action="store_true")
     args = parser.parse_args()
 
     profile = PROFILES[args.profile]
-    store = args.store or profile["store"]
-    include_tags = parse_csv(args.include_tags) or list(profile["include"])
+    store = args.store or profile.store
+    include_tags = parse_csv(args.include_tags)
+    if include_tags is None:
+        include_tags = list(profile.include)
     exclude_tags = parse_csv(args.exclude_tags)
     if exclude_tags is None:
-        exclude_tags = list(profile["exclude"])
+        exclude_tags = list(profile.exclude)
+    if args.include_quarantine:
+        exclude_tags = [tag for tag in exclude_tags if tag != "flaky_quarantine"]
 
     checks: list[Check] = [
         command_check("bash"),
         command_check("python3"),
         command_check("maestro"),
         command_check("adb"),
+        toolchain_check(),
     ]
 
     if args.env_file.exists():
@@ -261,7 +200,7 @@ def main() -> int:
     env.update(parse_env_file(args.env_file))
 
     flows = selected_flows(include_tags, exclude_tags)
-    checks.append(Check("ok" if flows else "warn", f"{len(flows)} flow(s) selected for profile {args.profile}"))
+    checks.append(Check("ok" if flows else "fail", f"{len(flows)} flow(s) selected for profile {args.profile}"))
 
     refs = referenced_env(flows, args.seed)
     missing = sorted(ref for ref in refs if not has_value(env, candidates_for(ref, store)))
@@ -284,6 +223,25 @@ def main() -> int:
     no_jetpack_url = next((env[name] for name in no_jetpack_candidates if env.get(name)), "")
     if jetpack_url and no_jetpack_url and url_host(jetpack_url) == url_host(no_jetpack_url):
         checks.append(Check("fail", "selected Jetpack store URL matches the no-Jetpack site URL"))
+
+    has_destructive_flow = any("destructive" in flow_tags(flow) for flow in flows)
+    if store == "shared" and has_destructive_flow:
+        if not args.seed:
+            checks.append(Check("fail", "shared destructive flows require --seed"))
+        shared_url = env.get("MAESTRO_WOO_SHARED_JETPACK_STORE_URL", "")
+        shared_host = url_host(shared_url)
+        if shared_host != SHARED_STORE_HOST:
+            checks.append(
+                Check(
+                    "fail",
+                    f"shared destructive host must be {SHARED_STORE_HOST}; "
+                    f"configured host is {shared_host or '<empty>'}",
+                )
+            )
+        if not os.access(SEED_SCRIPT, os.X_OK):
+            checks.append(Check("fail", f"shared-store lock helper is not executable: {SEED_SCRIPT}"))
+        if not os.environ.get("CI") and not os.environ.get("BUILDKITE"):
+            checks.append(Check("fail", "shared destructive runs are refused outside CI"))
 
     devices = adb_devices()
     if args.device:

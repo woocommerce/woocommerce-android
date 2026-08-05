@@ -28,16 +28,17 @@
     <thead><tr><th>Store</th><th>Purpose</th><th>Rules</th></tr></thead>
     <tbody>
       <tr><td><code>lab</code></td><td>Disposable Jurassic Ninja automation store.</td><td>Default for local runs, repair loops, destructive iteration, and can-fail checks.</td></tr>
-      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Release-tool and Thursday burst runs. Destructive tags are CI-only under a REST lock.</td></tr>
+      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Release-tool and Thursday burst runs. Destructive tags are CI-only and require seed, scoped REST credentials, the exact host, and a pre-device REST lock.</td></tr>
     </tbody>
   </table>
 
   <h2>Local Runs</h2>
   <pre>cp .maestro/env.example .maestro/.env.local
 .maestro/scripts/run-smoke-tests.sh --store lab
+.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554 --store lab
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
-.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
+.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
 .maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
 
   <h2>Fixtures and Cleanup</h2>

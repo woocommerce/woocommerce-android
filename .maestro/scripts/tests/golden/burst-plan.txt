@@ -1,0 +1,14 @@
+Maestro smoke plan
+  profile: burst
+  store:   shared
+  repeat:  3
+  include: smoke_core,smoke_extended,destructive
+  exclude: flaky_quarantine,pos_tablet,android_system
+  seed:    no
+  flows:   4
+
+Selected flows:
+  - .maestro/flows/login_successful.yaml
+  - .maestro/flows/dashboard_stats.yaml
+  - .maestro/flows/orders_list_and_search.yaml
+  - .maestro/flows/products_list_and_sort.yaml

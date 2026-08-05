@@ -142,8 +142,16 @@ def manifest_template(run_id: str, store: str) -> dict[str, Any]:
     }
 
 
-def record(manifest: dict[str, Any], entity_type: str, entity_id: int, label: str) -> None:
+def record(
+    manifest: dict[str, Any],
+    entity_type: str,
+    entity_id: int,
+    label: str,
+    manifest_path: Path | None = None,
+) -> None:
     manifest["entities"].append({"type": entity_type, "id": entity_id, "label": label})
+    if manifest_path is not None:
+        write_json(manifest_path, manifest)
 
 
 def suite_email(run_id: str) -> str:
@@ -170,7 +178,7 @@ def seed(args: argparse.Namespace) -> None:
     coupon_code = f"{run_id}-10".upper()
 
     tag = client.create("products/tags", {"name": f"{run_id} Tag"})
-    record(manifest, "product_tag", int(tag["id"]), "variable product tag")
+    record(manifest, "product_tag", int(tag["id"]), "variable product tag", manifest_path)
 
     simple_product = client.create(
         "products",
@@ -184,7 +192,7 @@ def seed(args: argparse.Namespace) -> None:
             "tags": [{"id": tag["id"]}],
         },
     )
-    record(manifest, "product", int(simple_product["id"]), "simple order product")
+    record(manifest, "product", int(simple_product["id"]), "simple order product", manifest_path)
 
     variable_product = client.create(
         "products",
@@ -203,7 +211,7 @@ def seed(args: argparse.Namespace) -> None:
             ],
         },
     )
-    record(manifest, "product", int(variable_product["id"]), "variable product")
+    record(manifest, "product", int(variable_product["id"]), "variable product", manifest_path)
     for option in ("Small", "Large"):
         variation = client.create(
             f"products/{variable_product['id']}/variations",
@@ -213,7 +221,13 @@ def seed(args: argparse.Namespace) -> None:
                 "attributes": [{"name": "Size", "option": option}],
             },
         )
-        record(manifest, "product_variation", int(variation["id"]), f"variation {option}")
+        record(
+            manifest,
+            "product_variation",
+            int(variation["id"]),
+            f"variation {option}",
+            manifest_path,
+        )
 
     customer = client.create(
         "customers",
@@ -230,7 +244,7 @@ def seed(args: argparse.Namespace) -> None:
             },
         },
     )
-    record(manifest, "customer", int(customer["id"]), "known customer")
+    record(manifest, "customer", int(customer["id"]), "known customer", manifest_path)
 
     coupon = client.create(
         "coupons",
@@ -241,7 +255,7 @@ def seed(args: argparse.Namespace) -> None:
             "description": f"{run_id} smoke coupon",
         },
     )
-    record(manifest, "coupon", int(coupon["id"]), "active coupon")
+    record(manifest, "coupon", int(coupon["id"]), "active coupon", manifest_path)
 
     pending_order_ids: list[int] = []
     refundable_order_ids: list[int] = []
@@ -257,7 +271,7 @@ def seed(args: argparse.Namespace) -> None:
             label=f"pending-order-{index}",
         )
         pending_order_ids.append(int(pending["id"]))
-        record(manifest, "order", int(pending["id"]), f"pending-order-{index}")
+        record(manifest, "order", int(pending["id"]), f"pending-order-{index}", manifest_path)
 
         refundable = create_order(
             client=client,
@@ -269,7 +283,13 @@ def seed(args: argparse.Namespace) -> None:
             label=f"refundable-order-{index}",
         )
         refundable_order_ids.append(int(refundable["id"]))
-        record(manifest, "order", int(refundable["id"]), f"refundable-order-{index}")
+        record(
+            manifest,
+            "order",
+            int(refundable["id"]),
+            f"refundable-order-{index}",
+            manifest_path,
+        )
 
         # Paid order awaiting fulfillment — the only status where the
         # order detail screen exposes the Mark Complete action.
@@ -283,7 +303,13 @@ def seed(args: argparse.Namespace) -> None:
             label=f"processing-order-{index}",
         )
         processing_order_ids.append(int(processing["id"]))
-        record(manifest, "order", int(processing["id"]), f"processing-order-{index}")
+        record(
+            manifest,
+            "order",
+            int(processing["id"]),
+            f"processing-order-{index}",
+            manifest_path,
+        )
 
     manifest["env"] = {
         "MAESTRO_SUITE_RUN_ID": run_id,
@@ -342,10 +368,12 @@ def create_order(
 
 
 def cleanup(args: argparse.Namespace) -> None:
-    manifest = read_json(Path(args.manifest))
+    manifest_path = Path(args.manifest)
+    manifest = read_json(manifest_path)
     load_store_env(manifest.get("store", args.store or "lab"))
     client = WooClient()
     errors: list[str] = []
+    original_count = len(manifest.get("entities", []))
     type_to_path = {
         "order": "orders",
         "coupon": "coupons",
@@ -355,20 +383,25 @@ def cleanup(args: argparse.Namespace) -> None:
         "customer": "customers",
         "lock_product": "products",
     }
-    for entity in reversed(manifest.get("entities", [])):
+    for entity in reversed(list(manifest.get("entities", []))):
         entity_type = entity.get("type")
         path = type_to_path.get(entity_type)
         if path is None:
+            manifest["entities"].remove(entity)
+            write_json(manifest_path, manifest)
             continue
         try:
             client.delete(path, int(entity["id"]))
         except SmokeSetupError as exc:
             errors.append(str(exc))
+        else:
+            manifest["entities"].remove(entity)
+            write_json(manifest_path, manifest)
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
         raise SmokeSetupError(f"Cleanup completed with {len(errors)} deletion error(s).")
-    print(f"Cleaned {len(manifest.get('entities', []))} manifest entities")
+    print(f"Cleaned {original_count} manifest entities")
 
 
 def sweep(args: argparse.Namespace) -> None:
@@ -454,7 +487,7 @@ def lock(args: argparse.Namespace) -> None:
         path = Path(args.manifest)
         manifest = read_json(path) if path.exists() else manifest_template(run_id, args.store)
         manifest["lock"] = lock_record
-        manifest.setdefault("entities", []).append(lock_record)
+        manifest.setdefault("entities", [])
         write_json(path, manifest)
     print(json.dumps(lock_record))
 
@@ -506,7 +539,9 @@ def write_env_file(path: Path, values: dict[str, str]) -> None:
 def write_json(path_value: str | Path, value: dict[str, Any]) -> None:
     path = Path(path_value)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.replace(path)
 
 
 def read_json(path: Path) -> dict[str, Any]:
