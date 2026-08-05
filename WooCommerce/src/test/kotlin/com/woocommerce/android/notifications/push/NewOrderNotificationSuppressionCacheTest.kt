@@ -9,7 +9,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order moved to a notifiable status, when consumed, then the entry is dropped`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "processing")
+        cache.recordOrderMovedToNotifiableStatus(SITE_ID, ORDER_ID, "processing")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
@@ -19,9 +19,9 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given order moved to a non notifiable status, when consume, then no entry is found`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "pending")
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "cancelled")
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "auto-draft")
+        cache.recordOrderMovedToNotifiableStatus(SITE_ID, ORDER_ID, "pending")
+        cache.recordOrderMovedToNotifiableStatus(SITE_ID, ORDER_ID, "cancelled")
+        cache.recordOrderMovedToNotifiableStatus(SITE_ID, ORDER_ID, "auto-draft")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
@@ -40,7 +40,7 @@ class NewOrderNotificationSuppressionCacheTest {
 
         notifiableStatuses.forEachIndexed { index, status ->
             // WHEN
-            cache.onOrderMovedToPaidStatus(SITE_ID, index.toLong(), status)
+            cache.recordOrderMovedToNotifiableStatus(SITE_ID, index.toLong(), status)
 
             // THEN
             assertThat(cache.consume(SITE_ID, index.toLong()))
@@ -52,7 +52,7 @@ class NewOrderNotificationSuppressionCacheTest {
     @Test
     fun `given an entry for another order, when consume, then no entry is found`() {
         // GIVEN
-        cache.onOrderMovedToPaidStatus(SITE_ID, ORDER_ID, "completed")
+        cache.recordOrderMovedToNotifiableStatus(SITE_ID, ORDER_ID, "completed")
 
         // THEN
         assertThat(cache.consume(SITE_ID, ORDER_ID + 1)).isFalse()

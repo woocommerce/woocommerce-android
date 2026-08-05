@@ -470,7 +470,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             viewModel.handleIsOrderPaid(true)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderMovedToNotifiableStatus(
                 siteId = site.siteId,
                 orderId = 1L,
                 newStatusKey = Order.Status.Completed.value,

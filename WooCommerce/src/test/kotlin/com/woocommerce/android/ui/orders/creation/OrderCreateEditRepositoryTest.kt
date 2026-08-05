@@ -267,7 +267,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderMovedToNotifiableStatus(
                 siteId = defaultSiteModel.siteId,
                 orderId = 123L,
                 newStatusKey = Order.Status.Processing.value,

@@ -85,7 +85,7 @@ class OrderCreateEditRepository @Inject constructor(
             result.isError -> Result.failure(WooException(result.error))
             else -> {
                 val updatedOrder = orderMapper.toAppModel(result.model!!)
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.recordOrderMovedToNotifiableStatus(
                     siteId = selectedSite.get().siteId,
                     orderId = updatedOrder.id,
                     newStatusKey = updatedOrder.status.value,

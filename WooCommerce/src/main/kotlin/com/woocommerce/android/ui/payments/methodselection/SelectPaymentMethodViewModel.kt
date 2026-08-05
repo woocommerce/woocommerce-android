@@ -432,7 +432,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             )
         }.onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.recordOrderMovedToNotifiableStatus(
                     siteId = selectedSite.get().siteId,
                     orderId = cardReaderPaymentFlowParam.orderId,
                     newStatusKey = statusKey

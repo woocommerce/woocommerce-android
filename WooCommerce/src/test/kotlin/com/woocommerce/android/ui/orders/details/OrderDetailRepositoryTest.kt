@@ -48,7 +48,7 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
             sut.updateOrderStatus(ORDER_ID, Order.Status.Completed.value).collect { }
 
             // THEN
-            verify(newOrderNotificationSuppressionCache).onOrderMovedToPaidStatus(
+            verify(newOrderNotificationSuppressionCache).recordOrderMovedToNotifiableStatus(
                 SITE_ID,
                 ORDER_ID,
                 Order.Status.Completed.value,

@@ -6,14 +6,14 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * In-memory record of orders this device moved into a paid status, used to suppress the
+ * In-memory record of orders this device moved into a notifiable status, used to suppress the
  * new order push notification triggered by that same action.
  */
 @Singleton
 class NewOrderNotificationSuppressionCache @Inject constructor() {
     private val entries = Collections.synchronizedSet(mutableSetOf<Entry>())
 
-    fun onOrderMovedToPaidStatus(siteId: Long, orderId: Long, newStatusKey: String) {
+    fun recordOrderMovedToNotifiableStatus(siteId: Long, orderId: Long, newStatusKey: String) {
         if (newStatusKey in NOTIFIABLE_STATUSES) {
             entries += Entry(siteId, orderId)
         }

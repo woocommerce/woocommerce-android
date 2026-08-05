@@ -137,7 +137,7 @@ class OrderDetailRepository @Inject constructor(
             status
         ).onEach { result ->
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
-                newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+                newOrderNotificationSuppressionCache.recordOrderMovedToNotifiableStatus(
                     siteId = selectedSite.get().siteId,
                     orderId = orderId,
                     newStatusKey = newStatus,

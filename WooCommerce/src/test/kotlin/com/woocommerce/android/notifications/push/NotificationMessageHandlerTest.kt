@@ -285,7 +285,7 @@ class NotificationMessageHandlerTest {
             // GIVEN
             val orderId = 4321L
             givenWooDrivenOrderNotification(orderId)
-            newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+            newOrderNotificationSuppressionCache.recordOrderMovedToNotifiableStatus(
                 siteId = orderNotification.remoteSiteId,
                 orderId = orderId,
                 newStatusKey = "processing",
@@ -305,7 +305,7 @@ class NotificationMessageHandlerTest {
         runTest {
             // GIVEN
             givenWooDrivenOrderNotification(orderId = 4321L)
-            newOrderNotificationSuppressionCache.onOrderMovedToPaidStatus(
+            newOrderNotificationSuppressionCache.recordOrderMovedToNotifiableStatus(
                 siteId = orderNotification.remoteSiteId,
                 orderId = 9999L,
                 newStatusKey = "processing",
