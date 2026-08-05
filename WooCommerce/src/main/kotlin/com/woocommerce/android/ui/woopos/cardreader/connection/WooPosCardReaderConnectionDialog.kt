@@ -290,7 +290,6 @@ fun WooPosCardReaderConnectionDialogContent(
                 }
                 is WooPosCardReaderConnectionState.Scanning -> {
                     ScanningContent(
-                        showPhoneFromAnotherStoreWarning = currentState.showPhoneFromAnotherStoreWarning,
                         onHintClick = onHintClick,
                     )
                 }
@@ -474,7 +473,6 @@ private fun CardReaderDialogContent(
 
 @Composable
 private fun ScanningContent(
-    showPhoneFromAnotherStoreWarning: Boolean,
     onHintClick: () -> Unit,
 ) {
     val showHint = currentWooPosBreakpoint() != WooPosBreakpoint.Phone
@@ -483,15 +481,15 @@ private fun ScanningContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            ScanningDialogBody(showPhoneFromAnotherStoreWarning)
+            ScanningDialogBody()
             WooPosRemoteReaderHintStrip(onClick = onHintClick)
         }
-        false -> ScanningDialogBody(showPhoneFromAnotherStoreWarning)
+        false -> ScanningDialogBody()
     }
 }
 
 @Composable
-private fun ScanningDialogBody(showPhoneFromAnotherStoreWarning: Boolean) {
+private fun ScanningDialogBody() {
     CardReaderDialogContent(
         title = stringResource(R.string.woopos_card_reader_scanning_title),
         icon = WooPosIcons.CardReaderScanning,
@@ -502,15 +500,6 @@ private fun ScanningDialogBody(showPhoneFromAnotherStoreWarning: Boolean) {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
-        if (showPhoneFromAnotherStoreWarning) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-            WooPosText(
-                text = stringResource(R.string.woopos_card_reader_scanning_phone_from_another_store),
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.alert,
-                textAlign = TextAlign.Center,
-            )
-        }
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
@@ -1029,20 +1018,7 @@ fun WooPosCardReaderConnectionDialogScanningPreview() {
     WooPosTheme {
         WooPosCardReaderConnectionDialogContent(
             isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning(),
-            onBackPressed = {},
-            onDismiss = {},
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosCardReaderConnectionDialogScanningPhoneFromAnotherStorePreview() {
-    WooPosTheme {
-        WooPosCardReaderConnectionDialogContent(
-            isVisible = true,
-            state = WooPosCardReaderConnectionState.Scanning(showPhoneFromAnotherStoreWarning = true),
+            state = WooPosCardReaderConnectionState.Scanning,
             onBackPressed = {},
             onDismiss = {},
         )

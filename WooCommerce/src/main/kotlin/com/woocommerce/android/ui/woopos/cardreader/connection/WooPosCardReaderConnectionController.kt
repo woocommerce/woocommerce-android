@@ -68,7 +68,7 @@ class WooPosCardReaderConnectionController(
     private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
 ) {
     private val _state = MutableStateFlow<WooPosCardReaderConnectionState>(
-        WooPosCardReaderConnectionState.Scanning()
+        WooPosCardReaderConnectionState.Scanning
     )
     val state: StateFlow<WooPosCardReaderConnectionState> = _state.asStateFlow()
 
@@ -83,7 +83,6 @@ class WooPosCardReaderConnectionController(
 
     private var selectedReader: CardReader? = null
     private var latestDiscoveredPhones: List<WooPosDiscoveredReader.Phone> = emptyList()
-    private var phoneFromAnotherStoreFound = false
     private var showUpdateCancelWarning = false
     private var isRequiredUpdate = true
     private var isBluetoothPermissionPermanentlyDenied = false
@@ -102,18 +101,14 @@ class WooPosCardReaderConnectionController(
 
     fun hideRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = scanningState()
+        _state.value = WooPosCardReaderConnectionState.Scanning
         startDiscovery()
     }
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = scanningState()
+        _state.value = WooPosCardReaderConnectionState.Scanning
     }
-
-    private fun scanningState() = WooPosCardReaderConnectionState.Scanning(
-        showPhoneFromAnotherStoreWarning = phoneFromAnotherStoreFound,
-    )
 
     fun startConnectionFlow() {
         isRequiredUpdate = true
@@ -325,7 +320,6 @@ class WooPosCardReaderConnectionController(
     private fun startDiscovery() {
         discoveryJob?.cancel()
         latestDiscoveredPhones = emptyList()
-        phoneFromAnotherStoreFound = false
         discoveryJob = scope.launch {
             when (cardReaderManager.readerStatus.value) {
                 is CardReaderStatus.Connected -> Unit
@@ -371,11 +365,6 @@ class WooPosCardReaderConnectionController(
                 val phoneReaders = phones.map { it as WooPosDiscoveredReader.Phone }
                 logger.d("Found ${bluetoothReaders.size} BT readers, ${phoneReaders.size} phones")
                 handleReadersFound(bluetoothReaders, phoneReaders)
-            }
-            is WooPosUnifiedDiscoveryEvent.PhoneFromAnotherStoreFound -> {
-                logger.d("Discovered a phone advertising a different store")
-                phoneFromAnotherStoreFound = true
-                if (_state.value is WooPosCardReaderConnectionState.Scanning) enterScanningState()
             }
             is WooPosUnifiedDiscoveryEvent.Failed -> {
                 logger.e("Discovery failed - ${event.msg}")
