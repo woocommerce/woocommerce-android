@@ -53,7 +53,7 @@ class WooPosMarkOrderAsCompleteRepository @Inject constructor(
             return@withContext MarkOrderAsCompleteOutcome.Failure
         }
 
-        newOrderNotificationSuppressionCache.recordOrderStatusChanged(
+        newOrderNotificationSuppressionCache.onOrderStatusChanged(
             siteId = selectedSite.get().siteId,
             orderId = orderId,
             previousStatusKey = previousStatusKey,

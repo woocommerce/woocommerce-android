@@ -193,7 +193,7 @@ class WooPosCashPaymentRepositoryTest {
         repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
 
         // THEN
-        verify(newOrderNotificationSuppressionCache).recordOrderStatusChanged(
+        verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
             siteId = siteId,
             orderId = orderId,
             previousStatusKey = Order.Status.Pending.value,

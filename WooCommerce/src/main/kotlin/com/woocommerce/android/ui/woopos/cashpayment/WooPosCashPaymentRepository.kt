@@ -66,7 +66,7 @@ class WooPosCashPaymentRepository @Inject constructor(
                     WooLog.e(T.POS, "Order completion failed - ${result.event.error.message}")
                     Result.failure(Exception(result.event.error.message))
                 } else {
-                    newOrderNotificationSuppressionCache.recordOrderStatusChanged(
+                    newOrderNotificationSuppressionCache.onOrderStatusChanged(
                         siteId = selectedSite.get().siteId,
                         orderId = orderId,
                         previousStatusKey = previousStatusKey,
