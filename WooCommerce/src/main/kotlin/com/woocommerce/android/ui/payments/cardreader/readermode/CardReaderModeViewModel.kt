@@ -50,8 +50,11 @@ class CardReaderModeViewModel @Inject constructor(
     private var sessionStarted = false
     private var sessionStartedTracked = false
     private var sessionEndedTracked = false
-    private var lastTrackedErrorMessage: String? = null
+    private var lastTrackedErrorDescription: String? = null
     private var isSimulated = false
+    private var lastSessionState: CardReaderRemoteSessionState = CardReaderRemoteSessionState.Idle
+    private var tabletEverConnected = false
+    private var exitRequestedByUser = false
 
     fun onLocationPermissionMissing() {
         if (sessionStarted) return
@@ -104,29 +107,35 @@ class CardReaderModeViewModel @Inject constructor(
         }
 
     private fun trackSessionState(state: CardReaderRemoteSessionState) {
+        lastSessionState = state
         when (state) {
             CardReaderRemoteSessionState.Idle,
             CardReaderRemoteSessionState.Starting -> Unit
-            is CardReaderRemoteSessionState.ReadyToPair,
             is CardReaderRemoteSessionState.WaitingForPayment -> {
-                if (!sessionStartedTracked) {
-                    sessionStartedTracked = true
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED,
-                        mapOf("is_simulated" to isSimulated),
-                    )
-                }
+                tabletEverConnected = true
+                trackSessionStartedOnce()
             }
+            is CardReaderRemoteSessionState.ReadyToPair -> trackSessionStartedOnce()
             is CardReaderRemoteSessionState.Error -> {
-                if (state.message != lastTrackedErrorMessage) {
-                    lastTrackedErrorMessage = state.message
+                val errorDescription = state.errorDescription ?: state.message.orEmpty()
+                if (errorDescription != lastTrackedErrorDescription) {
+                    lastTrackedErrorDescription = errorDescription
                     analyticsTrackerWrapper.track(
                         AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ERROR,
-                        mapOf("error_description" to (state.message ?: "")),
+                        mapOf("error_description" to errorDescription),
                     )
                 }
             }
         }
+    }
+
+    private fun trackSessionStartedOnce() {
+        if (sessionStartedTracked) return
+        sessionStartedTracked = true
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED,
+            mapOf("is_simulated" to isSimulated),
+        )
     }
 
     override fun onCleared() {
@@ -134,11 +143,29 @@ class CardReaderModeViewModel @Inject constructor(
             sessionEndedTracked = true
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED,
-                mapOf("reason" to "user_exit"),
+                mapOf(
+                    "reason" to sessionEndReason(),
+                    "last_state" to lastSessionState.toAnalyticsValue(),
+                    "tablet_connected" to tabletEverConnected,
+                ),
             )
         }
         session.stop()
         super.onCleared()
+    }
+
+    private fun sessionEndReason(): String = when {
+        lastSessionState is CardReaderRemoteSessionState.Error -> REASON_ERROR
+        exitRequestedByUser -> REASON_USER_EXIT
+        else -> REASON_DISMISSED
+    }
+
+    private fun CardReaderRemoteSessionState.toAnalyticsValue(): String = when (this) {
+        CardReaderRemoteSessionState.Idle -> "idle"
+        CardReaderRemoteSessionState.Starting -> "starting"
+        is CardReaderRemoteSessionState.ReadyToPair -> "ready_to_pair"
+        is CardReaderRemoteSessionState.WaitingForPayment -> "waiting_for_payment"
+        is CardReaderRemoteSessionState.Error -> "error"
     }
 
     private fun mapToViewState(state: CardReaderRemoteSessionState): ViewState? = when (state) {
@@ -161,6 +188,7 @@ class CardReaderModeViewModel @Inject constructor(
     }
 
     private fun exit() {
+        exitRequestedByUser = true
         _events.trySend(CardReaderModeEvent.Exit)
     }
 
@@ -169,4 +197,10 @@ class CardReaderModeViewModel @Inject constructor(
             ?.takeIf { it.isNotBlank() }
             ?.let(UrlUtils::removeScheme)
             ?.trim('/')
+
+    private companion object {
+        const val REASON_USER_EXIT = "user_exit"
+        const val REASON_ERROR = "error"
+        const val REASON_DISMISSED = "dismissed"
+    }
 }
