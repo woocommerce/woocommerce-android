@@ -349,8 +349,6 @@ class WooPosCardReaderConnectionController(
         if (event is WooPosUnifiedDiscoveryEvent.ReadersFound) {
             latestDiscoveredPhones = event.readers.filterIsInstance<WooPosDiscoveredReader.Phone>()
         }
-        // Discovery keeps running through a connection attempt so the phone's address stays fresh,
-        // but it must not overwrite whatever the connection attempt is showing.
         if (isShowingConnectionOutcome()) return
 
         when (event) {
@@ -727,13 +725,8 @@ class WooPosCardReaderConnectionController(
     }
 }
 
-/**
- * The phone binds a new ephemeral port every session, so the entry a connection attempt already
- * failed against is dead as soon as the phone restarts its session. Discovery keeps running through
- * the attempt, so a retry looks the device up again by [WooPosDiscoveredReader.Phone.deviceId] — the
- * only identifier that survives a session restart — and falls back to the known entry if the phone
- * has not been re-advertised yet.
- */
+// The phone binds a new ephemeral port and fingerprint every session, so an entry we already failed
+// against is dead. deviceId is the only identifier that survives a session restart.
 internal fun List<WooPosDiscoveredReader.Phone>.refreshAddressOf(
     phone: WooPosDiscoveredReader.Phone,
 ): WooPosDiscoveredReader.Phone = firstOrNull { it.deviceId == phone.deviceId } ?: phone

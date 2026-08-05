@@ -203,11 +203,7 @@ internal class DefaultCardReaderRemoteTabletClient(
     private companion object {
         const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
         const val TAG = "CardReaderRemoteTabletClient"
-
-        // Reported while establishing a session — the reader was never connected.
         const val CONNECT_FAILED_MESSAGE = "Could not connect to phone reader"
-
-        // Reported once a session was established and then dropped.
         const val CONNECTION_LOST_MESSAGE = "Connection to phone reader was lost"
     }
 }
