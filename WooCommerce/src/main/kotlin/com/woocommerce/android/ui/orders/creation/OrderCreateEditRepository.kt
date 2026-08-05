@@ -91,13 +91,13 @@ class OrderCreateEditRepository @Inject constructor(
             else -> {
                 val updatedOrder = orderMapper.toAppModel(result.model!!)
                 if (order.id == 0L) {
-                    newOrderNotificationSuppressionCache.recordOrderCreated(
+                    newOrderNotificationSuppressionCache.onOrderCreated(
                         siteId = selectedSite.get().siteId,
                         orderId = updatedOrder.id,
                         statusKey = updatedOrder.status.value,
                     )
                 } else {
-                    newOrderNotificationSuppressionCache.recordOrderStatusChanged(
+                    newOrderNotificationSuppressionCache.onOrderStatusChanged(
                         siteId = selectedSite.get().siteId,
                         orderId = updatedOrder.id,
                         previousStatusKey = previousStatusKey,

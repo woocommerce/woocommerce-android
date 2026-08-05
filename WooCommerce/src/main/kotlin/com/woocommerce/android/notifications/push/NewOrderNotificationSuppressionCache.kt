@@ -13,7 +13,7 @@ import javax.inject.Singleton
 class NewOrderNotificationSuppressionCache @Inject constructor() {
     private val entries = Collections.synchronizedSet(mutableSetOf<Entry>())
 
-    fun recordOrderCreated(siteId: Long, orderId: Long, statusKey: String) {
+    fun onOrderCreated(siteId: Long, orderId: Long, statusKey: String) {
         if (statusKey in NOTIFIABLE_STATUSES) {
             entries += Entry(siteId, orderId)
         }
@@ -23,7 +23,7 @@ class NewOrderNotificationSuppressionCache @Inject constructor() {
      * Core notifies a status change only when the order moves from a non-notifiable status into
      * a notifiable one.
      */
-    fun recordOrderStatusChanged(siteId: Long, orderId: Long, previousStatusKey: String?, newStatusKey: String) {
+    fun onOrderStatusChanged(siteId: Long, orderId: Long, previousStatusKey: String?, newStatusKey: String) {
         if (newStatusKey in NOTIFIABLE_STATUSES && previousStatusKey !in NOTIFIABLE_STATUSES) {
             entries += Entry(siteId, orderId)
         }
