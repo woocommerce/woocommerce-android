@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CancellationException
@@ -18,6 +19,9 @@ class AutoLoginActivity : AppCompatActivity() {
 
     @Inject
     internal lateinit var requestHandler: AutoLoginRequestHandler
+
+    @Inject
+    internal lateinit var registerDevice: RegisterDevice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -35,6 +39,7 @@ class AutoLoginActivity : AppCompatActivity() {
             try {
                 requestStore.publish(status)
                 if (status.shouldNavigate) {
+                    registerDevice.kickoff(RegisterDevice.Trigger.LOGIN_SUCCESS)
                     startActivity(
                         Intent(this@AutoLoginActivity, MainActivity::class.java).addFlags(
                             Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
