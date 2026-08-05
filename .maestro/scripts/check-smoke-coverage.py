@@ -79,7 +79,11 @@ def main() -> int:
         errors.append(f"{args.coverage}: duplicate item id {item_id}")
 
     for item_id, data in sorted(items.items()):
-        if not data.get("flow") and not data.get("manual"):
+        has_flow = bool(data.get("flow"))
+        has_manual = bool(data.get("manual"))
+        if has_flow and has_manual:
+            errors.append(f"{args.coverage}: item {item_id} has both flow and manual reason")
+        elif not has_flow and not has_manual:
             errors.append(f"{args.coverage}: item {item_id} has neither flow nor manual reason")
 
     known_ids = set(items)
