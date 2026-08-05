@@ -347,7 +347,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         mInProgressMessageId = messageId;
         startProgress();
 
-        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore, false);
+        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore);
 
         if (mIsSocialLogin) {
             if (shouldSendTwoStepSMS) {
@@ -606,7 +606,7 @@ public class Login2FaFragment extends LoginBaseFormFragment<LoginListener> imple
         }
 
         startProgress();
-        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore, false);
+        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore);
 
         StartWebauthnChallengePayload payload = new StartWebauthnChallengePayload(
                 mUserId, mWebauthnNonce);

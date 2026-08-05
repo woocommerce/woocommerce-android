@@ -222,6 +222,87 @@ internal class WCOrderStoreTest {
     }
 
     @Test
+    fun `given a cached completed order, when fetching it as refunded, then the order list requires refresh`() =
+        runBlocking {
+            // GIVEN
+            val cachedOrder = generateSampleOrder(42, CoreOrderStatus.COMPLETED.value).saveToDb()
+            val site = SiteModel().apply { id = cachedOrder.localSiteId.value }
+            val fetchedOrder = cachedOrder.copy(status = CoreOrderStatus.REFUNDED.value)
+            whenever(orderRestClient.fetchSingleOrder(site, cachedOrder.orderId))
+                .thenReturn(RemoteOrderPayload.Fetching(fetchedOrder to emptyList(), site))
+            clearInvocations(dispatcher)
+
+            // WHEN
+            orderStore.fetchSingleOrder(site, cachedOrder.orderId)
+
+            // THEN
+            val captor = argumentCaptor<Action<*>>()
+            verify(dispatcher, atLeastOnce()).dispatch(captor.capture())
+            val refreshActions = captor.allValues
+                .filter { it.type == ListAction.LIST_REQUIRES_REFRESH }
+            assertThat(refreshActions).hasSize(1)
+            assertThat(refreshActions.single().payload)
+                .isEqualTo(WCOrderListDescriptor.calculateTypeIdentifier(site.id))
+            Unit
+        }
+
+    @Test
+    fun `given a cached order, when fetching content changes without a status change, then the list does not refresh`() =
+        runBlocking {
+            // GIVEN
+            val cachedOrder = generateSampleOrder(42, CoreOrderStatus.COMPLETED.value).saveToDb()
+            val site = SiteModel().apply { id = cachedOrder.localSiteId.value }
+            val fetchedOrder = cachedOrder.copy(total = "15.0")
+            whenever(orderRestClient.fetchSingleOrder(site, cachedOrder.orderId))
+                .thenReturn(RemoteOrderPayload.Fetching(fetchedOrder to emptyList(), site))
+            clearInvocations(dispatcher)
+
+            // WHEN
+            orderStore.fetchSingleOrder(site, cachedOrder.orderId)
+
+            // THEN
+            verify(dispatcher, never()).dispatch(any())
+        }
+
+    @Test
+    fun `given a cached order, when fetching it fails, then the order list does not refresh`() = runBlocking {
+        // GIVEN
+        val cachedOrder = generateSampleOrder(42, CoreOrderStatus.COMPLETED.value).saveToDb()
+        val site = SiteModel().apply { id = cachedOrder.localSiteId.value }
+        whenever(orderRestClient.fetchSingleOrder(site, cachedOrder.orderId))
+            .thenReturn(
+                RemoteOrderPayload.Fetching(
+                    error = OrderError(message = "Fetch failed"),
+                    order = cachedOrder to emptyList(),
+                    site = site
+                )
+            )
+        clearInvocations(dispatcher)
+
+        // WHEN
+        orderStore.fetchSingleOrder(site, cachedOrder.orderId)
+
+        // THEN
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
+    fun `given no cached order, when fetching succeeds, then the order list does not refresh`() = runBlocking {
+        // GIVEN
+        val fetchedOrder = generateSampleOrder(42, CoreOrderStatus.REFUNDED.value)
+        val site = SiteModel().apply { id = fetchedOrder.localSiteId.value }
+        whenever(orderRestClient.fetchSingleOrder(site, fetchedOrder.orderId))
+            .thenReturn(RemoteOrderPayload.Fetching(fetchedOrder to emptyList(), site))
+        clearInvocations(dispatcher)
+
+        // WHEN
+        orderStore.fetchSingleOrder(site, fetchedOrder.orderId)
+
+        // THEN
+        verify(dispatcher, never()).dispatch(any())
+    }
+
+    @Test
     fun `given payment details, when updateOrderStatusAndPaymentDetails, then pass correct payment details to wcOrderRestClient`() {
         runBlocking {
             // GIVEN

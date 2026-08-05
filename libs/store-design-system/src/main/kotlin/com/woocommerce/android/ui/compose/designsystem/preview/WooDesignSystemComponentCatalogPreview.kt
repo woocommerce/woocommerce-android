@@ -683,7 +683,7 @@ private fun CatalogSection(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        color = WooTheme.colors.surface.default,
+        color = WooTheme.colors.surface.bright,
         contentColor = WooTheme.colors.surface.onDefault,
         shape = RoundedCornerShape(WooTheme.radius.medium),
     ) {

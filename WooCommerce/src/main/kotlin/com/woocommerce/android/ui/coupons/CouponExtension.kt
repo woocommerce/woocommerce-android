@@ -9,6 +9,6 @@ fun Coupon.toUiModel(couponUtils: CouponUtils, currencyCode: String?): CouponLis
         id = id,
         code = code,
         summary = couponUtils.generateSummary(this, currencyCode),
-        isActive = dateExpires?.after(Date()) ?: true
+        isActive = dateExpiresGmt?.after(Date()) ?: true
     )
 }

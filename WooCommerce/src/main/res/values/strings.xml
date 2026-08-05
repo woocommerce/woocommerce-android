@@ -316,7 +316,8 @@
     <string name="login_discovery_error_options">Here are a few other things you can try:</string>
     <string name="login_with_wordpress">Sign in with WordPress.com</string>
     <string name="login_troubleshooting_tips">Read our troubleshooting tips</string>
-    <string name="login_no_wpcom_account_found">Your email isn\'t used with a WordPress.com account.</string>
+    <string name="login_no_wpcom_account_found_title">Wrong email</string>
+    <string name="login_no_wpcom_account_found_message">User does not exist. Verify the email address is correct or try with a different account.</string>
     <string name="user_role_access_error_user_roles_null">This app supports only Administrator and Shop Manager user roles. We were unable to fetch user roles for your account. Please contact support.</string>
     <string name="user_role_access_error_fetch_failed">We couldn\'t verify your role on this store. Please try again. If the problem persists, contact support.</string>
     <string name="user_role_access_error_msg">This app supports only Administrator and Shop Manager user roles. Please contact your store owner to upgrade your role.</string>
@@ -826,6 +827,8 @@
     -->
     <string name="order_editing_non_editable_title">Parts of this order are not currently editable</string>
     <string name="order_editing_non_editable_message">To edit Products or Payment Details, change the status to Pending Payment.</string>
+    <string name="order_editing_currency_mismatch_title">This order can\'t be edited in the app</string>
+    <string name="order_editing_currency_mismatch_message">Sorry, you can only edit this order on the web, as it uses %1$s, and your site\'s currency is %2$s.</string>
     <string name="order_editing_locked_content_description">locked</string>
     <string name="order_editing_barcode_content_description">Scan barcode</string>
     <string name="order_editing_add_content_description">Add product</string>
@@ -2494,6 +2497,14 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+    <string name="support_mobile_status_report">Mobile status report</string>
+    <string name="support_mobile_status_report_detail">App, device and store information from this app</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce mobile status report</string>
+    <string name="support_mobile_status_report_copy_label">Copy mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_label">Share mobile status report</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobile status report copied to clipboard</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Error copying mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_error">Unable to share mobile status report</string>
 
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
@@ -2596,6 +2607,9 @@
     <string name="logviewer_log_files_list_header">Log files by created date</string>
     <string name="logviewer_log_files_list_footer">Up to seven day\'s worth of logs are stored.</string>
     <string name="logviewer_current_log_file">Current</string>
+    <string name="logviewer_share_all_logs">Share all logs</string>
+    <string name="logviewer_preparing_logs">Preparing logs…</string>
+    <string name="logviewer_share_all_logs_error">Unable to prepare the logs for sharing</string>
 
     <!--
         Login Library Imported Strings
@@ -3873,6 +3887,7 @@
     <string name="woopos_cart_item_custom_amount_content_description">Custom amount %1$s, %2$s</string>
     <string name="woopos_cart_custom_amount_edit_content_description">Edit %s</string>
     <string name="woopos_cart_custom_amount_includes_tax">Tax included</string>
+    <string name="woopos_cart_custom_amount_discount_not_applied">Discount not applied</string>
     <string name="woopos_cart_custom_amount_menu_edit">Edit</string>
     <string name="woopos_cart_custom_amount_menu_remove">Remove</string>
     <string name="woopos_custom_amount_entry_title">Custom amount</string>

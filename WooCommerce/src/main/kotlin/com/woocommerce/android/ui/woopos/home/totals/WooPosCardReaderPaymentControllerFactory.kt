@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.PointOfSaleMode
@@ -48,6 +49,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val crashLogging: CrashLogging,
 ) {
     fun create(
         orderId: Long,
@@ -80,6 +82,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         ),
         cardReaderType = cardReaderType,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        crashLogging = crashLogging,
     )
 
     fun createRefund(
@@ -112,6 +115,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         ),
         cardReaderType = CardReaderType.EXTERNAL,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        crashLogging = crashLogging,
         allowCancelledStatus = false,
     )
 }

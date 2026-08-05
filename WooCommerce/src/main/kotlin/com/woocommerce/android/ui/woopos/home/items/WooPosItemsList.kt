@@ -422,7 +422,9 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
         if (expiredState is Coupon.ExpiredState.Expired) {
             Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
             WooPosText(
-                text = stringResource(R.string.woopos_coupon_item_expired_label, expiredState.formattedDate),
+                text = expiredState.formattedDate?.let {
+                    stringResource(R.string.woopos_coupon_item_expired_label, it)
+                } ?: stringResource(R.string.coupon_list_item_label_expired),
                 maxLines = 1,
                 style = WooPosTypography.BodyLarge,
                 color = WooPosTheme.colors.onDisabledContainer

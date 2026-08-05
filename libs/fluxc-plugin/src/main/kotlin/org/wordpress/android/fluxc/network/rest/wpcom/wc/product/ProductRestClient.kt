@@ -362,14 +362,17 @@ class ProductRestClient @Inject constructor(
      *
      * @param [remoteProductId] Unique server id of the product to fetch
      * @param [remoteVariationId] Unique server id of the variation to fetch
+     * @param [context] REST context to fetch with; "edit" returns the variation's own image instead
+     * of the parent product's image
      */
     suspend fun fetchSingleVariation(
         site: SiteModel,
         remoteProductId: Long,
-        remoteVariationId: Long
+        remoteVariationId: Long,
+        context: String = "view"
     ): RemoteVariationPayload {
         val url = WOOCOMMERCE.products.id(remoteProductId).variations.variation(remoteVariationId).pathV3
-        val params = emptyMap<String, String>()
+        val params = mapOf("context" to context)
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -996,12 +999,14 @@ class ProductRestClient @Inject constructor(
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
         posProductsOnly: Boolean = false,
+        context: String = "view",
     ): WooPayload<List<WCProductVariationModel>> {
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "orderby" to "menu_order",
             "order" to "asc",
-            "offset" to offset.toString()
+            "offset" to offset.toString(),
+            "context" to context
         ).putIfNotEmpty("search" to searchQuery)
             .putIfNotEmpty("include" to includedVariationIds.map { it }.joinToString())
             .putIfNotEmpty("exclude" to excludedVariationIds.map { it }.joinToString())

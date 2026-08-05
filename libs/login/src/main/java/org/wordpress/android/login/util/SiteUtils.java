@@ -13,19 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SiteUtils {
-    public static ArrayList<Integer> getCurrentSiteIds(SiteStore siteStore, boolean selfhostedOnly) {
+    @NonNull
+    public static ArrayList<Integer> getCurrentSiteIds(@NonNull SiteStore siteStore) {
         ArrayList<Integer> siteIDs = new ArrayList<>();
-        List<SiteModel> sites = selfhostedOnly ? siteStore.getSitesAccessedViaXMLRPC() : siteStore.getSites();
-        for (SiteModel site : sites) {
+        for (SiteModel site : siteStore.getSites()) {
             siteIDs.add(site.getId());
         }
 
         return siteIDs;
-    }
-
-    @Nullable
-    public static SiteModel getXMLRPCSiteByUrl(SiteStore siteStore, String url) {
-        return getSiteByMatchingUrl(siteStore.getSitesAccessedViaXMLRPC(), url);
     }
 
     @Nullable

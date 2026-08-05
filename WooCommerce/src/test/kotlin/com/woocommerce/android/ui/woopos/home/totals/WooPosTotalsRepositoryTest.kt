@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -35,6 +36,7 @@ class WooPosTotalsRepositoryTest {
     private val orderMapper: OrderMapper = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val variationMapper: WooPosVariationMapper = mock()
+    private val couponRepository: CouponRepository = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -351,5 +353,6 @@ class WooPosTotalsRepositoryTest {
         orderMapper,
         resourceProvider,
         variationMapper,
+        couponRepository,
     )
 }
