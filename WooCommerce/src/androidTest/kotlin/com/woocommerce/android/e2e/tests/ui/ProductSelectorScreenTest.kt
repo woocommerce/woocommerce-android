@@ -1,7 +1,7 @@
 package com.woocommerce.android.e2e.tests.ui
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductType
