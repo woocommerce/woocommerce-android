@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.R
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable.SystemVersionNotSupported
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -54,6 +55,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -91,6 +93,9 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         on { invoke() }.thenReturn(Available)
     }
     private val paymentsHubTapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock {
+        on { getUpdateSimulatedReaderOption() } doReturn CardReaderManager.SimulatorUpdateFrequency.NEVER
+    }
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
 
     private val softwareUpdateAvailability = MutableStateFlow<SoftwareUpdateAvailability>(
@@ -1849,6 +1854,48 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         )
     )
 
+    @Test
+    fun `given Terminal not initialized, when view model started, then card reader manager is initialized`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.initialized).thenReturn(false)
+            clearInvocations(cardReaderManager)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
+            )
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            verify(cardReaderManager).initialize(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given Terminal already initialized, when view model started, then it is not initialized again`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardReaderManager.initialized).thenReturn(true)
+            clearInvocations(cardReaderManager)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = "1.0",
+                    countryCode = "US",
+                )
+            )
+
+            // WHEN
+            initViewModel()
+
+            // THEN
+            verify(cardReaderManager, never()).initialize(any(), any(), any(), any())
+        }
+
     private fun initViewModel(openInHub: OpenInHub = OpenInHub.NONE) {
         viewModel = PaymentsHubViewModel(
             PaymentsHubFragmentArgs(
@@ -1868,6 +1915,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
+            developerOptionsRepository,
         )
         viewModel.onViewVisible()
     }
