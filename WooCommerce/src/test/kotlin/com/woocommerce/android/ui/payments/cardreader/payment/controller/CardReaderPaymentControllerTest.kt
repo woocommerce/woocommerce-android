@@ -162,6 +162,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
 
         whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(siteModel)
@@ -1411,6 +1412,24 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
                 siteId = eq(siteModel.siteId),
                 orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.Pending.value),
+            )
+        }
+
+    @Test
+    fun `given an order already in a notifiable status, when payment succeeds, then the previous status is passed`() =
+        testBlocking {
+            whenever(mockedOrder.status).thenReturn(Order.Status.OnHold)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.OnHold.value),
             )
         }
 
