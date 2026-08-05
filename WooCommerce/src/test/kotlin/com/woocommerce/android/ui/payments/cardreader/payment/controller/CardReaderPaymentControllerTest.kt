@@ -38,6 +38,7 @@ import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -98,6 +99,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -130,6 +132,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -159,6 +162,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
 
         whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(siteModel)
@@ -222,6 +226,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
@@ -1393,6 +1398,53 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             controller.start()
 
             verify(paymentReceiptHelper).storeReceiptUrl(eq(ORDER_ID), eq(receiptUrl))
+        }
+
+    @Test
+    fun `when payment succeeds, then order is recorded as paid`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.Pending.value),
+            )
+        }
+
+    @Test
+    fun `given an order already in a notifiable status, when payment succeeds, then the previous status is passed`() =
+        testBlocking {
+            whenever(mockedOrder.status).thenReturn(Order.Status.OnHold)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.OnHold.value),
+            )
+        }
+
+    @Test
+    fun `when payment fails, then order is not recorded as paid`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            controller.start()
+
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
         }
 
     @Test
@@ -3863,6 +3915,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,

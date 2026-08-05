@@ -65,6 +65,24 @@ class NewOrderNotificationSuppressionCacheTest {
     }
 
     @Test
+    fun `given an order in a non notifiable status, when it is paid remotely, then the entry is recorded`() {
+        // GIVEN
+        cache.onOrderPaidRemotely(SITE_ID, ORDER_ID, previousStatusKey = "pending")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isTrue()
+    }
+
+    @Test
+    fun `given an order already in a notifiable status, when it is paid remotely, then nothing is recorded`() {
+        // GIVEN
+        cache.onOrderPaidRemotely(SITE_ID, ORDER_ID, previousStatusKey = "on-hold")
+
+        // THEN
+        assertThat(cache.consume(SITE_ID, ORDER_ID)).isFalse()
+    }
+
+    @Test
     fun `when every notifiable status is recorded, then each one produces an entry`() {
         val notifiableStatuses = listOf(
             "processing",

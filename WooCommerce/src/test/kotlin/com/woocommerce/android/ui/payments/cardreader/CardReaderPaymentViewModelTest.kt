@@ -204,6 +204,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            newOrderNotificationSuppressionCache = mock(),
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -218,6 +219,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.chargeId).thenReturn("chargeId")
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2699,6 +2701,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            newOrderNotificationSuppressionCache = mock(),
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
@@ -2737,6 +2740,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            newOrderNotificationSuppressionCache = mock(),
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}

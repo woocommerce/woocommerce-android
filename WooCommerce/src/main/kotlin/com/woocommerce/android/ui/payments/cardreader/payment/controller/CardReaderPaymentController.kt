@@ -42,6 +42,7 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -110,6 +111,7 @@ class CardReaderPaymentController(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
@@ -262,8 +264,9 @@ class CardReaderPaymentController(
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             delay(ARTIFICIAL_RETRY_DELAY)
+            val previousStatusKey = orderRepository.getOrderById(orderId)?.status?.value
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
+                onPaymentStatusChanged(orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel)
             }
         }
     }
@@ -311,6 +314,7 @@ class CardReaderPaymentController(
         ).collect { paymentStatus ->
             onPaymentStatusChanged(
                 order.id,
+                order.status.value,
                 customerEmail,
                 paymentStatus,
                 cardReaderPaymentOrderHelper.getAmountLabel(order)
@@ -321,6 +325,7 @@ class CardReaderPaymentController(
     @Suppress("LongMethod")
     private fun onPaymentStatusChanged(
         orderId: Long,
+        previousStatusKey: String?,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
@@ -358,7 +363,7 @@ class CardReaderPaymentController(
 
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
-                onPaymentCompleted(paymentStatus, orderId)
+                onPaymentCompleted(paymentStatus, orderId, previousStatusKey)
             }
 
             WaitingForInput -> {
@@ -463,9 +468,15 @@ class CardReaderPaymentController(
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
         orderId: Long,
+        previousStatusKey: String?,
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
+        newOrderNotificationSuppressionCache.onOrderPaidRemotely(
+            siteId = selectedSite.get().siteId,
+            orderId = orderId,
+            previousStatusKey = previousStatusKey,
+        )
 
         triggerEvent(CardReaderPaymentEvent.PlaySuccessfulPaymentSound)
         showPaymentSuccessfulState()

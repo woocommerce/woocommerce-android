@@ -29,6 +29,16 @@ class NewOrderNotificationSuppressionCache @Inject constructor() {
         }
     }
 
+    /**
+     * For payments confirmed on this device where the backend decides the resulting status,
+     * which is always a notifiable one, so only the previous status decides.
+     */
+    fun onOrderPaidRemotely(siteId: Long, orderId: Long, previousStatusKey: String?) {
+        if (previousStatusKey !in NOTIFIABLE_STATUSES) {
+            entries += Entry(siteId, orderId)
+        }
+    }
+
     fun consume(siteId: Long, orderId: Long): Boolean = entries.remove(Entry(siteId, orderId))
 
     private data class Entry(val siteId: Long, val orderId: Long)
