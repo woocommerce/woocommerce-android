@@ -121,12 +121,13 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
 
             val fingerprint = phone.fingerprintBase64
 
-            // The phone may have re-registered with a new fingerprint+name without us
-            // receiving the Lost event for the previous one (Android NSD goodbye is
-            // unreliable). Drop any earlier entries from the same host so we don't show
-            // the same device twice.
+            // The phone re-registers with a new fingerprint, name and port every session, and we
+            // may not receive the Lost event for the previous one (Android NSD goodbye is
+            // unreliable). Drop any earlier entries for the same device — deviceId is the only
+            // identifier that survives a session restart — so we don't show it twice or keep
+            // handing out its previous address.
             val staleServiceNames = state.phonesByFingerprint.values
-                .filter { it.host == phone.host && it.fingerprintBase64 != fingerprint }
+                .filter { it.deviceId == phone.deviceId && it.fingerprintBase64 != fingerprint }
                 .map { it.serviceName }
             staleServiceNames.forEach { serviceName ->
                 val staleFp = state.fingerprintByServiceName.remove(serviceName)
