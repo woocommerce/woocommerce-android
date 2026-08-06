@@ -1058,7 +1058,7 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        val nonSelectableReason = productRestrictions.getNonSelectableRestriction(product)?.nonSelectableReason
+        val unsupportedReason = productRestrictions.getUnsupportedRestriction(product)?.reason
         when {
             product.isNotPublished() -> {
                 sendAddingProductsViaScanningFailedEvent(
@@ -1086,9 +1086,9 @@ class OrderCreateEditViewModel @Inject constructor(
                 )
             }
 
-            nonSelectableReason != null -> {
+            unsupportedReason != null -> {
                 sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(nonSelectableReason)
+                    message = resourceProvider.getString(unsupportedReason)
                 )
                 trackProductSearchViaSKUFailureEvent(
                     source,

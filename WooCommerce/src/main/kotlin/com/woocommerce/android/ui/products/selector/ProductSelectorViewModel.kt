@@ -264,8 +264,8 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
-        productRestrictions.getNonSelectableRestriction(product = this)?.nonSelectableReason?.let { reason ->
-            return SelectionState.DISABLED(resourceProvider.getString(reason))
+        productRestrictions.getUnsupportedRestriction(product = this)?.let { restriction ->
+            return SelectionState.DISABLED(resourceProvider.getString(restriction.reason))
         }
         return when {
             isVariable() && numVariations > 0 -> {
