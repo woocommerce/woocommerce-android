@@ -390,7 +390,9 @@ class ProductSelectorViewModel @Inject constructor(
             return
         }
 
-        unlessBundleIsUnsellable(item) { selectItem(item, productSource) }
+        launch {
+            if (verifyBundleIsSellable(item)) selectItem(item, productSource)
+        }
     }
 
     private fun deselectItem(item: ListItem) {
@@ -407,37 +409,32 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     /**
-     * Runs [onSellable], unless [item] is a bundle holding a product which can't be added to an order.
-     *
-     * Anything other than a bundle runs straight away. A bundle takes a request to check, so it runs once that comes
-     * back: the item reports itself as loading in the meantime, and taps arriving before it does are dropped, so a
-     * merchant tapping again can't run [onSellable] twice.
+     * Returns whether [item] can be added to an order: true for anything other than a bundle, and for a bundle only
+     * once a request confirms it holds no unsupported product — the item reports itself as loading in the meantime,
+     * and a snackbar explains the rejection. Taps arriving while a check runs return false, so a merchant tapping
+     * again can't act twice.
      */
-    private fun unlessBundleIsUnsellable(item: ListItem, onSellable: () -> Unit) {
-        if (item.type != ProductType.BUNDLE) {
-            onSellable()
-            return
-        }
-        if (loadingItemId.value != null) return
+    private suspend fun verifyBundleIsSellable(item: ListItem): Boolean {
+        if (item.type != ProductType.BUNDLE) return true
+        if (loadingItemId.value != null) return false
 
-        launch {
-            loadingItemId.value = item.id
-            val isUnsellable = try {
-                hasUnsupportedBundledProducts(item.id)
-            } finally {
-                loadingItemId.value = null
-            }
-
-            if (isUnsellable) {
-                triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
-            } else {
-                onSellable()
-            }
+        loadingItemId.value = item.id
+        val isUnsellable = try {
+            hasUnsupportedBundledProducts(item.id)
+        } finally {
+            loadingItemId.value = null
         }
+
+        if (isUnsellable) {
+            triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
+        }
+        return !isUnsellable
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
-        unlessBundleIsUnsellable(item) { editConfiguration(item) }
+        launch {
+            if (verifyBundleIsSellable(item)) editConfiguration(item)
+        }
     }
 
     private fun editConfiguration(item: ListItem.ConfigurableListItem) {
