@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.ageeligibility
 
 import android.app.Activity
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -33,7 +31,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val accountRepository: AccountRepository = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
-    private val trackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val analyticsTracker: AgeSignalsAnalyticsTracker = mock()
     private val evaluator = AgeEligibilityEvaluator()
 
     @Before
@@ -53,12 +51,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
         assertThat(client.receivedActivity).isSameAs(activity)
         verify(prefsWrapper).userAgeRestrictionReason = ""
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
         verify(accountRepository, never()).logout()
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf("access_restricted" to false)
-        )
     }
 
     @Test
@@ -72,7 +65,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         )
         verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = false
         verify(accountRepository).logout()
     }
 
@@ -87,7 +79,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             .isEqualTo(AgeEligibilityDecision.VerificationRequired)
         verify(accountRepository, never()).logout()
         verify(prefsWrapper, never()).userAgeRestrictionReason = ""
-        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = false
     }
 
     @Test
@@ -114,7 +105,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
                 AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
             )
-            verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
             verify(accountRepository).logout()
         }
 
@@ -129,7 +119,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         )
-        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
         verify(accountRepository).logout()
     }
 
@@ -158,7 +147,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
             verify(prefsWrapper).userAgeRestrictionReason = ""
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = true
             verify(accountRepository, never()).logout()
         }
 
@@ -275,6 +263,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(client.callCount).isEqualTo(1)
+            verify(analyticsTracker, never()).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
 
             // WHEN
             client.gate?.complete(Unit)
@@ -283,6 +272,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(client.callCount).isEqualTo(2)
+            verify(analyticsTracker).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
 
             // WHEN
             checker.retryAfterReturningFromPlayStore(activity)
@@ -332,6 +322,8 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         checker.retryAfterReturningFromPlayStore(activity)
 
         assertThat(client.callCount).isEqualTo(1)
+        verify(analyticsTracker).trackPlayStoreOpened()
+        verify(analyticsTracker).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
     }
 
     private fun createChecker() = AgeEligibilityChecker(
@@ -339,7 +331,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         prefsWrapper = prefsWrapper,
         accountRepository = accountRepository,
         featureFlagRepository = featureFlagRepository,
-        trackerWrapper = trackerWrapper,
+        analyticsTracker = analyticsTracker,
         evaluator = evaluator,
         appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     )

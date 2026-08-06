@@ -69,8 +69,7 @@ sealed interface AgeEligibilityDecision {
 
 enum class AgeRestrictionReason {
     BELOW_MINIMUM_AGE,
-    LEGACY_RESTRICTION_UNKNOWN_REASON,
-    SUPERVISED_APPROVAL_DENIED
+    LEGACY_RESTRICTION_UNKNOWN_REASON
 }
 
 enum class AgeCheckTrigger {

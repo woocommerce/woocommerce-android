@@ -1178,7 +1178,8 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
 
     // Age restriction check
     ACCOUNT_AGE_RESTRICTION_CHECKED,
-    ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN;
+    ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN,
+    ACCOUNT_AGE_VERIFICATION_ACTION;
 
     override val isPosEvent: Boolean = false
 }
