@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WooCommerce Android Maestro Smoke System</title>
+  <style>
+    body { font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 980px; margin: 32px auto; padding: 0 20px; color: #202124; }
+    h1 { font-size: 28px; margin-bottom: 4px; }
+    h2 { margin-top: 32px; font-size: 20px; }
+    h3 { margin-top: 22px; font-size: 16px; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    pre { background: #f6f8fa; padding: 12px 14px; overflow-x: auto; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; }
+    th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f6f8fa; }
+  </style>
+</head>
+<body>
+  <h1>WooCommerce Android Maestro Smoke System</h1>
+  <p>Self-contained guide for the Maestro smoke suite rooted at <code>.maestro/</code>.</p>
+
+  <h2>Architecture</h2>
+  <p>Top-level flows live in <code>.maestro/flows/</code>. Reusable login and navigation helpers live in <code>.maestro/subflows/</code>. The runner owns device selection, store selection, fixture seeding, cleanup, retries, artifacts, and reports.</p>
+  <pre>flows -> subflows -> run-smoke-tests.sh -> Maestro CLI/MCP -> reports</pre>
+
+  <h2>Stores</h2>
+  <table>
+    <thead><tr><th>Store</th><th>Purpose</th><th>Rules</th></tr></thead>
+    <tbody>
+      <tr><td><code>lab</code></td><td>Disposable Jurassic Ninja automation store.</td><td>Default for local runs, repair loops, destructive iteration, and can-fail checks.</td></tr>
+      <tr><td><code>shared</code></td><td><code>inpersonpayments.wpcomstaging.com</code>.</td><td>Release-tool and Thursday burst runs. Destructive tags are CI-only under a REST lock.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Local Runs</h2>
+  <pre>cp .maestro/env.example .maestro/.env.local
+.maestro/scripts/run-smoke-tests.sh --store lab
+.maestro/scripts/run-smoke-tests.sh --device emulator-5554 --store lab
+.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
+.maestro/scripts/run-smoke-tests.sh --repeat 3 .maestro/flows/orders_list_and_search.yaml</pre>
+
+  <h2>Fixtures and Cleanup</h2>
+  <p>The runner calls <code>seed-fixtures.py</code> before flows. It creates pending orders, refundable orders, a variable product with variations and tags, a simple product, a coupon, and a customer. Consumable fixtures are created twice.</p>
+  <p>Every created entity is written to <code>run-manifest.json</code>. Cleanup deletes exactly those IDs. A guarded stale-orphan sweep only matches strict <code>SUITE-&lt;date&gt;-&lt;hash&gt;</code> values older than 48 hours and logs deletions into the run report.</p>
+
+  <h2>Tags</h2>
+  <table>
+    <thead><tr><th>Tag</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>smoke_core</code></td><td>Stable non-destructive critical paths. Default release signal.</td></tr>
+      <tr><td><code>smoke_extended</code></td><td>Broader P2 coverage.</td></tr>
+      <tr><td><code>pos_tablet</code></td><td>POS tablet flows.</td></tr>
+      <tr><td><code>destructive</code></td><td>Mutates store data.</td></tr>
+      <tr><td><code>flaky_quarantine</code></td><td>Excluded from real runs until promotion.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Selector Rules</h2>
+  <p>Interact through <code>id:</code> selectors whenever Compose <code>testTag</code> is available. Assert user-visible text through generated values from <code>.maestro/strings.env</code>. Use regex variables for parameterized strings and manifest-derived env vars for exact fixture values.</p>
+  <p><code>point:</code> selectors require an inline YAML comment explaining why no semantic selector exists.</p>
+
+  <h2>Reliability Policy</h2>
+  <p>Each failed flow gets one automatic retry. Pass-on-retry and pass-with-recovery count as flaky and make the run non-clean. Promotion requires clean results across two consecutive bi-weekly Thursday bursts. Quarantine is triggered by two flaky results in one burst or flaky results in two consecutive bursts.</p>
+
+  <h2>Coverage</h2>
+  <p>The committed snapshot is <code>.maestro/smoke-coverage.yaml</code>. Flow headers declare checklist IDs with <code># p2:</code>. Validate locally:</p>
+  <pre>.maestro/scripts/check-smoke-coverage.py
+.maestro/scripts/generate-strings-env.py --check-flow-references</pre>
+</body>
+</html>
