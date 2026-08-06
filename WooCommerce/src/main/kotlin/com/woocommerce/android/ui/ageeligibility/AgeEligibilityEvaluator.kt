@@ -3,38 +3,39 @@ package com.woocommerce.android.ui.ageeligibility
 import javax.inject.Inject
 
 class AgeEligibilityEvaluator @Inject constructor() {
-    fun evaluateLegacyResult(
-        result: AgeCheckResult,
+    fun evaluate(
+        result: AgeSignalsRequestResult,
         priorRestriction: AgeRestrictionReason?
-    ): AgeEligibilityEvaluation = when (result.verificationStatus) {
-        LegacyAgeVerificationStatus.VERIFIED -> authoritativeAllowed()
-        LegacyAgeVerificationStatus.SUPERVISED,
-        LegacyAgeVerificationStatus.SUPERVISED_APPROVAL_PENDING -> evaluateAgeUpper(
-            ageUpper = result.ageUpper,
-            priorRestriction = priorRestriction
+    ): AgeEligibilityEvaluation = when (result.accessStatus) {
+        AgeSignalsAccessStatus.SHARED -> evaluateSharedSignals(result.ageSignals, priorRestriction)
+        AgeSignalsAccessStatus.VERIFICATION_REQUIRED -> AgeEligibilityEvaluation(
+            decision = AgeEligibilityDecision.VerificationRequired,
+            isAuthoritative = false
         )
 
-        LegacyAgeVerificationStatus.SUPERVISED_APPROVAL_DENIED -> authoritativeRestriction(
-            AgeRestrictionReason.SUPERVISED_APPROVAL_DENIED
-        )
-
-        LegacyAgeVerificationStatus.UNKNOWN,
-        LegacyAgeVerificationStatus.UNEXPECTED -> nonAuthoritative(priorRestriction)
+        AgeSignalsAccessStatus.NOT_SHARED,
+        AgeSignalsAccessStatus.UNSPECIFIED,
+        AgeSignalsAccessStatus.UNEXPECTED -> nonAuthoritative(priorRestriction)
     }
 
     fun preservePriorRestriction(priorRestriction: AgeRestrictionReason?): AgeEligibilityEvaluation =
         nonAuthoritative(priorRestriction)
 
-    private fun evaluateAgeUpper(
-        ageUpper: Int?,
+    private fun evaluateSharedSignals(
+        signals: SharedAgeSignals?,
         priorRestriction: AgeRestrictionReason?
-    ): AgeEligibilityEvaluation = when {
-        ageUpper == null -> nonAuthoritative(priorRestriction)
-        ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE -> authoritativeRestriction(
-            AgeRestrictionReason.BELOW_MINIMUM_AGE
-        )
+    ): AgeEligibilityEvaluation {
+        val ageLower = signals?.ageLower ?: return nonAuthoritative(priorRestriction)
+        val ageUpper = signals.ageUpper
+        if (ageUpper != null && ageLower > ageUpper) return nonAuthoritative(priorRestriction)
 
-        else -> authoritativeAllowed()
+        return when {
+            ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE ->
+                authoritativeRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+
+            ageLower >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE -> authoritativeAllowed()
+            else -> nonAuthoritative(priorRestriction)
+        }
     }
 
     private fun authoritativeAllowed() = AgeEligibilityEvaluation(

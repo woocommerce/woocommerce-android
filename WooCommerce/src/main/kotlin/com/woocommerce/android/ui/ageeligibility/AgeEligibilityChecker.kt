@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.ageeligibility
 
 import android.app.Activity
-import android.os.RemoteException
 import androidx.annotation.StringRes
-import com.google.android.gms.common.api.ApiException
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -108,23 +106,20 @@ class AgeEligibilityChecker @Inject constructor(
             return
         }
 
-        val trackingProperties = mutableMapOf<String, Any>()
         val evaluation = try {
-            val result = client.checkAge(activity)
-            trackingProperties["retrieved_age"] = result.ageUpper ?: -1
-            trackingProperties["user_status"] = result.verificationStatus.name
-            evaluator.evaluateLegacyResult(result, persistedRestriction)
-        } catch (exception: ApiException) {
-            preservePriorRestriction(exception)
-        } catch (exception: RemoteException) {
+            val result = client.requestAgeSignals(activity)
+            evaluator.evaluate(result, persistedRestriction)
+        } catch (exception: AgeSignalsRequestFailure) {
             preservePriorRestriction(exception)
         }
 
         applyEvaluation(evaluation)
 
         val isAccessRestricted = evaluation.decision is AgeEligibilityDecision.Restricted
-        trackingProperties["access_restricted"] = isAccessRestricted
-        trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
+        trackerWrapper.track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            properties = mapOf("access_restricted" to isAccessRestricted)
+        )
 
         if (isAccessRestricted) {
             appCoroutineScope.launch {
@@ -150,10 +145,12 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     private fun preservePriorRestriction(exception: Exception): AgeEligibilityEvaluation {
-        WooLog.i(
-            WooLog.T.UTILS,
-            "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user age; preserving prior decision"
-        )
+        val failureSummary = if (exception is AgeSignalsRequestFailure) {
+            "${exception.stage.name}/${exception.errorCode.name} after ${exception.retryCount} retries"
+        } else {
+            exception.javaClass.simpleName
+        }
+        WooLog.i(WooLog.T.UTILS, "Age eligibility check failed with $failureSummary; preserving prior decision")
         return if (_ageEligibilityState.value.decision is AgeEligibilityDecision.VerificationRequired) {
             AgeEligibilityEvaluation(
                 decision = AgeEligibilityDecision.VerificationRequired,

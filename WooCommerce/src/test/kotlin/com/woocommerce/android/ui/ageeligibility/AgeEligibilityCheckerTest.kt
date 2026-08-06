@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.ageeligibility
 
 import android.app.Activity
-import android.os.RemoteException
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -45,9 +44,9 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given verified result, when age is checked, then access is allowed authoritatively`() = testBlocking {
+    fun `given eligible shared result, when age is checked, then access is allowed authoritatively`() = testBlocking {
         val checker = createChecker()
-        client.result = AgeCheckResult(LegacyAgeVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
+        client.result = sharedResult(ageLower = 18, ageUpper = null)
 
         checker.checkAge(activity)
 
@@ -58,29 +57,38 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         verify(accountRepository, never()).logout()
         verify(trackerWrapper).track(
             AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
-                "user_status" to "VERIFIED",
-                "access_restricted" to false
-            )
+            mapOf("access_restricted" to false)
         )
     }
 
     @Test
-    fun `given supervised user under 13, when age is checked, then restriction is persisted and user logs out`() =
-        testBlocking {
-            val checker = createChecker()
-            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 12)
+    fun `given shared age under 13, when checked, then restriction is persisted and user logs out`() = testBlocking {
+        val checker = createChecker()
+        client.result = sharedResult(ageLower = 0, ageUpper = 12)
 
-            checker.checkAge(activity)
+        checker.checkAge(activity)
 
-            assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
-                AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
-            )
-            verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
-            verify(accountRepository).logout()
-        }
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+        )
+        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+        verify(accountRepository).logout()
+    }
+
+    @Test
+    fun `given verification is required, when checked, then no logout or persistence change occurs`() = testBlocking {
+        val checker = createChecker()
+        client.result = AgeSignalsRequestResult(AgeSignalsAccessStatus.VERIFICATION_REQUIRED)
+
+        checker.checkAge(activity)
+
+        assertThat(checker.ageEligibilityState.value.decision)
+            .isEqualTo(AgeEligibilityDecision.VerificationRequired)
+        verify(accountRepository, never()).logout()
+        verify(prefsWrapper, never()).userAgeRestrictionReason = ""
+        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = false
+    }
 
     @Test
     fun `given legacy false preference, when checker is created, then it migrates to an authoritative restriction`() {
@@ -95,11 +103,11 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given prior restriction and unknown result, when age is checked, then restriction is retained`() =
+    fun `given prior restriction and non-authoritative result, when checked, then restriction is retained`() =
         testBlocking {
             stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
             val checker = createChecker()
-            client.result = AgeCheckResult(LegacyAgeVerificationStatus.UNKNOWN, DEFAULT_USER_AGE_UPPER)
+            client.result = AgeSignalsRequestResult(AgeSignalsAccessStatus.NOT_SHARED)
 
             checker.checkAge(activity)
 
@@ -111,10 +119,10 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given prior restriction and SDK failure, when age is checked, then restriction is retained`() = testBlocking {
+    fun `given prior restriction and SDK failure, when checked, then restriction is retained`() = testBlocking {
         stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         val checker = createChecker()
-        client.exception = mock<RemoteException>()
+        client.exception = requestFailure()
 
         checker.checkAge(activity)
 
@@ -126,11 +134,25 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given verification state and SDK failure, when retried, then verification state is retained`() = testBlocking {
+        val checker = createChecker()
+        client.result = AgeSignalsRequestResult(AgeSignalsAccessStatus.VERIFICATION_REQUIRED)
+        checker.checkAge(activity)
+        client.exception = requestFailure()
+
+        checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+
+        assertThat(checker.ageEligibilityState.value.decision)
+            .isEqualTo(AgeEligibilityDecision.VerificationRequired)
+        verify(accountRepository, never()).logout()
+    }
+
+    @Test
     fun `given prior restriction and conclusive eligible result, when checked, then restriction is cleared`() =
         testBlocking {
             stubPriorRestriction(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
             val checker = createChecker()
-            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 13)
+            client.result = sharedResult(ageLower = 13, ageUpper = 15)
 
             checker.checkAge(activity)
 
@@ -141,7 +163,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given feature is disabled, when age is checked, then persisted restriction is bypassed without clearing it`() =
+    fun `given feature is disabled, when checked, then persisted restriction is bypassed without clearing it`() =
         testBlocking {
             stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
             whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(false)
@@ -217,7 +239,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
                 true
             }
             val checker = createChecker()
-            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 12)
+            client.result = sharedResult(ageLower = 0, ageUpper = 12)
             val activityCheck = launch(start = CoroutineStart.LAZY) { checker.checkAge(activity) }
             val restrictionObserver = launch(start = CoroutineStart.UNDISPATCHED) {
                 checker.ageEligibilityState.drop(1).first {
@@ -327,13 +349,13 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     private class FakeAgeSignalsClient : AgeSignalsClient {
-        var result = AgeCheckResult(LegacyAgeVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
+        var result = sharedResult(ageLower = 18, ageUpper = null)
         var exception: Exception? = null
         var gate: CompletableDeferred<Unit>? = null
         var callCount = 0
         var receivedActivity: Activity? = null
 
-        override suspend fun checkAge(activity: Activity): AgeCheckResult {
+        override suspend fun requestAgeSignals(activity: Activity): AgeSignalsRequestResult {
             callCount++
             receivedActivity = activity
             gate?.await()
@@ -343,6 +365,21 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     companion object {
-        private const val DEFAULT_USER_AGE_UPPER = 19
+        private fun sharedResult(ageLower: Int?, ageUpper: Int?) = AgeSignalsRequestResult(
+            accessStatus = AgeSignalsAccessStatus.SHARED,
+            ageSignals = SharedAgeSignals(
+                ageLower = ageLower,
+                ageUpper = ageUpper,
+                ageRangeSource = AppAgeRangeSource.UNSPECIFIED,
+                significantChangeStatus = AppSignificantChangeStatus.UNSPECIFIED
+            )
+        )
+
+        private fun requestFailure() = AgeSignalsRequestFailure(
+            stage = AgeSignalsRequestStage.ACCESS,
+            errorCode = AppAgeSignalsErrorCode.NETWORK_ERROR,
+            retryCount = 0,
+            cause = IllegalStateException()
+        )
     }
 }
