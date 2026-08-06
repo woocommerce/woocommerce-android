@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.ageeligibility
 
+import android.app.Activity
 import android.os.RemoteException
 import androidx.annotation.StringRes
 import com.google.android.gms.common.api.ApiException
-import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,107 +26,120 @@ class AgeEligibilityChecker @Inject constructor(
     private val prefsWrapper: AppPrefsWrapper,
     private val accountRepository: AccountRepository,
     private val featureFlagRepository: FeatureFlagRepository,
-    private val trackerWrapper: AnalyticsTrackerWrapper
+    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val evaluator: AgeEligibilityEvaluator
 ) {
+    private val checkMutex = Mutex()
+    private var persistedRestriction = readPersistedRestriction()
 
     private val _ageEligibilityState = MutableStateFlow(
         AgeEligibilityState(
-            isUserAgeRangeEligible = prefsWrapper.isUserAgeEligibleForAppUse,
+            decision = persistedRestriction.toDecision(),
             ageRestrictedTitle = R.string.age_restriction_dialog_title,
-            ageRestrictedMessage = R.string.age_restriction_supervised_user_account_dialog_message
+            ageRestrictedMessage = persistedRestriction.toMessage()
         )
     )
     val ageEligibilityState: StateFlow<AgeEligibilityState> = _ageEligibilityState.asStateFlow()
 
-    suspend fun checkAge() {
-        if (featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)) {
-            val trackingProperties = mutableMapOf<String, Any>()
-            try {
-                val result = client.checkAge()
-                val isUserAgeEligible = isUserAgeEligibleForAppUse(result.userStatus, result.ageUpper)
-
-                _ageEligibilityState.update {
-                    ageEligibilityState.value.copy(
-                        isUserAgeRangeEligible = isUserAgeEligible,
-                        ageRestrictedMessage = if (isAgeBelowWooCommerceTOSMinimum(result.ageUpper)) {
-                            R.string.age_restriction_user_below_tos_minimum_age_dialog_message
-                        } else {
-                            R.string.age_restriction_supervised_user_account_dialog_message
-                        }
-                    )
-                }
-
-                prefsWrapper.isUserAgeEligibleForAppUse = _ageEligibilityState.value.isUserAgeRangeEligible
-                trackingProperties["retrieved_age"] = result.ageUpper ?: -1
-                trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
-            } catch (exception: ApiException) {
-                revertEligibilityToDefault(exception)
-            } catch (exception: RemoteException) {
-                // The age signals service is backed by a Play Store binder that can die at any
-                // time (e.g. Play Store killed or updated); the pending check then fails with a
-                // plain RemoteException instead of an ApiException
-                revertEligibilityToDefault(exception)
-            }
-
-            val isAccessRestricted = _ageEligibilityState.value.isUserAgeRangeEligible.not()
-            trackingProperties["access_restricted"] = isAccessRestricted
-            trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
-
-            if (isAccessRestricted) {
-                accountRepository.logout()
-            }
-        } else {
-            _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
+    init {
+        if (persistedRestriction == AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION) {
+            prefsWrapper.userAgeRestrictionReason = persistedRestriction?.name.orEmpty()
         }
     }
 
-    private fun revertEligibilityToDefault(exception: Exception) {
+    suspend fun checkAge(activity: Activity, trigger: AgeCheckTrigger = AgeCheckTrigger.STARTUP) {
+        if (!checkMutex.tryLock()) {
+            WooLog.i(WooLog.T.UTILS, "Skipping concurrent age check triggered by ${trigger.name}")
+            return
+        }
+
+        try {
+            checkAgeSingleFlight(activity)
+        } finally {
+            checkMutex.unlock()
+        }
+    }
+
+    private suspend fun checkAgeSingleFlight(activity: Activity) {
+        if (!featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)) {
+            _ageEligibilityState.update { it.copy(decision = AgeEligibilityDecision.Allowed) }
+            return
+        }
+
+        val trackingProperties = mutableMapOf<String, Any>()
+        val evaluation = try {
+            val result = client.checkAge(activity)
+            trackingProperties["retrieved_age"] = result.ageUpper ?: -1
+            trackingProperties["user_status"] = result.verificationStatus.name
+            evaluator.evaluateLegacyResult(result, persistedRestriction)
+        } catch (exception: ApiException) {
+            preservePriorRestriction(exception)
+        } catch (exception: RemoteException) {
+            preservePriorRestriction(exception)
+        }
+
+        applyEvaluation(evaluation)
+
+        val isAccessRestricted = evaluation.decision is AgeEligibilityDecision.Restricted
+        trackingProperties["access_restricted"] = isAccessRestricted
+        trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
+
+        if (isAccessRestricted) {
+            accountRepository.logout()
+        }
+    }
+
+    private fun applyEvaluation(evaluation: AgeEligibilityEvaluation) {
+        val restriction = (evaluation.decision as? AgeEligibilityDecision.Restricted)?.reason
+        _ageEligibilityState.update {
+            it.copy(
+                decision = evaluation.decision,
+                ageRestrictedMessage = restriction.toMessage()
+            )
+        }
+
+        if (evaluation.isAuthoritative) {
+            persistedRestriction = restriction
+            prefsWrapper.userAgeRestrictionReason = restriction?.name.orEmpty()
+            prefsWrapper.isUserAgeEligibleForAppUse = restriction == null
+        }
+    }
+
+    private fun preservePriorRestriction(exception: Exception): AgeEligibilityEvaluation {
         WooLog.i(
             WooLog.T.UTILS,
-            "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
-                "age: ${exception.message}, reverting user eligibility to default true"
+            "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user age; preserving prior decision"
         )
-        _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
+        return evaluator.preservePriorRestriction(persistedRestriction)
     }
 
-    private fun isAgeBelowWooCommerceTOSMinimum(ageUpper: Int?): Boolean =
-        ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE
-
-    private fun isUserAgeEligibleForAppUse(userStatus: Int?, ageUpper: Int?) = when (userStatus) {
-        AgeSignalsVerificationStatus.VERIFIED -> true
-        AgeSignalsVerificationStatus.SUPERVISED,
-        AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> {
-            if (ageUpper == null) {
-                true // If we can't determine the age return true
-            } else {
-                ageUpper >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE
-            }
+    private fun readPersistedRestriction(): AgeRestrictionReason? {
+        val typedRestriction = AgeRestrictionReason.entries.firstOrNull {
+            it.name == prefsWrapper.userAgeRestrictionReason
         }
-
-        AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
-
-        AgeSignalsVerificationStatus.UNKNOWN -> true // Safe default: allow access if unknown
-        else -> true // Handle any other cases as default
+        return typedRestriction ?: if (prefsWrapper.isUserAgeEligibleForAppUse) {
+            null
+        } else {
+            AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION
+        }
     }
 
-    private fun getUserStatusAsString(userStatus: Int?): String {
-        return when (userStatus) {
-            AgeSignalsVerificationStatus.VERIFIED -> "VERIFIED"
-            AgeSignalsVerificationStatus.SUPERVISED -> "SUPERVISED"
-            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> "SUPERVISED_APPROVAL_PENDING"
-            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> "SUPERVISED_APPROVAL_DENIED"
-            AgeSignalsVerificationStatus.UNKNOWN -> "UNKNOWN"
-            else -> "UNKNOWN"
-        }
+    private fun AgeRestrictionReason?.toDecision(): AgeEligibilityDecision =
+        this?.let(AgeEligibilityDecision::Restricted) ?: AgeEligibilityDecision.Allowed
+
+    @StringRes
+    private fun AgeRestrictionReason?.toMessage(): Int = if (this == AgeRestrictionReason.BELOW_MINIMUM_AGE) {
+        R.string.age_restriction_user_below_tos_minimum_age_dialog_message
+    } else {
+        R.string.age_restriction_supervised_user_account_dialog_message
     }
 
     data class AgeEligibilityState(
-        val isUserAgeRangeEligible: Boolean,
+        val decision: AgeEligibilityDecision,
         @StringRes val ageRestrictedTitle: Int,
         @StringRes val ageRestrictedMessage: Int
-    )
-
-    companion object {
-        private const val WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE = 13
+    ) {
+        val isUserAgeRangeEligible: Boolean
+            get() = decision is AgeEligibilityDecision.Allowed
     }
 }

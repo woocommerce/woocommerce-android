@@ -42,6 +42,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
 
+    var userAgeRestrictionReason by AppPrefs::userAgeRestrictionReason
+
     var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
 
     var hasSeenAnalyticsScheduledImportInfo by AppPrefs::hasSeenAnalyticsScheduledImportInfo

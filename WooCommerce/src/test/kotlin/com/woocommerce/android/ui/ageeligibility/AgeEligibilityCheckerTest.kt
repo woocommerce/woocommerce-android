@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.ageeligibility
 
+import android.app.Activity
 import android.os.RemoteException
-import com.google.android.play.agesignals.AgeSignalsException
-import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -10,46 +9,47 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class AgeEligibilityCheckerTest : BaseUnitTest() {
-
-    private lateinit var ageEligibilityChecker: AgeEligibilityChecker
+    private val activity: Activity = mock()
     private val client = FakeAgeSignalsClient()
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val accountRepository: AccountRepository = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val evaluator = AgeEligibilityEvaluator()
 
     @Before
-    fun setup() = testBlocking {
+    fun setup() {
+        whenever(prefsWrapper.userAgeRestrictionReason).thenReturn("")
         whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenReturn(true)
         whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(true)
-        ageEligibilityChecker = AgeEligibilityChecker(
-            client,
-            prefsWrapper,
-            accountRepository,
-            featureFlagRepository,
-            trackerWrapper
-        )
     }
 
     @Test
-    fun `given user is verified, when checkAge called, then user is eligible`() = testBlocking {
-        client.setExpectedValues(AgeSignalsVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
+    fun `given verified result, when age is checked, then access is allowed authoritatively`() = testBlocking {
+        val checker = createChecker()
+        client.result = AgeCheckResult(LegacyAgeVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
 
-        ageEligibilityChecker.checkAge()
+        checker.checkAge(activity)
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
+        assertThat(client.receivedActivity).isSameAs(activity)
+        verify(prefsWrapper).userAgeRestrictionReason = ""
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
+        verify(accountRepository, never()).logout()
         verify(trackerWrapper).track(
             AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
             mapOf(
@@ -61,218 +61,138 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given user is supervised and age is under 13, when checkAge called, then user is NOT eligible`() =
+    fun `given supervised user under 13, when age is checked, then restriction is persisted and user logs out`() =
         testBlocking {
-            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 12)
+            val checker = createChecker()
+            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 12)
 
-            ageEligibilityChecker.checkAge()
+            checker.checkAge(activity)
 
-            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
+            assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+                AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+            )
+            verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
-
-            verify(trackerWrapper).track(
-                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-                mapOf(
-                    "retrieved_age" to 12,
-                    "user_status" to "SUPERVISED",
-                    "access_restricted" to true
-                )
-            )
         }
 
     @Test
-    fun `given user is supervised and age is 13 or over, when checkAge called, then user is eligible`() = testBlocking {
-        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 13)
+    fun `given legacy false preference, when checker is created, then it migrates to an authoritative restriction`() {
+        whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenReturn(false)
 
-        ageEligibilityChecker.checkAge()
+        val checker = createChecker()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "retrieved_age" to 13,
-                "user_status" to "SUPERVISED",
-                "access_restricted" to false
-            )
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION)
         )
+        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION.name
     }
 
     @Test
-    fun `given user is supervised approval pending and age is under 13, when checkAge called, then user is NOT eligible`() =
+    fun `given prior restriction and unknown result, when age is checked, then restriction is retained`() =
         testBlocking {
-            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
+            stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+            val checker = createChecker()
+            client.result = AgeCheckResult(LegacyAgeVerificationStatus.UNKNOWN, DEFAULT_USER_AGE_UPPER)
 
-            ageEligibilityChecker.checkAge()
+            checker.checkAge(activity)
 
-            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+            assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+                AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+            )
+            verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
             verify(accountRepository).logout()
-
-            verify(trackerWrapper).track(
-                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-                mapOf(
-                    "retrieved_age" to 12,
-                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to true
-                )
-            )
         }
 
     @Test
-    fun `given user is supervised approval pending and age is 13 or over, when checkAge called, then user is eligible`() =
-        testBlocking {
-            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 13)
+    fun `given prior restriction and SDK failure, when age is checked, then restriction is retained`() = testBlocking {
+        stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+        val checker = createChecker()
+        client.exception = mock<RemoteException>()
 
-            ageEligibilityChecker.checkAge()
+        checker.checkAge(activity)
 
-            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
-            verify(trackerWrapper).track(
-                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-                mapOf(
-                    "retrieved_age" to 13,
-                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to false
-                )
-            )
-        }
-
-    @Test
-    fun `given user is supervised approval denied, when checkAge called, then user is NOT eligible`() = testBlocking {
-        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED, DEFAULT_USER_AGE_UPPER)
-
-        ageEligibilityChecker.checkAge()
-
-        assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+        )
+        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
         verify(accountRepository).logout()
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
-                "user_status" to "SUPERVISED_APPROVAL_DENIED",
-                "access_restricted" to true
-            )
-        )
     }
 
     @Test
-    fun `given user status is unknown, when checkAge called, then user is eligible`() = testBlocking {
-        client.setExpectedValues(AgeSignalsVerificationStatus.UNKNOWN, DEFAULT_USER_AGE_UPPER)
-
-        ageEligibilityChecker.checkAge()
-
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
-                "user_status" to "UNKNOWN",
-                "access_restricted" to false
-            )
-        )
-    }
-
-    @Test
-    fun `given checkAge throws exception, when checkAge called, then user is eligible`() = testBlocking {
-        client.setThrowException(AgeSignalsException(-5))
-
-        ageEligibilityChecker.checkAge()
-
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "access_restricted" to false
-            )
-        )
-    }
-
-    @Test
-    fun `given age signals service binder dies, when checkAge called, then user is eligible`() = testBlocking {
-        client.setThrowException(mock<RemoteException>())
-
-        ageEligibilityChecker.checkAge()
-
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "access_restricted" to false
-            )
-        )
-    }
-
-    @Test
-    fun `given user is supervised and ageUpper is null, when checkAge called, then user is eligible`() = testBlocking {
-        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, null)
-
-        ageEligibilityChecker.checkAge()
-
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf(
-                "retrieved_age" to -1,
-                "user_status" to "SUPERVISED",
-                "access_restricted" to false
-            )
-        )
-    }
-
-    @Test
-    fun `given user is supervised approval pending and ageUpper is null, when checkAge called, then user is eligible`() =
+    fun `given prior restriction and conclusive eligible result, when checked, then restriction is cleared`() =
         testBlocking {
-            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, null)
+            stubPriorRestriction(AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION)
+            val checker = createChecker()
+            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 13)
 
-            ageEligibilityChecker.checkAge()
+            checker.checkAge(activity)
 
-            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
+            assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
+            verify(prefsWrapper).userAgeRestrictionReason = ""
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
-
-            verify(trackerWrapper).track(
-                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-                mapOf(
-                    "retrieved_age" to -1,
-                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to false
-                )
-            )
+            verify(accountRepository, never()).logout()
         }
 
-    class FakeAgeSignalsClient : AgeSignalsClient {
-        private var exceptionToThrow: Exception? = null
-        private var userStatus: Int = DEFAULT_USER_AGE_STATUS
-        private var ageUpper: Int? = DEFAULT_USER_AGE_UPPER
+    @Test
+    fun `given feature is disabled, when age is checked, then persisted restriction is bypassed without clearing it`() =
+        testBlocking {
+            stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(false)
+            val checker = createChecker()
 
-        fun setExpectedValues(userStatus: Int, ageUpper: Int?) {
-            this.userStatus = userStatus
-            this.ageUpper = ageUpper
+            checker.checkAge(activity)
+
+            assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
+            assertThat(client.callCount).isZero()
+            verify(prefsWrapper, never()).userAgeRestrictionReason = ""
+            verify(accountRepository, never()).logout()
         }
 
-        fun setThrowException(exception: Exception) {
-            this.exceptionToThrow = exception
-        }
+    @Test
+    fun `given a check is running, when another check starts, then only one SDK request runs`() = testBlocking {
+        val checker = createChecker()
+        client.gate = CompletableDeferred()
 
-        override suspend fun checkAge(): AgeCheckResult {
-            exceptionToThrow?.let { throw it }
-            return AgeCheckResult(userStatus, ageUpper)
+        val firstCheck = launch { checker.checkAge(activity) }
+        yield()
+        checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+
+        assertThat(client.callCount).isEqualTo(1)
+        client.gate?.complete(Unit)
+        firstCheck.join()
+    }
+
+    private fun createChecker() = AgeEligibilityChecker(
+        client = client,
+        prefsWrapper = prefsWrapper,
+        accountRepository = accountRepository,
+        featureFlagRepository = featureFlagRepository,
+        trackerWrapper = trackerWrapper,
+        evaluator = evaluator
+    )
+
+    private fun stubPriorRestriction(reason: AgeRestrictionReason) {
+        whenever(prefsWrapper.userAgeRestrictionReason).thenReturn(reason.name)
+    }
+
+    private class FakeAgeSignalsClient : AgeSignalsClient {
+        var result = AgeCheckResult(LegacyAgeVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
+        var exception: Exception? = null
+        var gate: CompletableDeferred<Unit>? = null
+        var callCount = 0
+        var receivedActivity: Activity? = null
+
+        override suspend fun checkAge(activity: Activity): AgeCheckResult {
+            callCount++
+            receivedActivity = activity
+            gate?.await()
+            exception?.let { throw it }
+            return result
         }
     }
 
     companion object {
-        private const val DEFAULT_USER_AGE_STATUS = AgeSignalsVerificationStatus.VERIFIED
         private const val DEFAULT_USER_AGE_UPPER = 19
     }
 }

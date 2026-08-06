@@ -11,7 +11,7 @@ class ApplicationLifecycleMonitor(
 ) : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
     interface ApplicationLifecycleListener {
         fun onAppComesFromBackground()
-        fun onFirstActivityResumed()
+        fun onFirstActivityResumed(activity: Activity)
         fun onAppGoesToBackground()
     }
 
@@ -32,7 +32,7 @@ class ApplicationLifecycleMonitor(
 
         if (firstActivityResumed) {
             firstActivityResumed = false
-            lifecycleListener.onFirstActivityResumed()
+            lifecycleListener.onFirstActivityResumed(activity)
         }
     }
 
