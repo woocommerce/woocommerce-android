@@ -1,0 +1,74 @@
+# Smoke Test: Orders - List and Search
+# p2: orders.list, orders.search
+# P2 ref: Orders > Order list, Search for an order
+#
+# Verifies:
+#   - Orders list loads with order data
+#   - Search for an order by number or keyword
+appId: com.woocommerce.android.dev
+name: "Orders - List and search"
+tags:
+  - smoke_core
+  - orders
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Verify orders list loaded
+- assertVisible:
+    id: "ordersList"
+    label: "Orders list is visible"
+
+- assertVisible:
+    id: "orderNum"
+    label: "At least one order number is visible"
+
+# Validate first order has a non-empty number via JavaScript
+- copyTextFrom:
+    id: "orderNum"
+    index: 0
+- evalScript: |
+    var text = maestro.copiedText;
+    if (!text || text.trim() === '') {
+        throw new Error('Order number text is empty');
+    }
+- evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
+
+- takeScreenshot: orders_list
+
+# Test search against the first visible order from the loaded list.
+- tapOn:
+    id: "menu_search"
+    label: "Open order search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${output.orderSearchText}
+- pressKey: Enter
+
+# Wait for search results
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
+    timeout: 15000
+
+- assertVisible:
+    text: "${output.orderSearchText}"
+    label: "Captured order appears in search results"
+
+- takeScreenshot: orders_search_results
+
+# Go back from search
+- back
+- back

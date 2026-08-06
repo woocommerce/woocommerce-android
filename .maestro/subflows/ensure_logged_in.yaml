@@ -1,0 +1,95 @@
+# Ensure the app is launched with a logged-in session.
+#
+# WPCom triggers extra security screens (magic-link, CAPTCHA) once
+# the same account logs in too many times in a short window. To stay
+# under that threshold, non-login flows MUST reuse the existing
+# session instead of re-authenticating on every run. Only login-
+# specific flows should `clearState: true` + re-login.
+#
+# Behavior:
+#   1. Launch the app WITHOUT clearing state, so the existing
+#      session persists across flows.
+#   2. Wait for either the dashboard OR a welcome-screen signal to
+#      appear.
+#   3. Happy path — dashboard ("My store") is visible: return.
+#   4. Fallback path — the device was never signed in, the session
+#      was wiped by a previous `clearState`, or WPCom expired the
+#      token: run the login.yaml subflow. It clearStates and
+#      authenticates with the selected Jetpack-connected store and
+#      WP.com credentials (MAESTRO_WOO_JETPACK_STORE_URL,
+#      MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD) and
+#      lands back on the dashboard.
+#
+# Why the fallback matters: previously this subflow simply asserted
+# "My store" was visible and timed out (failing the flow) if the
+# user wasn't logged in. That forced the operator to manually run
+# login_successful.yaml as a prerequisite every time they wanted to
+# kick off a single non-login flow from a cold emulator. Now any
+# flow can be invoked in isolation and it'll self-heal into a
+# logged-in state on first run.
+appId: com.woocommerce.android.dev
+---
+- launchApp:
+    clearState: false
+
+# Wait for either the dashboard OR a welcome-screen signal to
+# appear.
+#
+#   "My store"                   — bottom-nav / top-bar label shown
+#                                  once logged in
+#   "Enter your store address"   — primary welcome-screen CTA
+#   "Log in"                     — welcome-screen alternate CTA
+#   "Skip"                       — intro carousel skip button (the
+#                                  first screen after clearState on
+#                                  some app versions)
+#
+# Matching any of these tells us the app has finished booting. We
+# branch on which one fired.
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Skip.*"
+    timeout: 45000
+    label: "Wait for dashboard or login welcome screen"
+
+# Dismiss known post-launch modals before deciding whether the session is dirty.
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn:
+          text: "Save"
+          label: "recovery_dismiss_privacy_dialog"
+
+- runFlow:
+    when:
+      visible: ".*Got it.*"
+    commands:
+      - tapOn:
+          text: ".*Got it.*"
+          label: "recovery_dismiss_got_it_dialog"
+
+- runFlow:
+    when:
+      visible: ".*Not now.*|.*Maybe later.*"
+    commands:
+      - tapOn:
+          text: ".*Not now.*|.*Maybe later.*"
+          label: "recovery_dismiss_optional_prompt"
+
+# Fallback: if we're not on the dashboard, run the full login
+# subflow. login.yaml clearStates + authenticates with the primary
+# Woo account and lands on the dashboard. Running it when we're
+# already on the welcome screen just means the clearState at its
+# top is a no-op-ish re-launch — still idempotent.
+- runFlow:
+    when:
+      notVisible: "My store"
+    commands:
+      - runFlow:
+          file: login.yaml
+
+# Confirm we're on the dashboard, whether we came in already
+# authenticated or via the login fallback.
+- extendedWaitUntil:
+    visible: "My store"
+    timeout: 30000
+    label: "Verify dashboard is reachable"

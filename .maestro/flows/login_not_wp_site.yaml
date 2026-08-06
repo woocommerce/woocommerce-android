@@ -1,0 +1,58 @@
+# Smoke Test: Login - Not a WordPress site
+# p2: login.not-wp-site
+# P2 ref: Login > Not a WP site (use "Google.com" or any non-WordPress site)
+#
+# Manages its own login flow (does not call the login subflow) because
+# we're validating the pre-login error path. Starts from a fresh state.
+appId: com.woocommerce.android.dev
+name: "Login - Not a WordPress site error"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - login
+---
+- launchApp:
+    clearState: true
+
+# Wait for app to finish loading after clearState
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+# Skip carousel if shown
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Tap "Enter your store address"
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+# Enter a non-WordPress site URL
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: "google.com"
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Verify error message appears
+- extendedWaitUntil:
+    visible: ".*not able to detect a WordPress site.*"
+    timeout: 15000
+
+# Verify the recovery buttons are present
+- assertVisible: "Try another store"
+
+- takeScreenshot: login_not_wp_site

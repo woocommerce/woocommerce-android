@@ -1,0 +1,33 @@
+# Smoke Test: Successful Login via Store Address
+# p2: install.fresh, login.jetpack
+# P2 ref: Login > Jetpack (site address + WP.com credentials)
+#
+# Prerequisites:
+#   - WOO_JETPACK_STORE_URL, WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD env vars set
+#
+# Run:
+#   maestro test \
+#     -e WOO_WPCOM_EMAIL="..." \
+#     -e WOO_WPCOM_PASSWORD="..." \
+#     -e WOO_JETPACK_STORE_URL="..." \
+#     .maestro/flows/login_successful.yaml
+appId: com.woocommerce.android.dev
+name: "Login - Successful store login"
+tags:
+  - smoke_core
+  - login
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+
+# Verify we landed on the Dashboard
+- assertVisible:
+    id: "dashboard"
+    label: "Verify Dashboard tab is visible after login"
+
+- assertVisible:
+    id: "dashboard_container"
+    label: "Verify Dashboard container loaded"
+
+- takeScreenshot: login_successful

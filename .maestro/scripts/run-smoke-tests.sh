@@ -532,12 +532,21 @@ if [[ "$STORE" == "shared" && "$SUITE_HAS_DESTRUCTIVE" == "yes" && -z "${CI:-}" 
   exit 1
 fi
 
+is_optional_flow_env_ref() {
+  local flow="$1"
+  local ref="$2"
+  [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]] &&
+    [[ "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
+      "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
+}
+
 validate_referenced_env() {
   local missing=()
   local flow ref var
   for flow in "${ORDERED_FLOWS[@]}"; do
     while IFS= read -r ref; do
       [[ -z "$ref" ]] && continue
+      is_optional_flow_env_ref "$flow" "$ref" && continue
       var="MAESTRO_${ref}"
       if [[ -z "${!var:-}" ]]; then
         missing+=("$var")
@@ -551,6 +560,25 @@ validate_referenced_env() {
   fi
 }
 validate_referenced_env
+
+validate_optional_not_woo_wpcom_env() {
+  local flow selected="no"
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    if [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]]; then
+      selected="yes"
+      break
+    fi
+  done
+  [[ "$selected" == "yes" ]] || return 0
+
+  local email="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL:-}"
+  local password="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD:-}"
+  if [[ -n "$email" && -z "$password" ]] || [[ -z "$email" && -n "$password" ]]; then
+    echo "Missing optional WP.com fallback pair: set both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD, or leave both blank." >&2
+    exit 1
+  fi
+}
+validate_optional_not_woo_wpcom_env
 
 DEVICE_SERIALS=()
 while read -r serial state _rest; do
@@ -672,6 +700,85 @@ if [[ -n "$APK_PATH" ]]; then
   echo "--- Installing APK"
   adb -s "$DEVICE_SERIAL" install -r -g "$APK_PATH"
 fi
+
+validate_google_login_apk() {
+  local flow google_flow_selected="no"
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    if [[ "$(basename "$flow")" == "login_google.yaml" ]]; then
+      google_flow_selected="yes"
+      break
+    fi
+  done
+  [[ "$google_flow_selected" == "yes" ]] || return 0
+
+  local apk_to_check="$APK_PATH"
+  local pulled_apk="no"
+  if [[ -z "$apk_to_check" ]]; then
+    local installed_apk_path
+    installed_apk_path="$(
+      adb -s "$DEVICE_SERIAL" shell pm path com.woocommerce.android.dev 2>/dev/null |
+        tr -d '\r' |
+        sed -n '1s/^package://p'
+    )"
+    if [[ -z "$installed_apk_path" ]]; then
+      echo "Setup error: com.woocommerce.android.dev is not installed for login_google." >&2
+      exit 1
+    fi
+    apk_to_check="$TMP_DIR/login-google-installed.apk"
+    adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
+    pulled_apk="yes"
+  fi
+
+  local validation_status=0
+  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" <<'PY' || validation_status=$?
+import json
+import pathlib
+import sys
+import zipfile
+
+config = json.loads(pathlib.Path(sys.argv[1]).read_text())
+example_client_id = ""
+for client in config.get("client", []):
+    package_name = client.get("client_info", {}).get("android_client_info", {}).get("package_name")
+    if package_name != "com.woocommerce.android.dev":
+        continue
+    for oauth_client in client.get("oauth_client", []):
+        if oauth_client.get("client_type") == 3:
+            example_client_id = oauth_client.get("client_id", "")
+            break
+
+if not example_client_id:
+    raise SystemExit(3)
+
+try:
+    with zipfile.ZipFile(sys.argv[2]) as apk:
+        resources = apk.read("resources.arsc")
+except (KeyError, OSError, zipfile.BadZipFile):
+    raise SystemExit(3)
+
+raise SystemExit(2 if example_client_id.encode() in resources else 0)
+PY
+
+  if [[ "$pulled_apk" == "yes" ]]; then
+    rm -f "$apk_to_check"
+  fi
+
+  if [[ "$validation_status" -eq 2 ]]; then
+    cat >&2 <<'EOF'
+Setup error: login_google cannot run with the example Google OAuth client.
+
+Build or obtain the APK with the private WooCommerce google-services.json,
+then install it or pass it with --apk. For a configured local checkout:
+  ./gradlew :WooCommerce:installWasabiDebug
+EOF
+    exit 1
+  fi
+  if [[ "$validation_status" -ne 0 ]]; then
+    echo "Setup error: could not inspect the APK resources required by login_google." >&2
+    exit 1
+  fi
+}
+validate_google_login_apk
 
 if [[ "$SEED" == "yes" ]]; then
   echo "--- Stale automation orphan sweep"

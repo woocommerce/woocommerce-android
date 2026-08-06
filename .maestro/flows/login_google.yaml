@@ -1,0 +1,141 @@
+# Smoke Test: Login - Social login (Google)
+# p2: login.social-google
+# P2 ref: Login > Social login - Apple/Google
+#
+# Verifies the "Continue with Google" path on the email screen launches
+# the native Google account picker and that selecting an account reaches
+# the dashboard.
+#
+# Preconditions (device/emulator):
+#   - A Google account is already signed in on the device.
+#   - The installed APK was built with the private WooCommerce
+#     google-services.json, not google-services.json-example. The example
+#     OAuth client lets the picker open but Google returns RESULT_CANCELED
+#     after account selection. The smoke runner validates this before launch.
+#   - That Google identity is LINKED on WP.com to an account with access
+#     to ${WOO_JETPACK_STORE_URL}. This is a stronger requirement than "a WP.com
+#     account with the same email exists": WP.com sign-in via Google
+#     uses the Google identity, not the email, so an account created
+#     via email+password will silently fail Google login unless the
+#     owner has explicitly linked Google under WP.com account settings.
+#     Symptom of a missing link: app shows "Logging in" briefly, then
+#     returns to the empty email screen with no visible error.
+#
+# Required env vars:
+#   WOO_JETPACK_STORE_URL            (any Jetpack-connected store the linked account accesses)
+appId: com.woocommerce.android.dev
+name: "Login - Social login (Google)"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - login
+---
+- launchApp:
+    clearState: true
+
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+
+# Enter store URL to reach the email screen (Google button lives there)
+- extendedWaitUntil:
+    visible:
+      id: "button_login_store"
+    timeout: 15000
+- tapOn:
+    id: "button_login_store"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${WOO_JETPACK_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Tap "Continue with Google" on the email screen
+# (id: continue_with_google, text: "Continue with Google")
+- extendedWaitUntil:
+    visible:
+      id: "continue_with_google"
+    timeout: 15000
+- tapOn:
+    id: "continue_with_google"
+    retryTapIfNoChange: true
+
+# Native Google account picker (Google Play Services bottom sheet).
+# Content varies by device/Android version. We wait for any recognizable
+# picker text, then tap the first email-looking entry.
+- extendedWaitUntil:
+    visible: ".*Choose an account.*|.*Sign in with Google.*|.*@.*\\..*"
+    timeout: 20000
+
+- takeScreenshot: login_google_account_picker
+
+- tapOn:
+    text: ".*@.*\\..*"
+    index: 0
+    retryTapIfNoChange: true
+
+# Play Services may show a confirmation step after picker selection.
+# The consent UI is a separate activity OUTSIDE the app, so gate each
+# handler on confirming we're still on that activity — otherwise a plain
+# `tapOn: "Continue"` / `"OK"` can fire on the app itself (e.g. hitting
+# the email screen's "Continue with Google" button if we bounced back).
+- runFlow:
+    when:
+      visible: ".*Continue as.*"
+    commands:
+      - tapOn: ".*Continue as.*"
+
+- runFlow:
+    when:
+      visible: ".*Sign in to.*|.*wants to access.*|.*Grant permission.*"
+    commands:
+      - tapOn:
+          text: "Allow|Continue"
+
+# If the WP.com account has access to multiple stores, the app shows
+# a store-picker before the dashboard. Pick whichever one is first —
+# we only need to reach the dashboard, not a specific store.
+- runFlow:
+    when:
+      visible: ".*Choose your store.*|.*Select a store.*|.*Pick a store.*"
+    commands:
+      - tapOn:
+          id: "site_list_item"
+          index: 0
+      - runFlow:
+          when:
+            visible: "Continue"
+          commands:
+            - tapOn: "Continue"
+
+# Verify dashboard loaded (allow generous time for the full auth
+# round-trip: Play Services → Google → WP.com → site fetch → dashboard).
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Manage privacy.*|.*Dashboard.*"
+    timeout: 60000
+
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+
+- extendedWaitUntil:
+    visible: ".*My store.*|.*Dashboard.*"
+    timeout: 15000
+
+- takeScreenshot: login_google_success
