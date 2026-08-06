@@ -20,7 +20,10 @@ import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.util.WooLog
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -78,11 +81,13 @@ class ZendeskTicketRepository @Inject constructor(
 
         val deviceLogs = envDataSource.getFullDeviceLogs()
 
-        val attachmentTokens = listOfNotNull(
-            diagnosticLog?.let { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) },
-            uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs),
-            uploadTextAttachment(MSR_FILENAME, msr)
-        )
+        val attachmentTokens = coroutineScope {
+            listOfNotNull(
+                diagnosticLog?.let { async { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) } },
+                async { uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs) },
+                async { uploadTextAttachment(MSR_FILENAME, msr) }
+            ).awaitAll().filterNotNull()
+        }
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
