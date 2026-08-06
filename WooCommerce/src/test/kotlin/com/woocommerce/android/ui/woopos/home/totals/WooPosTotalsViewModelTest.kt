@@ -160,6 +160,7 @@ class WooPosTotalsViewModelTest {
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        newOrderNotificationSuppressionCache = mock(),
         crashLogging = crashLogging,
     )
 

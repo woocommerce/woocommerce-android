@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteCertificateKeyType
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
@@ -31,6 +32,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
@@ -38,6 +40,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     private val sessionState = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
+        on { certificateKeyType }.thenReturn(CardReaderRemoteCertificateKeyType.ECDSA_256)
     }
     private val cardReaderManager: CardReaderManager = mock {
         on { initialized }.thenReturn(true)
@@ -224,7 +227,28 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             // THEN
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
-                eq(mapOf("is_simulated" to false)),
+                eq(mapOf("is_simulated" to false, "certificate_key_type" to "ecdsa_256")),
+            )
+        }
+
+    @Test
+    fun `given session fell back to an rsa certificate, when started, then rsa key type is tracked`() =
+        testBlocking {
+            // GIVEN
+            whenever(session.certificateKeyType).thenReturn(CardReaderRemoteCertificateKeyType.RSA_2048)
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+            // WHEN
+            sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+                deviceName = "Pixel",
+                fingerprintSuffix = "1234",
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
+                eq(mapOf("is_simulated" to false, "certificate_key_type" to "rsa_2048")),
             )
         }
 
