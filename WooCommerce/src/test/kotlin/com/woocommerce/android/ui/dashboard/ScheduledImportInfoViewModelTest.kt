@@ -85,7 +85,8 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
     @Test
     fun `when toggle is changed and update succeeds, then state reflects the new value and event is triggered`() =
         testBlocking {
-            createViewModel(isEnabled = false)
+            val savedState = SavedStateHandle()
+            createViewModel(isEnabled = false, savedState = savedState)
             whenever(scheduledImportRepository.setEnabled(true)).thenReturn(WooResult(true))
 
             val event = viewModel.event.runAndCaptureValues {
@@ -97,6 +98,10 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
             assertThat(state.isUpdating).isFalse()
             assertThat(state.hasError).isFalse()
             assertThat(event).isEqualTo(ScheduledImportInfoViewModel.SettingUpdated)
+
+            createViewModel(savedState = savedState)
+
+            assertThat(viewModel.viewState.value.isEnabled).isTrue()
         }
 
     @Test
