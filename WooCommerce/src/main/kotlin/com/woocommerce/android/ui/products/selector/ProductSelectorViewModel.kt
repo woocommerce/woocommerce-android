@@ -144,14 +144,13 @@ class ProductSelectorViewModel @Inject constructor(
             loadingState = loadingState,
             products = products.map {
                 mapProductsToUiModel(it, selectedIds)
-            },
-            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
-            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
+            }.markLoading(loadingItemId),
+            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds).markLoading(loadingItemId),
+            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds).markLoading(loadingItemId),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchState = searchState,
             selectionMode = navArgs.selectionMode,
-            loadingItemId = loadingItemId,
             productFlow = navArgs.productSelectorFlow,
             screenTitleOverride = navArgs.screenTitleOverride,
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
@@ -187,6 +186,21 @@ class ProductSelectorViewModel @Inject constructor(
     ) = when (selectionHandling) {
         NORMAL -> it.toUiModel(selectedIds)
         SIMPLE -> it.toSimpleUiModel(selectedIds)
+    }
+
+    private fun List<ListItem>.markLoading(loadingItemId: Long?): List<ListItem> {
+        if (loadingItemId == null) return this
+        return map { item ->
+            if (item.id != loadingItemId) {
+                item
+            } else {
+                when (item) {
+                    is ListItem.ProductListItem -> item.copy(isLoading = true)
+                    is ListItem.VariationListItem -> item.copy(isLoading = true)
+                    is ListItem.ConfigurableListItem -> item.copy(isLoading = true)
+                }
+            }
+        }
     }
 
     private fun getPopularProductsToDisplay(
@@ -738,7 +752,6 @@ class ProductSelectorViewModel @Inject constructor(
         val screenTitleOverride: String? = null,
         val ctaButtonTextOverride: String? = null,
         val selectionEnabled: Boolean = true,
-        val loadingItemId: Long? = null
     ) {
         val isDoneButtonEnabled: Boolean =
             selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0 || productFlow == OrderListFilter
@@ -764,6 +777,7 @@ class ProductSelectorViewModel @Inject constructor(
         open val stockAndPrice: String? = null,
         open val sku: String? = null,
         open val selectionState: SelectionState = UNSELECTED,
+        open val isLoading: Boolean = false,
     ) {
         data class ProductListItem(
             val productId: Long,
@@ -775,6 +789,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = productId,
             title = title,
@@ -783,6 +798,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
 
         data class VariationListItem(
@@ -794,6 +810,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = variationId,
             title = title,
@@ -802,6 +819,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
 
         data class ConfigurableListItem(
@@ -812,6 +830,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = productId,
             title = title,
@@ -820,6 +839,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
     }
 
