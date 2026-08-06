@@ -1,0 +1,41 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'unselected'}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unselected"
+          direction: DOWN
+          timeout: 10000
+          label: "Find unselected ${CARD_SLUG} dashboard card"
+      - tapOn:
+          id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unselected"
+          label: "Select ${CARD_SLUG} dashboard card"
+      - extendedWaitUntil:
+          visible:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_selected"
+          timeout: 5000
+          label: "Verify ${CARD_SLUG} dashboard card selected"
+
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'unavailable'}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unavailable"
+          direction: DOWN
+          timeout: 10000
+          label: "Account for unavailable ${CARD_SLUG} dashboard card"
+      - assertVisible:
+          id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unavailable"
+
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'hidden'}
+    commands:
+      - assertVisible:
+          id: ".*__${CARD_SLUG}_hidden__.*"
+          label: "Account for hidden ${CARD_SLUG} dashboard card"

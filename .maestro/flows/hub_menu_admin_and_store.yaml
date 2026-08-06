@@ -1,0 +1,256 @@
+# Smoke Test: Hub Menu - WC Admin, View Store, Change store
+# p2: hub.change-store, hub.wc-admin, hub.view-store
+# P2 ref: Hub menu > WC Admin, View Store, Change store
+#
+# Verifies:
+#   - Tapping "View Store" launches the authenticated webview for the
+#     storefront (More Menu no longer visible)
+#   - Tapping "WC Admin" launches the authenticated webview for the
+#     WC Admin dashboard (More Menu no longer visible)
+#   - Dynamically discovers another visible Woo store, switches to it, proves
+#     its identity and Orders surface loaded, then switches back and repeats
+#     the same assertions for the original store
+#
+# Why we don't assert specific webview content: Maestro's text-match
+# doesn't read into the embedded WebView reliably, and the rendered
+# page depends on the staging site's current state. Asserting "we
+# left the More Menu" + toolbar title is the highest-signal smoke
+# check available.
+appId: com.woocommerce.android.dev
+name: "Hub Menu - WC Admin, View Store, Change store"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - hub_menu
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# ── View Store ───────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "View Store"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to View Store"
+
+- tapOn:
+    text: "View Store"
+    retryTapIfNoChange: true
+    label: "Open View Store"
+
+# AuthenticatedWebViewScreen uses the selected site's display name as
+# the toolbar title. We don't know the display name, so instead assert
+# the More Menu is no longer visible (its Compose view id should have
+# been replaced by the webview fragment).
+- extendedWaitUntil:
+    notVisible:
+      id: "more_menu_compose_view"
+    timeout: 20000
+    label: "Verify webview took over from More Menu"
+
+# Give the webview a few seconds to render something before we
+# screenshot so the capture shows real content, not a white flash.
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 5000
+
+- takeScreenshot: hub_view_store
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu"
+
+# ── WC Admin ─────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "WC Admin"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to WC Admin"
+
+- tapOn:
+    text: "WC Admin"
+    retryTapIfNoChange: true
+    label: "Open WC Admin"
+
+# AuthenticatedWebViewScreen for WC Admin uses R.string.more_menu_
+# button_wс_admin = "WC Admin" as the toolbar title. That's also the
+# tappable row we just left, so it isn't discriminative. Instead,
+# confirm the More Menu is gone AND Payments (a sibling menu item) is
+# no longer visible — proof we navigated off the More Menu.
+- extendedWaitUntil:
+    notVisible:
+      id: "more_menu_compose_view"
+    timeout: 20000
+    label: "Verify webview took over from More Menu"
+
+- assertNotVisible: "Payments"
+
+- takeScreenshot: hub_wc_admin
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 15000
+    label: "Back on More Menu"
+
+# ── Change store ─────────────────────────────────────────────────────
+# Require the visible title for diagnostics and use normalized URL-host
+# equality for identity. Display names are not unique and are never used to
+# decide whether the selected store changed.
+- assertVisible:
+    id: "more_menu_store_title"
+- copyTextFrom:
+    id: "more_menu_store_url"
+- evalScript: ${output.originalStoreUrl = maestro.copiedText.trim()}
+- assertTrue:
+    condition: ${output.originalStoreUrl.length > 0}
+    label: "Capture original store identity"
+
+- tapOn:
+    id: "more_menu_store_switcher"
+    label: "Open store picker"
+
+- extendedWaitUntil:
+    visible: ".*Select store.*|.*Connected Stores.*"
+    timeout: 15000
+    label: "Require store picker"
+- extendedWaitUntil:
+    visible:
+      id: "sites_recycler"
+    timeout: 20000
+    label: "Wait for connected stores"
+
+# Woo stores are listed before non-Woo sites. Requiring two selectable domain
+# rows makes the multi-store fixture contract explicit instead of silently
+# passing after merely opening the picker.
+- extendedWaitUntil:
+    visible:
+      id: "text_site_domain"
+      index: 1
+    timeout: 20000
+    label: "Require at least two visible connected stores"
+
+- copyTextFrom:
+    id: "text_site_domain"
+    index: 0
+- evalScript: ${output.storeCandidateZeroUrl = maestro.copiedText.trim()}
+- copyTextFrom:
+    id: "text_site_domain"
+    index: 1
+- evalScript: ${output.storeCandidateOneUrl = maestro.copiedText.trim()}
+
+# Keep raw copied strings in output; Maestro 2.2.0 does not reliably export a
+# regex-derived string across commands. Normalize to host only inside boolean
+# conditions, where the result does not need to survive another command.
+- runFlow:
+    when:
+      true: ${String(output.storeCandidateZeroUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    commands:
+      - evalScript: ${output.alternateStoreUrl = output.storeCandidateZeroUrl}
+
+- runFlow:
+    when:
+      true: ${String(output.storeCandidateZeroUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    commands:
+      - evalScript: ${output.alternateStoreUrl = output.storeCandidateOneUrl}
+
+- assertTrue:
+    condition: ${output.alternateStoreUrl && String(output.alternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    label: "Discover a different connected store"
+
+- tapOn:
+    text: "${output.alternateStoreUrl}"
+    label: "Select alternate store"
+- tapOn:
+    id: "button_primary"
+    retryTapIfNoChange: true
+    label: "Confirm alternate store"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 30000
+    label: "Wait for alternate store dashboard"
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+- copyTextFrom:
+    id: "more_menu_store_url"
+- evalScript: ${output.selectedAlternateStoreUrl = maestro.copiedText.trim()}
+- assertTrue:
+    condition: ${String(output.selectedAlternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(output.alternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] && String(output.selectedAlternateStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    label: "Verify selected store identity changed"
+
+# Products is a store-backed surface. A real product or its legitimate empty
+# state proves the alternate store loaded; network error states are rejected.
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+- extendedWaitUntil:
+    visible:
+      id: "productName|empty_view"
+    timeout: 30000
+    label: "Require alternate store Products result"
+- assertNotVisible: ".*A network error occurred.*"
+- assertNotVisible: ".*Your network is unavailable.*"
+
+# Restore the original store using the identity captured before the switch.
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+- tapOn:
+    id: "more_menu_store_switcher"
+    label: "Open store picker to restore original store"
+- extendedWaitUntil:
+    visible:
+      id: "sites_recycler"
+    timeout: 20000
+
+- scrollUntilVisible:
+    element:
+      text: ".*${String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Find original store"
+- tapOn:
+    text: ".*${String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+    label: "Reselect original store"
+- tapOn:
+    id: "button_primary"
+    retryTapIfNoChange: true
+    label: "Confirm original store"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 30000
+    label: "Wait for restored store dashboard"
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+- copyTextFrom:
+    id: "more_menu_store_url"
+- evalScript: ${output.restoredStoreUrl = maestro.copiedText.trim()}
+- assertTrue:
+    condition: ${String(output.restoredStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(output.originalStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    label: "Verify original store identity restored"
+
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+- extendedWaitUntil:
+    visible:
+      id: "productName|empty_view"
+    timeout: 30000
+    label: "Require restored store Products result"
+- assertNotVisible: ".*A network error occurred.*"
+- assertNotVisible: ".*Your network is unavailable.*"
+
+- takeScreenshot: hub_change_store_restored

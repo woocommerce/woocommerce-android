@@ -1,0 +1,15 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      visible:
+        id: "dashboard_widget_editor_row_0_${CARD_SLUG}_.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalOrder[0] = CARD_SLUG}
+
+- runFlow:
+    when:
+      visible:
+        id: "dashboard_widget_editor_row_1_${CARD_SLUG}_.*"
+    commands:
+      - evalScript: ${output.dashboardOriginalOrder[1] = CARD_SLUG}

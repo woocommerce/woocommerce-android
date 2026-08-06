@@ -1,0 +1,28 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'selected'}
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_selected"
+          direction: DOWN
+          timeout: 10000
+          label: "Find selected ${CARD_SLUG} dashboard card"
+      - tapOn:
+          id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_selected"
+          label: "Deselect ${CARD_SLUG} dashboard card"
+      - extendedWaitUntil:
+          visible:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unselected"
+          timeout: 5000
+          label: "Verify ${CARD_SLUG} dashboard card deselected"
+      - tapOn:
+          id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_unselected"
+          label: "Reselect ${CARD_SLUG} dashboard card"
+      - extendedWaitUntil:
+          visible:
+            id: "dashboard_widget_editor_row_.*_${CARD_SLUG}_selected"
+          timeout: 5000
+          label: "Verify ${CARD_SLUG} dashboard card reselected"

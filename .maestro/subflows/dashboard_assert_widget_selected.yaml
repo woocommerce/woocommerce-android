@@ -1,0 +1,25 @@
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'selected' || output.dashboardOriginalStates[CARD_SLUG] == 'unselected'}
+    commands:
+      - assertVisible:
+          id: ".*__${CARD_SLUG}_selected__.*"
+          label: "Persisted ${CARD_SLUG} dashboard card selection"
+
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'unavailable'}
+    commands:
+      - assertVisible:
+          id: ".*__${CARD_SLUG}_unavailable__.*"
+          label: "Persisted unavailable ${CARD_SLUG} dashboard card state"
+
+- runFlow:
+    when:
+      true: ${output.dashboardOriginalStates[CARD_SLUG] == 'hidden'}
+    commands:
+      - assertVisible:
+          id: ".*__${CARD_SLUG}_hidden__.*"
+          label: "Persisted hidden ${CARD_SLUG} dashboard card state"

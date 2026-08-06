@@ -1,0 +1,20 @@
+appId: com.woocommerce.android.dev
+---
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_container"
+    timeout: 20000
+    label: "Wait for dashboard before customization"
+
+- tapOn:
+    id: "menu_edit_screen_widgets"
+    retryTapIfNoChange: true
+    label: "Open dashboard customization"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_widget_editor_state__.*"
+    timeout: 15000
+    label: "Wait for dashboard card state"
+
+- assertVisible: "SAVE"
