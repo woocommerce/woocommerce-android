@@ -128,6 +128,7 @@ The runner:
 - `smoke_extended`: broader P2 coverage.
 - `pos_tablet`: POS flows, tablet AVD required.
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
+- `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 
