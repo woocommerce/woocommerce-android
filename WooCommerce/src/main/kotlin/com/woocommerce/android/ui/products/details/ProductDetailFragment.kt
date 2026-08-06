@@ -634,6 +634,8 @@ class ProductDetailFragment :
         return viewModel.onBackButtonClickedProductDetail()
     }
 
+    override val tracksPendingBackResolution = true
+
     override fun onGalleryImageClicked(image: Image) {
         viewModel.onImageClicked()
     }
