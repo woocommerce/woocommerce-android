@@ -7,7 +7,6 @@ import com.google.android.play.agesignals.AgeSignalsAccessRequest
 import com.google.android.play.agesignals.AgeSignalsAccessResult
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.AgeSignalsManager
-import com.google.android.play.agesignals.AgeSignalsRequest
 import com.google.android.play.agesignals.AgeSignalsResult
 import com.google.android.play.agesignals.model.AgeRangeSource
 import com.google.android.play.agesignals.model.AgeSignalsErrorCode

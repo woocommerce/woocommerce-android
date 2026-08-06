@@ -25,6 +25,7 @@ interface AgeSignalsClient {
 class GoogleAgeSignalsClient @Inject constructor(
     private val manager: AgeSignalsManager
 ) : AgeSignalsClient {
+    @Suppress("SwallowedException")
     override suspend fun requestAgeSignals(activity: Activity): AgeSignalsRequestResult {
         var retryCount = 0
         while (true) {
@@ -80,6 +81,7 @@ class GoogleAgeSignalsClient @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun <T> executeStage(
         stage: AgeSignalsRequestStage,
         block: suspend () -> T
@@ -122,23 +124,22 @@ class GoogleAgeSignalsClient @Inject constructor(
 
     private fun Exception.toAgeSignalsErrorCode(): AppAgeSignalsErrorCode = when (this) {
         is RemoteException -> AppAgeSignalsErrorCode.BINDER_DIED
-        is AgeSignalsException -> when (errorCode) {
-            AgeSignalsErrorCode.API_NOT_AVAILABLE -> AppAgeSignalsErrorCode.API_NOT_AVAILABLE
-            AgeSignalsErrorCode.PLAY_STORE_NOT_FOUND -> AppAgeSignalsErrorCode.PLAY_STORE_NOT_FOUND
-            AgeSignalsErrorCode.NETWORK_ERROR -> AppAgeSignalsErrorCode.NETWORK_ERROR
-            AgeSignalsErrorCode.PLAY_SERVICES_NOT_FOUND -> AppAgeSignalsErrorCode.PLAY_SERVICES_NOT_FOUND
-            AgeSignalsErrorCode.CANNOT_BIND_TO_SERVICE -> AppAgeSignalsErrorCode.CANNOT_BIND_TO_SERVICE
-            AgeSignalsErrorCode.PLAY_STORE_VERSION_OUTDATED -> AppAgeSignalsErrorCode.PLAY_STORE_VERSION_OUTDATED
-            AgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED ->
-                AppAgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED
+        is AgeSignalsException -> errorCode.toAgeSignalsErrorCode()
+        else -> AppAgeSignalsErrorCode.UNEXPECTED
+    }
 
-            AgeSignalsErrorCode.CLIENT_TRANSIENT_ERROR -> AppAgeSignalsErrorCode.CLIENT_TRANSIENT_ERROR
-            AgeSignalsErrorCode.APP_NOT_OWNED -> AppAgeSignalsErrorCode.APP_NOT_OWNED
-            AgeSignalsErrorCode.SDK_VERSION_OUTDATED -> AppAgeSignalsErrorCode.SDK_VERSION_OUTDATED
-            AgeSignalsErrorCode.INTERNAL_ERROR -> AppAgeSignalsErrorCode.INTERNAL_ERROR
-            else -> AppAgeSignalsErrorCode.UNEXPECTED
-        }
-
+    private fun Int.toAgeSignalsErrorCode(): AppAgeSignalsErrorCode = when (this) {
+        AgeSignalsErrorCode.API_NOT_AVAILABLE -> AppAgeSignalsErrorCode.API_NOT_AVAILABLE
+        AgeSignalsErrorCode.PLAY_STORE_NOT_FOUND -> AppAgeSignalsErrorCode.PLAY_STORE_NOT_FOUND
+        AgeSignalsErrorCode.NETWORK_ERROR -> AppAgeSignalsErrorCode.NETWORK_ERROR
+        AgeSignalsErrorCode.PLAY_SERVICES_NOT_FOUND -> AppAgeSignalsErrorCode.PLAY_SERVICES_NOT_FOUND
+        AgeSignalsErrorCode.CANNOT_BIND_TO_SERVICE -> AppAgeSignalsErrorCode.CANNOT_BIND_TO_SERVICE
+        AgeSignalsErrorCode.PLAY_STORE_VERSION_OUTDATED -> AppAgeSignalsErrorCode.PLAY_STORE_VERSION_OUTDATED
+        AgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED -> AppAgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED
+        AgeSignalsErrorCode.CLIENT_TRANSIENT_ERROR -> AppAgeSignalsErrorCode.CLIENT_TRANSIENT_ERROR
+        AgeSignalsErrorCode.APP_NOT_OWNED -> AppAgeSignalsErrorCode.APP_NOT_OWNED
+        AgeSignalsErrorCode.SDK_VERSION_OUTDATED -> AppAgeSignalsErrorCode.SDK_VERSION_OUTDATED
+        AgeSignalsErrorCode.INTERNAL_ERROR -> AppAgeSignalsErrorCode.INTERNAL_ERROR
         else -> AppAgeSignalsErrorCode.UNEXPECTED
     }
 
