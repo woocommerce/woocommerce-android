@@ -39,7 +39,12 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
+import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
+import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFragment
+import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
+import com.woocommerce.android.ui.ageeligibility.showAgeVerificationRequiredDialog
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueListener
@@ -141,7 +146,8 @@ class LoginActivity :
     WooLoginEmailFragment.Listener,
     LoginSiteCredentialsFragment.Listener,
     QrLoginPrologueFragment.Listener,
-    QrLoginScannerFragment.Listener {
+    QrLoginScannerFragment.Listener,
+    AgeVerificationRequiredDialogFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -200,6 +206,7 @@ class LoginActivity :
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
+    private var ageRestrictionDialog: AlertDialog? = null
 
     private var connectSiteInfo: ConnectSiteInfo? = null
 
@@ -1183,20 +1190,51 @@ class LoginActivity :
     private fun keepTrackOfAgeEligibility() {
         lifecycleScope.launch {
             ageEligibilityChecker.ageEligibilityState.collect { ageEligibilityState ->
-                val dialog = AlertDialog.Builder(this@LoginActivity)
-                    .setTitle(ageEligibilityState.ageRestrictedTitle)
-                    .setMessage(ageEligibilityState.ageRestrictedMessage)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
-                    .create()
-
-                if (ageEligibilityState.isUserAgeRangeEligible.not()) {
-                    dialog.show()
-                    AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN)
-                } else {
-                    dialog.hide()
+                when (ageEligibilityState.decision) {
+                    AgeEligibilityDecision.Allowed -> {
+                        dismissAgeVerificationRequiredDialog()
+                        dismissAgeRestrictionDialog()
+                    }
+                    AgeEligibilityDecision.VerificationRequired -> {
+                        dismissAgeRestrictionDialog()
+                        showAgeVerificationRequiredDialog()
+                    }
+                    is AgeEligibilityDecision.Restricted -> {
+                        dismissAgeVerificationRequiredDialog()
+                        showAgeRestrictionDialog(ageEligibilityState)
+                    }
                 }
             }
+        }
+    }
+
+    private fun showAgeRestrictionDialog(state: AgeEligibilityChecker.AgeEligibilityState) {
+        if (ageRestrictionDialog?.isShowing == true) return
+
+        ageRestrictionDialog = AlertDialog.Builder(this)
+            .setTitle(state.ageRestrictedTitle)
+            .setMessage(state.ageRestrictedMessage)
+            .setCancelable(false)
+            .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
+            .create()
+            .also {
+                it.show()
+                AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN)
+            }
+    }
+
+    private fun dismissAgeRestrictionDialog() {
+        ageRestrictionDialog?.dismiss()
+        ageRestrictionDialog = null
+    }
+
+    override fun onAgeVerificationPlayStoreOpened() {
+        ageEligibilityChecker.onPlayStoreOpenedForVerification()
+    }
+
+    override fun onAgeVerificationRetryRequested() {
+        lifecycleScope.launch {
+            ageEligibilityChecker.checkAge(this@LoginActivity, AgeCheckTrigger.MANUAL_RETRY)
         }
     }
 

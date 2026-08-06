@@ -361,6 +361,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     override fun onActivityResumed(activity: Activity) {
         (activity as? LifecycleOwner)?.lifecycleScope?.launch {
             ageEligibilityChecker.checkAgeOnStartup(activity)
+            ageEligibilityChecker.retryAfterReturningFromPlayStore(activity)
         }
     }
 

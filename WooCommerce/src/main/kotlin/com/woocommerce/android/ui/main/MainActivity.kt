@@ -39,6 +39,7 @@ import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -68,6 +69,12 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
+import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFragment
+import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
+import com.woocommerce.android.ui.ageeligibility.showAgeVerificationRequiredDialog
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -131,6 +138,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -148,7 +156,8 @@ class MainActivity :
     MainContract.View,
     MainNavigationRouter,
     BackPressTrackerOwner,
-    MainBottomNavigationView.MainNavigationListener {
+    MainBottomNavigationView.MainNavigationListener,
+    AgeVerificationRequiredDialogFragment.Listener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
 
@@ -198,6 +207,9 @@ class MainActivity :
 
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+
+    @Inject
+    lateinit var ageEligibilityChecker: AgeEligibilityChecker
 
     @Inject
     lateinit var animatorHelper: MainAnimatorHelper
@@ -1051,9 +1063,24 @@ class MainActivity :
 
     private fun observeUserAgeEligibilityState() {
         viewModel.isUserAgeRangeEligible.observe(this) { ageEligibilityState ->
-            if (ageEligibilityState.isUserAgeRangeEligible.not()) {
-                showLoginScreen()
+            when (ageEligibilityState.decision) {
+                AgeEligibilityDecision.Allowed -> dismissAgeVerificationRequiredDialog()
+                AgeEligibilityDecision.VerificationRequired -> showAgeVerificationRequiredDialog()
+                is AgeEligibilityDecision.Restricted -> {
+                    dismissAgeVerificationRequiredDialog()
+                    showLoginScreen()
+                }
             }
+        }
+    }
+
+    override fun onAgeVerificationPlayStoreOpened() {
+        ageEligibilityChecker.onPlayStoreOpenedForVerification()
+    }
+
+    override fun onAgeVerificationRetryRequested() {
+        lifecycleScope.launch {
+            ageEligibilityChecker.checkAge(this@MainActivity, AgeCheckTrigger.MANUAL_RETRY)
         }
     }
 

@@ -35,6 +35,7 @@ class AgeEligibilityChecker @Inject constructor(
 ) {
     private val isCheckInProgress = AtomicBoolean(false)
     private val isStartupCheckPending = AtomicBoolean(true)
+    private val retryAfterPlayStore = AtomicBoolean(false)
     private var persistedRestriction = readPersistedRestriction()
 
     private val _ageEligibilityState = MutableStateFlow(
@@ -73,6 +74,16 @@ class AgeEligibilityChecker @Inject constructor(
             return true
         } finally {
             isCheckInProgress.set(false)
+        }
+    }
+
+    fun onPlayStoreOpenedForVerification() {
+        retryAfterPlayStore.set(true)
+    }
+
+    suspend fun retryAfterReturningFromPlayStore(activity: Activity) {
+        if (retryAfterPlayStore.compareAndSet(true, false)) {
+            checkAge(activity, AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
         }
     }
 
@@ -128,7 +139,14 @@ class AgeEligibilityChecker @Inject constructor(
             WooLog.T.UTILS,
             "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user age; preserving prior decision"
         )
-        return evaluator.preservePriorRestriction(persistedRestriction)
+        return if (_ageEligibilityState.value.decision is AgeEligibilityDecision.VerificationRequired) {
+            AgeEligibilityEvaluation(
+                decision = AgeEligibilityDecision.VerificationRequired,
+                isAuthoritative = false
+            )
+        } else {
+            evaluator.preservePriorRestriction(persistedRestriction)
+        }
     }
 
     private fun readPersistedRestriction(): AgeRestrictionReason? {

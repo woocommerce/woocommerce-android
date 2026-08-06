@@ -233,6 +233,26 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             verify(accountRepository).logout()
         }
 
+    @Test
+    fun `given Play Store was not opened, when activity resumes, then age is not checked`() = testBlocking {
+        val checker = createChecker()
+
+        checker.retryAfterReturningFromPlayStore(activity)
+
+        assertThat(client.callCount).isZero()
+    }
+
+    @Test
+    fun `given Play Store was opened, when activity resumes twice, then age is checked once`() = testBlocking {
+        val checker = createChecker()
+        checker.onPlayStoreOpenedForVerification()
+
+        checker.retryAfterReturningFromPlayStore(activity)
+        checker.retryAfterReturningFromPlayStore(activity)
+
+        assertThat(client.callCount).isEqualTo(1)
+    }
+
     private fun createChecker() = AgeEligibilityChecker(
         client = client,
         prefsWrapper = prefsWrapper,
