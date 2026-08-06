@@ -9,9 +9,9 @@ import javax.inject.Inject
  * product list asks. The bundled products are not part of the cached product list, so this resolves them and is only
  * worth calling once the merchant picks the bundle.
  *
- * Only the restrictions carrying a reason apply: they are the ones saying a product can never be sold from the app.
- * The rest merely keep a product out of the list — a bundled product being unpublished or having no price of its own
- * says nothing about whether the bundle can be sold.
+ * Only the [ProductRestriction.Unsupported] restrictions apply: a [ProductRestriction.Hidden] one merely keeps a
+ * product out of the list — a bundled product being unpublished or having no price of its own says nothing about
+ * whether the bundle can be sold.
  */
 class HasUnsupportedBundledProducts @Inject constructor(
     private val getBundledProducts: GetBundledProducts,
@@ -21,7 +21,7 @@ class HasUnsupportedBundledProducts @Inject constructor(
     suspend operator fun invoke(productId: Long): Boolean {
         return getBundledProducts(productId).first().any { bundledProduct ->
             val product = productDetailRepository.getProduct(bundledProduct.bundledProductId)
-            product != null && productRestrictions.getNonSelectableRestriction(product) != null
+            product != null && productRestrictions.getUnsupportedRestriction(product) != null
         }
     }
 }

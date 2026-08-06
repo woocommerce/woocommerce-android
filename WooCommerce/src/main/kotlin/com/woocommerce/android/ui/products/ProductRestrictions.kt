@@ -9,27 +9,18 @@ import javax.inject.Inject
 
 interface ProductRestrictions {
     val restrictions: List<ProductRestriction>
+
     fun isProductBlocked(product: Product): Boolean {
-        return restrictions.map { restriction -> restriction(product) }
-            .fold(false) { acc, result -> acc || result }
+        return restrictions.any { restriction -> restriction(product) }
     }
 
-    /**
-     * Restricted products which stay in the product list, so that the reason can be shown to the user.
-     */
-    fun getNonSelectableRestriction(product: Product): ProductRestriction? {
-        return restrictions.firstOrNull { restriction ->
-            restriction.nonSelectableReason != null && restriction(product)
-        }
+    fun getUnsupportedRestriction(product: Product): ProductRestriction.Unsupported? {
+        return restrictions.filterIsInstance<ProductRestriction.Unsupported>()
+            .firstOrNull { restriction -> restriction(product) }
     }
 
-    /**
-     * Restricted products which are removed from the product list altogether.
-     */
     fun isProductHidden(product: Product): Boolean {
-        return restrictions.any { restriction ->
-            restriction.nonSelectableReason == null && restriction(product)
-        }
+        return restrictions.any { restriction -> restriction is ProductRestriction.Hidden && restriction(product) }
     }
 }
 class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictions {
@@ -53,46 +44,46 @@ class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictio
 @Parcelize
 sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     /**
-     * When set, the product stays visible in the product selector and this is shown as the reason why it can't be
-     * selected. Restrictions without a reason remove the product from the list instead.
+     * A restriction which removes the product from the product list altogether.
      */
-    @get:StringRes
-    open val nonSelectableReason: Int?
-        get() = null
+    sealed class Hidden : ProductRestriction()
+
+    /**
+     * A restriction on products the app can't sell at all. The product stays visible in the product list and
+     * [reason] is shown as why it can't be selected.
+     */
+    sealed class Unsupported(@StringRes val reason: Int) : ProductRestriction()
 
     @Parcelize
-    object NonPublishedProducts : ProductRestriction() {
+    object NonPublishedProducts : Hidden() {
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH
         }
     }
 
     @Parcelize
-    object NonPurchasableProducts : ProductRestriction() {
+    object NonPurchasableProducts : Hidden() {
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH && product.status != ProductStatus.PRIVATE
         }
     }
 
     @Parcelize
-    object VariableProductsWithNoVariations : ProductRestriction() {
+    object VariableProductsWithNoVariations : Hidden() {
         override fun invoke(product: Product): Boolean {
             return (product.isVariable() && product.numVariations == 0)
         }
     }
 
     @Parcelize
-    object ProductWithPriceNotSpecified : ProductRestriction() {
+    object ProductWithPriceNotSpecified : Hidden() {
         override fun invoke(product: Product): Boolean {
             return product.price == null
         }
     }
 
     @Parcelize
-    object SubscriptionProducts : ProductRestriction() {
-        override val nonSelectableReason: Int
-            get() = R.string.product_selector_subscription_not_supported
-
+    object SubscriptionProducts : Unsupported(R.string.product_selector_subscription_not_supported) {
         override fun invoke(product: Product): Boolean {
             return product.productType.isSubscriptionProduct()
         }

@@ -100,7 +100,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertEquals(ProductRestriction.SubscriptionProducts, sut.getNonSelectableRestriction(product))
+        assertEquals(ProductRestriction.SubscriptionProducts, sut.getUnsupportedRestriction(product))
     }
 
     @Test
@@ -113,7 +113,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertEquals(ProductRestriction.SubscriptionProducts, sut.getNonSelectableRestriction(product))
+        assertEquals(ProductRestriction.SubscriptionProducts, sut.getUnsupportedRestriction(product))
     }
 
     @Test
@@ -133,7 +133,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertNull(sut.getNonSelectableRestriction(product))
+        assertNull(sut.getUnsupportedRestriction(product))
     }
 
     @Test

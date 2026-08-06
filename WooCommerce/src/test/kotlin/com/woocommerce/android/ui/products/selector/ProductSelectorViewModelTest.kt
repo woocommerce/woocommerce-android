@@ -1613,7 +1613,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
 
         whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(subscriptionProduct)))
-        whenever(productRestriction.getNonSelectableRestriction(subscriptionProduct))
+        whenever(productRestriction.getUnsupportedRestriction(subscriptionProduct))
             .thenReturn(ProductRestriction.SubscriptionProducts)
         whenever(resourceProvider.getString(any()))
             .thenReturn("Not supported")
@@ -1643,7 +1643,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
 
         whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(variableSubscriptionProduct)))
-        whenever(productRestriction.getNonSelectableRestriction(variableSubscriptionProduct))
+        whenever(productRestriction.getUnsupportedRestriction(variableSubscriptionProduct))
             .thenReturn(ProductRestriction.SubscriptionProducts)
         whenever(resourceProvider.getString(any()))
             .thenReturn("Not supported")
