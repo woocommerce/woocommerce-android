@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.cashpayment
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -25,6 +26,7 @@ class WooPosCashPaymentRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val orderMapper: OrderMapper,
     private val gatewayStore: WCGatewayStore,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
 ) {
 
     private var cachedParameters: SiteParameters? = null
@@ -48,6 +50,8 @@ class WooPosCashPaymentRepository @Inject constructor(
             label = Order.Status.Completed.value
         )
 
+        val previousStatusKey = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.status
+
         orderStore.updateOrderStatusAndPaymentDetails(
             orderId = orderId,
             site = selectedSite.get(),
@@ -62,6 +66,12 @@ class WooPosCashPaymentRepository @Inject constructor(
                     WooLog.e(T.POS, "Order completion failed - ${result.event.error.message}")
                     Result.failure(Exception(result.event.error.message))
                 } else {
+                    newOrderNotificationSuppressionCache.onOrderStatusChanged(
+                        siteId = selectedSite.get().siteId,
+                        orderId = orderId,
+                        previousStatusKey = previousStatusKey,
+                        newStatusKey = Order.Status.Completed.value,
+                    )
                     Result.success(Unit)
                 }
             }.first()
