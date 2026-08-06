@@ -1,5 +1,5 @@
 # Smoke Test: Successful Login via Store Address
-# p2: install.fresh, login.jetpack
+# p2: login.jetpack
 # P2 ref: Login > Jetpack (site address + WP.com credentials)
 #
 # Prerequisites:

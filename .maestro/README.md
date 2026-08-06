@@ -15,17 +15,23 @@ The suite has two store targets:
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite.
 
-Destructive flows against the shared store are refused outside CI. In CI, the runner creates a REST-backed store lock
-before destructive shared-store runs and removes it on exit.
+Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
+`MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
+runner acquires a REST-backed store lock before any ADB interaction and removes it on exit.
 
 ## Local Setup
 
 Install prerequisites:
 
 ```bash
-curl -fsSL "https://get.maestro.mobile.dev" | bash
+source .maestro/scripts/configure-toolchain.sh
 adb devices
 ```
+
+The script selects an installed JDK 21, downloads the immutable Maestro 2.8.0
+release archive into the workspace, verifies the SHA-256 in
+`toolchain.properties`, and runs the checker. The runner, doctor, and CI fail
+fast when either version differs; Buildkite uses the same path before building.
 
 Create local credentials:
 
@@ -67,6 +73,7 @@ Common variants:
 
 ```bash
 .maestro/scripts/run-smoke-tests.sh --profile core
+.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
 .maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --profile release
 .maestro/scripts/run-smoke-tests.sh --profile burst
@@ -75,7 +82,7 @@ Common variants:
 .maestro/scripts/doctor.sh --profile phone-full --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
 .maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
-.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --store lab
+.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
 .maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
@@ -92,6 +99,11 @@ Profiles are copy/paste-safe presets:
 - `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
   Wasabi app discoverable as `Woo (Dev)` in the app drawer.
 
+Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
+Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
+store lock. `flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
+passed explicitly. A zero-flow selection is an error in both the runner and doctor.
+
 `--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
 store, device, APK, repeat, and profile options.
 
@@ -103,7 +115,8 @@ The runner:
 - writes created entity IDs to `run-manifest.json` when seeding;
 - deletes exactly those manifest IDs during cleanup when seeding;
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
-- retries each failed flow once and records pass-on-retry as flaky;
+- retries each failed non-destructive flow once and records pass-on-retry as flaky;
+- never blindly retries a failed destructive mutation; cleanup runs first and the failure remains visible;
 - redacts `MAESTRO_WOO_*` values from logs;
 - stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`;
 - writes copy/paste commands into the HTML report for rerunning the same selection, rerunning failed flows, and running
@@ -115,6 +128,7 @@ The runner:
 - `smoke_extended`: broader P2 coverage.
 - `pos_tablet`: POS flows, tablet AVD required.
 - `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
+- `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
 - `destructive`: mutates store data.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 

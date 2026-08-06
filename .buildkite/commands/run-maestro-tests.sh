@@ -7,6 +7,8 @@ set -euo pipefail
 #   MAESTRO_WOO_SHARED_JETPACK_STORE_URL
 #   MAESTRO_WOO_SHARED_WPCOM_EMAIL
 #   MAESTRO_WOO_SHARED_WPCOM_PASSWORD
+#   MAESTRO_WOO_SHARED_CONSUMER_KEY (when MAESTRO_SEED=true)
+#   MAESTRO_WOO_SHARED_CONSUMER_SECRET (when MAESTRO_SEED=true)
 #
 # Optional controls:
 #   MAESTRO_STORE=shared|lab
@@ -16,10 +18,13 @@ set -euo pipefail
 #   MAESTRO_APK_PATH=/path/to/beta.apk
 #   MAESTRO_SEED=true
 
-if .buildkite/commands/should-skip-job.sh --job-type validation; then
+if [[ "${BUILDKITE_PULL_REQUEST:-false}" != "false" ]] &&
+  .buildkite/commands/should-skip-job.sh --job-type validation; then
   echo "Skipping Maestro tests - no relevant changes"
   exit 0
 fi
+
+source .maestro/scripts/configure-toolchain.sh
 
 STORE="${MAESTRO_STORE:-shared}"
 INCLUDE_TAGS="${MAESTRO_INCLUDE_TAGS:-smoke_core}"
@@ -73,6 +78,11 @@ mkdir -p WooCommerce/build/buildkite-test-analytics
 LATEST_REPORT_DIR="$(find "$OUTPUT_DIR" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
 if [[ -n "$LATEST_REPORT_DIR" && -f "$LATEST_REPORT_DIR/report.xml" ]]; then
   cp "$LATEST_REPORT_DIR/report.xml" WooCommerce/build/buildkite-test-analytics/maestro-report.xml
+fi
+if [[ "${BUILDKITE:-false}" == "true" && -n "$LATEST_REPORT_DIR" && -f "$LATEST_REPORT_DIR/report.xml" ]]; then
+  python3 .maestro/scripts/annotate-run.py --junit "$LATEST_REPORT_DIR/report.xml" |
+    buildkite-agent annotate --context maestro-smoke --style info ||
+    echo "Warning: could not publish the Maestro Buildkite annotation." >&2
 fi
 
 if [[ "$MAESTRO_EXIT_STATUS" -ne 0 ]]; then

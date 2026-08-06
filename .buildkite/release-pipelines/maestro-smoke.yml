@@ -9,10 +9,13 @@ env:
   MAESTRO_INCLUDE_TAGS: "smoke_core,smoke_extended,destructive"
   MAESTRO_EXCLUDE_TAGS: "flaky_quarantine,pos_tablet"
   MAESTRO_REPEAT: "1"
+  MAESTRO_SEED: "true"
 
 steps:
   - label: ":maestro: Release Maestro smoke tests"
     command: .buildkite/commands/run-maestro-tests.sh
+    concurrency: 1
+    concurrency_group: "woocommerce-android/maestro/shared-store"
     plugins:
       - $CI_TOOLKIT
       - $TEST_COLLECTOR :
