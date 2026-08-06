@@ -22,7 +22,6 @@ class BackPressTracker @Inject constructor(
 
     // A consumed callback can enqueue a pop, so both tracking reports arrive before the main queue advances.
     private var trackedInCurrentMainLoop = false
-    private var suppressNextTrack = false
 
     fun register(activity: Activity, fragmentManager: FragmentManager) {
         fragmentManager.addOnBackStackChangedListener(backStackChangedListener(activity))
@@ -37,10 +36,6 @@ class BackPressTracker @Inject constructor(
 
     @MainThread
     internal fun trackBackPressed(view: Any) {
-        if (suppressNextTrack) {
-            suppressNextTrack = false
-            return
-        }
         if (trackedInCurrentMainLoop) return
 
         trackedInCurrentMainLoop = true
@@ -53,57 +48,20 @@ class BackPressTracker @Inject constructor(
         )
     }
 
-    @MainThread
-    internal fun armNextTrackSuppression() {
-        suppressNextTrack = true
-    }
-
     private fun backStackChangedListener(view: Any) = object : FragmentManager.OnBackStackChangedListener {
-        private var popCommitted = false
-        private var suppressCurrentPop = false
+        private var trackedCurrentPop = false
 
         override fun onBackStackChangeCommitted(fragment: Fragment, pop: Boolean) {
-            if (!pop) return
-
-            popCommitted = true
-            if (
-                fragment.isRemoving &&
-                (fragment as? BackResolutionOwner)?.consumePendingBackResolution() == true
-            ) {
-                suppressCurrentPop = true
+            if (pop && !trackedCurrentPop) {
+                trackBackPressed(view)
+                trackedCurrentPop = true
             }
         }
 
         override fun onBackStackChanged() {
-            if (!popCommitted) {
-                suppressNextTrack = false
-                return
-            }
-
-            val shouldSuppress = suppressCurrentPop
-            resetCurrentPop()
-            if (shouldSuppress) {
-                suppressNextTrack = false
-            } else {
-                trackBackPressed(view)
-            }
-        }
-
-        override fun onBackStackChangeCancelled() {
-            resetCurrentPop()
-            suppressNextTrack = false
-        }
-
-        private fun resetCurrentPop() {
-            popCommitted = false
-            suppressCurrentPop = false
+            trackedCurrentPop = false
         }
     }
-}
-
-interface BackResolutionOwner {
-    @MainThread
-    fun consumePendingBackResolution(): Boolean
 }
 
 interface BackPressTrackerOwner {

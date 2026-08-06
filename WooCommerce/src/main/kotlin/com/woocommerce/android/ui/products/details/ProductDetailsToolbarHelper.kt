@@ -99,7 +99,6 @@ class ProductDetailsToolbarHelper @Inject constructor() :
             }
 
         toolbar.setNavigationOnClickListener {
-            fragment?.clearPendingBackResolution()
             if (viewModel?.onBackButtonClickedProductDetail() == false) return@setNavigationOnClickListener
 
             if (fragment?.findNavController()?.popBackStack(R.id.products, false) == false) {

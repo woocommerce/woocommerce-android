@@ -7,21 +7,15 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BackPressTrackerOwner
-import com.woocommerce.android.ui.main.BackResolutionOwner
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 
-open class BaseFragment : Fragment, BaseFragmentView, BackResolutionOwner {
+open class BaseFragment : Fragment, BaseFragmentView {
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     open val activityAppBarStatus: AppBarStatus = AppBarStatus.Visible()
-
-    // Opt in only when a consumed back can finish through delayed navigation.
-    protected open val tracksPendingBackResolution = false
-    protected var hasPendingBackResolution = false
-        private set
 
     /**
      * Lets BackPressListener screens save or confirm before the NavHost consumes a system back event.
@@ -30,11 +24,7 @@ open class BaseFragment : Fragment, BaseFragmentView, BackResolutionOwner {
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             val listener = this@BaseFragment as? BackPressListener ?: return
-            hasPendingBackResolution = tracksPendingBackResolution
-            val allowBackPress = listener.onRequestAllowBackPress()
-
-            if (allowBackPress) {
-                clearPendingBackResolution()
+            if (listener.onRequestAllowBackPress()) {
                 continueBackNavigation()
             } else {
                 trackConsumedBackPress()
@@ -62,24 +52,12 @@ open class BaseFragment : Fragment, BaseFragmentView, BackResolutionOwner {
     }
 
     internal fun continueBackNavigation() {
-        val activity = requireActivity()
-        if (consumePendingBackResolution()) {
-            (activity as? BackPressTrackerOwner)?.backPressTracker?.armNextTrackSuppression()
-        }
         backPressedCallback.isEnabled = false
         try {
-            activity.onBackPressedDispatcher.onBackPressed()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         } finally {
             backPressedCallback.isEnabled = true
         }
-    }
-
-    internal fun clearPendingBackResolution() {
-        hasPendingBackResolution = false
-    }
-
-    override fun consumePendingBackResolution(): Boolean {
-        return hasPendingBackResolution.also { hasPendingBackResolution = false }
     }
 
     private fun trackConsumedBackPress() {

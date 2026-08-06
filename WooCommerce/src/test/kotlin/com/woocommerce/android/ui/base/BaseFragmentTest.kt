@@ -35,7 +35,6 @@ class BaseFragmentTest {
         // THEN
         assertThat(setup.fragment.backPressCalls).isEqualTo(1)
         assertThat(setup.hostBackPressCalls()).isZero()
-        assertThat(setup.fragment.isResolutionPending).isTrue()
         verify(setup.analyticsTrackerWrapper).track(
             stat = AnalyticsEvent.BACK_PRESSED,
             properties = mapOf(KEY_CONTEXT to BackPressTestActivity::class.java.simpleName)
@@ -53,7 +52,6 @@ class BaseFragmentTest {
         // THEN
         assertThat(setup.fragment.backPressCalls).isEqualTo(1)
         assertThat(setup.hostBackPressCalls()).isEqualTo(1)
-        assertThat(setup.fragment.isResolutionPending).isFalse()
     }
 
     @Test
@@ -68,36 +66,6 @@ class BaseFragmentTest {
         // THEN
         assertThat(setup.fragment.backPressCalls).isEqualTo(1)
         assertThat(setup.hostBackPressCalls()).isEqualTo(1)
-        assertThat(setup.fragment.isResolutionPending).isFalse()
-    }
-
-    @Test
-    fun `given listener consumes back, when the resolution is cancelled, then it is no longer pending`() {
-        // GIVEN
-        val setup = givenBackPressSetup(allowBackPress = false)
-        setup.activity.onBackPressedDispatcher.onBackPressed()
-
-        // WHEN
-        setup.fragment.cancelResolution()
-
-        // THEN
-        assertThat(setup.fragment.isResolutionPending).isFalse()
-    }
-
-    @Test
-    fun `given listener consumes back, when a later back is allowed, then the old resolution is cleared`() {
-        // GIVEN
-        val setup = givenBackPressSetup(allowBackPress = false)
-        setup.activity.onBackPressedDispatcher.onBackPressed()
-        setup.fragment.allowBackPress = true
-
-        // WHEN
-        setup.activity.onBackPressedDispatcher.onBackPressed()
-
-        // THEN
-        assertThat(setup.fragment.backPressCalls).isEqualTo(2)
-        assertThat(setup.hostBackPressCalls()).isEqualTo(1)
-        assertThat(setup.fragment.isResolutionPending).isFalse()
     }
 
     private fun givenBackPressSetup(allowBackPress: Boolean): BackPressSetup {
@@ -131,10 +99,6 @@ class BaseFragmentTest {
         var backPressCalls = 0
             private set
 
-        override val tracksPendingBackResolution = true
-        val isResolutionPending: Boolean
-            get() = hasPendingBackResolution
-
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -144,10 +108,6 @@ class BaseFragmentTest {
         override fun onRequestAllowBackPress(): Boolean {
             backPressCalls++
             return allowBackPress
-        }
-
-        fun cancelResolution() {
-            clearPendingBackResolution()
         }
     }
 

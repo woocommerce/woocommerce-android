@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.CallSuper
@@ -46,61 +45,21 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ShowDialog -> showBackResolutionDialog(event)
+                is ShowDialog -> WooDialog.showDialog(
+                    requireActivity(),
+                    event.positiveBtnAction,
+                    event.negativeBtnAction,
+                    event.neutralBtnAction,
+                    titleId = event.titleId,
+                    messageId = event.messageId,
+                    positiveButtonId = event.positiveButtonId,
+                    negativeButtonId = event.negativeButtonId,
+                    neutralButtonId = event.neutralButtonId
+                )
                 is ProductNavigationTarget -> navigator.navigate(this, event)
                 else -> event.isHandled = false
             }
         }
-    }
-
-    private fun showBackResolutionDialog(event: ShowDialog) {
-        if (!tracksPendingBackResolution) {
-            WooDialog.showDialog(
-                requireActivity(),
-                event.positiveBtnAction,
-                event.negativeBtnAction,
-                event.neutralBtnAction,
-                titleId = event.titleId,
-                messageId = event.messageId,
-                positiveButtonId = event.positiveButtonId,
-                negativeButtonId = event.negativeButtonId,
-                neutralButtonId = event.neutralButtonId
-            )
-            return
-        }
-
-        var resolutionContinues = false
-        fun continuingAction(action: DialogInterface.OnClickListener?) = action?.let {
-            DialogInterface.OnClickListener { dialog, which ->
-                resolutionContinues = true
-                it.onClick(dialog, which)
-            }
-        }
-        val cancellingAction = event.negativeButtonId?.let {
-            DialogInterface.OnClickListener { dialog, which ->
-                clearPendingBackResolution()
-                event.negativeBtnAction?.onClick(dialog, which)
-            }
-        }
-
-        WooDialog.showDialog(
-            activity = requireActivity(),
-            posBtnAction = continuingAction(event.positiveBtnAction),
-            negBtnAction = cancellingAction,
-            neutBtAction = continuingAction(event.neutralBtnAction),
-            titleId = event.titleId,
-            messageId = event.messageId,
-            positiveButtonId = event.positiveButtonId,
-            negativeButtonId = event.negativeButtonId,
-            neutralButtonId = event.neutralButtonId,
-            cancellable = event.cancelable,
-            onDismiss = {
-                if (!resolutionContinues) {
-                    clearPendingBackResolution()
-                }
-                event.onDismiss?.invoke()
-            }
-        )
     }
 
     @CallSuper

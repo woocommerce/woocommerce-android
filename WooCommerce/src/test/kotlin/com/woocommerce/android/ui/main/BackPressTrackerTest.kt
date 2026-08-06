@@ -79,108 +79,6 @@ class BackPressTrackerTest {
     }
 
     @Test
-    fun `given tracked back awaits resolution, when its fragment is popped later, then it is not tracked again`() {
-        // GIVEN
-        val fragment = TestBackResolutionFragment().apply { markResolutionPending() }
-        givenForwardNavigation(fragment)
-        backPressTracker.trackBackPressed(activity)
-        shadowOf(Looper.getMainLooper()).idle()
-
-        // WHEN
-        fragmentManager.popBackStackImmediate()
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
-    fun `given tracked back has no pending resolution, when its fragment is popped later, then pop is tracked`() {
-        // GIVEN
-        givenForwardNavigation()
-        backPressTracker.trackBackPressed(activity)
-        shadowOf(Looper.getMainLooper()).idle()
-
-        // WHEN
-        fragmentManager.popBackStackImmediate()
-
-        // THEN
-        verify(analyticsTrackerWrapper, times(2)).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
-    fun `given both suppression paths are armed, when fragment is popped, then neither leaks`() {
-        // GIVEN
-        val fragment = TestBackResolutionFragment().apply { markResolutionPending() }
-        givenForwardNavigation(fragment)
-        backPressTracker.armNextTrackSuppression()
-
-        // WHEN
-        fragmentManager.popBackStackImmediate()
-        backPressTracker.trackBackPressed(activity)
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
-    fun `given suppression is armed, when a pop is tracked, then only that tracking is suppressed`() {
-        // GIVEN
-        givenForwardNavigation()
-        backPressTracker.armNextTrackSuppression()
-
-        // WHEN
-        fragmentManager.popBackStackImmediate()
-        backPressTracker.trackBackPressed(activity)
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
-    fun `given suppression is armed, when tracking is called directly, then only that call is suppressed`() {
-        // GIVEN
-        backPressTracker.armNextTrackSuppression()
-
-        // WHEN
-        backPressTracker.trackBackPressed(activity)
-        backPressTracker.trackBackPressed(activity)
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
-    fun `given suppression is armed, when navigating forward, then suppression is disarmed`() {
-        // GIVEN
-        backPressTracker.armNextTrackSuppression()
-
-        // WHEN
-        givenForwardNavigation()
-        backPressTracker.trackBackPressed(activity)
-
-        // THEN
-        verify(analyticsTrackerWrapper).track(
-            stat = AnalyticsEvent.BACK_PRESSED,
-            properties = mapOf(KEY_CONTEXT to FragmentActivity::class.java.simpleName)
-        )
-    }
-
-    @Test
     fun `given previous tracking completed, when back is pressed again, then both presses are tracked`() {
         // GIVEN
         backPressTracker.trackBackPressed(activity)
@@ -196,26 +94,14 @@ class BackPressTrackerTest {
         )
     }
 
-    private fun givenForwardNavigation(nextFragment: Fragment = Fragment()) {
+    private fun givenForwardNavigation() {
         val initialFragment = checkNotNull(fragmentManager.findFragmentByTag(INITIAL_FRAGMENT_TAG))
         fragmentManager.beginTransaction()
             .remove(initialFragment)
-            .add(nextFragment, NEXT_FRAGMENT_TAG)
+            .add(Fragment(), NEXT_FRAGMENT_TAG)
             .addToBackStack(null)
             .commit()
         fragmentManager.executePendingTransactions()
-    }
-
-    class TestBackResolutionFragment : Fragment(), BackResolutionOwner {
-        private var resolutionPending = false
-
-        fun markResolutionPending() {
-            resolutionPending = true
-        }
-
-        override fun consumePendingBackResolution(): Boolean {
-            return resolutionPending.also { resolutionPending = false }
-        }
     }
 
     private companion object {
