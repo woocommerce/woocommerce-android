@@ -543,7 +543,6 @@ private fun ProductItem(
     WooPosCard(
         modifier = modifier
             .wrapContentHeight()
-            .testTag(WooPosTestTags.CART_COUPON_ITEM)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
@@ -640,6 +639,7 @@ private fun CouponItem(
     WooPosCard(
         modifier = modifier
             .wrapContentHeight()
+            .testTag(WooPosTestTags.CART_COUPON_ITEM)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
