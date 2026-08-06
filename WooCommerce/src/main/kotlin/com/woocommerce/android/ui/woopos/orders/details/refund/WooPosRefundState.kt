@@ -35,7 +35,6 @@ sealed class WooPosRefundState {
         // Refund-specific message for a failed preview (see [WooPosRefundApiError]); null when
         // the failure has no mapped code, in which case the UI shows the generic preview error.
         val previewErrorMessage: String? = null,
-        val maxRefundable: BigDecimal? = null,
     ) : WooPosRefundState() {
 
         @Immutable

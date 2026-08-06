@@ -387,6 +387,113 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
+    fun `given interac refund with server line items, when reader succeeds, then computed refund is created`() =
+        runTest {
+            // GIVEN — an Interac order refunded through the reader on a store that supports
+            // server-computed totals. The reader reverses the money, then the backend records it.
+            val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
+                CardReaderInteracRefundState.LoadingData {}
+            )
+            val controller = mockController(paymentState)
+            whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+                PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                    cardBrand = "interac",
+                    cardLast4 = "1234",
+                    paymentMethodType = INTERAC_PRESENT
+                )
+            )
+            whenever(cardReaderPaymentControllerFactory.createRefund(any(), any(), any()))
+                .thenReturn(controller)
+            val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+            whenever(
+                refundStore.createComputedItemsRefund(
+                    site = eq(site),
+                    orderId = eq(order.id),
+                    reason = eq("Customer request"),
+                    autoRefund = eq(false),
+                    restockItems = eq(true),
+                    amount = anyOrNull(),
+                    items = eq(serverLineItems),
+                )
+            ).thenReturn(WooResult(refundModel))
+
+            // WHEN
+            processor.submit(request.copy(serverLineItems = serverLineItems)).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.PreparingReader)
+
+                paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                awaitComplete()
+            }
+
+            // THEN — the computed create is used, and the gateway is not asked to refund again
+            // because the reader already did (autoRefund false).
+            verify(refundStore).createComputedItemsRefund(
+                site = eq(site),
+                orderId = eq(order.id),
+                reason = eq("Customer request"),
+                autoRefund = eq(false),
+                restockItems = eq(true),
+                amount = isNull(),
+                items = eq(serverLineItems),
+            )
+            verify(refundStore, never()).createItemsRefund(
+                site = any(),
+                orderId = any(),
+                amount = any(),
+                reason = any(),
+                restockItems = any(),
+                autoRefund = any(),
+                items = any()
+            )
+        }
+
+    @Test
+    fun `given server line items, when the computed create fails, then the failure is surfaced`() = runTest {
+        // GIVEN
+        whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment("ch_123")).thenReturn(
+            PaymentChargeRepository.CardDataUsedForOrderPaymentResult.Success(
+                cardBrand = "visa",
+                cardLast4 = "1234",
+                paymentMethodType = CARD_PRESENT
+            )
+        )
+        val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+        whenever(
+            refundStore.createComputedItemsRefund(
+                site = any(),
+                orderId = any(),
+                reason = any(),
+                autoRefund = any(),
+                restockItems = any(),
+                amount = anyOrNull(),
+                items = any(),
+            )
+        ).thenReturn(
+            WooResult(
+                error = WooError(
+                    type = WooErrorType.GENERIC_ERROR,
+                    original = GenericErrorType.UNKNOWN,
+                    message = "Something went wrong.",
+                    apiErrorCode = "some_unmapped_code"
+                )
+            )
+        )
+
+        // WHEN
+        processor.submit(request.copy(serverLineItems = serverLineItems)).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
+
+            // THEN — the error from the computed create reaches the cashier rather than being
+            // swallowed into a success state.
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("Something went wrong.")
+            awaitComplete()
+        }
+    }
+
+    @Test
     fun `given interac refund controller starts with payment loading state, when submitted, then state is ignored`() =
         runTest {
             val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(

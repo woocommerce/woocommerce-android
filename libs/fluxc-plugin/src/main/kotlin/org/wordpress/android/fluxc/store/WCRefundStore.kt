@@ -135,7 +135,8 @@ class WCRefundStore @Inject internal constructor(
                 reason = reason,
                 apiRefund = autoRefund,
                 apiRestock = restockItems,
-                amount = amount?.toString(),
+                // toPlainString: toString() can emit scientific notation for extreme scales.
+                amount = amount?.toPlainString(),
                 lineItems = items,
             )
             return@withDefaultContext when {
