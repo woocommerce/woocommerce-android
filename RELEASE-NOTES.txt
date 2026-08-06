@@ -58,6 +58,7 @@
 - [*] Custom amounts now use the same decimal entry as shipping and the rest of the app — enter 2.50 instead of 250 to get $2.50 [https://github.com/woocommerce/woocommerce-android/pull/16358]
 - [*] Fixed an order status sometimes reverting on tablets after reopening the app following a long period of inactivity [https://github.com/woocommerce/woocommerce-android/pull/16392]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring
+- [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
 - [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets [https://github.com/woocommerce/woocommerce-android/pull/16325]
