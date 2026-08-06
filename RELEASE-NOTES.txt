@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.5
+-----
+- [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text
+
 25.4
 -----
 - [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason
