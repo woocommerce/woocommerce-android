@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
 import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.rememberNavController
@@ -64,6 +66,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.commons.stats.StatsTimeRange
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import java.util.Date
 
@@ -78,14 +81,32 @@ fun DashboardStatsCard(
         }
     )
 ) {
+    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
+    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var isOrderDateTypeBottomSheetDismissing by remember { mutableStateOf(false) }
+    val orderDateTypeBottomSheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
+    val dismissOrderDateTypeBottomSheetWithAnimation: () -> Unit = {
+        if (!isOrderDateTypeBottomSheetDismissing) {
+            isOrderDateTypeBottomSheetDismissing = true
+            coroutineScope.launch {
+                try {
+                    orderDateTypeBottomSheetState.hide()
+                    if (!orderDateTypeBottomSheetState.isVisible) {
+                        showOrderDateTypeBottomSheet = false
+                    }
+                } finally {
+                    isOrderDateTypeBottomSheetDismissing = false
+                }
+            }
+        }
+    }
     val dateRange = viewModel.dateRangeState.observeAsState().value ?: return
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
     val isScheduledImportEnabled by parentViewModel.isScheduledImportEnabled.observeAsState(false)
     val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
-    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
-    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     HandleEvents(
         event = viewModel.event,
@@ -157,12 +178,18 @@ fun DashboardStatsCard(
     if (showOrderDateTypeBottomSheet) {
         OrderDateTypeBottomSheet(
             state = orderDateTypeState,
-            onDismiss = { showOrderDateTypeBottomSheet = false },
+            sheetState = orderDateTypeBottomSheetState,
+            isDismissing = isOrderDateTypeBottomSheetDismissing,
+            onDismissRequest = { showOrderDateTypeBottomSheet = false },
+            onDismissWithAnimation = dismissOrderDateTypeBottomSheetWithAnimation,
             onSelect = { orderDateType ->
-                viewModel.onOrderDateTypeSelected(orderDateType) {
-                    showOrderDateTypeBottomSheet = false
+                if (!isOrderDateTypeBottomSheetDismissing) {
+                    viewModel.onOrderDateTypeSelected(
+                        orderDateType = orderDateType,
+                        onSuccess = dismissOrderDateTypeBottomSheetWithAnimation,
+                    )
                 }
-            }
+            },
         )
     }
 }
@@ -343,15 +370,16 @@ private fun RevenueStatsTypeSelector(
 @Composable
 private fun OrderDateTypeBottomSheet(
     state: DashboardStatsViewModel.OrderDateTypeUiState,
-    onDismiss: () -> Unit,
+    sheetState: WooModalBottomSheetState,
+    isDismissing: Boolean,
+    onDismissRequest: () -> Unit,
+    onDismissWithAnimation: () -> Unit,
     onSelect: (WCAnalyticsOrderDateType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
-
     WooModalBottomSheet(
         state = sheetState,
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismissRequest,
         modifier = modifier,
     ) {
         Column(
@@ -381,8 +409,9 @@ private fun OrderDateTypeBottomSheet(
                 OrderDateTypeOptionRow(
                     option = option,
                     state = state,
-                    onDismiss = onDismiss,
-                    onSelect = onSelect
+                    isDismissing = isDismissing,
+                    onDismiss = onDismissWithAnimation,
+                    onSelect = onSelect,
                 )
             }
 
@@ -417,12 +446,13 @@ private fun OrderDateTypeBottomSheet(
 private fun OrderDateTypeOptionRow(
     option: OrderDateTypeOption,
     state: DashboardStatsViewModel.OrderDateTypeUiState,
+    isDismissing: Boolean,
     onDismiss: () -> Unit,
     onSelect: (WCAnalyticsOrderDateType) -> Unit
 ) {
     val isSelected = state.selectedType == option.type
     val isUpdating = state.updatingType == option.type
-    val isEnabled = state.updatingType == null && !state.isLoading
+    val isEnabled = state.updatingType == null && !state.isLoading && !isDismissing
 
     Row(
         modifier = Modifier

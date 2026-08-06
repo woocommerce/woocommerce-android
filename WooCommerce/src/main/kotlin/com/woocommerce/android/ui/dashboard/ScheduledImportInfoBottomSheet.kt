@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,15 @@ private fun ScheduledImportInfoBottomSheet(
     if (!state.isVisible) return
 
     val sheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
+
+    LaunchedEffect(state.isDismissRequested) {
+        if (state.isDismissRequested) {
+            sheetState.hide()
+            if (!sheetState.isVisible) {
+                onDismissRequest()
+            }
+        }
+    }
 
     WooModalBottomSheet(
         state = sheetState,
@@ -106,7 +116,7 @@ private fun ScheduledImportInfoContent(
             description = stringResource(id = R.string.dashboard_scheduled_import_option_scheduled_description),
             isSelected = state.isEnabled,
             isLoading = state.isUpdating && state.isEnabled,
-            enabled = !state.isUpdating,
+            enabled = !state.isUpdating && !state.isDismissRequested,
             onClick = { onOptionSelected(true) },
         )
 
@@ -115,7 +125,7 @@ private fun ScheduledImportInfoContent(
             description = stringResource(id = R.string.dashboard_scheduled_import_option_immediately_description),
             isSelected = !state.isEnabled,
             isLoading = state.isUpdating && !state.isEnabled,
-            enabled = !state.isUpdating,
+            enabled = !state.isUpdating && !state.isDismissRequested,
             onClick = { onOptionSelected(false) },
         )
 

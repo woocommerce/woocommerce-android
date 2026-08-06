@@ -49,6 +49,7 @@ class ScheduledImportInfoViewModel @Inject constructor(
             it.copy(
                 isVisible = true,
                 isEnabled = isEnabled,
+                isDismissRequested = false,
                 hasError = false,
             )
         }
@@ -61,6 +62,7 @@ class ScheduledImportInfoViewModel @Inject constructor(
             it.copy(
                 isVisible = false,
                 isEnabled = confirmedIsEnabled,
+                isDismissRequested = false,
                 isUpdating = false,
                 hasError = false,
             )
@@ -68,13 +70,19 @@ class ScheduledImportInfoViewModel @Inject constructor(
     }
 
     fun onOptionSelected(scheduledEnabled: Boolean) {
-        if (_viewState.value.isUpdating) return
+        if (_viewState.value.isUpdating || _viewState.value.isDismissRequested) return
         if (scheduledEnabled == _viewState.value.isEnabled) {
-            // Tapping the already-selected option keeps the value and simply closes the sheet.
-            triggerEvent(SettingUpdated)
+            updateViewState { it.copy(isDismissRequested = true) }
             return
         }
-        updateViewState { it.copy(isEnabled = scheduledEnabled, isUpdating = true, hasError = false) }
+        updateViewState {
+            it.copy(
+                isEnabled = scheduledEnabled,
+                isDismissRequested = false,
+                isUpdating = true,
+                hasError = false,
+            )
+        }
         updateJob = launch {
             val result = scheduledImportRepository.setEnabled(scheduledEnabled)
             currentCoroutineContext().ensureActive()
@@ -85,8 +93,14 @@ class ScheduledImportInfoViewModel @Inject constructor(
                 }
             } else {
                 confirmedIsEnabled = updatedValue
-                updateViewState { it.copy(isEnabled = updatedValue, isUpdating = false, hasError = false) }
-                triggerEvent(SettingUpdated)
+                updateViewState {
+                    it.copy(
+                        isEnabled = updatedValue,
+                        isDismissRequested = true,
+                        isUpdating = false,
+                        hasError = false,
+                    )
+                }
             }
         }
     }
@@ -105,9 +119,8 @@ class ScheduledImportInfoViewModel @Inject constructor(
         val isEnabled: Boolean,
         val isUpdating: Boolean,
         val hasError: Boolean,
+        val isDismissRequested: Boolean = false,
     )
-
-    data object SettingUpdated : Event()
 
     private companion object {
         const val IS_VISIBLE_KEY = "scheduledImportInfoIsVisible"

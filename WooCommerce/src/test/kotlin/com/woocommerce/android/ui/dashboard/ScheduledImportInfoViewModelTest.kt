@@ -83,25 +83,25 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when toggle is changed and update succeeds, then state reflects the new value and event is triggered`() =
+    fun `when toggle is changed and update succeeds, then state reflects the new value and dismissal is requested`() =
         testBlocking {
             val savedState = SavedStateHandle()
             createViewModel(isEnabled = false, savedState = savedState)
             whenever(scheduledImportRepository.setEnabled(true)).thenReturn(WooResult(true))
 
-            val event = viewModel.event.runAndCaptureValues {
-                viewModel.onOptionSelected(true)
-            }.last()
+            viewModel.onOptionSelected(true)
 
             val state = viewModel.viewState.value
+            assertThat(state.isVisible).isTrue()
             assertThat(state.isEnabled).isTrue()
+            assertThat(state.isDismissRequested).isTrue()
             assertThat(state.isUpdating).isFalse()
             assertThat(state.hasError).isFalse()
-            assertThat(event).isEqualTo(ScheduledImportInfoViewModel.SettingUpdated)
 
             createViewModel(savedState = savedState)
 
             assertThat(viewModel.viewState.value.isEnabled).isTrue()
+            assertThat(viewModel.viewState.value.isDismissRequested).isFalse()
         }
 
     @Test
@@ -121,6 +121,7 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.value
         assertThat(state.isEnabled).isFalse()
+        assertThat(state.isDismissRequested).isFalse()
         assertThat(state.isUpdating).isFalse()
         assertThat(state.hasError).isTrue()
     }
@@ -153,18 +154,16 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
                 suspendCoroutine { updateContinuation = it }
             }
 
-            val events = viewModel.event.runAndCaptureValues {
-                viewModel.onOptionSelected(true)
-                viewModel.onDismissed()
-                updateContinuation.resumeWith(Result.success(WooResult(true)))
-                runCurrent()
-            }
+            viewModel.onOptionSelected(true)
+            viewModel.onDismissed()
+            updateContinuation.resumeWith(Result.success(WooResult(true)))
+            runCurrent()
 
             assertThat(viewModel.viewState.value.isVisible).isFalse()
             assertThat(viewModel.viewState.value.isEnabled).isFalse()
+            assertThat(viewModel.viewState.value.isDismissRequested).isFalse()
             assertThat(viewModel.viewState.value.isUpdating).isFalse()
             assertThat(viewModel.viewState.value.hasError).isFalse()
-            assertThat(events.filterIsInstance<ScheduledImportInfoViewModel.SettingUpdated>()).isEmpty()
         }
 
     @Test
@@ -203,35 +202,15 @@ class ScheduledImportInfoViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given update fails, when toggle is changed, then no setting updated event is triggered`() = testBlocking {
-        createViewModel(isEnabled = false)
-        whenever(scheduledImportRepository.setEnabled(true)).thenReturn(
-            WooResult(
-                error = WooError(
-                    type = WooErrorType.GENERIC_ERROR,
-                    original = BaseRequest.GenericErrorType.NETWORK_ERROR,
-                    message = "error"
-                )
-            )
-        )
-
-        val events = viewModel.event.runAndCaptureValues {
-            viewModel.onOptionSelected(true)
-        }
-
-        assertThat(events.filterIsInstance<ScheduledImportInfoViewModel.SettingUpdated>()).isEmpty()
-    }
-
-    @Test
-    fun `given an option is already selected, when it is tapped, then the sheet closes without calling the repository`() =
+    fun `given an option is already selected, when tapped, then dismissal is requested without a repository call`() =
         testBlocking {
             createViewModel(isEnabled = true)
 
-            val event = viewModel.event.runAndCaptureValues {
-                viewModel.onOptionSelected(true)
-            }.last()
+            viewModel.onOptionSelected(true)
+            viewModel.onOptionSelected(false)
 
-            assertThat(event).isEqualTo(ScheduledImportInfoViewModel.SettingUpdated)
+            assertThat(viewModel.viewState.value.isDismissRequested).isTrue()
             verify(scheduledImportRepository, never()).setEnabled(true)
+            verify(scheduledImportRepository, never()).setEnabled(false)
         }
 }

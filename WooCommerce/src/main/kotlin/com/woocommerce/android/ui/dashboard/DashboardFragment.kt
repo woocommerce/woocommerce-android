@@ -197,9 +197,6 @@ class DashboardFragment : TopLevelFragment() {
 
         scheduledImportInfoViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ScheduledImportInfoViewModel.SettingUpdated ->
-                    scheduledImportInfoViewModel.onDismissed()
-
                 is LaunchUrlInChromeTab ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
 
