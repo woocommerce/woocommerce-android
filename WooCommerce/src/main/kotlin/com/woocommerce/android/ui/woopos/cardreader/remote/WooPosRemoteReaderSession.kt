@@ -37,6 +37,7 @@ class WooPosRemoteReaderSession @Inject constructor(
     private val clientProvider: WooPosRemoteReaderClientProvider,
     private val logger: WooPosLogWrapper,
     private val resourceProvider: ResourceProvider,
+    private val errorMapper: WooPosRemoteReaderErrorMapper,
 ) {
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> = _state.asStateFlow()
@@ -111,7 +112,15 @@ class WooPosRemoteReaderSession @Inject constructor(
                     _state.value = it
                     watchForRemoteClose(newClient)
                 }
-            is ConnectOutcome.Rejected -> fail("${outcome.code}: ${outcome.description}")
+            is ConnectOutcome.Rejected -> {
+                logger.e("Remote reader connect rejected: ${outcome.error.code} - ${outcome.description}")
+                fail(
+                    errorMapper.toUserMessage(
+                        error = outcome.error,
+                        fallback = R.string.woopos_remote_reader_connect_failed_generic,
+                    )
+                )
+            }
             is ConnectOutcome.Failed -> {
                 logger.e(
                     "Remote reader connect failed: ${outcome.cause::class.java.simpleName}",

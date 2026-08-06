@@ -99,6 +99,7 @@ class CardReaderRemoteSession internal constructor(
             } catch (t: Throwable) {
                 logWrapper.e(LOG_TAG, "Session ended with error: ${t.describeWithCauses()}")
                 _state.value = CardReaderRemoteSessionState.Error(
+                    error = t.toCardReaderRemoteError(CardReaderRemoteError.ConnectFailed),
                     message = t.toString(),
                     errorDescription = t.describeWithCauses(),
                 )
@@ -232,13 +233,13 @@ class CardReaderRemoteSession internal constructor(
                 logWrapper.d(LOG_TAG, "ConnectAck sent, transitioning to WaitingForPayment")
                 _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
             }.onFailure { err ->
-                logWrapper.e(LOG_TAG, "Connect failed: ${err::class.java.simpleName}: ${err.message}")
+                logWrapper.e(LOG_TAG, "Connect failed: ${err.describeWithCauses()}")
                 runCatching { cardReaderManager.disconnectReader() }
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
-                        code = CODE_CONNECT_FAILED,
-                        description = "${err::class.java.simpleName}: ${err.message.orEmpty()}",
+                        code = err.toCardReaderRemoteError(CardReaderRemoteError.ConnectFailed).code,
+                        description = err.describeWithCauses(),
                     )
                 )
                 tlsServer?.let { _state.value = readyToPairState(it) }
@@ -257,8 +258,10 @@ class CardReaderRemoteSession internal constructor(
             .mapNotNull { event ->
                 when (event) {
                     is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
-                    is CardReaderDiscoveryEvents.Failed -> error(event.msg)
-                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported -> error(event.msg)
+                    is CardReaderDiscoveryEvents.Failed ->
+                        throw CardReaderRemoteFailure(CardReaderRemoteError.ConnectFailed, event.msg)
+                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                        throw CardReaderRemoteFailure(CardReaderRemoteError.PhoneNotEligible, event.msg)
                     CardReaderDiscoveryEvents.Started,
                     CardReaderDiscoveryEvents.Succeeded -> null
                 }
@@ -291,7 +294,8 @@ class CardReaderRemoteSession internal constructor(
                         accepted.send(
                             ErrorMessage(
                                 requestId = request.requestId,
-                                code = CODE_COLLECT_FAILED,
+                                code = collectResult.cause
+                                    .toCardReaderRemoteError(CardReaderRemoteError.CollectFailed).code,
                                 description = collectResult.cause.describeWithCauses(),
                             )
                         )
@@ -303,7 +307,8 @@ class CardReaderRemoteSession internal constructor(
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
-                        code = CODE_CREATE_INTENT_FAILED,
+                        code = createResult.cause
+                            .toCardReaderRemoteError(CardReaderRemoteError.CreateIntentFailed).code,
                         description = createResult.cause.describeWithCauses(),
                     )
                 )
@@ -390,9 +395,6 @@ class CardReaderRemoteSession internal constructor(
 
     companion object {
         private const val LOG_TAG = "CardReaderRemoteSession"
-        private const val CODE_CONNECT_FAILED = "connect_failed"
-        private const val CODE_COLLECT_FAILED = "collect_failed"
-        private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
         private const val DEFAULT_DEVICE_NAME = "Android"
         private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
 

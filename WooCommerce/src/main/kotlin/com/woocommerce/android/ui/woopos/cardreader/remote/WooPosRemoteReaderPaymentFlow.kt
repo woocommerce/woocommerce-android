@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteConnectionLostException
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.model.Order
@@ -31,6 +32,7 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val resourceProvider: ResourceProvider,
     private val logger: WooPosLogWrapper,
+    private val errorMapper: WooPosRemoteReaderErrorMapper,
     @PointOfSaleMode private val paymentsFlowTracker: PaymentsFlowTracker,
     private val appPrefs: AppPrefs = AppPrefs,
 ) {
@@ -105,10 +107,13 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
                 capture(orderId, outcome.paymentIntentId)
             }
             is CollectPaymentOutcome.Rejected -> {
-                logger.e("Remote payment rejected: ${outcome.code} - ${outcome.description}")
+                logger.e("Remote payment rejected: ${outcome.error.code} - ${outcome.description}")
                 Result.Failed(
-                    message = genericFailureMessage(),
-                    errorDescription = "remote_rejected: ${outcome.code} - ${outcome.description}",
+                    message = errorMapper.toUserMessage(
+                        error = outcome.error,
+                        fallback = R.string.woopos_remote_payment_failed_generic,
+                    ),
+                    errorDescription = "remote_rejected: ${outcome.error.code} - ${outcome.description}",
                 )
             }
             CollectPaymentOutcome.TimedOut -> {
@@ -128,14 +133,12 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
         }
     }
 
-    private fun mapFailureToUserMessage(cause: Throwable): String {
-        val message = cause.message.orEmpty()
-        return if (cause is IllegalStateException && message.contains(CONNECTION_LOST_MARKER, ignoreCase = true)) {
-            resourceProvider.getString(R.string.woopos_remote_payment_failed_connection_lost)
-        } else {
-            genericFailureMessage()
+    private fun mapFailureToUserMessage(cause: Throwable): String =
+        when (cause) {
+            is CardReaderRemoteConnectionLostException ->
+                resourceProvider.getString(R.string.woopos_remote_payment_failed_connection_lost)
+            else -> genericFailureMessage()
         }
-    }
 
     private fun isSimulatedReaderConnected(): Boolean =
         (remoteReaderSession.state.value as? WooPosRemoteReaderSession.State.Connected)?.reader?.isSimulated == true
@@ -173,6 +176,5 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
 
     private companion object {
         const val SIMULATED_PAYMENT_DELAY_MS = 1_500L
-        const val CONNECTION_LOST_MARKER = "Connection to phone reader was lost"
     }
 }

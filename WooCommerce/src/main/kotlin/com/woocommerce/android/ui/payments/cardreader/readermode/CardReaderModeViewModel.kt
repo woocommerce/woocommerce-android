@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteCertificateKeyType
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
@@ -20,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWait
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.siteIdHash
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +43,7 @@ class CardReaderModeViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -178,9 +182,22 @@ class CardReaderModeViewModel @Inject constructor(
             onPrimaryActionClicked = ::exit,
         )
         is CardReaderRemoteSessionState.Error -> RemoteTapToPayError(
-            message = state.message,
+            message = errorMessageFor(state.error),
             onPrimaryActionClicked = ::exit,
         )
+    }
+
+    private fun errorMessageFor(error: CardReaderRemoteError): String? = when (error) {
+        CardReaderRemoteError.PhoneNotEligible ->
+            resourceProvider.getString(R.string.card_reader_mode_error_phone_not_eligible)
+        CardReaderRemoteError.NfcDisabled ->
+            resourceProvider.getString(R.string.card_reader_payment_failed_nfc_disabled)
+        CardReaderRemoteError.TokenInvalid,
+        CardReaderRemoteError.ConnectFailed,
+        CardReaderRemoteError.CollectFailed,
+        CardReaderRemoteError.CreateIntentFailed,
+        CardReaderRemoteError.UnexpectedReply,
+        is CardReaderRemoteError.Unknown -> null
     }
 
     private fun exit() {
