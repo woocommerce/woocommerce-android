@@ -1,0 +1,57 @@
+# Discovers a variable product from the loaded POS catalog, searches for its
+# app-provided name, opens its variations, and adds the first variation.
+appId: com.woocommerce.android.dev
+---
+- scrollUntilVisible:
+    element: "Variable Product .*"
+    direction: DOWN
+    timeout: 30000
+    label: "Find a Variable product in the POS catalog"
+
+- copyTextFrom:
+    text: "Variable Product .*"
+
+- evalScript: ${output.posVariableProductName = maestro.copiedText.replace('Variable Product ', '')}
+- assertTrue:
+    condition: ${output.posVariableProductName.length > 0}
+    label: "Capture the discovered Variable product name"
+
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible: ".*Search products and variations.*"
+    timeout: 10000
+
+- tapOn:
+    id: "woo_pos_search_input"
+    label: "Focus product search"
+- inputText: ${output.posVariableProductName}
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible: "Variable Product .*"
+    timeout: 20000
+    label: "Search resolves a Variable product"
+
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Open discovered Variable product variations"
+
+- extendedWaitUntil:
+    notVisible: ".*Search products and variations.*"
+    timeout: 10000
+    label: "Require variation selection screen"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+    label: "Wait for POS variations"
+
+- tapOn:
+    id: "woo_pos_product_item"
+    index: 0
+    label: "Add first variation to cart"

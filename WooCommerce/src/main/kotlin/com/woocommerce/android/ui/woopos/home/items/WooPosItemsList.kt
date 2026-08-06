@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -367,7 +368,10 @@ fun WooPosCouponCard(
                     enabled = item.expiredState is Coupon.ExpiredState.NotExpired,
                     onClickLabel = stringResource(R.string.woopos_add_coupon_to_cart_accessibility_label)
                 ) { onItemClicked(item) }
-                .clearAndSetSemantics { contentDescription = itemContentDescription }
+                .clearAndSetSemantics {
+                    contentDescription = itemContentDescription
+                    testTag = WooPosTestTags.COUPON_ADD_TO_CART_BUTTON
+                }
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically

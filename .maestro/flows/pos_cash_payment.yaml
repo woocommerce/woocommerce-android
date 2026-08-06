@@ -1,0 +1,104 @@
+# Smoke Test: POS - Cash Payment flow (Tablet)
+# p2: pos.add-products, pos.pay-cash
+# P2 ref: POS > Search products, Add to cart, Pay with Cash
+#
+# POS exposes Compose test tags as resource IDs (WooPosTheme enables
+# testTagsAsResourceId at the root of the Compose tree).
+#
+# NOTE: This flow requires a tablet device/emulator and a genuinely POS-
+# eligible store. Missing POS navigation must fail the release signal.
+#
+# Verifies (on tablet):
+#   - POS screen loads from bottom navigation
+#   - Products load and can be added to cart
+#   - Checkout flow works
+#   - Cash payment can be completed
+#   - Payment success screen displays
+#   - A new order can be started after successful payment
+appId: com.woocommerce.android.dev
+name: "POS - Cash payment flow"
+tags:
+  - pos_tablet
+  - flaky_quarantine
+  - destructive
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "point_of_sale"
+    timeout: 10000
+    label: "Require real POS eligibility"
+
+- tapOn:
+    id: "point_of_sale"
+    label: "Tap POS tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+
+- runFlow:
+    when:
+      visible:
+        id: "woo_pos_clear_cart_button"
+    commands:
+      - tapOn:
+          id: "woo_pos_clear_cart_button"
+          label: "Open clear-cart menu"
+      - tapOn:
+          text: "Clear cart"
+          label: "Own an empty POS cart"
+
+- runFlow:
+    file: ../subflows/pos_add_discovered_variable_product.yaml
+
+- copyTextFrom:
+    id: "woo_pos_cart_items_count"
+- evalScript: |
+    var count = parseInt(maestro.copiedText, 10);
+    if (isNaN(count) || count < 1) {
+        throw new Error('Owned POS cart should contain a product');
+    }
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_checkout_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_checkout_button"
+    label: "Tap Checkout"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_cash_payment_button"
+    timeout: 15000
+- tapOn:
+    id: "woo_pos_cash_payment_button"
+    label: "Select Cash payment"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_complete_payment_button"
+    timeout: 10000
+- tapOn:
+    id: "woo_pos_complete_payment_button"
+    label: "Complete payment"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_new_order_button"
+    timeout: 15000
+- assertVisible:
+    id: "woo_pos_success_checkmark_icon"
+    label: "Payment success checkmark visible"
+
+- takeScreenshot: pos_payment_success
+
+- tapOn:
+    id: "woo_pos_new_order_button"
+    label: "Start new order"

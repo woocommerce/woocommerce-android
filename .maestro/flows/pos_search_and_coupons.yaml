@@ -1,0 +1,109 @@
+# Smoke Test: POS - Search + Coupons tab (Tablet)
+# p2: pos.search-products, pos.coupons
+# P2 ref: POS > Search products, Use coupons
+#
+# POS exposes the Products/Coupons tabs as plain Compose text. The shared
+# WooPosSearchInput exposes a stable resource ID and the hint strings tell
+# which mode it is in:
+#   - Products tab: hint is R.string.woopos_search_products_and_variations
+#     → "Search products and variations"
+#   - Coupons tab:  hint is R.string.woopos_search_coupons
+#     → "Search coupons"
+#
+# NOTE: POS is tablet-only and requires a genuinely eligible store. Missing
+# POS navigation is a setup failure, not a reason to skip this release signal.
+#
+# Verifies (on tablet):
+#   - POS screen loads with Products + Coupons tabs visible
+#   - Search resolves a variable product discovered from the live catalog
+#   - A real coupon is added to the cart
+#   - Switching back to Products reloads the product grid
+appId: com.woocommerce.android.dev
+name: "POS - Search and Coupons tab"
+tags:
+  - pos_tablet
+  - flaky_quarantine
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "point_of_sale"
+    timeout: 10000
+    label: "Require real POS eligibility"
+
+- tapOn:
+    id: "point_of_sale"
+    label: "Tap POS tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 20000
+
+- runFlow:
+    when:
+      visible:
+        id: "woo_pos_clear_cart_button"
+    commands:
+      - tapOn:
+          id: "woo_pos_clear_cart_button"
+          label: "Open clear-cart menu"
+      - tapOn:
+          text: "Clear cart"
+          label: "Clear leftover POS cart"
+
+- assertVisible: "Products"
+- assertVisible: "Coupons"
+- assertVisible:
+    id: "woo_pos_search_input"
+
+- runFlow:
+    file: ../subflows/pos_add_discovered_variable_product.yaml
+
+- runFlow:
+    when:
+      notVisible: "Coupons"
+    commands:
+      - back
+
+- extendedWaitUntil:
+    visible: "Coupons"
+    timeout: 10000
+
+- tapOn:
+    text: "Coupons"
+    retryTapIfNoChange: true
+    label: "Tap Coupons tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_coupon_add_to_cart_button"
+    timeout: 20000
+    label: "Require a usable coupon"
+
+- tapOn:
+    id: "woo_pos_coupon_add_to_cart_button"
+    index: 0
+    label: "Add coupon to cart"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_cart_coupon_item"
+    timeout: 10000
+    label: "Verify coupon in POS cart"
+
+- takeScreenshot: pos_coupon_in_cart
+
+- tapOn:
+    text: "Products"
+    retryTapIfNoChange: true
+    label: "Restore Products tab"
+
+- extendedWaitUntil:
+    visible:
+      id: "woo_pos_product_item"
+    timeout: 15000
