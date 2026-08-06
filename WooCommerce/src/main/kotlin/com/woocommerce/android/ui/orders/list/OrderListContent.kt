@@ -5,6 +5,8 @@ package com.woocommerce.android.ui.orders.list
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +29,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,7 +63,8 @@ internal fun OrderListContent(
     itemCount: Int,
     itemKey: (index: Int) -> Any,
     itemAt: (index: Int) -> OrderListItemUiModel?,
-    onOrderTapped: (orderId: Long) -> Unit,
+    itemContentType: (index: Int) -> Any? = { null },
+    onOrderActivated: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
     onMarkOrderCompleted: (orderId: Long) -> Unit,
@@ -79,10 +87,11 @@ internal fun OrderListContent(
             itemCount = itemCount,
             itemKey = itemKey,
             itemAt = itemAt,
+            itemContentType = itemContentType,
             rowState = rowState,
             isAppending = state.isAppending,
             contentRevision = state.contentRevision,
-            onOrderTapped = onOrderTapped,
+            onOrderActivated = onOrderActivated,
             onOrderLongPressed = onOrderLongPressed,
             onOrderSelectionToggled = onOrderSelectionToggled,
             onMarkOrderCompleted = onMarkOrderCompleted,
@@ -98,26 +107,30 @@ private fun OrderLazyList(
     itemCount: Int,
     itemKey: (index: Int) -> Any,
     itemAt: (index: Int) -> OrderListItemUiModel?,
+    itemContentType: (index: Int) -> Any?,
     rowState: OrderListRowState,
     isAppending: Boolean,
     contentRevision: Long,
-    onOrderTapped: (orderId: Long) -> Unit,
+    onOrderActivated: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
     onMarkOrderCompleted: (orderId: Long) -> Unit,
     modifier: Modifier,
     listState: LazyListState,
 ) {
+    val gestureAuthority = remember { OrderListGestureAuthority() }
     LazyColumn(
         state = listState,
         modifier = modifier
             .fillMaxSize()
+            .acceptFirstPointerOnly(gestureAuthority)
             .testTag(OrderListTestTags.LIST),
         contentPadding = PaddingValues(bottom = WooTheme.padding.padding5),
     ) {
         items(
             count = itemCount,
             key = itemKey,
+            contentType = itemContentType,
         ) { index ->
             // itemAt is memoized per index. Advance contentRevision when mapped content changes
             // without replacing the accessor.
@@ -131,10 +144,16 @@ private fun OrderLazyList(
                         isBulkSelected = orderId in rowState.bulkSelectedOrderIds,
                         isDetailHighlighted = orderId == rowState.detailHighlightedOrderId,
                         isBulkSelectionActive = rowState.isBulkSelectionActive,
-                        onTap = { onOrderTapped(orderId) },
+                        onActivate = { onOrderActivated(orderId) },
                         onLongPress = { onOrderLongPressed(orderId) },
                         onSelectionToggle = { onOrderSelectionToggled(orderId) },
                         onMarkCompleted = { onMarkOrderCompleted(orderId) },
+                        canHandleSwipeDelta = { gestureAuthority.canHandleSwipeDelta(orderId) },
+                        canCommitSwipe = { gestureAuthority.canCommitSwipe(orderId) },
+                        modifier = Modifier.claimSwipeAuthority(
+                            orderId = orderId,
+                            gestureAuthority = gestureAuthority,
+                        ),
                     )
                     if (item.showDivider) {
                         WooDivider(
@@ -164,6 +183,90 @@ private fun OrderLazyList(
                 }
             }
         }
+    }
+}
+
+private fun Modifier.acceptFirstPointerOnly(
+    gestureAuthority: OrderListGestureAuthority,
+) = pointerInput(gestureAuthority) {
+    awaitEachGesture {
+        val owner = awaitFirstDown(
+            requireUnconsumed = false,
+            pass = PointerEventPass.Initial,
+        ).id
+        gestureAuthority.start(owner)
+        do {
+            val event = awaitPointerEvent(PointerEventPass.Initial)
+            val ownerChange = event.changes.firstOrNull { it.id == owner }
+            val ownerIsPressed = ownerChange?.pressed == true
+            val secondaryIsPressed = event.changes.any { it.id != owner && it.pressed }
+            // Pointer cancellation is consumed, so only a clean owner up can arm the destructive action.
+            if (ownerChange?.changedToUp() == true && !secondaryIsPressed) {
+                gestureAuthority.armSwipeCommit()
+            } else if (!ownerIsPressed) {
+                gestureAuthority.revokeSwipe()
+            }
+            event.changes.forEach { change ->
+                if (change.id != owner && (ownerIsPressed || change.changedToDown())) {
+                    change.consume()
+                }
+            }
+        } while (event.changes.any { it.pressed })
+    }
+}
+
+private fun Modifier.claimSwipeAuthority(
+    orderId: Long,
+    gestureAuthority: OrderListGestureAuthority,
+) = pointerInput(orderId, gestureAuthority) {
+    awaitEachGesture {
+        val down = awaitFirstDown(
+            requireUnconsumed = false,
+            pass = PointerEventPass.Initial,
+        )
+        gestureAuthority.claim(down.id, orderId)
+        do {
+            val event = awaitPointerEvent(PointerEventPass.Initial)
+        } while (event.changes.any { it.pressed })
+    }
+}
+
+private class OrderListGestureAuthority {
+    private var ownerPointerId: PointerId? = null
+    private var ownerOrderId: Long? = null
+    private var isSwipeRevoked = false
+    private var isSwipeCommitArmed = false
+
+    fun start(pointerId: PointerId) {
+        ownerPointerId = pointerId
+        ownerOrderId = null
+        isSwipeRevoked = false
+        isSwipeCommitArmed = false
+    }
+
+    fun claim(pointerId: PointerId, orderId: Long) {
+        if (pointerId == ownerPointerId) {
+            ownerOrderId = orderId
+        }
+    }
+
+    fun revokeSwipe() {
+        isSwipeRevoked = true
+        isSwipeCommitArmed = false
+    }
+
+    fun armSwipeCommit() {
+        if (!isSwipeRevoked) {
+            isSwipeCommitArmed = true
+        }
+    }
+
+    fun canHandleSwipeDelta(orderId: Long): Boolean {
+        return !isSwipeRevoked && ownerOrderId == orderId
+    }
+
+    fun canCommitSwipe(orderId: Long): Boolean {
+        return isSwipeCommitArmed && canHandleSwipeDelta(orderId)
     }
 }
 
@@ -521,7 +624,7 @@ private fun OrderListContentPreview(
             itemCount = items.size,
             itemKey = { index -> previewItemKey(index, items[index]) },
             itemAt = items::get,
-            onOrderTapped = {},
+            onOrderActivated = {},
             onOrderLongPressed = {},
             onOrderSelectionToggled = { true },
             onMarkOrderCompleted = {},

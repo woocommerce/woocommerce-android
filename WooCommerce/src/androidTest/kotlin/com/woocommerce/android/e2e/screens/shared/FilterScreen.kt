@@ -53,13 +53,12 @@ class FilterScreen : Screen {
     fun showOrders(expectResults: Boolean): OrderListScreen {
         clickOn(R.id.showOrdersButton)
 
-        if (expectResults) {
-            waitForElementToBeDisplayed(R.id.orderListHeader)
+        val orderListScreen = OrderListScreen()
+        return if (expectResults) {
+            orderListScreen.waitForOrders()
         } else {
-            waitForElementToBeDisplayedWithoutFailure(R.id.empty_view_title)
+            orderListScreen.waitForEmptyState()
         }
-
-        return OrderListScreen()
     }
 
     fun leaveFilterScreenToProducts(): ProductListScreen {

@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.requestFocus
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -71,11 +72,13 @@ internal fun OrderListOrderRow(
     isBulkSelected: Boolean,
     isDetailHighlighted: Boolean,
     isBulkSelectionActive: Boolean,
-    onTap: () -> Unit,
+    onActivate: () -> Unit,
     onLongPress: () -> Unit,
     onSelectionToggle: () -> Boolean,
     onMarkCompleted: () -> Unit,
     modifier: Modifier = Modifier,
+    canHandleSwipeDelta: () -> Boolean = { true },
+    canCommitSwipe: () -> Boolean = { true },
 ) {
     val focusRequester = remember { FocusRequester() }
     val selectionAction = stringResource(
@@ -83,11 +86,6 @@ internal fun OrderListOrderRow(
         order.number,
     )
     val markCompletedAction = stringResource(R.string.orderlist_mark_completed)
-    val activate: () -> Unit = if (isBulkSelectionActive) {
-        { onSelectionToggle() }
-    } else {
-        onTap
-    }
     val background = if (isBulkSelected || isDetailHighlighted) {
         colorResource(R.color.color_item_selected)
     } else {
@@ -99,6 +97,8 @@ internal fun OrderListOrderRow(
         isCompleted = order.isCompleted,
         isEnabled = !isBulkSelectionActive,
         onMarkCompleted = onMarkCompleted,
+        canHandleDelta = canHandleSwipeDelta,
+        canCommit = canCommitSwipe,
         modifier = modifier.fillMaxWidth(),
     ) { swipeModifier ->
         Row(
@@ -109,7 +109,7 @@ internal fun OrderListOrderRow(
                 .background(background)
                 .focusRequester(focusRequester)
                 .combinedClickable(
-                    onClick = activate,
+                    onClick = onActivate,
                     onLongClick = onLongPress,
                 )
                 .semantics(mergeDescendants = true) {
@@ -272,6 +272,7 @@ private fun OrderListSwipeBackground(
                     text = stringResource(R.string.orderlist_mark_completed),
                     color = WooTheme.colors.onPrimary,
                     style = WooTheme.text.bodyLarge.regular,
+                    textAlign = TextAlign.Center,
                 )
             }
         }

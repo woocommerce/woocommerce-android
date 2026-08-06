@@ -329,12 +329,6 @@ private fun ProductListHeader(
         title = stringResource(R.string.products),
         showDivider = showDivider,
         actions = {
-            WooOutlinedIconButton(
-                imageVector = WooIcons.Regular.MagnifyingGlass,
-                contentDescription = stringResource(R.string.product_search_hint),
-                onClick = onSearchClicked,
-                modifier = Modifier.testTag(ProductListTestTags.SEARCH_ACTION),
-            )
             if (showBarcode) {
                 WooOutlinedIconButton(
                     imageVector = WooIcons.Regular.BarcodeScan,
@@ -343,6 +337,12 @@ private fun ProductListHeader(
                     modifier = Modifier.testTag(ProductListTestTags.BARCODE_ACTION),
                 )
             }
+            WooOutlinedIconButton(
+                imageVector = WooIcons.Regular.MagnifyingGlass,
+                contentDescription = stringResource(R.string.product_search_hint),
+                onClick = onSearchClicked,
+                modifier = Modifier.testTag(ProductListTestTags.SEARCH_ACTION),
+            )
         },
     )
 }
