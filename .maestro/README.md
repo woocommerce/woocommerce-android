@@ -46,6 +46,15 @@ Run the pre-flight doctor when setting up a machine, changing credentials, or pr
 .maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
 ```
 
+### Store data prerequisites
+
+`orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
+The app creates that `Order.Customer` in `OrderCreateEditCustomerAddFragment` and
+`OrderCreateEditViewModel.onCustomerEdited` replaces only `orderDraft.customer`; it does not update the store customer.
+The flow captures the selected email, verifies it on the draft, verifies the edited marker on the persisted order,
+then searches the customer list again and requires the original email to be unchanged. The configured store must have
+at least two existing customers with email addresses; missing data fails as an explicit prerequisite.
+
 ## Running
 
 Default local run: lab store, `smoke_core` only, quarantine excluded.

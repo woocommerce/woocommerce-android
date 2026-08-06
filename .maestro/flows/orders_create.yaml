@@ -1,0 +1,743 @@
+# Smoke Test: Orders - Create Order
+# p2: orders.create.products, orders.create.variable-products, orders.create.quantity, orders.create.product-discount, orders.create.custom-amount, orders.create.custom-amount-note, orders.create.shipping, orders.create.customer-add, orders.create.customer-edit, orders.create.note
+# P2 ref: Orders > Create an order (add products, custom amount, customer, customer note)
+#
+# Verifies:
+#   - Order creation FAB works
+#   - Add a product from the product selector
+#   - Add a fixed-amount custom amount with a name
+#   - Add an existing customer by searching their email
+#   - Prove the selected customer's identity is attached to the draft
+#   - Edit only the order-local customer copy and persist its marker
+#   - Prove the underlying store customer remains unchanged
+#   - Add a customer-facing note
+#   - All sections display the added data
+#   - Tap "Create" to submit the order — lands on order detail
+#   - Tap "Collect Payment" → pick Cash → Mark Order as Complete to
+#     fully exercise the post-creation cash checkout path
+#
+# The order IS committed to the staging store and completed via COD.
+# Staging orders use test data (SmokeTest customer, $10 gift wrap) so
+# accumulation across runs is acceptable.
+appId: com.woocommerce.android.dev
+name: "Orders - Create a new order"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+# Start from an already-authenticated session (see comment in
+# ensure_logged_in.yaml — re-logging in on every run triggers WPCom
+# security screens).
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/ensure_configured_woo_store.yaml
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Tap Create Order FAB
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
+
+# Wait for order creation screen (title and Add products are always visible on empty creation)
+- extendedWaitUntil:
+    visible: "Add products"
+    timeout: 15000
+
+- takeScreenshot: order_create_empty
+
+# ── Add a product ─────────────────────────────────────────────────────
+- tapOn:
+    text: "Add products"
+    label: "Tap Add products"
+
+# Product selector loaded
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_product_selector
+
+# Filter to Variable products so this order always exercises the variation
+# picker instead of depending on whichever product happens to be listed first.
+- tapOn:
+    text: "Filter"
+    retryTapIfNoChange: true
+    label: "Open product selector filters"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterList"
+    timeout: 15000
+    label: "Wait for product selector filters"
+
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Open Product type filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterOptionList"
+    timeout: 15000
+    label: "Wait for Product type options"
+
+- tapOn:
+    text: "Variable"
+    retryTapIfNoChange: true
+    label: "Select Variable products"
+
+- tapOn:
+    id: "filterOptionList_btnShowProducts"
+    retryTapIfNoChange: true
+    label: "Confirm Variable product filter"
+
+- runFlow:
+    when:
+      visible:
+        id: "filterList_btnShowProducts"
+    commands:
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Apply Variable product filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_variable_product_item"
+    timeout: 20000
+    label: "Require a Variable product with variations"
+
+- tapOn:
+    id: "product_selector_variable_product_item"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open the first Variable product"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_variation_item"
+    timeout: 15000
+    label: "Require a purchasable variation"
+
+- tapOn:
+    id: "product_selector_variation_item"
+    index: 0
+    label: "Select first available variation"
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_done_button"
+    timeout: 15000
+    label: "Wait for selected variation in parent selector"
+
+# Keep the selected variation, switch the selector to Simple products, and
+# select another purchasable line item. Filtering by a different product type
+# guarantees the second item cannot be the selected variation or its parent.
+- tapOn:
+    text: "Filter.*"
+    retryTapIfNoChange: true
+    label: "Reopen product selector filters"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterList"
+    timeout: 15000
+
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Change Product type filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "filterOptionList"
+    timeout: 15000
+
+- tapOn:
+    text: "Simple"
+    retryTapIfNoChange: true
+    label: "Select Simple products"
+
+- tapOn:
+    id: "filterOptionList_btnShowProducts"
+    retryTapIfNoChange: true
+    label: "Confirm Simple product filter"
+
+- runFlow:
+    when:
+      visible:
+        id: "filterList_btnShowProducts"
+    commands:
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Apply Simple product filter"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_product_item"
+    timeout: 20000
+    label: "Require a purchasable Simple product"
+
+- tapOn:
+    id: "product_selector_product_item"
+    index: 0
+    label: "Select a distinct Simple product"
+
+- tapOn:
+    id: "product_selector_done_button"
+    label: "Confirm both product selections"
+
+# Back on order creation
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    id: "order_product_card"
+    index: 0
+    label: "First selected line item is present in the order"
+
+- assertVisible:
+    id: "order_product_card"
+    index: 1
+    label: "Second selected line item is present in the order"
+
+- assertVisible:
+    text: ".*⦁.*"
+    label: "A selected line item exposes real variation attributes"
+
+- takeScreenshot: order_create_with_product
+
+# ── Adjust quantity and apply a product discount ─────────────────────
+- tapOn:
+    id: "order_product_card"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Expand first selected product"
+
+- extendedWaitUntil:
+    visible: "Order count"
+    timeout: 10000
+
+- tapOn:
+    text: "Increase product quantity"
+    retryTapIfNoChange: true
+    label: "Increase product quantity"
+
+- assertVisible:
+    text: ".*2 ×.*|.*2 x.*"
+    label: "Quantity increased to two"
+
+- tapOn:
+    text: "Decrease product quantity"
+    retryTapIfNoChange: true
+    label: "Decrease product quantity"
+
+- assertVisible:
+    text: ".*1 ×.*|.*1 x.*"
+    label: "Quantity decreased to one"
+
+- tapOn:
+    text: "Add discount"
+    retryTapIfNoChange: true
+    label: "Open product discount"
+
+- extendedWaitUntil:
+    visible: "Discount"
+    timeout: 15000
+
+# Use a percentage so the fixture's price cannot make the discount invalid.
+- tapOn:
+    text: "%"
+    label: "Use percentage discount"
+- eraseText: 100
+- inputText: "10"
+- hideKeyboard
+
+- assertVisible:
+    text: "Calculated Amount"
+    label: "Percentage discount is calculated"
+- assertNotVisible: "Discount cannot be greater than the price"
+
+- tapOn:
+    text: "Done"
+    retryTapIfNoChange: true
+    label: "Save product discount"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    id: "order_product_discount_amount"
+    label: "Product discount is reflected in the order"
+- copyTextFrom:
+    id: "order_product_discount_amount"
+- evalScript: |
+    if (!maestro.copiedText || maestro.copiedText.trim().charAt(0) !== '-') {
+        throw new Error('Product discount amount is missing from the order');
+    }
+
+# ── Add a custom amount (fixed, with a name) ──────────────────────────
+- scrollUntilVisible:
+    element: "Add custom amount"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to custom amounts section"
+
+- tapOn:
+    text: "Add custom amount"
+    label: "Tap Add custom amount"
+
+# Same flake pattern as the orders_cash_payment Collect Payment tap:
+# occasionally the first tap visibly depresses the row but the "Select
+# custom amount type" bottom sheet never presents. Give the happy path
+# 8s, then re-tap if the sheet still isn't there (the first tap was
+# lost). On the normal path the re-tap is skipped because the sheet is
+# already visible.
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - extendedWaitUntil:
+          visible: "A fixed amount"
+          timeout: 8000
+
+- runFlow:
+    when:
+      notVisible: "A fixed amount"
+    commands:
+      - tapOn:
+          text: "Add custom amount"
+          retryTapIfNoChange: true
+          label: "Retry tap on Add custom amount (first was lost)"
+
+- extendedWaitUntil:
+    visible: "A fixed amount"
+    timeout: 15000
+
+- tapOn:
+    text: "A fixed amount"
+    label: "Choose fixed amount"
+
+# Fill amount and name in the custom amount dialog
+- extendedWaitUntil:
+    visible:
+      id: "editPrice"
+    timeout: 10000
+
+- tapOn:
+    id: "editPrice"
+- eraseText
+# Emulator locale uses comma as decimal separator — entering "1000" yields 10,00
+- inputText: "1000"
+- hideKeyboard
+
+- tapOn:
+    id: "customAmountNameText"
+- inputText: "Gift wrap"
+- hideKeyboard
+
+- takeScreenshot: order_create_custom_amount_dialog
+
+- tapOn:
+    id: "buttonDone"
+    label: "Tap Done on custom amount"
+
+# Back on order creation — verify custom amount was added
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: "Gift wrap"
+    label: "Custom amount name is visible in creation screen"
+
+- takeScreenshot: order_create_with_custom_amount
+
+# ── Add shipping ─────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "add_shipping_button"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add shipping"
+
+- tapOn:
+    id: "add_shipping_button"
+    retryTapIfNoChange: true
+    label: "Open Add shipping"
+
+- extendedWaitUntil:
+    visible:
+      id: "order_shipping_amount_input"
+    timeout: 15000
+
+- tapOn:
+    id: "order_shipping_amount_input"
+- inputText: "500"
+- hideKeyboard
+
+- tapOn:
+    id: "order_shipping_name_input"
+- inputText: Maestro shipping ${SUITE_RUN_ID}
+- hideKeyboard
+
+- tapOn:
+    id: "order_shipping_save_button"
+    retryTapIfNoChange: true
+    label: "Save shipping line"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: "Maestro shipping ${SUITE_RUN_ID}"
+    label: "Shipping line is present in the order"
+
+- takeScreenshot: order_create_with_shipping
+
+# The first shipping line can trigger a feedback overlay that intercepts the
+# customer and note controls underneath it.
+- runFlow:
+    when:
+      visible: "Shipping added!"
+    commands:
+      - tapOn:
+          text: "Close"
+          label: "Dismiss shipping feedback"
+      - extendedWaitUntil:
+          notVisible: "Shipping added!"
+          timeout: 5000
+
+# ── Add a customer-facing note ────────────────────────────────────────
+# Added BEFORE the customer on purpose: when both customer and note are
+# empty, the "Add note" button lives in customer_section (via
+# initCustomerAndNotesEmptySection). Once a customer is added, that
+# button migrates to notes_section whose bounds overlap with the Compose
+# totals_section, and the totals overlay intercepts taps on it.
+- scrollUntilVisible:
+    element: "Add note"
+    direction: DOWN
+    centerElement: true
+    timeout: 10000
+    label: "Scroll to notes button in customer section"
+
+- tapOn:
+    text: "Add note"
+    childOf:
+      id: "customer_section"
+    retryTapIfNoChange: true
+    label: "Tap Add note in empty customer section"
+
+- extendedWaitUntil:
+    visible:
+      id: "customerOrderNote_editor"
+    timeout: 15000
+
+- tapOn:
+    id: "customerOrderNote_editor"
+- inputText: "Maestro smoke test note - please gift wrap."
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_note_typed
+
+# Save via toolbar DONE
+- tapOn:
+    id: "menu_done"
+    label: "Save customer note"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    text: ".*Maestro smoke test note.*"
+    label: "Customer note visible in creation screen"
+
+# ── Add a customer ────────────────────────────────────────────────────
+# Select an existing customer from the live store. Manual customer entry does
+# not satisfy the P2 existing-customer check.
+- scrollUntilVisible:
+    element: "Add customer details"
+    direction: DOWN
+    centerElement: true
+    timeout: 10000
+    label: "Scroll to customer section"
+
+- tapOn:
+    text: "Add customer details"
+    label: "Tap Add customer details"
+
+- extendedWaitUntil:
+    visible: "Search for customers"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible:
+      id: "customer_list_item"
+    timeout: 20000
+    label: "Require at least one existing customer"
+
+# Capture and tap the second visible email. Some stores expose an address-only
+# first customer whose list summary has an email but whose full customer fetch
+# does not; requiring another live row keeps the draft identity assertion real.
+- copyTextFrom:
+    text: ".*@.*"
+    index: 1
+- evalScript: ${output.selectedCustomerEmail = maestro.copiedText.trim()}
+- evalScript: |
+    if (!output.selectedCustomerEmail || output.selectedCustomerEmail.indexOf('@') < 1) {
+        throw new Error('Existing customer prerequisite requires at least two customers with email addresses');
+    }
+
+- tapOn:
+    text: ".*@.*"
+    index: 1
+    retryTapIfNoChange: true
+    label: "Select existing customer"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: "Edit customer details"
+    direction: DOWN
+    centerElement: true
+    timeout: 10000
+    label: "Verify the existing customer is attached"
+
+- takeScreenshot: order_create_with_existing_customer
+
+# ── Edit the added customer ───────────────────────────────────────────
+- scrollUntilVisible:
+    element: "Edit customer details"
+    direction: DOWN
+    centerElement: true
+    timeout: 10000
+    label: "Scroll to customer section"
+
+- tapOn:
+    text: "Edit customer details"
+    label: "Tap customer edit button"
+
+- extendedWaitUntil:
+    visible: ".*Last name.*"
+    timeout: 15000
+
+- assertVisible:
+    text: "${output.selectedCustomerEmail}"
+    label: "Customer editor shows the selected live identity"
+
+# Rewrite the last name with a per-suite-run-unique marker so
+# orders_refund.yaml can find THIS exact order and won't pick up an
+# already-refunded leftover from a previous suite run. SUITE_RUN_ID is
+# exported by .maestro/scripts/run-smoke-tests.sh (set to the run's
+# timestamp, e.g. 20260421-123100), so every run's customer last name
+# is distinct.
+- tapOn:
+    id: "edit_text"
+    childOf:
+      id: "last_name"
+- eraseText
+- inputText: "SmokeTest-${SUITE_RUN_ID}"
+- hideKeyboard
+
+- takeScreenshot: order_create_customer_re_edited
+
+- tapOn:
+    id: "menu_done"
+    label: "Save customer edit"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+# The order summary currently omits the name/email block after this edit even
+# though the draft retains both values. Reopen the editor to verify the actual
+# draft model before submitting it.
+- scrollUntilVisible:
+    element: "Edit customer details"
+    direction: DOWN
+    centerElement: true
+    timeout: 10000
+- tapOn:
+    text: "Edit customer details"
+    retryTapIfNoChange: true
+    label: "Reopen customer editor to verify draft persistence"
+- extendedWaitUntil:
+    visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    timeout: 15000
+    label: "Edited customer marker is retained by the draft"
+- assertVisible:
+    text: "${output.selectedCustomerEmail}"
+    label: "Selected customer identity is retained by the draft"
+- back
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- takeScreenshot: order_create_fully_customized
+
+# ── Submit + auto-launch payment flow ─────────────────────────────────
+# The Compose totals overlay at the bottom of the creation screen
+# hosts a "Collect Payment" primary button (see
+# OrderCreateEditTotalsHelper.toButtonText → Creation branch). Tapping
+# it submits the order AND sets startPaymentFlow=true, so
+# OrderDetailViewModel's init auto-triggers StartPaymentFlow —
+# landing on the Take-payment selector without requiring a second tap
+# on order detail.
+- scrollUntilVisible:
+    element: "Collect Payment"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Collect Payment primary button"
+
+- tapOn:
+    text: "Collect Payment"
+    retryTapIfNoChange: true
+    label: "Tap Collect Payment to submit + start payment flow"
+
+# Take-payment bottom sheet appears (Card/Cash options).
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 30000
+
+- takeScreenshot: order_create_select_payment_method
+
+- tapOn:
+    text: "Cash"
+    retryTapIfNoChange: true
+    label: "Select Cash payment method"
+
+# Change Due Calculator — the order total is pre-filled, so tapping
+# "Mark Order as Complete" records the cash payment and closes out the
+# order.
+- extendedWaitUntil:
+    visible: ".*Mark Order as Complete.*"
+    timeout: 15000
+
+- takeScreenshot: order_create_change_due_calculator
+
+- tapOn:
+    text: ".*Mark Order as Complete.*"
+    retryTapIfNoChange: true
+    label: "Mark order as complete with cash"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 30000
+
+- takeScreenshot: order_create_completed
+
+# Locate the exact completed order and prove the order-local customer edit was
+# persisted by the backend, rather than only rendered in the draft.
+- tapOn:
+    id: "menu_search"
+    label: "Search for the completed smoke order"
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+- tapOn:
+    id: "search_src_text"
+- inputText: SmokeTest-${SUITE_RUN_ID}
+- pressKey: Enter
+- extendedWaitUntil:
+    visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    timeout: 30000
+    label: "Require the persisted order customer marker"
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open the completed smoke order"
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: "productInfo_name"
+    direction: DOWN
+    timeout: 15000
+    label: "Find persisted order line items"
+- assertVisible:
+    id: "productInfo_name"
+    index: 0
+    label: "First line item persisted on the completed order"
+- assertVisible:
+    id: "productInfo_name"
+    index: 1
+    label: "Second line item persisted on the completed order"
+- assertVisible:
+    text: ".*⦁.*"
+    label: "Persisted order retains the selected variation attributes"
+- scrollUntilVisible:
+    element: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Verify the edited marker on persisted order details"
+
+# Return to a fresh draft, reopen the customer picker, and search by the
+# captured email. The original name/email must still be present, proving the
+# arbitrary live customer account was not modified by the order edit.
+- back
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Open a fresh order for customer integrity check"
+- scrollUntilVisible:
+    element: "Add customer details"
+    direction: DOWN
+    centerElement: true
+    timeout: 15000
+    label: "Reach customer picker in fresh order"
+- tapOn:
+    text: "Add customer details"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: "Search for customers"
+    timeout: 15000
+- tapOn: "Search for customers"
+- inputText: ${output.selectedCustomerEmail}
+- hideKeyboard
+- extendedWaitUntil:
+    visible: "${output.selectedCustomerEmail}"
+    timeout: 20000
+    label: "Find the original customer after order creation"
+- copyTextFrom:
+    text: "${output.selectedCustomerEmail}"
+- evalScript: |
+    if (maestro.copiedText.trim() !== output.selectedCustomerEmail) {
+        throw new Error('Store customer email changed after editing the order-local copy');
+    }
+- assertNotVisible:
+    text: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    label: "Order-local marker was not persisted to the store customer"
+- back
+- back
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- takeScreenshot: order_create_customer_integrity_verified

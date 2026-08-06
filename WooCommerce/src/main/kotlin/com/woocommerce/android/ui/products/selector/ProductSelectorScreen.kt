@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.components.ProductSelectorTestTags
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.util.StringUtils
 
@@ -324,6 +326,7 @@ private fun displayProductsSection(
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
                 enabled = state.selectionEnabled && product.enabled,
+                testTag = product.selectorTestTag,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -345,6 +348,13 @@ enum class ProductType {
     POPULAR,
     RECENT
 }
+
+private val ListItem.selectorTestTag: String
+    get() = if (hasVariations()) {
+        ProductSelectorTestTags.VARIABLE_PRODUCT_ITEM
+    } else {
+        ProductSelectorTestTags.PRODUCT_ITEM
+    }
 
 @Composable
 private fun ProductList(
@@ -446,6 +456,7 @@ private fun ProductList(
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
                     enabled = state.selectionEnabled && product.enabled,
+                    testTag = product.selectorTestTag,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }
@@ -505,6 +516,7 @@ private fun SelectionConfirmButton(
         },
         enabled = state.isDoneButtonEnabled,
         modifier = Modifier
+            .testTag(ProductSelectorTestTags.DONE_BUTTON)
             .fillMaxWidth()
             .padding(dimensionResource(id = dimen.major_100))
     )

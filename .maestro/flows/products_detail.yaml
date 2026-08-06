@@ -1,5 +1,5 @@
 # Smoke Test: Products - Product Detail
-# p2: products.detail.description, products.detail.categories, products.detail.type
+# p2: products.detail.categories
 # P2 ref: Products > Product details (all details)
 #
 # IMPORTANT: this flow opens "the first product" in the staging list.
@@ -25,9 +25,10 @@
 # Verifies:
 #   - Product detail screen loads
 #   - Product name field + "Describe your product" area render
-#   - Universal ComplexProperty rows render (Product type, Reviews,
-#     Categories). Type-specific editors remain manual until this flow targets
-#     a product fixture that guarantees those rows.
+#   - Universal ComplexProperty rows render (Product type, Reviews, Categories)
+#
+# Mutable description and product-type persistence is verified against the
+# run-owned product in products_create.yaml.
 appId: com.woocommerce.android.dev
 name: "Products - Product detail view"
 tags:

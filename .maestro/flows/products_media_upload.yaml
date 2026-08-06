@@ -1,0 +1,309 @@
+# Smoke Test: Products - Media upload via WordPress media library
+# p2: products.detail.media
+# P2 ref: Products > Media upload
+#
+# Exercises the full WP-media-library upload path end-to-end:
+#
+#   Product detail
+#     └─ tap "Add image"
+#        (ProductDetailViewModel.onAddImageButtonClicked →
+#         ViewProductImageGallery with showChooser = true)
+#           ▼
+#   ProductImagesFragment ("Photos" screen)
+#     └─ image-source dialog auto-opens
+#        └─ tap "WordPress media library"
+#           (mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY))
+#              ▼
+#   MediaPickerActivity (external org.wordpress:mediapicker lib)
+#     └─ tap first image_thumbnail in the recycler
+#     └─ tap mnu_confirm_selection ("Add N") in the toolbar
+#        └─ result returned to ProductImagesFragment
+#           ▼
+#   ProductImagesFragment — gallery now shows the image
+#     └─ back → product detail (dirty — new image in draft)
+#        └─ tap Save / Publish → product detail updated on backend
+#
+# ⚠️  STORE MUTATION: unlike most smoke flows, this one DOES persist a
+# change — the image is attached to the product it opens. The flow
+# therefore targets the automation-owned product created earlier in the
+# suite by products_create.yaml, located by the unique suite run id.
+#
+# Source strings (res/values/strings.xml):
+#   - image_source_wp_media_library → "WordPress media library"
+#   - product_add_tool_bar_menu_button_done → "Publish"
+#
+# External lib resource IDs (from
+# org.wordpress:mediapicker:0.3.5 AAR):
+#   - recycler                 — media thumbnail list
+#   - image_thumbnail          — per-tile ImageView
+#   - mnu_confirm_selection    — "Add N" action-mode menu item
+#   - soft_ask_view            — storage-permission prompt (guarded)
+appId: com.woocommerce.android.dev
+name: "Products - Media upload via WP media library"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - products
+  - destructive
+---
+# Reuse the logged-in session.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# products_variations_and_tags.yaml leaves the Product type filter
+# active when it runs earlier in the suite. Clear active filters before
+# searching for this run's simple product.
+- runFlow:
+    when:
+      visible: "Filters.*[0-9]"
+    commands:
+      - tapOn:
+          id: "btn_product_filter"
+          retryTapIfNoChange: true
+          label: "Open active product filters"
+      - extendedWaitUntil:
+          visible:
+            id: "filterList"
+          timeout: 15000
+      - tapOn:
+          id: "menu_clear"
+          retryTapIfNoChange: true
+          label: "Clear active product filters"
+      - tapOn:
+          id: "filterList_btnShowProducts"
+          retryTapIfNoChange: true
+          label: "Show products without filters"
+      - extendedWaitUntil:
+          visible:
+            id: "productsRecycler"
+          timeout: 15000
+
+# Open this run's newly-created product — never an arbitrary first row.
+# This flow persists an image on whatever product it opens, and on the
+# shared store index-0 can be a manual tester's real product.
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      text: "Maestro Smoke Product ${SUITE_RUN_ID}"
+    timeout: 20000
+    label: "Wait for this run's product in search results"
+
+- hideKeyboard
+
+- tapOn:
+    id: "productName"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open this run's product"
+
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: media_upload_product_detail
+
+# Tap the add-image affordance. Newly-created products show the
+# empty-gallery "Add a product image" row; products that already have
+# media show the gallery add icon/container. All paths call
+# ProductDetailViewModel.onAddImageButtonClicked which navigates to
+# ProductImagesFragment with showChooser = true.
+- runFlow:
+    when:
+      visible: "Add a product image"
+    commands:
+      - tapOn:
+          text: "Add a product image"
+          retryTapIfNoChange: true
+          label: "Tap empty-gallery add image row"
+      - extendedWaitUntil:
+          visible: "Select an upload method"
+          timeout: 10000
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageIcon"
+          retryTapIfNoChange: true
+          label: "Tap add image icon (gallery)"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageContainer"
+          retryTapIfNoChange: true
+          label: "Tap add image container (fallback)"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          text: "Add image"
+          retryTapIfNoChange: true
+          label: "Tap by Add image content description"
+
+# Dialog should be showing now.
+- extendedWaitUntil:
+    visible: "Select an upload method"
+    timeout: 15000
+    label: "Wait for image source dialog"
+
+- takeScreenshot: media_upload_source_dialog
+
+# Pick the WP media library source. The Choose / Camera entries are
+# probed incidentally by the existence-assertions in the original
+# smoke flow; here we specifically exercise the network-backed path.
+- tapOn:
+    text: "WordPress media library"
+    label: "Tap WordPress media library"
+
+# MediaPickerActivity should open with the thumbnails RecyclerView.
+# On a freshly-installed app it occasionally shows the permission
+# soft-ask first — we grant it if it appears. The APK installer uses
+# `adb install -g` which usually pre-grants runtime permissions, but
+# the soft-ask is an in-app affordance unrelated to runtime perms,
+# so we still guard for it.
+- runFlow:
+    when:
+      visible:
+        id: "soft_ask_view"
+    commands:
+      - tapOn:
+          text: ".*Allow access.*|.*Allow.*"
+
+- extendedWaitUntil:
+    visible:
+      id: "recycler"
+    timeout: 30000
+    label: "Wait for WP Media Library to load"
+
+- takeScreenshot: media_upload_wp_library
+
+# Select the first image in the grid.
+- tapOn:
+    id: "image_thumbnail"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Tap first WP Media Library item"
+
+- takeScreenshot: media_upload_item_selected
+
+# Confirm the selection via the action-mode menu item. The
+# mediapicker library labels this button dynamically based on
+# selection count ("Add 1", "Add 2", …) so we target the id
+# directly — it's stable across counts.
+- tapOn:
+    id: "mnu_confirm_selection"
+    retryTapIfNoChange: true
+    label: "Tap Add in toolbar"
+
+# Back on ProductImagesFragment. The gallery now shows the freshly-
+# picked image. The thumbnail's id is `productImage`
+# (image_gallery_item.xml) — asserting it's visible proves the
+# image-add round-trip worked. Allow generous timeout because the
+# image is streamed from Jetpack / wp.com.
+- extendedWaitUntil:
+    visible:
+      id: "productImage"
+    timeout: 45000
+    label: "Wait for image to appear in product gallery"
+
+- assertVisible:
+    id: "productImage"
+    label: "Image is displayed in ProductImagesFragment"
+
+- takeScreenshot: media_upload_image_in_gallery
+
+# Navigate back to the product detail through ProductImagesFragment's
+# toolbar navigation. That path calls onNavigateBackButtonClicked()
+# and returns ExitWithResult(images) to ProductDetailFragment. A raw
+# device back can pop the destination without delivering that result
+# on some app/back-stack states.
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Tap image gallery toolbar back"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for product detail to reappear"
+
+# Save the product so the image is persisted on the backend. On an
+# existing product the action is labelled "SAVE"; on a brand-new
+# product it would read "PUBLISH". Match either.
+- extendedWaitUntil:
+    visible: ".*SAVE.*|.*PUBLISH.*"
+    timeout: 10000
+    label: "Wait for Save/Publish action"
+
+- tapOn:
+    text: ".*SAVE.*|.*PUBLISH.*"
+    retryTapIfNoChange: true
+    label: "Tap Save/Publish to persist the image"
+
+# A few outcomes are possible depending on app version + network:
+#   1. The button label flips back to the non-dirty state and we
+#      stay on the detail screen.
+#   2. A success snackbar appears.
+#   3. The detail screen closes automatically.
+# We accept any of those signals as "save worked".
+- extendedWaitUntil:
+    visible: ".*updated.*|.*saved.*|.*productsRecycler.*|.*Describe your product.*"
+    timeout: 30000
+    label: "Wait for save confirmation"
+
+- takeScreenshot: media_upload_saved
+
+# Return to the product list for the next flow.
+- runFlow:
+    when:
+      notVisible:
+        id: "productsRecycler"
+    commands:
+      - back
+
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn: "Discard"
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 15000

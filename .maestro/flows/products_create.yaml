@@ -1,0 +1,1111 @@
+# Smoke Test: Products - Create and publish a full product
+# p2: products.create, products.detail.description, products.detail.price, products.detail.inventory, products.detail.shipping, products.detail.type, products.detail.tags, products.detail.short-description, products.detail.linked, products.detail.downloads
+# P2 ref: Products > Create product
+#
+# Exercises the full happy-path creation flow for a run-owned Simple physical
+# product, publishes it, reopens the exact product, and verifies its values:
+#
+#   1. FAB → Manual → Simple physical product
+#   2. Enter a name and main description unique to SUITE_RUN_ID
+#   3. Set the regular price
+#   4. Configure Inventory with a unique SKU and managed stock quantity
+#   5. Add Shipping dimensions and prove the draft is a physical Simple product
+#   6. Create and attach a unique tag
+#   7. Add an Upsell from Linked products
+#   8. Add a downloadable file by URL
+#   9. Tap "Add more details" (productDetail_addMoreButton) — on a
+#      freshly-created simple product the Short description and
+#      Categories rows don't appear on the detail screen until the
+#      user opts them in from this bottom sheet
+#  10. From the sheet pick "Short description" and enter a unique value
+#  11. Tap "Add more details" again → pick "Categories" → ProductCategorySelector
+#      → select the first category ("Uncategorized" if present) → Done
+#  12. Tap PUBLISH in the toolbar
+#  13. Search by run ID, reopen the exact product, and verify Description,
+#      Price, Inventory, Shipping, type, tag, Short description, Upsell, and
+#      Downloadable file values persisted in their editors
+#
+# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on
+# the staging store every run. Clean up periodically by searching
+# "Maestro Smoke" in wp-admin → Products and bulk-trashing the matches.
+# A future improvement would be to trash the product automatically at
+# the end of the flow (menu_trash_product exists).
+#
+# Source strings (res/values/strings.xml):
+#   - product_price_empty                → "Add price"
+#   - product_detail_add_more            → "Add more details"
+#   - product_short_description          → "Short description"
+#   - product_categories                 → "Categories"
+#   - product_category_selector_title    → "Select categories"
+#   - product_category_selector_select_button_title_one → "Select 1 category"
+#   - product_add_tool_bar_menu_button_done → "Publish"
+appId: com.woocommerce.android.dev
+name: "Products - Create and publish a full product"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - products
+  - destructive
+---
+# Reuse the logged-in session.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/ensure_configured_woo_store.yaml
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# ─────────────────────────────────────────────────────────────────────
+# 1. Start product creation
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "addProductButton"
+    retryTapIfNoChange: true
+    label: "Tap Add Product FAB"
+
+- extendedWaitUntil:
+    visible: ".*manual.*|.*Manual.*|.*Select a product type.*|.*Simple physical.*"
+    timeout: 15000
+    label: "Wait for creation entry sheet"
+
+- runFlow:
+    when:
+      visible: ".*manual.*|.*Manual.*"
+    commands:
+      - tapOn: ".*manual.*|.*Manual.*"
+
+- runFlow:
+    when:
+      visible: ".*Simple physical product.*"
+    commands:
+      - tapOn: ".*Simple physical product.*"
+
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Write with AI.*|.*Describe your product.*"
+    timeout: 20000
+    label: "Wait for creation form"
+
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: product_create_empty_form
+
+# ─────────────────────────────────────────────────────────────────────
+# 2. Name — stamped with the suite run id so (a) the end-of-flow search
+#    matches exactly this run's product, never a leftover duplicate,
+#    and (b) the stale-orphan sweep can find and delete it if the run
+#    crashes before any cleanup.
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    id: "editText"
+    label: "Tap product name field"
+
+- inputText: "Maestro Smoke Product ${SUITE_RUN_ID}"
+
+- hideKeyboard
+
+- takeScreenshot: product_create_named
+
+# Main description — unique to this run so the reopened editor proves the
+# published product, rather than a stale list row, retained the mutation.
+- tapOn:
+    text: "Describe your product"
+    retryTapIfNoChange: true
+    label: "Open main product description"
+
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+
+- tapOn:
+    id: "visualEditor"
+- inputText: "Maestro description ${SUITE_RUN_ID}"
+- hideKeyboard
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save main description through the editor toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Return after main description edit"
+
+- tapOn:
+    text: "Description"
+    retryTapIfNoChange: true
+    label: "Reopen draft main description"
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+- copyTextFrom:
+    id: "visualEditor"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))) {
+        throw new Error('Draft product did not retain its main description');
+    }
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Return from verified main description"
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# ─────────────────────────────────────────────────────────────────────
+# 3. Price — "Add price" ComplexProperty → ProductPricingFragment
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: ".*Add price.*|.*Price.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add price row"
+
+- tapOn:
+    text: ".*Add price.*|.*Price.*"
+    retryTapIfNoChange: true
+    label: "Tap Add price row"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_regular_price"
+    timeout: 15000
+    label: "Wait for pricing editor"
+
+- tapOn:
+    id: "product_regular_price"
+    label: "Tap regular price field"
+
+- inputText: "19.99"
+
+- hideKeyboard
+
+- takeScreenshot: product_create_price_entered
+
+# Use the toolbar affordance so ProductPricingFragment delivers its result.
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save price through the editor toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after price edit"
+
+# ─────────────────────────────────────────────────────────────────────
+# 4. Inventory — set a run-unique SKU and enable managed stock
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Inventory"
+
+- tapOn:
+    text: "Inventory"
+    retryTapIfNoChange: true
+    label: "Open Inventory settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_sku"
+    timeout: 15000
+    label: "Wait for Inventory editor"
+
+- tapOn:
+    id: "product_sku"
+    label: "Focus SKU"
+- eraseText
+- inputText: "SMOKE-${SUITE_RUN_ID}"
+- hideKeyboard
+
+- tapOn:
+    id: "manageStock_switch"
+    label: "Enable stock management"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_stock_quantity"
+    timeout: 10000
+    label: "Wait for managed stock fields"
+
+- tapOn:
+    id: "product_stock_quantity"
+    label: "Focus stock quantity"
+- eraseText
+- inputText: "7"
+- hideKeyboard
+
+- assertVisible:
+    id: "manageStock_switch"
+    checked: true
+    label: "Stock management is enabled"
+
+- takeScreenshot: product_create_inventory
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save inventory through the editor toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Inventory"
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Shipping — add weight and dimensions to the physical product
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Shipping"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Shipping"
+
+- extendedWaitUntil:
+    visible: "Shipping"
+    timeout: 10000
+    label: "Require Shipping option"
+
+- tapOn:
+    text: "Shipping"
+    retryTapIfNoChange: true
+    label: "Open Shipping settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_weight"
+    timeout: 15000
+    label: "Wait for Shipping editor"
+
+- tapOn: { id: "product_weight", label: "Focus weight" }
+- eraseText
+- inputText: "1.25"
+- tapOn: { id: "product_length", label: "Focus length" }
+- eraseText
+- inputText: "2.5"
+- tapOn: { id: "product_width", label: "Focus width" }
+- eraseText
+- inputText: "3.75"
+- tapOn: { id: "product_height", label: "Focus height" }
+- eraseText
+- inputText: "4.5"
+- hideKeyboard
+
+- takeScreenshot: product_create_shipping
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save shipping through the editor toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Shipping"
+
+- scrollUntilVisible:
+    element: "Shipping"
+    direction: DOWN
+    timeout: 10000
+    label: "Shipping row was added"
+
+# The selected creation type must still be a non-virtual Simple product before
+# adding a downloadable file changes the summary to Downloadable product.
+- scrollUntilVisible:
+    element: "Physical product"
+    direction: DOWN
+    timeout: 10000
+    label: "Require the Simple physical product type"
+
+- assertVisible:
+    text: "Physical product"
+    label: "Draft is a Simple physical product"
+
+# Tags — create a run-unique tag and attach it to this run-owned draft.
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Reach Add more details for Tags"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Tags"
+
+- scrollUntilVisible:
+    element: "Tags"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Tags option"
+
+- tapOn:
+    text: "Tags"
+    retryTapIfNoChange: true
+    label: "Open product tags"
+
+- extendedWaitUntil:
+    visible:
+      id: "productTagsRecycler"
+    timeout: 15000
+
+- tapOn:
+    id: "addTagsEditText"
+- inputText: "Maestro tag ${SUITE_RUN_ID}"
+- pressKey: Enter
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      text: "Maestro tag ${SUITE_RUN_ID}"
+      childOf:
+        id: "selectedTagsGroup"
+    timeout: 15000
+    label: "Run-owned tag is selected"
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save tags through the editor toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 30000
+    label: "Return after creating the run-owned tag"
+
+# Reopen Tags after the asynchronous create request has completed. If the
+# first request returned no tag, repeat the same unique selection once.
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+
+- runFlow:
+    when:
+      visible: "Tags"
+    commands:
+      - tapOn:
+          text: "Tags"
+          retryTapIfNoChange: true
+          label: "Reopen attached run-owned tag"
+      - extendedWaitUntil:
+          visible:
+            id: "productTagsRecycler"
+          timeout: 15000
+
+- runFlow:
+    when:
+      notVisible:
+        id: "productTagsRecycler"
+    commands:
+      - tapOn:
+          id: "productDetail_addMoreButton"
+          retryTapIfNoChange: true
+          label: "Reopen Add more details for tag recovery"
+      - extendedWaitUntil:
+          visible: "Tags"
+          timeout: 10000
+      - tapOn:
+          text: "Tags"
+          retryTapIfNoChange: true
+          label: "Reopen Tags for tag recovery"
+
+- extendedWaitUntil:
+    visible:
+      id: "productTagsRecycler"
+    timeout: 15000
+
+- runFlow:
+    when:
+      notVisible:
+        text: "Maestro tag ${SUITE_RUN_ID}"
+        childOf:
+          id: "selectedTagsGroup"
+    commands:
+      - tapOn:
+          id: "addTagsEditText"
+      - inputText: "Maestro tag ${SUITE_RUN_ID}"
+      - pressKey: Enter
+      - hideKeyboard
+      - extendedWaitUntil:
+          visible:
+            text: "Maestro tag ${SUITE_RUN_ID}"
+            childOf:
+              id: "selectedTagsGroup"
+          timeout: 15000
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Confirm the run-owned tag after asynchronous creation"
+
+- extendedWaitUntil:
+    visible: "Maestro tag ${SUITE_RUN_ID}"
+    timeout: 30000
+    label: "Run-owned tag is attached to the product draft"
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Linked products — add one existing product as an Upsell
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Linked products"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Linked products"
+
+- scrollUntilVisible:
+    element: "Linked products"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Linked products option"
+
+- tapOn:
+    text: "Linked products"
+    retryTapIfNoChange: true
+    label: "Open Linked products"
+
+- extendedWaitUntil:
+    visible:
+      id: "add_upsell_products"
+    timeout: 15000
+    label: "Wait for Linked products editor"
+
+- tapOn:
+    id: "add_upsell_products"
+    retryTapIfNoChange: true
+    label: "Open Upsell products"
+
+- extendedWaitUntil:
+    visible: "Add product"
+    timeout: 15000
+    label: "Wait for empty Upsell list"
+
+- tapOn:
+    text: "Add product"
+    retryTapIfNoChange: true
+    label: "Choose an Upsell product"
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 20000
+    label: "Wait for product selection list"
+
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Select first existing product as Upsell"
+
+- extendedWaitUntil:
+    visible:
+      id: "menu_done"
+    timeout: 10000
+    label: "Wait for product selection action"
+
+- tapOn:
+    id: "menu_done"
+    label: "Confirm Upsell product"
+
+- extendedWaitUntil:
+    visible:
+      id: "productName"
+    timeout: 15000
+    label: "Upsell product appears in the linked list"
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save selected Upsell through the toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 10000
+    label: "Wait for Upsell count"
+
+- assertVisible:
+    id: "upsells_count"
+    label: "One Upsell is attached to the product draft"
+
+- takeScreenshot: product_create_linked_product
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save Linked products through the toolbar"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for detail screen after Linked products"
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Downloadable files — attach a deterministic URL and file name
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details for Downloadable files"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Open Add more details for Downloadable files"
+
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Downloadable files option"
+
+- tapOn:
+    text: "Downloadable files"
+    retryTapIfNoChange: true
+    label: "Open downloadable file sources"
+
+- extendedWaitUntil:
+    visible:
+      id: "add_downloadable_manually"
+    timeout: 10000
+    label: "Wait for downloadable file source sheet"
+
+- tapOn:
+    id: "add_downloadable_manually"
+    label: "Enter downloadable file URL"
+
+- extendedWaitUntil:
+    visible:
+      id: "product_download_url"
+    timeout: 15000
+    label: "Wait for downloadable file editor"
+
+- tapOn: { id: "product_download_url", label: "Focus file URL" }
+- inputText: "https://example.com/maestro-${SUITE_RUN_ID}.pdf"
+- tapOn: { id: "product_download_name", label: "Focus file name" }
+- inputText: "Maestro download ${SUITE_RUN_ID}"
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible:
+      id: "menu_done"
+    timeout: 10000
+    label: "Wait for Add downloadable file action"
+
+- tapOn:
+    id: "menu_done"
+    label: "Add downloadable file"
+
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 15000
+    label: "Downloadable files row was added"
+
+- assertVisible: "1 file"
+- takeScreenshot: product_create_downloadable_file
+
+# ─────────────────────────────────────────────────────────────────────
+# 8. Open the "Add more details" bottom sheet to unlock the Short
+#    description + Categories rows. The sheet's list items are built
+#    by ProductDetailBottomSheetBuilder; their visible text comes
+#    from the same string resources used on the detail rows.
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details button"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Tap Add more details"
+
+- extendedWaitUntil:
+    visible: "Short description"
+    timeout: 10000
+    label: "Wait for Add more details bottom sheet"
+
+- takeScreenshot: product_create_add_more_sheet_1
+
+# ─────────────────────────────────────────────────────────────────────
+# 5. Short description — Aztec visual editor
+# ─────────────────────────────────────────────────────────────────────
+- tapOn:
+    text: "Short description"
+    retryTapIfNoChange: true
+    label: "Tap Short description in sheet"
+
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+    label: "Wait for Aztec visual editor"
+
+- tapOn:
+    id: "visualEditor"
+    label: "Focus the Aztec editor"
+
+# Maestro inputText does not support Unicode (see mobile-dev-inc/maestro#146),
+# so we stick to plain ASCII — no em-dashes, smart quotes, etc.
+- inputText: "Maestro short description ${SUITE_RUN_ID}"
+
+- hideKeyboard
+
+- takeScreenshot: product_create_short_description_entered
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Save short description through the editor toolbar"
+
+- extendedWaitUntil:
+    visible: ".*PUBLISH.*|.*SAVE.*"
+    timeout: 10000
+    label: "Wait for detail screen after description edit"
+
+- assertVisible:
+    text: "Maestro short description ${SUITE_RUN_ID}"
+    label: "Short description is attached to the draft"
+
+# ─────────────────────────────────────────────────────────────────────
+# 6. Categories — open "Add more details" sheet again, pick Categories
+# ─────────────────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productDetail_addMoreButton"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Add more details button again"
+
+- tapOn:
+    id: "productDetail_addMoreButton"
+    retryTapIfNoChange: true
+    label: "Tap Add more details (Categories)"
+
+- extendedWaitUntil:
+    visible: "Categories"
+    timeout: 10000
+    label: "Wait for Add more details bottom sheet"
+
+- takeScreenshot: product_create_add_more_sheet_2
+
+- tapOn:
+    text: "Categories"
+    retryTapIfNoChange: true
+    label: "Tap Categories in sheet"
+
+# ViewProductCategories navigates to ProductCategoriesFragment —
+# a View-based screen (NOT the Compose ProductCategorySelectorScreen
+# that's also in the codebase). Signal that the screen has loaded by
+# waiting for its RecyclerView instead of a title string, since
+# "Categories" text is ambiguous with the still-visible detail row.
+- extendedWaitUntil:
+    visible:
+      id: "productCategoriesRecycler"
+    timeout: 15000
+    label: "Wait for category list"
+
+- takeScreenshot: product_create_category_screen
+
+# Only the checkbox itself toggles selection —
+# ProductCategoriesAdapter wires the click listener exclusively on
+# `categoryCheckbox`, NOT on the row or the category name TextView
+# (the row's `selectableItemBackground` is purely decorative). We
+# therefore tap the first `categoryCheckbox` directly (index 0 =
+# whichever category renders at the top of the list; which one is
+# irrelevant for this smoke — the point is "product gets a category").
+- tapOn:
+    id: "categoryCheckbox"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Tick first category checkbox"
+
+# Small settle so the checked-state animation completes before the
+# back press tears the fragment down.
+- extendedWaitUntil:
+    visible:
+      id: "categoryCheckbox"
+    timeout: 3000
+
+# ProductCategoriesFragment saves via viewModel.onBackButtonClicked
+# → setResult back to the detail fragment when the user presses back.
+- back
+
+- extendedWaitUntil:
+    visible: ".*PUBLISH.*|.*SAVE.*"
+    timeout: 15000
+    label: "Wait for detail screen after category edit"
+
+- takeScreenshot: product_create_all_fields_set
+
+# ─────────────────────────────────────────────────────────────────────
+# 7. Publish
+# ─────────────────────────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible: ".*PUBLISH.*"
+    timeout: 10000
+    label: "Wait for Publish action"
+
+- tapOn:
+    text: "PUBLISH"
+    retryTapIfNoChange: true
+    label: "Tap Publish"
+
+# After publishing the app may stay on the detail screen (with
+# action label swapping PUBLISH → SAVE) or return to the products
+# list. Either settling signal is good.
+- extendedWaitUntil:
+    visible: ".*productsRecycler.*|.*SAVE.*|.*updated.*|.*published.*"
+    timeout: 45000
+    label: "Wait for publish to complete"
+
+- takeScreenshot: product_create_published
+
+# ─────────────────────────────────────────────────────────────────────
+# 8. Confirm the product is in the list
+# ─────────────────────────────────────────────────────────────────────
+- runFlow:
+    when:
+      notVisible:
+        id: "productsRecycler"
+    commands:
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 15000
+    label: "Wait for products list"
+
+- tapOn:
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+
+- inputText: ${SUITE_RUN_ID}
+
+- hideKeyboard
+
+# The search is debounced, and the staging backend can take a couple
+# of seconds to return results for a just-published product. Generous
+# timeout to accommodate that round-trip. Matching on the run id makes
+# this assert immune to leftovers from previous runs.
+- extendedWaitUntil:
+    visible: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
+    timeout: 30000
+    label: "Wait for the new product in search results"
+
+- assertVisible: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
+
+- takeScreenshot: product_create_found_in_list
+
+# Reopen the exact run-owned product after publishing and verify the four
+# edited detail surfaces persisted through the product update.
+- tapOn:
+    text: ".*Maestro Smoke Product ${SUITE_RUN_ID}.*"
+    retryTapIfNoChange: true
+    label: "Reopen the published run-owned product"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 20000
+    label: "Wait for published product detail"
+
+# Main-description persistence in its editor.
+- tapOn:
+    text: "Description"
+    retryTapIfNoChange: true
+    label: "Reopen persisted main description"
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+- copyTextFrom:
+    id: "visualEditor"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro description ' + String(SUITE_RUN_ID))) {
+        throw new Error('Published product did not retain its main description');
+    }
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Return from persisted main description"
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+# Price persistence in its editor.
+- scrollUntilVisible:
+    element: "Price"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Price"
+    retryTapIfNoChange: true
+    label: "Reopen persisted price"
+- extendedWaitUntil:
+    visible:
+      id: "product_regular_price"
+    timeout: 15000
+- copyTextFrom:
+    id: "product_regular_price"
+- evalScript: |
+    if (!maestro.copiedText || maestro.copiedText.trim().replace(',', '.') !== '19.99') {
+        throw new Error('Published product did not retain regular price 19.99');
+    }
+- back
+- extendedWaitUntil:
+    visible: "Price"
+    timeout: 10000
+
+# Inventory persistence.
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Inventory"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "product_sku"
+    timeout: 15000
+
+- copyTextFrom:
+    id: "product_sku"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('SMOKE-' + String(SUITE_RUN_ID))) {
+        throw new Error('Published product did not retain its run-owned SKU');
+    }
+- assertVisible:
+    id: "manageStock_switch"
+    checked: true
+    label: "Published product retains managed stock"
+- copyTextFrom:
+    id: "product_stock_quantity"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('7')) {
+        throw new Error('Published product did not retain stock quantity 7');
+    }
+- takeScreenshot: product_persisted_inventory
+- back
+
+- extendedWaitUntil:
+    visible: "Inventory"
+    timeout: 10000
+
+# Shipping persistence.
+- scrollUntilVisible:
+    element: "Shipping"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Shipping"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "product_weight"
+    timeout: 15000
+
+- copyTextFrom: { id: "product_weight" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('1.25')) {
+        throw new Error('Published product did not retain weight 1.25');
+    }
+- copyTextFrom: { id: "product_length" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('2.5')) {
+        throw new Error('Published product did not retain length 2.5');
+    }
+- copyTextFrom: { id: "product_width" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('3.75')) {
+        throw new Error('Published product did not retain width 3.75');
+    }
+- copyTextFrom: { id: "product_height" }
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('4.5')) {
+        throw new Error('Published product did not retain height 4.5');
+    }
+- takeScreenshot: product_persisted_shipping
+- back
+
+- extendedWaitUntil:
+    visible: "Shipping"
+    timeout: 10000
+
+# Linked-products persistence.
+- scrollUntilVisible:
+    element: "Linked products"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Linked products"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 15000
+- copyTextFrom:
+    id: "upsells_count"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.trim().startsWith('1')) {
+        throw new Error('Published product did not retain its Upsell');
+    }
+- takeScreenshot: product_persisted_linked_product
+- back
+
+- extendedWaitUntil:
+    visible: "Linked products"
+    timeout: 10000
+
+# Downloadable-file persistence.
+- scrollUntilVisible:
+    element: "Downloadable files"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Downloadable files"
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible:
+      id: "productDownloadsRecycler"
+    timeout: 15000
+- assertVisible:
+    text: "Maestro download ${SUITE_RUN_ID}"
+    label: "Published product retains downloadable file name"
+- assertVisible:
+    text: "https://example.com/maestro-${SUITE_RUN_ID}.pdf"
+    label: "Published product retains downloadable file URL"
+- takeScreenshot: product_persisted_downloadable_file
+- back
+
+- extendedWaitUntil:
+    visible: "Downloadable files"
+    timeout: 10000
+
+# Product-type persistence. A Simple physical product with an attached file is
+# summarized as Downloadable product after publishing; Shipping persistence
+# above proves it was not converted to a virtual product.
+- scrollUntilVisible:
+    element: "Downloadable product"
+    direction: DOWN
+    timeout: 10000
+    label: "Published product retains its Simple downloadable type"
+- assertVisible:
+    text: "Downloadable product"
+
+# Tag persistence in the tags editor.
+- scrollUntilVisible:
+    element: "Tags"
+    direction: UP
+    timeout: 10000
+- tapOn:
+    text: "Tags"
+    retryTapIfNoChange: true
+    label: "Reopen persisted tags"
+- extendedWaitUntil:
+    visible:
+      id: "productTagsRecycler"
+    timeout: 15000
+- assertVisible:
+    text: "Maestro tag ${SUITE_RUN_ID}"
+    childOf:
+      id: "selectedTagsGroup"
+    label: "Published product retains the run-owned tag"
+- back
+- extendedWaitUntil:
+    visible: "Tags"
+    timeout: 10000
+
+# Short-description persistence in its editor.
+- scrollUntilVisible:
+    element: "Short description"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    text: "Short description"
+    retryTapIfNoChange: true
+    label: "Reopen persisted short description"
+- extendedWaitUntil:
+    visible:
+      id: "visualEditor"
+    timeout: 15000
+- copyTextFrom:
+    id: "visualEditor"
+- evalScript: |
+    if (!maestro.copiedText || !maestro.copiedText.includes('Maestro short description ' + String(SUITE_RUN_ID))) {
+        throw new Error('Published product did not retain its short description');
+    }
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Return from verified short description"
+- extendedWaitUntil:
+    visible: "Linked products"
+    timeout: 10000
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000
+    label: "Return to filtered product results"
+
+# Close search to leave the UI clean for downstream flows.
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000

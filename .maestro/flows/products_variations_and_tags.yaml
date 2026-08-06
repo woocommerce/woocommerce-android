@@ -1,5 +1,5 @@
 # Smoke Test: Products - Variations via Product Type filter
-# p2: products.detail.tags, products.detail.variations, products.detail.variation-attributes
+# p2: products.detail.variations, products.detail.variation-attributes
 # P2 ref: Products > Product details — Variations, Variation detail
 #
 # Exercises the real Variable-product path end-to-end:
@@ -24,6 +24,9 @@
 # a positive variation count after the filter is applied will fail — that's
 # intentional. The test doesn't know whether "no variable products" is
 # a regression in the app or missing store data.
+#
+# Mutable tag persistence is verified against the run-owned product in
+# products_create.yaml.
 #
 # Key selectors (from the app's XML layouts):
 #   - btn_product_filter              — WCToggleOutlinedButton on the

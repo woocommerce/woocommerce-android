@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.TopAppBarEdgeToEdge
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
+import com.woocommerce.android.ui.products.selector.components.ProductSelectorTestTags
 import com.woocommerce.android.ui.products.selector.components.SelectorListItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.LoadingState.LOADING
@@ -186,6 +187,7 @@ private fun VariationList(
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = false,
                     enabled = true,
+                    testTag = ProductSelectorTestTags.VARIATION_ITEM,
                     onEditConfiguration = {}
                 ) {
                     onVariationClick(variation)

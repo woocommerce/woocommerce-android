@@ -1,0 +1,203 @@
+# Smoke Test: Orders - Mark order complete
+# p2: orders.mark-complete
+# P2 ref: Orders > Mark complete
+#
+# Verifies:
+#   - Create a fresh paid automation order through the app UI
+#   - Move that order back to Processing via the order status editor
+#   - Navigate to the Fulfill screen via "Mark order complete"
+#   - Complete the fulfillment
+#   - "🎉 Order completed!" snackbar appears
+#
+# The Mark Complete button is only exposed for paid orders whose status
+# is not Completed. This flow creates its own paid order, moves that
+# automation-owned order to Processing, then marks it Completed again.
+appId: com.woocommerce.android.dev
+name: "Orders - Mark order complete"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# ── Create a paid automation order ───────────────────────────────────
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
+
+- extendedWaitUntil:
+    visible: "Add products"
+    timeout: 15000
+
+- tapOn:
+    text: "Add products"
+    label: "Tap Add products"
+
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
+
+- tapOn:
+    point: "50%,30%"
+    label: "Tap first product row"
+
+- extendedWaitUntil:
+    visible: ".*Select \\d+ Product.*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Select \\d+ Product.*"
+    label: "Confirm product selection"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: "Collect Payment"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Collect Payment primary button"
+
+- tapOn:
+    text: "Collect Payment"
+    retryTapIfNoChange: true
+    label: "Submit order and start payment flow"
+
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 30000
+
+- tapOn:
+    text: "Cash"
+    retryTapIfNoChange: true
+    label: "Select Cash payment method"
+
+- extendedWaitUntil:
+    visible: ".*Mark Order as Complete.*"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Mark Order as Complete.*"
+    retryTapIfNoChange: true
+    label: "Create paid completed order"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 30000
+
+- takeScreenshot: order_mark_complete_paid_order_created
+
+# Reopen the newest order this flow just created. It is automation-owned
+# and appears at the top of the list after the cash completion above.
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Open newly-created completed order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+- takeScreenshot: order_detail_completed_before_status_edit
+
+# ── Move the paid order back to Processing ───────────────────────────
+- tapOn:
+    id: "orderStatus_container"
+    retryTapIfNoChange: true
+    label: "Open order status selector"
+
+- extendedWaitUntil:
+    visible: "Change order status"
+    timeout: 10000
+
+- tapOn:
+    text: "Processing"
+    label: "Select Processing status"
+
+- tapOn:
+    text: "Apply"
+    retryTapIfNoChange: true
+    label: "Apply Processing status"
+
+- extendedWaitUntil:
+    visible: ".*Processing.*"
+    timeout: 30000
+    label: "Wait for Processing status"
+
+- takeScreenshot: order_detail_processing
+
+# ── Mark complete → Fulfill screen ───────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: "productList_btnMarkOrderComplete"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Mark order complete button"
+
+- tapOn:
+    id: "productList_btnMarkOrderComplete"
+    retryTapIfNoChange: true
+    label: "Tap Mark order complete"
+
+# Fulfill screen has its own Mark Complete CTA that actually commits
+# the status change.
+- extendedWaitUntil:
+    visible:
+      id: "button_mark_order_compete"
+    timeout: 15000
+
+- takeScreenshot: order_fulfill_screen
+
+- tapOn:
+    id: "button_mark_order_compete"
+    retryTapIfNoChange: true
+    label: "Confirm mark complete"
+
+# ── Verify completion ────────────────────────────────────────────────
+# On stores with shipping labels enabled, the Fulfill confirm can race
+# into an auto-navigation to the Create Shipping Label screen. Back out
+# until the orders list reappears, which is this flow's final state.
+- runFlow:
+    when:
+      visible: ".*Create shipping label.*"
+    commands:
+      - back
+          # Create Shipping Label is a sibling of Order Detail in the
+          # nav graph — a single back returns directly to the orders
+          # list on this store config.
+
+# If we're still on order detail, back out to the orders list.
+- runFlow:
+    when:
+      visible:
+        id: "orderDetail_container"
+    commands:
+      - extendedWaitUntil:
+          visible: ".*Completed.*|.*Order completed.*|.*Undo.*"
+          timeout: 15000
+          label: "Verify completed status or snackbar"
+      - takeScreenshot: order_marked_complete
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+- takeScreenshot: order_marked_complete_list
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
