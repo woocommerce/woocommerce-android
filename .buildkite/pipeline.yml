@@ -117,6 +117,22 @@ steps:
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
 
+      - input: Run Maestro smoke tests?
+        prompt: "Run on-demand Maestro smoke tests. Requires MAESTRO_WOO_* secrets and an Android device/emulator."
+        key: maestro_smoke_tests_triggered
+
+      - label: ":maestro: Maestro smoke tests"
+        depends_on: maestro_smoke_tests_triggered
+        command: .buildkite/commands/run-maestro-tests.sh
+        plugins:
+          - $CI_TOOLKIT
+          - $TEST_COLLECTOR :
+              <<: *test_collector_common_params
+              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_MAESTRO_TESTS"
+        artifact_paths:
+          - "WooCommerce/build/outputs/maestro-smoke/**/*"
+          - "WooCommerce/build/buildkite-test-analytics/maestro-report.xml"
+
 
   - label: "🐘 Populate Gradle build cache"
     command: .buildkite/commands/gradle-cache-build.sh

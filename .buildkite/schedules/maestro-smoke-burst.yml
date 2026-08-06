@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+# Intended Buildkite schedule:
+#   Bi-weekly Thursday night before the Monday production rollout.
+#   Branch: active release branch.
+#
+# This is deliberately not a nightly pipeline.
+
+agents:
+  queue: "android"
+
+env:
+  MAESTRO_STORE: "shared"
+  MAESTRO_INCLUDE_TAGS: "smoke_core,smoke_extended,destructive"
+  MAESTRO_EXCLUDE_TAGS: "flaky_quarantine,pos_tablet"
+  MAESTRO_REPEAT: "3"
+
+steps:
+  - label: ":maestro: Thursday Maestro smoke burst"
+    command: .buildkite/commands/run-maestro-tests.sh
+    plugins:
+      - $CI_TOOLKIT
+      - $TEST_COLLECTOR :
+          files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+          format: "junit"
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_MAESTRO_TESTS"
+    artifact_paths:
+      - "WooCommerce/build/outputs/maestro-smoke/**/*"
+      - "WooCommerce/build/buildkite-test-analytics/maestro-report.xml"
+
+notify:
+  - slack:
+      channels:
+        - "#woo-android-notifs"
+    if: "build.state != 'passed'"
