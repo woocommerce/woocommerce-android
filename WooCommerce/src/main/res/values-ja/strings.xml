@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:58:50+0000
+Translation-Revision-Date: 2026-07-14 09:56:09+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">この画像タイプはサポートされていません。 PNG、JPEG、WebP、GIF、BMP、HEIC、HEIF のいずれかの画像を選択してください。</string>
+    <string name="ai_support_chat_store_connection_error_message">自分のストアにアクセスできません。 自分のストアにアクセスを試みた際に、アプリが接続エラーを検出しました。 これを解決するにはどうすればよいですか ?</string>
+    <string name="settings_crash_reporting_error_update">クラッシュ報告の設定の更新中にエラーが発生しました</string>
+    <string name="empty_search_guest_orders_button">非会員注文を表示</string>
+    <string name="empty_message_with_search_guest">非会員顧客による注文をお探しですか ?</string>
+    <string name="order_refunds_gift_card_unsupported_message">この注文はギフトカードで支払われました。 ここで返金を行うと、ギフトカード残高が復元されません。 正しく返金するには、ウェブのストア管理から処理してください。</string>
+    <string name="order_refunds_gift_card_unsupported_title">ストア管理から返金</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">このサイトのセキュリティ証明書を確認できませんでした。 ホスティングサービスまたはサイト管理者に連絡して、もう一度お試しください。</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">安全な接続を確立できませんでした。 端末の日時が正しいことを確認してから、もう一度お試しください。</string>
     <string name="woopos_refund_preview_error">返金合計を計算できませんでした。 もう一度お試しください。</string>
@@ -502,11 +509,6 @@ Language: ja_JP
     <string name="connectivity_tool_view_technical_details">技術詳細を表示</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">ストアで商品を取得しています</string>
     <string name="user_role_access_error_fetch_failed">このストアでの権限グループを認証できませんでした。 もう一度お試しください。 問題が解決しない場合は、サポートにお問い合わせください。</string>
-    <string name="woopos_eligibility_learn_more_label">さらに詳しく</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 &lt;b&gt;Pro にアップグレード&lt;/b&gt;すると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">取引ごとにわずか2.70% + 0.10ドルで直接支払いを受け取れます。 Pro にアップグレードすると、スマートフォンで Tap To Pay を利用できるほか、在庫と注文のリアルタイム同期を備えた POS システムをフル活用できます。</string>
-    <string name="woopos_eligibility_ciab_title">Pro プランが必要です</string>
-    <string name="ciab_order_status_open">開く</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">配送ラベルを購入できません。 配送元住所を入力してください。</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">配送元住所がないか、無効です</string>
     <string name="woopos_orders_details_refund_details_background">返金詳細ダイアログの背景</string>

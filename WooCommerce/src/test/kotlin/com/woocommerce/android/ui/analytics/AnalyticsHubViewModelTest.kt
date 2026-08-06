@@ -583,7 +583,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            on { revenueState } doReturn flow { RevenueState.Error }
+            on { revenueState } doReturn flowOf(RevenueState.Error)
         }
 
         sut = givenAViewModel()
@@ -599,7 +599,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            on { ordersState } doReturn flow { OrdersState.Error }
+            on { ordersState } doReturn flowOf(OrdersState.Error)
         }
 
         sut = givenAViewModel()
@@ -615,7 +615,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            on { productsState } doReturn flow { ProductsState.Error }
+            on { productsState } doReturn flowOf(ProductsState.Error)
         }
 
         sut = givenAViewModel()
@@ -631,7 +631,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         configureVisibleCards()
         configureSuccessfulStatsResponse()
         updateStats.stub {
-            on { sessionState } doReturn flow { SessionState.Error }
+            on { sessionState } doReturn flowOf(SessionState.Error)
         }
 
         sut = givenAViewModel()

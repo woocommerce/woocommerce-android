@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.PointOfSaleMode
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -48,6 +50,8 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
+    private val crashLogging: CrashLogging,
 ) {
     fun create(
         orderId: Long,
@@ -74,12 +78,14 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         paymentOrRefund = PaymentOrRefund.Payment(
             orderId = orderId,
             paymentType = paymentType
         ),
         cardReaderType = cardReaderType,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        crashLogging = crashLogging,
     )
 
     fun createRefund(
@@ -106,12 +112,14 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         paymentOrRefund = PaymentOrRefund.Refund(
             orderId = orderId,
             refundAmount = refundAmount
         ),
         cardReaderType = CardReaderType.EXTERNAL,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        crashLogging = crashLogging,
         allowCancelledStatus = false,
     )
 }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.coupons
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmssGmt
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
@@ -17,6 +16,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.coupon.UpdateCouponRequest
 import org.wordpress.android.fluxc.store.CouponStore
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class CouponRepository @Inject constructor(
@@ -161,8 +162,8 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    suspend fun updateCoupon(coupon: Coupon): Result<Unit> {
-        val request = coupon.createUpdateCouponRequest()
+    suspend fun updateCoupon(coupon: Coupon, originalCoupon: Coupon): Result<Unit> {
+        val request = coupon.createUpdateCouponRequest(originalCoupon)
 
         val result = store.updateCoupon(
             site = selectedSite.get(),
@@ -194,30 +195,38 @@ class CouponRepository @Inject constructor(
         return store.getCoupons(selectedSite.get(), couponIds).map { it.toAppModel() }
     }
 
-    private fun Coupon.createUpdateCouponRequest() =
-        UpdateCouponRequest(
-            code = code,
-            description = description,
-            amount = amount?.toPlainString(),
-            discountType = type?.value,
-            isShippingFree = isShippingFree,
-            expiryDate = dateExpires?.formatToYYYYmmDDhhmmssGmt() ?: "",
-            productIds = productIds,
-            productCategoryIds = categoryIds,
-            usageLimit = restrictions.usageLimit,
-            usageLimitPerUser = restrictions.usageLimitPerUser,
-            restrictedEmails = restrictions.restrictedEmails,
-            areSaleItemsExcluded = restrictions.areSaleItemsExcluded,
-            isForIndividualUse = restrictions.isForIndividualUse,
-            maximumAmount = restrictions.maximumAmount?.toPlainString(),
-            minimumAmount = restrictions.minimumAmount?.toPlainString(),
-            limitUsageToXItems = restrictions.limitUsageToXItems,
-            excludedProductIds = restrictions.excludedProductIds,
-            excludedProductCategoryIds = restrictions.excludedCategoryIds
-        )
-
     data class SearchResult(
         val coupons: List<Coupon>,
         val canLoadMore: Boolean
     )
 }
+
+internal fun Coupon.createUpdateCouponRequest(originalCoupon: Coupon? = null) =
+    UpdateCouponRequest(
+        code = code,
+        description = description,
+        amount = amount?.toPlainString(),
+        discountType = type?.value,
+        isShippingFree = isShippingFree,
+        expiryDate = when {
+            originalCoupon == null -> dateExpiresLocal?.formatAsCouponExpiry() ?: ""
+            dateExpiresLocal == originalCoupon.dateExpiresLocal -> null
+            dateExpiresLocal == null -> ""
+            else -> dateExpiresLocal.formatAsCouponExpiry()
+        },
+        productIds = productIds,
+        productCategoryIds = categoryIds,
+        usageLimit = restrictions.usageLimit,
+        usageLimitPerUser = restrictions.usageLimitPerUser,
+        restrictedEmails = restrictions.restrictedEmails,
+        areSaleItemsExcluded = restrictions.areSaleItemsExcluded,
+        isForIndividualUse = restrictions.isForIndividualUse,
+        maximumAmount = restrictions.maximumAmount?.toPlainString(),
+        minimumAmount = restrictions.minimumAmount?.toPlainString(),
+        limitUsageToXItems = restrictions.limitUsageToXItems,
+        excludedProductIds = restrictions.excludedProductIds,
+        excludedProductCategoryIds = restrictions.excludedCategoryIds
+    )
+
+private fun LocalDate.formatAsCouponExpiry() =
+    "${format(DateTimeFormatter.ISO_LOCAL_DATE)}T00:00:00"

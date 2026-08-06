@@ -11,6 +11,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import org.wordpress.android.fluxc.logging.FakeCrashLogging
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
@@ -31,6 +33,9 @@ object WooAiSmokeFeatureAppBindingsModule {
 
     @Provides
     fun provideAppSecrets(): AppSecrets = AppSecrets(BuildConfig.OAUTH_APP_ID, BuildConfig.OAUTH_APP_SECRET)
+
+    @Provides
+    fun provideFluxCCrashLogger(): FluxCCrashLogger = FakeCrashLogging
 
     @Provides
     fun provideAssistantTelemetryTracker(): AssistantTelemetryTracker =

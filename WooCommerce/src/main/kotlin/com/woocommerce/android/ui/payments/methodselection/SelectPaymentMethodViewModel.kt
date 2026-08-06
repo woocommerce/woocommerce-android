@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
@@ -45,11 +46,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -77,7 +80,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
-    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -121,7 +125,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 WOO_POS -> error("Unsupported card reader flow param: $param")
                             }
                         }
-                        Unit
                     }
 
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
@@ -411,6 +414,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         paymentMethodTitle: String?
     ): Flow<WCOrderStore.UpdateOrderResult> {
         val statusModel = getStatusModel(statusKey)
+        val previousStatusKey =
+            orderStore.getOrderByIdAndSite(cardReaderPaymentFlowParam.orderId, selectedSite.get())?.status
 
         return if (paymentMethod == null && paymentMethodTitle == null) {
             orderStore.updateOrderStatus(
@@ -426,6 +431,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 paymentMethod,
                 paymentMethodTitle
             )
+        }.onEach { result ->
+            if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
+                newOrderNotificationSuppressionCache.onOrderStatusChanged(
+                    siteId = selectedSite.get().siteId,
+                    orderId = cardReaderPaymentFlowParam.orderId,
+                    previousStatusKey = previousStatusKey,
+                    newStatusKey = statusKey
+                )
+            }
         }
     }
 
@@ -435,12 +449,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
-        collect { result ->
-            when (result) {
-                is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
-                is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
-                    if (result.event.isError) {
-                        handleUpdateOrderStatusError()
+        // exitFlow() on the optimistic result cancels the ViewModel scope, keep collecting so the
+        // remote result is still observed. FluxC finishes the request itself in NonCancellable.
+        withContext(NonCancellable) {
+            collect { result ->
+                when (result) {
+                    is WCOrderStore.UpdateOrderResult.OptimisticUpdateResult -> exitFlow()
+                    is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
+                        if (result.event.isError) {
+                            handleUpdateOrderStatusError()
+                        }
                     }
                 }
             }

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:58:45+0000
+Translation-Revision-Date: 2026-07-13 14:57:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Den här bildtypen stöds inte. Välj en PNG-, JPEG-, WebP-, GIF-, BMP-, HEIC- eller HEIF-bild.</string>
+    <string name="ai_support_chat_store_connection_error_message">Min butik kan inte nås. Appen upptäckte ett anslutningsfel när den försökte nå min butik. Hur kan jag åtgärda detta?</string>
+    <string name="settings_crash_reporting_error_update">Det uppstod ett fel vid uppdateringen av dina inställningar för kraschrapportering</string>
+    <string name="empty_search_guest_orders_button">Visa gästbeställningar</string>
+    <string name="empty_message_with_search_guest">Letar du efter beställningar gjorda av gästkunder?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Denna beställning betalades med ett presentkort. Återbetalning här återställer inte presentkortssaldot. För att återbetala korrekt, behandla det från din butiksadmin på webben.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Återbetala från din butiksadmin</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Vi kunde inte verifiera denna webbplats säkerhetscertifikat. Kontakta ditt webbhotell eller din webbplatsadministratör och försök sedan igen.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Vi kunde inte etablera en säker anslutning. Kontrollera att datum och tid på din enhet är rätt och försök sedan igen.</string>
     <string name="woopos_refund_preview_error">Det gick inte att beräkna återbetalningsbeloppet. Försök igen.</string>
@@ -502,11 +509,6 @@ Language: sv_SE
     <string name="connectivity_tool_view_technical_details">Visa tekniska detaljer</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Hämtar produkter i din butik</string>
     <string name="user_role_access_error_fetch_failed">Vi kunde inte verifiera din roll i denna butik. Försök igen. Om problemet kvarstår, kontakta support.</string>
-    <string name="woopos_eligibility_learn_more_label">Läs mer</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. &lt;b&gt;Uppgradera till Pro&lt;/b&gt; för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Ta emot betalningar personligen för endast 2,70 % + 0,10 USD per transaktion. Uppgradera till Pro för att få åtkomst till tryck-för-att-betala på din telefon, vårt fullständiga kassasystem med lagersaldo i realtid samt ordersynkronisering.</string>
-    <string name="woopos_eligibility_ciab_title">Pro-paket krävs</string>
-    <string name="ciab_order_status_open">Öppna</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Det gick inte att köpa fraktetikett. Fyll i avsändarens adress.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Originaladress saknas eller ogiltig</string>
     <string name="woopos_orders_details_refund_details_background">Bakgrund för dialogrutan Återbetalningsinformation</string>

@@ -13,6 +13,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
@@ -36,8 +38,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
             wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
-            getWooVersion = getWooVersion,
-            fetchWooVersion = fetchWooVersion,
+            isFileBasedSyncSupported = WooPosIsFileBasedSyncSupported(getWooVersion, fetchWooVersion),
             posTabShouldBeVisible = posTabShouldBeVisible,
             posCanBeLaunchedInTab = posCanBeLaunchedInTab,
             wooPosLogWrapper = logger,
@@ -142,6 +143,64 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         val result = isLocalCatalogSupported()
 
         // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given all conditions met, when asked as of last evaluation, then returns true`() {
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = true, launchable = true)
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given feature flag disabled, when asked as of last evaluation, then returns false`() {
+        // GIVEN
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
+
+        // WHEN
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = true, launchable = true)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given WC version below minimum, when asked as of last evaluation, then returns false`() {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn("10.4.9")
+
+        // WHEN
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = true, launchable = true)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given no cached WC version, when asked as of last evaluation, then it does not fetch one`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn(null)
+
+        // WHEN
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = true, launchable = true)
+
+        // THEN
+        assertThat(result).isFalse()
+        verify(fetchWooVersion, never()).invoke()
+    }
+
+    @Test
+    fun `given POS tab not visible, when asked as of last evaluation, then returns false`() {
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = false, launchable = true)
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given POS not launchable, when asked as of last evaluation, then returns false`() {
+        val result = isLocalCatalogSupported.asOfLastEvaluation(tabVisible = true, launchable = false)
+
         assertThat(result).isFalse()
     }
 }

@@ -286,7 +286,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 mLoginListener.getLoginMode() == LoginMode.JETPACK_LOGIN_ONLY,
                 mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE
         );
-        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore, false);
+        mOldSitesIDs = SiteUtils.getCurrentSiteIds(mSiteStore);
     }
 
     @Override
@@ -320,6 +320,13 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
     private void showError(String error) {
         mAnalyticsListener.trackFailure(error);
         mPasswordInput.setError(error);
+    }
+
+    @NonNull
+    private String resolveFailureMessage(@NonNull LoginState loginState) {
+        String failureMessage = loginState.getFailureMessage();
+        return failureMessage == null || failureMessage.trim().isEmpty() ?
+                getString(R.string.error_generic) : failureMessage;
     }
 
     @Override
@@ -413,7 +420,7 @@ public class LoginEmailPasswordFragment extends LoginBaseFormFragment<LoginListe
                 break;
             case FAILURE:
                 onLoginFinished(false);
-                showError(getString(R.string.error_generic));
+                showError(resolveFailureMessage(loginState));
                 break;
             case SUCCESS:
                 onLoginFinished(true);
