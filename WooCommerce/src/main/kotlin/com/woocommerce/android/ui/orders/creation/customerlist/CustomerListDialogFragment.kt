@@ -29,7 +29,7 @@ class CustomerListDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Slide)
     }
 
     override fun onCreateView(

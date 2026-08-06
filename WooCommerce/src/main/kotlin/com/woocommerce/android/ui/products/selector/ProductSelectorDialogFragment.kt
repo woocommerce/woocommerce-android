@@ -38,7 +38,7 @@ class ProductSelectorDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Slide)
 
         if (args.selectionHandling != ProductSelectorViewModel.SelectionHandling.SIMPLE) {
             // If we want to support the other handling, we need to make all of the destinations as dialogs
