@@ -5,6 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -20,9 +21,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductBlocked(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -33,9 +32,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -47,9 +44,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductBlocked(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -61,9 +56,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -74,9 +67,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductBlocked(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -87,9 +78,30 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
+    }
+
+    @Test
+    fun `given draft product, when order creation products restriction, then the matched restriction is returned`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.DRAFT.name
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.NonPurchasableProducts, sut.getRestriction(product))
+    }
+
+    @Test
+    fun `given private product with no price, when order creation products restriction, then the price restriction is returned`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.PRIVATE.name,
+            amount = ""
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.ProductWithPriceNotSpecified, sut.getRestriction(product))
     }
 
     @Test
@@ -158,9 +170,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -172,9 +182,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertTrue {
-            sut.isProductBlocked(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -186,9 +194,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -199,9 +205,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertTrue {
-            sut.isProductBlocked(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -212,9 +216,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductBlocked(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
     //endregion
 }

@@ -10,8 +10,8 @@ import javax.inject.Inject
 interface ProductRestrictions {
     val restrictions: List<ProductRestriction>
 
-    fun isProductBlocked(product: Product): Boolean {
-        return restrictions.any { restriction -> restriction(product) }
+    fun getRestriction(product: Product): ProductRestriction? {
+        return restrictions.firstOrNull { restriction -> restriction(product) }
     }
 
     fun getUnsupportedRestriction(product: Product): ProductRestriction.Unsupported? {
@@ -44,6 +44,18 @@ class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictio
 @Parcelize
 sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     /**
+     * Message shown to the merchant when a scanned barcode or SKU resolves to a product this restriction blocks.
+     */
+    @get:StringRes
+    abstract val scanningMessage: Int
+
+    /**
+     * Failure reason reported to analytics (never shown to the user) when the scanning flow rejects a product this
+     * restriction blocks.
+     */
+    abstract val scanningTrackingReason: String
+
+    /**
      * A restriction which removes the product from the product list altogether.
      */
     sealed class Hidden : ProductRestriction()
@@ -52,10 +64,15 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
      * A restriction on products the app can't sell at all. The product stays visible in the product list and
      * [reason] is shown as why it can't be selected.
      */
-    sealed class Unsupported(@StringRes val reason: Int) : ProductRestriction()
+    sealed class Unsupported(@StringRes val reason: Int) : ProductRestriction() {
+        override val scanningMessage: Int get() = reason
+    }
 
     @Parcelize
     object NonPublishedProducts : Hidden() {
+        override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+        override val scanningTrackingReason get() = "Failed to add a product which is not published"
+
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH
         }
@@ -63,6 +80,9 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
 
     @Parcelize
     object NonPurchasableProducts : Hidden() {
+        override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
+        override val scanningTrackingReason get() = "Failed to add a product which is not published"
+
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH && product.status != ProductStatus.PRIVATE
         }
@@ -70,6 +90,10 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
 
     @Parcelize
     object VariableProductsWithNoVariations : Hidden() {
+        override val scanningMessage get() =
+            R.string.order_creation_barcode_scanning_unable_to_add_product_with_no_variations
+        override val scanningTrackingReason get() = "Failed to add a variable product with no variations"
+
         override fun invoke(product: Product): Boolean {
             return (product.isVariable() && product.numVariations == 0)
         }
@@ -77,6 +101,10 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
 
     @Parcelize
     object ProductWithPriceNotSpecified : Hidden() {
+        override val scanningMessage get() =
+            R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
+        override val scanningTrackingReason get() = "Failed to add a product whose price is not specified"
+
         override fun invoke(product: Product): Boolean {
             return product.price == null
         }
@@ -84,6 +112,8 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
 
     @Parcelize
     object SubscriptionProducts : Unsupported(R.string.product_selector_subscription_not_supported) {
+        override val scanningTrackingReason get() = "Failed to add a subscription product"
+
         override fun invoke(product: Product): Boolean {
             return product.productType.isSubscriptionProduct()
         }
