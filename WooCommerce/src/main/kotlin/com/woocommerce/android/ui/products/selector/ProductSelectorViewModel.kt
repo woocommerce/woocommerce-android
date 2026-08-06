@@ -779,6 +779,9 @@ class ProductSelectorViewModel @Inject constructor(
         open val selectionState: SelectionState = UNSELECTED,
         open val isLoading: Boolean = false,
     ) {
+        val enabled: Boolean
+            get() = selectionState !is SelectionState.DISABLED && !isLoading
+
         data class ProductListItem(
             val productId: Long,
             val numVariations: Int,

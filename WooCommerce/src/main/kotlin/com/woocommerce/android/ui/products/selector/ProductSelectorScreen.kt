@@ -515,9 +515,6 @@ private fun SelectionConfirmButton(
 private fun ListItem.hasVariations() =
     this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
 
-private val ListItem.enabled: Boolean
-    get() = selectionState !is SelectionState.DISABLED && !isLoading
-
 private val ListItem.disabledReason: String?
     get() = (selectionState as? SelectionState.DISABLED)?.reason
 
