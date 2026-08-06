@@ -16,6 +16,7 @@
 - [*] Woo POS: Fixed some phones failing to start reader mode, so the POS tablet could never discover them [https://github.com/woocommerce/woocommerce-android/pull/16367]
 - [*] The application log screen can now share all stored logs at once as a single zip, instead of one day at a time [https://github.com/woocommerce/woocommerce-android/pull/16337]
 - [*] Made the SMS verification option clearer during WordPress.com two-step login [https://github.com/woocommerce/woocommerce-android/pull/16296]
+- [*] The shipment tracking carrier list shows your store's country at the top of the list again [https://github.com/woocommerce/woocommerce-android/pull/16332]
 
 25.3
 -----
