@@ -215,7 +215,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     /**
      * Fetches the store settings required for local refund calculation (currency decimals and tax
-     * rounding mode) unless already cached. Only the v3 fallback path needs these.
+     * rounding mode) unless already cached. Only the local-calculation flow needs these.
      */
     private suspend fun ensureLocalCalculationSettings(): Boolean {
         if (cachedNumberOfDecimalPoints == null && fetchSiteSettings().isFailure) return false
@@ -409,24 +409,16 @@ class WooPosRefundViewModel @AssistedInject constructor(
     /**
      * Triggered when the user commits their selection by tapping "Continue". On a server-eligible
      * store this fetches the server-calculated totals and, on success, advances to the review step
-     * showing those authoritative totals. On a local-flow store (flag off, WooCommerce too old, or
-     * server refunds known unavailable) the totals are calculated locally instead. On a preview
-     * error the user stays on the selection step with a retry affordance.
+     * showing those authoritative totals. [WooPosRefundPreview] owns the eligibility decision and
+     * reports `FallbackToLocal` for a local-flow store (flag off, WooCommerce too old, or server
+     * refunds known unavailable), which resolves the totals on-device instead. On a preview error
+     * the user stays on the selection step with a retry affordance.
      */
     private fun continueToReview(currentState: WooPosRefundState.Content) {
         if (currentState.selectedItemIds.isEmpty()) return
         previewJob?.cancel()
 
         val selectedItems = currentState.refundableItems.filter { it.uniqueId in currentState.selectedItemIds }
-
-        if (resolveRefundFlow() is WooPosRefundFlow.LocalComputed) {
-            // The legacy local flow: skip the probe and resolve totals on-device.
-            _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
-            previewJob = viewModelScope.launch {
-                advanceToReviewWithLocalTotals(currentState, selectedItems)
-            }
-            return
-        }
 
         _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
 
@@ -498,7 +490,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
             subtotal = preview.subtotal,
             taxes = preview.tax,
             total = preview.total,
-            maxRefundable = preview.maxRefundable,
             formattedSubtotal = PriceUtils.formatCurrency(preview.subtotal, currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(preview.tax, currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(preview.total, currency, currencyFormatter),
@@ -561,9 +552,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
     ): WooPosRefundSubmissionRequest? {
-        val serverRefundsConfirmedAvailable =
-            serverRefundAvailabilityCache.isAvailable(selectedSite.get().localId().value) == true
-        if (resolveRefundFlow() is WooPosRefundFlow.ServerComputed && serverRefundsConfirmedAvailable) {
+        val flow = resolveRefundFlow()
+        val serverRefundsConfirmedAvailable = flow is WooPosRefundFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(
+                localSiteId = selectedSite.get().localId().value,
+                wooVersion = flow.wooVersion,
+            ) == true
+        if (serverRefundsConfirmedAvailable) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,

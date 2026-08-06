@@ -29,7 +29,8 @@ class WooPosRefundPreview @Inject constructor(
         val site = selectedSite.get()
         val localSiteId = site.localId().value
 
-        if (resolveRefundFlow() is WooPosRefundFlow.LocalComputed) {
+        val flow = resolveRefundFlow()
+        if (flow !is WooPosRefundFlow.ServerComputed) {
             return Result.FallbackToLocal
         }
 
@@ -43,7 +44,7 @@ class WooPosRefundPreview @Inject constructor(
             response.isError -> {
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
                     WooLog.i(WooLog.T.POS, "WooPosRefund: preview route not available; falling back to local")
-                    availabilityCache.markUnavailable(localSiteId)
+                    availabilityCache.markUnavailable(localSiteId, flow.wooVersion)
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(
@@ -56,7 +57,7 @@ class WooPosRefundPreview @Inject constructor(
             }
 
             preview != null -> {
-                availabilityCache.markAvailable(localSiteId)
+                availabilityCache.markAvailable(localSiteId, flow.wooVersion)
                 Result.ServerCalculated(preview)
             }
 

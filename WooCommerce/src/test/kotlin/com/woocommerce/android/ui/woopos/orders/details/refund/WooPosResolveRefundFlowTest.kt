@@ -56,7 +56,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.1.0")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed)
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.1.0"))
     }
 
     @Test
@@ -65,7 +65,7 @@ class WooPosResolveRefundFlowTest {
         whenever(getWooCoreVersion.invoke()).thenReturn("11.2.0")
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed)
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.2.0"))
     }
 
     @Test
@@ -81,7 +81,7 @@ class WooPosResolveRefundFlowTest {
     fun `given WC version unknown and availability cached true, when resolved, then flow is still local`() {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn(null)
-        availabilityCache.markAvailable(LOCAL_SITE_ID)
+        availabilityCache.markAvailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
         assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
@@ -90,7 +90,7 @@ class WooPosResolveRefundFlowTest {
     @Test
     fun `given server refunds known unavailable, when resolved, then flow is local`() {
         // GIVEN
-        availabilityCache.markUnavailable(LOCAL_SITE_ID)
+        availabilityCache.markUnavailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
         assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)
@@ -99,22 +99,45 @@ class WooPosResolveRefundFlowTest {
     @Test
     fun `given server refunds confirmed available, when resolved, then flow is server`() {
         // GIVEN
-        availabilityCache.markAvailable(LOCAL_SITE_ID)
+        availabilityCache.markAvailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed)
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
+    }
+
+    @Test
+    fun `given a prerelease of the minimum version, when resolved, then flow is server`() {
+        // GIVEN — trunk builds report `11.1.0-dev`, and betas `11.1.0-beta1`. Neither may read as
+        // below 11.1.0, otherwise testers silently get the local flow.
+        whenever(getWooCoreVersion.invoke()).thenReturn("11.1.0-dev")
+
+        // THEN
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed("11.1.0-dev"))
+    }
+
+    @Test
+    fun `given a verdict probed on an older version, when the store upgrades, then flow is server again`() {
+        // GIVEN a store probed as unavailable while it ran an older WooCommerce
+        availabilityCache.markUnavailable(LOCAL_SITE_ID, "11.0.5")
+
+        // WHEN it now reports a supported version
+        whenever(getWooCoreVersion.invoke()).thenReturn(MIN_VERSION)
+
+        // THEN the stale verdict does not pin it to local calculation for the rest of the process
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
     }
 
     @Test
     fun `given another site is unavailable, when resolved, then this site is still eligible`() {
         // GIVEN — the cache is keyed by local site id; another store's verdict must not bleed over.
-        availabilityCache.markUnavailable(LOCAL_SITE_ID + 1)
+        availabilityCache.markUnavailable(LOCAL_SITE_ID + 1, MIN_VERSION)
 
         // THEN
-        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed)
+        assertThat(sut()).isEqualTo(WooPosRefundFlow.ServerComputed(MIN_VERSION))
     }
 
     private companion object {
         private const val LOCAL_SITE_ID = 11
+        private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
 }

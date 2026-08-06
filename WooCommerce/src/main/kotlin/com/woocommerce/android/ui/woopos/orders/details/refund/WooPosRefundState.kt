@@ -32,7 +32,6 @@ sealed class WooPosRefundState {
         // back to the local calculation and these stay at their defaults (no loading/no failure).
         val isPreviewLoading: Boolean = false,
         val previewFailed: Boolean = false,
-        val maxRefundable: BigDecimal? = null,
     ) : WooPosRefundState() {
 
         @Immutable

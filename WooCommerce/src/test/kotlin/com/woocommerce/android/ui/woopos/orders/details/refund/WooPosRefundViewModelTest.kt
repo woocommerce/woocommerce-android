@@ -52,6 +52,9 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
+/** The store version these tests report; availability verdicts are recorded against it. */
+private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosRefundViewModelTest {
 
@@ -152,7 +155,7 @@ class WooPosRefundViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
 
         whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
-        // Default to the v3 fallback so existing assertions exercise the local-calculation path;
+        // Default to the local flow so existing assertions exercise the local-calculation path;
         // server-flow tests override this.
         whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.FallbackToLocal)
         whenever(refundSubmissionProcessor.submit(any())).thenReturn(
@@ -324,7 +327,7 @@ class WooPosRefundViewModelTest {
     fun `given server refunds unavailable, when continue clicked, then settings fetched and totals calculated locally`() =
         runTest {
             // GIVEN — server refunds are known unavailable for the site, so the local path is used.
-            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value)
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
             val refundableItems = listOf(
                 testRefundableItem.copy(rowIndex = 0),
                 testRefundableItem.copy(rowIndex = 1)
@@ -340,9 +343,12 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
 
-            // THEN — settings were fetched lazily and the totals computed locally.
+            // THEN — settings were fetched lazily and the totals computed locally. The eligibility
+            // decision lives only in WooPosRefundPreview now, so it is consulted and reports the
+            // fallback; that it does not reach the network for an unavailable store is asserted in
+            // WooPosRefundPreviewTest rather than duplicated here.
             verify(wooCommerceStore).fetchSiteSettingsTaxRoundAtSubtotal(testSite)
-            verify(refundPreview, never()).invoke(any(), any())
+            verify(refundPreview).invoke(any(), any())
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
             assertThat(content.subtotal).isEqualByComparingTo(BigDecimal("40.00"))
@@ -356,7 +362,7 @@ class WooPosRefundViewModelTest {
         // that verdict must not bleed into testSite (local id 1) — important for self-hosted/WPAPI
         // stores that all share remote siteId 0.
         val otherLocalSiteId = testSite.localId().value + 1
-        serverRefundAvailabilityCache.markUnavailable(otherLocalSiteId)
+        serverRefundAvailabilityCache.markUnavailable(otherLocalSiteId, MIN_VERSION)
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
         whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
@@ -427,7 +433,6 @@ class WooPosRefundViewModelTest {
         assertThat(content.subtotal).isEqualByComparingTo(BigDecimal("55.00"))
         assertThat(content.taxes).isEqualByComparingTo(BigDecimal("5.00"))
         assertThat(content.total).isEqualByComparingTo(BigDecimal("60.00"))
-        assertThat(content.maxRefundable).isEqualByComparingTo(BigDecimal("60.00"))
         assertThat(content.isPreviewLoading).isFalse()
         assertThat(content.previewFailed).isFalse()
     }
@@ -478,7 +483,7 @@ class WooPosRefundViewModelTest {
     fun `given preview succeeded, when refund confirmed, then processor receives server line items`() =
         runTest {
             // GIVEN — server refunds are available, so the preview returns server-calculated totals.
-            serverRefundAvailabilityCache.markAvailable(testSite.localId().value)
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -514,10 +519,39 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given store eligible but no successful preview, when refund confirmed, then the classic request is sent`() =
+        runTest {
+            // GIVEN — an eligible store (flag on, supported version) whose preview reported the
+            // local fallback, so nothing ever confirmed `compute_totals` support. This is the deny
+            // side of the create gate: sending a computed create here would silently drop the
+            // parameter on a store that does not understand it and book a zero-amount refund.
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(WooPosRefundPreview.Result.FallbackToLocal)
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN — no server line items, and the items come from local grouping instead.
+            verify(refundSubmissionProcessor).submit(
+                argThat { orderId == testOrderId && serverLineItems == null }
+            )
+            verify(groupRefundItems).invoke(any(), any(), any())
+        }
+
+    @Test
     fun `given preview loading, when selection toggled, then loading is cleared and stale preview dropped`() =
         runTest {
             // GIVEN — server refunds are available; the preview is held open to simulate a request in flight.
-            serverRefundAvailabilityCache.markAvailable(testSite.localId().value)
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
             val refundableItems = listOf(testRefundableItem.copy(rowIndex = 0), testRefundableItem.copy(rowIndex = 1))
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
@@ -721,7 +755,7 @@ class WooPosRefundViewModelTest {
             )
 
             // Server refunds unavailable so totals are calculated locally on Continue.
-            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value)
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
             whenever(
                 retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())
@@ -1211,7 +1245,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
-            // WHEN — Continue resolves the totals (locally, via the v3 fallback) before confirming.
+            // WHEN — Continue resolves the totals (locally, via the legacy flow) before confirming.
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -1848,7 +1882,7 @@ class WooPosRefundViewModelTest {
             val stateBeforeConfirm = viewModel.state.value as WooPosRefundState.Content
             assertThat(stateBeforeConfirm.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item3.uniqueId)
 
-            // WHEN — Continue resolves the totals (locally, via the v3 fallback) before confirming.
+            // WHEN — Continue resolves the totals (locally, via the legacy flow) before confirming.
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
