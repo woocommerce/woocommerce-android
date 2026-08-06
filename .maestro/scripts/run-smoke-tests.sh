@@ -66,7 +66,7 @@ Usage:
   .maestro/scripts/run-smoke-tests.sh .maestro/flows/orders_list_and_search.yaml
 
 Options:
-  --profile name              Preset: core, phone-full, release, burst, pos-tablet.
+  --profile name              Preset: core, phone-full, release, burst, pos-tablet, android-system.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
   --apk path                  Install APK before running.
@@ -107,25 +107,25 @@ apply_profile() {
       STORE="lab"
       REPEAT=1
       INCLUDE_TAGS=("smoke_core")
-      EXCLUDE_TAGS=("flaky_quarantine")
+      EXCLUDE_TAGS=("flaky_quarantine" "android_system")
       ;;
     phone-full)
       STORE="lab"
       REPEAT=1
       INCLUDE_TAGS=("smoke_core" "smoke_extended")
-      EXCLUDE_TAGS=("pos_tablet")
+      EXCLUDE_TAGS=("pos_tablet" "android_system")
       ;;
     release)
       STORE="shared"
       REPEAT=1
       INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
-      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet")
+      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet" "android_system")
       ;;
     burst)
       STORE="shared"
       REPEAT=3
       INCLUDE_TAGS=("smoke_core" "smoke_extended" "destructive")
-      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet")
+      EXCLUDE_TAGS=("flaky_quarantine" "pos_tablet" "android_system")
       ;;
     pos-tablet)
       STORE="lab"
@@ -133,9 +133,15 @@ apply_profile() {
       INCLUDE_TAGS=("pos_tablet")
       EXCLUDE_TAGS=()
       ;;
+    android-system)
+      STORE="lab"
+      REPEAT=1
+      INCLUDE_TAGS=("android_system")
+      EXCLUDE_TAGS=()
+      ;;
     *)
       echo "Unknown --profile: $PROFILE" >&2
-      echo "Valid profiles: core, phone-full, release, burst, pos-tablet" >&2
+      echo "Valid profiles: core, phone-full, release, burst, pos-tablet, android-system" >&2
       exit 2
       ;;
   esac
@@ -280,6 +286,8 @@ P2_ORDERED_FLOWS=(
   orders_details_and_actions.yaml
   orders_mark_complete.yaml
   orders_cash_payment.yaml
+  orders_barcode_scanner_opens.yaml
+  orders_payment_qr_and_share.yaml
   orders_refund.yaml
   products_list_and_sort.yaml
   products_detail.yaml
@@ -295,6 +303,7 @@ P2_ORDERED_FLOWS=(
   google_for_woo.yaml
   pos_search_and_coupons.yaml
   pos_cash_payment.yaml
+  android_quick_actions.yaml
 )
 
 echo "--- Pre-flight checks"

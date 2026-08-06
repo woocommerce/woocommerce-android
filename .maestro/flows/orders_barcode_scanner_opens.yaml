@@ -1,0 +1,99 @@
+# Smoke Test: Orders - Barcode scanner opens
+# p2: orders.barcode.open-scanner
+# P2 ref: Orders > Barcode scanner entry points
+#
+# Verifies:
+#   - Orders-list barcode action opens the scanner surface
+#   - Empty order-creation "Add products via scanner" opens the scanner
+#   - The draft order screen is discarded without creating an order
+#
+# This flow does not claim barcode product injection or order creation. Those
+# still require a camera feed or a guided physical barcode scan.
+appId: com.woocommerce.android.dev
+name: "Orders - Barcode scanner opens"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - system_surface
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Orders-list scanner entry.
+- tapOn:
+    id: "menu_barcode"
+    retryTapIfNoChange: true
+    label: "Open scanner from orders list"
+
+- extendedWaitUntil:
+    visible:
+      id: "barcodeComposeView"
+    timeout: 15000
+    label: "Wait for barcode scanner surface"
+
+- extendedWaitUntil:
+    visible: ".*Scan Product Barcode.*|.*Grant Camera Permission.*"
+    timeout: 15000
+    label: "Wait for barcode scanner overlay"
+
+- takeScreenshot: orders_barcode_scanner_from_list
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000
+
+# Order-creation product scanner entry.
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
+
+- extendedWaitUntil:
+    visible: "Add products"
+    timeout: 15000
+
+- tapOn:
+    text: ".*Add products via scanner.*|.*Scan products.*"
+    retryTapIfNoChange: true
+    label: "Open scanner from order creation"
+
+- extendedWaitUntil:
+    visible:
+      id: "barcodeComposeView"
+    timeout: 15000
+    label: "Wait for barcode scanner surface from order creation"
+
+- extendedWaitUntil:
+    visible: ".*Scan Product Barcode.*|.*Grant Camera Permission.*"
+    timeout: 15000
+    label: "Wait for order-creation scanner overlay"
+
+- takeScreenshot: orders_barcode_scanner_from_order_creation
+
+- back
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- back
+
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn:
+          text: "Discard"
+          label: "Discard empty order draft"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 15000

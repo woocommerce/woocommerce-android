@@ -1,0 +1,186 @@
+# Smoke Test: Orders - Payment QR and share link
+# p2: orders.collect-payment.qr, orders.collect-payment.share-link
+# P2 ref: Orders > Collect payment using QR code / Share payment link
+#
+# Verifies:
+#   - A fresh UI-created pending order exposes Collect Payment
+#   - Scan To Pay renders its QR instructions
+#   - Share Payment Link opens the Android share sheet
+#   - The flow backs out without collecting payment
+appId: com.woocommerce.android.dev
+name: "Orders - Payment QR and share link"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - orders
+  - destructive
+  - system_surface
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Create a fresh pending-payment order owned by this flow. This avoids opening
+# an arbitrary shared-store order whose payment state may have changed.
+- tapOn:
+    id: "createOrderButton"
+    retryTapIfNoChange: true
+    label: "Tap Create Order FAB"
+
+- extendedWaitUntil:
+    visible: "Add products"
+    timeout: 15000
+
+- tapOn:
+    text: "Add products"
+    label: "Tap Add products"
+
+- extendedWaitUntil:
+    visible: ".*Search Products.*"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_product_item"
+    timeout: 15000
+    label: "Require a selectable product"
+
+- tapOn:
+    id: "product_selector_product_item"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Select first available product"
+
+- runFlow:
+    when:
+      visible:
+        id: "product_selector_variation_item"
+    commands:
+      - tapOn:
+          id: "product_selector_variation_item"
+          index: 0
+          label: "Select first available variation"
+      - back
+
+- extendedWaitUntil:
+    visible:
+      id: "product_selector_done_button"
+    timeout: 15000
+    label: "Wait for product selection"
+
+- tapOn:
+    id: "product_selector_done_button"
+    label: "Confirm product selection"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 15000
+
+- assertVisible:
+    id: "order_product_card"
+    label: "Selected product is present in the order"
+
+- tapOn:
+    id: "menu_create"
+    retryTapIfNoChange: true
+    label: "Create pending-payment order"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+
+- extendedWaitUntil:
+    visible: ".*Pending payment.*"
+    timeout: 20000
+    label: "Wait for pending-payment order detail"
+
+- takeScreenshot: order_payment_surface_pending_detail
+
+- scrollUntilVisible:
+    element:
+      id: "paymentInfo_collectCardPresentPaymentButton"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Collect Payment button"
+
+- tapOn:
+    id: "paymentInfo_collectCardPresentPaymentButton"
+    retryTapIfNoChange: true
+    label: "Tap Collect Payment"
+
+- runFlow:
+    when:
+      notVisible: ".*Take payment.*|.*Cash.*"
+    commands:
+      - extendedWaitUntil:
+          visible: ".*Take payment.*|.*Cash.*"
+          timeout: 10000
+
+- runFlow:
+    when:
+      notVisible: ".*Take payment.*|.*Cash.*"
+    commands:
+      - tapOn:
+          id: "paymentInfo_collectCardPresentPaymentButton"
+          retryTapIfNoChange: true
+          label: "Retry Collect Payment tap"
+
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 30000
+
+- takeScreenshot: order_payment_surface_method_list
+
+- scrollUntilVisible:
+    element: "Scan To Pay"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Scan To Pay"
+
+- tapOn:
+    text: "Scan To Pay"
+    retryTapIfNoChange: true
+    label: "Open Scan To Pay QR"
+
+- extendedWaitUntil:
+    visible: "Scan QR and follow instructions"
+    timeout: 30000
+    label: "Wait for Scan To Pay QR"
+
+- takeScreenshot: order_payment_scan_to_pay_qr
+
+# Back dismisses the QR without reporting payment completion.
+- back
+
+- extendedWaitUntil:
+    visible: ".*Take payment.*|.*Cash.*"
+    timeout: 15000
+
+- scrollUntilVisible:
+    element: "Share Payment Link"
+    direction: DOWN
+    timeout: 10000
+    label: "Require Share Payment Link"
+
+- tapOn:
+    text: "Share Payment Link"
+    retryTapIfNoChange: true
+    label: "Open Android share sheet"
+
+- extendedWaitUntil:
+    visible: ".*Share with.*|.*Copy.*|.*Messages.*|.*Quick Share.*|.*Checkout.*"
+    timeout: 15000
+    label: "Wait for Android share sheet"
+
+- takeScreenshot: order_payment_share_sheet
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 30000
+    label: "Wait for order detail after dismissing share sheet"

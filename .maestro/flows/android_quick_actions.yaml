@@ -1,0 +1,103 @@
+# Smoke Test: Android system - App shortcuts
+# p2: other.quick-actions
+# P2 ref: Other > Quick Actions (long press on app icon)
+#
+# Verifies on the real launcher surface:
+#   - Long-pressing Woo (Dev) exposes Create order and Payments
+#   - Create order opens a fresh order draft
+#   - Payments opens the Payments hub
+#
+# Run only through the android-system profile on an English Pixel Launcher AVD.
+appId: com.woocommerce.android.dev
+name: "Android system - App shortcuts"
+tags:
+  - android_system
+  - flaky_quarantine
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Dynamic shortcuts are registered after a site is selected. Stop the app and
+# exercise them from Pixel Launcher's app drawer rather than launching an
+# equivalent intent directly.
+- stopApp
+- pressKey: HOME
+- swipe:
+    direction: UP
+    duration: 500
+
+- extendedWaitUntil:
+    visible: "Search apps"
+    timeout: 10000
+    label: "Open Pixel Launcher app drawer"
+
+- tapOn:
+    text: "Search apps"
+    label: "Focus app search"
+- inputText: "Woo"
+- hideKeyboard
+
+- extendedWaitUntil:
+    visible: "Woo \\(Dev\\)"
+    timeout: 10000
+    label: "Find the Wasabi app icon"
+
+- longPressOn:
+    text: "Woo \\(Dev\\)"
+    label: "Open Woo app shortcuts"
+
+- assertVisible:
+    text: "Create order"
+    label: "Create order shortcut is present"
+- assertVisible:
+    text: "Payments"
+    label: "Payments shortcut is present"
+
+- takeScreenshot: android_quick_actions
+
+- tapOn:
+    text: "Create order"
+    label: "Launch Create order shortcut"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 30000
+    label: "Create order shortcut opens an order draft"
+- assertVisible: "Add products"
+- takeScreenshot: android_quick_action_create_order
+
+- back
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn:
+          text: "Discard"
+          label: "Discard shortcut-created order draft"
+
+# Reopen the launcher shortcuts and verify the Payments destination too.
+- stopApp
+- pressKey: HOME
+- swipe:
+    direction: UP
+    duration: 500
+
+- extendedWaitUntil:
+    visible: "Search apps"
+    timeout: 10000
+- tapOn: "Search apps"
+- inputText: "Woo"
+- hideKeyboard
+- extendedWaitUntil:
+    visible: "Woo \\(Dev\\)"
+    timeout: 10000
+- longPressOn: "Woo \\(Dev\\)"
+- tapOn:
+    text: "Payments"
+    label: "Launch Payments shortcut"
+
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 30000
+    label: "Payments shortcut opens the Payments hub"
+- takeScreenshot: android_quick_action_payments
