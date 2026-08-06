@@ -19,12 +19,13 @@ class CardReaderRemoteTlsServerTest {
             heldCertificateFactory = { keyType -> buildCertificate(keyType) },
         )
 
-        // WHEN
-        server.start()
+        server.use {
+            // WHEN
+            server.start()
 
-        // THEN
-        assertThat(server.certificateKeyType).isEqualTo(CardReaderRemoteCertificateKeyType.ECDSA_256)
-        server.close()
+            // THEN
+            assertThat(server.certificateKeyType).isEqualTo(CardReaderRemoteCertificateKeyType.ECDSA_256)
+        }
     }
 
     @Test
@@ -41,14 +42,15 @@ class CardReaderRemoteTlsServerTest {
             },
         )
 
-        // WHEN
-        server.start()
+        server.use {
+            // WHEN
+            server.start()
 
-        // THEN
-        assertThat(server.certificateKeyType).isEqualTo(CardReaderRemoteCertificateKeyType.RSA_2048)
-        assertThat(server.port).isGreaterThan(0)
-        assertThat(server.fingerprint).isNotEmpty()
-        server.close()
+            // THEN
+            assertThat(server.certificateKeyType).isEqualTo(CardReaderRemoteCertificateKeyType.RSA_2048)
+            assertThat(server.port).isGreaterThan(0)
+            assertThat(server.fingerprint).isNotEmpty()
+        }
     }
 
     @Test
