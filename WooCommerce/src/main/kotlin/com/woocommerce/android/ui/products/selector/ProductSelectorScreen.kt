@@ -323,11 +323,11 @@ private fun displayProductsSection(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                enabled = state.isSelectable(product),
+                enabled = state.selectionEnabled && product.enabled,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 },
-                isLoading = state.isLoading(product)
+                isLoading = product.isLoading
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -446,11 +446,11 @@ private fun ProductList(
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
-                    enabled = state.isSelectable(product),
+                    enabled = state.selectionEnabled && product.enabled,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     },
-                    isLoading = state.isLoading(product)
+                    isLoading = product.isLoading
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -516,12 +516,7 @@ private fun ListItem.hasVariations() =
     this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
 
 private val ListItem.enabled: Boolean
-    get() = selectionState !is SelectionState.DISABLED
-
-private fun ViewState.isSelectable(item: ListItem) =
-    selectionEnabled && item.enabled && !isLoading(item)
-
-private fun ViewState.isLoading(item: ListItem) = loadingItemId == item.id
+    get() = selectionState !is SelectionState.DISABLED && !isLoading
 
 private val ListItem.disabledReason: String?
     get() = (selectionState as? SelectionState.DISABLED)?.reason

@@ -1763,14 +1763,16 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         testBlocking {
             val resolution = CompletableDeferred<Boolean>()
             whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).doSuspendableAnswer { resolution.await() }
-            whenever(listHandler.productsFlow).thenReturn(flowOf(emptyList()))
+            whenever(listHandler.productsFlow).thenReturn(
+                flowOf(listOf(generateProduct(productId = BUNDLE_ID, productType = "bundle")))
+            )
             val sut = createOrderCreationViewModel()
 
             sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
-            assertThat(sut.viewState.getOrAwaitValue().loadingItemId).isEqualTo(BUNDLE_ID)
+            assertThat(sut.viewState.getOrAwaitValue().products.single().isLoading).isTrue
 
             resolution.complete(false)
-            assertThat(sut.viewState.getOrAwaitValue().loadingItemId).isNull()
+            assertThat(sut.viewState.getOrAwaitValue().products.single().isLoading).isFalse
         }
 
     @Test
