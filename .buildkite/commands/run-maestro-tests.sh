@@ -18,7 +18,8 @@ set -euo pipefail
 #   MAESTRO_APK_PATH=/path/to/beta.apk
 #   MAESTRO_SEED=true
 
-if .buildkite/commands/should-skip-job.sh --job-type validation; then
+if [[ "${BUILDKITE_PULL_REQUEST:-false}" != "false" ]] &&
+  .buildkite/commands/should-skip-job.sh --job-type validation; then
   echo "Skipping Maestro tests - no relevant changes"
   exit 0
 fi

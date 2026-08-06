@@ -18,6 +18,20 @@ class MaestroCiContractTests(unittest.TestCase):
             wrapper.index("./gradlew :WooCommerce:installWasabiDebug"),
         )
 
+    def test_changed_file_skip_only_applies_to_pull_requests(self) -> None:
+        wrapper = (
+            REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(
+            'if [[ "${BUILDKITE_PULL_REQUEST:-false}" != "false" ]] &&',
+            wrapper,
+        )
+        self.assertIn(
+            ".buildkite/commands/should-skip-job.sh --job-type validation; then",
+            wrapper,
+        )
+
     def test_shared_store_steps_are_serialized(self) -> None:
         pipeline_files = [
             REPO_ROOT / ".buildkite" / "pipeline.yml",
