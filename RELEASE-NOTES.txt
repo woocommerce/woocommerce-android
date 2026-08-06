@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.5
+-----
+- [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
+
 25.4
 -----
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
