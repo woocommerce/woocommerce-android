@@ -2,10 +2,13 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.5
+-----
+- [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
+
 25.4
 -----
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
-- [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
 
 25.3
 -----
