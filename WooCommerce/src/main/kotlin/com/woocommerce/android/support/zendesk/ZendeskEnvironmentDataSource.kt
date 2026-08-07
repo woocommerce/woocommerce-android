@@ -108,18 +108,22 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
 
         // Storage — SI units, matching what Android Settings shows since API 26
         private const val bytesPerUnit = 1000.0
+        private const val displayedDecimalFactor = 10.0
         private val spaceUnits = listOf("B", "KB", "MB", "GB", "TB")
 
         @VisibleForTesting
         internal fun formatAvailableSpace(bytes: Long): String {
             var value = bytes.toDouble()
             var unitIndex = 0
-            // Compare the displayed (one-decimal) value, so e.g. 1023.99 MB promotes to 1.0 GB, not 1024.0 MB
-            while ((value * 10).roundToLong() >= bytesPerUnit * 10 && unitIndex < spaceUnits.lastIndex) {
+            // Compare the displayed (one-decimal) value, so e.g. 999.99 MB promotes to 1.0 GB, not 1000.0 MB
+            while (roundToDisplayed(value) >= bytesPerUnit && unitIndex < spaceUnits.lastIndex) {
                 value /= bytesPerUnit
                 unitIndex++
             }
             return String.format(Locale.US, "%.1f %s", value, spaceUnits[unitIndex])
         }
+
+        private fun roundToDisplayed(value: Double) =
+            (value * displayedDecimalFactor).roundToLong() / displayedDecimalFactor
     }
 }
