@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 25.4
-This release makes payments more dependable: card payments no longer show an error after a successful charge, and the payment screen keeps working if you rotate your device. Orders behave better too, with refunded orders leaving the Completed filter, coupon dates staying put, and a prompt before you discard edits. Plus POS reader and login fixes.
+Payments are more reliable: if a card charge succeeds but confirmation fails, the app now verifies it and shows success, preventing double charges. Rotating your device mid-payment no longer crashes. We also fixed refunded orders lingering in the Completed filter, and added a prompt before discarding unsaved order edits. Plus POS and login fixes.
 
 ## 25.3
 This update delivers accurate multi-currency pricing, improved product duplication, and reliable variation image handling. The My Store toolbar is now glitch-free, Analytics Hub shows clearer data comparisons, and In-Person Payments onboarding is more flexible. Plus, several crashes and UI bugs are fixed.
