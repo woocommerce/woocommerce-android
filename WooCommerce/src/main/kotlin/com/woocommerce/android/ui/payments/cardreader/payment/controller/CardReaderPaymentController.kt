@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -42,6 +43,7 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
@@ -71,6 +73,7 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CompletionHandlerException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -88,6 +91,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.reflect.KMutableProperty0
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
+private const val SCOPE_CANCELLATION_FAILURE_MESSAGE = "Failed to cancel the card reader payment scope"
 
 @Suppress("LongParameterList", "LargeClass")
 class CardReaderPaymentController(
@@ -110,12 +114,23 @@ class CardReaderPaymentController(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
+    private val crashLogging: CrashLogging,
     private val allowCancelledStatus: Boolean = false,
 ) {
-    private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    @OptIn(InternalCoroutinesApi::class)
+    private val scopeExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        // Stripe throws from its cancellation handler while an operation awaits the network. Coroutines route
+        // that here rather than to the caller, so it cannot be caught around scope.cancel().
+        if (throwable !is CompletionHandlerException) throw throwable
+        WooLog.e(WooLog.T.CARD_READER, SCOPE_CANCELLATION_FAILURE_MESSAGE, throwable)
+        crashLogging.sendReport(exception = throwable, message = SCOPE_CANCELLATION_FAILURE_MESSAGE)
+    }
+
+    private var scope: CoroutineScope = createScope()
     private val terminalPaymentPreparationResolver = TerminalPaymentPreparationResolver(wooStore, appPrefs)
 
     private val _paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> =
@@ -135,9 +150,14 @@ class CardReaderPaymentController(
         _event.emit(event)
     }
 
+    private fun createScope() = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + scopeExceptionHandler)
+
     fun start() {
+        // The view can be recreated mid-payment (rotation), and the cancel below would kill the flow for good.
+        if (paymentFlowJob?.isActive == true || refundFlowJob?.isActive == true) return
+
         scope.cancel()
-        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        scope = createScope()
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             startFlowWhenReaderConnected()
         } else {
@@ -262,8 +282,9 @@ class CardReaderPaymentController(
         paymentFlowJob = scope.launch {
             _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             delay(ARTIFICIAL_RETRY_DELAY)
+            val previousStatusKey = orderRepository.getOrderById(orderId)?.status?.value
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
+                onPaymentStatusChanged(orderId, previousStatusKey, billingEmail, paymentStatus, amountLabel)
             }
         }
     }
@@ -311,6 +332,7 @@ class CardReaderPaymentController(
         ).collect { paymentStatus ->
             onPaymentStatusChanged(
                 order.id,
+                order.status.value,
                 customerEmail,
                 paymentStatus,
                 cardReaderPaymentOrderHelper.getAmountLabel(order)
@@ -321,6 +343,7 @@ class CardReaderPaymentController(
     @Suppress("LongMethod")
     private fun onPaymentStatusChanged(
         orderId: Long,
+        previousStatusKey: String?,
         billingEmail: String,
         paymentStatus: CardPaymentStatus,
         amountLabel: String
@@ -358,7 +381,7 @@ class CardReaderPaymentController(
 
             is PaymentCompleted -> {
                 tracker.trackPaymentSucceeded()
-                onPaymentCompleted(paymentStatus, orderId)
+                onPaymentCompleted(paymentStatus, orderId, previousStatusKey)
             }
 
             WaitingForInput -> {
@@ -463,9 +486,15 @@ class CardReaderPaymentController(
     private fun onPaymentCompleted(
         paymentStatus: PaymentCompleted,
         orderId: Long,
+        previousStatusKey: String?,
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
+        newOrderNotificationSuppressionCache.onOrderPaidRemotely(
+            siteId = selectedSite.get().siteId,
+            orderId = orderId,
+            previousStatusKey = previousStatusKey,
+        )
 
         triggerEvent(CardReaderPaymentEvent.PlaySuccessfulPaymentSound)
         showPaymentSuccessfulState()
@@ -790,7 +819,6 @@ class CardReaderPaymentController(
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     fun stop() {
         try {
             paymentDataForRetry?.let {
@@ -799,13 +827,7 @@ class CardReaderPaymentController(
         } catch (e: IllegalStateException) {
             WooLog.e(WooLog.T.CARD_READER, "Failed to cancel card reader payment", e)
         } finally {
-            try {
-                // Stripe Terminal can throw from a coroutine cancellation handler while it is waiting for
-                // a network response; coroutines wrap that in CompletionHandlerException.
-                scope.cancel()
-            } catch (e: CompletionHandlerException) {
-                WooLog.e(WooLog.T.CARD_READER, "Failed to stop card reader payment controller", e)
-            }
+            scope.cancel()
         }
     }
 

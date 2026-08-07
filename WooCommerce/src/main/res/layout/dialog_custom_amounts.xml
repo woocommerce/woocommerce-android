@@ -82,7 +82,6 @@
                     app:editTextLayoutMode="wrap"
                     app:supportsEmptyState="false"
                     app:supportsNegativeValues="false"
-                    app:usesFullFormatting="true"
                     tools:hint="0.00" />
 
                 <androidx.constraintlayout.widget.Group
