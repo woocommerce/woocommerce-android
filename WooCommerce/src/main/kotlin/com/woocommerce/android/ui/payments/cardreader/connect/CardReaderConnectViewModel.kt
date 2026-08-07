@@ -290,8 +290,6 @@ class CardReaderConnectViewModel @Inject constructor(
                             errorCode = status.errorCode,
                             errorMessage = status.errorMessage
                         )
-                    } else {
-                        Unit
                     }
                 }
 

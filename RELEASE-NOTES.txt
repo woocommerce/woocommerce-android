@@ -4,11 +4,20 @@
 
 25.4
 -----
+- [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
+- [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
+- [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets
 - [*] Fixed fully refunded orders remaining visible in the Completed orders filter [https://github.com/woocommerce/woocommerce-android/pull/16313]
 - [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
+- [*] An order paid or marked as paid on the device no longer triggers the new order notification on that same device [https://github.com/woocommerce/woocommerce-android/pull/16326]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
 - [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
 - [Internal] Support tickets now report the device's free space correctly, instead of roughly double the real figure capped at megabytes [https://github.com/woocommerce/woocommerce-android/pull/16340]
+- [*] Fixed a crash when the payment screen was recreated, such as rotating the device, while an in-person card payment was being processed — the payment now keeps running instead of freezing [https://github.com/woocommerce/woocommerce-android/pull/16359]
+- [*] Woo POS: Fixed some phones failing to start reader mode, so the POS tablet could never discover them [https://github.com/woocommerce/woocommerce-android/pull/16367]
+- [*] The application log screen can now share all stored logs at once as a single zip, instead of one day at a time [https://github.com/woocommerce/woocommerce-android/pull/16337]
+- [*] Made the SMS verification option clearer during WordPress.com two-step login [https://github.com/woocommerce/woocommerce-android/pull/16296]
+- [*] The shipment tracking carrier list shows your store's country at the top of the list again [https://github.com/woocommerce/woocommerce-android/pull/16332]
 
 25.3
 -----
