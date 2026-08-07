@@ -4,6 +4,7 @@
 
 25.4
 -----
+- [*] Scanning a subscription product's barcode or SKU during order creation now explains why it can't be added [https://github.com/woocommerce/woocommerce-android/pull/16380]
 - [*] Custom amounts now use the same decimal entry as shipping and the rest of the app — enter 2.50 instead of 250 to get $2.50 [https://github.com/woocommerce/woocommerce-android/pull/16358]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
