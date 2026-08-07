@@ -1,2 +1,0 @@
-25.3:
-Den här uppdateringen ger korrekt prissättning i flera valutor, förbättrad produktduplicering och tillförlitlig hantering av variationsbilder. Verktygsfältet Min butik är nu felfritt, Analytics Hub visar tydligare datajämförelser och onboarding av personliga betalningar är mer flexibelt. Dessutom har flera krascher och UI-buggar åtgärdats.

@@ -1,2 +1,0 @@
-25.3 :
-Cette mise à jour permet une tarification précise en plusieurs devises, améliore la duplication des produits et traite de façon fiable les images de variantes. La barre d’outils Ma boutique fonctionne désormais correctement, l’espace des statistiques affiche des comparaisons de données plus claires et l’intégration des paiements en personne est plus flexible. De plus, plusieurs problèmes de plantage et bugs d’interface utilisateur ont été corrigés.

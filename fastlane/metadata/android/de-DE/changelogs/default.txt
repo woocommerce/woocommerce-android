@@ -1,2 +1,0 @@
-25.3:
-In diesem Update haben wir Multiwährungspreise korrigiert, das Duplizieren von Produkten verbessert und die zuverlässige Handhabung von Variantenbildern sichergestellt. Die Werkzeugleiste „Mein Shop“ funktioniert jetzt fehlerfrei, der Analyse-Hub zeigt übersichtlichere Datenvergleiche an und das Onboarding von persönlichen Zahlungen ist flexibler. Außerdem wurden mehrere Abstürze und UI-Fehler behoben.

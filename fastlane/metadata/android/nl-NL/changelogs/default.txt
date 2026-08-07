@@ -1,2 +1,0 @@
-25.3:
-Deze update biedt nauwkeurige prijzen in meerdere valuta, verbeterde productduplicatie en betrouwbare afhandeling van variatieafbeeldingen. De toolbar Mijn winkel is nu glitch-vrij, Analytics Hub toont duidelijkere gegevensvergelijkingen en de onboarding van fysieke betalingen is flexibeler. Bovendien zijn verschillende crashes en UI-bugs opgelost.
