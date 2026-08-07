@@ -11,6 +11,7 @@
 - [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
 - [*] An order paid or marked as paid on the device no longer triggers the new order notification on that same device [https://github.com/woocommerce/woocommerce-android/pull/16326]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
+- [*] Turning off the Pay in Person toggle no longer renames the Cash on Delivery payment gateway [https://github.com/woocommerce/woocommerce-android/pull/16349]
 - [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
 - [*] Fixed a crash when the payment screen was recreated, such as rotating the device, while an in-person card payment was being processed — the payment now keeps running instead of freezing [https://github.com/woocommerce/woocommerce-android/pull/16359]
 - [*] Woo POS: Fixed some phones failing to start reader mode, so the POS tablet could never discover them [https://github.com/woocommerce/woocommerce-android/pull/16367]
