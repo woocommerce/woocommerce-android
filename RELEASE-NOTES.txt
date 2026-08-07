@@ -4,11 +4,11 @@
 
 25.5
 -----
-- [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text
+- [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
+- [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
 
 25.4
 -----
-- [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
 - [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets
