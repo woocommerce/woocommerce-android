@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 09:56:09+0000
+Translation-Revision-Date: 2026-07-28 09:56:59+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">割引は適用されません</string>
+    <string name="product_duplicate_discard_changes_action">破棄して複製</string>
+    <string name="product_duplicate_discard_changes_message">保存されていない変更は失われます。 複製には最後に保存されたバージョンが使用されます。</string>
+    <string name="product_duplicate_discard_changes_title">変更を破棄して複製しますか ?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">1つ以上の期限切れの要件があります。 スキップして支払いを受け取り続けることはできますが、要件がアカウントをブロックしている場合、解決するまで一部の取引が拒否される場合があります。</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">アカウントの期限切れ要件</string>
+    <string name="order_editing_currency_mismatch_title">この注文はアプリで編集できません</string>
+    <string name="login_no_wpcom_account_found_message">ユーザーが見つかりません。 メールアドレスが正しいことを確認するか、別のアカウントでお試しください。</string>
+    <string name="login_no_wpcom_account_found_title">間違ったメールアドレス</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">この画像タイプはサポートされていません。 PNG、JPEG、WebP、GIF、BMP、HEIC、HEIF のいずれかの画像を選択してください。</string>
     <string name="ai_support_chat_store_connection_error_message">自分のストアにアクセスできません。 自分のストアにアクセスを試みた際に、アプリが接続エラーを検出しました。 これを解決するにはどうすればよいですか ?</string>
     <string name="settings_crash_reporting_error_update">クラッシュ報告の設定の更新中にエラーが発生しました</string>
@@ -1187,6 +1196,7 @@ Language: ja_JP
     <string name="shipping_label_purchased_note">注意: 印刷されたラベルを再利用すると、弊社の利用規約違反となり、刑事責任を問われる可能性があります。</string>
     <string name="shipping_label_purchased_success_message">こちらから再度配送ラベルを印刷するか、ラベルの用紙サイズを変更することができます。</string>
     <string name="shipping_label_purchased_success_title">配送ラベルを印刷する準備ができました</string>
+    <string name="order_editing_currency_mismatch_message">この注文は %1$s を使用しており、サイトの通貨は %2$s であるため、編集はウェブ上でしか行えません。</string>
     <string name="shipping_label_shipping_service_title">配送サービス</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">最速</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">最安値</string>
@@ -1667,9 +1677,6 @@ Language: ja_JP
     <string name="blaze_campaign_budget_toolbar_title">予算を設定する</string>
     <string name="blaze_campaign_preview_target_default_value">すべて</string>
     <string name="blaze_campaign_preview_days_duration">%2$sから%1$s日間</string>
-    <string name="product_creation_survey_button_dont_show_again">今後表示しない</string>
-    <string name="product_creation_survey_button_remind_me_later">後で再通知</string>
-    <string name="product_creation_survey_description">少々お時間がございましたら、 簡単なフィードバックをお寄せいただき、AI 搭載機能の改善にご協力ください。</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">詳細を確認</string>
     <string name="blaze_campaign_preview_details_destination_url">広告の掲載先</string>
     <string name="blaze_campaign_preview_details_interests">興味</string>
@@ -1719,8 +1726,6 @@ Language: ja_JP
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce テーマストアでご自身にぴったりなテーマが見つかります。</string>
     <string name="theme_picker_current_theme_title">現在のテーマ</string>
     <string name="theme_picker_settings_title">新しいデザインを試す</string>
-    <string name="product_creation_survey_button_open">アンケートをスタート</string>
-    <string name="product_creation_survey_title">お待ちしています。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">「直接支払い」を有効化すると、顧客はオンライン注文の代金を配達時に現金またはカードで支払うことができます。\n\nこの機能を有効化しなくても、注文は手動で作成できます。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">ウェブでの購入手続きに「直接支払い」を追加しますか ?</string>
     <string name="card_reader_onboarding_contact_us">サポートが必要ですか ? &lt;a href=\'\'&gt;お問い合わせ&lt;/a&gt;</string>
@@ -2304,7 +2309,6 @@ Language: ja_JP
     <string name="support_request_title">問題を解決しましょう</string>
     <string name="support_request_help_title">サポートが必要な領域</string>
     <string name="support_request">サポートリクエスト</string>
-    <string name="store_onboarding_menu_share_feedback">フィードバックを共有</string>
     <string name="store_onboarding_full_screen_transition_name">オンボーディングのフルスクリーン表示</string>
     <string name="store_onboarding_task_view_all">すべて表示 (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%2$d件中%1$d件のタスクが完了しました</string>
@@ -2483,7 +2487,6 @@ Language: ja_JP
     <string name="login_site_picker_enter_site_address">サイトアドレスを入力</string>
     <string name="card_reader_onboarding_not_finished">「オフラインでの支払い」の設定が完了していないようです。 &lt;a href=\'\'&gt;セットアップを続行&lt;/a&gt;</string>
     <string name="payments_hub_title">支払い</string>
-    <string name="login_no_wpcom_account_found">メールアドレス  は WordPress.com アカウントで使用されていません</string>
     <string name="login_non_woo_stores_label">その他のサイト</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">マジックリンクを次のアドレスに送信しました: </string>
@@ -3039,8 +3042,6 @@ Language: ja_JP
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">口座に保留中の要件があります。 引き続きオフラインでのお支払いを受け取る場合は、%1$sまでに要件を完了させてください。</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">お使いのアカウントに保留中の要件があります</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">ご使用のアカウントに期限切れの要件があります。 オフラインでの支払いを再開するには、この要件を処理してください</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_under_review_hint">アカウントのレビューが完了すると、すぐにオフラインでの支払いを受け取れるようになります。</string>
     <string name="card_reader_onboarding_account_under_review_header">オフラインでの支払いは現在利用できません</string>
     <string name="card_reader_onboarding_account_rejected_hint">このストアはオフラインでの支払いに対応していません。</string>
