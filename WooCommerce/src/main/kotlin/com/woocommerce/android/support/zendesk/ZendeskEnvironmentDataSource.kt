@@ -106,8 +106,8 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
 
         const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field
 
-        // Storage
-        private const val bytesPerUnit = 1024.0
+        // Storage — SI units, matching what Android Settings shows since API 26
+        private const val bytesPerUnit = 1000.0
         private val spaceUnits = listOf("B", "KB", "MB", "GB", "TB")
 
         @VisibleForTesting
