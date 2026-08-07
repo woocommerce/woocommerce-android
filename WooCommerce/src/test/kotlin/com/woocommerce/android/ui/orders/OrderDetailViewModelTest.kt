@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippin
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
@@ -185,7 +184,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
-    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
@@ -219,7 +217,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
-                refreshProductsSignal,
             )
         )
     }
@@ -1018,62 +1015,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.awaitOrder()).isEqualTo(orderAfterPayment)
     }
-
-    @Test
-    fun `given payment completes, when order reloads, then the order products stock change is signalled`() =
-        testBlocking {
-            viewModel.start()
-            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 101)
-            val paidOrder = order.copy(
-                items = listOf(item, item.copy(productId = 102)),
-                status = Order.Status.fromDataModel(CoreOrderStatus.COMPLETED)!!
-            )
-            doReturn(paidOrder).whenever(orderDetailRepository).getOrderById(any())
-
-            viewModel.onCardReaderPaymentCompleted()
-
-            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
-        }
-
-    @Test
-    fun `given status change confirmed remotely, when order status changed, then products stock change is signalled`() =
-        testBlocking {
-            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 101)
-            val updatedOrder = order.copy(items = listOf(item, item.copy(productId = 102)))
-            doReturn(updatedOrder).whenever(orderDetailRepository).getOrderById(any())
-            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn(flowOf(UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())))
-            viewModel.start()
-
-            viewModel.onOrderStatusChanged(
-                OrderStatusUpdateSource.Dialog(
-                    oldStatus = order.status.value,
-                    newStatus = CoreOrderStatus.COMPLETED.value
-                )
-            )
-
-            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
-        }
-
-    @Test
-    fun `given only optimistic update, when order status changed, then products stock change is not signalled`() =
-        testBlocking {
-            val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 101)
-            val updatedOrder = order.copy(items = listOf(item))
-            doReturn(updatedOrder).whenever(orderDetailRepository).getOrderById(any())
-            whenever(orderDetailRepository.updateOrderStatus(any(), any()))
-                .thenReturn(flowOf(UpdateOrderResult.OptimisticUpdateResult(OnOrderChanged())))
-            viewModel.start()
-
-            viewModel.onOrderStatusChanged(
-                OrderStatusUpdateSource.Dialog(
-                    oldStatus = order.status.value,
-                    newStatus = CoreOrderStatus.COMPLETED.value
-                )
-            )
-
-            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
-        }
 
     @Test
     fun `show order status updated snackbar on updating status from dialog`() =

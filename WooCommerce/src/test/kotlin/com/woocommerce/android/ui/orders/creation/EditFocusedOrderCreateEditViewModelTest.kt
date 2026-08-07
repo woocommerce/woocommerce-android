@@ -28,7 +28,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -827,28 +826,5 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
         val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
         assertThat(event.orderCurrency).isNull()
-    }
-
-    @Test
-    fun `given edit mode, when order draft synced successfully, then notify stock changed with product ids`() {
-        // GIVEN
-        val order = defaultOrderValue.copy(
-            items = listOf(
-                createOrderItem(withProductId = 101L),
-                createOrderItem(withProductId = 102L)
-            )
-        )
-        orderDetailRepository.stub {
-            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
-        }
-        createUpdateOrderUseCase = mock {
-            on { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
-        }
-
-        // WHEN
-        createSut()
-
-        // THEN
-        verify(refreshProductsSignal).notifyProductsChanged(argThat { toSet() == setOf(101L, 102L) })
     }
 }

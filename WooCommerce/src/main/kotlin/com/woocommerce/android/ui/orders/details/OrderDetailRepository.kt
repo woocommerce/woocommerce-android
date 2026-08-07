@@ -21,10 +21,12 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -49,7 +51,8 @@ class OrderDetailRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
-    private val shippingLabelMapper: ShippingLabelMapper
+    private val shippingLabelMapper: ShippingLabelMapper,
+    private val refreshProductsSignal: RefreshProductsSignal
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -132,7 +135,13 @@ class OrderDetailRepository @Inject constructor(
             orderId,
             selectedSite.get(),
             status
-        )
+        ).onEach { result ->
+            // Changing status (e.g. to Processing/Completed) can change the order's products' stock server-side,
+            // so once the server confirms, tell the Products list to refresh those rows.
+            if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
+                refreshProductsSignal.notifyProductsChanged(getOrderById(orderId)?.getProductIds().orEmpty())
+            }
+        }
     }
 
     suspend fun addOrderNote(

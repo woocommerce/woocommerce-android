@@ -141,7 +141,6 @@ import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
@@ -216,7 +215,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
-    private val refreshProductsSignal: RefreshProductsSignal,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1506,10 +1504,6 @@ class OrderCreateEditViewModel @Inject constructor(
                                 showOrderUpdateSnackbar = false,
                                 isEditable = isOrderEditable(updateStatus)
                             )
-                            if (mode is Mode.Edit) {
-                                // Editing a synced order can change its products' stock server-side, so refresh them.
-                                refreshProductsSignal.notifyProductsChanged(updateStatus.order.getProductIds())
-                            }
                             try {
                                 ignoreIfOrderJustUpdatedFromRemote = true
                                 _orderDraft.updateAndGet { currentDraft ->

@@ -5,10 +5,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderAttributionOrigin
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +23,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -53,6 +56,10 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var wooCommerceStore: WooCommerceStore
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported = mock()
+    private val orderMapper: OrderMapper = mock {
+        on { toAppModel(any()) } doReturn OrderTestUtils.generateTestOrder()
+    }
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -77,13 +84,14 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             selectedSite = selectedSite,
             orderStore = mock(),
             orderUpdateStore = orderUpdateStore,
-            orderMapper = mock(),
+            orderMapper = orderMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
             analyticsTrackerWrapper = trackerWrapper,
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            refreshProductsSignal = refreshProductsSignal,
         )
     }
 
@@ -341,4 +349,46 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given a non-draft order, when createOrUpdateOrder succeeds, then products refresh is signalled`() =
+        testBlocking {
+            // GIVEN
+            val syncedOrder = OrderTestUtils.generateTestOrder().copy(
+                items = listOf(
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 101L),
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 102L)
+                ),
+                status = Order.Status.fromValue(CoreOrderStatus.PROCESSING.value)
+            )
+            whenever(orderMapper.toAppModel(any())).thenReturn(syncedOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date())
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
+        }
+
+    @Test
+    fun `given a draft order, when createOrUpdateOrder succeeds, then products refresh is not signalled`() =
+        testBlocking {
+            // GIVEN
+            val draftOrder = OrderTestUtils.generateTestOrder().copy(
+                status = Order.Status.fromValue(Order.Status.AUTO_DRAFT)
+            )
+            whenever(orderMapper.toAppModel(any())).thenReturn(draftOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date())
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
+        }
 }

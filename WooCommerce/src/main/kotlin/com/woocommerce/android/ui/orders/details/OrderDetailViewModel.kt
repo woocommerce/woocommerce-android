@@ -65,7 +65,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -126,7 +125,6 @@ class OrderDetailViewModel @Inject constructor(
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -717,7 +715,6 @@ class OrderDetailViewModel @Inject constructor(
                                     tracker.trackOrderStatusChangeFailed(result.event.error)
                                 } else {
                                     tracker.trackOrderStatusChangeSucceeded()
-                                    notifyOrderProductsStockChanged()
                                 }
                             }
                         }
@@ -1032,7 +1029,6 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCardReaderPaymentCompleted() {
         reloadOrderDetails()
-        notifyOrderProductsStockChanged()
     }
 
     private fun reloadOrderDetails() {
@@ -1042,14 +1038,6 @@ class OrderDetailViewModel @Inject constructor(
             } ?: WooLog.w(T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
             displayOrderDetails()
         }
-    }
-
-    /**
-     * Payment / status change / fulfillment reduces the products' stock server-side, so tell the Products list to
-     * refresh the affected products once the change is server-confirmed.
-     */
-    private fun notifyOrderProductsStockChanged() {
-        launch { refreshProductsSignal.notifyProductsChanged(awaitOrder().getProductIds()) }
     }
 
     suspend fun awaitOrder(): Order = _order.filterNotNull().first()
