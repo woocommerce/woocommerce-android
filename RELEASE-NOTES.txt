@@ -2,9 +2,12 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.5
+-----
+- [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
+
 25.4
 -----
-- [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
 - [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets
