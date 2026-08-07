@@ -4,7 +4,8 @@
 
 25.4
 -----
-- [Internal] POS refunds: server-refund availability is now tracked per WooCommerce version, so a store that changes version mid-session is re-probed instead of reusing a stale verdict [https://github.com/woocommerce/woocommerce-android/pull/16365]
+- [Internal] POS refunds: switched the server-calculated refund flow from the wc/v4 endpoints to wc/v3 (refund preview + compute_totals create), removing the v4 flow [https://github.com/woocommerce/woocommerce-android/pull/16335]
+- [Internal] POS refunds: server-refund availability is now tracked per WooCommerce version, so a store that changes version mid-session is re-probed instead of reusing a stale verdict [https://github.com/woocommerce/woocommerce-android/pull/16335]
 - [*] Fixed fully refunded orders remaining visible in the Completed orders filter [https://github.com/woocommerce/woocommerce-android/pull/16313]
 - [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
