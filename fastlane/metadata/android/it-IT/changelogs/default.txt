@@ -1,2 +1,0 @@
-25.3:
-Questo aggiornamento offre prezzi multivaluta accurati, una gestione migliorata della duplicazione dei prodotti e una gestione affidabile delle immagini delle varianti. La barra degli strumenti “Il mio negozio” ora funziona senza problemi, Analytics Hub mostra confronti dei dati più chiari e la procedura di configurazione dei pagamenti in negozio è più flessibile. Inoltre, sono stati risolti diversi crash e bug della UI.

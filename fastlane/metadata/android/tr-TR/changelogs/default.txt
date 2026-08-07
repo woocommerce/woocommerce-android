@@ -1,2 +1,0 @@
-25.3:
-Bu güncelleme doğru çoklu para birimi fiyatlandırması, iyileştirilmiş ürün çoğaltması ve güvenilir varyasyon görsel işleme sunar. Mağazam araç çubuğu artık hatasızdır, Analytics Hub daha net veri karşılaştırmaları gösterir ve Şahsen Ödemeler ilk katılımı daha esnektir. Ayrıca, birkaç çökme ve kullanıcı arayüzü hatası düzeltildi.

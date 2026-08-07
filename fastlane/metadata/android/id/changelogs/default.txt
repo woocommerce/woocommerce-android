@@ -1,2 +1,0 @@
-25.3:
-Pembaruan ini menghadirkan penetapan harga multivaluta yang akurat, fitur duplikasi produk yang lebih baik, dan penanganan gambar variasi yang andal. Bilah peralatan Toko Saya kini bebas kendala, Pusat Analitik menampilkan perbandingan data yang lebih jelas, dan penyiapan awal Pembayaran Langsung menjadi lebih fleksibel. Selain itu, beberapa masalah crash dan bug UI juga telah dibenahi.
