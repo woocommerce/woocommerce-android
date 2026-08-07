@@ -854,7 +854,12 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             }
 
             // then
-            verify(uploadProvider).uploadAttachment(any(), any(), any(), uploadCaptor.capture())
+            verify(uploadProvider).uploadAttachment(
+                eq("application_log.txt"),
+                any(),
+                any(),
+                uploadCaptor.capture()
+            )
             uploadCaptor.firstValue.onError(mock())
             advanceUntilIdle()
             verify(requestProvider).createRequest(requestCaptor.capture(), any())
@@ -987,6 +992,94 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             job.cancel()
 
             assertThat(requestCaptor.firstValue.attachments).containsExactly("app-log-token", "status-token")
+        }
+
+    @Test
+    fun `when createRequest is called, then all the attachments are uploaded before any of them completes`() =
+        testBlocking {
+            // given
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress",
+                    diagnosticLog = "diagnostic logs"
+                ).first()
+            }
+
+            // then all three uploads are in flight even though none of them has invoked its callback yet
+            verify(uploadProvider).uploadAttachment(eq("connectivitytest_log.txt"), any(), any(), any())
+            verify(uploadProvider).uploadAttachment(eq("application_log.txt"), any(), any(), any())
+            verify(uploadProvider).uploadAttachment(eq("mobile_status_report.txt"), any(), any(), any())
+            advanceUntilIdle()
+            job.cancel()
+        }
+
+    @Test
+    fun `given one attachment upload fails, when createRequest is called, then the others are still attached`() =
+        testBlocking {
+            // given
+            val diagnosticResponse = mock<UploadResponse> { on { token } doReturn "diagnostic-token" }
+            val statusResponse = mock<UploadResponse> { on { token } doReturn "status-token" }
+            val uploadProvider = mock<UploadProvider>()
+            given(zendeskSettings.uploadProvider).willReturn(uploadProvider)
+            val diagnosticCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val appLogCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val statusCaptor = argumentCaptor<ZendeskCallback<UploadResponse>>()
+            val requestCaptor = argumentCaptor<CreateRequest>()
+
+            // when
+            val job = launch {
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = null,
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress",
+                    diagnosticLog = "diagnostic logs"
+                ).first()
+            }
+
+            verify(uploadProvider).uploadAttachment(
+                eq("connectivitytest_log.txt"),
+                any(),
+                any(),
+                diagnosticCaptor.capture()
+            )
+            verify(uploadProvider).uploadAttachment(
+                eq("application_log.txt"),
+                any(),
+                any(),
+                appLogCaptor.capture()
+            )
+            verify(uploadProvider).uploadAttachment(
+                eq("mobile_status_report.txt"),
+                any(),
+                any(),
+                statusCaptor.capture()
+            )
+            appLogCaptor.firstValue.onError(mock())
+            diagnosticCaptor.firstValue.onSuccess(diagnosticResponse)
+            statusCaptor.firstValue.onSuccess(statusResponse)
+            advanceUntilIdle()
+
+            // then
+            verify(requestProvider).createRequest(requestCaptor.capture(), any())
+            job.cancel()
+
+            assertThat(requestCaptor.firstValue.attachments).containsExactly("diagnostic-token", "status-token")
         }
 
     private fun createSUT() {
