@@ -33,14 +33,6 @@ class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictio
         )
 }
 
-class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictions {
-    override val restrictions: List<ProductRestriction>
-        get() = listOf(
-            ProductRestriction.VariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceNotSpecified,
-        )
-}
-
 @Parcelize
 sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     @get:StringRes
@@ -59,16 +51,6 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
      */
     sealed class Unsupported(@StringRes val reason: Int) : ProductRestriction() {
         override val scanningMessage: Int get() = reason
-    }
-
-    @Parcelize
-    object NonPublishedProducts : Hidden() {
-        override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
-        override val scanningTrackingReason get() = "Failed to add a product that is not published"
-
-        override fun invoke(product: Product): Boolean {
-            return product.status != ProductStatus.PUBLISH
-        }
     }
 
     @Parcelize

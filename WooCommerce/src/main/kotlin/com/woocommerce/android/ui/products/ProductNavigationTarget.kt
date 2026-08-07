@@ -155,8 +155,7 @@ sealed class ProductNavigationTarget : Event() {
         val productType: String?,
         val productStatus: String?,
         val productCategory: String?,
-        val productCategoryName: String?,
-        val restrictions: List<ProductRestriction>
+        val productCategoryName: String?
     ) : ProductNavigationTarget()
 
     data class ViewProductSubscriptionExpiration(
