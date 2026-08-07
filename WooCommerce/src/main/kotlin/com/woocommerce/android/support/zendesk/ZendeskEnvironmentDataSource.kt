@@ -28,9 +28,7 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
      * It also stopped formatting at megabytes, so a half-full 128 GB phone read as `104,857MB`.
      */
     val totalAvailableMemorySize: String
-        get() = StatFs(Environment.getDataDirectory().path)
-            .let { it.availableBlocksLong * it.blockSizeLong }
-            .let { formatAvailableSpace(it) }
+        get() = formatAvailableSpace(StatFs(Environment.getDataDirectory().path).availableBytes)
 
     val deviceLanguage: String get() = Locale.getDefault().language
 
