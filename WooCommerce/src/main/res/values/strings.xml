@@ -794,6 +794,7 @@
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">You cannot add products that are not published</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">You cannot add products with no price specified</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">You cannot add a variable product that has no variations</string>
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
