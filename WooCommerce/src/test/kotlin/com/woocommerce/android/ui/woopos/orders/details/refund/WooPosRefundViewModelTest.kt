@@ -71,7 +71,7 @@ class WooPosRefundViewModelTest {
     private val serverRefundAvailabilityCache = WooPosServerRefundAvailabilityCache()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
+        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
     }
     private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
     private val calculateRefundTax = WooPosCalculateRefundTax()

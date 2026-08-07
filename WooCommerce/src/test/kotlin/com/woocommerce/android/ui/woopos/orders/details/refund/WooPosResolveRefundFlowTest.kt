@@ -22,7 +22,7 @@ class WooPosResolveRefundFlowTest {
         on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
     private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
+        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
     }
 
     private val site = SiteModel().apply { id = LOCAL_SITE_ID }
@@ -35,7 +35,7 @@ class WooPosResolveRefundFlowTest {
     @Test
     fun `given flag disabled, when resolved, then flow is local`() {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
 
         // THEN
         assertThat(sut()).isEqualTo(WooPosRefundFlow.LocalComputed)

@@ -57,7 +57,7 @@ class WooPosResolveRefundFlow @Inject constructor(
     operator fun invoke(): WooPosRefundFlow {
         val wooVersion = getWooCoreVersion()
         val eligibleVersion = when {
-            !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4) ->
+            !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) ->
                 fallBackToLocal("feature flag disabled")
             // Unknown version fails closed: eligibility must never rest on the preview probe alone,
             // because the preview route does not prove `compute_totals` create support.
