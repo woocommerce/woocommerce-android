@@ -19,7 +19,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult
@@ -51,10 +50,13 @@ class OrderDetailRepositoryTest : BaseUnitTest() {
     fun `given the status update is confirmed remotely, when updateOrderStatus, then products refresh is signalled`() =
         testBlocking {
             // GIVEN
-            val orderEntity: OrderEntity = mock()
-            val order: Order = mock {
-                on { getProductIds() } doReturn listOf(101L, 102L)
-            }
+            val orderEntity = OrderTestUtils.generateOrder()
+            val order = OrderTestUtils.generateTestOrder().copy(
+                items = listOf(
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 101L),
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 102L),
+                )
+            )
             whenever(orderStore.getOrderByIdAndSite(ORDER_ID, site)).thenReturn(orderEntity)
             whenever(orderMapper.toAppModel(orderEntity)).thenReturn(order)
             whenever(orderStore.updateOrderStatus(any(), any(), any()))
