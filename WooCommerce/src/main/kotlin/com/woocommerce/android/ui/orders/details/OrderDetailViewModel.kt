@@ -65,7 +65,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
@@ -126,7 +126,7 @@ class OrderDetailViewModel @Inject constructor(
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-    private val productStockChangedSignal: ProductStockChangedSignal,
+    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -1049,7 +1049,7 @@ class OrderDetailViewModel @Inject constructor(
      * refresh the affected products once the change is server-confirmed.
      */
     private fun notifyOrderProductsStockChanged() {
-        launch { productStockChangedSignal.notifyStockChanged(awaitOrder().getProductIds()) }
+        launch { refreshProductsSignal.notifyProductsChanged(awaitOrder().getProductIds()) }
     }
 
     suspend fun awaitOrder(): Order = _order.filterNotNull().first()

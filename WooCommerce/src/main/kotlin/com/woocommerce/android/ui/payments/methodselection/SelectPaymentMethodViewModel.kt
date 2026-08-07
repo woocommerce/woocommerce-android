@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -81,7 +81,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
-    private val productStockChangedSignal: ProductStockChangedSignal,
+    private val refreshProductsSignal: RefreshProductsSignal,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
@@ -452,7 +452,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         withContext(dispatchers.main) { handleUpdateOrderStatusError() }
                     } else if (notifyStockChange) {
                         // Emit only after the server confirms so the products' fetch sees the reduced stock.
-                        productStockChangedSignal.notifyStockChanged(order.first().getProductIds())
+                        refreshProductsSignal.notifyProductsChanged(order.first().getProductIds())
                     }
                 }
             }

@@ -13,8 +13,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -55,7 +55,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val getProductsByIds: GetProductsByIds = mock()
-    private val productStockChangedSignal = ProductStockChangedSignal()
+    private val refreshProductsSignal = RefreshProductsSignal()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -81,7 +81,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                 wooCommerceStore,
                 isWindowClassLargeThanCompact,
                 getProductsByIds,
-                productStockChangedSignal,
+                refreshProductsSignal,
             )
         )
     }
@@ -114,7 +114,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
             clearInvocations(productRepository)
 
-            productStockChangedSignal.notifyStockChanged(changedIds)
+            refreshProductsSignal.notifyProductsChanged(changedIds)
             advanceUntilIdle()
 
             // Targeted fetch of just the changed products (upsert in place, no cache wipe)...
@@ -137,7 +137,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
             clearInvocations(productRepository)
 
-            productStockChangedSignal.notifyStockChanged(listOf(11L))
+            refreshProductsSignal.notifyProductsChanged(listOf(11L))
             advanceUntilIdle()
 
             // The affected products are still fetched into the cache (fresh for when search closes)...
@@ -154,7 +154,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             createViewModel()
             advanceUntilIdle()
 
-            productStockChangedSignal.notifyStockChanged(listOf(11L))
+            refreshProductsSignal.notifyProductsChanged(listOf(11L))
             advanceUntilIdle()
 
             verifyBlocking(getProductsByIds, never()) { invoke(any()) }
@@ -170,10 +170,10 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        productStockChangedSignal.notifyStockChanged(listOf(11L))
+        refreshProductsSignal.notifyProductsChanged(listOf(11L))
         advanceUntilIdle()
 
-        assertThat(productStockChangedSignal.pendingProductIds.value).isEmpty()
+        assertThat(refreshProductsSignal.pendingProductIds.value).isEmpty()
     }
 
     @Test
@@ -182,7 +182,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             doReturn(Result.success(emptyList<Product>()))
                 .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
             // Accumulate ids before the view model exists (i.e. while nothing is collecting the signal).
-            productStockChangedSignal.notifyStockChanged(listOf(11L, 22L))
+            refreshProductsSignal.notifyProductsChanged(listOf(11L, 22L))
 
             createViewModel()
             advanceUntilIdle()
@@ -197,10 +197,10 @@ class ProductListViewModelTest : BaseUnitTest() {
         createViewModel()
         advanceUntilIdle()
 
-        productStockChangedSignal.notifyStockChanged(listOf(11L))
+        refreshProductsSignal.notifyProductsChanged(listOf(11L))
         advanceUntilIdle()
 
-        assertThat(productStockChangedSignal.pendingProductIds.value).contains(11L)
+        assertThat(refreshProductsSignal.pendingProductIds.value).contains(11L)
     }
 
     @Test

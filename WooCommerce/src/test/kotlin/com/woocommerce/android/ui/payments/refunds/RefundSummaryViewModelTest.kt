@@ -9,7 +9,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -58,7 +58,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
         }
     }
     private val paymentChargeRepository: PaymentChargeRepository = mock()
-    private val productStockChangedSignal: ProductStockChangedSignal = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     private lateinit var viewModel: RefundSummaryViewModel
 
@@ -82,7 +82,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             gatewayStore = gatewayStore,
             refundStore = refundStore,
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
-            productStockChangedSignal = productStockChangedSignal
+            refreshProductsSignal = refreshProductsSignal
         )
     }
 
@@ -804,7 +804,7 @@ class RefundSummaryViewModelTest : BaseUnitTest() {
             initViewModel(refundItems = arrayOf(refundedItem, notRefundedItem))
             viewModel.refund()
 
-            verify(productStockChangedSignal).notifyStockChanged(listOf(refundedProductId))
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(refundedProductId))
         }
     }
 

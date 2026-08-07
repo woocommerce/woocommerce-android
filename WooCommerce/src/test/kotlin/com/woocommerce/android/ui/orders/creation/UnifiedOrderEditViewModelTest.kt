@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
@@ -114,7 +114,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
     protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
     protected lateinit var isStoreCurrencyMatch: IsStoreCurrencyMatch
-    protected val productStockChangedSignal: ProductStockChangedSignal = mock()
+    protected val refreshProductsSignal: RefreshProductsSignal = mock()
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -2216,7 +2216,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
             isStoreCurrencyMatch = isStoreCurrencyMatch,
-            productStockChangedSignal = productStockChangedSignal,
+            refreshProductsSignal = refreshProductsSignal,
         )
     }
 

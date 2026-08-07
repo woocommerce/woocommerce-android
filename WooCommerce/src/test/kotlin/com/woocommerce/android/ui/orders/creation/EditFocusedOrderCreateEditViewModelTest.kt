@@ -849,6 +849,6 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         createSut()
 
         // THEN
-        verify(productStockChangedSignal).notifyStockChanged(argThat { toSet() == setOf(101L, 102L) })
+        verify(refreshProductsSignal).notifyProductsChanged(argThat { toSet() == setOf(101L, 102L) })
     }
 }

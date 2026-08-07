@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
 import com.woocommerce.android.ui.payments.toCardBrandDisplayName
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -63,7 +63,7 @@ class RefundSummaryViewModel @Inject constructor(
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val productStockChangedSignal: ProductStockChangedSignal,
+    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -289,7 +289,7 @@ class RefundSummaryViewModel @Inject constructor(
             // refundItems contains every refundable line item; only those with a chosen quantity were refunded.
             .filter { it.quantity > 0 }
             .map { it.orderItem.productId }
-        productStockChangedSignal.notifyStockChanged(refundedProductIds)
+        refreshProductsSignal.notifyProductsChanged(refundedProductIds)
     }
 
     private fun triggerUIMessageIfRefundIsInterac() {

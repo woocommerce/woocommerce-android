@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -116,7 +116,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
-    private val productStockChangedSignal: ProductStockChangedSignal = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -491,7 +491,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            verify(productStockChangedSignal).notifyStockChanged(productIds)
+            verify(refreshProductsSignal).notifyProductsChanged(productIds)
         }
 
     @Test
@@ -510,7 +510,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            verify(productStockChangedSignal, never()).notifyStockChanged(any())
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
         }
 
     @Test
@@ -1254,7 +1254,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
-            productStockChangedSignal = productStockChangedSignal,
+            refreshProductsSignal = refreshProductsSignal,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
         )
     }

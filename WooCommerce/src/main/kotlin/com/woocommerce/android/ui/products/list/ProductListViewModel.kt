@@ -21,7 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
@@ -61,7 +61,7 @@ class ProductListViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val getProductsByIds: GetProductsByIds,
-    private val productStockChangedSignal: ProductStockChangedSignal,
+    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -119,7 +119,7 @@ class ProductListViewModel @Inject constructor(
             .onEach { loadProducts() }
             .launchIn(this)
 
-        productStockChangedSignal.pendingProductIds
+        refreshProductsSignal.pendingProductIds
             .filter { it.isNotEmpty() }
             .onEach { onProductStockChanged(it) }
             .launchIn(this)
@@ -139,7 +139,7 @@ class ProductListViewModel @Inject constructor(
                 // Don't clobber active search results; the browse list re-reads the fresh cache when search closes.
                 if (!isSearching()) reloadProductsFromDb()
                 // Only clear the ids we actually refreshed; a failed fetch (empty result) stays pending for retry.
-                productStockChangedSignal.clearProcessed(refreshed.map { it.remoteId }.toSet())
+                refreshProductsSignal.clearProcessed(refreshed.map { it.remoteId }.toSet())
             }
         }
     }

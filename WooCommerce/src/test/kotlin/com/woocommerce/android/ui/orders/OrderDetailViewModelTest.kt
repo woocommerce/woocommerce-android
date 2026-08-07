@@ -51,7 +51,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippin
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductStockChangedSignal
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
@@ -185,7 +185,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
     private val refreshShippingMethods: RefreshShippingMethods = mock()
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch = mock()
-    private val productStockChangedSignal: ProductStockChangedSignal = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
@@ -219,7 +219,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 refreshShippingMethods,
                 isStoreCurrencyMatch,
                 getShippingMethodsWithOtherValue,
-                productStockChangedSignal,
+                refreshProductsSignal,
             )
         )
     }
@@ -1032,7 +1032,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.onCardReaderPaymentCompleted()
 
-            verify(productStockChangedSignal).notifyStockChanged(listOf(101L, 102L))
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
         }
 
     @Test
@@ -1052,7 +1052,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
 
-            verify(productStockChangedSignal).notifyStockChanged(listOf(101L, 102L))
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
         }
 
     @Test
@@ -1072,7 +1072,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 )
             )
 
-            verify(productStockChangedSignal, never()).notifyStockChanged(any())
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
         }
 
     @Test
