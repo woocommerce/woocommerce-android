@@ -35,15 +35,18 @@ class CashOnDeliverySettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun isCashOnDeliveryEnabled(): Boolean {
+    suspend fun isCashOnDeliveryEnabled(): Boolean = fetchCashOnDeliveryGateway()?.isEnabled ?: false
+
+    suspend fun fetchCashOnDeliveryGateway(): WCGatewayModel? {
         val gateways = gatewayStore.fetchAllGateways(selectedSite.get()).model
         return gateways?.firstOrNull { wcGatewayModel ->
-            wcGatewayModel.id.equals("cod", ignoreCase = true)
-        }?.isEnabled ?: false
+            wcGatewayModel.id.equals(CASH_ON_DELIVERY_GATEWAY_ID, ignoreCase = true)
+        }
     }
 
     companion object {
-        private const val PAY_IN_PERSON_TITLE = "Pay in Person"
+        const val PAY_IN_PERSON_TITLE = "Pay in Person"
         private const val PAY_IN_PERSON_DESCRIPTION = "Pay by card or another accepted payment method"
+        private const val CASH_ON_DELIVERY_GATEWAY_ID = "cod"
     }
 }

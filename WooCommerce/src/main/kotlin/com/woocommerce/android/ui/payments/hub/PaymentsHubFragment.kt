@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -119,6 +120,14 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         url = event.url,
                         height = ChromeCustomTabUtils.Height.Partial.ThreeQuarters,
                     )
+                }
+                is PaymentsHubViewModel.PaymentsHubEvents.ShowCashOnDeliveryConfirmation -> {
+                    MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle(event.title)
+                        .setMessage(UiHelpers.getTextOfUiString(requireContext(), event.message))
+                        .setPositiveButton(event.positiveButton) { _, _ -> event.onConfirmed() }
+                        .setNegativeButton(event.negativeButton, null)
+                        .show()
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)

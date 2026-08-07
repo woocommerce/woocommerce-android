@@ -1465,6 +1465,13 @@
     <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay In Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay In Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Enable Pay In Person?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">This enables the Cash on Delivery payment method at your store’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">This enables the Cash on Delivery payment method at your store’s checkout and renames it from “%1$s” to “Pay in Person” for your customers, including on your website’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Enable</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>

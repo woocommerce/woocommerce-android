@@ -70,20 +70,18 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             when (uiState.state) {
                 ToggleState.LOADING -> {
                     binding.paymentsHubSwitch.isInvisible = true
+                    binding.paymentsHubSwitch.isClickable = false
                     binding.root.setOnClickListener(null)
                 }
                 ToggleState.CHECKED, ToggleState.UNCHECKED -> {
                     binding.paymentsHubSwitch.isInvisible = false
                     binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
-                    binding.paymentsHubSwitch.isClickable = uiState.isEnabled
+                    binding.paymentsHubSwitch.isClickable = false
                     binding.paymentsHubSwitch.isChecked = uiState.state == ToggleState.CHECKED
-                    binding.paymentsHubSwitch.setOnCheckedChangeListener { _, isChecked ->
-                        if (uiState.isEnabled) {
-                            uiState.onToggled(isChecked)
-                        }
-                    }
                     binding.root.setOnClickListener {
-                        binding.paymentsHubSwitch.isChecked = uiState.state != ToggleState.CHECKED
+                        if (uiState.isEnabled) {
+                            uiState.onToggled(!uiState.isChecked)
+                        }
                     }
                 }
             }

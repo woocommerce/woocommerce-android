@@ -95,11 +95,38 @@ class CashOnDeliverySettingsRepositoryTest {
         }
     }
 
-    private fun getSuccessWooResult(paymentType: String, isPaymentTypeEnabled: Boolean) = WooResult(
+    @Test
+    fun `when cod has a custom title, then that title is returned with the gateway`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+                getSuccessWooResult("cod", true, title = "Cash on delivery")
+            )
+
+            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()?.title)
+                .isEqualTo("Cash on delivery")
+        }
+    }
+
+    @Test
+    fun `when cod payment type is not present, then no gateway is returned`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+                getSuccessWooResult("cheque", true)
+            )
+
+            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).isNull()
+        }
+    }
+
+    private fun getSuccessWooResult(
+        paymentType: String,
+        isPaymentTypeEnabled: Boolean,
+        title: String = ""
+    ) = WooResult(
         model = listOf(
             WCGatewayModel(
                 id = paymentType,
-                title = "",
+                title = title,
                 description = "",
                 order = 0,
                 isEnabled = isPaymentTypeEnabled,
