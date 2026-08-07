@@ -1,0 +1,2 @@
+25.3:
+Esta actualización ofrece precios exactos en varias monedas, una mejor duplicación de productos y un manejo de imágenes de variaciones de confianza. La barra de herramientas de Mi tienda no tiene fallos, Analytics Hub muestra comparaciones de datos más claras y la incorporación de Pagos en persona es más flexible. Además, se han corregido varios fallos y errores de la interfaz de usuario.
