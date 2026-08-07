@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.cashpayment
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.models.SiteParameters
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -11,6 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -31,6 +34,7 @@ class WooPosCashPaymentRepositoryTest {
     private val orderStore: WCOrderStore = mock()
     private val orderMapper: OrderMapper = mock()
     private val gatewayStore: WCGatewayStore = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private lateinit var repository: WooPosCashPaymentRepository
 
@@ -41,7 +45,8 @@ class WooPosCashPaymentRepositoryTest {
             wooCommerceStore,
             orderStore,
             orderMapper,
-            gatewayStore
+            gatewayStore,
+            newOrderNotificationSuppressionCache
         )
     }
 
@@ -156,6 +161,44 @@ class WooPosCashPaymentRepositoryTest {
             newPaymentMethodId = "cod",
             newPaymentMethodTitle = gatewayTitle,
             cashPaymentChangeDueAmount = cashPaymentChangeDueAmount
+        )
+        verifyNoInteractions(newOrderNotificationSuppressionCache)
+    }
+
+    @Test
+    fun `given order completion succeeds, when completeOrder, then the status change is recorded`() = runTest {
+        // GIVEN
+        val orderId = 123L
+        val siteId = 999L
+        val site: SiteModel = mock { on { this.siteId }.thenReturn(siteId) }
+        val statusModel = WCOrderStatusModel(statusKey = Order.Status.Completed.value)
+        val updateResult = UpdateOrderResult.RemoteUpdateResult(OnOrderChanged())
+        val storedOrder = OrderTestUtils.generateOrder().copy(status = Order.Status.Pending.value)
+
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(gatewayStore.getGateway(site, "cod")).thenReturn(null)
+        whenever(orderStore.getOrderByIdAndSite(orderId, site)).thenReturn(storedOrder)
+        whenever(orderStore.getOrderStatusForSiteAndKey(site, Order.Status.Completed.value)).thenReturn(statusModel)
+        whenever(
+            orderStore.updateOrderStatusAndPaymentDetails(
+                orderId = orderId,
+                site = site,
+                newStatus = statusModel,
+                newPaymentMethodId = "cod",
+                newPaymentMethodTitle = "Pay in Person",
+                cashPaymentChangeDueAmount = "5"
+            )
+        ).thenReturn(flowOf(updateResult))
+
+        // WHEN
+        repository.completeOrder(orderId, cashPaymentChangeDueAmount = "5")
+
+        // THEN
+        verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
+            siteId = siteId,
+            orderId = orderId,
+            previousStatusKey = Order.Status.Pending.value,
+            newStatusKey = Order.Status.Completed.value,
         )
     }
 

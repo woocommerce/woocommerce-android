@@ -20,6 +20,7 @@ import com.woocommerce.android.model.ShippingLabelMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -52,7 +53,8 @@ class OrderDetailRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
     private val shippingLabelMapper: ShippingLabelMapper,
-    private val refreshProductsSignal: RefreshProductsSignal
+    private val refreshProductsSignal: RefreshProductsSignal,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
         val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
@@ -131,14 +133,21 @@ class OrderDetailRepository @Inject constructor(
             orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), newStatus)
                 ?: WCOrderStatusModel(statusKey = newStatus)
         }
+        val previousStatusKey = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.status
         return orderStore.updateOrderStatus(
             orderId,
             selectedSite.get(),
             status
         ).onEach { result ->
-            // Changing status (e.g. to Processing/Completed) can change the order's products' stock server-side,
-            // so once the server confirms, tell the Products list to refresh those rows.
             if (result is WCOrderStore.UpdateOrderResult.RemoteUpdateResult && !result.event.isError) {
+                newOrderNotificationSuppressionCache.onOrderStatusChanged(
+                    siteId = selectedSite.get().siteId,
+                    orderId = orderId,
+                    previousStatusKey = previousStatusKey,
+                    newStatusKey = newStatus,
+                )
+                // Changing status (e.g. to Processing/Completed) can change the order's products' stock
+                // server-side, so once the server confirms, tell the Products list to refresh those rows.
                 refreshProductsSignal.notifyProductsChanged(getOrderById(orderId)?.getProductIds().orEmpty())
             }
         }

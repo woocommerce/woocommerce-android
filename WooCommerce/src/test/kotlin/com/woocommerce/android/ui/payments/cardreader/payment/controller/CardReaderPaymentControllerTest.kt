@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.cardreader.payment.controller
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -38,6 +39,7 @@ import com.woocommerce.android.cardreader.payments.RefundParams
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
@@ -99,6 +101,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -132,6 +135,8 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
+    private val crashLogging: CrashLogging = mock()
 
     private var isTTPinProgress = false
     private val isTTPinProgressProp: KMutableProperty0<Boolean> = ::isTTPinProgress
@@ -161,6 +166,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(mockedAddress.lastName).thenReturn("Test")
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
 
         whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(siteModel)
@@ -224,10 +230,12 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
             refreshProductsSignal = refreshProductsSignal,
+            crashLogging = crashLogging,
         )
     }
 
@@ -1412,6 +1420,53 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when payment succeeds, then order is recorded as paid`() =
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.Pending.value),
+            )
+        }
+
+    @Test
+    fun `given an order already in a notifiable status, when payment succeeds, then the previous status is passed`() =
+        testBlocking {
+            whenever(mockedOrder.status).thenReturn(Order.Status.OnHold)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("testUrl")) }
+            }
+
+            controller.start()
+
+            verify(newOrderNotificationSuppressionCache).onOrderPaidRemotely(
+                siteId = eq(siteModel.siteId),
+                orderId = eq(ORDER_ID),
+                previousStatusKey = eq(Order.Status.OnHold.value),
+            )
+        }
+
+    @Test
+    fun `when payment fails, then order is not recorded as paid`() =
+        testBlocking {
+            whenever(errorMapper.mapPaymentErrorToUiError(Generic, false))
+                .thenReturn(PaymentFlowError.Generic)
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
+            }
+
+            controller.start()
+
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
+        }
+
+    @Test
     fun `given payment flow already started, when start() is invoked, then flow is not restarted`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2527,18 +2582,46 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @Test
     fun `given user leaves the screen, when scope cancellation handler throws, then stop does not crash`() =
         testBlocking {
-            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow<CardPaymentStatus> {
-                    suspendCancellableCoroutine<Unit> { continuation ->
-                        continuation.invokeOnCancellation {
-                            throw IllegalStateException("Cancellation race")
-                        }
-                    }
-                }
-            }
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
             controller.start()
 
-            controller.stop()
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.stop() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
+        }
+
+    @Test
+    fun `given payment in flight, when the flow is restarted, then cancellation handler does not crash`() =
+        testBlocking {
+            // GIVEN
+            stubPaymentThatThrowsOnCancellation()
+            controller.start()
+
+            // WHEN
+            val uncaught = captureUncaughtExceptions { controller.start() }
+
+            // THEN
+            assertThat(uncaught).isEmpty()
+        }
+
+    @Test
+    fun `given payment in flight, when the flow is restarted, then payment updates are still delivered`() =
+        testBlocking {
+            // GIVEN
+            val paymentStatus = MutableStateFlow<CardPaymentStatus>(InitializingPayment)
+            whenever(cardReaderManager.collectPayment(any())).thenReturn(paymentStatus)
+            controller.start()
+
+            // WHEN
+            controller.start()
+            paymentStatus.value = ProcessingPayment
+
+            // THEN
+            assertThat(controller.paymentState.value)
+                .isInstanceOf(CardReaderPaymentState.ProcessingPayment::class.java)
         }
 
     @Test
@@ -3845,6 +3928,32 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             verify(cardReaderManager, never()).collectPayment(any())
         }
 
+    private suspend fun stubPaymentThatThrowsOnCancellation() {
+        whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+            flow<CardPaymentStatus> {
+                suspendCancellableCoroutine<Unit> { continuation ->
+                    continuation.invokeOnCancellation {
+                        throw IllegalStateException(
+                            "Cannot cancel this operation while it is waiting for a network response"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureUncaughtExceptions(block: () -> Unit): List<Throwable> {
+        val captured = mutableListOf<Throwable>()
+        val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { _, throwable -> captured.add(throwable) }
+        try {
+            block()
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
+        return captured
+    }
+
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
             whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
@@ -3879,10 +3988,12 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentReceiptHelper = paymentReceiptHelper,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             paymentReceiptShare = paymentReceiptShare,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,
             refreshProductsSignal = refreshProductsSignal,
+            crashLogging = crashLogging,
         )
     }
 

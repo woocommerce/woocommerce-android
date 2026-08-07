@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
@@ -177,6 +178,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private val paymentReceiptHelper: PaymentReceiptHelper = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
+    private val crashLogging: CrashLogging = mock()
     private val paymentStateMapper = CardReaderPaymentStateToViewStateMapper(
         cardReaderPaymentReaderTypeStateProvider
     )
@@ -207,6 +209,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
 
         whenever(orderRepository.getOrderById(any())).thenReturn(mockedOrder)
@@ -221,6 +225,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.chargeId).thenReturn("chargeId")
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2703,6 +2708,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}
@@ -2742,6 +2749,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
             refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
+            crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
         viewModel.viewStateData.observeForever {}

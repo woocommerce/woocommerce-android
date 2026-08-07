@@ -13,6 +13,7 @@ import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
 import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
@@ -51,6 +52,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
     private val refreshProductsSignal: RefreshProductsSignal,
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
 ) {
     suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
@@ -66,6 +68,11 @@ class OrderCreateEditRepository @Inject constructor(
             createdVia = source.value,
             giftCard = giftCard.orNullIfEmpty(),
         )
+        val previousStatusKey = if (order.id != 0L) {
+            orderStore.getOrderByIdAndSite(order.id, selectedSite.get())?.status
+        } else {
+            null
+        }
         val result = if (order.id == 0L) {
             orderUpdateStore.createOrder(
                 site = selectedSite.get(),
@@ -85,6 +92,20 @@ class OrderCreateEditRepository @Inject constructor(
             result.isError -> Result.failure(WooException(result.error))
             else -> {
                 val updatedOrder = orderMapper.toAppModel(result.model!!)
+                if (order.id == 0L) {
+                    newOrderNotificationSuppressionCache.onOrderCreated(
+                        siteId = selectedSite.get().siteId,
+                        orderId = updatedOrder.id,
+                        statusKey = updatedOrder.status.value,
+                    )
+                } else {
+                    newOrderNotificationSuppressionCache.onOrderStatusChanged(
+                        siteId = selectedSite.get().siteId,
+                        orderId = updatedOrder.id,
+                        previousStatusKey = previousStatusKey,
+                        newStatusKey = updatedOrder.status.value,
+                    )
+                }
                 // Creating/editing a non-draft order can change its products' stock server-side; refresh those rows.
                 // Draft syncs (AUTO_DRAFT) don't affect stock, so skip the needless refresh.
                 if (updatedOrder.status.value != AUTO_DRAFT) {

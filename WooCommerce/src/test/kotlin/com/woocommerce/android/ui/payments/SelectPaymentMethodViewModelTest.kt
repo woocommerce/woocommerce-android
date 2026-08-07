@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -41,7 +42,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -92,7 +92,16 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
+        on {
+            updateOrderStatusAndPaymentDetails(any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+        }.thenReturn(
+            flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(OnOrderChanged()),
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()),
+            )
+        )
     }
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private val gatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock {
@@ -449,6 +458,26 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
                 eq(CUSTOM_PAYMENT_METHOD_TITLE),
                 eq(null)
+            )
+        }
+
+    @Test
+    fun `given cash payment confirmed, when order update succeeds, then the status change is recorded`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderEntity.status).thenReturn(Order.Status.Pending.value)
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(null)
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+
+            // THEN
+            verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
+                siteId = site.siteId,
+                orderId = 1L,
+                previousStatusKey = Order.Status.Pending.value,
+                newStatusKey = Order.Status.Completed.value,
             )
         }
 
@@ -1255,7 +1284,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
             refreshProductsSignal = refreshProductsSignal,
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache
         )
     }
 
