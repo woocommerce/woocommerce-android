@@ -17,6 +17,7 @@ import org.wordpress.android.util.StringUtils
 import org.wordpress.android.util.UrlUtils
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.math.roundToLong
 
 class ZendeskEnvironmentDataSource @Inject constructor() {
     /**
@@ -113,7 +114,8 @@ class ZendeskEnvironmentDataSource @Inject constructor() {
         internal fun formatAvailableSpace(bytes: Long): String {
             var value = bytes.toDouble()
             var unitIndex = 0
-            while (value >= bytesPerUnit && unitIndex < spaceUnits.lastIndex) {
+            // Compare the displayed (one-decimal) value, so e.g. 1023.99 MB promotes to 1.0 GB, not 1024.0 MB
+            while ((value * 10).roundToLong() >= bytesPerUnit * 10 && unitIndex < spaceUnits.lastIndex) {
                 value /= bytesPerUnit
                 unitIndex++
             }

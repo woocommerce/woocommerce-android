@@ -34,6 +34,13 @@ class ZendeskEnvironmentDataSourceTest {
     }
 
     @Test
+    fun `given a size just below a unit boundary, when formatted, then it is promoted to the next unit`() {
+        val bytes = 1024L * 1024 * 1024 - 1
+
+        assertThat(ZendeskEnvironmentDataSource.formatAvailableSpace(bytes)).isEqualTo("1.0 GB")
+    }
+
+    @Test
     fun `given zero free space, when formatted, then it is reported as zero bytes`() {
         assertThat(ZendeskEnvironmentDataSource.formatAvailableSpace(0)).isEqualTo("0.0 B")
     }
