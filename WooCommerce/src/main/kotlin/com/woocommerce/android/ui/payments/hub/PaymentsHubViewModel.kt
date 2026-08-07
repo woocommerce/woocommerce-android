@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Lea
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.PayoutSummaryListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem.ToggleState
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -89,8 +90,7 @@ class PaymentsHubViewModel @Inject constructor(
                 containsHtml = true
             ),
             index = 2,
-            isChecked = false,
-            isLoading = true,
+            state = ToggleState.LOADING,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
             onLearnMoreClicked = ::onLearnMoreCodClicked
         )
@@ -153,8 +153,7 @@ class PaymentsHubViewModel @Inject constructor(
         val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         updateCashOnDeliveryOptionState(
             cashOnDeliveryState.value?.copy(
-                isChecked = isCashOnDeliveryEnabled,
-                isLoading = false
+                state = ToggleState.fromChecked(isCashOnDeliveryEnabled)
             )!!
         )
     }
@@ -447,7 +446,7 @@ class PaymentsHubViewModel @Inject constructor(
         paymentsFlowTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
             updateCashOnDeliveryOptionState(
-                cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
+                cashOnDeliveryState.value?.copy(isEnabled = false, state = ToggleState.fromChecked(isChecked))!!
             )
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
@@ -461,7 +460,7 @@ class PaymentsHubViewModel @Inject constructor(
                     )
                 }
                 updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
+                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(isChecked))!!
                 )
             } else {
                 if (isChecked) {
@@ -476,7 +475,7 @@ class PaymentsHubViewModel @Inject constructor(
                     )
                 }
                 updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
+                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(!isChecked))!!
                 )
                 if (result.error.message.isNullOrEmpty()) {
                     triggerEvent(ShowToast(R.string.something_went_wrong_try_again))
