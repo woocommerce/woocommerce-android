@@ -43,16 +43,9 @@ class ProductFilterProductRestrictions @Inject constructor() : ProductRestrictio
 
 @Parcelize
 sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
-    /**
-     * Message shown to the merchant when a scanned barcode or SKU resolves to a product this restriction blocks.
-     */
     @get:StringRes
     abstract val scanningMessage: Int
 
-    /**
-     * Failure reason reported to analytics (never shown to the user) when the scanning flow rejects a product this
-     * restriction blocks.
-     */
     abstract val scanningTrackingReason: String
 
     /**
@@ -71,7 +64,7 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     @Parcelize
     object NonPublishedProducts : Hidden() {
         override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
-        override val scanningTrackingReason get() = "Failed to add a product which is not published"
+        override val scanningTrackingReason get() = "Failed to add a product that is not published"
 
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH
@@ -81,7 +74,7 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     @Parcelize
     object NonPurchasableProducts : Hidden() {
         override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
-        override val scanningTrackingReason get() = "Failed to add a product which is not published"
+        override val scanningTrackingReason get() = "Failed to add a product that is not published"
 
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH && product.status != ProductStatus.PRIVATE
