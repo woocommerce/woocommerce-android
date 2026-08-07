@@ -1,7 +1,6 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.util.Patterns
 import androidx.annotation.StringRes
@@ -10,7 +9,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isInteger
-import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.util.FormatUtils
@@ -193,34 +191,13 @@ object StringUtils {
     /**
      * Returns the name of the country associated with the current store.
      * @param [storeCountry], if available is in the format US:NY.
-     * This method will transform `US:NY` into `United States`
-     * by getting the corresponding country name from string.xml for this
-     * value: "country_mapping_$countryCode"
+     * This method will transform `US:NY` into `United States` using [COUNTRY_NAMES_BY_CODE].
      *
-     * Will return nil if it can not figure out a valid country name
-     * There might be some scenario where the store country is not
-     * mapped to a valid country name. In order to avoid potential
-     * crashes because of this, logging the exception and returning
-     * null
-     * */
-    fun getCountryByCountryCode(
-        context: Context,
-        storeCountry: String?
-    ): String? {
-        try {
-            storeCountry?.let {
-                val countryCode = it.split(":")[0]
-                val resourceId = context.resources.getIdentifier(
-                    "country_mapping_$countryCode",
-                    "string",
-                    context.packageName
-                )
-                return context.getString(resourceId)
-            }
-        } catch (e: NotFoundException) {
-            WooLog.d(UTILS, "Unable to find a valid country name for country code: $storeCountry")
-        }
-        return null
+     * Returns null when the country code is missing or is not one we have a name for.
+     */
+    fun getCountryByCountryCode(storeCountry: String?): String? {
+        val countryCode = storeCountry?.substringBefore(":")?.uppercase()
+        return countryCode?.let { COUNTRY_NAMES_BY_CODE[it] }
     }
 
     /**

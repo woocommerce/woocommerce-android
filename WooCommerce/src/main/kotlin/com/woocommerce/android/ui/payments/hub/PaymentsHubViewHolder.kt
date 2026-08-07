@@ -14,6 +14,7 @@ import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
 import com.woocommerce.android.databinding.PaymentsHubHeaderBinding
 import com.woocommerce.android.databinding.PaymentsHubListItemBinding
 import com.woocommerce.android.databinding.PaymentsHubToggelableItemBinding
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem.ToggleState
 import com.woocommerce.android.ui.payments.hub.payoutsummary.PaymentsHubPayoutSummaryView
 import com.woocommerce.android.util.UiHelpers
 
@@ -65,16 +66,27 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             binding.paymentsHubListItemLabelTv.text = UiHelpers.getTextOfUiString(itemView.context, uiState.label)
             binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
-            binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
-            binding.paymentsHubSwitch.isChecked = uiState.isChecked
-            binding.paymentsHubSwitch.isInvisible = uiState.isLoading
+            binding.paymentsHubSwitch.setOnCheckedChangeListener(null)
+            when (uiState.state) {
+                ToggleState.LOADING -> {
+                    binding.paymentsHubSwitch.isInvisible = true
+                    binding.paymentsHubSwitch.isClickable = false
+                    binding.root.setOnClickListener(null)
+                }
+                ToggleState.CHECKED, ToggleState.UNCHECKED -> {
+                    binding.paymentsHubSwitch.isInvisible = false
+                    binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
+                    binding.paymentsHubSwitch.isClickable = false
+                    binding.paymentsHubSwitch.isChecked = uiState.state == ToggleState.CHECKED
+                    binding.root.setOnClickListener {
+                        if (uiState.isEnabled) {
+                            uiState.onToggled(!uiState.isChecked)
+                        }
+                    }
+                }
+            }
             binding.paymentsHubListItemDescriptionTv.setOnClickListener {
                 uiState.onLearnMoreClicked()
-            }
-            binding.root.setOnClickListener {
-                if (uiState.isEnabled && !uiState.isLoading) {
-                    uiState.onToggled(!uiState.isChecked)
-                }
             }
         }
     }

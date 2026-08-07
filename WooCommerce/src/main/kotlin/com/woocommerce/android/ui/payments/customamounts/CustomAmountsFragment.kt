@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogCustomAmountsBinding
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
@@ -227,7 +228,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
                 }
                 when (arguments.customAmountUIModel.type) {
                     FIXED_CUSTOM_AMOUNT -> {
-                        if (binding.editPrice.editText.text.toString() != it.currentPrice.toString()) {
+                        if (binding.editPrice.value.value isNotEqualTo it.currentPrice) {
                             binding.editPrice.setValue(it.currentPrice)
                             binding.editPrice.editText.setSelection(binding.editPrice.editText.text?.length ?: 0)
                         }
