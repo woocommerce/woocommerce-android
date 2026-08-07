@@ -473,11 +473,7 @@ class ProductDetailViewModel @Inject constructor(
             } else {
                 when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
-                        productRepository.getProductAggregate(
-                            viewState.productDraft?.remoteId ?: mode.remoteProductId
-                        )?.let {
-                            storedProductAggregate.value = it
-                        }
+                        restoreStoredProduct(viewState.productDraft?.remoteId ?: mode.remoteProductId)
                     }
 
                     ProductDetailFragment.Mode.Loading -> {
@@ -491,9 +487,19 @@ class ProductDetailViewModel @Inject constructor(
                             )
                         )
 
-                    is ProductDetailFragment.Mode.AddNewProduct -> Unit
+                    is ProductDetailFragment.Mode.AddNewProduct -> {
+                        viewState.productDraft?.remoteId
+                            ?.takeIf { it != DEFAULT_ADD_NEW_PRODUCT_ID }
+                            ?.let { restoreStoredProduct(it) }
+                    }
                 }
             }
+        }
+    }
+
+    private suspend fun restoreStoredProduct(remoteProductId: Long) {
+        productRepository.getProductAggregate(remoteProductId)?.let {
+            storedProductAggregate.value = it
         }
     }
 
@@ -1468,8 +1474,14 @@ class ProductDetailViewModel @Inject constructor(
 
     fun refreshProduct() {
         launch {
-            val mode = navArgs.mode as ProductDetailFragment.Mode.ShowProduct
-            fetchProduct(viewState.productDraft?.remoteId ?: mode.remoteProductId)
+            val remoteProductId = when (val mode = navArgs.mode) {
+                is ProductDetailFragment.Mode.ShowProduct -> viewState.productDraft?.remoteId ?: mode.remoteProductId
+                ProductDetailFragment.Mode.AddNewProduct ->
+                    viewState.productDraft?.remoteId?.takeIf { it != DEFAULT_ADD_NEW_PRODUCT_ID }
+                ProductDetailFragment.Mode.Empty,
+                ProductDetailFragment.Mode.Loading -> null
+            }
+            remoteProductId?.let { fetchProduct(it) }
         }
     }
 
