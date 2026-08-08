@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import android.content.pm.ApplicationInfo
 import android.graphics.Rect
 import android.graphics.drawable.RippleDrawable
 import android.view.ContextThemeWrapper
@@ -16,12 +17,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
+import androidx.core.widget.ImageViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.ui.compose.designsystem.R
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import kotlin.math.roundToInt
 
@@ -122,6 +125,91 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    fun `given overflow item, when menu is rendered, then overflow matches outlined icon contract`() {
+        val toolbar = LayoutInflater.from(toolbarContext())
+            .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
+
+        toolbar.layoutToolbar()
+        val overflowButton = toolbar.overflowButton()
+        val touchTarget = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+        val iconPadding = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_padding)
+        val overflowLayoutParams = overflowButton.layoutParams as ActionMenuView.LayoutParams
+        val expectedTint = checkNotNull(
+            AppCompatResources.getColorStateList(toolbar.context, R.color.woo_ds_toolbar_icon_button_tint),
+        )
+
+        assertThat(overflowLayoutParams.isOverflowButton).isTrue()
+        assertThat(overflowLayoutParams.width).isEqualTo(touchTarget)
+        assertThat(overflowLayoutParams.height).isEqualTo(touchTarget)
+        assertThat(overflowButton.measuredWidth).isEqualTo(touchTarget)
+        assertThat(overflowButton.measuredHeight).isEqualTo(touchTarget)
+        assertThat(overflowButton.minimumWidth).isEqualTo(touchTarget)
+        assertThat(overflowButton.minimumHeight).isEqualTo(touchTarget)
+        assertThat(overflowButton.paddingLeft).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingTop).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingRight).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingBottom).isEqualTo(iconPadding)
+        assertThat(overflowButton.scaleType).isEqualTo(ImageView.ScaleType.FIT_CENTER)
+        assertThat(overflowButton.background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
+        assertThat(shadowOf(overflowButton.drawable).createdFromResId)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+        assertThat(ImageViewCompat.getImageTintList(overflowButton)).isEqualTo(expectedTint)
+        assertThat(overflowButton.contentDescription)
+            .isEqualTo(toolbar.context.getString(androidx.appcompat.R.string.abc_action_menu_overflow_description))
+        assertThat(overflowButton.isClickable).isTrue()
+        assertThat(overflowButton.isFocusable).isTrue()
+    }
+
+    @Test
+    fun `given decorated overflow, when laid out again, then background and overflow layout params are reused`() {
+        val toolbar = LayoutInflater.from(toolbarContext())
+            .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
+
+        toolbar.layoutToolbar()
+        val firstOverflowButton = toolbar.overflowButton()
+        val firstBackground = firstOverflowButton.background
+        val firstLayoutParams = firstOverflowButton.layoutParams
+
+        toolbar.layoutToolbar()
+        val secondOverflowButton = toolbar.overflowButton()
+
+        assertThat(secondOverflowButton).isSameAs(firstOverflowButton)
+        assertThat(secondOverflowButton.background).isSameAs(firstBackground)
+        assertThat(secondOverflowButton.layoutParams).isSameAs(firstLayoutParams)
+        assertThat((secondOverflowButton.layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
+    }
+
+    @Test
+    fun `given decorated overflow, when menu is cleared and reinflated, then overflow remains styled`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext())
+        toolbar.inflateMenu(R.menu.woo_design_system_toolbar_test_menu)
+        toolbar.layoutToolbar()
+        val overflowButton = toolbar.overflowButton()
+        val overflowBackground = overflowButton.background
+        val touchTarget = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.woo_design_system_toolbar_test_menu)
+        val overflowLayoutParams = overflowButton.layoutParams as ActionMenuView.LayoutParams
+        overflowLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+        overflowLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        toolbar.layoutToolbar()
+        val redecoratedOverflowButton = toolbar.overflowButton()
+
+        assertThat(redecoratedOverflowButton).isSameAs(overflowButton)
+        assertThat(redecoratedOverflowButton.layoutParams).isSameAs(overflowLayoutParams)
+        assertThat(overflowLayoutParams.width).isEqualTo(touchTarget)
+        assertThat(overflowLayoutParams.height).isEqualTo(touchTarget)
+        assertThat(overflowButton.background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(overflowButton.background).isSameAs(overflowBackground)
+        assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
+        assertThat(shadowOf(overflowButton.drawable).createdFromResId)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+        assertThat(overflowLayoutParams.isOverflowButton).isTrue()
+    }
+
+    @Test
     @Config(qualifiers = "notnight")
     fun `given light theme, when icon controls are rendered, then ripple matches compose pressed state`() {
         assertToolbarIconRippleColor()
@@ -131,6 +219,33 @@ class WooDesignSystemToolbarTest {
     @Config(qualifiers = "night")
     fun `given dark theme, when icon controls are rendered, then ripple matches compose pressed state`() {
         assertToolbarIconRippleColor()
+    }
+
+    @Test
+    @Config(qualifiers = "ldrtl")
+    fun `given rtl layout with overflow, when laid out, then actions honor the logical end inset`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            addOverflowAction()
+        }
+        val edgeInset = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
+        val applicationInfo = toolbar.context.applicationInfo
+        val originalApplicationFlags = applicationInfo.flags
+
+        try {
+            applicationInfo.flags = applicationInfo.flags or ApplicationInfo.FLAG_SUPPORTS_RTL
+            toolbar.measure(
+                exactMeasureSpec(toolbar.dp(360)),
+                exactMeasureSpec(toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_height)),
+            )
+            toolbar.layoutDirection = View.LAYOUT_DIRECTION_RTL
+            toolbar.layout(0, 0, toolbar.measuredWidth, toolbar.measuredHeight)
+
+            assertThat(toolbar.layoutDirection).isEqualTo(View.LAYOUT_DIRECTION_RTL)
+            assertThat(toolbar.actionMenuView().left).isEqualTo(edgeInset)
+            assertThat((toolbar.overflowButton().layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
+        } finally {
+            applicationInfo.flags = originalApplicationFlags
+        }
     }
 
     @Test
@@ -315,6 +430,11 @@ class WooDesignSystemToolbarTest {
         setShowAsAction(showAsAction)
     }
 
+    private fun WooDesignSystemToolbar.addOverflowAction(): MenuItem =
+        menu.add(0, OVERFLOW_ACTION_ID, 0, "Settings").apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        }
+
     private fun WooDesignSystemToolbar.layoutToolbar(widthDp: Int = 360) {
         measure(
             exactMeasureSpec(dp(widthDp)),
@@ -336,6 +456,13 @@ class WooDesignSystemToolbarTest {
     private fun WooDesignSystemToolbar.actionMenuView(): ActionMenuView =
         children.filterIsInstance<ActionMenuView>().first()
 
+    private fun WooDesignSystemToolbar.overflowButton(): ImageView =
+        actionMenuView()
+            .children
+            .first { child ->
+                (child.layoutParams as? ActionMenuView.LayoutParams)?.isOverflowButton == true
+            } as ImageView
+
     private fun WooDesignSystemToolbar.navigationButton(contentDescription: String): AppCompatImageButton =
         children
             .filterIsInstance<AppCompatImageButton>()
@@ -352,6 +479,7 @@ class WooDesignSystemToolbarTest {
         )
         toolbar.navigationContentDescription = "Back"
         toolbar.addIconAction()
+        toolbar.addOverflowAction()
 
         toolbar.layoutToolbar()
         val expectedColor = ColorUtils.setAlphaComponent(
@@ -369,6 +497,9 @@ class WooDesignSystemToolbarTest {
         assertThat(rippleColor.defaultColor).isEqualTo(expectedColor)
         assertThat(toolbar.navigationButton("Back").background).isInstanceOf(RippleDrawable::class.java)
         assertThat(toolbar.actionChild(ACTION_ID).background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(toolbar.overflowButton().background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(ImageViewCompat.getImageTintList(toolbar.overflowButton())?.defaultColor)
+            .isEqualTo(ContextCompat.getColor(toolbar.context, R.color.woo_ds_color_surface_on_default))
         assertThat(resourceBackground).isInstanceOf(RippleDrawable::class.java)
     }
 
@@ -382,6 +513,7 @@ class WooDesignSystemToolbarTest {
         const val ACTION_ID = 1
         const val TEXT_ACTION_ID = 2
         const val SEARCH_ACTION_ID = 3
+        const val OVERFLOW_ACTION_ID = 4
         const val FULL_COLOR_ALPHA = 255
         const val PRESSED_STATE_ALPHA = 0.1f
     }

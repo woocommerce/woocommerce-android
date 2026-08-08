@@ -77,17 +77,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     private fun decorateNavigationButton(): Boolean {
         val navigationButton = children.filterIsInstance<AppCompatImageButton>().firstOrNull() ?: return false
-        var changed = navigationButton.applyToolbarIconTouchTarget()
-        if (navigationButton.scaleType != ImageView.ScaleType.FIT_CENTER) {
-            navigationButton.scaleType = ImageView.ScaleType.FIT_CENTER
-            changed = true
-        }
-        if (navigationButton.getTag(R.id.woo_ds_toolbar_action_view) != true) {
-            navigationButton.background = context.toolbarIconButtonBackground(icon = null)
-            navigationButton.setTag(R.id.woo_ds_toolbar_action_view, true)
-            changed = true
-        }
-        return changed
+        return navigationButton.applyOutlinedToolbarImageButtonStyle()
     }
 
     private fun decorateRenderedMenuActions(): Boolean {
@@ -97,6 +87,12 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
             .filterIsInstance<ActionMenuView>()
             .flatMap { actionMenuView -> actionMenuView.children.asIterable() }
             .forEach { child ->
+                val layoutParams = child.layoutParams as? ActionMenuView.LayoutParams
+                if (layoutParams?.isOverflowButton == true) {
+                    changed = child.applyOutlinedToolbarImageButtonStyle() || changed
+                    return@forEach
+                }
+
                 val item = menu.findItem(child.id) ?: return@forEach
                 if (item.actionView === child) {
                     return@forEach
@@ -108,6 +104,20 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
                     child.clearOutlinedToolbarActionStyle(icon, iconSize) || changed
                 }
             }
+        return changed
+    }
+
+    private fun View.applyOutlinedToolbarImageButtonStyle(): Boolean {
+        var changed = applyToolbarIconTouchTarget()
+        if (this is ImageView && scaleType != ImageView.ScaleType.FIT_CENTER) {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            changed = true
+        }
+        if (getTag(R.id.woo_ds_toolbar_action_view) != true) {
+            background = context.toolbarIconButtonBackground(icon = null)
+            setTag(R.id.woo_ds_toolbar_action_view, true)
+            changed = true
+        }
         return changed
     }
 
@@ -215,11 +225,14 @@ private fun View.applyToolbarIconTouchTarget(): Boolean {
         minimumHeight = touchTarget
         changed = true
     }
-    if (layoutParams?.width != touchTarget || layoutParams?.height != touchTarget) {
-        layoutParams = (layoutParams ?: ViewGroup.LayoutParams(touchTarget, touchTarget)).apply {
-            width = touchTarget
-            height = touchTarget
-        }
+    val currentLayoutParams = layoutParams
+    if (currentLayoutParams == null) {
+        layoutParams = ViewGroup.LayoutParams(touchTarget, touchTarget)
+        changed = true
+    } else if (currentLayoutParams.width != touchTarget || currentLayoutParams.height != touchTarget) {
+        currentLayoutParams.width = touchTarget
+        currentLayoutParams.height = touchTarget
+        requestLayout()
         changed = true
     }
     if (!hasUniformPadding(iconPadding)) {

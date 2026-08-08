@@ -9,6 +9,6 @@
     <dimen name="woo_ds_toolbar_icon_size">18dp</dimen>
     <dimen name="woo_ds_toolbar_icon_padding">15dp</dimen>
     <dimen name="woo_ds_toolbar_icon_border_inset">4dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_border_width">0.5dp</dimen>
+    <dimen name="woo_ds_toolbar_icon_border_width">1dp</dimen>
     <dimen name="woo_ds_toolbar_icon_corner_radius">12dp</dimen>
 </resources>
