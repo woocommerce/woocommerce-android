@@ -22,9 +22,10 @@
 
     <item
         android:id="@+id/menu_share"
+        android:icon="@drawable/woo_ds_ic_regular_share_24dp"
         android:title="@string/share"
         android:visible="false"
-        app:showAsAction="withText" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_view_product"

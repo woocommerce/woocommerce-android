@@ -196,7 +196,7 @@ class ProductDetailsToolbarHelper @Inject constructor() :
             isVisible = state.shareOption
 
             setShowAsActionFlags(
-                if (state.showShareOptionAsActionWithText) {
+                if (state.showShareOptionAsAction) {
                     MenuItem.SHOW_AS_ACTION_IF_ROOM
                 } else {
                     MenuItem.SHOW_AS_ACTION_NEVER
