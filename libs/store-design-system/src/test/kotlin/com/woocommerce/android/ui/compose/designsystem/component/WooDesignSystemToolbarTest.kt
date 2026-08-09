@@ -58,7 +58,7 @@ class WooDesignSystemToolbarTest {
         val controlEdgeInset = (
             toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
                 toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
-        ).roundToInt()
+            ).roundToInt()
         toolbar.navigationIcon = AppCompatResources.getDrawable(
             toolbar.context,
             R.drawable.woo_ds_ic_regular_angle_left_24dp,
@@ -242,7 +242,7 @@ class WooDesignSystemToolbarTest {
         val controlEdgeInset = (
             toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
                 toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
-        ).roundToInt()
+            ).roundToInt()
         val applicationInfo = toolbar.context.applicationInfo
         val originalApplicationFlags = applicationInfo.flags
 

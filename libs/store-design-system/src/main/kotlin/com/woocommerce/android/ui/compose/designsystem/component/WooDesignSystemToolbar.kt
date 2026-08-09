@@ -179,7 +179,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         val controlEdgeInset = (
             resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
                 resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
-        ).roundToInt()
+            ).roundToInt()
         val isRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
         val toolbarWidth = width
         val toolbarHeight = height
