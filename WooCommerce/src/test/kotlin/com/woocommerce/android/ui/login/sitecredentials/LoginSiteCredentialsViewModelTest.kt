@@ -476,18 +476,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
                 loginEntryVerified = true
             )
-            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
-                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
-            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS))
-                .thenReturn(Result.failure(invalidCredentials))
-            whenever(repository.login(SITE_URL, USERNAME, STILL_WRONG_PASSWORD, PENDING_LOGIN_ENDPOINTS))
-                .thenReturn(Result.failure(invalidCredentials))
-            whenever(repository.login(SITE_URL, USERNAME, CORRECT_PASSWORD, PENDING_LOGIN_ENDPOINTS))
-                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL)))
-            whenever(repository.login(SITE_URL, USERNAME, CORRECT_PASSWORD, ADMIN_RETRY_ENDPOINTS))
-                .thenReturn(Result.success(Unit))
-            whenever(repository.fetchSite(SITE_URL, USERNAME, CORRECT_PASSWORD)).thenReturn(Result.success(site))
-            setup()
+            givenCustomLoginRetriesBeforeNativeSuccess(invalidCredentials)
 
             // GIVEN
             viewModel.viewState.observeForTesting {
@@ -809,6 +798,23 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 override suspend fun isEnabledForJetpackAccess() = true
             }
         )
+    }
+
+    private suspend fun givenCustomLoginRetriesBeforeNativeSuccess(
+        invalidCredentials: CookieNonceAuthenticationException
+    ) {
+        whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+            .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
+        whenever(repository.login(SITE_URL, USERNAME, PASSWORD, LOGIN_ENDPOINTS))
+            .thenReturn(Result.failure(invalidCredentials))
+        whenever(repository.login(SITE_URL, USERNAME, STILL_WRONG_PASSWORD, PENDING_LOGIN_ENDPOINTS))
+            .thenReturn(Result.failure(invalidCredentials))
+        whenever(repository.login(SITE_URL, USERNAME, CORRECT_PASSWORD, PENDING_LOGIN_ENDPOINTS))
+            .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL)))
+        whenever(repository.login(SITE_URL, USERNAME, CORRECT_PASSWORD, ADMIN_RETRY_ENDPOINTS))
+            .thenReturn(Result.success(Unit))
+        whenever(repository.fetchSite(SITE_URL, USERNAME, CORRECT_PASSWORD)).thenReturn(Result.success(site))
+        setup()
     }
 
     private fun credentialsState(siteAddress: String = SITE_URL) = SavedStateHandle(

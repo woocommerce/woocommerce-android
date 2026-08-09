@@ -291,92 +291,114 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     ) {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value)
         loadingMessage.value = R.string.logging_in
-        wpApiSiteRepository.login(
+        val result = wpApiSiteRepository.login(
             url = siteAddress,
             username = state.username,
             password = state.password,
             endpoints = endpoints
-        ).fold(
-            onSuccess = {
-                promoteValidatedEndpoints(endpoints)
-                endpointRecovery.value = null
-                fetchSite()
-            },
-            onFailure = { exception ->
-                val authenticationError = exception as? CookieNonceAuthenticationException
-                val loginEntryWasVerified = authenticationError?.loginEntryVerified == true ||
-                    authenticationError?.errorType == CUSTOM_ADMIN_URL
-                val hasVerifiedCustomLoginEntry = endpoints.loginEntryUrl != null && loginEntryWasVerified
-
-                if (retryingEndpoint == EndpointType.LOGIN && hasVerifiedCustomLoginEntry) {
-                    promoteValidatedEndpoint(EndpointType.LOGIN, endpoints)
-                    endpointRecovery.value = null
-                }
-
-                when (authenticationError?.errorType) {
-                    CUSTOM_LOGIN_URL -> {
-                        if (hasVerifiedCustomLoginEntry) {
-                            authError.value = AuthenticationError(
-                                errorMessage = authenticationError.errorMessage,
-                                showWpAdminFallbackOption = false
-                            )
-                        } else {
-                            handleEndpointRecovery(
-                                EndpointType.LOGIN,
-                                retryingEndpoint == EndpointType.LOGIN
-                            )
-                        }
-                    }
-
-                    CUSTOM_ADMIN_URL -> {
-                        handleEndpointRecovery(
-                            EndpointType.ADMIN,
-                            retryingEndpoint == EndpointType.ADMIN
-                        )
-                    }
-
-                    INVALID_CREDENTIALS -> authError.value = AuthenticationError(
-                        errorMessage = authenticationError.errorMessage,
-                        showWpAdminFallbackOption = endpoints.loginEntryUrl == null
-                    )
-
-                    BASIC_AUTH_REQUIRED -> authError.value = AuthenticationError(
-                        errorMessage = authenticationError.errorMessage,
-                        showWpAdminFallbackOption = false
-                    )
-
-                    else -> {
-                        if (hasVerifiedCustomLoginEntry) {
-                            authError.value = AuthenticationError(
-                                errorMessage = requireNotNull(authenticationError).errorMessage,
-                                showWpAdminFallbackOption = false
-                            )
-                        } else if (authenticationError?.errorType == INVALID_RESPONSE &&
-                            endpoints.loginEntryUrl != null
-                        ) {
-                            showEndpointRecovery(EndpointType.LOGIN, showError = true)
-                        } else if (retryingEndpoint != null || endpoints.loginEntryUrl != null) {
-                            authError.value = AuthenticationError(
-                                errorMessage = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic),
-                                showWpAdminFallbackOption = false
-                            )
-                        } else {
-                            fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
-                            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
-                        }
-                    }
-                }
-
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType?.name,
-                    errorDescription = exception.message,
-                    statusCode = authenticationError?.networkStatusCode
-                )
-            }
+        )
+        result.fold(
+            onSuccess = { completeNativeAuthentication(endpoints) },
+            onFailure = { handleLoginFailure(it, endpoints, retryingEndpoint) }
         )
         loadingMessage.value = 0
+    }
+
+    private suspend fun completeNativeAuthentication(endpoints: CookieNonceAuthenticationEndpoints) {
+        promoteValidatedEndpoints(endpoints)
+        endpointRecovery.value = null
+        fetchSite()
+    }
+
+    private suspend fun handleLoginFailure(
+        exception: Throwable,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?
+    ) {
+        val authenticationError = exception as? CookieNonceAuthenticationException
+        val loginEntryWasVerified = authenticationError?.loginEntryVerified == true ||
+            authenticationError?.errorType == CUSTOM_ADMIN_URL
+        val hasVerifiedCustomLoginEntry = endpoints.loginEntryUrl != null && loginEntryWasVerified
+
+        if (retryingEndpoint == EndpointType.LOGIN && hasVerifiedCustomLoginEntry) {
+            promoteValidatedEndpoint(EndpointType.LOGIN, endpoints)
+            endpointRecovery.value = null
+        }
+
+        routeLoginFailure(authenticationError, endpoints, retryingEndpoint, hasVerifiedCustomLoginEntry)
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = exception.javaClass.simpleName,
+            errorType = authenticationError?.errorType?.name,
+            errorDescription = exception.message,
+            statusCode = authenticationError?.networkStatusCode
+        )
+    }
+
+    private suspend fun routeLoginFailure(
+        authenticationError: CookieNonceAuthenticationException?,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?,
+        hasVerifiedCustomLoginEntry: Boolean
+    ) {
+        when (authenticationError?.errorType) {
+            CUSTOM_LOGIN_URL -> if (hasVerifiedCustomLoginEntry) {
+                showNativeAuthenticationError(authenticationError.errorMessage)
+            } else {
+                handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
+            }
+
+            CUSTOM_ADMIN_URL -> handleEndpointRecovery(
+                EndpointType.ADMIN,
+                retryingEndpoint == EndpointType.ADMIN
+            )
+
+            INVALID_CREDENTIALS -> authError.value = AuthenticationError(
+                errorMessage = authenticationError.errorMessage,
+                showWpAdminFallbackOption = endpoints.loginEntryUrl == null
+            )
+
+            BASIC_AUTH_REQUIRED -> showNativeAuthenticationError(authenticationError.errorMessage)
+            else -> routeUnknownLoginFailure(
+                authenticationError,
+                endpoints,
+                retryingEndpoint,
+                hasVerifiedCustomLoginEntry
+            )
+        }
+    }
+
+    private suspend fun routeUnknownLoginFailure(
+        authenticationError: CookieNonceAuthenticationException?,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?,
+        hasVerifiedCustomLoginEntry: Boolean
+    ) {
+        when {
+            hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(
+                requireNotNull(authenticationError).errorMessage
+            )
+
+            authenticationError?.errorType == INVALID_RESPONSE && endpoints.loginEntryUrl != null -> {
+                showEndpointRecovery(EndpointType.LOGIN, showError = true)
+            }
+
+            retryingEndpoint != null || endpoints.loginEntryUrl != null -> showNativeAuthenticationError(
+                authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+            )
+
+            else -> {
+                fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
+                analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
+            }
+        }
+    }
+
+    private fun showNativeAuthenticationError(errorMessage: UiString) {
+        authError.value = AuthenticationError(
+            errorMessage = errorMessage,
+            showWpAdminFallbackOption = false
+        )
     }
 
     private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
