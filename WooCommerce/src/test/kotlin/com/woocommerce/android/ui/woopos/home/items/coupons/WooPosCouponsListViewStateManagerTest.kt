@@ -30,8 +30,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.time.LocalDate
 import java.util.Date
 import com.woocommerce.android.model.Coupon as CouponDBModel
 
@@ -604,7 +606,7 @@ class WooPosCouponsListViewStateManagerTest {
     fun `given coupon without expiration date, when mapped, then expiredState is NotExpired`() = runTest {
         // GIVEN
         val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
-            dateExpires = null
+            dateExpiresGmt = null
         )
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(coupon))
@@ -635,7 +637,7 @@ class WooPosCouponsListViewStateManagerTest {
         // GIVEN
         val futureDate = Date(System.currentTimeMillis() + 86400000) // tomorrow
         val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
-            dateExpires = futureDate
+            dateExpiresGmt = futureDate
         )
         whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
             couponsDataFlow.emit(listOf(coupon))
@@ -666,11 +668,13 @@ class WooPosCouponsListViewStateManagerTest {
         runTest {
             // GIVEN
             val pastDate = Date(System.currentTimeMillis() - 86400000) // yesterday
+            val localExpiryDate = LocalDate.of(2099, 1, 1)
             val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
-                dateExpires = pastDate
+                dateExpiresGmt = pastDate,
+                dateExpiresLocal = localExpiryDate
             )
             val formattedDate = "01 Jan 2023"
-            whenever(couponFormatter.formatExpiredText(pastDate)).thenReturn(formattedDate)
+            whenever(couponFormatter.formatExpiredText(localExpiryDate)).thenReturn(formattedDate)
             whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
                 couponsDataFlow.emit(listOf(coupon))
                 delay(1) // workaround for bug in mockito
@@ -696,6 +700,38 @@ class WooPosCouponsListViewStateManagerTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `given expired coupon without local expiry, when mapped, then expired state has no formatted date`() = runTest {
+        // GIVEN
+        val coupon = CouponTestUtils.generateTestCoupon(0L).copy(
+            dateExpiresGmt = Date(System.currentTimeMillis() - 86400000),
+            dateExpiresLocal = null
+        )
+        whenever(couponsDataSource.clearCacheAndFetchFirstPage()).doSuspendableAnswer {
+            couponsDataFlow.emit(listOf(coupon))
+            delay(1) // workaround for bug in mockito
+            Result.success(false)
+        }
+
+        sat.viewState.test {
+            // WHEN
+            sat.fetchCoupons(
+                testViewModelScope,
+                WooPosCouponsListViewStateManager.WooPosCouponsListRefreshType.INITIAL
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val state = expectMostRecentItem() as Content
+            val mappedCoupon = state.items.first() as WooPosItemSelectionViewState.Coupon
+            val expiredState = mappedCoupon.expiredState as WooPosItemSelectionViewState.Coupon.ExpiredState.Expired
+            assertThat(expiredState.formattedDate).isNull()
+            verify(couponFormatter, never()).formatExpiredText(any())
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 
     @Test
     fun `when next page loads without search query, then tracks event with LIST source type`() = runTest {

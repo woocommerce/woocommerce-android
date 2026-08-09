@@ -13,7 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -86,6 +87,9 @@ class ProductListFragment :
     @Inject
     lateinit var isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact
 
+    @Inject
+    lateinit var backPressTracker: BackPressTracker
+
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
     private val productListViewModel: ProductListViewModel by viewModels()
 
@@ -95,6 +99,27 @@ class ProductListFragment :
     private var isAddProductFabAvailable = false
     private val isPullToRefreshEnabled = MutableStateFlow(true)
     private val scrollToTopRequests = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private var detailNavController: NavController? = null
+
+    private val backPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            handleBackPressed()
+        }
+    }
+
+    private val detailDestinationChangedListener = NavController.OnDestinationChangedListener { _, _, _ ->
+        updateBackPressedCallbackState()
+    }
+
+    private val layoutChangeListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+        setupDetailNavController()
+        updateBackPressedCallbackState()
+    }
+
+    private val refreshBackPressedCallbackState = Runnable {
+        setupDetailNavController()
+        updateBackPressedCallbackState()
+    }
 
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = requireNotNull(_binding)
@@ -160,6 +185,11 @@ class ProductListFragment :
 
     override fun onDestroyView() {
         uiMessageResolver.anchorViewId = null
+        binding.root.removeCallbacks(refreshBackPressedCallbackState)
+        binding.root.removeOnLayoutChangeListener(layoutChangeListener)
+        detailNavController?.removeOnDestinationChangedListener(detailDestinationChangedListener)
+        detailNavController = null
+        backPressedCallback.isEnabled = false
         super.onDestroyView()
         _binding = null
     }
@@ -192,6 +222,7 @@ class ProductListFragment :
                 isSearchActive = new.isSearchActive == true,
                 isSelecting = productListViewModel.isSelecting(),
             )
+            updateBackPressedCallbackState()
         }
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -201,6 +232,7 @@ class ProductListFragment :
                         isSearchActive = productListViewModel.isSearching(),
                         isSelecting = selectedIds.isNotEmpty(),
                     )
+                    updateBackPressedCallbackState()
                 }
             }
         }
@@ -243,42 +275,79 @@ class ProductListFragment :
     }
 
     private fun setupBackHandling() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    when {
-                        productListViewModel.isSelecting() -> productListViewModel.exitSelectionMode()
-                        productListViewModel.isSearching() -> productListViewModel.onSearchClosed()
-                        isWindowClassLargeThanCompact() -> handleTabletBackPress()
-                        else -> handlePhoneBackPress()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        binding.root.addOnLayoutChangeListener(layoutChangeListener)
+        setupDetailNavController()
+        binding.root.post(refreshBackPressedCallbackState)
+        updateBackPressedCallbackState()
+    }
+
+    private fun handleBackPressed() {
+        val consumed = when {
+            productListViewModel.isSelecting() -> {
+                productListViewModel.exitSelectionMode()
+                true
+            }
+
+            productListViewModel.isSearching() -> {
+                productListViewModel.onSearchClosed()
+                true
+            }
+
+            isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
+
+            binding.productsComposeContainer.isVisible.not() -> {
+                if (detailNavController?.navigateUp() != true) {
+                    displayListPaneOnly()
                 }
+                true
             }
-        )
-    }
 
-    private fun handleTabletBackPress() {
-        val navHostFragment = binding.detailNavContainer.getFragment<NavHostFragment?>()
-        val detailsFragment = navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)
-        if (detailsFragment is MainActivity.Companion.BackPressListener) {
-            if (detailsFragment.onRequestAllowBackPress() &&
-                navHostFragment.findNavController().popBackStack().not()
-            ) {
-                findNavController().popBackStack()
-            }
-        } else if (navHostFragment?.findNavController()?.popBackStack() == false) {
-            findNavController().popBackStack()
+            else -> false
         }
-    }
 
-    private fun handlePhoneBackPress() {
-        val detailsPaneIsNotNavigationRoot = binding.detailNavContainer.findNavController().navigateUp()
-        if (!detailsPaneIsNotNavigationRoot && binding.productsComposeContainer.isVisible.not()) {
-            displayListPaneOnly()
+        if (consumed) {
+            backPressTracker.trackBackPressed(requireActivity())
+            updateBackPressedCallbackState()
         } else {
-            findNavController().navigateUp()
+            continueBackNavigationPastProductList()
         }
+    }
+
+    private fun continueBackNavigationPastProductList() {
+        backPressedCallback.isEnabled = false
+        try {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        } finally {
+            updateBackPressedCallbackState()
+        }
+    }
+
+    private fun setupDetailNavController() {
+        val detailNavHost = childFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment
+        val navController = detailNavHost?.navController
+        if (navController === detailNavController) return
+
+        detailNavController?.removeOnDestinationChangedListener(detailDestinationChangedListener)
+        detailNavController = navController
+        detailNavController?.addOnDestinationChangedListener(detailDestinationChangedListener)
+    }
+
+    private fun updateBackPressedCallbackState() {
+        val currentBinding = _binding
+        if (currentBinding == null) {
+            backPressedCallback.isEnabled = false
+            return
+        }
+
+        val shouldHandlePaneBack = if (isWindowClassLargeThanCompact()) {
+            detailNavController?.previousBackStackEntry != null
+        } else {
+            currentBinding.productsComposeContainer.isVisible.not()
+        }
+        backPressedCallback.isEnabled = productListViewModel.isSelecting() ||
+            productListViewModel.isSearching() ||
+            shouldHandlePaneBack
     }
 
     private fun updateBottomNavVisibility(isSearchActive: Boolean, isSelecting: Boolean) {

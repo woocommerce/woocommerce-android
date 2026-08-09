@@ -801,6 +801,7 @@
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">You cannot add products that are not published</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">You cannot add products with no price specified</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">You cannot add a variable product that has no variations</string>
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
@@ -1471,6 +1472,13 @@
     <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay In Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay In Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Enable Pay In Person?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">This enables the Cash on Delivery payment method at your store’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">This enables the Cash on Delivery payment method at your store’s checkout and renames it from “%1$s” to “Pay in Person” for your customers, including on your website’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Enable</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -2506,6 +2514,14 @@
     <string name="support_system_status_report_share_label">Share system status report</string>
     <string name="support_system_status_report_copied_to_clipboard">System status report copied to clipboard</string>
     <string name="support_system_status_report_error_copy_to_clipboard">Error copying SSR to clipboard</string>
+    <string name="support_mobile_status_report">Mobile status report</string>
+    <string name="support_mobile_status_report_detail">App, device and store information from this app</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce mobile status report</string>
+    <string name="support_mobile_status_report_copy_label">Copy mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_label">Share mobile status report</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobile status report copied to clipboard</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Error copying mobile status report to clipboard</string>
+    <string name="support_mobile_status_report_share_error">Unable to share mobile status report</string>
 
     <string name="ai_support_chat_help_row_title">Chat with support</string>
     <string name="ai_support_chat_help_row_subtitle">Chat with our AI assistant to diagnose store issues</string>
@@ -2608,6 +2624,9 @@
     <string name="logviewer_log_files_list_header">Log files by created date</string>
     <string name="logviewer_log_files_list_footer">Up to seven day\'s worth of logs are stored.</string>
     <string name="logviewer_current_log_file">Current</string>
+    <string name="logviewer_share_all_logs">Share all logs</string>
+    <string name="logviewer_preparing_logs">Preparing logs…</string>
+    <string name="logviewer_share_all_logs_error">Unable to prepare the logs for sharing</string>
 
     <!--
         Login Library Imported Strings
@@ -2619,8 +2638,9 @@
     <string name="log_in">Log In</string>
     <string name="next">Next</string>
     <string name="open_mail">Open Mail</string>
-    <string name="enter_verification_code">Almost there! Please enter the verification code for WordPress.com from your authenticator app.</string>
+    <string name="enter_verification_code">Enter a verification code to continue.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
+    <string name="enter_verification_code_sms_generic">We sent a text message. Enter the verification code from the message.</string>
     <string name="login_use_wpcom_username_instead">Use username and password instead</string>
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
@@ -3076,8 +3096,8 @@
     <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
     <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
-    <string name="login_text_otp">Text me a code instead</string>
-    <string name="login_text_otp_another">Text me another code instead</string>
+    <string name="login_text_otp">Resend code via text message</string>
+    <string name="login_text_otp_another">Resend code via text message</string>
 
     <string name="login_magic_links_sent_label">Check your email on this device and tap the link in the email you received from WordPress.com.</string>
     <string name="magic_link_not_seeing_email_message">Not seeing the email? Check your Spam or Junk Mail folder.</string>
@@ -4028,6 +4048,10 @@
     <string name="woopos_scan_to_pay_retry">Try again</string>
     <string name="woopos_scan_to_pay_cancel">Cancel</string>
     <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Customer chose to pay in person</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">No payment was taken online. Collect it on the register, or show the code again.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Collect on the register</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Show the code again</string>
     <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
     <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>

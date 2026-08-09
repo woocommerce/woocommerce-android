@@ -16,6 +16,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductType
@@ -1602,6 +1603,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
 
         whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(subscriptionProduct)))
+        whenever(productRestriction.getUnsupportedRestriction(subscriptionProduct))
+            .thenReturn(ProductRestriction.SubscriptionProducts)
         whenever(resourceProvider.getString(any()))
             .thenReturn("Not supported")
 
@@ -1630,6 +1633,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         )
 
         whenever(listHandler.productsFlow).thenReturn(flowOf(listOf(variableSubscriptionProduct)))
+        whenever(productRestriction.getUnsupportedRestriction(variableSubscriptionProduct))
+            .thenReturn(ProductRestriction.SubscriptionProducts)
         whenever(resourceProvider.getString(any()))
             .thenReturn("Not supported")
 

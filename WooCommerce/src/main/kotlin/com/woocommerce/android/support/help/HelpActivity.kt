@@ -23,6 +23,7 @@ import com.woocommerce.android.extensions.doOnApplyWindowInsets
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.support.MobileStatusReportActivity
 import com.woocommerce.android.support.SSRActivity
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.WooLogViewerActivity
@@ -120,6 +121,7 @@ class HelpActivity : AppCompatActivity() {
             binding.ssrContainer.show()
             binding.ssrContainer.setOnClickListener { showSSR() }
         }
+        binding.mobileStatusReportContainer.setOnClickListener { showMobileStatusReport() }
 
         if (isAiSupportChatAvailable) {
             binding.aiSupportChatHistoryContainer.show()
@@ -251,6 +253,10 @@ class HelpActivity : AppCompatActivity() {
 
     private fun showSSR() {
         startActivity(Intent(this, SSRActivity::class.java))
+    }
+
+    private fun showMobileStatusReport() {
+        startActivity(Intent(this, MobileStatusReportActivity::class.java))
     }
 
     private fun isAiSupportChatAvailable(): Boolean =

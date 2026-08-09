@@ -240,11 +240,12 @@ class WooPosCouponsListViewStateManager @Inject constructor(
         coupon: Coupon,
         currentDate: Date
     ): WooPosItemSelectionViewState.Coupon.ExpiredState {
-        val expiryDate = coupon.dateExpires ?: return WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
+        val expiryDateGmt = coupon.dateExpiresGmt
+            ?: return WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired
 
-        return if (expiryDate.before(currentDate)) {
+        return if (expiryDateGmt.before(currentDate)) {
             WooPosItemSelectionViewState.Coupon.ExpiredState.Expired(
-                couponsFormatter.formatExpiredText(expiryDate)
+                coupon.dateExpiresLocal?.let(couponsFormatter::formatExpiredText)
             )
         } else {
             WooPosItemSelectionViewState.Coupon.ExpiredState.NotExpired

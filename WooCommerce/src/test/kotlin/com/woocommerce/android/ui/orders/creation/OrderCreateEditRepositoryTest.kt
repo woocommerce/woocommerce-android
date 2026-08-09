@@ -5,7 +5,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderAttributionOrigin
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -22,6 +24,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -34,6 +37,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
+import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
@@ -53,6 +57,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var wooCommerceStore: WooCommerceStore
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported = mock()
+    private val orderMapper: OrderMapper = mock {
+        on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
+    }
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
+    private val orderStore: WCOrderStore = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -75,15 +84,16 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         sut = OrderCreateEditRepository(
             selectedSite = selectedSite,
-            orderStore = mock(),
+            orderStore = orderStore,
             orderUpdateStore = orderUpdateStore,
-            orderMapper = mock(),
+            orderMapper = orderMapper,
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
             analyticsTrackerWrapper = trackerWrapper,
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         )
     }
 
@@ -244,6 +254,69 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
 
         verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
+
+    @Test
+    fun `given an order in a non-notifiable status, when an update moves it to a notifiable one, then it is recorded`() =
+        testBlocking {
+            // GIVEN
+            val paidOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+            whenever(isCurrencyQueryParamSupported()).thenReturn(false)
+            whenever(orderMapper.toAppModel(any())).thenReturn(paidOrder)
+            whenever(orderStore.getOrderByIdAndSite(123L, defaultSiteModel))
+                .thenReturn(OrderTestUtils.generateOrder().copy(status = "pending"))
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+            // WHEN
+            sut.createOrUpdateOrder(paidOrder, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
+                siteId = defaultSiteModel.siteId,
+                orderId = 123L,
+                previousStatusKey = "pending",
+                newStatusKey = Order.Status.Processing.value,
+            )
+        }
+
+    @Test
+    fun `given an order update fails, when it moves to a notifiable status, then the order is not recorded`() =
+        testBlocking {
+            // GIVEN
+            whenever(isCurrencyQueryParamSupported()).thenReturn(false)
+            whenever(orderUpdateStore.updateOrder(any(), any(), any(), anyOrNull())).thenReturn(
+                WooResult(
+                    WooError(WooErrorType.API_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR, DEFAULT_ERROR_MESSAGE)
+                )
+            )
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verifyNoInteractions(newOrderNotificationSuppressionCache)
+        }
+
+    @Test
+    fun `given a new order with a notifiable status, when the creation succeeds, then it is recorded as created`() =
+        testBlocking {
+            // GIVEN
+            val createdOrder = Order.getEmptyOrder(Date(), Date()).copy(id = 123L, status = Order.Status.Processing)
+            whenever(orderMapper.toAppModel(any())).thenReturn(createdOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+
+            // WHEN
+            sut.createOrUpdateOrder(createdOrder.copy(id = 0L), source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(newOrderNotificationSuppressionCache).onOrderCreated(
+                siteId = defaultSiteModel.siteId,
+                orderId = 123L,
+                statusKey = Order.Status.Processing.value,
+            )
+        }
 
     @Test
     fun `given the store takes the currency query param, when an order is updated, then the currency is sent`() =

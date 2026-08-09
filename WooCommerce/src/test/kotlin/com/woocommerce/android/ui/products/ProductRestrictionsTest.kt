@@ -3,7 +3,10 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -18,9 +21,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -31,9 +32,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -45,9 +44,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -59,9 +56,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -72,9 +67,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -85,9 +78,85 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = OrderCreationProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
+    }
+
+    @Test
+    fun `given draft product, when order creation products restriction, then the matched restriction is returned`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.DRAFT.name
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.NonPurchasableProducts, sut.getRestriction(product))
+    }
+
+    @Test
+    fun `given private product with no price, when order creation products restriction, then the price restriction is returned`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.PRIVATE.name,
+            amount = ""
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.ProductWithPriceNotSpecified, sut.getRestriction(product))
+    }
+
+    @Test
+    fun `given subscription product, when order creation products restriction, then product is not selectable`() {
+        val product = ProductTestUtils.generateProduct(
+            productType = "subscription"
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.SubscriptionProducts, sut.getUnsupportedRestriction(product))
+    }
+
+    @Test
+    fun `given variable subscription product, when order creation products restriction, then product is not selectable`() {
+        val product = ProductTestUtils.generateProduct(
+            productType = "variable-subscription",
+            isVariable = true,
+            variationIds = "[123]"
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertEquals(ProductRestriction.SubscriptionProducts, sut.getUnsupportedRestriction(product))
+    }
+
+    @Test
+    fun `given subscription product, when order creation products restriction, then product is not hidden`() {
+        val product = ProductTestUtils.generateProduct(
+            productType = "subscription"
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertFalse { sut.isProductHidden(product) }
+    }
+
+    @Test
+    fun `given simple product, when order creation products restriction, then product is selectable`() {
+        val product = ProductTestUtils.generateProduct()
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertNull(sut.getUnsupportedRestriction(product))
+    }
+
+    @Test
+    fun `given draft product, when order creation products restriction, then product is hidden`() {
+        val product = ProductTestUtils.generateProduct(
+            customStatus = ProductStatus.DRAFT.name
+        )
+
+        val sut = OrderCreationProductRestrictions()
+
+        assertTrue { sut.isProductHidden(product) }
     }
     //endregion
 
@@ -101,9 +170,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -115,9 +182,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -129,9 +194,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
 
     @Test
@@ -142,9 +205,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertTrue {
-            sut.isProductRestricted(product)
-        }
+        assertNotNull(sut.getRestriction(product))
     }
 
     @Test
@@ -155,9 +216,7 @@ class ProductRestrictionsTest : BaseUnitTest() {
 
         val sut = ProductFilterProductRestrictions()
 
-        assertFalse {
-            sut.isProductRestricted(product)
-        }
+        assertNull(sut.getRestriction(product))
     }
     //endregion
 }
