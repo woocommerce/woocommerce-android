@@ -14,10 +14,14 @@ data class CookieNonceAuthenticationEndpoints(
     fun validate(): ValidationResult {
         val canonical = canonicalSiteOrigin.networkUrl()
             ?: return invalid(Endpoint.CANONICAL, ValidationError.INVALID_URL)
-        if (canonical.hasUserInfo() || canonical.query != null) {
-            return invalid(Endpoint.CANONICAL, ValidationError.UNSAFE_ORIGIN)
+        return if (canonical.hasUserInfo() || canonical.query != null) {
+            invalid(Endpoint.CANONICAL, ValidationError.UNSAFE_ORIGIN)
+        } else {
+            validateEndpoints(canonical)
         }
+    }
 
+    private fun validateEndpoints(canonical: HttpUrl): ValidationResult {
         val (login, loginError) = validatedEndpoint(
             loginEntryUrl ?: canonical.toString().slashJoin("wp-login.php"),
             canonical

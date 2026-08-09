@@ -24,7 +24,10 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 private const val NOT_FOUND_STATUS_CODE = 404
+private const val GONE_STATUS_CODE = 410
 private const val MAX_ENDPOINT_REDIRECTS = 3
+private const val REDIRECT_STATUS_CODE_START = 300
+private const val REDIRECT_STATUS_CODE_END = 399
 private typealias ValidatedEndpoints = CookieNonceAuthenticationEndpoints.ValidationResult.Valid
 
 @Singleton
@@ -79,26 +82,21 @@ class NonceRestClient @Inject constructor(
             preflight.transactionUrl,
             validated.canonicalSiteOrigin
         )
+        val transaction = LoginTransaction(
+            endpoints = validated,
+            verification = endpoints.adminBaseVerification,
+            loginUrl = preflight.transactionUrl,
+            nonceUrl = nonceUrl,
+            username = username
+        )
         val nonce = when (preflight) {
-            is LoginPreflight.LoginForm -> postCredentials(
-                validated,
-                endpoints.adminBaseVerification,
-                preflight.transactionUrl,
-                nonceUrl,
-                username,
-                password
-            )
-            is LoginPreflight.AlreadyAuthenticated -> verifyAdminDashboardAndRequestNonce(
-                validated,
-                endpoints.adminBaseVerification,
-                preflight.transactionUrl,
-                nonceUrl,
-                username
-            )
+            is LoginPreflight.LoginForm -> postCredentials(transaction, password)
+            is LoginPreflight.AlreadyAuthenticated -> verifyAdminDashboardAndRequestNonce(transaction)
         }
         return cache(endpoints.canonicalSiteOrigin, nonce.withVerifiedLoginEntry())
     }
 
+    @Suppress("NestedBlockDepth", "ReturnCount")
     private suspend fun preflightLogin(endpoints: ValidatedEndpoints, username: String): LoginPreflight {
         var currentUrl = endpoints.loginEntryUrl
         var redirectsFollowed = 0
@@ -149,71 +147,59 @@ class NonceRestClient @Inject constructor(
     }
 
     private suspend fun postCredentials(
-        endpoints: ValidatedEndpoints,
-        verification: AdminBaseVerification,
-        loginUrl: HttpUrl,
-        nonceUrl: HttpUrl,
-        username: String,
+        transaction: LoginTransaction,
         password: String
     ): Nonce {
         return when (val response = wpApiEncodedBodyRequestBuilder.syncPostRequest(
             restClient = this,
-            url = loginUrl.toString(),
+            url = transaction.loginUrl.toString(),
             body = mapOf(
-                "log" to username,
+                "log" to transaction.username,
                 "pwd" to password,
-                "redirect_to" to nonceUrl.toString()
+                "redirect_to" to transaction.nonceUrl.toString()
             )
         )) {
-            is Success -> loginBodyFailure(response, username)
-            is Error -> handleCredentialError(response, endpoints, verification, loginUrl, nonceUrl, username)
+            is Success -> loginBodyFailure(response, transaction.username)
+            is Error -> handleCredentialError(response, transaction)
         }
     }
 
     private suspend fun handleCredentialError(
         response: Error<String>,
-        endpoints: ValidatedEndpoints,
-        verification: AdminBaseVerification,
-        loginUrl: HttpUrl,
-        nonceUrl: HttpUrl,
-        username: String
+        transaction: LoginTransaction
     ): Nonce {
-        if (response.error.volleyError is NoConnectionError) return Unknown(username)
+        if (response.error.volleyError is NoConnectionError) return Unknown(transaction.username)
 
         val networkResponse = response.error.volleyError?.networkResponse
         if (networkResponse?.statusCode?.isRedirect() != true) {
-            return loginFailure(username, response, networkResponse)
+            return loginFailure(transaction.username, response, networkResponse)
         }
 
         val redirectUrl = networkResponse.location()
-            ?.let(loginUrl::resolve)
+            ?.let(transaction.loginUrl::resolve)
             ?.withoutFragment()
-            ?.takeIf { it.isSafeFor(endpoints.canonicalSiteOrigin, loginUrl) }
+            ?.takeIf { it.isSafeFor(transaction.endpoints.canonicalSiteOrigin, transaction.loginUrl) }
         return when {
-            redirectUrl == nonceUrl -> verifyAdminDashboardAndRequestNonce(
-                endpoints, verification, loginUrl, nonceUrl, username
-            )
+            redirectUrl == transaction.nonceUrl -> verifyAdminDashboardAndRequestNonce(transaction)
             redirectUrl?.isNonceEndpoint() == true -> {
-                failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
+                failed(transaction.username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
             }
-            else -> failed(username, CookieNonceErrorType.INVALID_NONCE, response)
+            else -> failed(transaction.username, CookieNonceErrorType.INVALID_NONCE, response)
         }
     }
 
-    private suspend fun verifyAdminDashboardAndRequestNonce(
-        endpoints: ValidatedEndpoints,
-        verification: AdminBaseVerification,
-        loginUrl: HttpUrl,
-        nonceUrl: HttpUrl,
-        username: String
-    ): Nonce {
-        if (verification == AdminBaseVerification.AUTHENTICATED_DASHBOARD) {
-            val dashboardUrl = endpoints.adminBaseUrl.upgradeForSecureLogin(loginUrl, endpoints.canonicalSiteOrigin)
-            verifyAdminDashboard(endpoints, dashboardUrl, username)?.let { return it }
+    private suspend fun verifyAdminDashboardAndRequestNonce(transaction: LoginTransaction): Nonce {
+        if (transaction.verification == AdminBaseVerification.AUTHENTICATED_DASHBOARD) {
+            val dashboardUrl = transaction.endpoints.adminBaseUrl.upgradeForSecureLogin(
+                transaction.loginUrl,
+                transaction.endpoints.canonicalSiteOrigin
+            )
+            verifyAdminDashboard(transaction.endpoints, dashboardUrl, transaction.username)?.let { return it }
         }
-        return requestNonce(nonceUrl, username)
+        return requestNonce(transaction.nonceUrl, transaction.username)
     }
 
+    @Suppress("ReturnCount")
     private suspend fun verifyAdminDashboard(
         endpoints: ValidatedEndpoints,
         initialUrl: HttpUrl,
@@ -271,7 +257,7 @@ class NonceRestClient @Inject constructor(
 
     private fun getLoginErrorType(networkResponse: NetworkResponse?): CookieNonceErrorType = when {
         networkResponse?.statusCode == NOT_FOUND_STATUS_CODE ||
-            networkResponse?.statusCode == 410 -> CookieNonceErrorType.CUSTOM_LOGIN_URL
+            networkResponse?.statusCode == GONE_STATUS_CODE -> CookieNonceErrorType.CUSTOM_LOGIN_URL
         isBasicAuthError(networkResponse) -> CookieNonceErrorType.BASIC_AUTH_REQUIRED
         else -> CookieNonceErrorType.GENERIC_ERROR
     }
@@ -318,14 +304,14 @@ class NonceRestClient @Inject constructor(
     }
 
     private fun HttpUrl.upgradeForSecureLogin(loginUrl: HttpUrl, canonicalOrigin: HttpUrl): HttpUrl {
-        return if (canonicalOrigin.scheme == "http" && canonicalOrigin.port == HTTP_DEFAULT_PORT &&
-            scheme == "http" && port == HTTP_DEFAULT_PORT && loginUrl.scheme == "https"
-        ) {
+        return if (canonicalOrigin.isDefaultHttp() && isDefaultHttp() && loginUrl.scheme == "https") {
             newBuilder().scheme("https").port(HTTPS_DEFAULT_PORT).build()
         } else {
             this
         }
     }
+
+    private fun HttpUrl.isDefaultHttp(): Boolean = scheme == "http" && port == HTTP_DEFAULT_PORT
 
     private fun HttpUrl.withoutFragment(): HttpUrl = newBuilder().fragment(null).build()
 
@@ -337,7 +323,7 @@ class NonceRestClient @Inject constructor(
         encodedPathSegments.lastOrNull() == ADMIN_AJAX_PATH_SEGMENT &&
             encodedQuery == REST_NONCE_QUERY
 
-    private fun Int.isRedirect(): Boolean = this in 300..399
+    private fun Int.isRedirect(): Boolean = this in REDIRECT_STATUS_CODE_START..REDIRECT_STATUS_CODE_END
 
     private fun NetworkResponse.location(): String? = allHeaders
         ?.firstOrNull { it.name.equals(LOCATION_HEADER, ignoreCase = true) }
@@ -367,6 +353,7 @@ class NonceRestClient @Inject constructor(
         return HtmlUtils.fastStripHtml(errorHtml).trim(' ', '\n')
     }
 
+    @Suppress("ReturnCount")
     private fun String?.loginFormSubmissionUrl(documentUrl: HttpUrl, canonicalOrigin: HttpUrl): HttpUrl? {
         val renderedHtml = this?.replace(NON_RENDERED_REGION_PATTERN, "") ?: return null
         if (NON_RENDERED_MARKER_PATTERN.containsMatchIn(renderedHtml)) return null
@@ -442,6 +429,14 @@ class NonceRestClient @Inject constructor(
         data class AlreadyAuthenticated(override val transactionUrl: HttpUrl) : Success
         data class Failure(val nonce: Nonce) : LoginPreflight
     }
+
+    private data class LoginTransaction(
+        val endpoints: ValidatedEndpoints,
+        val verification: AdminBaseVerification,
+        val loginUrl: HttpUrl,
+        val nonceUrl: HttpUrl,
+        val username: String
+    )
 
     companion object {
         const val INVALID_CREDENTIAL_HTML_PATTERN = "document.querySelector('form').classList.add('shake')"
