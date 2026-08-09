@@ -52,9 +52,13 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    @Config(qualifiers = "420dpi")
     fun `given navigation and actions, when laid out, then controls honor edge insets`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
-        val edgeInset = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
+        val controlEdgeInset = (
+            toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
+                toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
+        ).roundToInt()
         toolbar.navigationIcon = AppCompatResources.getDrawable(
             toolbar.context,
             R.drawable.woo_ds_ic_regular_angle_left_24dp,
@@ -65,9 +69,16 @@ class WooDesignSystemToolbarTest {
         toolbar.layoutToolbar()
         val navigationButton = toolbar.navigationButton("Back")
         val actionMenuView = toolbar.actionMenuView()
+        val action = toolbar.actionChild(ACTION_ID)
 
-        assertThat(navigationButton.left).isEqualTo(edgeInset)
-        assertThat(actionMenuView.right).isEqualTo(toolbar.width - edgeInset)
+        assertThat(navigationButton.left).isEqualTo(controlEdgeInset)
+        assertThat(actionMenuView.right).isEqualTo(toolbar.width - controlEdgeInset)
+        assertThat(navigationButton.top)
+            .isEqualTo(((toolbar.height - navigationButton.height) / 2f).roundToInt())
+        assertThat(actionMenuView.top)
+            .isEqualTo(((toolbar.height - actionMenuView.height) / 2f).roundToInt())
+        assertThat(actionMenuView.top + action.top)
+            .isEqualTo(((toolbar.height - action.height) / 2f).roundToInt())
     }
 
     @Test
@@ -80,6 +91,7 @@ class WooDesignSystemToolbarTest {
         val titleView = toolbar.titleTextView("Products")
         assertThat(titleView.width).isGreaterThan(0)
         assertThat(titleView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(titleView.includeFontPadding).isFalse()
     }
 
     @Test
@@ -227,7 +239,10 @@ class WooDesignSystemToolbarTest {
         val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
             addOverflowAction()
         }
-        val edgeInset = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
+        val controlEdgeInset = (
+            toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
+                toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
+        ).roundToInt()
         val applicationInfo = toolbar.context.applicationInfo
         val originalApplicationFlags = applicationInfo.flags
 
@@ -241,7 +256,7 @@ class WooDesignSystemToolbarTest {
             toolbar.layout(0, 0, toolbar.measuredWidth, toolbar.measuredHeight)
 
             assertThat(toolbar.layoutDirection).isEqualTo(View.LAYOUT_DIRECTION_RTL)
-            assertThat(toolbar.actionMenuView().left).isEqualTo(edgeInset)
+            assertThat(toolbar.actionMenuView().left).isEqualTo(controlEdgeInset)
             assertThat((toolbar.overflowButton().layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
         } finally {
             applicationInfo.flags = originalApplicationFlags
