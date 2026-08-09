@@ -62,6 +62,9 @@ class CardReaderRemoteSession internal constructor(
     private val _state = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     val state: StateFlow<CardReaderRemoteSessionState> = _state.asStateFlow()
 
+    var certificateKeyType: CardReaderRemoteCertificateKeyType? = null
+        private set
+
     private var sessionScope: CoroutineScope? = null
     private var tlsServer: CardReaderRemoteTlsServer? = null
     private var nsdRegistration: CardReaderRemoteNsdRegistration? = null
@@ -136,6 +139,7 @@ class CardReaderRemoteSession internal constructor(
 
         val server = tlsServerFactory.create().also { tlsServer = it }
         server.start()
+        certificateKeyType = server.certificateKeyType
 
         val registration = nsdFactory.create(context)
             .advertise(server.port, server.fingerprint, deviceName(), siteHash, deviceId)

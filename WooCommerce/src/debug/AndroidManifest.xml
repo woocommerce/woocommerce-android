@@ -38,20 +38,12 @@
             tools:replace="android:exported" />
 
         <activity
-            android:name=".ui.login.auto.AutoLoginActivity"
+            android:name="com.woocommerce.android.ui.login.auto.AutoLoginActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
-            android:theme="@style/Theme.Woo.Splash">
-            <intent-filter tools:ignore="AppLinkWarning">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="https" />
-                <data android:host="woocommerce.com" />
-                <data android:path="/mobile/auto-login" />
-            </intent-filter>
-        </activity>
+            android:finishOnTaskLaunch="true"
+            android:permission="android.permission.DUMP"
+            android:theme="@style/Theme.Woo.Splash" />
 
     </application>
 
