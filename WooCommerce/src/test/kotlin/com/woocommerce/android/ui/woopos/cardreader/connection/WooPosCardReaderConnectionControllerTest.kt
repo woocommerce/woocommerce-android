@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderSession
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -19,11 +20,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import java.net.InetAddress
 
 @ExperimentalCoroutinesApi
 class WooPosCardReaderConnectionControllerTest {
@@ -78,4 +81,44 @@ class WooPosCardReaderConnectionControllerTest {
         // THEN
         verify(wooPosAnalyticsTracker).track(eq(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown))
     }
+
+    @Test
+    fun `given the phone was re-advertised on a new port, when refreshing its address, then the new entry is used`() {
+        // GIVEN
+        val previousSession = phone(deviceId = "device-1", port = 35579)
+        val newSession = phone(deviceId = "device-1", port = 35401, fingerprintBase64 = "CD8E")
+
+        // WHEN
+        val refreshed = listOf(newSession).refreshAddressOf(previousSession)
+
+        // THEN
+        assertThat(refreshed).isEqualTo(newSession)
+    }
+
+    @Test
+    fun `given the phone has not been re-advertised, when refreshing its address, then the known entry is kept`() {
+        // GIVEN
+        val knownPhone = phone(deviceId = "device-1", port = 35579)
+        val anotherPhone = phone(deviceId = "device-2", port = 40100)
+
+        // WHEN
+        val refreshed = listOf(anotherPhone).refreshAddressOf(knownPhone)
+
+        // THEN
+        assertThat(refreshed).isEqualTo(knownPhone)
+    }
+
+    private fun phone(
+        deviceId: String,
+        port: Int,
+        fingerprintBase64: String = "AB4F",
+    ) = WooPosDiscoveredReader.Phone(
+        serviceName = "woopos-remote-$fingerprintBase64",
+        deviceId = deviceId,
+        name = "Pixel 7",
+        host = InetAddress.getLoopbackAddress(),
+        port = port,
+        fingerprintBase64 = fingerprintBase64,
+        siteHash = "site-hash",
+    )
 }

@@ -183,18 +183,67 @@ class WooPosUnifiedDiscoveryStreamTest {
         }
     }
 
+    @Test
+    fun `given phone re-advertises after a session restart, when discovered, then only the new address is surfaced`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderManager.discoverReaders(false, types)).thenReturn(
+                flowOf(CardReaderDiscoveryEvents.Started)
+            )
+            val previousSession = phone(
+                name = "Pixel 7",
+                serviceName = "woopos-remote-2416",
+                fingerprintBase64 = "AB4F",
+                deviceId = "device-1",
+                port = 35579,
+            )
+            val newSession = phone(
+                name = "Pixel 7",
+                serviceName = "woopos-remote-9c31",
+                fingerprintBase64 = "CD8E",
+                deviceId = "device-1",
+                port = 35401,
+                host = InetAddress.getByName("192.168.31.235"),
+            )
+            whenever(remoteDiscovery.discover()).thenReturn(
+                flowOf(
+                    WooPosPhoneDiscoveryEvent.Added(previousSession),
+                    WooPosPhoneDiscoveryEvent.Added(newSession),
+                )
+            )
+            val sut = WooPosUnifiedDiscoveryStream(
+                cardReaderManager,
+                remoteDiscovery,
+                simulatedRemoteDiscovery,
+                selectedSite,
+                logger,
+            )
+
+            // WHEN / THEN
+            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+                assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+                assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers)
+                    .containsExactly(previousSession)
+                assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers)
+                    .containsExactly(newSession)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun phone(
         name: String,
         siteHash: String = siteIdHash(TABLET_SITE_ID),
         serviceName: String = "woopos-remote-${name.hashCode().toString(16)}",
         fingerprintBase64: String = "AB4F",
         deviceId: String = "device-${name.hashCode().toString(16)}",
+        port: Int = 9000,
+        host: InetAddress = InetAddress.getLoopbackAddress(),
     ) = WooPosDiscoveredReader.Phone(
         serviceName = serviceName,
         deviceId = deviceId,
         name = name,
-        host = InetAddress.getLoopbackAddress(),
-        port = 9000,
+        host = host,
+        port = port,
         fingerprintBase64 = fingerprintBase64,
         siteHash = siteHash,
     )

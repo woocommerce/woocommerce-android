@@ -188,13 +188,7 @@ class WooPosHomeViewModel @Inject constructor(
                         }
                     }
 
-                    is ChildToParentEvent.OrderSuccessfullyPaidByCard -> onOrderSuccessfullyPaid(
-                        PaymentMethod.CARD
-                    )
-
-                    is ChildToParentEvent.OrderSuccessfullyPaidExternally -> onOrderSuccessfullyPaid(
-                        PaymentMethod.EXTERNAL
-                    )
+                    is ChildToParentEvent.OrderSuccessfullyPaid -> onOrderSuccessfullyPaid(event.paymentMethod)
 
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(

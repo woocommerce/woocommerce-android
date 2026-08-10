@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
@@ -103,7 +102,7 @@ class ProductSelectorViewModel @Inject constructor(
     val selectedItems: StateFlow<List<SelectedItem>> = _selectedItems
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val products = listHandler.productsFlow.map { products ->
-        products.filterNot { product -> productRestrictions.isProductRestricted(product = product) }
+        products.filterNot { product -> productRestrictions.isProductHidden(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -214,7 +213,7 @@ class ProductSelectorViewModel @Inject constructor(
                 recentlySoldOrders
             ).distinctBy { it }
         ).filterNot { product ->
-            productRestrictions.isProductRestricted(product = product)
+            productRestrictions.isProductHidden(product = product)
         }
     }
 
@@ -231,7 +230,7 @@ class ProductSelectorViewModel @Inject constructor(
         popularProducts.value = productsMapper.mapProductIdsToProduct(
             topPopularProductsSorted.keys.toList()
         ).filterNot { product ->
-            productRestrictions.isProductRestricted(product = product)
+            productRestrictions.isProductHidden(product = product)
         }
     }
 
@@ -265,14 +264,10 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
+        productRestrictions.getUnsupportedRestriction(product = this)?.let { restriction ->
+            return SelectionState.DISABLED(resourceProvider.getString(restriction.reason))
+        }
         return when {
-            productType == SUBSCRIPTION ||
-                productType == VARIABLE_SUBSCRIPTION -> {
-                SelectionState.DISABLED(
-                    resourceProvider.getString(R.string.product_selector_subscription_not_supported)
-                )
-            }
-
             isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
