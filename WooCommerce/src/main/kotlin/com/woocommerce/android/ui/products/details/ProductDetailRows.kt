@@ -606,7 +606,7 @@ private fun synchronizeTitleFieldValue(
     titleFieldValue(externalText, moveCursorToEnd)
 }
 
-private fun synchronizeTitleFieldState(
+internal fun synchronizeTitleFieldState(
     externalText: String,
     isFocused: Boolean,
     shouldFocus: Boolean,
@@ -627,7 +627,7 @@ private fun synchronizeTitleFieldState(
     )
 }
 
-private data class ProductDetailTitleFieldState(
+internal data class ProductDetailTitleFieldState(
     val value: TextFieldValue,
     val restoreFocus: Boolean,
     val hasEditedWhileFocused: Boolean,
