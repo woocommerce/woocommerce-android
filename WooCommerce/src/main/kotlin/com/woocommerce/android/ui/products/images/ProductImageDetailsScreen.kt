@@ -21,10 +21,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -35,8 +33,7 @@ fun ProductImageDetailsScreen(viewModel: ProductImageDetailsViewModel) {
         state = state,
         onAltTextChanged = viewModel::onAltTextChanged,
         onNameChanged = viewModel::onNameChanged,
-        onDoneClicked = viewModel::onDoneClicked,
-        onBackButtonClick = viewModel::onBackClick
+        onBackButtonClick = viewModel::onExit
     )
 }
 
@@ -45,7 +42,6 @@ private fun ProductImageDetailsScreen(
     state: ProductImageDetailsViewModel.UiState,
     onAltTextChanged: (String) -> Unit,
     onNameChanged: (String) -> Unit,
-    onDoneClicked: () -> Unit,
     onBackButtonClick: () -> Unit
 ) {
     BackHandler { onBackButtonClick() }
@@ -54,14 +50,7 @@ private fun ProductImageDetailsScreen(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.product_image_details_title),
-                onNavigationButtonClick = onBackButtonClick,
-                actions = {
-                    WCTextButton(
-                        onClick = onDoneClicked,
-                        text = stringResource(R.string.done),
-                        enabled = state.hasChanges
-                    )
-                }
+                onNavigationButtonClick = onBackButtonClick
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -113,13 +102,6 @@ private fun ProductImageDetailsScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-
-        state.discardChangesDialogState?.let {
-            DiscardChangesDialog(
-                discardButton = it.onDiscard,
-                dismissButton = it.onCancel
-            )
-        }
     }
 }
 
@@ -135,7 +117,6 @@ private fun ProductImageDetailsScreenPreview() {
             ),
             onAltTextChanged = {},
             onNameChanged = {},
-            onDoneClicked = {},
             onBackButtonClick = {}
         )
     }
@@ -156,7 +137,6 @@ private fun ProductImageDetailsScreenClearedAltTextPreview() {
             ),
             onAltTextChanged = {},
             onNameChanged = {},
-            onDoneClicked = {},
             onBackButtonClick = {}
         )
     }

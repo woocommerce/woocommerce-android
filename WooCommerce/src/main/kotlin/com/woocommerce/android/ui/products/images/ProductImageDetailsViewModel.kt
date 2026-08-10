@@ -8,8 +8,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
@@ -30,29 +28,17 @@ class ProductImageDetailsViewModel @Inject constructor(
         ),
         key = "imageDraft"
     )
-    private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
-        scope = viewModelScope,
-        initialValue = false,
-        key = "showDiscardChangesDialog"
-    )
 
-    val state = combine(
-        imageDraft,
-        showDiscardChangesDialog.mapToDiscardChangesDialogState()
-    ) { draft, discardChangesDialogState ->
-        buildUiState(draft, discardChangesDialogState)
-    }.toStateFlow(buildUiState(imageDraft.value, discardChangesDialogState = null))
+    val state = imageDraft.map { buildUiState(it) }.toStateFlow(buildUiState(imageDraft.value))
 
-    private fun buildUiState(draft: ImageDraft, discardChangesDialogState: DiscardChangesDialogState?) = UiState(
+    private fun buildUiState(draft: ImageDraft) = UiState(
         imageUrl = storedImage.source,
         altText = draft.altText,
         name = draft.name,
         altTextPlaceholder = storedImage.alt,
         namePlaceholder = storedImage.name,
         isAltTextRemovalBlocked = draft.altText.isEmpty() && !storedImage.alt.isNullOrEmpty(),
-        isNameRemovalBlocked = draft.name.isEmpty() && !storedImage.name.isNullOrEmpty(),
-        hasChanges = draft.altText.isChangedFrom(storedImage.alt) || draft.name.isChangedFrom(storedImage.name),
-        discardChangesDialogState = discardChangesDialogState
+        isNameRemovalBlocked = draft.name.isEmpty() && !storedImage.name.isNullOrEmpty()
     )
 
     // The update request can't clear a value on the server, so an emptied field is not a change;
@@ -67,32 +53,19 @@ class ProductImageDetailsViewModel @Inject constructor(
         imageDraft.update { it.copy(name = name) }
     }
 
-    fun onDoneClicked() {
+    fun onExit() {
         val draft = imageDraft.value
+        val hasChanges = draft.altText.isChangedFrom(storedImage.alt) || draft.name.isChangedFrom(storedImage.name)
+        if (!hasChanges) {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+            return
+        }
+
         val updatedImage = storedImage.copy(
             alt = if (draft.altText.isChangedFrom(storedImage.alt)) draft.altText else storedImage.alt,
             name = if (draft.name.isChangedFrom(storedImage.name)) draft.name else storedImage.name
         )
         triggerEvent(MultiLiveEvent.Event.ExitWithResult(data = updatedImage, key = KEY_IMAGE_DETAILS_RESULT))
-    }
-
-    fun onBackClick() {
-        if (state.value.hasChanges) {
-            showDiscardChangesDialog.value = true
-        } else {
-            triggerEvent(MultiLiveEvent.Event.Exit)
-        }
-    }
-
-    private fun Flow<Boolean>.mapToDiscardChangesDialogState() = map {
-        if (it) {
-            DiscardChangesDialogState(
-                onDiscard = { triggerEvent(MultiLiveEvent.Event.Exit) },
-                onCancel = { showDiscardChangesDialog.value = false }
-            )
-        } else {
-            null
-        }
     }
 
     data class UiState(
@@ -102,14 +75,7 @@ class ProductImageDetailsViewModel @Inject constructor(
         val altTextPlaceholder: String? = null,
         val namePlaceholder: String? = null,
         val isAltTextRemovalBlocked: Boolean = false,
-        val isNameRemovalBlocked: Boolean = false,
-        val hasChanges: Boolean = false,
-        val discardChangesDialogState: DiscardChangesDialogState? = null
-    )
-
-    data class DiscardChangesDialogState(
-        val onDiscard: () -> Unit,
-        val onCancel: () -> Unit
+        val isNameRemovalBlocked: Boolean = false
     )
 
     @Parcelize
