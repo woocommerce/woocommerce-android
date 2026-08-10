@@ -400,13 +400,16 @@ class ProductSelectorViewModel @Inject constructor(
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
 
-        if (navArgs.productSelectorFlow == OrderListFilter && _selectedItems.value.containsItemWith(item.id)) {
+        val isAlreadySelected = _selectedItems.value.containsItemWith(item.id)
+        if (navArgs.productSelectorFlow == OrderListFilter && isAlreadySelected) {
             deselectItem(item)
             return
         }
 
         launch {
-            if (verifyBundleIsSellable(item)) selectItem(item, productSource)
+            // A tap on an already-selected item deselects or edits it, so there is nothing to verify — the check
+            // would only delay the tap, and an unsellable bundle could never be removed.
+            if (isAlreadySelected || verifyBundleIsSellable(item)) selectItem(item, productSource)
         }
     }
 

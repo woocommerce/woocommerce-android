@@ -1801,9 +1801,24 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             verify(hasUnsupportedBundledProducts, never()).invoke(any())
         }
 
-    private fun createOrderCreationViewModel() = createViewModel(
+    @Test
+    fun `given a selected bundle, when it is tapped again, then deselect it without resolving its products`() =
+        testBlocking {
+            val sut = createOrderCreationViewModel(
+                selectedItems = arrayOf(ProductSelectorViewModel.SelectedItem.Product(BUNDLE_ID))
+            )
+
+            sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
+
+            assertThat(sut.selectedItems.value).isEmpty()
+            verify(hasUnsupportedBundledProducts, never()).invoke(any())
+        }
+
+    private fun createOrderCreationViewModel(
+        selectedItems: Array<ProductSelectorViewModel.SelectedItem> = emptyArray()
+    ) = createViewModel(
         ProductSelectorFragmentArgs(
-            selectedItems = emptyArray(),
+            selectedItems = selectedItems,
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
         ).toSavedStateHandle()
     )
