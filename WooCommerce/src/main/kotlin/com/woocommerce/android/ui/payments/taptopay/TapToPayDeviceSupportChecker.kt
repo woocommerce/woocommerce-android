@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.payments.taptopay
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
-import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,12 +19,12 @@ import javax.inject.Singleton
 @Singleton
 class TapToPayDeviceSupportChecker @Inject constructor(
     private val cardReaderManager: CardReaderManager,
-    private val developerOptionsRepository: DeveloperOptionsRepository,
+    private val appPrefs: AppPrefs,
 ) {
     private val cached = ConcurrentHashMap<Boolean, Boolean>()
 
     fun isSupported(): Boolean? {
-        val isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled()
+        val isSimulated = appPrefs.isSimulatedReaderEnabled
         cached[isSimulated]?.let { return it }
         return when (cardReaderManager.isTapToPaySupportedOnDevice(isSimulated = isSimulated)) {
             TapToPaySupportResult.Supported -> true.also { cached[isSimulated] = it }

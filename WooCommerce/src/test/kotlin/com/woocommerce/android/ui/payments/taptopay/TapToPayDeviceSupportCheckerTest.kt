@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.payments.taptopay
 
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.TapToPaySupportResult
-import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -11,8 +11,8 @@ import org.mockito.kotlin.whenever
 
 class TapToPayDeviceSupportCheckerTest {
     private val cardReaderManager: CardReaderManager = mock()
-    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
-    private val checker = TapToPayDeviceSupportChecker(cardReaderManager, developerOptionsRepository)
+    private val appPrefs: AppPrefs = mock()
+    private val checker = TapToPayDeviceSupportChecker(cardReaderManager, appPrefs)
 
     @Test
     fun `given Stripe reports supported, when isSupported, then true returned`() {
@@ -59,7 +59,7 @@ class TapToPayDeviceSupportCheckerTest {
     @Test
     fun `given simulated reader enabled, when isSupported, then Stripe is asked about the simulated reader`() {
         // GIVEN
-        whenever(developerOptionsRepository.isSimulatedCardReaderEnabled()).thenReturn(true)
+        whenever(appPrefs.isSimulatedReaderEnabled).thenReturn(true)
         whenever(cardReaderManager.isTapToPaySupportedOnDevice(true))
             .thenReturn(TapToPaySupportResult.Supported)
 
