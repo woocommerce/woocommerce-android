@@ -33,7 +33,8 @@ import kotlin.math.abs
  * [SavedStateHandle] after the process was killed (e.g. a tablet woken after a long idle). It is stable across
  * configuration changes and regenerated on process death. See WOOMOB-3275.
  */
-private val navResultSessionId: String = UUID.randomUUID().toString()
+// internal (not private) so the pure envelope/staleness logic can be unit-tested — see FragmentExtTest.
+internal val navResultSessionId: String = UUID.randomUUID().toString()
 
 /**
  * Wraps a nav result together with the [session] that produced it. Only the observed value key is restored across
@@ -42,14 +43,14 @@ private val navResultSessionId: String = UUID.randomUUID().toString()
  * leftover from a dead process and is dropped instead of replayed. See WOOMOB-3275.
  */
 @Parcelize
-private data class NavResultEnvelope(val session: String, val value: @RawValue Any?) : Parcelable
+internal data class NavResultEnvelope(val session: String, val value: @RawValue Any?) : Parcelable
 
 /** True when a restored nav result was produced by a different (already dead) process — see [NavResultEnvelope]. */
-private fun Any.isStaleNavResult(): Boolean =
+internal fun Any.isStaleNavResult(): Boolean =
     this is NavResultEnvelope && session != navResultSessionId
 
 /** Unwraps a [NavResultEnvelope]; a value written without the envelope is returned as-is (legacy behaviour). */
-private fun Any.unwrapNavResult(): Any? =
+internal fun Any.unwrapNavResult(): Any? =
     if (this is NavResultEnvelope) value else this
 
 /**
