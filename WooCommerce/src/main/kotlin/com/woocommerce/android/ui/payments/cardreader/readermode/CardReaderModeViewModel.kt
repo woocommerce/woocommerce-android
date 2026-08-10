@@ -7,6 +7,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteCertificateKeyType
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
@@ -113,7 +114,10 @@ class CardReaderModeViewModel @Inject constructor(
                     sessionStartedTracked = true
                     analyticsTrackerWrapper.track(
                         AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED,
-                        mapOf("is_simulated" to isSimulated),
+                        mapOf(
+                            "is_simulated" to isSimulated,
+                            "certificate_key_type" to certificateKeyTypeTrackingValue(),
+                        ),
                     )
                 }
             }
@@ -127,6 +131,12 @@ class CardReaderModeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun certificateKeyTypeTrackingValue(): String = when (session.certificateKeyType) {
+        CardReaderRemoteCertificateKeyType.ECDSA_256 -> "ecdsa_256"
+        CardReaderRemoteCertificateKeyType.RSA_2048 -> "rsa_2048"
+        null -> "unknown"
     }
 
     override fun onCleared() {

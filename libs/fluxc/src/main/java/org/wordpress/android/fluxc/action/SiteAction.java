@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.store.SiteStore.DesignatedPrimaryDomainPayloa
 import org.wordpress.android.fluxc.store.SiteStore.DomainSupportedStatesResponsePayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload;
-import org.wordpress.android.fluxc.store.SiteStore.RefreshSitesXMLRPCPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsPayload;
 import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload;
 
@@ -18,13 +17,9 @@ import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 public enum SiteAction implements IAction {
     // Remote actions
     @Action(payloadType = SiteModel.class)
-    FETCH_PROFILE_XML_RPC,
-    @Action(payloadType = SiteModel.class)
     FETCH_SITE,
     @Action(payloadType = FetchSitesPayload.class)
     FETCH_SITES,
-    @Action(payloadType = RefreshSitesXMLRPCPayload.class)
-    FETCH_SITES_XML_RPC,
     @Action(payloadType = SuggestDomainsPayload.class)
     SUGGEST_DOMAINS,
     @Action(payloadType = FetchConnectSiteInfoPayload.class)
@@ -35,8 +30,6 @@ public enum SiteAction implements IAction {
     DESIGNATE_PRIMARY_DOMAIN,
 
     // Remote responses
-    @Action(payloadType = SiteModel.class)
-    FETCHED_PROFILE_XML_RPC,
     @Action(payloadType = ConnectSiteInfoPayload.class)
     FETCHED_CONNECT_SITE_INFO,
     @Action(payloadType = DomainSupportedStatesResponsePayload.class)

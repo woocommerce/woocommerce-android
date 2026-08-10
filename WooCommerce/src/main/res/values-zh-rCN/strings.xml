@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 11:55:14+0000
+Translation-Revision-Date: 2026-07-28 11:56:56+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">未应用折扣</string>
+    <string name="product_duplicate_discard_changes_action">放弃并复制</string>
+    <string name="product_duplicate_discard_changes_message">您未保存的更改将会丢失。 副本将使用最后保存的版本。</string>
+    <string name="product_duplicate_discard_changes_title">是否要放弃更改并复制？</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">您至少有一项逾期未完成的要求。 您可以跳过此项并继续收款，但如果该要求导致您的账户受阻，则在您解决之前，部分交易可能会被拒绝。</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">您账户上有逾期未完成的要求</string>
+    <string name="order_editing_currency_mismatch_title">此订单无法在应用程序中编辑</string>
+    <string name="login_no_wpcom_account_found_message">用户不存在。 请确认电子邮件地址正确无误或尝试使用其他账户。</string>
+    <string name="login_no_wpcom_account_found_title">电子邮件地址错误</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">不支持此图片类型。 请选择 PNG、JPEG、WebP、GIF、BMP、HEIC 或 HEIF 格式的图片。</string>
     <string name="ai_support_chat_store_connection_error_message">无法访问我的商店。 应用程序在尝试访问我的商店时检测到连接错误。 如何修复此问题？</string>
     <string name="settings_crash_reporting_error_update">更新您的崩溃报告设置时出现错误</string>
@@ -1187,6 +1196,7 @@ Language: zh_CN
     <string name="shipping_label_purchased_note">注意：重复使用打印的标签违反了我们的服务条款，并可能导致刑事指控。</string>
     <string name="shipping_label_purchased_success_message">在此处，您可以再次打印运输标签或更改标签的纸张尺寸。</string>
     <string name="shipping_label_purchased_success_title">您的运输标签已可供打印</string>
+    <string name="order_editing_currency_mismatch_message">很抱歉，您只能在网页上编辑此订单，因为它使用的是 %1$s，而您站点的货币是 %2$s。</string>
     <string name="shipping_label_shipping_service_title">运输服务</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">速度最快</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">费用最低</string>
@@ -1667,9 +1677,6 @@ Language: zh_CN
     <string name="blaze_campaign_budget_toolbar_title">设置您的预算</string>
     <string name="blaze_campaign_preview_target_default_value">所有</string>
     <string name="blaze_campaign_preview_days_duration">从 %2$s 起 %1$s 天</string>
-    <string name="product_creation_survey_button_dont_show_again">不再显示</string>
-    <string name="product_creation_survey_button_remind_me_later">稍后提醒我</string>
-    <string name="product_creation_survey_description">有时间吗？ 请提供快速反馈，以帮助我们改进人工智能辅助功能。</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">确认详情</string>
     <string name="blaze_campaign_preview_details_destination_url">广告目的地</string>
     <string name="blaze_campaign_preview_details_interests">兴趣</string>
@@ -1719,8 +1726,6 @@ Language: zh_CN
     <string name="theme_picker_carousel_info_item_description_settings">您可以在 WooCommerce 主题商店中找到最适合您的主题。</string>
     <string name="theme_picker_current_theme_title">当前主题</string>
     <string name="theme_picker_settings_title">试用新外观</string>
-    <string name="product_creation_survey_button_open">开始调查</string>
-    <string name="product_creation_survey_title">您的宝贵意见对我们非常重要！</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">启用“现场付款”功能，让客户能在收货时通过现金或银行卡为在线订单付款。\n\n即使不启用此功能，您仍然可以手动创建订单。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">您想在结账页面中添加“现场付款”功能吗？</string>
     <string name="card_reader_onboarding_contact_us">需要一些帮助？ &lt;a href=\'\'&gt;联系我们&lt;/a&gt;</string>
@@ -2304,7 +2309,6 @@ Language: zh_CN
     <string name="support_request_title">我们来解决这个问题</string>
     <string name="support_request_help_title">我需要帮助</string>
     <string name="support_request">支持请求</string>
-    <string name="store_onboarding_menu_share_feedback">分享反馈</string>
     <string name="store_onboarding_full_screen_transition_name">全屏引导</string>
     <string name="store_onboarding_task_view_all">查看全部 (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">已完成 %1$d 个任务，共 %2$d 个</string>
@@ -2483,7 +2487,6 @@ Language: zh_CN
     <string name="login_site_picker_enter_site_address">输入站点地址</string>
     <string name="card_reader_onboarding_not_finished">我们注意到您尚未完成“现场付款”设置。 &lt;a href=\'\'&gt;继续设置&lt;/a&gt;</string>
     <string name="payments_hub_title">付款</string>
-    <string name="login_no_wpcom_account_found">您的电子邮件未与 WordPress.com 账户关联。</string>
     <string name="login_non_woo_stores_label">其他站点</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">我们刚刚发送了一个神奇的链接至</string>
@@ -3039,8 +3042,6 @@ Language: zh_CN
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">您的帐户中存在待处理的要求。 请在 %1$s 之前完成这些要求，以继续接受现场付款。</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">您的账户中存在待处理的请求</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">您的帐户中至少有一项逾期要求。 请注意恢复现场付款</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我们完成您的帐户审核后，您即可接受现场付款。</string>
     <string name="card_reader_onboarding_account_under_review_header">当前不支持现场付款</string>
     <string name="card_reader_onboarding_account_rejected_hint">抱歉，我们不能为这家商店提供现场付款支持。</string>

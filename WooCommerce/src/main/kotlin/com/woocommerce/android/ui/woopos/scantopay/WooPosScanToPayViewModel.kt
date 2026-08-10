@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ScanToPayCollectPaymentSuccess
@@ -30,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosScanToPayViewModel @Inject constructor(
     private val repository: WooPosScanToPayRepository,
-    private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val priceFormat: WooPosFormatPrice,
@@ -60,6 +60,7 @@ class WooPosScanToPayViewModel @Inject constructor(
                 WooPosScanToPayState.Loading -> prepareAndShowQr()
                 is WooPosScanToPayState.ShowingQR -> startPolling()
                 WooPosScanToPayState.PaymentDetected -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+                WooPosScanToPayState.PayInPersonSelected,
                 is WooPosScanToPayState.Failed -> Unit
             }
         }
@@ -72,6 +73,13 @@ class WooPosScanToPayViewModel @Inject constructor(
                 prepareAndShowQr()
             }
             WooPosScanToPayUIEvent.CancelClicked -> onBackClicked()
+            // The customer already placed the order through the QR page, so the cart is sent back to
+            // the register rather than to checkout: the merchant starts a fresh order to collect on.
+            WooPosScanToPayUIEvent.CollectOnRegisterClicked -> viewModelScope.launch {
+                pollingJob?.cancel()
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            }
         }
     }
 
@@ -126,8 +134,15 @@ class WooPosScanToPayViewModel @Inject constructor(
                 delay(intervalMs)
 
                 val snapshot = repository.fetchOrderSnapshot(orderId) ?: continue
-                if (snapshot.isPaid()) {
+                if (snapshot.isOrderPaid) {
                     onPaymentDetected()
+                    return@launch
+                }
+                // Online gateways stamp `datePaid` when the money arrives. Offline ones such as
+                // "Pay in Person" only advance the status, so a paid status without `datePaid`
+                // means the customer picked an offline method instead of paying through the QR.
+                if (snapshot.status in OFFLINE_PAYMENT_STATUSES) {
+                    _state.value = WooPosScanToPayState.PayInPersonSelected
                     return@launch
                 }
             }
@@ -139,8 +154,8 @@ class WooPosScanToPayViewModel @Inject constructor(
         _state.value = WooPosScanToPayState.PaymentDetected
         analyticsTracker.track(ScanToPayPaymentDetectedViaPolling)
         analyticsTracker.track(ScanToPayCollectPaymentSuccess)
-        parentToChildrenEventSender.sendToChildren(
-            ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY),
+        childrenToParentEventSender.sendToParent(
+            ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
         )
         _navigationEvent.emit(WooPosNavigationEvent.GoBack)
         viewModelScope.launch {
@@ -151,11 +166,6 @@ class WooPosScanToPayViewModel @Inject constructor(
     private fun failedState() = WooPosScanToPayState.Failed(
         message = resourceProvider.getString(R.string.woopos_scan_to_pay_error_message),
     )
-
-    // `isOrderPaid` only checks `datePaid`; treat Processing/Completed as paid even when the
-    // backend hasn't populated `datePaid` yet, so polling can detect payment as soon as the
-    // status transitions.
-    private fun Order.isPaid(): Boolean = isOrderPaid || status in PAID_STATUSES
 
     override fun onCleared() {
         pollingJob?.cancel()
@@ -171,7 +181,7 @@ class WooPosScanToPayViewModel @Inject constructor(
         const val FAST_POLL_ATTEMPTS = 15
         const val MAX_POLL_ATTEMPTS = 75
 
-        val PAID_STATUSES: Set<Order.Status> = setOf(
+        val OFFLINE_PAYMENT_STATUSES: Set<Order.Status> = setOf(
             Order.Status.Processing,
             Order.Status.Completed,
         )

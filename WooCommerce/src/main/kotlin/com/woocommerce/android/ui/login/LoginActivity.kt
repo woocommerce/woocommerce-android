@@ -888,52 +888,6 @@ class LoginActivity :
         viewHelpAndSupport(HelpOrigin.LOGIN_USERNAME_PASSWORD, extraTags = extraSupportTags)
     }
 
-    override fun helpNoJetpackScreen(
-        siteAddress: String,
-        endpointAddress: String?,
-        username: String,
-        password: String,
-        userAvatarUrl: String?,
-        checkJetpackAvailability: Boolean
-    ) {
-        val jetpackReqFragment = LoginNoJetpackFragment.newInstance(
-            siteAddress,
-            endpointAddress,
-            username,
-            password,
-            userAvatarUrl,
-            checkJetpackAvailability
-        )
-        changeFragment(
-            fragment = jetpackReqFragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginNoJetpackFragment.TAG
-        )
-    }
-
-    override fun helpHandleDiscoveryError(
-        siteAddress: String,
-        endpointAddress: String?,
-        username: String,
-        password: String,
-        userAvatarUrl: String?,
-        errorMessage: Int
-    ) {
-        val discoveryErrorFragment = LoginDiscoveryErrorFragment.newInstance(
-            siteAddress,
-            endpointAddress,
-            username,
-            password,
-            userAvatarUrl,
-            errorMessage
-        )
-        changeFragment(
-            fragment = discoveryErrorFragment as Fragment,
-            shouldAddToBackStack = true,
-            tag = LoginDiscoveryErrorFragment.TAG
-        )
-    }
-
     // SmartLock
 
     override fun saveCredentialsInSmartLock(
