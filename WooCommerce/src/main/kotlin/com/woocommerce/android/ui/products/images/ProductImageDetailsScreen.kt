@@ -89,6 +89,11 @@ private fun ProductImageDetailsScreen(
                 onValueChange = onAltTextChanged,
                 label = stringResource(R.string.product_image_details_alt_text_label),
                 placeholderText = state.altTextPlaceholder,
+                helperText = if (state.isAltTextRemovalBlocked) {
+                    stringResource(R.string.product_image_details_alt_text_removal_blocked)
+                } else {
+                    null
+                },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -99,6 +104,11 @@ private fun ProductImageDetailsScreen(
                 onValueChange = onNameChanged,
                 label = stringResource(R.string.product_image_details_name_label),
                 placeholderText = state.namePlaceholder,
+                helperText = if (state.isNameRemovalBlocked) {
+                    stringResource(R.string.product_image_details_name_removal_blocked)
+                } else {
+                    null
+                },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -122,6 +132,27 @@ private fun ProductImageDetailsScreenPreview() {
                 imageUrl = "https://example.com/image.jpg",
                 altText = "A black t-shirt",
                 name = "black-t-shirt"
+            ),
+            onAltTextChanged = {},
+            onNameChanged = {},
+            onDoneClicked = {},
+            onBackButtonClick = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun ProductImageDetailsScreenClearedAltTextPreview() {
+    WooThemeWithBackground {
+        ProductImageDetailsScreen(
+            state = ProductImageDetailsViewModel.UiState(
+                imageUrl = "https://example.com/image.jpg",
+                altText = "",
+                name = "black-t-shirt",
+                altTextPlaceholder = "A black t-shirt",
+                namePlaceholder = "black-t-shirt",
+                isAltTextRemovalBlocked = true
             ),
             onAltTextChanged = {},
             onNameChanged = {},

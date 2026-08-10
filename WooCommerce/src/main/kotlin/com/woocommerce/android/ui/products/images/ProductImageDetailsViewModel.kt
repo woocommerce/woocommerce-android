@@ -49,6 +49,8 @@ class ProductImageDetailsViewModel @Inject constructor(
         name = draft.name,
         altTextPlaceholder = storedImage.alt,
         namePlaceholder = storedImage.name,
+        isAltTextRemovalBlocked = draft.altText.isEmpty() && !storedImage.alt.isNullOrEmpty(),
+        isNameRemovalBlocked = draft.name.isEmpty() && !storedImage.name.isNullOrEmpty(),
         hasChanges = draft.altText.isChangedFrom(storedImage.alt) || draft.name.isChangedFrom(storedImage.name),
         discardChangesDialogState = discardChangesDialogState
     )
@@ -99,6 +101,8 @@ class ProductImageDetailsViewModel @Inject constructor(
         val name: String,
         val altTextPlaceholder: String? = null,
         val namePlaceholder: String? = null,
+        val isAltTextRemovalBlocked: Boolean = false,
+        val isNameRemovalBlocked: Boolean = false,
         val hasChanges: Boolean = false,
         val discardChangesDialogState: DiscardChangesDialogState? = null
     )

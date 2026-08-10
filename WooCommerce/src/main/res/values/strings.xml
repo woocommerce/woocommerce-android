@@ -2271,6 +2271,8 @@
     <string name="product_image_details_title">Image details</string>
     <string name="product_image_details_alt_text_label">Alt text</string>
     <string name="product_image_details_name_label">Title</string>
+    <string name="product_image_details_alt_text_removal_blocked">The app doesn\'t support removing alt text. Please use wp-admin to remove it.</string>
+    <string name="product_image_details_name_removal_blocked">The app doesn\'t support removing the title. Please use wp-admin to remove it.</string>
     <string name="discard_changes_question">Discard changes?</string>
     <string name="changes_not_saved_message">Your changes are not saved</string>
     <string name="save_copy">Save copy</string>
