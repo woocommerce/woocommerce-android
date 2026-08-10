@@ -77,7 +77,8 @@ fun UpdateProductStockStatusScreen(
                     onStockStatusChanged(newStatus)
                 },
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
