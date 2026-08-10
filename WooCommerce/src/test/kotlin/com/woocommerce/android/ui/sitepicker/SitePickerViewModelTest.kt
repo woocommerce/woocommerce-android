@@ -182,7 +182,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
         assertThat(sitePickerData).isEqualTo(
             SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState)
-                .copy(editStoreListEnabled = false)
+                .copy(editStoreListEnabled = false, isPrimaryBtnEnabled = false)
         )
     }
 
@@ -269,7 +269,61 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             assertThat(items).isNotEmpty
             assertThat(items?.first()).isEqualTo(SitesListItem.Header(R.string.login_pick_store))
-            assertThat(sites?.first()?.isSelected).isTrue()
+            assertThat(sites?.map { it.site }).containsExactlyElementsOf(defaultExpectedSiteList)
+        }
+
+    @Test
+    fun `given login without site address, when multiple stores are fetched, then no store is selected`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            whenSitesAreFetched()
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            val sites = viewModel.sites.captureValues().last().filterIsInstance<WooSiteUiModel>()
+            assertThat(sites).noneMatch { it.isSelected }
+            assertThat(viewModel.sitePickerViewState.isPrimaryBtnEnabled).isFalse()
+        }
+
+    @Test
+    fun `given login without a selected store, when continue is tapped, then no store is verified`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            whenSitesAreFetched()
+            whenViewModelIsCreated()
+
+            // WHEN
+            viewModel.onContinueButtonClick()
+
+            // THEN
+            verify(repository, times(0)).verifySiteWooAPIVersion(any())
+        }
+
+    @Test
+    fun `given login without site address, when Woo and non-Woo sites are fetched, then no store is selected`() =
+        testBlocking {
+            // GIVEN
+            givenTheScreenIsFromLogin(calledFromLogin = true)
+            givenThatSiteVerificationIsCompleted()
+            val sites = SitePickerTestUtils.generateStores().take(2).onEachIndexed { index, site ->
+                site.hasWooCommerce = index == 0
+            }
+            whenever(getWooVisibleSites()).thenReturn(sites.filter { it.hasWooCommerce })
+            whenSitesAreFetched(sitesFromDb = sites, sitesFromApi = sites)
+
+            // WHEN
+            whenViewModelIsCreated()
+
+            // THEN
+            val wooSites = viewModel.sites.captureValues().last().filterIsInstance<WooSiteUiModel>()
+            assertThat(wooSites).noneMatch { it.isSelected }
+            assertThat(viewModel.sitePickerViewState.isPrimaryBtnEnabled).isFalse()
+            verify(repository, times(0)).verifySiteWooAPIVersion(any())
         }
 
     @Test

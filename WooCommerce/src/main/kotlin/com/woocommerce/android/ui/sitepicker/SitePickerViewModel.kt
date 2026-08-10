@@ -248,7 +248,8 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-        val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
+        val shouldSelectFirstSite = !navArgs.openedFromLogin || sites.size == 1
+        val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
 
@@ -270,9 +271,11 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && wooSites.size == 1) {
-            onSiteSelected(wooSites.first())
-            onContinueButtonClick(isAutoLogin = true)
+        if (navArgs.openedFromLogin && sites.size == 1) {
+            wooSites.singleOrNull()?.let {
+                onSiteSelected(it)
+                onContinueButtonClick(isAutoLogin = true)
+            }
         }
     }
 
@@ -585,7 +588,7 @@ class SitePickerViewModel @Inject constructor(
             loadedWooSites.firstOrNull { it.id == currentSelectedSiteId }?.let { return it }
         }
 
-        return loadedWooSites.firstOrNull()
+        return if (navArgs.openedFromLogin) null else loadedWooSites.firstOrNull()
     }
 
     private fun trackAppPasswordsSupport(site: SiteModel) {

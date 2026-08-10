@@ -4,6 +4,7 @@
 
 25.5
 -----
+- [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one
 - [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
 - [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
 - [Internal] Woo POS Scan to Pay: picking an offline method such as Pay in Person on the QR page no longer reports the order as paid, and a detected payment now shows the fullscreen success screen [https://github.com/woocommerce/woocommerce-android/pull/16363]
