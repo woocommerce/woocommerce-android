@@ -22,8 +22,8 @@
     </style>
 
     <style name="Animation.Woo.Slide" parent="">
-        <item name="android:windowEnterAnimation">@anim/slide_in_from_right</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_to_right</item>
+        <item name="android:windowEnterAnimation">@anim/default_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/default_pop_exit_anim</item>
     </style>
     <style name="Theme.WooBase" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Colors -->
