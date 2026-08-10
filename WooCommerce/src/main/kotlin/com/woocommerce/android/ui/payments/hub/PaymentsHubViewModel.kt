@@ -145,6 +145,9 @@ class PaymentsHubViewModel @Inject constructor(
         }
 
     init {
+        // Must run before anything below reads Tap to Pay availability — Stripe cannot answer
+        // whether the device supports it until Terminal is initialized.
+        initializeCardReaderManagerIfNeeded()
         handleOpenInHubParameter()
         listenForSoftwareUpdateAvailability()
     }
@@ -165,7 +168,6 @@ class PaymentsHubViewModel @Inject constructor(
         }
         launch {
             val state = cardReaderChecker.getOnboardingState()
-            initializeCardReaderManagerIfNeeded()
             viewState.value = when (state) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
                 is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
