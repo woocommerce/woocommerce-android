@@ -397,7 +397,7 @@
     <string name="login_site_credentials_admin_url_not_found_error">We couldn\'t reach the WordPress dashboard at that address. Check it and try again.</string>
     <string name="login_site_credentials_endpoint_persistence_failed">We couldn\'t save your store\'s sign-in settings. Please try again.</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
-    <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_use_web_authorization">Try signing in with your browser instead</string>
     <string name="login_site_credentials_http_basic_auth_error">Basic Authentication is enabled on your site. Basic Authentication is unsupported in the WooCommerce mobile app. Please disable it, or contact support for troubleshooting.</string>
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
