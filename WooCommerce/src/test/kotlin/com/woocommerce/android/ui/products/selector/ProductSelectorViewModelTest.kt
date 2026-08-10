@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts
+import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts.Result
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductConfiguration
@@ -1705,7 +1706,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a bundle holding an unsupported product, when clicked, then explain it can't be added`() = testBlocking {
-        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(true)
+        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(Result.YES)
         val sut = createOrderCreationViewModel()
 
         sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
@@ -1715,9 +1716,21 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a bundle whose check can't complete, when clicked, then report the error and don't add it`() =
+        testBlocking {
+            whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(Result.UNKNOWN)
+            val sut = createOrderCreationViewModel()
+
+            sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
+
+            assertThat(sut.event.value).isEqualTo(ShowSnackbar(R.string.error_generic_network))
+            assertThat(sut.selectedItems.value).isEmpty()
+        }
+
+    @Test
     fun `given a bundle holding an unsupported product, when configured, then explain it can't be added`() =
         testBlocking {
-            whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(true)
+            whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(Result.YES)
             val sut = createOrderCreationViewModel()
 
             sut.onEditConfiguration(bundleListItem())
@@ -1727,7 +1740,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a bundle without unsupported products, when clicked, then open its configuration`() = testBlocking {
-        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(false)
+        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(Result.NO)
         val sut = createOrderCreationViewModel()
 
         sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
@@ -1737,7 +1750,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a bundle without unsupported products, when configured, then open its configuration`() = testBlocking {
-        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(false)
+        whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).thenReturn(Result.NO)
         val sut = createOrderCreationViewModel()
 
         sut.onEditConfiguration(bundleListItem())
@@ -1747,13 +1760,13 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a bundle being resolved, when it is tapped again, then the second tap is ignored`() = testBlocking {
-        val resolution = CompletableDeferred<Boolean>()
+        val resolution = CompletableDeferred<Result>()
         whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).doSuspendableAnswer { resolution.await() }
         val sut = createOrderCreationViewModel()
 
         sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
         sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
-        resolution.complete(false)
+        resolution.complete(Result.NO)
 
         verify(hasUnsupportedBundledProducts).invoke(BUNDLE_ID)
     }
@@ -1761,7 +1774,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     @Test
     fun `given a bundle being resolved, when the state is observed, then the item reports itself as loading`() =
         testBlocking {
-            val resolution = CompletableDeferred<Boolean>()
+            val resolution = CompletableDeferred<Result>()
             whenever(hasUnsupportedBundledProducts.invoke(BUNDLE_ID)).doSuspendableAnswer { resolution.await() }
             whenever(listHandler.productsFlow).thenReturn(
                 flowOf(listOf(generateProduct(productId = BUNDLE_ID, productType = "bundle")))
@@ -1771,7 +1784,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             sut.onProductClick(bundleListItem(), ProductSourceForTracking.ALPHABETICAL)
             assertThat(sut.viewState.getOrAwaitValue().products.single().isLoading).isTrue
 
-            resolution.complete(false)
+            resolution.complete(Result.NO)
             assertThat(sut.viewState.getOrAwaitValue().products.single().isLoading).isFalse
         }
 

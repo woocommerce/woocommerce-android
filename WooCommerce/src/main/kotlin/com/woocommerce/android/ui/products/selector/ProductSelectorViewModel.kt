@@ -13,6 +13,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts
+import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts.Result
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
@@ -425,24 +426,32 @@ class ProductSelectorViewModel @Inject constructor(
     /**
      * Returns whether [item] can be added to an order: true for anything other than a bundle, and for a bundle only
      * once a request confirms it holds no unsupported product — the item reports itself as loading in the meantime,
-     * and a snackbar explains the rejection. Taps arriving while a check runs return false, so a merchant tapping
-     * again can't act twice.
+     * and a snackbar explains the rejection. A bundle whose check can't complete is kept out of the order too, with
+     * a snackbar inviting a retry. Taps arriving while a check runs return false, so a merchant tapping again can't
+     * act twice.
      */
     private suspend fun verifyBundleIsSellable(item: ListItem): Boolean {
         if (item.type != ProductType.BUNDLE) return true
         if (loadingItemId.value != null) return false
 
         loadingItemId.value = item.id
-        val isUnsellable = try {
+        val result = try {
             hasUnsupportedBundledProducts(item.id)
         } finally {
             loadingItemId.value = null
         }
 
-        if (isUnsellable) {
-            triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
+        return when (result) {
+            Result.NO -> true
+            Result.YES -> {
+                triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
+                false
+            }
+            Result.UNKNOWN -> {
+                triggerEvent(ShowSnackbar(R.string.error_generic_network))
+                false
+            }
         }
-        return !isUnsellable
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {

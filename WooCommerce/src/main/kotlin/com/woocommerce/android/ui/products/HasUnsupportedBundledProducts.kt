@@ -12,16 +12,24 @@ import javax.inject.Inject
  * Only the [ProductRestriction.Unsupported] restrictions apply: a [ProductRestriction.Hidden] one merely keeps a
  * product out of the list — a bundled product being unpublished or having no price of its own says nothing about
  * whether the bundle can be sold.
+ *
+ * A bundled product which can't be resolved (its fetch failed and nothing is cached) leaves the answer [Result.UNKNOWN]
+ * rather than letting the bundle through unchecked.
  */
 class HasUnsupportedBundledProducts @Inject constructor(
     private val getBundledProducts: GetBundledProducts,
     private val productDetailRepository: ProductDetailRepository,
     private val productRestrictions: OrderCreationProductRestrictions
 ) {
-    suspend operator fun invoke(productId: Long): Boolean {
-        return getBundledProducts(productId).first().any { bundledProduct ->
-            val product = productDetailRepository.getProduct(bundledProduct.bundledProductId)
-            product != null && productRestrictions.getUnsupportedRestriction(product) != null
+    suspend operator fun invoke(productId: Long): Result {
+        val bundledProducts = getBundledProducts(productId).first()
+        val resolvedProducts = bundledProducts.mapNotNull { productDetailRepository.getProduct(it.bundledProductId) }
+        return when {
+            resolvedProducts.any { productRestrictions.getUnsupportedRestriction(it) != null } -> Result.YES
+            resolvedProducts.size < bundledProducts.size -> Result.UNKNOWN
+            else -> Result.NO
         }
     }
+
+    enum class Result { NO, YES, UNKNOWN }
 }
