@@ -29,7 +29,7 @@ class ProductImageDetailsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ExitWithResult<*> ->
-                    navigateBackWithResult(ProductImageDetailsViewModel.KEY_IMAGE_DETAILS_RESULT, event.data)
+                    navigateBackWithResult(requireNotNull(event.key), event.data)
                 MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
