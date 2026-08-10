@@ -140,7 +140,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
@@ -1000,8 +999,9 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (productRestrictions.isProductRestricted(product)) {
-            handleProductRestrictions(product, source, barcodeFormat)
+        val restriction = productRestrictions.getRestriction(product)
+        if (restriction != null) {
+            handleRestrictedProduct(restriction, source, barcodeFormat)
         } else if (product.isVariable()) {
             handleVariableProduct(product, source, barcodeFormat, selectedItems)
         } else {
@@ -1053,38 +1053,15 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleProductRestrictions(
-        product: ModelProduct,
+    private fun handleRestrictedProduct(
+        restriction: ProductRestriction,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        when {
-            product.isNotPublished() -> {
-                sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(
-                        string.order_creation_barcode_scanning_unable_to_add_draft_product
-                    )
-                )
-                trackProductSearchViaSKUFailureEvent(
-                    source,
-                    barcodeFormat,
-                    "Failed to add a product that is not published"
-                )
-            }
-
-            product.hasNoPrice() -> {
-                sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(
-                        string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
-                    )
-                )
-                trackProductSearchViaSKUFailureEvent(
-                    source,
-                    barcodeFormat,
-                    "Failed to add a product whose price is not specified"
-                )
-            }
-        }
+        sendAddingProductsViaScanningFailedEvent(
+            message = resourceProvider.getString(restriction.scanningMessage)
+        )
+        trackProductSearchViaSKUFailureEvent(source, barcodeFormat, restriction.scanningTrackingReason)
     }
 
     private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {
@@ -2216,9 +2193,5 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
-
-private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
-
-private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != Order.Item.EMPTY.itemId

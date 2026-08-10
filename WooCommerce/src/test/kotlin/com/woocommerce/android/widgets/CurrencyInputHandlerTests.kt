@@ -3,8 +3,8 @@ package com.woocommerce.android.widgets
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class RegularCurrencyInputHandlerTests {
-    private lateinit var inputHandler: RegularCurrencyInputHandler
+class CurrencyInputHandlerTests {
+    private lateinit var inputHandler: CurrencyInputHandler
 
     fun setup(
         supportsEmptyState: Boolean,
@@ -12,7 +12,7 @@ class RegularCurrencyInputHandlerTests {
         decimalSeparator: String = ".",
         numberOfDecimals: Int = 2
     ) {
-        inputHandler = RegularCurrencyInputHandler(
+        inputHandler = CurrencyInputHandler(
             supportsEmptyState = supportsEmptyState,
             supportsNegativeValues = supportsNegativeValues,
             decimalSeparator = decimalSeparator,
