@@ -138,6 +138,14 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
         }
     }
 
+    protected fun onExitRequested() {
+        if (hasChanges()) {
+            confirmDiscard()
+        } else {
+            navigateUp()
+        }
+    }
+
     private fun confirmDiscard() {
         MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
             positiveBtnAction = { _, _ ->

@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gem 'danger-dangermattic', '~> 1.4'
 gem 'fastlane', '~> 2.237'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 1.0'
-gem 'rubocop', '~> 1.88'
+gem 'rubocop', '~> 1.89'
 
 # Security: https://github.com/lostisland/faraday/pull/1665
 # Faraday 2.0 is not compatible with Fastlane
@@ -13,7 +13,7 @@ gem 'faraday', '~> 1.10'
 
 ### Fastlane Plugins
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 13.8'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 14.11'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 

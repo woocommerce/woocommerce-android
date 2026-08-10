@@ -32,6 +32,7 @@ class WooFileLogger(
     private val processLifecycleOwner: LifecycleOwner,
     private val crashLogging: Provider<CrashLogging>? = null,
     private val logFileWriter: LogFileWriter,
+    private val logFilesArchiver: LogFilesArchiver,
 ) {
     @Inject
     constructor(
@@ -47,6 +48,10 @@ class WooFileLogger(
         logFileWriter = LogFileWriter(
             logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
             maxLogFiles = MAX_LOG_FILES,
+            dispatchers = dispatchers,
+        ),
+        logFilesArchiver = LogFilesArchiver(
+            archiveDirectory = File(context.cacheDir, LOG_FILE_DIRECTORY),
             dispatchers = dispatchers,
         ),
     )
@@ -96,6 +101,14 @@ class WooFileLogger(
     }
 
     suspend fun getLogFiles(): List<File> = logFileWriter.getLogFiles()
+
+    /**
+     * Bundles every stored log file into a single zip, so all of them can be shared at once.
+     */
+    suspend fun archiveLogFiles(deviceInfo: String): File? {
+        forceFlush()
+        return logFilesArchiver.archive(logFiles = logFileWriter.getLogFiles(), deviceInfo = deviceInfo)
+    }
 
     suspend fun getCurrentLogFile(): File = logFileWriter.getCurrentLogFile()
 

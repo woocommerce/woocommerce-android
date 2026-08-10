@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativePaint
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
@@ -26,7 +27,7 @@ fun Modifier.drawShadow(
     val shadowColor = color.copy(alpha = alpha).toArgb()
     this.drawIntoCanvas {
         val paint = Paint()
-        val frameworkPaint = paint.asFrameworkPaint()
+        val frameworkPaint = paint.nativePaint
         frameworkPaint.color = backgroundColor.toArgb()
         frameworkPaint.setShadowLayer(
             shadowRadius.toPx(),

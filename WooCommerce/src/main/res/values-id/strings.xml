@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 09:56:01+0000
+Translation-Revision-Date: 2026-07-28 09:55:28+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Diskon tidak diterapkan</string>
+    <string name="product_duplicate_discard_changes_action">Buang &amp; duplikasikan</string>
+    <string name="product_duplicate_discard_changes_message">Perubahan yang belum disimpan akan hilang. Hasil duplikasi akan menggunakan versi terakhir yang disimpan.</string>
+    <string name="product_duplicate_discard_changes_title">Buang perubahan dan duplikasikan?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Ada setidaknya satu persyaratan yang melewati tenggat. Anda dapat mengabaikannya dan tetap menerima pembayaran. Namun, jika persyaratan tersebut memblokir akun Anda, beberapa transaksi mungkin akan ditolak hingga masalah ini diselesaikan.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Persyaratan yang melewati tenggat pada akun Anda</string>
+    <string name="order_editing_currency_mismatch_title">Pesanan ini tidak dapat disunting di aplikasi</string>
+    <string name="login_no_wpcom_account_found_message">Pengguna tidak ditemukan. Pastikan alamat email sudah benar atau coba dengan akun lain.</string>
+    <string name="login_no_wpcom_account_found_title">Email salah</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Jenis gambar ini tidak didukung. Pilih gambar PNG, JPEG, WebP, GIF, BMP, HEIC, atau HEIF.</string>
     <string name="ai_support_chat_store_connection_error_message">Toko saya tidak dapat dijangkau. Aplikasi mendeteksi error koneksi saat mencoba menjangkau toko saya. Bagaimana cara memperbaiki ini?</string>
     <string name="settings_crash_reporting_error_update">Terjadi error saat memperbarui pengaturan pelaporan crash Anda</string>
@@ -1186,6 +1195,7 @@ Language: id
     <string name="shipping_label_purchased_note">Catatan: Penggunaan kembali label yang dicetak adalah tindakan yang melanggar ketentuan layanan kami dan dapat mengakibatkan tuntutan pidana.</string>
     <string name="shipping_label_purchased_success_message">Dari sini, Anda dapat mencetak label pengiriman lagi atau mengubah ukuran kertas label.</string>
     <string name="shipping_label_purchased_success_title">Label pengiriman siap dicetak</string>
+    <string name="order_editing_currency_mismatch_message">Maaf, Anda hanya dapat menyunting pesanan ini di web karena menggunakan %1$s, sedangkan mata uang situs Anda adalah %2$s.</string>
     <string name="shipping_label_shipping_service_title">Layanan pengiriman</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Tercepat</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Termurah</string>
@@ -1666,9 +1676,6 @@ Language: id
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Tanggal mulai</string>
-    <string name="product_creation_survey_button_dont_show_again">Jangan Tampilkan Lagi</string>
-    <string name="product_creation_survey_button_remind_me_later">Ingatkan Saya Nanti</string>
-    <string name="product_creation_survey_description">Boleh minta waktunya sebentar? Bantu kami memperbaiki fitur berbantuan AI dengan feedback cepat.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Konfirmasi Detail</string>
     <string name="blaze_campaign_preview_details_destination_url">Tujuan iklan</string>
     <string name="blaze_campaign_preview_details_interests">Minat</string>
@@ -1718,8 +1725,6 @@ Language: id
     <string name="theme_picker_carousel_info_item_description_settings">Temukan tema ideal Anda di Toko Tema WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema saat ini</string>
     <string name="theme_picker_settings_title">Coba tampilan baru</string>
-    <string name="product_creation_survey_button_open">Mulai Survei</string>
-    <string name="product_creation_survey_title">Kami menghargai masukan Anda!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Mengaktifkan Pembayaran Langsung memungkinkan pelanggan membayar pesanan online saat pesanan diterima dengan uang tunai atau kartu.\n\nPesanan dapat dibuat secara manual tanpa mengaktifkan fitur ini.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Apakah Anda ingin menambahkan fitur Pembayaran Langsung saat checkout di situs web?</string>
     <string name="card_reader_onboarding_contact_us">Butuh bantuan? &lt;a href=\'\'&gt;Hubungi kami&lt;/a&gt;</string>
@@ -2309,7 +2314,6 @@ Language: id
     <string name="store_onboarding_task_about_your_store_description">Kami akan menggunaakan data tersebut untuk menyetel pengaturan terkait pengiriman, pajak, dan pembayaran.</string>
     <string name="support_request_loading_title">Mengirim permintaan</string>
     <string name="support_request_message_hint">Mulai menulis</string>
-    <string name="store_onboarding_menu_share_feedback">Bagikan feedback</string>
     <string name="store_onboarding_task_about_your_store_title">Bisa berikan info lebih lanjut tentang toko Anda?</string>
     <string name="login_magic_links_email_sent_to_unknown_email">Tautan ajaib sudah berhasil dikirim ke alamat email yang terdaftar untuk akun Anda</string>
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Akses semua toko WooCommerce Anda.</string>
@@ -2484,7 +2488,6 @@ Language: id
     <string name="more_menu_button_w___admin">Admin WC</string>
     <string name="login_non_woo_stores_label">Situs lain</string>
     <string name="payments_hub_title">Pembayaran</string>
-    <string name="login_no_wpcom_account_found">Email Anda tidak digunakan dengan akun WordPress.com.</string>
     <string name="login_magic_link_button">Login dengan tautan ajaib</string>
     <string name="or_use_password" a8c-src-lib="module:login">Gunakan kata sandi untuk login</string>
     <string name="login_magic_links_sent_label_short">Periksa email Anda di perangkat ini!</string>
@@ -3036,8 +3039,6 @@ Language: id
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pembayaran Langsung tidak tersedia dalam Mode Pengujian. Harap matikan untuk melanjutkan.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Ada persyaratan yang tertunda di akun Anda. Penuhi persyaratan tersebut dengan %1$s agar dapat tetap menerima Pembayaran Langsung.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Anda memiliki setidaknya satu persyaratan yang terlambat di akun Anda. Harap penuhi persyaratan tersebut untuk dapat terus menggunakan Pembayaran Langsung</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Pembayaran Langsung saat ini tidak tersedia</string>
     <string name="card_reader_onboarding_account_under_review_hint">Anda akan dapat menerima Pembayaran Langsung segera setelah kami selesai meninjau akun Anda.</string>
     <string name="card_reader_tutorial_charged_label">Pastikan pembaca selalu memiliki daya</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Ada persyaratan untuk Akun Anda yang belum dipenuhi</string>
