@@ -407,8 +407,6 @@ class ProductSelectorViewModel @Inject constructor(
         }
 
         launch {
-            // A tap on an already-selected item deselects or edits it, so there is nothing to verify — the check
-            // would only delay the tap, and an unsellable bundle could never be removed.
             if (isAlreadySelected || verifyBundleIsSellable(item)) selectItem(item, productSource)
         }
     }
