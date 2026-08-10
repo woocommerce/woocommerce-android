@@ -173,7 +173,9 @@ The current toolbar direction is a unified design-system visual look, not one fo
   variant.
 - Keep modal sheet composition, `WooModalBottomSheetState`, dismissal callbacks, and business
   content in the screen. Use `rememberWooModalBottomSheetState()` and `WooModalBottomSheet` without
-  reaching through to Material sheet types or adding screen-specific styling knobs.
+  reaching through to Material sheet types or adding screen-specific styling knobs. For animated
+  programmatic dismissal, use `rememberWooModalBottomSheetDismisser()` while retaining caller-owned
+  composition and business visibility.
 - The Woo wrapper owns the semantic scrim color. Material owns modal gestures, scrim rendering, back
   handling, focus/pane/traversal semantics, maximum width, insets, IME, and platform behavior.
   Screen code must not reproduce those behaviors around the Woo wrapper.

@@ -32,6 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetDismisser
 import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
@@ -57,13 +58,14 @@ private fun ScheduledImportInfoBottomSheet(
     if (!state.isVisible) return
 
     val sheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetDismisser = rememberWooModalBottomSheetDismisser(
+        state = sheetState,
+        onDismissed = onDismissRequest,
+    )
 
     LaunchedEffect(state.isDismissRequested) {
         if (state.isDismissRequested) {
-            sheetState.hide()
-            if (!sheetState.isVisible) {
-                onDismissRequest()
-            }
+            sheetDismisser.dismiss()
         }
     }
 
