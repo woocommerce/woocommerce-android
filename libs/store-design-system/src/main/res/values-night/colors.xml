@@ -34,7 +34,7 @@
     <color name="woo_ds_color_status_warning_container">#FFDDEE</color>
 
     <color name="woo_ds_color_overlay_overlay20">#33000000</color>
-    <color name="woo_ds_color_overlay_overlay50">#BF000000</color>
+    <color name="woo_ds_color_overlay_overlay50">#802C3338</color>
 
     <color name="woo_ds_color_state_layer_on_surface_opacity08">#14FFFFFF</color>
     <color name="woo_ds_color_state_layer_on_surface_opacity10">#1AFFFFFF</color>

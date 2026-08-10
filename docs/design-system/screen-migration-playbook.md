@@ -174,9 +174,9 @@ The current toolbar direction is a unified design-system visual look, not one fo
 - Keep modal sheet composition, `WooModalBottomSheetState`, dismissal callbacks, and business
   content in the screen. Use `rememberWooModalBottomSheetState()` and `WooModalBottomSheet` without
   reaching through to Material sheet types or adding screen-specific styling knobs.
-- Material owns modal gestures, scrim, back handling, focus/pane/traversal semantics, maximum width,
-  insets, IME, and platform behavior. Screen code must not reproduce those behaviors around the Woo
-  wrapper.
+- The Woo wrapper owns the semantic scrim color. Material owns modal gestures, scrim rendering, back
+  handling, focus/pane/traversal semantics, maximum width, insets, IME, and platform behavior.
+  Screen code must not reproduce those behaviors around the Woo wrapper.
 - Migrating a sheet or segment control does not authorize copy, analytics, navigation, ViewModel,
   loading/error, or merchant-action changes.
 

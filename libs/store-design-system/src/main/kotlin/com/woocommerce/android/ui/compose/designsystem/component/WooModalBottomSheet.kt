@@ -42,6 +42,7 @@ fun WooModalBottomSheet(
         shape = shape,
         containerColor = colors.surface.bright,
         contentColor = colors.surface.onDefault,
+        scrimColor = colors.overlay.overlay50,
         tonalElevation = 0.dp,
         dragHandle = {
             BottomSheetDefaults.DragHandle(
