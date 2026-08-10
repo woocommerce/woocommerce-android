@@ -7,8 +7,14 @@ import com.woocommerce.android.model.Product
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
-interface ProductRestrictions {
-    val restrictions: List<ProductRestriction>
+class OrderCreationProductRestrictions @Inject constructor() {
+    private val restrictions: List<ProductRestriction>
+        get() = listOf(
+            ProductRestriction.NonPurchasableProducts,
+            ProductRestriction.VariableProductsWithNoVariations,
+            ProductRestriction.ProductWithPriceNotSpecified,
+            ProductRestriction.SubscriptionProducts,
+        )
 
     fun getRestriction(product: Product): ProductRestriction? {
         return restrictions.firstOrNull { restriction -> restriction(product) }
@@ -22,15 +28,6 @@ interface ProductRestrictions {
     fun isProductHidden(product: Product): Boolean {
         return restrictions.any { restriction -> restriction is ProductRestriction.Hidden && restriction(product) }
     }
-}
-class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictions {
-    override val restrictions: List<ProductRestriction>
-        get() = listOf(
-            ProductRestriction.NonPurchasableProducts,
-            ProductRestriction.VariableProductsWithNoVariations,
-            ProductRestriction.ProductWithPriceNotSpecified,
-            ProductRestriction.SubscriptionProducts,
-        )
 }
 
 @Parcelize
