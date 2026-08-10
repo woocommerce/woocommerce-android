@@ -60,6 +60,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -76,7 +77,6 @@ import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun PaymentsHubPayoutSummaryView(
@@ -589,28 +589,30 @@ private fun FundsNumber(
 }
 
 @Composable
-private fun PaymentsHubPayoutSummaryState.Info.Interval.buildText() =
-    when (this) {
+private fun PaymentsHubPayoutSummaryState.Info.Interval.buildText(): String {
+    val locale = LocalLocale.current.platformLocale
+    return when (this) {
         PaymentsHubPayoutSummaryState.Info.Interval.Daily -> stringResource(
             id = R.string.card_reader_hub_payout_summary_available_payout_time_daily
         )
 
         is PaymentsHubPayoutSummaryState.Info.Interval.Weekly -> {
-            val dayOfWeek = DayOfWeek.valueOf(weekDay.uppercase(Locale.getDefault()))
+            val dayOfWeek = DayOfWeek.valueOf(weekDay.uppercase(locale))
             stringResource(
                 id = R.string.card_reader_hub_payout_summary_available_payout_time_weekly,
-                dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                dayOfWeek.getDisplayName(TextStyle.FULL, locale)
             )
         }
 
         is PaymentsHubPayoutSummaryState.Info.Interval.Monthly -> {
-            val formatter = MessageFormat("{0,ordinal}", Locale.getDefault())
+            val formatter = MessageFormat("{0,ordinal}", locale)
             stringResource(
                 id = R.string.card_reader_hub_payout_summary_available_payout_time_monthly,
                 formatter.format(arrayOf(day))
             )
         }
     }
+}
 
 private val previewState = sortedMapOf(
     "USD" to PaymentsHubPayoutSummaryState.Info(
