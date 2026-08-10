@@ -2,6 +2,7 @@ package com.woocommerce.android.model
 
 import android.os.Parcelable
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -12,10 +13,13 @@ data class BundledProduct(
     val title: String,
     val stockStatus: ProductStockStatus,
     val rules: BundleProductRules,
+    val productType: ProductType,
     val imageUrl: String? = null,
     val sku: String? = null,
+) : Parcelable {
     val isVariable: Boolean
-) : Parcelable
+        get() = productType == ProductType.VARIABLE
+}
 
 @Parcelize
 data class BundleProductRules(
