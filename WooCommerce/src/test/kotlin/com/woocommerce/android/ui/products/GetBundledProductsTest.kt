@@ -9,10 +9,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -144,6 +146,42 @@ class GetBundledProductsTest : BaseUnitTest() {
             verify(productStore).fetchProductListSynced(any(), eq(listOf(27L)))
             assertThat(result.getValue(3).isVariable).isTrue
         }
+
+    @Test
+    fun `given more missing products than fit in a page, when they are processed, then every one is fetched`() =
+        testBlocking {
+            // given
+            val remoteProductId = 5L
+            val manyBundledProducts = generateBundledProducts(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE + 1)
+            whenever(productStore.observeBundledProducts(any(), eq(remoteProductId)))
+                .doReturn(flowOf(manyBundledProducts))
+            whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(emptyList())
+
+            // when
+            sut.invoke(remoteProductId).first()
+
+            // then
+            val requestedIds = argumentCaptor<List<Long>>()
+            verify(productStore, times(2)).fetchProductListSynced(any(), requestedIds.capture())
+            assertThat(requestedIds.allValues.flatten())
+                .containsExactlyElementsOf(manyBundledProducts.map { it.bundledProductId })
+        }
+
+    private fun generateBundledProducts(count: Int) = List(count) { index ->
+        WCBundledProduct(
+            id = index.toLong(),
+            bundledProductId = 100L + index,
+            menuOrder = index,
+            title = "Bundled product $index",
+            stockStatus = "in_stock",
+            quantityMin = null,
+            quantityMax = null,
+            quantityDefault = null,
+            isOptional = false,
+            attributesDefault = null,
+            variationIds = null
+        )
+    }
 
     @Test
     fun `given every product is cached, when the products are processed, then no product is fetched`() = testBlocking {

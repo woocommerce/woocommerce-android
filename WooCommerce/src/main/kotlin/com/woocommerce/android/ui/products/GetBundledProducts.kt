@@ -54,6 +54,9 @@ class GetBundledProducts @Inject constructor(
     /**
      * The bundled products are not necessarily part of the cached product list, so any missing one is fetched to
      * make sure details such as the product type are available.
+     *
+     * The fetch returns a single page, so the ids are requested a page at a time. Asking for more than fits in one
+     * would silently drop the remainder, leaving those products without a type.
      */
     private suspend fun getBundledProductsDetails(
         siteModel: SiteModel,
@@ -64,9 +67,9 @@ class GetBundledProducts @Inject constructor(
         val missingIds = remoteIds - cachedProducts.keys
         if (missingIds.isEmpty()) return cachedProducts
 
-        val fetchedProducts = productStore.fetchProductListSynced(siteModel, missingIds)
-            ?.associateBy { it.remoteProductId }
-            .orEmpty()
+        val fetchedProducts = missingIds.chunked(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE)
+            .flatMap { idsToFetch -> productStore.fetchProductListSynced(siteModel, idsToFetch).orEmpty() }
+            .associateBy { it.remoteProductId }
         return cachedProducts + fetchedProducts
     }
 }

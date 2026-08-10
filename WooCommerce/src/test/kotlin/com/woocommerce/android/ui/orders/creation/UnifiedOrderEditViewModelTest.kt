@@ -904,7 +904,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Failed to add a product which is not published"
+                    KEY_SCANNING_FAILURE_REASON to "Failed to add a product that is not published"
                 )
             )
         }

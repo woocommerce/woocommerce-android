@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.content.FileProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.compose.theme.WooTheme
@@ -12,6 +13,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
+import java.io.File
 
 @AndroidEntryPoint
 class WooLogViewerActivity : ComponentActivity() {
@@ -30,7 +32,24 @@ class WooLogViewerActivity : ComponentActivity() {
             when (event) {
                 is WooLogViewerViewModel.ShareLogs -> shareAppLog(event.logs)
                 is WooLogViewerViewModel.CopyLogs -> copyAppLogToClipboard(event.logs)
+                is WooLogViewerViewModel.ShareLogsArchive -> shareAppLogArchive(event.archive)
+                is WooLogViewerViewModel.ShareLogsArchiveFailed ->
+                    ToastUtils.showToast(this, R.string.logviewer_share_all_logs_error)
             }
+        }
+    }
+
+    private fun shareAppLogArchive(archive: File) {
+        val archiveUri = FileProvider.getUriForFile(this, "$packageName.provider", archive)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "application/zip"
+        intent.putExtra(Intent.EXTRA_STREAM, archiveUri)
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + title)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.share)))
+        } catch (_: android.content.ActivityNotFoundException) {
+            ToastUtils.showToast(this, R.string.logviewer_share_error)
         }
     }
 

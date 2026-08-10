@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-13 14:56:37+0000
+Translation-Revision-Date: 2026-07-28 16:55:10+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Remise non appliquée</string>
+    <string name="product_duplicate_discard_changes_action">Ignorer et dupliquer</string>
+    <string name="product_duplicate_discard_changes_message">Vos modifications non enregistrées seront perdues. L’élément dupliqué utilisera la dernière version enregistrée.</string>
+    <string name="product_duplicate_discard_changes_title">Ignorer les modifications et dupliquer ?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Vous avez au moins un prérequis en attente. Vous pouvez ignorer le problème et continuer à recevoir des paiements, mais si le prérequis bloque votre compte, certaines transactions peuvent être refusées jusqu’à ce que vous le résolviez.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Prérequis en attente sur votre compte</string>
+    <string name="order_editing_currency_mismatch_title">Cette commande ne peut pas être modifiée dans l’application.</string>
+    <string name="login_no_wpcom_account_found_message">Cet utilisateur n’existe pas. Vérifiez que l’adresse e-mail est correcte ou essayez avec un autre compte.</string>
+    <string name="login_no_wpcom_account_found_title">Adresse e-mail incorrecte</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Ce type d’image n’est pas pris en charge. Veuillez sélectionner une image au format PNG, JPEG, WebP, GIF, BMP, HEIC ou HEIF.</string>
     <string name="ai_support_chat_store_connection_error_message">Le système ne parvient pas à se connecter à ma boutique. L’application a détecté une erreur de connexion lors d’une tentative d’accès à ma boutique. Comment résoudre ce problème ?</string>
     <string name="settings_crash_reporting_error_update">Une erreur est survenue lors de la mise à jour de votre réglage de signalement d’incident.</string>
@@ -1187,6 +1196,7 @@ Language: fr
     <string name="shipping_label_purchased_note">Remarque : la réutilisation d’une étiquette imprimée constitue une violation de nos conditions d’utilisation susceptible d’entraîner des poursuites judiciaires.</string>
     <string name="shipping_label_purchased_success_message">Vous pouvez réimprimer l’étiquette d’expédition ou modifier la dimension de l’étiquette ici.</string>
     <string name="shipping_label_purchased_success_title">Votre étiquette d’expédition est prête pour l’impression</string>
+    <string name="order_editing_currency_mismatch_message">Malheureusement, vous pouvez modifier cette commande uniquement sur le Web, car elle est en %1$s et votre site est en %2$s.</string>
     <string name="shipping_label_shipping_service_title">Service d’expédition</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Le plus rapide</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Le moins cher</string>
@@ -1667,9 +1677,6 @@ Language: fr
     <string name="blaze_campaign_budget_toolbar_title">Définir votre budget</string>
     <string name="blaze_campaign_preview_target_default_value">Tout</string>
     <string name="blaze_campaign_preview_days_duration">%1$s jours à partir de %2$s</string>
-    <string name="product_creation_survey_button_dont_show_again">Ne plus afficher</string>
-    <string name="product_creation_survey_button_remind_me_later">Me le rappeler ultérieurement</string>
-    <string name="product_creation_survey_description">Vous avez une minute ? Aidez-nous à améliorer nos fonctionnalités d’IA en nous donnant votre avis.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirmer les détails</string>
     <string name="blaze_campaign_preview_details_destination_url">Destination de la publicité</string>
     <string name="blaze_campaign_preview_details_interests">Intérêts</string>
@@ -1719,8 +1726,6 @@ Language: fr
     <string name="theme_picker_carousel_info_item_description_settings">Vous trouverez le thème parfait dans la boutique de thèmes WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Thème actuel</string>
     <string name="theme_picker_settings_title">Essayer un nouveau look</string>
-    <string name="product_creation_survey_button_open">Commencer l’enquête</string>
-    <string name="product_creation_survey_title">Nous apprécions vos retours !</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Activer Payez en personne permet à vos clients de vous régler leurs commandes en ligne lors de la livraison, en espèces ou par carte.\n\nLes commandes peuvent toujours être créées manuellement sans activer cette fonctionnalité.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Désirez-vous ajouter Payer en personne à la validation de la commande Web ?</string>
     <string name="card_reader_onboarding_contact_us">Besoin d’aide ? &lt;a href=\'\'&gt;Nous contacter&lt;/a&gt;</string>
@@ -2304,7 +2309,6 @@ Language: fr
     <string name="support_request_title">Voyons comment nous pouvons régler votre problème</string>
     <string name="support_request_help_title">J’ai besoin d’aide concernant</string>
     <string name="support_request">Demande d’aide</string>
-    <string name="store_onboarding_menu_share_feedback">Partager des commentaires</string>
     <string name="store_onboarding_full_screen_transition_name">Intégration (plein écran)</string>
     <string name="store_onboarding_task_view_all">Tout afficher (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d tâche(s) sur %2$d terminée(s)</string>
@@ -2483,7 +2487,6 @@ Language: fr
     <string name="login_site_picker_enter_site_address">Entrer l’adresse d’un site</string>
     <string name="card_reader_onboarding_not_finished">Nous avons remarqué que vous n’avez pas encore terminé la configuration des paiements en personne. &lt;a href=\'\'&gt;Poursuivre la configuration&lt;/a&gt;</string>
     <string name="payments_hub_title">Paiements</string>
-    <string name="login_no_wpcom_account_found">Votre adresse e-mail n’est pas associée à un compte WordPress.com.</string>
     <string name="login_non_woo_stores_label">Autres sites</string>
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_magic_links_email_sent">Nous venons d\'envoyer un lien magique à </string>
@@ -3039,8 +3042,6 @@ Language: fr
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Votre compte comporte des prérequis en attente. Veuillez compléter ces prérequis avant le %1$s afin de continuer à accepter des paiements en personne.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Votre compte comporte des prérequis en attente.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Votre compte comporte au moins un prérequis en attente. Veuillez y remédier afin de reprendre les paiements en personne.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_under_review_hint">Vous pourrez accepter des paiements en personne dès que nous aurons passé votre compte en revue.</string>
     <string name="card_reader_onboarding_account_under_review_header">Les paiements en personne ne sont actuellement pas disponibles.</string>
     <string name="card_reader_onboarding_account_rejected_hint">Malheureusement, nous ne pouvons pas prendre en charge les paiements en personne pour cette boutique.</string>

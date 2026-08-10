@@ -38,7 +38,7 @@ class WooNetworkTest {
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork = mock()
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler = mock()
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport = mock()
-    private val unknownBlogListener: UnknownBlogListener = mock()
+    private val wpComSiteInvalidationListener: WPComSiteInvalidationListener = mock()
     private val invalidSignatureListener: InvalidSignatureListener = mock()
 
     private val sut = WooNetwork(
@@ -47,7 +47,7 @@ class WooNetworkTest {
         jetpackTunnelWPAPINetwork = jetpackTunnelWPAPINetwork,
         jetpackApplicationPasswordsSupport = jetpackApplicationPasswordsSupport,
         jetpackApplicationPasswordsErrorHandler = jetpackApplicationPasswordsErrorHandler,
-        unknownBlogListener = Optional.of(unknownBlogListener),
+        wpComSiteInvalidationListener = Optional.of(wpComSiteInvalidationListener),
         invalidSignatureListener = Optional.of(invalidSignatureListener)
     )
 
@@ -177,23 +177,29 @@ class WooNetworkTest {
     }
 
     @Test
-    fun `given a request returns unknown_blog, when making request, then notify the unknown blog listener`() = test {
+    fun `given a request returns unknown_blog, when making request, then notify the site invalidation listener`() =
+        test {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
         givenJetpackTunnelResponse(WPAPIResponse.Error(WPAPINetworkError(mock(), "unknown_blog")))
 
         sut.executeGetGsonRequest(site = testSite, path = testPath, clazz = SampleResponse::class.java)
 
-        verify(unknownBlogListener).onUnknownBlog(testSite.siteId)
+        verify(wpComSiteInvalidationListener).onSiteInvalidated(
+            WPComSiteInvalidationEvent(
+                siteId = testSite.siteId,
+                reason = WPComSiteInvalidationReason.UNKNOWN_BLOG
+            )
+        )
     }
 
     @Test
-    fun `given a successful request, when making request, then do not notify the unknown blog listener`() = test {
+    fun `given a successful request, when making request, then do not notify the site invalidation listener`() = test {
         whenever(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).thenReturn(false)
         givenJetpackTunnelResponse(WPAPIResponse.Success(SampleResponse("value"), emptyList()))
 
         sut.executeGetGsonRequest(site = testSite, path = testPath, clazz = SampleResponse::class.java)
 
-        verify(unknownBlogListener, never()).onUnknownBlog(any())
+        verify(wpComSiteInvalidationListener, never()).onSiteInvalidated(any())
     }
 
     @Test

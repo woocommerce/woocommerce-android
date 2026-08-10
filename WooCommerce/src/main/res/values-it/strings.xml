@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-15 09:59:01+0000
+Translation-Revision-Date: 2026-07-28 14:55:27+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Sconto non applicato</string>
+    <string name="product_duplicate_discard_changes_action">Elimina e duplica</string>
+    <string name="product_duplicate_discard_changes_message">Le modifiche non salvate andranno perse. Il duplicato utilizzerà l\'ultima versione salvata.</string>
+    <string name="product_duplicate_discard_changes_title">Eliminare le modifiche e duplicarle?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Hai almeno un requisito scaduto. Puoi saltare il pagamento e continuare a riceverne altri, ma se il problema sta bloccando il tuo account, alcune transazioni potrebbero essere rifiutate finché non lo risolverai.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Requisiti scaduti sul tuo account</string>
+    <string name="order_editing_currency_mismatch_title">Questo ordine non può essere modificato nell\'app</string>
+    <string name="login_no_wpcom_account_found_message">L\'utente non esiste Verifica che l\'indirizzo e-mail sia corretto o prova con un account diverso.</string>
+    <string name="login_no_wpcom_account_found_title">Indirizzo e-mail sbagliato</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Questo tipo di immagine non è supportato. Seleziona un\'immagine PNG, JPEG, WebP, GIF, BMP, HEIC o HEIF.</string>
     <string name="ai_support_chat_store_connection_error_message">Il mio negozio non può essere raggiunto. L\'app ha rilevato un errore di connessione durante il tentativo di raggiungere il mio negozio. Come posso risolvere questo problema?</string>
     <string name="empty_message_with_search_guest">Cerchi ordini effettuati da clienti ospiti?</string>
@@ -1186,6 +1195,7 @@ Language: it
     <string name="shipping_label_purchased_note">Nota: il riutilizzo di un\'etichetta stampata viola i nostri termini di servizio e può comportare una denuncia penale.</string>
     <string name="shipping_label_purchased_success_message">Da qui puoi stampare di nuovo l\'etichetta di spedizione o cambiare il formato della carta per l\'etichetta.</string>
     <string name="shipping_label_purchased_success_title">La tua etichetta di spedizione è pronta per la stampa</string>
+    <string name="order_editing_currency_mismatch_message">Spiacenti, puoi modificare questo ordine solo sul web, in quanto utilizza %1$s, mentre la valuta del tuo sito è %2$s.</string>
     <string name="shipping_label_shipping_service_title">Servizio di spedizione</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Più veloce</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Più economico</string>
@@ -1666,9 +1676,6 @@ Language: it
     <string name="blaze_campaign_preview_days_duration">%1$s giorni da %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Data iniziale</string>
     <string name="blaze_campaign_edit_ad_change_tagline_title">Motto</string>
-    <string name="product_creation_survey_button_dont_show_again">Non mostrare più</string>
-    <string name="product_creation_survey_button_remind_me_later">Ricordamelo più tardi</string>
-    <string name="product_creation_survey_description">Hai un minuto? Aiutaci a migliorare le nostre funzionalità assistite dall\'intelligenza artificiale con un rapido feedback.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Conferma dettagli</string>
     <string name="blaze_campaign_preview_details_destination_url">Destinazione annuncio</string>
     <string name="blaze_campaign_preview_details_interests">Interessi</string>
@@ -1718,8 +1725,6 @@ Language: it
     <string name="theme_picker_carousel_info_item_description_settings">Puoi trovare il tema perfetto nel negozio di temi WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema corrente</string>
     <string name="theme_picker_settings_title">Prova un nuovo aspetto</string>
-    <string name="product_creation_survey_button_open">Inizia il sondaggio</string>
-    <string name="product_creation_survey_title">Apprezziamo il tuo contributo!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">L\'attivazione di Paga di persona consente al cliente di pagare gli ordini online alla consegna tramite contanti o carta.\n\nGli ordini possono comunque essere creati manualmente senza attivare questa funzione.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vuoi aggiungere Paga di persona al pagamento web?</string>
     <string name="card_reader_onboarding_contact_us">Hai bisogno di assistenza? &lt;a href=\'\'&gt;Contattaci&lt;/a&gt;</string>
@@ -1982,8 +1987,8 @@ Language: it
     <string name="store_onboarding_task_name_store_title">Dai un nome al tuo negozio</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Abilita NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Pacchetti di fornitura di piccole quantità (marcature richieste)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">Pacchetti via terra a quantità limitata - Aerosol, disinfettanti spray, vernice spray, spray per capelli, propano, butano, prodotti per la pulizia, ecc. - Fragranze, smalto per unghie, solvente per unghie, solventi, igienizzante per le mani, alcol disinfettante, prodotti a base di etanolo, ecc. - Altri materiali per superfici in quantità limitata (cosmetici, prodotti per la pulizia, vernici, ecc.)</string>
     <string name="shipping_label_hazmat_option_lighters">Pacchetti di accendini - Accendini autorizzati</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">Pacchetti via terra a quantità limitata - Aerosol, disinfettanti spray, vernice spray, spray per capelli, propano, butano, prodotti per la pulizia, ecc. - Fragranze, smalto per unghie, solvente per unghie, solventi, igienizzante per le mani, alcol disinfettante, prodotti a base di etanolo, ecc. - Altri materiali per superfici in quantità limitata (cosmetici, prodotti per la pulizia, vernici, ecc.)</string>
     <string name="shipping_label_hazmat_option_id8000">Pacchetto di prodotti di consumo ID8000 - Prodotti di consumo ID8000 conformi alle prescrizioni per il volo (aerosol non infiammabili, liquidi combustibili infiammabili, sostanze tossiche, materiali pericolosi vari)</string>
     <string name="shipping_label_hazmat_option_ground_only">Materiali pericolosi solo per trasporto via terra (per gli articoli non elencati ma limitati al solo trasporto via terra)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Pacchetti di fornitura di quantità esenti (ad esempio piccole quantità di liquidi infiammabili, materiali corrosivi, tossici o pericolosi per l\'ambiente - marcatura richiesta)</string>
@@ -2303,7 +2308,6 @@ Language: it
     <string name="support_request_title">Mettiamo ordine</string>
     <string name="support_request_help_title">Ho bisogno di aiuto con</string>
     <string name="support_request">Richiesta di supporto</string>
-    <string name="store_onboarding_menu_share_feedback">Condividi il tuo feedback</string>
     <string name="store_onboarding_full_screen_transition_name">Avviamento dello schermo intero</string>
     <string name="store_onboarding_task_view_all">Visualizza tutto (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d di %2$d attività completate</string>
@@ -2484,7 +2488,6 @@ Language: it
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_non_woo_stores_label">Altri siti</string>
     <string name="payments_hub_title">Pagamenti</string>
-    <string name="login_no_wpcom_account_found">L\'e-mail non è utilizzata con un account WordPress.com.</string>
     <string name="login_magic_link_button">Accedi con il link magico</string>
     <string name="or_use_password" a8c-src-lib="module:login">Usa la password per accedere</string>
     <string name="login_magic_links_sent_label_short">Controlla la tua e-mail su questo dispositivo!</string>
@@ -3037,8 +3040,6 @@ Language: it
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Pagamenti di persona non è disponibile nella Modalità di prova. Disattivare la funzione per proseguire.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Pagamenti di persona attualmente non disponibile</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Ci sono requisiti in sospeso sull\'account. Completa i requisiti tramite %1$s per continuare ad accettare Pagamenti di persona.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">C\'è almeno un requisito scaduto sul tuo account. Completalo per riprendere a utilizzare Pagamenti di persona</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Pagamenti di persona attualmente non disponibile</string>
     <string name="card_reader_onboarding_account_under_review_hint">Potrai accettare Pagamenti di persona non appena avremo terminato la revisione del tuo account.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Il tuo account presenta requisiti in sospeso</string>
     <string name="card_reader_onboarding_account_under_review_header">Pagamenti di persona attualmente non disponibile</string>
