@@ -8,6 +8,7 @@
 - [*] Woo POS: Retrying a failed connection to a phone card reader now works without having to close and reopen the reader dialog [https://github.com/woocommerce/woocommerce-android/pull/16371]
 - [*] Fixed missing back navigation in Country and State pickers when creating shipping labels on tablets [https://github.com/woocommerce/woocommerce-android/pull/16364]
 - [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
+- [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
 
 25.4
 -----

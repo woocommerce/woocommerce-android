@@ -3057,6 +3057,7 @@
     <string name="product_selector_recent_products_heading">Last Sold</string>
     <string name="product_selector_products_heading">Products</string>
     <string name="product_selector_subscription_not_supported">Subscription products are not supported for order creation</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">This bundle contains a subscription product, which is not supported for order creation</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
