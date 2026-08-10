@@ -135,14 +135,14 @@ class OrderFilterCategoriesFragment :
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
         val action = when (category.categoryKey) {
             CUSTOMER -> {
-                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListDialogFragment(
+                OrderFilterCategoriesFragmentDirections.actionOrderFilterCategoriesFragmentToCustomerListFragment(
                     allowCustomerCreation = false,
                     allowGuests = false
                 )
             }
             PRODUCT -> {
                 OrderFilterCategoriesFragmentDirections
-                    .actionOrderFilterCategoriesFragmentToProductSelectorDialogFragment(
+                    .actionOrderFilterCategoriesFragmentToNavGraphProductSelector(
                         selectionMode = SINGLE,
                         selectionHandling = SIMPLE,
                         screenTitleOverride = getString(R.string.product),
