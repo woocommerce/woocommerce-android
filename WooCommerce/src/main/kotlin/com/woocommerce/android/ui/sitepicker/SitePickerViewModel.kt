@@ -163,7 +163,7 @@ class SitePickerViewModel @Inject constructor(
         launch {
             val sitesInDb = getSitesFromDb()
             if (sitesInDb.isNotEmpty()) {
-                onSitesLoaded(sitesInDb)
+                onSitesLoaded(sitesInDb, isApiResponse = false)
             }
             fetchSitesFromApi(showSkeleton = sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
@@ -190,7 +190,7 @@ class SitePickerViewModel @Inject constructor(
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
-                onSitesLoaded(repository.getSites())
+                onSitesLoaded(repository.getSites(), isApiResponse = true)
             }
         }
     }
@@ -224,7 +224,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private suspend fun onSitesLoaded(sites: List<SiteModel>) {
+    private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean = false) {
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
@@ -248,7 +248,7 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-        val shouldSelectFirstSite = !navArgs.openedFromLogin || sites.size == 1
+        val shouldSelectFirstSite = !navArgs.openedFromLogin || (isApiResponse && sites.size == 1)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
@@ -271,7 +271,7 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && sites.size == 1) {
+        if (navArgs.openedFromLogin && isApiResponse && sites.size == 1) {
             wooSites.singleOrNull()?.let {
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
