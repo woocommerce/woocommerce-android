@@ -363,7 +363,12 @@ private fun RevenueStatsTypeSelector(
         options = options.map { stringResource(id = it.labelRes) },
         selectedIndex = options.indexOf(selectedType),
         onSelectedIndexChange = { onTypeSelected(options[it]) },
-        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp),
+        modifier = modifier.padding(
+            start = WooTheme.padding.padding5,
+            top = WooTheme.padding.padding3,
+            end = WooTheme.padding.padding5,
+            bottom = WooTheme.padding.padding2,
+        ),
     )
 }
 
