@@ -81,7 +81,7 @@ class WooPosCardReaderConnectionControllerTest {
     }
 
     @Test
-    fun `given a connected reader, when disconnecting, then both transport and reader model are cleared`() = runTest {
+    fun `given a connected reader, when disconnecting, then transport, model and battery are cleared`() = runTest {
         // GIVEN
         whenever(cardReaderManager.disconnectReader()).thenReturn(true)
         val controller = createController(this)
@@ -93,5 +93,6 @@ class WooPosCardReaderConnectionControllerTest {
         // THEN
         verify(cardReaderTrackingInfoKeeper).setTransport(null)
         verify(cardReaderTrackingInfoKeeper).setCardReaderModel(null)
+        verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(null)
     }
 }

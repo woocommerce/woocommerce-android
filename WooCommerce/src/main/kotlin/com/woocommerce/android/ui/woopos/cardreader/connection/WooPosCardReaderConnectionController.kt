@@ -383,7 +383,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
         if (lastKnownReader != null) {
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
-            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+            markBluetoothReaderSelected(lastKnownReader.type)
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
             return
@@ -456,8 +456,7 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun onConnectToReaderClicked(reader: CardReader) {
-        cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        markBluetoothReaderSelected(reader.type)
         tracker.trackOnConnectTapped()
         connectToReader(reader)
     }
@@ -480,13 +479,21 @@ class WooPosCardReaderConnectionController(
     private fun clearReaderTrackingInfo() {
         cardReaderTrackingInfoKeeper.setTransport(null)
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
-    // Must run before any phone event is tracked, or a model left over from a previous Bluetooth
-    // connection gets reported against this wifi_lan session.
+    // Must run before any phone event is tracked, or a model and battery level left over from a
+    // previous Bluetooth connection get reported against this wifi_lan session.
     private fun markPhoneReaderSelected() {
         cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
+    }
+
+    private fun markBluetoothReaderSelected(readerModel: String) {
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setCardReaderModel(readerModel)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
     private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
