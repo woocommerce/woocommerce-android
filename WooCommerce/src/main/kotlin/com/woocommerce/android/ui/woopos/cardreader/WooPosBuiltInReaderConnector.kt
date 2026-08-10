@@ -124,13 +124,14 @@ class WooPosBuiltInReaderConnector @Inject constructor(
 
     private suspend fun initializeCardReaderManager() {
         withContext(Dispatchers.Main.immediate) {
-            if (cardReaderManager.initialized) return@withContext
-            cardReaderManager.initialize(
-                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
-                useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
-                isDebug = BuildConfig.DEBUG,
-            )
+            if (!cardReaderManager.initialized) {
+                cardReaderManager.initialize(
+                    updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+                    useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+                    useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
+                    isDebug = BuildConfig.DEBUG,
+                )
+            }
             cardReaderManager.setupTapToPayUx(
                 CardReaderManager.TapToPayUxConfig(
                     primaryColor = R.color.color_primary,

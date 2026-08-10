@@ -56,6 +56,12 @@ class QrLoginScannerFragment : Fragment() {
         fun onQrLoginAppLoginCredentials(siteUrl: String, username: String)
         fun onQrLoginAppLoginWpComEmail(siteUrl: String, wpComEmail: String)
         fun onQrLoginHelpClicked()
+
+        /**
+         * The merchant backed out of the QR surface. The host pops or finishes exactly as it
+         * would for a system back press.
+         */
+        fun onQrLoginDismissed()
     }
 
     private val scannerViewModel: BarcodeScanningViewModel by viewModels()
@@ -176,7 +182,7 @@ class QrLoginScannerFragment : Fragment() {
                 is BarcodeScanningViewModel.ScanningEvents.OnScanningResult ->
                     qrLoginViewModel.onScanResult(event.status)
 
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is Exit -> dismiss()
             }
         }
     }
@@ -225,7 +231,7 @@ class QrLoginScannerFragment : Fragment() {
      */
     private fun handleCancelNumberMatch() {
         qrLoginViewModel.onCancelNumberMatch()
-        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
+        if (isDeepLinkEntry) dismiss()
     }
 
     /**
@@ -236,7 +242,7 @@ class QrLoginScannerFragment : Fragment() {
      */
     private fun handleCancelSessionReplace() {
         qrLoginViewModel.onCancelSessionReplace()
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        dismiss()
     }
 
     /**
@@ -246,7 +252,18 @@ class QrLoginScannerFragment : Fragment() {
      */
     private fun handleStartOver() {
         qrLoginViewModel.onStartOver()
-        if (isDeepLinkEntry) requireActivity().onBackPressedDispatcher.onBackPressed()
+        if (isDeepLinkEntry) dismiss()
+    }
+
+    /**
+     * Leaves the QR surface. Deliberately does *not* go through
+     * [androidx.activity.OnBackPressedDispatcher.onBackPressed]: [handleCancelSessionReplace]
+     * runs from the warning screen's own `BackHandler`, which is still registered and enabled at
+     * that point — the state change to Idle only lands on the next recomposition — so
+     * re-dispatching back re-enters the same handler and recurses until the stack overflows.
+     */
+    private fun dismiss() {
+        listener?.onQrLoginDismissed()
     }
 
     private fun handleLoggedIn(localSiteId: Int) {

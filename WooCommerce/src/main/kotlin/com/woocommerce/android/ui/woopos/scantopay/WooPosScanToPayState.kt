@@ -19,6 +19,9 @@ sealed class WooPosScanToPayState : Parcelable {
     data object PaymentDetected : WooPosScanToPayState()
 
     @Parcelize
+    data object PayInPersonSelected : WooPosScanToPayState()
+
+    @Parcelize
     data class Failed(
         val message: String,
     ) : WooPosScanToPayState()

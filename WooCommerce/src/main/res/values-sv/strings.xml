@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-13 14:57:15+0000
+Translation-Revision-Date: 2026-07-27 20:56:44+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Rabatt inte tillämpad</string>
+    <string name="product_duplicate_discard_changes_action">Släng och duplicera</string>
+    <string name="product_duplicate_discard_changes_message">Dina osparade ändringar kommer att gå förlorade. Dubbletten kommer att använda den senast sparade versionen.</string>
+    <string name="product_duplicate_discard_changes_title">Ignorera ändringar och duplicera?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett förfallet krav. Du kan hoppa över och fortsätta ta emot betalningar, men om kravet blockerar ditt konto kan vissa transaktioner nekas tills du har löst problemet.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Förfallna krav på ditt konto</string>
+    <string name="order_editing_currency_mismatch_title">Denna beställning kan inte redigeras i appen</string>
+    <string name="login_no_wpcom_account_found_message">Användare finns inte. Verifiera att e-postadressen är korrekt eller försök med ett annat konto.</string>
+    <string name="login_no_wpcom_account_found_title">Fel e-post</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Den här bildtypen stöds inte. Välj en PNG-, JPEG-, WebP-, GIF-, BMP-, HEIC- eller HEIF-bild.</string>
     <string name="ai_support_chat_store_connection_error_message">Min butik kan inte nås. Appen upptäckte ett anslutningsfel när den försökte nå min butik. Hur kan jag åtgärda detta?</string>
     <string name="settings_crash_reporting_error_update">Det uppstod ett fel vid uppdateringen av dina inställningar för kraschrapportering</string>
@@ -1187,6 +1196,7 @@ Language: sv_SE
     <string name="shipping_label_purchased_note">Obs: Återanvändning av en utskriven fraktetikett är ett brott mot våra användarvillkor och kan leda till åtal.</string>
     <string name="shipping_label_purchased_success_message">Härifrån kan du skriva ut fraktetiketten igen eller ändra storlek på etiketten.</string>
     <string name="shipping_label_purchased_success_title">Din fraktetikett är redo att skrivas ut</string>
+    <string name="order_editing_currency_mismatch_message">Du kan bara redigera den här beställningen på webben, eftersom den använder %1$s och din webbplats valuta är %2$s.</string>
     <string name="shipping_label_shipping_service_title">Frakttjänst</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Snabbast</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Billigast</string>
@@ -1667,9 +1677,6 @@ Language: sv_SE
     <string name="blaze_campaign_budget_toolbar_title">Ställ in din budget</string>
     <string name="blaze_campaign_preview_target_default_value">Alla</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dagar från %2$s</string>
-    <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
-    <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
-    <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Bekräfta detaljer</string>
     <string name="blaze_campaign_preview_details_destination_url">Annonsdestination</string>
     <string name="blaze_campaign_preview_details_interests">Intressen</string>
@@ -1719,8 +1726,6 @@ Language: sv_SE
     <string name="theme_picker_carousel_info_item_description_settings">Du hittar ditt perfekta tema i WooCommerce-temabutiken.</string>
     <string name="theme_picker_current_theme_title">Nuvarande tema</string>
     <string name="theme_picker_settings_title">Prova ett nytt utseende</string>
-    <string name="product_creation_survey_button_open">Börja undersökningen</string>
-    <string name="product_creation_survey_title">Vi värdesätter dina åsikter!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Om du aktiverar alternativet Betala personligen kan kunden betala kontant eller med kort för onlinebeställningar vid leverans.\n\nBeställningar kan fortfarande skapas manuellt utan att aktivera denna funktion.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Vill du lägga till alternativet Betala personligen i din kassa?</string>
     <string name="card_reader_onboarding_contact_us">Behöver du hjälp? &lt;a href=\'\'&gt;Kontakta oss&lt;/a&gt;</string>
@@ -2304,7 +2309,6 @@ Language: sv_SE
     <string name="support_request_title">Låt oss ordna detta</string>
     <string name="support_request_help_title">Jag behöver hjälp med</string>
     <string name="support_request">Supportförfrågan</string>
-    <string name="store_onboarding_menu_share_feedback">Dela feedback</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding, fullskärm</string>
     <string name="store_onboarding_task_view_all">Visa alla (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d av %2$d uppgifter har slutförts</string>
@@ -2483,7 +2487,6 @@ Language: sv_SE
     <string name="login_site_picker_enter_site_address">Ange en webbplatsadress</string>
     <string name="card_reader_onboarding_not_finished">Vi har noterat att du inte har slutfört installationen av Personliga betalningar. &lt;a href=\'\'&gt;Fortsätt installationen&lt;/a&gt;</string>
     <string name="payments_hub_title">Betalningar</string>
-    <string name="login_no_wpcom_account_found">Din e-post används inte med ett WordPress.com-konto.</string>
     <string name="login_non_woo_stores_label">Andra webbplatser</string>
     <string name="more_menu_button_w___admin">WC-admin</string>
     <string name="login_magic_links_email_sent">Vi har precis skickat en magisk länk till</string>
@@ -3039,8 +3042,6 @@ Language: sv_SE
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Det finns krav som inväntar granskning i ditt konto. Slutför dessa krav senast den %1$s för att fortsätta ta emot personliga betalningar.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Ditt konto har krav som inväntar granskning</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du har minst ett försenat krav i ditt konto. Ta hand om det för att återuppta personliga betalningar.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_under_review_hint">Du kommer att kunna ta emot personliga betalningar så snart vi har slutfört granskningen av ditt konto.</string>
     <string name="card_reader_onboarding_account_under_review_header">Personliga betalningar är för närvarande inte tillgängliga</string>
     <string name="card_reader_onboarding_account_rejected_hint">Tyvärr kan vi inte erbjuda personliga betalningar för den här butiken.</string>

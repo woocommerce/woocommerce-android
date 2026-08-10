@@ -12,12 +12,13 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts
+import com.woocommerce.android.ui.products.HasUnsupportedBundledProducts.Result
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToProductFilter
 import com.woocommerce.android.ui.products.ProductNavigationTarget.NavigateToVariationSelector
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.ProductType.VARIATION
@@ -78,7 +79,8 @@ class ProductSelectorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
     private val productsMapper: ProductsMapper,
-    private val productRestrictions: OrderCreationProductRestrictions
+    private val productRestrictions: OrderCreationProductRestrictions,
+    private val hasUnsupportedBundledProducts: HasUnsupportedBundledProducts
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -103,13 +105,15 @@ class ProductSelectorViewModel @Inject constructor(
     val selectedItems: StateFlow<List<SelectedItem>> = _selectedItems
     private val filterState = savedState.getStateFlow(viewModelScope, FilterState())
     private val products = listHandler.productsFlow.map { products ->
-        products.filterNot { product -> productRestrictions.isProductRestricted(product = product) }
+        products.filterNot { product -> productRestrictions.isProductHidden(product = product) }
     }
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
     private val selectionEnabled: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, true, "key_selection_enabled")
+
+    private val loadingItemId = MutableStateFlow<Long?>(null)
 
     private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
@@ -134,14 +138,16 @@ class ProductSelectorViewModel @Inject constructor(
         flow6 = filterState,
         flow7 = searchState,
         flow8 = selectionEnabled,
-    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled ->
+        flow9 = loadingItemId,
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled,
+        loadingItemId ->
         ViewState(
             loadingState = loadingState,
             products = products.map {
                 mapProductsToUiModel(it, selectedIds)
-            },
-            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
-            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
+            }.markLoading(loadingItemId),
+            popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds).markLoading(loadingItemId),
+            recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds).markLoading(loadingItemId),
             selectedItemsCount = selectedIds.size,
             filterState = filterState,
             searchState = searchState,
@@ -183,6 +189,21 @@ class ProductSelectorViewModel @Inject constructor(
         SIMPLE -> it.toSimpleUiModel(selectedIds)
     }
 
+    private fun List<ListItem>.markLoading(loadingItemId: Long?): List<ListItem> {
+        if (loadingItemId == null) return this
+        return map { item ->
+            if (item.id != loadingItemId) {
+                item
+            } else {
+                when (item) {
+                    is ListItem.ProductListItem -> item.copy(isLoading = true)
+                    is ListItem.VariationListItem -> item.copy(isLoading = true)
+                    is ListItem.ConfigurableListItem -> item.copy(isLoading = true)
+                }
+            }
+        }
+    }
+
     private fun getPopularProductsToDisplay(
         popularProducts: List<Product>,
         selectedIds: List<SelectedItem>
@@ -214,7 +235,7 @@ class ProductSelectorViewModel @Inject constructor(
                 recentlySoldOrders
             ).distinctBy { it }
         ).filterNot { product ->
-            productRestrictions.isProductRestricted(product = product)
+            productRestrictions.isProductHidden(product = product)
         }
     }
 
@@ -231,7 +252,7 @@ class ProductSelectorViewModel @Inject constructor(
         popularProducts.value = productsMapper.mapProductIdsToProduct(
             topPopularProductsSorted.keys.toList()
         ).filterNot { product ->
-            productRestrictions.isProductRestricted(product = product)
+            productRestrictions.isProductHidden(product = product)
         }
     }
 
@@ -265,14 +286,10 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
+        productRestrictions.getUnsupportedRestriction(product = this)?.let { restriction ->
+            return SelectionState.DISABLED(resourceProvider.getString(restriction.reason))
+        }
         return when {
-            productType == SUBSCRIPTION ||
-                productType == VARIABLE_SUBSCRIPTION -> {
-                SelectionState.DISABLED(
-                    resourceProvider.getString(R.string.product_selector_subscription_not_supported)
-                )
-            }
-
             isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
@@ -382,30 +399,69 @@ class ProductSelectorViewModel @Inject constructor(
 
     fun onProductClick(item: ListItem, productSourceForTracking: ProductSourceForTracking) {
         val productSource = updateProductSourceIfSearchIsEnabled(productSourceForTracking)
-        if (
-            navArgs.productSelectorFlow == OrderListFilter &&
-            _selectedItems.value.containsItemWith(item.id)
-        ) {
-            selectedItemsSource.remove(item.id)
-            _selectedItems.update { it.filter { selectedItem -> selectedItem.id != item.id } }
-        } else {
-            when (item) {
-                is ListItem.ProductListItem -> {
-                    handleProductTap(item, productSource)
-                }
 
-                is ListItem.VariationListItem -> {
-                    handleVariationItemTap(item, productSource)
-                }
+        val isAlreadySelected = _selectedItems.value.containsItemWith(item.id)
+        if (navArgs.productSelectorFlow == OrderListFilter && isAlreadySelected) {
+            deselectItem(item)
+            return
+        }
 
-                is ListItem.ConfigurableListItem -> {
-                    handleConfigurableItemTap(item)
-                }
+        launch {
+            if (isAlreadySelected || verifyBundleIsSellable(item)) selectItem(item, productSource)
+        }
+    }
+
+    private fun deselectItem(item: ListItem) {
+        selectedItemsSource.remove(item.id)
+        _selectedItems.update { items -> items.filter { it.id != item.id } }
+    }
+
+    private fun selectItem(item: ListItem, productSource: ProductSourceForTracking) {
+        when (item) {
+            is ListItem.ProductListItem -> handleProductTap(item, productSource)
+            is ListItem.VariationListItem -> handleVariationItemTap(item, productSource)
+            is ListItem.ConfigurableListItem -> handleConfigurableItemTap(item)
+        }
+    }
+
+    /**
+     * Returns whether [item] can be added to an order: true for anything other than a bundle, and for a bundle only
+     * once a request confirms it holds no unsupported product — the item reports itself as loading in the meantime,
+     * and a snackbar explains the rejection. A bundle whose check can't complete is kept out of the order too, with
+     * a snackbar inviting a retry. Taps arriving while a check runs return false, so a merchant tapping again can't
+     * act twice.
+     */
+    private suspend fun verifyBundleIsSellable(item: ListItem): Boolean {
+        if (item.type != ProductType.BUNDLE) return true
+        if (loadingItemId.value != null) return false
+
+        loadingItemId.value = item.id
+        val result = try {
+            hasUnsupportedBundledProducts(item.id)
+        } finally {
+            loadingItemId.value = null
+        }
+
+        return when (result) {
+            Result.NO -> true
+            Result.YES -> {
+                triggerEvent(ShowSnackbar(R.string.product_selector_bundle_with_subscription_not_supported))
+                false
+            }
+            Result.UNKNOWN -> {
+                triggerEvent(ShowSnackbar(R.string.error_generic_network))
+                false
             }
         }
     }
 
     fun onEditConfiguration(item: ListItem.ConfigurableListItem) {
+        launch {
+            if (verifyBundleIsSellable(item)) editConfiguration(item)
+        }
+    }
+
+    private fun editConfiguration(item: ListItem.ConfigurableListItem) {
         val selectedItem = selectedItems.value.firstOrNull { it.id == item.id } as? SelectedItem.ConfigurableProduct
         selectedItem?.configuration?.let {
             triggerEvent(
@@ -705,7 +761,7 @@ class ProductSelectorViewModel @Inject constructor(
         val productFlow: ProductSelectorFlow,
         val screenTitleOverride: String? = null,
         val ctaButtonTextOverride: String? = null,
-        val selectionEnabled: Boolean = true
+        val selectionEnabled: Boolean = true,
     ) {
         val isDoneButtonEnabled: Boolean =
             selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0 || productFlow == OrderListFilter
@@ -731,7 +787,11 @@ class ProductSelectorViewModel @Inject constructor(
         open val stockAndPrice: String? = null,
         open val sku: String? = null,
         open val selectionState: SelectionState = UNSELECTED,
+        open val isLoading: Boolean = false,
     ) {
+        val enabled: Boolean
+            get() = selectionState !is SelectionState.DISABLED && !isLoading
+
         data class ProductListItem(
             val productId: Long,
             val numVariations: Int,
@@ -742,6 +802,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = productId,
             title = title,
@@ -750,6 +811,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
 
         data class VariationListItem(
@@ -761,6 +823,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = variationId,
             title = title,
@@ -769,6 +832,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
 
         data class ConfigurableListItem(
@@ -779,6 +843,7 @@ class ProductSelectorViewModel @Inject constructor(
             override val stockAndPrice: String? = null,
             override val sku: String? = null,
             override val selectionState: SelectionState = UNSELECTED,
+            override val isLoading: Boolean = false,
         ) : ListItem(
             id = productId,
             title = title,
@@ -787,6 +852,7 @@ class ProductSelectorViewModel @Inject constructor(
             stockAndPrice = stockAndPrice,
             sku = sku,
             selectionState = selectionState,
+            isLoading = isLoading,
         )
     }
 

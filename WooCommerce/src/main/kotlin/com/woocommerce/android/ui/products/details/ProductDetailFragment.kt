@@ -491,7 +491,6 @@ class ProductDetailFragment :
     private fun showProductDetails(product: Product, isImageUploadAvailable: Boolean) {
         binding.productErrorStateContainer.isVisible = false
         binding.productDetailRoot.isVisible = true
-        binding.productDetailAddMoreContainer.isVisible = true
 
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId

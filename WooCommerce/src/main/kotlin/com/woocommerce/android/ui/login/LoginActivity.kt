@@ -385,6 +385,10 @@ class LoginActivity :
         viewHelpAndSupport(HelpOrigin.LOGIN_WITH_QR_CODE)
     }
 
+    override fun onQrLoginDismissed() {
+        handleBackPress()
+    }
+
     private fun hasJetpackConnectedIntent(): Boolean {
         val action = intent.action
         val uri = intent.data

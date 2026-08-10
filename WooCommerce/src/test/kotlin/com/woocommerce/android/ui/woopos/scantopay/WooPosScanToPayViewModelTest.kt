@@ -5,9 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
-import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromScanToPay
@@ -46,7 +46,7 @@ class WooPosScanToPayViewModelTest {
     val instantTaskRule = InstantTaskExecutorRule()
 
     private val repository: WooPosScanToPayRepository = mock()
-    private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock()
@@ -66,7 +66,7 @@ class WooPosScanToPayViewModelTest {
 
     private fun createViewModel() = WooPosScanToPayViewModel(
         repository = repository,
-        parentToChildrenEventSender = parentToChildrenEventSender,
+        childrenToParentEventSender = childrenToParentEventSender,
         analyticsTracker = tracker,
         resourceProvider = resourceProvider,
         priceFormat = priceFormat,
@@ -162,8 +162,8 @@ class WooPosScanToPayViewModelTest {
             // THEN
             verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
             verify(tracker).track(ScanToPayCollectPaymentSuccess)
-            verify(parentToChildrenEventSender).sendToChildren(
-                eq(ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)),
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.SCAN_TO_PAY)
             )
             verify(repository).addOrderNote(orderId, "Customer paid via Scan to Pay")
         }
@@ -184,32 +184,48 @@ class WooPosScanToPayViewModelTest {
     }
 
     @Test
-    fun `given QR shown, when polling sees Processing status, then payment detected`() = runTest {
+    fun `when collect on register clicked, then cart is restored and GoBack emitted`() = runTest {
+        // GIVEN
+        whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.failure(Exception("boom")))
+        val viewModel = createViewModel()
+        runCurrent()
+
+        // WHEN / THEN
+        viewModel.navigationEvent.test {
+            viewModel.onUIEvent(WooPosScanToPayUIEvent.CollectOnRegisterClicked)
+            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+        }
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+    }
+
+    @Test
+    fun `given QR shown, when customer picks Pay in Person, then PayInPersonSelected shown`() = runTest {
         // GIVEN
         val pendingOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             paymentUrl = "https://example.com/pay/abc",
             status = Order.Status.Pending,
         )
-        val processingOrder = Order.getEmptyOrder(Date(), Date()).copy(
+        val codOrder = Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             datePaid = null,
             status = Order.Status.Processing,
+            paymentMethod = "cod",
         )
         whenever(repository.promoteOrderToPending(orderId)).thenReturn(Result.success(Unit))
-        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, processingOrder)
+        whenever(repository.fetchOrderSnapshot(orderId)).thenReturn(pendingOrder, codOrder)
         whenever(repository.getCachedOrder(orderId)).thenReturn(pendingOrder)
-        whenever(repository.addOrderNote(eq(orderId), any())).thenReturn(Result.success(Unit))
 
         // WHEN
         val viewModel = createViewModel()
         runCurrent()
+        advanceTimeBy(2_500)
+        runCurrent()
 
         // THEN
-        viewModel.navigationEvent.test {
-            assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
-        }
-        verify(tracker).track(ScanToPayPaymentDetectedViaPolling)
+        verify(tracker, never()).track(ScanToPayPaymentDetectedViaPolling)
+        verify(tracker, never()).track(ScanToPayPaymentFailed)
+        assertThat(viewModel.state.value).isEqualTo(WooPosScanToPayState.PayInPersonSelected)
     }
 
     @Test
@@ -308,7 +324,7 @@ class WooPosScanToPayViewModelTest {
         // WHEN
         val viewModel = WooPosScanToPayViewModel(
             repository = repository,
-            parentToChildrenEventSender = parentToChildrenEventSender,
+            childrenToParentEventSender = childrenToParentEventSender,
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
@@ -334,7 +350,7 @@ class WooPosScanToPayViewModelTest {
             // GIVEN
             val viewModel = WooPosScanToPayViewModel(
                 repository = repository,
-                parentToChildrenEventSender = parentToChildrenEventSender,
+                childrenToParentEventSender = childrenToParentEventSender,
                 analyticsTracker = tracker,
                 resourceProvider = resourceProvider,
                 priceFormat = priceFormat,
@@ -359,7 +375,7 @@ class WooPosScanToPayViewModelTest {
         // GIVEN
         val viewModel = WooPosScanToPayViewModel(
             repository = repository,
-            parentToChildrenEventSender = parentToChildrenEventSender,
+            childrenToParentEventSender = childrenToParentEventSender,
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
