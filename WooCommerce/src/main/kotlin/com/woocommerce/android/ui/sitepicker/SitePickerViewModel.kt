@@ -248,7 +248,7 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-        val shouldSelectFirstSite = !navArgs.openedFromLogin || (isApiResponse && sites.size == 1)
+        val shouldSelectFirstSite = shouldSelectFirstSite(sites.size, isApiResponse)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
@@ -277,6 +277,12 @@ class SitePickerViewModel @Inject constructor(
                 onContinueButtonClick(isAutoLogin = true)
             }
         }
+    }
+
+    private fun shouldSelectFirstSite(siteCount: Int, isApiResponse: Boolean) = when {
+        !navArgs.openedFromLogin -> true
+        !isApiResponse -> false
+        else -> siteCount == 1
     }
 
     private suspend fun buildSitesList(
