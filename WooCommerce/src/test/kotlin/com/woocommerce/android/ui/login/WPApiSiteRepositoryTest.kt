@@ -119,12 +119,13 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given persisted site cannot be reloaded, when saving endpoints, then fail without mutating caller`() =
+    fun `given update persists but site cannot be reloaded, when saving endpoints, then fail without rollback`() =
         testBlocking {
             val result = repository.saveAuthenticationEndpoints(site, ENDPOINTS)
 
             assertThat(result.isFailure).isTrue()
-            thenOriginalEndpointsAreRetained()
+            assertThat(site.loginUrl).isEqualTo(LOGIN_URL)
+            assertThat(site.adminUrl).isEqualTo(ADMIN_URL)
         }
 
     @Test

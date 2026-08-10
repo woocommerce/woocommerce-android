@@ -189,14 +189,16 @@ class WPApiSiteRepository @Inject constructor(
                 event.rowsAffected <= 0 -> Result.failure(
                     IllegalStateException("Authentication endpoints update did not persist any site rows")
                 )
-                else -> getSiteByLocalId(site.id)?.let { persistedSite ->
+                else -> {
                     persistenceConfirmed = true
-                    Result.success(persistedSite)
-                } ?: Result.failure(
-                    IllegalStateException(
-                        "Authentication endpoints persisted but site ${site.id} could not be reloaded"
+                    getSiteByLocalId(site.id)?.let { persistedSite ->
+                        Result.success(persistedSite)
+                    } ?: Result.failure(
+                        IllegalStateException(
+                            "Authentication endpoints persisted but site ${site.id} could not be reloaded"
+                        )
                     )
-                )
+                }
             }
         } finally {
             if (!persistenceConfirmed) {
