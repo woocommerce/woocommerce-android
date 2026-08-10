@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationSelectionResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,6 +44,8 @@ class ProductSelectorFragment : BaseFragment() {
     }
 
     @Inject lateinit var navigator: ProductNavigator
+
+    @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: ProductSelectorViewModel by viewModels()
     private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
@@ -76,6 +80,7 @@ class ProductSelectorFragment : BaseFragment() {
                     )
                 }
                 is ProductNavigationTarget -> navigator.navigate(this, event)
+                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
             }
         }

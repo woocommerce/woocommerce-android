@@ -82,6 +82,7 @@ class WooPosCardReaderConnectionController(
     private var remoteConnectionJob: Job? = null
 
     private var selectedReader: CardReader? = null
+    private var latestDiscoveredPhones: List<WooPosDiscoveredReader.Phone> = emptyList()
     private var showUpdateCancelWarning = false
     private var isRequiredUpdate = true
     private var isBluetoothPermissionPermanentlyDenied = false
@@ -318,6 +319,7 @@ class WooPosCardReaderConnectionController(
 
     private fun startDiscovery() {
         discoveryJob?.cancel()
+        latestDiscoveredPhones = emptyList()
         discoveryJob = scope.launch {
             when (cardReaderManager.readerStatus.value) {
                 is CardReaderStatus.Connected -> Unit
@@ -344,6 +346,11 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun handleDiscoveryEvent(event: WooPosUnifiedDiscoveryEvent) {
+        if (event is WooPosUnifiedDiscoveryEvent.ReadersFound) {
+            latestDiscoveredPhones = event.readers.filterIsInstance<WooPosDiscoveredReader.Phone>()
+        }
+        if (isShowingConnectionOutcome()) return
+
         when (event) {
             is WooPosUnifiedDiscoveryEvent.Started -> {
                 logger.d("Discovery started")
@@ -372,12 +379,15 @@ class WooPosCardReaderConnectionController(
         }
     }
 
+    private fun isShowingConnectionOutcome(): Boolean =
+        _state.value is WooPosCardReaderConnectionState.Connecting ||
+            _state.value is WooPosCardReaderConnectionState.ConnectingFailed ||
+            _state.value is Connected
+
     private fun handleReadersFound(
         bluetoothReaders: List<CardReader>,
         phones: List<WooPosDiscoveredReader.Phone>,
     ) {
-        if (_state.value is WooPosCardReaderConnectionState.Connecting) return
-
         tracker.trackReadersDiscovered(bluetoothReaders.size + phones.size)
 
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
@@ -465,7 +475,6 @@ class WooPosCardReaderConnectionController(
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
         markPhoneReaderSelected()
         tracker.trackOnConnectTapped()
-        discoveryJob?.cancel()
         selectedReader = null
         _state.value = WooPosCardReaderConnectionState.Connecting
 
@@ -496,6 +505,14 @@ class WooPosCardReaderConnectionController(
         cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
+    private fun onPhoneRetryConnectClicked(phone: WooPosDiscoveredReader.Phone) {
+        val refreshed = latestDiscoveredPhones.refreshAddressOf(phone)
+        if (refreshed.port != phone.port || refreshed.host != phone.host) {
+            logger.d("Retrying phone connection with a re-advertised address")
+        }
+        onPhoneConnectClicked(refreshed)
+    }
+
     private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
         WooPosDiscoveryTransport.Bluetooth -> "bluetooth"
         WooPosDiscoveryTransport.WifiLan -> "wifi_lan"
@@ -508,6 +525,7 @@ class WooPosCardReaderConnectionController(
         when (result) {
             is WooPosRemoteReaderSession.State.Connected -> {
                 logger.d("Remote reader connected: ${phone.name}")
+                discoveryJob?.cancel()
                 tracker.trackConnectionSucceeded()
                 appPrefsWrapper.setLastConnectedPhoneDeviceId(phone.deviceId)
                 _state.value = Connected(readerName = phone.name)
@@ -518,7 +536,7 @@ class WooPosCardReaderConnectionController(
                 appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
-                    onRetryClicked = { onPhoneConnectClicked(phone) },
+                    onRetryClicked = { onPhoneRetryConnectClicked(phone) },
                     onCancelClicked = { cancel() },
                 )
             }
@@ -725,3 +743,9 @@ class WooPosCardReaderConnectionController(
         }
     }
 }
+
+// The phone binds a new ephemeral port and fingerprint every session, so an entry we already failed
+// against is dead. deviceId is the only identifier that survives a session restart.
+internal fun List<WooPosDiscoveredReader.Phone>.refreshAddressOf(
+    phone: WooPosDiscoveredReader.Phone,
+): WooPosDiscoveredReader.Phone = firstOrNull { it.deviceId == phone.deviceId } ?: phone

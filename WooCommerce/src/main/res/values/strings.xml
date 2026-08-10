@@ -794,6 +794,7 @@
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">You cannot add variable product directly. Please select a specific variation</string>
     <string name="order_creation_barcode_scanning_unable_to_add_draft_product">You cannot add products that are not published</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product_with_invalid_price">You cannot add products with no price specified</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">You cannot add a variable product that has no variations</string>
     <string name="order_creation_tax_based_on_store_address">Calculated on store address</string>
     <string name="order_creation_tax_based_on_billing_address">Calculated on billing address</string>
     <string name="order_creation_tax_based_on_shipping_address">Calculated on shipping address</string>
@@ -1464,6 +1465,13 @@
     <string name="card_reader_settings_header">SETTINGS</string>
     <string name="card_reader_enable_pay_in_person">Pay In Person</string>
     <string name="card_reader_enable_pay_in_person_description">The Pay In Person checkout option lets you accept payments for website orders, on collection or delivery. &lt;a href=\'\'&gt;Learn more&lt;/a&gt;</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Enable Pay In Person?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">This enables the Cash on Delivery payment method at your store’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">This enables the Cash on Delivery payment method at your store’s checkout and renames it from “%1$s” to “Pay in Person” for your customers, including on your website’s checkout.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Enable</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -3049,6 +3057,7 @@
     <string name="product_selector_recent_products_heading">Last Sold</string>
     <string name="product_selector_products_heading">Products</string>
     <string name="product_selector_subscription_not_supported">Subscription products are not supported for order creation</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">This bundle contains a subscription product, which is not supported for order creation</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -4031,6 +4040,10 @@
     <string name="woopos_scan_to_pay_retry">Try again</string>
     <string name="woopos_scan_to_pay_cancel">Cancel</string>
     <string name="woopos_scan_to_pay_order_note">Customer paid via Scan to Pay</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Customer chose to pay in person</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">No payment was taken online. Collect it on the register, or show the code again.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Collect on the register</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Show the code again</string>
     <string name="woopos_payment_method_picker_bottom_sheet_title">Choose payment method</string>
     <string name="woopos_payment_method_picker_bottom_sheet_scrim_content_description">Dimmed background. Tap to dismiss the payment method picker.</string>
     <string name="woopos_tap_to_pay_promoted_title">Tap to pay</string>
