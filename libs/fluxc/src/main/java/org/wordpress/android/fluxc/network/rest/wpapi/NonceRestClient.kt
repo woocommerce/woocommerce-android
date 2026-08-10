@@ -17,17 +17,11 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
-import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.HtmlUtils
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
-private const val NOT_FOUND_STATUS_CODE = 404
-private const val GONE_STATUS_CODE = 410
-private const val MAX_ENDPOINT_REDIRECTS = 3
-private const val REDIRECT_STATUS_CODE_START = 300
-private const val REDIRECT_STATUS_CODE_END = 399
 private typealias ValidatedEndpoints = CookieNonceAuthenticationEndpoints.ValidationResult.Valid
 
 @Singleton
@@ -58,6 +52,7 @@ class NonceRestClient @Inject constructor(
         username: String,
         password: String
     ): Nonce {
+        val siteIdentity = endpoints.siteUrl
         val validated = when (val result = endpoints.validate()) {
             is CookieNonceAuthenticationEndpoints.ValidationResult.Valid -> result
             is CookieNonceAuthenticationEndpoints.ValidationResult.Invalid -> {
@@ -66,34 +61,25 @@ class NonceRestClient @Inject constructor(
                 } else {
                     CookieNonceErrorType.CUSTOM_LOGIN_URL
                 }
-                return cache(endpoints.canonicalSiteOrigin, failed(username, type))
+                return cache(siteIdentity, failed(username, type))
             }
         }
-        val derivedNonceUrl = validated.adminBaseUrl.toString()
-            .slashJoin("$ADMIN_AJAX_PATH_SEGMENT?$REST_NONCE_QUERY")
-            .toNetworkUrlOrNull()
-            ?: return cache(endpoints.canonicalSiteOrigin, failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL))
 
         val preflight = when (val result = preflightLogin(validated, username)) {
             is LoginPreflight.Success -> result
-            is LoginPreflight.Failure -> return cache(endpoints.canonicalSiteOrigin, result.nonce)
+            is LoginPreflight.Failure -> return cache(siteIdentity, result.nonce)
         }
-        val nonceUrl = derivedNonceUrl.upgradeForSecureLogin(
-            preflight.transactionUrl,
-            validated.canonicalSiteOrigin
-        )
         val transaction = LoginTransaction(
             endpoints = validated,
-            verification = endpoints.adminBaseVerification,
             loginUrl = preflight.transactionUrl,
-            nonceUrl = nonceUrl,
+            nonceUrl = validated.nonceUrlFor(preflight.transactionUrl),
             username = username
         )
         val nonce = when (preflight) {
             is LoginPreflight.LoginForm -> postCredentials(transaction, password)
             is LoginPreflight.AlreadyAuthenticated -> verifyAdminDashboardAndRequestNonce(transaction)
         }
-        return cache(endpoints.canonicalSiteOrigin, nonce.withVerifiedLoginEntry())
+        return cache(siteIdentity, nonce.withVerifiedLoginEntry())
     }
 
     @Suppress("NestedBlockDepth", "ReturnCount")
@@ -103,21 +89,15 @@ class NonceRestClient @Inject constructor(
         while (true) {
             when (val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(this, currentUrl.toString())) {
                 is Success -> {
-                    val expectedAdminUrl = endpoints.adminBaseUrl.upgradeForSecureLogin(
-                        currentUrl,
-                        endpoints.canonicalSiteOrigin
-                    )
-                    val isExpectedAdminUrl = currentUrl.asReusableAdminBase() == expectedAdminUrl
-                    if (response.data.isWordPressAdminDashboard()) {
-                        return if (isExpectedAdminUrl) LoginPreflight.AlreadyAuthenticated(currentUrl)
-                        else LoginPreflight.Failure(failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL))
+                    return when {
+                        endpoints.isAdminBase(currentUrl) -> LoginPreflight.AlreadyAuthenticated(currentUrl)
+                        response.data.isWordPressAdminDashboard() -> {
+                            LoginPreflight.Failure(failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL))
+                        }
+                        else -> response.data.loginFormSubmissionUrl(currentUrl, endpoints)
+                            ?.let(LoginPreflight::LoginForm)
+                            ?: LoginPreflight.Failure(failed(username, CookieNonceErrorType.INVALID_RESPONSE))
                     }
-                    if (isExpectedAdminUrl) return LoginPreflight.AlreadyAuthenticated(currentUrl)
-                    val submissionUrl = response.data.loginFormSubmissionUrl(
-                        currentUrl,
-                        endpoints.canonicalSiteOrigin
-                    ) ?: return LoginPreflight.Failure(failed(username, CookieNonceErrorType.INVALID_RESPONSE))
-                    return LoginPreflight.LoginForm(submissionUrl)
                 }
                 is Error -> {
                     if (response.error.volleyError is NoConnectionError) {
@@ -135,7 +115,7 @@ class NonceRestClient @Inject constructor(
                     val redirectUrl = networkResponse.location()
                         ?.let(currentUrl::resolve)
                         ?.withoutFragment()
-                        ?.takeIf { it.isSafeFor(endpoints.canonicalSiteOrigin, currentUrl) }
+                        ?.takeIf { endpoints.allows(it, currentUrl) }
                         ?: return LoginPreflight.Failure(
                             failed(username, CookieNonceErrorType.CUSTOM_LOGIN_URL, response)
                         )
@@ -178,10 +158,10 @@ class NonceRestClient @Inject constructor(
         val redirectUrl = networkResponse.location()
             ?.let(transaction.loginUrl::resolve)
             ?.withoutFragment()
-            ?.takeIf { it.isSafeFor(transaction.endpoints.canonicalSiteOrigin, transaction.loginUrl) }
+            ?.takeIf { transaction.endpoints.allows(it, transaction.loginUrl) }
         return when {
             redirectUrl == transaction.nonceUrl -> verifyAdminDashboardAndRequestNonce(transaction)
-            redirectUrl?.isNonceEndpoint() == true -> {
+            transaction.endpoints.isNonceEndpoint(redirectUrl) -> {
                 failed(transaction.username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
             }
             else -> failed(transaction.username, CookieNonceErrorType.INVALID_NONCE, response)
@@ -189,11 +169,8 @@ class NonceRestClient @Inject constructor(
     }
 
     private suspend fun verifyAdminDashboardAndRequestNonce(transaction: LoginTransaction): Nonce {
-        if (transaction.verification == AdminBaseVerification.AUTHENTICATED_DASHBOARD) {
-            val dashboardUrl = transaction.endpoints.adminBaseUrl.upgradeForSecureLogin(
-                transaction.loginUrl,
-                transaction.endpoints.canonicalSiteOrigin
-            )
+        if (transaction.endpoints.adminBaseVerification == AdminBaseVerification.AUTHENTICATED_DASHBOARD) {
+            val dashboardUrl = transaction.endpoints.adminBaseUrlFor(transaction.loginUrl)
             verifyAdminDashboard(transaction.endpoints, dashboardUrl, transaction.username)?.let { return it }
         }
         return requestNonce(transaction.nonceUrl, transaction.username)
@@ -227,7 +204,7 @@ class NonceRestClient @Inject constructor(
                     val redirectUrl = networkResponse.location()
                         ?.let(currentUrl::resolve)
                         ?.withoutFragment()
-                        ?.takeIf { it.isSafeFor(endpoints.canonicalSiteOrigin, currentUrl) }
+                        ?.takeIf { endpoints.allows(it, currentUrl) }
                         ?: return failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL, response)
                     currentUrl = redirectUrl
                     redirectsFollowed++
@@ -299,29 +276,7 @@ class NonceRestClient @Inject constructor(
 
     private fun String.toNetworkUrlOrNull() = toHttpUrlOrNull()?.takeIf { it.scheme == "http" || it.scheme == "https" }
 
-    private fun HttpUrl.isSafeFor(canonicalOrigin: HttpUrl, previousUrl: HttpUrl? = null): Boolean {
-        return CookieNonceAuthenticationEndpoints.isSafeFor(this, canonicalOrigin, previousUrl)
-    }
-
-    private fun HttpUrl.upgradeForSecureLogin(loginUrl: HttpUrl, canonicalOrigin: HttpUrl): HttpUrl {
-        return if (canonicalOrigin.isDefaultHttp() && isDefaultHttp() && loginUrl.scheme == "https") {
-            newBuilder().scheme("https").port(HTTPS_DEFAULT_PORT).build()
-        } else {
-            this
-        }
-    }
-
-    private fun HttpUrl.isDefaultHttp(): Boolean = scheme == "http" && port == HTTP_DEFAULT_PORT
-
     private fun HttpUrl.withoutFragment(): HttpUrl = newBuilder().fragment(null).build()
-
-    private fun HttpUrl.asReusableAdminBase(): HttpUrl = takeUnless {
-        encodedPathSegments.lastOrNull().equals(ADMIN_INDEX, ignoreCase = true)
-    } ?: newBuilder().removePathSegment(encodedPathSegments.lastIndex).addPathSegment("").build()
-
-    private fun HttpUrl.isNonceEndpoint(): Boolean =
-        encodedPathSegments.lastOrNull() == ADMIN_AJAX_PATH_SEGMENT &&
-            encodedQuery == REST_NONCE_QUERY
 
     private fun Int.isRedirect(): Boolean = this in REDIRECT_STATUS_CODE_START..REDIRECT_STATUS_CODE_END
 
@@ -354,7 +309,7 @@ class NonceRestClient @Inject constructor(
     }
 
     @Suppress("ReturnCount")
-    private fun String?.loginFormSubmissionUrl(documentUrl: HttpUrl, canonicalOrigin: HttpUrl): HttpUrl? {
+    private fun String?.loginFormSubmissionUrl(documentUrl: HttpUrl, endpoints: ValidatedEndpoints): HttpUrl? {
         val renderedHtml = this?.replace(NON_RENDERED_REGION_PATTERN, "") ?: return null
         if (NON_RENDERED_MARKER_PATTERN.containsMatchIn(renderedHtml)) return null
 
@@ -372,7 +327,7 @@ class NonceRestClient @Inject constructor(
 
         val action = formAttributes.value("action")?.let(StringEscapeUtils::unescapeHtml4)?.trim().orEmpty()
         val submissionUrl = if (action.isEmpty()) documentUrl else documentUrl.resolve(action) ?: return null
-        return submissionUrl.withoutFragment().takeIf { it.isSafeFor(canonicalOrigin, documentUrl) }
+        return submissionUrl.withoutFragment().takeIf { endpoints.allows(it, documentUrl) }
     }
 
     private fun String.inputAttributes(): List<List<MatchResult>>? = INPUT_PATTERN.findAll(this).toList().map { input ->
@@ -432,7 +387,6 @@ class NonceRestClient @Inject constructor(
 
     private data class LoginTransaction(
         val endpoints: ValidatedEndpoints,
-        val verification: AdminBaseVerification,
         val loginUrl: HttpUrl,
         val nonceUrl: HttpUrl,
         val username: String
@@ -486,11 +440,11 @@ class NonceRestClient @Inject constructor(
         private const val TEXT_INPUT_TYPE = "text"
         private const val PASSWORD_INPUT_TYPE = "password"
         private const val POST_METHOD = "post"
-        private const val ADMIN_INDEX = "index.php"
         private const val LOCATION_HEADER = "Location"
-        private const val HTTP_DEFAULT_PORT = 80
-        private const val HTTPS_DEFAULT_PORT = 443
-        private const val ADMIN_AJAX_PATH_SEGMENT = "admin-ajax.php"
-        private const val REST_NONCE_QUERY = "action=rest-nonce"
+        private const val NOT_FOUND_STATUS_CODE = 404
+        private const val GONE_STATUS_CODE = 410
+        private const val MAX_ENDPOINT_REDIRECTS = 3
+        private const val REDIRECT_STATUS_CODE_START = 300
+        private const val REDIRECT_STATUS_CODE_END = 399
     }
 }

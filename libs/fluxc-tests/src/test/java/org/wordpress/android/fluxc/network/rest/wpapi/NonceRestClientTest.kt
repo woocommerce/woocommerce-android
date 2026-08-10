@@ -381,6 +381,20 @@ class NonceRestClientTest {
     }
 
     @Test
+    fun `given WPS reaches admin base without trailing slash, when requesting a nonce, then reuse it`() = test {
+        val dashboardUrl = "$SITE_ORIGIN/wp-admin"
+        givenGet(DEFAULT_LOGIN_URL, redirect(dashboardUrl))
+        givenGet(dashboardUrl, WPAPIResponse.Success(ADMIN_DASHBOARD, emptyList()))
+        givenNonce(DEFAULT_NONCE_URL)
+
+        val actual = subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD)
+
+        assertIs<Nonce.Available>(actual)
+        verifyNoCredentialPost()
+        verify(requestBuilder).syncGetRequest(subject, DEFAULT_NONCE_URL)
+    }
+
+    @Test
     fun `given preflight reaches an unexpected dashboard URL, when requesting a nonce, then reject it`() = test {
         givenGet(DEFAULT_LOGIN_URL, redirect(CUSTOM_ADMIN_URL))
         givenGet(CUSTOM_ADMIN_URL, WPAPIResponse.Success(ADMIN_DASHBOARD, emptyList()))
@@ -720,7 +734,7 @@ class NonceRestClientTest {
             "<html><body class=\"wp-admin wp-core-ui index-php\">" +
                 "<div id=\"dashboard-widgets-wrap\"></div></body></html>"
         val MANUAL_ADMIN_ENDPOINTS = CookieNonceAuthenticationEndpoints(
-            canonicalSiteOrigin = SITE_ORIGIN,
+            siteUrl = SITE_ORIGIN,
             adminBaseUrl = CUSTOM_ADMIN_URL,
             adminBaseVerification = AdminBaseVerification.AUTHENTICATED_DASHBOARD
         )
