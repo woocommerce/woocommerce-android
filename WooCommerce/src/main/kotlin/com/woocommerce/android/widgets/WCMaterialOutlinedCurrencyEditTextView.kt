@@ -19,7 +19,6 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.isEqualTo
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.products.ParameterRepository
@@ -31,13 +30,10 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
-import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import java.math.BigDecimal
-import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.math.max
 
 private const val DEFAULT_DECIMALS_NUMBER = 2
 
@@ -45,14 +41,13 @@ private const val DEFAULT_DECIMALS_NUMBER = 2
 class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle,
-    private val usesFullFormatting: Boolean = false
+    @AttrRes defStyleRes: Int = R.attr.wcMaterialOutlinedCurrencyEditTextViewStyle
 ) : TextInputLayout(ctx, attrs, defStyleRes) {
     companion object {
         private const val KEY_SUPER_STATE = "WC-OUTLINED-CURRENCY-VIEW-SUPER-STATE"
     }
 
-    private lateinit var currencyEditText: CurrencyEditText
+    private val currencyEditText = CurrencyEditText(context)
 
     @Inject
     lateinit var parameterRepository: ParameterRepository
@@ -94,14 +89,6 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             attrs,
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
-            val usesFullFormatting = a.getBoolean(
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting,
-                usesFullFormatting
-            )
-            currencyEditText = when (usesFullFormatting) {
-                true -> FullFormattingCurrencyEditText(context)
-                false -> RegularCurrencyEditText(context)
-            }
             val mode = EditTextLayoutMode.values()[
                 a.getInt(R.styleable.WCMaterialOutlinedCurrencyEditTextView_editTextLayoutMode, FILL.ordinal)
             ]
@@ -203,26 +190,15 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
     }
 }
 
-private abstract class CurrencyEditText(context: Context) : TextInputEditText(
-    context,
-    null,
-    androidx.appcompat.R.attr.editTextStyle
-) {
-    open var supportsEmptyState: Boolean = true
-    abstract var supportsNegativeValues: Boolean
-    abstract val value: LiveData<BigDecimal?>
-
-    abstract fun initView(formattingParameters: CurrencyFormattingParameters?)
-    abstract fun setValue(value: BigDecimal)
-}
-
-private class RegularCurrencyEditText(context: Context) : CurrencyEditText(context), InputFilter {
+private class CurrencyEditText(context: Context) :
+    TextInputEditText(context, null, androidx.appcompat.R.attr.editTextStyle),
+    InputFilter {
     private var isChangingText = false
     private var isInitialized = false
 
     private lateinit var decimalSeparator: String
 
-    override var supportsNegativeValues: Boolean = false
+    var supportsNegativeValues: Boolean = false
         set(value) {
             field = value
             if (this::inputHandler.isInitialized) {
@@ -230,7 +206,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
             }
         }
 
-    override var supportsEmptyState: Boolean = super.supportsEmptyState
+    var supportsEmptyState: Boolean = true
         set(value) {
             field = value
             if (this::inputHandler.isInitialized) {
@@ -239,11 +215,11 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         }
 
     private val _value = MutableLiveData<BigDecimal?>()
-    override val value: LiveData<BigDecimal?> = _value
+    val value: LiveData<BigDecimal?> = _value
 
-    private lateinit var inputHandler: RegularCurrencyInputHandler
+    private lateinit var inputHandler: CurrencyInputHandler
 
-    override fun initView(formattingParameters: CurrencyFormattingParameters?) {
+    fun initView(formattingParameters: CurrencyFormattingParameters?) {
         decimalSeparator = formattingParameters?.currencyDecimalSeparator
             ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
 
@@ -254,7 +230,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         keyListener = DigitsKeyListener.getInstance(acceptedDigits)
         filters = arrayOf(this)
 
-        inputHandler = RegularCurrencyInputHandler(
+        inputHandler = CurrencyInputHandler(
             supportsEmptyState = supportsEmptyState,
             supportsNegativeValues = supportsNegativeValues,
             decimalSeparator = decimalSeparator,
@@ -268,7 +244,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
         }
     }
 
-    override fun setValue(value: BigDecimal) {
+    fun setValue(value: BigDecimal) {
         setText(value.toPlainString())
     }
 
@@ -305,7 +281,7 @@ private class RegularCurrencyEditText(context: Context) : CurrencyEditText(conte
 }
 
 @VisibleForTesting
-class RegularCurrencyInputHandler(
+class CurrencyInputHandler(
     var supportsEmptyState: Boolean,
     var supportsNegativeValues: Boolean,
     val decimalSeparator: String,
@@ -366,120 +342,5 @@ class RegularCurrencyInputHandler(
         }
 
         return updatedText
-    }
-}
-
-/**
- * A [TextInputEditText] that provides full formatting experience
- */
-private class FullFormattingCurrencyEditText(
-    context: Context
-) : CurrencyEditText(context) {
-    private var isChangingText = false
-
-    private val decimals
-        get() = formattingParameters?.currencyDecimalNumber ?: 0
-
-    private var isInitialized = false
-
-    private var formattingParameters: CurrencyFormattingParameters? = null
-
-    override var supportsNegativeValues: Boolean
-        get() = this.inputType and InputType.TYPE_NUMBER_FLAG_SIGNED != 0
-        set(value) {
-            if (value) {
-                this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
-            } else {
-                this.inputType = InputType.TYPE_CLASS_NUMBER
-            }
-        }
-
-    private val _value = MutableLiveData<BigDecimal?>()
-    override val value: LiveData<BigDecimal?> = _value
-
-    override fun initView(
-        formattingParameters: CurrencyFormattingParameters?
-    ) {
-        this.formattingParameters = formattingParameters
-        isInitialized = true
-        if (!supportsEmptyState) {
-            setValue(BigDecimal.ZERO)
-            setSelection(text!!.length)
-        }
-    }
-
-    override fun setValue(value: BigDecimal) {
-        setText(formatValue(value))
-    }
-
-    override fun onTextChanged(text: CharSequence?, start: Int, lengthBefore: Int, lengthAfter: Int) {
-        if (isInitialized && !isChangingText) {
-            isChangingText = true
-
-            val cleanValue = WCCurrencyUtils.cleanFullFormattedCurrencyInput(text, decimals)
-            if (cleanValue != null) {
-                // When the user types backspace on a field that already contained `0`
-                val shouldClearTheField = supportsEmptyState &&
-                    lengthAfter < lengthBefore &&
-                    _value.value?.isEqualTo(BigDecimal.ZERO) == true &&
-                    cleanValue.isEqualTo(BigDecimal.ZERO)
-                if (shouldClearTheField) {
-                    clearValue()
-                } else {
-                    formatAndUpdateValue(text, cleanValue)
-                }
-            } else {
-                clearValue()
-            }
-            isChangingText = false
-        }
-    }
-
-    private fun formatAndUpdateValue(currentText: CharSequence?, cleanValue: BigDecimal) {
-        val currentSelectionPosition = selectionStart
-
-        val (formattedValue, selectionPosition) =
-            if (currentText?.startsWith("-") == true && cleanValue.isEqualTo(BigDecimal.ZERO)) {
-                // A special case for negative values if the actual value is still 0
-                val value = "-${formatValue(cleanValue)}"
-                Pair(value, value.length)
-            } else {
-                val value = formatValue(cleanValue)
-                val selectionOffset = value.length - (currentText?.length ?: 0)
-                Pair(value, currentSelectionPosition + selectionOffset)
-            }
-
-        _value.value = cleanValue
-        setText(formattedValue)
-        setSelection(max(0, selectionPosition))
-    }
-
-    override fun setText(text: CharSequence?, type: BufferType?) {
-        super.setText(text, type)
-    }
-
-    private fun clearValue() {
-        if (supportsEmptyState) {
-            _value.value = null
-            setText("")
-        } else {
-            setValue(BigDecimal.ZERO)
-        }
-    }
-
-    private fun formatValue(value: BigDecimal): String {
-        val formattingParameters = formattingParameters
-        return if (formattingParameters != null) {
-            WCCurrencyUtils.formatCurrencyForDisplay(
-                rawValue = value.toDouble(),
-                currencyDecimalNumber = formattingParameters.currencyDecimalNumber,
-                currencyDecimalSeparator = formattingParameters.currencyDecimalSeparator,
-                currencyThousandSeparator = formattingParameters.currencyThousandSeparator,
-                locale = Locale.ROOT
-            )
-        } else {
-            val decimalFormat = DecimalFormat("0.${"0".repeat(decimals)}")
-            decimalFormat.format(value)
-        }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -23,6 +23,16 @@
         android:inputType="numberDecimal" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_otp_button"
+        style="@style/Widget.LoginFlow.Button.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/login_text_otp"
+        app:icon="@drawable/ic_login_sms_24dp"
+        app:iconGravity="textStart" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/login_security_key_button"
         style="@style/Widget.LoginFlow.Button.Tertiary"
         android:layout_width="wrap_content"
@@ -30,13 +40,4 @@
         android:paddingEnd="@dimen/margin_none"
         android:paddingStart="@dimen/margin_none"
         android:text="@string/login_text_security_key" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/login_otp_button"
-        style="@style/Widget.LoginFlow.Button.Tertiary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/margin_none"
-        android:paddingStart="@dimen/margin_none"
-        tools:text="@string/login_text_otp" />
 </LinearLayout>
