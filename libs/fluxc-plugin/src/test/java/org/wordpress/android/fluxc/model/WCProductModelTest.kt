@@ -53,4 +53,40 @@ class WCProductModelTest {
 
         assertThat(result).isFalse
     }
+
+    @Test
+    fun `given a bundle with a bundled item, when isConfigurable is checked, then it is configurable`() {
+        val sut = WCProductModel().copy(
+            type = CoreProductType.BUNDLE.value,
+            bundledItems = """[{"bundled_item_id": 1, "product_id": 39, "quantity_min": 1, "quantity_max": 1}]"""
+        )
+
+        val result = sut.isConfigurable
+
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun `given a bundle without bundled items, when isConfigurable is checked, then it is not configurable`() {
+        val sut = WCProductModel().copy(
+            type = CoreProductType.BUNDLE.value,
+            bundledItems = "[]"
+        )
+
+        val result = sut.isConfigurable
+
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun `given a product which is not a bundle, when isConfigurable is checked, then it is not configurable`() {
+        val sut = WCProductModel().copy(
+            type = CoreProductType.SIMPLE.value,
+            bundledItems = """[{"bundled_item_id": 1, "product_id": 39, "quantity_min": 1, "quantity_max": 1}]"""
+        )
+
+        val result = sut.isConfigurable
+
+        assertThat(result).isFalse
+    }
 }

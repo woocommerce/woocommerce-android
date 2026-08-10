@@ -22,10 +22,3 @@ class WCBundledProduct(
     val attributesDefault: List<WCProductVariationModel.ProductVariantOption>?,
     @SerializedName("allowed_variations") val variationIds: List<Long>?
 )
-
-fun WCBundledProduct.isConfigurable(): Boolean {
-    return (quantityMin != quantityMax)
-            || (quantityMin == null)
-            || isOptional
-            || (variationIds?.size == 1 && attributesDefault.isNullOrEmpty())
-}
