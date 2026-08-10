@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.products
 
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 class OrderCreationProductRestrictions @Inject constructor() {
@@ -30,8 +28,7 @@ class OrderCreationProductRestrictions @Inject constructor() {
     }
 }
 
-@Parcelize
-sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
+sealed class ProductRestriction : (Product) -> Boolean {
     @get:StringRes
     abstract val scanningMessage: Int
 
@@ -50,7 +47,6 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
         override val scanningMessage: Int get() = reason
     }
 
-    @Parcelize
     object NonPurchasableProducts : Hidden() {
         override val scanningMessage get() = R.string.order_creation_barcode_scanning_unable_to_add_draft_product
         override val scanningTrackingReason get() = "Failed to add a product that is not published"
@@ -60,7 +56,6 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
         }
     }
 
-    @Parcelize
     object VariableProductsWithNoVariations : Hidden() {
         override val scanningMessage get() =
             R.string.order_creation_barcode_scanning_unable_to_add_product_with_no_variations
@@ -71,7 +66,6 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
         }
     }
 
-    @Parcelize
     object ProductWithPriceNotSpecified : Hidden() {
         override val scanningMessage get() =
             R.string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
@@ -82,7 +76,6 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
         }
     }
 
-    @Parcelize
     object SubscriptionProducts : Unsupported(R.string.product_selector_subscription_not_supported) {
         override val scanningTrackingReason get() = "Failed to add a subscription product"
 
