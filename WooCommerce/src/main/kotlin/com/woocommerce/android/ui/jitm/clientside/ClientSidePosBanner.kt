@@ -35,10 +35,10 @@ class ClientSidePosBanner @Inject constructor(
 
         if (wooPosIsScreenSizeAllowed()) return false
 
+        if (dismissalStorage.isBannerHidden(bannerId, site)) return false
+
         val countryCode = wooStore.getSiteSettingsAsync(site)?.countryCode
         if (countryCode !in ELIGIBLE_COUNTRIES) return false
-
-        if (dismissalStorage.isBannerHidden(bannerId)) return false
 
         return true
     }

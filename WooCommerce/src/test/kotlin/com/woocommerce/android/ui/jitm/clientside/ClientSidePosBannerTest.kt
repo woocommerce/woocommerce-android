@@ -92,7 +92,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
         whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
-        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         val result = sut.shouldShow()
 
@@ -111,7 +111,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
         whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
-        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         sut.shouldShow()
 
@@ -125,7 +125,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
             val site = setupValidSite()
             whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
             whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
-            whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+            whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
             // WHEN
             sut.shouldShow()
@@ -133,6 +133,21 @@ class ClientSidePosBannerTest : BaseUnitTest() {
             // THEN
             verify(wooStore, never()).getStoreCountryCode(any())
         }
+
+    @Test
+    fun `given banner already dismissed, when shouldShow called, then site settings are not read`() = testBlocking {
+        // GIVEN
+        setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(true)
+
+        // WHEN
+        val result = sut.shouldShow()
+
+        // THEN
+        assertThat(result).isFalse()
+        verify(wooStore, never()).getSiteSettingsAsync(any())
+    }
 
     private fun setupValidSite(): SiteModel {
         val site = SiteModel().apply {
