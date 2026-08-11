@@ -11,8 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_T
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.extensions.formatToLocalizedMonthDay
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.support.help.HelpOrigin
@@ -389,7 +389,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             isEndlessCampaign -> resourceProvider.getString(
                 R.string.blaze_campaign_preview_days_duration_endless,
                 totalBudgetWithCurrency,
-                startDate.formatToLocalizedMedium()
+                startDate.formatToLocalizedMonthDayYear()
             )
 
             else ->
@@ -419,7 +419,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             stringRes = stringRes,
             params = listOf(
                 UiStringText(budget.toDisplayTotalBudget()),
-                UiStringText(budget.startDate.formatToLocalizedMedium())
+                UiStringText(budget.startDate.formatToLocalizedMonthDayYear())
             ),
             containsHtml = true
         )

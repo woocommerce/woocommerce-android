@@ -101,6 +101,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
     fun setUpDateFormat() {
         dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
         whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
     }
 
     @After

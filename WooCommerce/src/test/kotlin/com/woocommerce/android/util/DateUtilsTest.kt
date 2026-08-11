@@ -37,6 +37,7 @@ class DateUtilsTest {
     fun setUp() {
         dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
         whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
         whenever(DateFormat.getBestDateTimePattern(any(), eq("EEEEMMMd"))).thenReturn("EEEE, MMM d")
 
         dateUtilsUnderTest = DateUtils(
@@ -111,6 +112,7 @@ class DateUtilsTest {
 
     @Test
     fun `given a day-first locale, when getting the short month day and year string, then the day comes first`() {
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("d MMM y")
         val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
 
         assertEquals("3 Jul 2018", ukDateUtils.getShortMonthDayAndYearString("2018-07-03"))

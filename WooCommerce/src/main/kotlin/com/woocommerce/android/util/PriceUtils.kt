@@ -1,8 +1,8 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.extensions.formatToLocalizedMonthDay
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -90,21 +90,21 @@ object PriceUtils {
                 val formattedFromDate = if (DateTimeUtils.isSameYear(dateOnSaleFrom, dateOnSaleTo)) {
                     dateOnSaleFrom.formatToLocalizedMonthDay()
                 } else {
-                    dateOnSaleFrom.formatToLocalizedMedium()
+                    dateOnSaleFrom.formatToLocalizedMonthDayYear()
                 }
                 resources.getString(
                     R.string.product_sale_date_from_to,
                     formattedFromDate,
-                    dateOnSaleTo.formatToLocalizedMedium()
+                    dateOnSaleTo.formatToLocalizedMonthDayYear()
                 )
             }
             // only start date is set
             dateOnSaleFrom != null -> {
-                resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToLocalizedMedium())
+                resources.getString(R.string.product_sale_date_from, dateOnSaleFrom.formatToLocalizedMonthDayYear())
             }
             // only end date is set
             dateOnSaleTo != null -> {
-                resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToLocalizedMedium())
+                resources.getString(R.string.product_sale_date_to, dateOnSaleTo.formatToLocalizedMonthDayYear())
             }
 
             else -> null

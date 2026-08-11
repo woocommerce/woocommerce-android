@@ -29,8 +29,8 @@ class DateUtils @Inject constructor(
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat
         get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMd"), locale)
-    private val mediumDateFormat
-        get() = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, locale)
+    private val friendlyMonthDayYearFormat: SimpleDateFormat
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yMMMd"), locale)
     private val friendlyTimeFormat: SimpleDateFormat
         get() = SimpleDateFormat("h:mm a", locale)
     private val friendlyLongMonthDayFormat: SimpleDateFormat
@@ -165,7 +165,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in the medium date format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the abbreviated month, day and year.
      *
      * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
      *
@@ -175,7 +175,7 @@ class DateUtils @Inject constructor(
         return try {
             val (year, month, day) = iso8601Date.split("-")
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-            mediumDateFormat.format(date)
+            friendlyMonthDayYearFormat.format(date)
         } catch (e: Exception) {
             "Date string argument is not of format YYYY-MM-DD: $iso8601Date".reportAsError(e)
             return null
@@ -185,7 +185,7 @@ class DateUtils @Inject constructor(
     fun getShortMonthDayAndYearStringFromFullIsoDate(fullIso8601Date: String): String? {
         return try {
             getDateUsingSiteTimeZone(fullIso8601Date)?.let { date ->
-                mediumDateFormat.format(date)
+                friendlyMonthDayYearFormat.format(date)
             }
         } catch (e: Exception) {
             "Date string argument is not of format YYYY-MM-DD: $fullIso8601Date".reportAsError(e)
@@ -412,18 +412,18 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Method to convert a date string from the medium date format to yyyy-MM-dd format
+     * Method to convert a date string with the abbreviated month, day and year to yyyy-MM-dd format
      * i.e. Dec 2, 2020 is formatted to 2020-12-02
      */
     fun formatToYYYYmmDD(dateString: String): String? {
         return try {
-            val date = mediumDateFormat.parse(dateString) ?: Date()
+            val date = friendlyMonthDayYearFormat.parse(dateString) ?: Date()
             date.formatToYYYYmmDD()
         } catch (e: Exception) {
             findMatchingDatePattern(dateString)
                 ?.formatToYYYYmmDD()
                 .also {
-                    if (it == null) "Date string argument is not a medium date: $dateString".reportAsError(e)
+                    if (it == null) "Date string argument is not a month day year date: $dateString".reportAsError(e)
                 }
         }
     }

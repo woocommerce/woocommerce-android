@@ -69,6 +69,28 @@ class DateExtTest {
     }
 
     @Test
+    fun `given a month-first locale, when formatting to localized month day year, then the month comes first`() {
+        val date = Date(Instant.parse("2026-08-13T00:00:00Z").toEpochMilli())
+
+        Mockito.mockStatic(DateFormat::class.java).use {
+            whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
+
+            assertThat(date.formatToLocalizedMonthDayYear(Locale.US)).isEqualTo("Aug 13, 2026")
+        }
+    }
+
+    @Test
+    fun `given a day-first locale, when formatting to localized month day year, then the day comes first`() {
+        val date = Date(Instant.parse("2026-08-13T00:00:00Z").toEpochMilli())
+
+        Mockito.mockStatic(DateFormat::class.java).use {
+            whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("d MMM y")
+
+            assertThat(date.formatToLocalizedMonthDayYear(Locale.UK)).isEqualTo("13 Aug 2026")
+        }
+    }
+
+    @Test
     fun `given a day-first locale, when formatting to localized medium, then the day comes first`() {
         val date = Date(Instant.parse("2026-08-13T00:00:00Z").toEpochMilli())
 

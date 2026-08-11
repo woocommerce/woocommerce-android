@@ -4,10 +4,13 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedRangeForDashboardStats
 import com.woocommerce.android.ui.dashboard.topperformers.GetSelectedRangeForTopPerformers
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -22,23 +25,32 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val getSelectedRangeForTopPerformers: GetSelectedRangeForTopPerformers = mock()
     private val getSelectedRangeForDashboardStats: GetSelectedRangeForDashboardStats = mock()
     private val updateAnalyticsData: UpdateAnalyticsDataByRangeSelection = mock()
 
-    private val today = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault(),
-        referenceStartDate = Date(1719858929),
-        referenceEndDate = Date(1719858929)
-    )
+    private lateinit var today: StatsTimeRangeSelection
+    private lateinit var yesterday: StatsTimeRangeSelection
 
-    private val yesterday = StatsTimeRangeSelection.SelectionType.YESTERDAY.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault(),
-        referenceStartDate = Date(1719794129),
-        referenceEndDate = Date(1719794129)
-    )
+    @Before
+    fun setUpRanges() {
+        today = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault(),
+            referenceStartDate = Date(1719858929),
+            referenceEndDate = Date(1719858929)
+        )
+
+        yesterday = StatsTimeRangeSelection.SelectionType.YESTERDAY.generateSelectionData(
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault(),
+            referenceStartDate = Date(1719794129),
+            referenceEndDate = Date(1719794129)
+        )
+    }
 
     private val sut = UpdateAnalyticsDashboardRangeSelections(
         getSelectedRangeForTopPerformers = getSelectedRangeForTopPerformers,

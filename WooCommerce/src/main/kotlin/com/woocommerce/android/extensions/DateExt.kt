@@ -63,6 +63,15 @@ fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = Simpl
 ).format(this)
 
 /**
+ * Formats the date to an abbreviated month, day and year string, e.g. "Aug 3, 2026" in English and
+ * "3. Aug. 2026" in German. Pairs with [formatToLocalizedMonthDay], which keeps the month name in every locale.
+ */
+fun Date.formatToLocalizedMonthDayYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMd"),
+    locale
+).format(this)
+
+/**
  * Formats the date with the locale's medium date style, e.g. "Aug 3, 2026" in English, "3 Aug 2026" in British
  * English and "03.08.2026" in German.
  */

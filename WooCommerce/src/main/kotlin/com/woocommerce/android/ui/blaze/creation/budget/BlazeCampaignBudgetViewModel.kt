@@ -8,8 +8,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDG
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.extensions.formatToLocalizedMonthDay
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
@@ -225,12 +225,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     private fun getFormattedStartDate(startDateMillis: Long, isEndlessCampaign: Boolean) =
         when {
-            isEndlessCampaign -> Date(startDateMillis).formatToLocalizedMedium()
+            isEndlessCampaign -> Date(startDateMillis).formatToLocalizedMonthDayYear()
             else -> Date(startDateMillis).formatToLocalizedMonthDay()
         }
 
     private fun getFormattedEndDate(startDateMillis: Long, duration: Int) =
-        Date(startDateMillis + duration.days.inWholeMilliseconds).formatToLocalizedMedium()
+        Date(startDateMillis + duration.days.inWholeMilliseconds).formatToLocalizedMonthDayYear()
 
     private fun formatBudget(rawValue: Float) =
         currencyFormatter.formatCurrencyRounded(rawValue.toDouble(), navArgs.budget.currencyCode)
