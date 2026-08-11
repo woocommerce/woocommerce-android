@@ -63,7 +63,8 @@ fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = Simpl
 ).format(this)
 
 /**
- * Formats the date to a string in the format "MMM d, yyyy" considering the current locale.
+ * Formats the date with the locale's medium date style, e.g. "Aug 3, 2026" in English, "3 Aug 2026" in British
+ * English and "03.08.2026" in German.
  */
 fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateInstance(SimpleDateFormat.MEDIUM, locale)
