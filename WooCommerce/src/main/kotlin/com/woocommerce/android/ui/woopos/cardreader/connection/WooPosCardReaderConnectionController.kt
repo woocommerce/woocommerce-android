@@ -209,7 +209,7 @@ class WooPosCardReaderConnectionController(
         _state.value = when (requirement) {
             BluetoothRequirement.Satisfied -> WooPosCardReaderConnectionState.Scanning
             is BluetoothRequirement.Unmet ->
-                if (prefersPhoneReader()) {
+                if (hasConnectedPhoneReaderBefore()) {
                     WooPosCardReaderConnectionState.Scanning
                 } else {
                     requirement.toBlockingState()
@@ -273,7 +273,7 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun prefersPhoneReader() = appPrefsWrapper.getLastConnectedPhoneDeviceId() != null
+    private fun hasConnectedPhoneReaderBefore() = appPrefsWrapper.getLastConnectedPhoneDeviceId() != null
 
     private fun requestBluetoothPermission() {
         if (isBluetoothPermissionPermanentlyDenied) {
@@ -535,7 +535,8 @@ class WooPosCardReaderConnectionController(
         val requirement = bluetoothRequirement
         val failure = pendingBluetoothFailure
         _state.value = when {
-            requirement is BluetoothRequirement.Unmet && !prefersPhoneReader() -> requirement.toBlockingState()
+            requirement is BluetoothRequirement.Unmet && !hasConnectedPhoneReaderBefore() ->
+                requirement.toBlockingState()
             failure != null -> scanningFailedState(failure)
             else -> WooPosCardReaderConnectionState.Scanning
         }
