@@ -14,6 +14,7 @@
 - [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
 - [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
 - [*] [Internal] Remove SiteModel#mXmlRpcUrl [https://github.com/woocommerce/woocommerce-android/pull/16301]
+- [*] Fixed the app freezing on the My Store screen when the POS promotion banner is evaluated [https://github.com/woocommerce/woocommerce-android/pull/16405]
 
 25.4
 -----
