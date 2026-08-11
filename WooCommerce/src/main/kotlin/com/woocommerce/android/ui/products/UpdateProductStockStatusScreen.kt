@@ -149,7 +149,8 @@ fun StockStatusDropdown(
         currentValue = initialStatusDisplayString,
         mapper = { it },
         modifier = modifier,
-        focusRequester = dropdownFocusRequester
+        focusRequester = dropdownFocusRequester,
+        fillWidth = true
     )
 }
 

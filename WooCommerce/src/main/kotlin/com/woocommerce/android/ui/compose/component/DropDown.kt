@@ -31,7 +31,8 @@ fun <T> WCExposedDropDown(
     modifier: Modifier = Modifier,
     currentValue: T = items.first(),
     mapper: (T) -> String = { it.toString() },
-    focusRequester: FocusRequester = FocusRequester()
+    focusRequester: FocusRequester = FocusRequester(),
+    fillWidth: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(currentValue) }
@@ -53,7 +54,7 @@ fun <T> WCExposedDropDown(
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                     .focusRequester(focusRequester)
             )
