@@ -553,13 +553,13 @@ private fun BluetoothUnavailableStrip(
     if (bluetoothUnavailable == null) return
 
     val label = when (bluetoothUnavailable.requirement) {
-        WooPosBluetoothRequirement.MissingBluetoothPermission ->
+        WooPosCardReaderConnectionState.BluetoothRequirement.Unmet.MissingBluetoothPermission ->
             R.string.woopos_card_reader_bluetooth_unavailable_permission
-        WooPosBluetoothRequirement.BluetoothOff ->
+        WooPosCardReaderConnectionState.BluetoothRequirement.Unmet.BluetoothOff ->
             R.string.woopos_card_reader_bluetooth_unavailable_off
-        WooPosBluetoothRequirement.MissingLocationPermission ->
+        WooPosCardReaderConnectionState.BluetoothRequirement.Unmet.MissingLocationPermission ->
             R.string.woopos_card_reader_bluetooth_unavailable_location_permission
-        WooPosBluetoothRequirement.LocationOff ->
+        WooPosCardReaderConnectionState.BluetoothRequirement.Unmet.LocationOff ->
             R.string.woopos_card_reader_bluetooth_unavailable_location_off
     }
 
@@ -1191,7 +1191,7 @@ fun WooPosCardReaderConnectionDialogPhonesOnlyBluetoothOffPreview() {
                 ),
                 onCancelClicked = {},
                 bluetoothUnavailable = WooPosCardReaderConnectionState.BluetoothUnavailable(
-                    requirement = WooPosBluetoothRequirement.BluetoothOff,
+                    requirement = WooPosCardReaderConnectionState.BluetoothRequirement.Unmet.BluetoothOff,
                     onFixClicked = {},
                 ),
             ),

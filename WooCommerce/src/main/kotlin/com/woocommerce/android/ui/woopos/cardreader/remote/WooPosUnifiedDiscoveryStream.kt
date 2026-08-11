@@ -69,8 +69,7 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
 
         if (includeBluetooth) {
             launch {
-                // discoverReaders() itself throws when Terminal is not initialised, so the call has to
-                // happen inside the flow for catch to see it — otherwise it tears down NSD discovery too.
+                // discoverReaders() throws before returning its flow when Terminal is not initialised.
                 flow { emitAll(cardReaderManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)) }
                     .catch { throwable -> logger.e("BT discovery failed, degrading to phone-only", throwable) }
                     .collect { event ->

@@ -75,9 +75,20 @@ sealed interface WooPosCardReaderConnectionState {
     }
 
     data class BluetoothUnavailable(
-        val requirement: WooPosBluetoothRequirement,
+        val requirement: BluetoothRequirement.Unmet,
         val onFixClicked: () -> Unit,
     )
+
+    sealed interface BluetoothRequirement {
+        data object Satisfied : BluetoothRequirement
+
+        sealed interface Unmet : BluetoothRequirement {
+            data object MissingBluetoothPermission : Unmet
+            data object BluetoothOff : Unmet
+            data object MissingLocationPermission : Unmet
+            data object LocationOff : Unmet
+        }
+    }
 
     data object Connecting : WooPosCardReaderConnectionState
 
