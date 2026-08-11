@@ -101,9 +101,11 @@ class ClientSidePosBannerTest : BaseUnitTest() {
 
     @Test
     fun `when onDismiss called, then banner is hidden in storage`() {
+        val site = setupValidSite()
+
         sut.onDismiss()
 
-        verify(dismissalStorage).hideBanner("woo_pos_client_banner")
+        verify(dismissalStorage).hideBanner("woo_pos_client_banner", site)
     }
 
     @Test

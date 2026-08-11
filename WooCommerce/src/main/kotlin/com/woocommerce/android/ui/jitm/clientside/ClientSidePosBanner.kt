@@ -74,11 +74,11 @@ class ClientSidePosBanner @Inject constructor(
     }
 
     fun onDismiss() {
-        dismissalStorage.hideBanner(bannerId)
+        selectedSite.getIfExists()?.let { dismissalStorage.hideBanner(bannerId, it) }
     }
 
     fun onCtaClick() {
-        dismissalStorage.hideBanner(bannerId)
+        selectedSite.getIfExists()?.let { dismissalStorage.hideBanner(bannerId, it) }
     }
 
     companion object {
