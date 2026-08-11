@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressio
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +24,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -60,6 +62,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private val orderMapper: OrderMapper = mock {
         on { toAppModel(any()) } doReturn Order.getEmptyOrder(Date(), Date())
     }
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
     private val orderStore: WCOrderStore = mock()
 
@@ -93,6 +96,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             listItemMapper = mock(),
             getWooVersion = getWooVersion,
             isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            refreshProductsSignal = refreshProductsSignal,
             newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache,
         )
     }
@@ -414,4 +418,46 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given a non-draft order, when createOrUpdateOrder succeeds, then products refresh is signalled`() =
+        testBlocking {
+            // GIVEN
+            val syncedOrder = OrderTestUtils.generateTestOrder().copy(
+                items = listOf(
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 101L),
+                    OrderTestUtils.generateTestOrder().items.first().copy(productId = 102L)
+                ),
+                status = Order.Status.fromValue(CoreOrderStatus.PROCESSING.value)
+            )
+            whenever(orderMapper.toAppModel(any())).thenReturn(syncedOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date())
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
+        }
+
+    @Test
+    fun `given a draft order, when createOrUpdateOrder succeeds, then products refresh is not signalled`() =
+        testBlocking {
+            // GIVEN
+            val draftOrder = OrderTestUtils.generateTestOrder().copy(
+                status = Order.Status.fromValue(Order.Status.AUTO_DRAFT)
+            )
+            whenever(orderMapper.toAppModel(any())).thenReturn(draftOrder)
+            whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
+                .thenReturn(WooResult(OrderTestUtils.generateOrder()))
+            val order = Order.getEmptyOrder(Date(), Date())
+
+            // WHEN
+            sut.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+
+            // THEN
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
+        }
 }

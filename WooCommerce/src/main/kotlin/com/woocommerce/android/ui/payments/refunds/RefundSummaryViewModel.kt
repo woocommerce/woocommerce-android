@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRef
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.PaymentMethodType
 import com.woocommerce.android.ui.payments.toCardBrandDisplayName
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -61,7 +62,8 @@ class RefundSummaryViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val gatewayStore: WCGatewayStore,
     private val refundStore: WCRefundStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val REFUND_METHOD_MANUAL = "manual"
@@ -270,10 +272,24 @@ class RefundSummaryViewModel @Inject constructor(
             } else {
                 trackRefundSuccess(order, result)
                 updateRefundSummaryStateWithOrderNote(order)
+                notifyRefundedProductsStockChanged()
                 triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                 triggerEvent(Exit)
             }
         }
+    }
+
+    /**
+     * A refund with restock increases the refunded products' stock server-side; tell the Products list to refresh
+     * those products so it doesn't show stale stock.
+     */
+    private fun notifyRefundedProductsStockChanged() {
+        val refundedProductIds = navArgs.refundItems
+            .filterIsInstance<ProductRefundListItem>()
+            // refundItems contains every refundable line item; only those with a chosen quantity were refunded.
+            .filter { it.quantity > 0 }
+            .map { it.orderItem.productId }
+        refreshProductsSignal.notifyProductsChanged(refundedProductIds)
     }
 
     private fun triggerUIMessageIfRefundIsInterac() {

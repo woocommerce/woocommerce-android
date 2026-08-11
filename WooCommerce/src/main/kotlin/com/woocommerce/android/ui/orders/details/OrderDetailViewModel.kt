@@ -124,7 +124,7 @@ class OrderDetailViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
-    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
