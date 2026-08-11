@@ -15,16 +15,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductImageDetailsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    productImagesRepository: ProductImagesRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<ProductImageDetailsFragmentArgs>()
-    private val storedImage = navArgs.image
+    private val draftImage = navArgs.image
+
+    // The image as the site knows it. The draft can carry unsaved edits, so blocking removal and
+    // showing the kept value are based on the stored image; clearing an unsaved edit stays possible.
+    private val storedImage = productImagesRepository.getProduct(navArgs.remoteProductId)
+        ?.images
+        ?.firstOrNull { it.id == draftImage.id }
 
     private val imageDraft = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = ImageDraft(
-            altText = storedImage.alt.orEmpty(),
-            name = storedImage.name.orEmpty()
+            altText = draftImage.alt.orEmpty(),
+            name = draftImage.name.orEmpty()
         ),
         key = "imageDraft"
     )
@@ -32,18 +39,14 @@ class ProductImageDetailsViewModel @Inject constructor(
     val state = imageDraft.map { buildUiState(it) }.toStateFlow(buildUiState(imageDraft.value))
 
     private fun buildUiState(draft: ImageDraft) = UiState(
-        imageUrl = storedImage.source,
+        imageUrl = draftImage.source,
         altText = draft.altText,
         name = draft.name,
-        altTextPlaceholder = storedImage.alt,
-        namePlaceholder = storedImage.name,
-        isAltTextRemovalBlocked = draft.altText.isEmpty() && !storedImage.alt.isNullOrEmpty(),
-        isNameRemovalBlocked = draft.name.isEmpty() && !storedImage.name.isNullOrEmpty()
+        altTextPlaceholder = storedImage?.alt,
+        namePlaceholder = storedImage?.name,
+        isAltTextRemovalBlocked = draft.altText.isEmpty() && !storedImage?.alt.isNullOrEmpty(),
+        isNameRemovalBlocked = draft.name.isEmpty() && !storedImage?.name.isNullOrEmpty()
     )
-
-    // The update request can't clear a value on the server, so an emptied field is not a change;
-    // the stored value stays and is shown as the field's placeholder
-    private fun String.isChangedFrom(storedValue: String?) = isNotEmpty() && this != storedValue.orEmpty()
 
     fun onAltTextChanged(altText: String) {
         imageDraft.update { it.copy(altText = altText) }
@@ -55,17 +58,17 @@ class ProductImageDetailsViewModel @Inject constructor(
 
     fun onExit() {
         val draft = imageDraft.value
-        val hasChanges = draft.altText.isChangedFrom(storedImage.alt) || draft.name.isChangedFrom(storedImage.name)
-        if (!hasChanges) {
-            triggerEvent(MultiLiveEvent.Event.Exit)
-            return
-        }
-
-        val updatedImage = storedImage.copy(
-            alt = if (draft.altText.isChangedFrom(storedImage.alt)) draft.altText else storedImage.alt,
-            name = if (draft.name.isChangedFrom(storedImage.name)) draft.name else storedImage.name
+        // A cleared field falls back to the stored value because the update request can't remove
+        // it from the server
+        val updatedImage = draftImage.copy(
+            alt = draft.altText.ifEmpty { storedImage?.alt },
+            name = draft.name.ifEmpty { storedImage?.name }
         )
-        triggerEvent(MultiLiveEvent.Event.ExitWithResult(data = updatedImage, key = KEY_IMAGE_DETAILS_RESULT))
+        if (updatedImage == draftImage) {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        } else {
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(data = updatedImage, key = KEY_IMAGE_DETAILS_RESULT))
+        }
     }
 
     data class UiState(

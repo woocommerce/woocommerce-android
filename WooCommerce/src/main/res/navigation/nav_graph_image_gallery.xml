@@ -73,6 +73,9 @@
         <argument
             android:name="image"
             app:argType="com.woocommerce.android.model.Product$Image" />
+        <argument
+            android:name="remoteProductId"
+            app:argType="long" />
     </fragment>
 
     <fragment

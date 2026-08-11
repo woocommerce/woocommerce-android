@@ -240,7 +240,8 @@ class ProductImageViewerFragment :
 
         val action = ProductImageViewerFragmentDirections
             .actionProductImageViewerFragmentToProductImageDetailsFragment(
-                image = currentImage
+                image = currentImage,
+                remoteProductId = navArgs.remoteId
             )
         findNavController().navigate(action)
     }
