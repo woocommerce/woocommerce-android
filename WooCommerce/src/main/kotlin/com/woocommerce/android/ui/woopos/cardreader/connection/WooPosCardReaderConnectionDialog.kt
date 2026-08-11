@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -299,11 +300,13 @@ fun WooPosCardReaderConnectionDialogContent(
                         fingerprintSuffix = currentState.reader.fingerprintSuffix,
                         onConnectClicked = currentState.reader.onConnectClicked,
                         onKeepSearchingClicked = currentState.onKeepSearchingClicked,
+                        bluetoothUnavailable = currentState.bluetoothUnavailable,
                     )
                 }
                 is WooPosCardReaderConnectionState.MultipleReadersFound -> {
                     MultipleReadersFoundContent(
                         readers = currentState.readers,
+                        bluetoothUnavailable = currentState.bluetoothUnavailable,
                     )
                 }
                 is WooPosCardReaderConnectionState.Connecting -> {
@@ -337,12 +340,14 @@ fun WooPosCardReaderConnectionDialogContent(
                     BluetoothDisabledContent(
                         onEnableBluetoothClicked = currentState.onEnableBluetoothClicked,
                         onCancelClicked = currentState.onCancelClicked,
+                        onHintClick = onHintClick,
                     )
                 }
                 is WooPosCardReaderConnectionState.LocationDisabled -> {
                     LocationDisabledContent(
                         onEnableLocationClicked = currentState.onEnableLocationClicked,
                         onCancelClicked = currentState.onCancelClicked,
+                        onHintClick = onHintClick,
                     )
                 }
                 is WooPosCardReaderConnectionState.MissingLocationPermission -> {
@@ -351,6 +356,7 @@ fun WooPosCardReaderConnectionDialogContent(
                         message = stringResource(R.string.woopos_card_reader_location_permission_message),
                         onRequestPermissionClicked = currentState.onRequestPermissionClicked,
                         onCancelClicked = currentState.onCancelClicked,
+                        onHintClick = onHintClick,
                     )
                 }
                 is WooPosCardReaderConnectionState.MissingBluetoothPermission -> {
@@ -359,6 +365,7 @@ fun WooPosCardReaderConnectionDialogContent(
                         message = stringResource(R.string.woopos_card_reader_bluetooth_permission_message),
                         onRequestPermissionClicked = currentState.onRequestPermissionClicked,
                         onCancelClicked = currentState.onCancelClicked,
+                        onHintClick = onHintClick,
                     )
                 }
                 is WooPosCardReaderConnectionState.InvalidMerchantAddress -> {
@@ -510,6 +517,7 @@ private fun ReaderFoundContent(
     fingerprintSuffix: String?,
     onConnectClicked: () -> Unit,
     onKeepSearchingClicked: () -> Unit,
+    bluetoothUnavailable: WooPosCardReaderConnectionState.BluetoothUnavailable?,
 ) {
     val title = if (fingerprintSuffix != null) {
         stringResource(R.string.woopos_card_reader_found_title, "$readerName · $fingerprintSuffix")
@@ -533,11 +541,51 @@ private fun ReaderFoundContent(
             text = stringResource(R.string.woopos_card_reader_keep_searching_button),
             onClick = onKeepSearchingClicked,
         )
+
+        BluetoothUnavailableStrip(bluetoothUnavailable)
     }
 }
 
 @Composable
-private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnectionState.FoundReader>) {
+private fun BluetoothUnavailableStrip(
+    bluetoothUnavailable: WooPosCardReaderConnectionState.BluetoothUnavailable?,
+) {
+    if (bluetoothUnavailable == null) return
+
+    val label = when (bluetoothUnavailable.requirement) {
+        WooPosBluetoothRequirement.MissingBluetoothPermission ->
+            R.string.woopos_card_reader_bluetooth_unavailable_permission
+        WooPosBluetoothRequirement.BluetoothOff ->
+            R.string.woopos_card_reader_bluetooth_unavailable_off
+        WooPosBluetoothRequirement.MissingLocationPermission ->
+            R.string.woopos_card_reader_bluetooth_unavailable_location_permission
+        WooPosBluetoothRequirement.LocationOff ->
+            R.string.woopos_card_reader_bluetooth_unavailable_location_off
+    }
+
+    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+    WooPosText(
+        text = stringResource(label),
+        style = WooPosTypography.BodyMedium,
+        color = MaterialTheme.colorScheme.primary,
+        textAlign = TextAlign.Center,
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = bluetoothUnavailable.onFixClicked)
+            .padding(
+                horizontal = WooPosSpacing.Large.value,
+                vertical = WooPosSpacing.Small.value,
+            ),
+    )
+}
+
+@Composable
+private fun MultipleReadersFoundContent(
+    readers: List<WooPosCardReaderConnectionState.FoundReader>,
+    bluetoothUnavailable: WooPosCardReaderConnectionState.BluetoothUnavailable?,
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
@@ -578,6 +626,8 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
                 modifier = Modifier.size(WooPosIconSize.Small.value)
             )
         }
+
+        BluetoothUnavailableStrip(bluetoothUnavailable)
     }
 }
 
@@ -738,6 +788,7 @@ private fun BatteryLowErrorContent(
 private fun BluetoothDisabledContent(
     onEnableBluetoothClicked: () -> Unit,
     onCancelClicked: () -> Unit,
+    onHintClick: () -> Unit,
 ) {
     CardReaderDialogContent(
         title = stringResource(R.string.woopos_card_reader_bluetooth_disabled_title),
@@ -765,6 +816,10 @@ private fun BluetoothDisabledContent(
             text = stringResource(R.string.woopos_card_reader_cancel_button),
             onClick = onCancelClicked,
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosRemoteReaderHintStrip(onClick = onHintClick)
     }
 }
 
@@ -772,6 +827,7 @@ private fun BluetoothDisabledContent(
 private fun LocationDisabledContent(
     onEnableLocationClicked: () -> Unit,
     onCancelClicked: () -> Unit,
+    onHintClick: () -> Unit,
 ) {
     CardReaderDialogContent(
         title = stringResource(R.string.woopos_card_reader_location_disabled_title),
@@ -799,6 +855,10 @@ private fun LocationDisabledContent(
             text = stringResource(R.string.woopos_card_reader_cancel_button),
             onClick = onCancelClicked,
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosRemoteReaderHintStrip(onClick = onHintClick)
     }
 }
 
@@ -808,6 +868,7 @@ private fun MissingPermissionContent(
     message: String,
     onRequestPermissionClicked: () -> Unit,
     onCancelClicked: () -> Unit,
+    onHintClick: () -> Unit,
 ) {
     CardReaderDialogContent(
         title = title,
@@ -835,6 +896,10 @@ private fun MissingPermissionContent(
             text = stringResource(R.string.woopos_card_reader_cancel_button),
             onClick = onCancelClicked,
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosRemoteReaderHintStrip(onClick = onHintClick)
     }
 }
 
@@ -1047,6 +1112,7 @@ fun WooPosCardReaderConnectionDialogReaderFoundPreview() {
             fingerprintSuffix = null,
             onConnectClicked = {},
             onKeepSearchingClicked = {},
+            bluetoothUnavailable = null,
         )
     }
 }
@@ -1064,6 +1130,7 @@ fun WooPosCardReaderConnectionDialogMultipleReadersPreview() {
                     phoneReader("Andrey's Pixel 7", "AB4F"),
                 ),
                 onCancelClicked = {},
+                bluetoothUnavailable = null,
             ),
             onBackPressed = {},
             onDismiss = {},
@@ -1083,6 +1150,7 @@ fun WooPosCardReaderConnectionDialogPhonesOnlyPreview() {
                     phoneReader("Sales floor phone", "3C21"),
                 ),
                 onCancelClicked = {},
+                bluetoothUnavailable = null,
             ),
             onBackPressed = {},
             onDismiss = {},
@@ -1102,6 +1170,30 @@ fun WooPosCardReaderConnectionDialogMixedReadersPreview() {
                     phoneReader("Andrey's Pixel 7", "AB4F"),
                 ),
                 onCancelClicked = {},
+                bluetoothUnavailable = null,
+            ),
+            onBackPressed = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosCardReaderConnectionDialogPhonesOnlyBluetoothOffPreview() {
+    WooPosTheme {
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MultipleReadersFound(
+                readers = listOf(
+                    phoneReader("Andrey's Pixel 7", "AB4F"),
+                    phoneReader("Sales floor phone", "3C21"),
+                ),
+                onCancelClicked = {},
+                bluetoothUnavailable = WooPosCardReaderConnectionState.BluetoothUnavailable(
+                    requirement = WooPosBluetoothRequirement.BluetoothOff,
+                    onFixClicked = {},
+                ),
             ),
             onBackPressed = {},
             onDismiss = {},
