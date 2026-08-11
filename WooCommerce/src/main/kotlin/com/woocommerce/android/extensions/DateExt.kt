@@ -49,8 +49,11 @@ fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFo
     locale
 ).format(this)
 
-fun Date.formatToMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d",
+/**
+ * Formats the date to an abbreviated month and day string, e.g. "Aug 13" in English and "13 Ağu" in Turkish.
+ */
+fun Date.formatToLocalizedMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "MMMd"),
     locale
 ).format(this)
 
@@ -59,27 +62,31 @@ fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = Simpl
     locale
 ).format(this)
 
-fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy",
+/**
+ * Formats the date to an abbreviated month, day and year string, e.g. "Aug 3, 2026" in English and
+ * "3. Aug. 2026" in German. Pairs with [formatToLocalizedMonthDay], which keeps the month name in every locale.
+ */
+fun Date.formatToLocalizedMonthDayYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMd"),
     locale
 ).format(this)
 
 /**
- * Formats the date to a string in the format "MMM d, yyyy" considering the current locale.
+ * Formats the date with the locale's medium date style, e.g. "Aug 3, 2026" in English, "3 Aug 2026" in British
+ * English and "03.08.2026" in German.
  */
 fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateInstance(SimpleDateFormat.MEDIUM, locale)
     .format(this)
 
-fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy hh:mm a",
-    locale
-).format(this)
-
-fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
-    "d, yyyy",
-    locale
-).format(this)
+/**
+ * Formats the date and time with the locale's medium date style and short time style, e.g. "Aug 3, 2026, 9:30 AM"
+ * in English and "3 Aug 2026, 09:30" in British English. The time style follows the locale, not the system
+ * 12h/24h setting.
+ */
+fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
+    .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
+    .format(this)
 
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {
     val symbols = DateFormatSymbols(locale)
@@ -174,15 +181,15 @@ fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
 
 fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
     val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
-        this.formatToMMMdd(locale)
+        SimpleDateFormat("MMM d", locale).format(this)
     } else {
-        this.formatToMMMddYYYY(locale)
+        SimpleDateFormat("MMM d, yyyy", locale).format(this)
     }
 
     val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
-        other.formatToDDyyyy(locale)
+        SimpleDateFormat("d, yyyy", locale).format(other)
     } else {
-        other.formatToMMMddYYYY(locale)
+        SimpleDateFormat("MMM d, yyyy", locale).format(other)
     }
 
     return "$formattedStartDate – $formattedEndDate"

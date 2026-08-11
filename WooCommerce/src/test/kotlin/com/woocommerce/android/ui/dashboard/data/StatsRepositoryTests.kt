@@ -4,10 +4,12 @@ import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
@@ -36,6 +38,8 @@ import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatsRepositoryTests : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
 
     private val selectedSite: SelectedSite = mock()
     private val wcStatsStore: WCStatsStore = mock()
@@ -47,12 +51,14 @@ class StatsRepositoryTests : BaseUnitTest() {
     private lateinit var sut: StatsRepository
 
     private val defaultSiteModel = SiteModel()
-    private val defaultRange = SelectionType.TODAY.generateSelectionData(
-        referenceStartDate = Date(),
-        referenceEndDate = Date(),
-        calendar = Calendar.getInstance(),
-        locale = Locale.ROOT
-    ).currentRange
+    private val defaultRange by lazy {
+        SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.ROOT
+        ).currentRange
+    }
 
     @Before
     fun setup() {

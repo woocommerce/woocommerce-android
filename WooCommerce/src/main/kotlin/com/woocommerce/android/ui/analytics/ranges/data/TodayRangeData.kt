@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges.data
 
 import com.woocommerce.android.extensions.endOfCurrentDay
-import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.extensions.startOfCurrentDay
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeData
@@ -37,7 +37,7 @@ class TodayRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = referenceDate.formatToMMMddYYYY(locale)
+        formattedCurrentRange = referenceDate.formatToLocalizedMonthDayYear(locale)
 
         val yesterday = referenceDate.oneDayAgo()
         calendar.time = yesterday
@@ -46,6 +46,6 @@ class TodayRangeData(
             start = previousStart,
             end = yesterday
         )
-        formattedPreviousRange = yesterday.formatToMMMddYYYY(locale)
+        formattedPreviousRange = yesterday.formatToLocalizedMonthDayYear(locale)
     }
 }
