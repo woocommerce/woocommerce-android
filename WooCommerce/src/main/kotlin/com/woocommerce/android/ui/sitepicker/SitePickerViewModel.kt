@@ -224,7 +224,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean = false) {
+    private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean) {
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
@@ -248,7 +248,7 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-        val shouldSelectFirstSite = shouldSelectFirstSite(sites.size, isApiResponse)
+        val shouldSelectFirstSite = shouldSelectFirstSite(wooSites.size, isApiResponse)
         val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
@@ -271,7 +271,7 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && isApiResponse && sites.size == 1) {
+        if (navArgs.openedFromLogin && isApiResponse && wooSites.size == 1) {
             wooSites.singleOrNull()?.let {
                 onSiteSelected(it)
                 onContinueButtonClick(isAutoLogin = true)
@@ -279,10 +279,10 @@ class SitePickerViewModel @Inject constructor(
         }
     }
 
-    private fun shouldSelectFirstSite(siteCount: Int, isApiResponse: Boolean) = when {
+    private fun shouldSelectFirstSite(wooSiteCount: Int, isApiResponse: Boolean) = when {
         !navArgs.openedFromLogin -> true
         !isApiResponse -> false
-        else -> siteCount == 1
+        else -> wooSiteCount == 1
     }
 
     private suspend fun buildSitesList(
@@ -699,13 +699,13 @@ class SitePickerViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     // Continue login
-                    onSitesLoaded(repository.getSites())
+                    onSitesLoaded(repository.getSites(), isApiResponse = false)
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(string.site_picker_error))
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
-                    onSitesLoaded(repository.getSites())
+                    onSitesLoaded(repository.getSites(), isApiResponse = false)
                 }
             )
         }
@@ -740,7 +740,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onWooSitesVisibilityUpdated() {
         launch {
-            onSitesLoaded(repository.getSites())
+            onSitesLoaded(repository.getSites(), isApiResponse = false)
         }
     }
 

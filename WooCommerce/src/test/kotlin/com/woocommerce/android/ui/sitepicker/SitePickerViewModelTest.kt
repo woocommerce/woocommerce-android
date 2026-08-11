@@ -342,7 +342,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given login without site address, when Woo and non-Woo sites are fetched, then no store is selected`() =
+    fun `given login without site address, when one Woo and one non-Woo site are fetched, then Woo store is selected`() =
         testBlocking {
             // GIVEN
             givenTheScreenIsFromLogin(calledFromLogin = true)
@@ -358,9 +358,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
 
             // THEN
             val wooSites = viewModel.sites.captureValues().last().filterIsInstance<WooSiteUiModel>()
-            assertThat(wooSites).noneMatch { it.isSelected }
-            assertThat(viewModel.sitePickerViewState.isPrimaryBtnEnabled).isFalse()
-            verify(repository, times(0)).verifySiteWooAPIVersion(any())
+            assertThat(wooSites.single().isSelected).isTrue()
+            assertThat(viewModel.sitePickerViewState.isPrimaryBtnEnabled).isTrue()
+            verify(repository, times(1)).verifySiteWooAPIVersion(wooSites.single().site)
         }
 
     @Test
