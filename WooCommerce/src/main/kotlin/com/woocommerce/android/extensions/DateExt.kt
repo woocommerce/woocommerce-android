@@ -71,7 +71,9 @@ fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String =
     .format(this)
 
 /**
- * Formats the date and time to a string in the format "MMM d, yyyy, h:mm AM" considering the current locale.
+ * Formats the date and time with the locale's medium date style and short time style, e.g. "Aug 3, 2026, 9:30 AM"
+ * in English and "3 Aug 2026, 09:30" in British English. The time style follows the locale, not the system
+ * 12h/24h setting.
  */
 fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
