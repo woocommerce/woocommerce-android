@@ -9,12 +9,14 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -27,6 +29,9 @@ import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetSelectedDateRangeTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val appPrefs: AppPrefsWrapper = mock {
         on { observePrefs() } doReturn flowOf(Unit)
     }

@@ -37,9 +37,9 @@ fun DateRangeFilterOption.toOrderFilterOptionUiModel(resourceProvider: ResourceP
 fun toDisplayDateRange(startMillis: Long, endMillis: Long, dateUtils: DateUtils): String =
     when {
         startMillis > 0 && endMillis > 0 ->
-            "${dateUtils.toDisplayMMMddYYYYDate(startMillis)} - ${dateUtils.toDisplayMMMddYYYYDate(endMillis)}"
-        startMillis > 0 -> dateUtils.toDisplayMMMddYYYYDate(startMillis)
-        endMillis > 0 -> dateUtils.toDisplayMMMddYYYYDate(endMillis)
+            "${dateUtils.toDisplayMediumDate(startMillis)} - ${dateUtils.toDisplayMediumDate(endMillis)}"
+        startMillis > 0 -> dateUtils.toDisplayMediumDate(startMillis)
+        endMillis > 0 -> dateUtils.toDisplayMediumDate(endMillis)
         else -> ""
     } ?: ""
 

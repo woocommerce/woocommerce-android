@@ -15,6 +15,7 @@
 - [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
 - [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
 - [*] [Internal] Remove SiteModel#mXmlRpcUrl [https://github.com/woocommerce/woocommerce-android/pull/16301]
+- [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 
 25.4
 -----
