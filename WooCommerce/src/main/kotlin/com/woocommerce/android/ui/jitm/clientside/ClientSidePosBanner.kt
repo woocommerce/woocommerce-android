@@ -28,14 +28,14 @@ class ClientSidePosBanner @Inject constructor(
     val bannerId: String = BANNER_ID
 
     @Suppress("ReturnCount")
-    fun shouldShow(): Boolean {
+    suspend fun shouldShow(): Boolean {
         if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER)) return false
 
         val site = selectedSite.getIfExists() ?: return false
 
         if (wooPosIsScreenSizeAllowed()) return false
 
-        val countryCode = wooStore.getStoreCountryCode(site)
+        val countryCode = wooStore.getSiteSettingsAsync(site)?.countryCode
         if (countryCode !in ELIGIBLE_COUNTRIES) return false
 
         if (dismissalStorage.isBannerHidden(bannerId)) return false
