@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCo
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.util.CouponUtils
@@ -207,15 +206,7 @@ class EditCouponViewModel @Inject constructor(
             it.productIds.map { productOrVariationId ->
                 SelectedItem.ProductOrVariation(productOrVariationId)
             }.let { selectedItems ->
-                triggerEvent(
-                    EditIncludedProducts(
-                        selectedItems,
-                        listOf(
-                            ProductRestriction.NonPublishedProducts,
-                            ProductRestriction.VariableProductsWithNoVariations
-                        )
-                    )
-                )
+                triggerEvent(EditIncludedProducts(selectedItems))
             }
         }
     }

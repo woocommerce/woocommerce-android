@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -118,6 +119,7 @@ class CardReaderPaymentController(
     private val paymentOrRefund: CardReaderFlowParam.PaymentOrRefund,
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
+    private val refreshProductsSignal: RefreshProductsSignal,
     private val crashLogging: CrashLogging,
     private val allowCancelledStatus: Boolean = false,
 ) {
@@ -504,11 +506,17 @@ class CardReaderPaymentController(
     @VisibleForTesting
     fun reFetchOrder() {
         refetchOrderJob = scope.launch {
-            fetchOrder() ?: triggerEvent(
-                CardReaderPaymentEvent.ShowErrorMessage(
-                    R.string.card_reader_refetching_order_failed
+            val order = fetchOrder()
+            if (order == null) {
+                triggerEvent(
+                    CardReaderPaymentEvent.ShowErrorMessage(
+                        R.string.card_reader_refetching_order_failed
+                    )
                 )
-            )
+            } else {
+                // The completed card payment reduced these products' stock server-side; refresh those rows.
+                refreshProductsSignal.notifyProductsChanged(order.getProductIds())
+            }
             if (_paymentState.value == CardReaderPaymentState.ReFetchingOrder) {
                 triggerEvent(CardReaderPaymentEvent.Exit)
             }

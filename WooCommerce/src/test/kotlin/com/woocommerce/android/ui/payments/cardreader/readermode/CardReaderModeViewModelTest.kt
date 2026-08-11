@@ -251,4 +251,110 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                 eq(mapOf("is_simulated" to false, "certificate_key_type" to "rsa_2048")),
             )
         }
+
+    @Test
+    fun `given the session errors, when tracked, then the error description carries the cause chain`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+            // WHEN
+            sessionState.value = CardReaderRemoteSessionState.Error(
+                message = "java.lang.IllegalStateException: handshake failed",
+                errorDescription = "java.lang.IllegalStateException: handshake failed" +
+                    " <- caused by: java.security.cert.CertificateException: untrusted root",
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ERROR),
+                eq(
+                    mapOf(
+                        "error_description" to "java.lang.IllegalStateException: handshake failed" +
+                            " <- caused by: java.security.cert.CertificateException: untrusted root"
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given a tablet connected then the session errored, when cleared, then error reason is reported`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+            sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "iPad")
+            advanceUntilIdle()
+            sessionState.value = CardReaderRemoteSessionState.Error(message = "boom")
+            advanceUntilIdle()
+
+            // WHEN
+            store.clear()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+                eq(
+                    mapOf(
+                        "reason" to "error",
+                        "last_state" to "error",
+                        "tablet_connected" to true,
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given no tablet ever connected, when cleared without an explicit exit, then dismissed is reported`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+            sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+                deviceName = "Pixel",
+                fingerprintSuffix = "1234",
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            store.clear()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+                eq(
+                    mapOf(
+                        "reason" to "dismissed",
+                        "last_state" to "ready_to_pair",
+                        "tablet_connected" to false,
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given the user taps the exit action, when cleared, then user exit reason is reported`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+        sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+            deviceName = "Pixel",
+            fingerprintSuffix = "1234",
+        )
+        advanceUntilIdle()
+        (viewModel.viewState.value as RemoteTapToPayReadyToPair).onPrimaryActionClicked()
+
+        // WHEN
+        store.clear()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+            eq(
+                mapOf(
+                    "reason" to "user_exit",
+                    "last_state" to "ready_to_pair",
+                    "tablet_connected" to false,
+                )
+            ),
+        )
+    }
 }
