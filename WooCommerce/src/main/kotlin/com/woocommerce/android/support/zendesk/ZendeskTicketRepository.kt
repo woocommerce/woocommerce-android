@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.formatResult
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.zendesk.RequestConstants.APPLICATION_LOG_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.DIAGNOSTIC_LOG_FILENAME
+import com.woocommerce.android.support.zendesk.RequestConstants.MSR_FILENAME
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationIdentityNotSetErrorMessage
 import com.woocommerce.android.support.zendesk.RequestConstants.requestCreationTimeoutErrorMessage
 import com.woocommerce.android.support.zendesk.ZendeskException.IdentityNotSetException
@@ -19,7 +20,10 @@ import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import com.woocommerce.android.util.WooLog
 import com.zendesk.service.ErrorResponse
 import com.zendesk.service.ZendeskCallback
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -45,7 +49,8 @@ class ZendeskTicketRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val wooLog: WooLog,
     private val ssrFetcher: WCSSRModelCachingFetcher,
-    private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite
+    private val isAppPasswordsSupportedForJetpackSite: IsAppPasswordsSupportedForJetpackSite,
+    private val mobileStatusProvider: MobileStatusProvider
 ) {
     /**
      * This function creates a new customer Support Request through the Zendesk API Providers.
@@ -72,12 +77,17 @@ class ZendeskTicketRepository @Inject constructor(
 
         val ssr: String? = selectedSite?.let { fetchSSR(it) }
 
+        val msr = mobileStatusProvider(selectedSite, siteAddress)
+
         val deviceLogs = envDataSource.getFullDeviceLogs()
 
-        val attachmentTokens = listOfNotNull(
-            diagnosticLog?.let { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) },
-            uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs)
-        )
+        val attachmentTokens = coroutineScope {
+            listOfNotNull(
+                diagnosticLog?.let { async { uploadTextAttachment(DIAGNOSTIC_LOG_FILENAME, it) } },
+                async { uploadTextAttachment(APPLICATION_LOG_FILENAME, deviceLogs) },
+                async { uploadTextAttachment(MSR_FILENAME, msr) }
+            ).awaitAll().filterNotNull()
+        }
 
         val requestCallback = object : ZendeskCallback<Request>() {
             override fun onSuccess(result: Request?) {
@@ -107,7 +117,8 @@ class ZendeskTicketRepository @Inject constructor(
                 selectedSite = selectedSite,
                 ssr = ssr,
                 siteAddress = siteAddress,
-                deviceLogs = deviceLogs
+                deviceLogs = deviceLogs,
+                msr = msr
             )
 
             this.customFields = buildZendeskCustomFields(zendeskCustomFieldsParams)
@@ -201,7 +212,8 @@ class ZendeskTicketRepository @Inject constructor(
                 TicketCustomField.blogList,
                 envDataSource.generateCombinedLogInformationOfSites(params.allSites)
             ),
-            CustomField(TicketCustomField.siteAddress, params.siteAddress)
+            CustomField(TicketCustomField.siteAddress, params.siteAddress),
+            CustomField(TicketCustomField.msr, params.msr)
         )
     }
 
@@ -342,6 +354,9 @@ object TicketCustomField {
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
     const val siteAddress = 22054927L
+
+    // MSR refers to the Mobile Status Report, the app-level counterpart to the SSR above.
+    const val msr = 51884914117268L
 }
 
 object ZendeskTags {
@@ -377,6 +392,7 @@ private object RequestConstants {
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
     const val DIAGNOSTIC_LOG_FILENAME = "connectivitytest_log.txt"
     const val APPLICATION_LOG_FILENAME = "application_log.txt"
+    const val MSR_FILENAME = "mobile_status_report.txt"
 }
 
 private data class ZendeskCustomFieldsParams(
@@ -386,5 +402,6 @@ private data class ZendeskCustomFieldsParams(
     val selectedSite: SiteModel?,
     val ssr: String?,
     val siteAddress: String,
-    val deviceLogs: String
+    val deviceLogs: String,
+    val msr: String
 )

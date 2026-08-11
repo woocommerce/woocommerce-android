@@ -9,9 +9,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -97,6 +101,103 @@ class GetBundledProductsTest : BaseUnitTest() {
             assertThat(bundleWithoutImageOrSKU.sku).isNull()
             assertThat(bundleWithoutImageOrSKU.stockStatus).isEqualTo(ProductStockStatus.InStock)
         }
+
+    @Test
+    fun `given bundled products, when the products are processed, then the product type is resolved`() =
+        testBlocking {
+            // given
+            val remoteProductId = 5L
+            whenever(productStore.observeBundledProducts(any(), eq(remoteProductId))).doReturn(flowOf(bundledProducts))
+            whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(
+                listOf(
+                    WCProductModel().copy(remoteId = RemoteId(25), type = "variable"),
+                    WCProductModel().copy(remoteId = RemoteId(26), type = "variable-subscription"),
+                    WCProductModel().copy(remoteId = RemoteId(27), type = "simple")
+                )
+            )
+
+            // when
+            val result = sut.invoke(remoteProductId).first().associateBy { it.id }
+
+            // then
+            assertThat(result.getValue(1).productType).isEqualTo(ProductType.VARIABLE)
+            assertThat(result.getValue(2).productType).isEqualTo(ProductType.VARIABLE_SUBSCRIPTION)
+            assertThat(result.getValue(3).productType).isEqualTo(ProductType.SIMPLE)
+
+            assertThat(result.getValue(1).isVariable).isTrue
+            assertThat(result.getValue(2).isVariable).isFalse
+            assertThat(result.getValue(3).isVariable).isFalse
+        }
+
+    @Test
+    fun `given products missing from the cache, when the products are processed, then the missing ones are fetched`() =
+        testBlocking {
+            // given
+            val remoteProductId = 5L
+            val missingProduct = WCProductModel().copy(remoteId = RemoteId(27), type = "variable")
+            whenever(productStore.observeBundledProducts(any(), eq(remoteProductId))).doReturn(flowOf(bundledProducts))
+            whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(products)
+            whenever(productStore.fetchProductListSynced(any(), any())).doReturn(listOf(missingProduct))
+
+            // when
+            val result = sut.invoke(remoteProductId).first().associateBy { it.id }
+
+            // then
+            verify(productStore).fetchProductListSynced(any(), eq(listOf(27L)))
+            assertThat(result.getValue(3).isVariable).isTrue
+        }
+
+    @Test
+    fun `given more missing products than fit in a page, when they are processed, then every one is fetched`() =
+        testBlocking {
+            // given
+            val remoteProductId = 5L
+            val manyBundledProducts = generateBundledProducts(WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE + 1)
+            whenever(productStore.observeBundledProducts(any(), eq(remoteProductId)))
+                .doReturn(flowOf(manyBundledProducts))
+            whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(emptyList())
+
+            // when
+            sut.invoke(remoteProductId).first()
+
+            // then
+            val requestedIds = argumentCaptor<List<Long>>()
+            verify(productStore, times(2)).fetchProductListSynced(any(), requestedIds.capture())
+            assertThat(requestedIds.allValues.flatten())
+                .containsExactlyElementsOf(manyBundledProducts.map { it.bundledProductId })
+        }
+
+    private fun generateBundledProducts(count: Int) = List(count) { index ->
+        WCBundledProduct(
+            id = index.toLong(),
+            bundledProductId = 100L + index,
+            menuOrder = index,
+            title = "Bundled product $index",
+            stockStatus = "in_stock",
+            quantityMin = null,
+            quantityMax = null,
+            quantityDefault = null,
+            isOptional = false,
+            attributesDefault = null,
+            variationIds = null
+        )
+    }
+
+    @Test
+    fun `given every product is cached, when the products are processed, then no product is fetched`() = testBlocking {
+        // given
+        val remoteProductId = 5L
+        whenever(productStore.observeBundledProducts(any(), eq(remoteProductId))).doReturn(flowOf(bundledProducts))
+        whenever(productStore.getProductsByRemoteIds(any(), any())).doReturn(
+            products + WCProductModel().copy(remoteId = RemoteId(27))
+        )
+
+        // when
+        sut.invoke(remoteProductId).first()
+
+        // then
+        verify(productStore, never()).fetchProductListSynced(any(), any())
+    }
 
     private val products = listOf(
         WCProductModel().copy(

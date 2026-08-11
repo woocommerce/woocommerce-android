@@ -9,6 +9,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -16,10 +17,13 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
+import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository.Companion.PAY_IN_PERSON_TITLE
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.CASH_ON_DELIVERY
@@ -41,10 +45,12 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.Lea
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.PayoutSummaryListItem
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem.ToggleState
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingErrorAction
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -74,6 +80,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val developerOptionsRepository: DeveloperOptionsRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -89,11 +96,15 @@ class PaymentsHubViewModel @Inject constructor(
                 containsHtml = true
             ),
             index = 2,
-            isChecked = false,
+            state = ToggleState.LOADING,
             onToggled = { (::onCashOnDeliveryToggled)(it) },
             onLearnMoreClicked = ::onLearnMoreCodClicked
         )
     )
+
+    private var cashOnDeliveryTitle: String? = null
+
+    private var isOnboardingCheckInProgress = false
 
     private fun listenForSoftwareUpdateAvailability() {
         launch {
@@ -142,31 +153,48 @@ class PaymentsHubViewModel @Inject constructor(
         }
 
     init {
+        // Must run before anything below reads Tap to Pay availability — Stripe cannot answer
+        // whether the device supports it until Terminal is initialized.
+        initializeCardReaderManagerIfNeeded()
         handleOpenInHubParameter()
         listenForSoftwareUpdateAvailability()
     }
 
     private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
-        val isCashOnDeliveryEnabled = cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
+        val cashOnDeliveryGateway = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+        cashOnDeliveryTitle = cashOnDeliveryGateway?.title
         updateCashOnDeliveryOptionState(
             cashOnDeliveryState.value?.copy(
-                isChecked = isCashOnDeliveryEnabled
+                state = ToggleState.fromChecked(cashOnDeliveryGateway?.isEnabled == true)
             )!!
         )
     }
 
     fun onViewVisible() {
+        isOnboardingCheckInProgress = true
         viewState.value = initialState
         launch {
             checkAndUpdateCashOnDeliveryOptionState()
         }
         launch {
-            viewState.value = when (val state = cardReaderChecker.getOnboardingState()) {
+            val state = cardReaderChecker.getOnboardingState()
+            isOnboardingCheckInProgress = false
+            viewState.value = when (state) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
                 is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
                 else -> createOnboardingFailedState(state)
             }
         }
+    }
+
+    private fun initializeCardReaderManagerIfNeeded() {
+        if (cardReaderManager.initialized) return
+        cardReaderManager.initialize(
+            updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+            useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+            useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
+            isDebug = BuildConfig.DEBUG,
+        )
     }
 
     private val cardReaderPurchaseUrl: String by lazy {
@@ -322,7 +350,8 @@ class PaymentsHubViewModel @Inject constructor(
     private fun updateCashOnDeliveryOptionState(cashOnDeliveryListItem: ToggleableListItem) {
         cashOnDeliveryState.value = cashOnDeliveryListItem
         viewState.value = viewState.value?.copy(
-            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem)
+            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem),
+            isLoading = isOnboardingCheckInProgress || cashOnDeliveryListItem.isLoading
         )
     }
 
@@ -342,7 +371,7 @@ class PaymentsHubViewModel @Inject constructor(
             } else {
                 createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
             },
-            isLoading = false,
+            isLoading = cashOnDeliveryState.value!!.isLoading,
             onboardingErrorAction = null,
         )
     }
@@ -358,7 +387,7 @@ class PaymentsHubViewModel @Inject constructor(
     private fun createOnboardingFailedState(state: CardReaderOnboardingState): PaymentsHubViewState {
         return PaymentsHubViewState(
             rows = createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!),
-            isLoading = false,
+            isLoading = cashOnDeliveryState.value!!.isLoading,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
@@ -436,13 +465,47 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun onCashOnDeliveryToggled(isChecked: Boolean) {
+        triggerEvent(
+            PaymentsHubEvents.ShowCashOnDeliveryConfirmation(
+                title = if (isChecked) {
+                    R.string.card_reader_enable_pay_in_person_dialog_title
+                } else {
+                    R.string.card_reader_disable_pay_in_person_dialog_title
+                },
+                message = buildCashOnDeliveryConfirmationMessage(isChecked),
+                positiveButton = if (isChecked) {
+                    R.string.card_reader_enable_pay_in_person_dialog_button
+                } else {
+                    R.string.card_reader_disable_pay_in_person_dialog_button
+                },
+                negativeButton = R.string.cancel,
+                onConfirmed = { updateCashOnDeliveryOption(isChecked) }
+            )
+        )
+    }
+
+    private fun buildCashOnDeliveryConfirmationMessage(isChecked: Boolean): UiString {
+        val currentTitle = cashOnDeliveryTitle
+        return when {
+            !isChecked -> UiStringRes(R.string.card_reader_disable_pay_in_person_dialog_message)
+            currentTitle.isNullOrBlank() || currentTitle.equals(PAY_IN_PERSON_TITLE, ignoreCase = true) ->
+                UiStringRes(R.string.card_reader_enable_pay_in_person_dialog_message)
+            else -> UiStringRes(
+                R.string.card_reader_enable_pay_in_person_dialog_message_rename,
+                listOf(UiStringText(currentTitle))
+            )
+        }
+    }
+
+    private fun updateCashOnDeliveryOption(isChecked: Boolean) {
         paymentsFlowTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
             updateCashOnDeliveryOptionState(
-                cashOnDeliveryState.value?.copy(isEnabled = false, isChecked = isChecked)!!
+                cashOnDeliveryState.value?.copy(isEnabled = false, state = ToggleState.fromChecked(isChecked))!!
             )
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
+                result.model?.let { cashOnDeliveryTitle = it.title }
                 if (isChecked) {
                     paymentsFlowTracker.trackCashOnDeliveryEnabledSuccess(
                         PAYMENTS_HUB
@@ -453,7 +516,7 @@ class PaymentsHubViewModel @Inject constructor(
                     )
                 }
                 updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = isChecked)!!
+                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(isChecked))!!
                 )
             } else {
                 if (isChecked) {
@@ -468,7 +531,7 @@ class PaymentsHubViewModel @Inject constructor(
                     )
                 }
                 updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, isChecked = !isChecked)!!
+                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(!isChecked))!!
                 )
                 if (result.error.message.isNullOrEmpty()) {
                     triggerEvent(ShowToast(R.string.something_went_wrong_try_again))
@@ -581,6 +644,14 @@ class PaymentsHubViewModel @Inject constructor(
 
         data class NavigateToAboutTapToPay(
             val countryConfig: CardReaderConfigForSupportedCountry
+        ) : PaymentsHubEvents()
+
+        data class ShowCashOnDeliveryConfirmation(
+            @StringRes val title: Int,
+            val message: UiString,
+            @StringRes val positiveButton: Int,
+            @StringRes val negativeButton: Int,
+            val onConfirmed: () -> Unit,
         ) : PaymentsHubEvents()
 
         data class ShowToastString(val message: String) : PaymentsHubEvents()

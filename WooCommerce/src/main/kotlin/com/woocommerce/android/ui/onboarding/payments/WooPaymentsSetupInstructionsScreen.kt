@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -41,7 +42,6 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun WooPaymentsSetupInstructionsScreen(
@@ -144,7 +144,7 @@ private fun WooPaymentsSetupInstructionsContent(
 
 @Composable
 private fun WooPaymentsSetupInstructionsStep(stepNumber: Int, formattedText: @Composable () -> Unit) {
-    val format = NumberFormat.getInstance(Locale.getDefault())
+    val format = NumberFormat.getInstance(LocalLocale.current.platformLocale)
     val formattedNumber = format.format(stepNumber)
 
     Column {

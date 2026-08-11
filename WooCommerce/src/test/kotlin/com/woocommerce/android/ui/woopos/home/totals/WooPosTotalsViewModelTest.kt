@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
@@ -138,6 +139,7 @@ class WooPosTotalsViewModelTest {
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val crashLogging: CrashLogging = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -158,6 +160,8 @@ class WooPosTotalsViewModelTest {
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        newOrderNotificationSuppressionCache = mock(),
+        crashLogging = crashLogging,
     )
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
