@@ -2,19 +2,42 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.5
+-----
+- [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
+- [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
+- [Internal] Woo POS Scan to Pay: picking an offline method such as Pay in Person on the QR page no longer reports the order as paid, and a detected payment now shows the fullscreen success screen [https://github.com/woocommerce/woocommerce-android/pull/16363]
+- [*] Woo POS: Retrying a failed connection to a phone card reader now works without having to close and reopen the reader dialog [https://github.com/woocommerce/woocommerce-android/pull/16371]
+- [*] Fixed missing back navigation in Country and State pickers when creating shipping labels on tablets [https://github.com/woocommerce/woocommerce-android/pull/16364]
+- [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
+- [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
+- [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
+- [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
+- [*] [Internal] Remove SiteModel#mXmlRpcUrl [https://github.com/woocommerce/woocommerce-android/pull/16301]
+- [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
+
 25.4
 -----
+- [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation [https://github.com/woocommerce/woocommerce-android/pull/16360]
+- [*] Scanning a subscription product's barcode or SKU during order creation now explains why it can't be added [https://github.com/woocommerce/woocommerce-android/pull/16380]
+- [*] Custom amounts now use the same decimal entry as shipping and the rest of the app — enter 2.50 instead of 250 to get $2.50 [https://github.com/woocommerce/woocommerce-android/pull/16358]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
-- [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets
+- [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets [https://github.com/woocommerce/woocommerce-android/pull/16325]
 - [*] Fixed fully refunded orders remaining visible in the Completed orders filter [https://github.com/woocommerce/woocommerce-android/pull/16313]
 - [*] Fixed coupon expiry dates drifting when unrelated coupon changes were saved for stores outside UTC [https://github.com/woocommerce/woocommerce-android/pull/16279]
+- [*] An order paid or marked as paid on the device no longer triggers the new order notification on that same device [https://github.com/woocommerce/woocommerce-android/pull/16326]
 - [*] Card payments no longer show an error when the payment was actually captured but the backend reported a network/server issue — the app now verifies the payment status and shows success, preventing double charges [https://github.com/woocommerce/woocommerce-android/pull/16295]
+- [*] Turning off the Pay in Person toggle no longer renames the Cash on Delivery payment gateway [https://github.com/woocommerce/woocommerce-android/pull/16349]
+- [*] Toggling Pay in Person now asks for confirmation and explains what changes at your store's checkout [https://github.com/woocommerce/woocommerce-android/pull/16350]
 - [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
+- [*] The Products list now updates stock automatically after an order takes payment, is fulfilled, refunded, or edited — no pull-to-refresh needed [https://github.com/woocommerce/woocommerce-android/pull/16278]
+- [Internal] Support tickets now report the device's free space correctly, instead of roughly double the real figure capped at megabytes [https://github.com/woocommerce/woocommerce-android/pull/16340]
 - [*] Fixed a crash when the payment screen was recreated, such as rotating the device, while an in-person card payment was being processed — the payment now keeps running instead of freezing [https://github.com/woocommerce/woocommerce-android/pull/16359]
+- [*] Woo POS: Fixed some phones failing to start reader mode, so the POS tablet could never discover them [https://github.com/woocommerce/woocommerce-android/pull/16367]
 - [*] The application log screen can now share all stored logs at once as a single zip, instead of one day at a time [https://github.com/woocommerce/woocommerce-android/pull/16337]
 - [*] Made the SMS verification option clearer during WordPress.com two-step login [https://github.com/woocommerce/woocommerce-android/pull/16296]
-- [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
+- [*] The shipment tracking carrier list shows your store's country at the top of the list again [https://github.com/woocommerce/woocommerce-android/pull/16332]
 
 25.3
 -----

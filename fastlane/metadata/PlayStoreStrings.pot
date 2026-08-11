@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-03 20:08+0200\n"
+"PO-Revision-Date: 2026-08-07 08:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -116,13 +116,14 @@ msgid ""
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_253"
+msgctxt "release_note_254"
 msgid ""
-"25.3:\n"
-"This update delivers accurate multi-currency pricing, improved product duplica"
-"tion, and reliable variation image handling. The My Store toolbar is now glitc"
-"h-free, Analytics Hub shows clearer data comparisons, and In-Person Payments o"
-"nboarding is more flexible. Plus, several crashes and UI bugs are fixed.\n"
+"25.4:\n"
+"Payments are more reliable: if a card charge succeeds but confirmation fails, "
+"the app now verifies it and shows success, preventing double charges. Rotating"
+" your device mid-payment no longer crashes. We also fixed refunded orders ling"
+"ering in the Completed filter, and added a prompt before discarding unsaved or"
+"der edits. Plus POS and login fixes.\n"
 msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!

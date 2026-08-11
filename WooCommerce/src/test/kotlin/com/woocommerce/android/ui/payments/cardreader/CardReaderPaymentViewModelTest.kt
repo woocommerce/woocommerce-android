@@ -86,6 +86,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -129,6 +130,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: CardReaderPaymentViewModel
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val mockedOrder = mock<Order>()
     private val mockedAddress = mock<Address>()
     private val selectedSite: SelectedSite = mock()
@@ -206,6 +208,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
             crashLogging = crashLogging,
         )
 
@@ -221,6 +225,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
         whenever(mockedOrder.orderKey).thenReturn("wc_order_j0LMK3bFhalEL")
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.chargeId).thenReturn("chargeId")
+        whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
         whenever(orderRepository.fetchOrderById(ORDER_ID)).thenReturn(mockedOrder)
         whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Connected(mock())))
         whenever(cardReaderManager.collectPayment(any())).thenAnswer {
@@ -2702,6 +2707,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
             crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
@@ -2741,6 +2748,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             paymentReceiptShare = paymentReceiptShare,
             paymentStateProvider = paymentStateProvider,
             paymentStateMapper = paymentStateMapper,
+            refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = mock(),
             crashLogging = crashLogging,
         )
         viewModel.event.observeForever {}
