@@ -43,10 +43,13 @@ fun Date.formatToYYYYWmm(locale: Locale = Locale.getDefault()): String = SimpleD
     locale
 ).format(this)
 
-fun Date.formatToMMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM dd",
-    locale
-).format(this)
+/**
+ * Formats the date to a full month and day string, e.g. "August 13" in English and "13 August" in British English.
+ */
+fun Date.formatToLocalizedFullMonthDay(): String {
+    val locale = Locale.getDefault()
+    return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMMd"), locale).format(this)
+}
 
 fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "d",

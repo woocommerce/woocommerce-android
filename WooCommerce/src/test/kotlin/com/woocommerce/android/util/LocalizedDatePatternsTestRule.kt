@@ -32,6 +32,7 @@ class LocalizedDatePatternsTestRule : TestWatcher() {
         whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
         whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
         whenever(DateFormat.getBestDateTimePattern(any(), eq("EEEEMMMd"))).thenReturn("EEEE, MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMMd"))).thenReturn("MMMM d")
 
         dateInterval = Mockito.mockConstruction(DateInterval::class.java, lenient) { mock, context ->
             whenever(mock.fromDate).thenReturn(context.arguments()[0] as Long)

@@ -7,7 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.di.StoreManagementMode
-import com.woocommerce.android.extensions.formatToMMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedFullMonthDay
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -483,5 +483,5 @@ class CardReaderOnboardingViewModel @Inject constructor(
         Locale.Builder().setRegion(countryCode.orEmpty()).build().displayName
 
     private fun formatDueDate(state: StripeAccountPendingRequirement) =
-        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToMMMMdd() }
+        state.dueDate?.let { Date(it * UNIX_TO_JAVA_TIMESTAMP_OFFSET).formatToLocalizedFullMonthDay() }
 }
