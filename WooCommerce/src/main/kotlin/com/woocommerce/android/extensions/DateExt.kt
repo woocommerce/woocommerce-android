@@ -163,24 +163,6 @@ fun Date.oneYearAgo(): Date =
         add(Calendar.YEAR, -1)
     }.time
 
-fun Date.isInSameYearAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisYear = calendar.get(Calendar.YEAR)
-    calendar.time = other
-    val otherYear = calendar.get(Calendar.YEAR)
-    return thisYear == otherYear
-}
-
-fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisMonth = calendar.get(Calendar.MONTH)
-    calendar.time = other
-    val otherMonth = calendar.get(Calendar.MONTH)
-    return thisMonth == otherMonth && isInSameYearAs(other, calendar)
-}
-
 /**
  * Formats the two dates as a range in the locale's own interval format, e.g. "Jul 1 – 31, 2022" in English
  * and "1.–31. Juli 2022" in German.
