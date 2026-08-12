@@ -4,7 +4,6 @@ import android.content.Context
 import android.icu.text.DateIntervalFormat
 import android.icu.util.DateInterval
 import android.text.format.DateFormat
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -92,14 +91,6 @@ fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String =
 fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
     .format(this)
-
-fun Date.formatToEEEEMMMddhha(locale: Locale): String {
-    val symbols = DateFormatSymbols(locale)
-    symbols.amPmStrings = arrayOf("am", "pm")
-    val dateFormat = SimpleDateFormat("EEEE, MMM dd › ha", locale)
-    dateFormat.dateFormatSymbols = symbols
-    return dateFormat.format(this)
-}
 
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
 
