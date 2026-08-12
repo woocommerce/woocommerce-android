@@ -20,7 +20,10 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOr
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangePicker
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.util.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Date
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
@@ -32,6 +35,9 @@ class OrderFilterOptionsFragment :
 
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
+
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
@@ -91,16 +97,11 @@ class OrderFilterOptionsFragment :
     }
 
     private fun openDateRangePicker(startDateMillis: Long, endDateMillis: Long) {
-        val selectedStartMillis = when {
-            startDateMillis > 0 -> startDateMillis
-            else -> System.currentTimeMillis()
-        }
-        val selectedEndMillis = when {
-            startDateMillis > 0 -> endDateMillis
-            else -> System.currentTimeMillis()
-        }
-        showDateRangePicker(selectedStartMillis, selectedEndMillis) { start, end ->
-            viewModel.onCustomDateRangeChanged(start, end)
+        val siteToday = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        val selectedStart = if (startDateMillis > 0) Date(startDateMillis) else siteToday
+        val selectedEnd = if (startDateMillis > 0) Date(endDateMillis) else siteToday
+        showDateRangePicker(selectedStart, selectedEnd, siteToday) { startDate, endDate ->
+            viewModel.onCustomDateRangeChanged(startDate.time, endDate.time)
         }
     }
 

@@ -22,10 +22,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.util.Date
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 /**
@@ -294,43 +293,36 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
 }
 
 fun Fragment.showDateRangePicker(
-    fromMillis: Long = System.currentTimeMillis(),
-    toMillis: Long = System.currentTimeMillis(),
-    onCustomRangeSelected: (Long, Long) -> Unit
+    fromDate: Date,
+    toDate: Date,
+    maxDate: Date,
+    onCustomRangeSelected: (Date, Date) -> Unit
 ) {
-    fun shiftTime(time: Long, originalZoneId: ZoneId, targetZoneId: ZoneId): Long {
-        // The timestamps returned by the MaterialDatePicker are in UTC timezone, if we use them directly
-        // we will get a shift in the selected range.
-        // To avoid this, we get the local date using UTC timestamps and then convert it to the selected timezone
-        // See: https://github.com/material-components/material-components-android/issues/882
-        val originalDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), originalZoneId).toLocalDateTime()
-        val targetDateTime = ZonedDateTime.of(originalDateTime, targetZoneId)
-        return targetDateTime.toInstant().toEpochMilli()
-    }
-
-    val deviceZoneId = ZoneId.systemDefault()
+    val maxDay = maxDate.toEpochDay()
+    // The picker's millis are UTC midnights of the picked days
+    val maxDateUtcMillis = TimeUnit.DAYS.toMillis(maxDay)
     val datePicker = MaterialDatePicker.Builder.dateRangePicker()
         .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
         .setSelection(
             androidx.core.util.Pair(
-                shiftTime(fromMillis, deviceZoneId, ZoneId.of("UTC")),
-                shiftTime(toMillis, deviceZoneId, ZoneId.of("UTC"))
+                TimeUnit.DAYS.toMillis(fromDate.toEpochDay().coerceAtMost(maxDay)),
+                TimeUnit.DAYS.toMillis(toDate.toEpochDay().coerceAtMost(maxDay))
             )
         )
         .setCalendarConstraints(
             CalendarConstraints.Builder()
-                .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                .setValidator(DateValidatorPointBackward.now())
+                .setEnd(maxDateUtcMillis)
+                .setValidator(DateValidatorPointBackward.before(maxDateUtcMillis))
                 .build()
         )
         .build()
 
     datePicker.show(parentFragmentManager, AnalyticsHubFragment.DATE_PICKER_FRAGMENT_TAG)
     datePicker.addOnPositiveButtonClickListener {
-        val start = shiftTime(it.first ?: 0, ZoneId.of("UTC"), deviceZoneId)
-        val end = shiftTime(it.second ?: 0, ZoneId.of("UTC"), deviceZoneId)
-
-        onCustomRangeSelected(start, end)
+        onCustomRangeSelected(
+            TimeUnit.MILLISECONDS.toDays(it.first ?: 0).toDateAtStartOfDay(),
+            TimeUnit.MILLISECONDS.toDays(it.second ?: 0).toDateAtStartOfDay()
+        )
     }
 }
 
