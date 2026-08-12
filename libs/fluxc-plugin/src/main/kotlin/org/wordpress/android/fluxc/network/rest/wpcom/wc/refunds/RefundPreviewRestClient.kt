@@ -3,7 +3,7 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
@@ -11,26 +11,25 @@ import org.wordpress.android.fluxc.utils.toWooPayload
 import javax.inject.Inject
 
 /**
- * REST client for the v4 refund preview endpoint (`POST /wc/v4/refunds/preview`).
+ * REST client for the refund preview endpoint (`POST /wc/v3/orders/<order_id>/refunds/preview`).
  *
  * The endpoint returns authoritative, server-calculated refund totals so the client does not need
- * to replicate backend tax/rounding logic. When the v4 route is not registered (feature flag off),
- * the request fails with HTTP 404 `rest_no_route`, surfaced as [WooErrorType.API_NOT_FOUND], which
- * callers use to fall back to the v3 + local-calculation flow.
+ * to replicate backend tax/rounding logic. On stores older than the WooCommerce release that ships
+ * the route, the request fails with HTTP 404 `rest_no_route`, surfaced as
+ * [WooErrorType.API_NOT_FOUND], which callers use to fall back to the local-calculation flow.
  */
 class RefundPreviewRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
     suspend fun previewRefund(
         site: SiteModel,
         orderId: Long,
-        lineItems: List<RefundV4LineItem>,
+        lineItems: List<RefundPreviewLineItem>,
     ): WooPayload<RefundPreviewResponse> {
         val body = mapOf(
-            "order_id" to orderId,
             "line_items" to lineItems,
         )
         val response = wooNetwork.executePostGsonRequest(
             site = site,
-            path = WOOCOMMERCE.refunds.preview.pathV4,
+            path = WOOCOMMERCE.orders.id(orderId).refunds.preview.pathV3,
             body = body,
             clazz = RefundPreviewResponse::class.java,
         )
