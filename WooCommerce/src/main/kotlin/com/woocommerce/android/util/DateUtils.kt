@@ -34,7 +34,7 @@ class DateUtils @Inject constructor(
     private val friendlyTimeFormat: SimpleDateFormat
         get() = SimpleDateFormat("h:mm a", locale)
     private val friendlyLongMonthDayFormat: SimpleDateFormat
-        get() = SimpleDateFormat("MMMM dd", locale)
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMMd"), locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat
         get() = SimpleDateFormat("yyyy-ww", locale).apply {
@@ -129,7 +129,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in long month ("MMMM dd") format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the full month name and day.
      *
      * For example, given 2018-07-03 returns "July 3", and given 2018-07-28 returns "July 28".
      *

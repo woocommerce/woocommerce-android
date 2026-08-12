@@ -21,10 +21,13 @@ fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDa
     locale
 ).format(this)
 
-fun Date.formatToMMMMyyyy(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM yyyy",
-    locale
-).format(this)
+/**
+ * Formats the date to a full month and year string, e.g. "August 2026" in English and "2026年8月" in Japanese.
+ */
+fun Date.formatToLocalizedMonthYear(): String {
+    val locale = Locale.getDefault()
+    return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yMMMM"), locale).format(this)
+}
 
 fun Date.formatToYYYYmmDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "yyyy-MM-dd",

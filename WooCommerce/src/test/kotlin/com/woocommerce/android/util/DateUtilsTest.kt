@@ -37,6 +37,7 @@ class DateUtilsTest {
         whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
         whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
         whenever(DateFormat.getBestDateTimePattern(any(), eq("EEEEMMMd"))).thenReturn("EEEE, MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMMd"))).thenReturn("MMMM d")
 
         dateUtilsUnderTest = DateUtils(
             Locale.US,
