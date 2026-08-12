@@ -38,7 +38,7 @@ class LastMonthRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
         val twoMonthsAgo = oneMonthAgo.oneMonthAgo()
         calendar.time = twoMonthsAgo
@@ -48,6 +48,6 @@ class LastMonthRangeData(
             start = previousStart,
             end = previousEnd
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale)
     }
 }
