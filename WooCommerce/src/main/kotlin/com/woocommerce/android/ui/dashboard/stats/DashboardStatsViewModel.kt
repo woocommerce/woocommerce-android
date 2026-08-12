@@ -162,10 +162,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
         } else {
             analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED)
         }
+        val siteToday = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
         triggerEvent(
             OpenDatePicker(
-                fromDate = dateRangeState.value?.customRange?.start ?: Date(),
-                toDate = dateRangeState.value?.customRange?.end ?: Date()
+                fromDate = dateRangeState.value?.customRange?.start ?: siteToday,
+                toDate = dateRangeState.value?.customRange?.end ?: siteToday
             )
         )
     }
