@@ -296,7 +296,10 @@ class WooPosCardReaderConnectionController(
             BluetoothRequirement.Satisfied -> null
             is BluetoothRequirement.Unmet -> WooPosCardReaderConnectionState.BluetoothUnavailable(
                 requirement = requirement,
-                onFixClicked = { _state.value = requirement.toBlockingState() },
+                onFixClicked = {
+                    discoveryJob?.cancel()
+                    _state.value = requirement.toBlockingState()
+                },
             )
         }
 
