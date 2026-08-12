@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus.Result.NotAvailable
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -81,6 +82,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
+    private val refreshProductsSignal: RefreshProductsSignal,
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
@@ -283,7 +285,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             Order.Status.Completed.value,
             CASH_ON_DELIVERY_PAYMENT_TYPE,
             codGateway?.title ?: "Pay in Person",
-        ).handleOrderUpdateResultBeforeExit()
+        ).handleOrderUpdateResultBeforeExit(notifyStockChange = true)
     }
 
     fun onSharePaymentUrlClicked() {
@@ -448,7 +450,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
             ?: WCOrderStatusModel(statusKey = statusKey, label = statusKey)
     }
 
-    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
+    private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit(
+        notifyStockChange: Boolean = false
+    ) {
         // exitFlow() on the optimistic result cancels the ViewModel scope, keep collecting so the
         // remote result is still observed. FluxC finishes the request itself in NonCancellable.
         withContext(NonCancellable) {
@@ -458,6 +462,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is WCOrderStore.UpdateOrderResult.RemoteUpdateResult -> {
                         if (result.event.isError) {
                             handleUpdateOrderStatusError()
+                        } else if (notifyStockChange) {
+                            // Emit only after the server confirms so the products' fetch sees the reduced stock.
+                            refreshProductsSignal.notifyProductsChanged(order.first().getProductIds())
                         }
                     }
                 }

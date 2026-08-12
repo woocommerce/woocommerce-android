@@ -89,4 +89,45 @@ class WCProductModelTest {
 
         assertThat(result).isFalse
     }
+
+    @Test
+    fun `when comparing products with the same images, then the images are the same`() {
+        val sut = WCProductModel().copy(images = imagesJson(alt = "alt text"))
+        val updatedProduct = WCProductModel().copy(images = imagesJson(alt = "alt text"))
+
+        val result = sut.hasSameImages(updatedProduct)
+
+        assertThat(result).isTrue
+    }
+
+    @Test
+    fun `when comparing products with a different image alt text, then the images differ`() {
+        val sut = WCProductModel().copy(images = imagesJson(alt = "alt text"))
+        val updatedProduct = WCProductModel().copy(images = imagesJson(alt = "updated alt text"))
+
+        val result = sut.hasSameImages(updatedProduct)
+
+        assertThat(result).isFalse
+    }
+
+    @Test
+    fun `when comparing products with a different image name, then the images differ`() {
+        val sut = WCProductModel().copy(images = imagesJson(name = "name"))
+        val updatedProduct = WCProductModel().copy(images = imagesJson(name = "updated name"))
+
+        val result = sut.hasSameImages(updatedProduct)
+
+        assertThat(result).isFalse
+    }
+
+    private fun imagesJson(alt: String = "", name: String = "") = JsonArray().apply {
+        add(
+            JsonObject().apply {
+                addProperty("id", 1L)
+                addProperty("src", "https://example.com/image.jpg")
+                addProperty("alt", alt)
+                addProperty("name", name)
+            }
+        )
+    }.toString()
 }

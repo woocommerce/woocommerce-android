@@ -116,6 +116,36 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when the image details are updated, then the image is replaced in the state`() {
+        val images = ProductTestUtils.generateProductImagesList()
+        initialize(images)
+        val updatedImage = images.first().copy(alt = "updated alt text", name = "updated name")
+
+        viewModel.onImageDetailsUpdated(updatedImage)
+
+        observeState { state ->
+            assertThat(state.images).contains(updatedImage, Index.atIndex(0))
+        }
+    }
+
+    @Test
+    fun `given an edited image, when the back button is clicked, then exit with the updated images`() {
+        initialize()
+        val updatedImage = DEFAULT_PRODUCT_IMAGES.first().copy(alt = "updated alt text")
+
+        viewModel.onImageDetailsUpdated(updatedImage)
+        viewModel.onNavigateBackButtonClicked()
+
+        observeEvents { event ->
+            assertThat(event).isEqualTo(
+                MultiLiveEvent.Event.ExitWithResult(
+                    listOf(updatedImage) + DEFAULT_PRODUCT_IMAGES.drop(1)
+                )
+            )
+        }
+    }
+
+    @Test
     fun `Update list state on image reorder`() {
         val images = ProductTestUtils.generateProductImagesList()
         initialize(images)
