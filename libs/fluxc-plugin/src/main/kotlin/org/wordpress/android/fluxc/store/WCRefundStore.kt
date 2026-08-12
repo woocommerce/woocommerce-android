@@ -111,7 +111,9 @@ class WCRefundStore @Inject internal constructor(
     /**
      * Creates a server-computed refund through `POST /wc/v3/orders/<order_id>/refunds` with
      * `compute_totals=true`. The client sends only the items being refunded; the server computes
-     * all monetary values unless an explicit order-level [amount] override is given.
+     * all monetary values unless an explicit order-level [amount] override is given. An override
+     * below the computed line-item total is rejected with a 400; one above it is accepted as a
+     * goodwill over-refund, capped at the order's remaining refundable amount (422 beyond).
      *
      * On a store whose refund endpoint does not support `compute_totals`, the unknown param is
      * silently dropped and a quantity-only body would create a ghost zero-amount refund with
