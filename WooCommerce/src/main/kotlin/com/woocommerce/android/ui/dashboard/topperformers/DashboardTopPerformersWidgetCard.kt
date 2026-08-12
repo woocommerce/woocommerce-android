@@ -20,6 +20,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -62,7 +63,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DashboardTopPerformersWidgetCard(
@@ -392,7 +392,7 @@ private fun TopPerformersWidgetCardPreview() {
             referenceStartDate = Date(),
             referenceEndDate = Date(),
             calendar = Calendar.getInstance(),
-            locale = Locale.getDefault(),
+            locale = LocalLocale.current.platformLocale,
         ),
         customRange = null,
         dateFormatted = "Today"

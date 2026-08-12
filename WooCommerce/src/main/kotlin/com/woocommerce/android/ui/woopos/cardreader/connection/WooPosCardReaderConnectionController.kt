@@ -282,7 +282,7 @@ class WooPosCardReaderConnectionController(
         remoteConnectionJob?.cancel()
         selectedReader = null
         if (!wasAlreadyConnected) {
-            cardReaderTrackingInfoKeeper.setTransport(null)
+            clearReaderTrackingInfo()
             scope.launch { remoteReaderSession.disconnect() }
         }
         enterScanningState()
@@ -294,7 +294,7 @@ class WooPosCardReaderConnectionController(
             logger.d("disconnect(): clearing prefs")
             appPrefsWrapper.removeLastConnectedCardReaderId()
             appPrefsWrapper.removeLastConnectedPhoneDeviceId()
-            cardReaderTrackingInfoKeeper.setTransport(null)
+            clearReaderTrackingInfo()
 
             logger.d("disconnect(): stopping remote session")
             runCatching { remoteReaderSession.disconnect() }
@@ -393,7 +393,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownReader = findLastKnownReader(bluetoothReaders)
         if (lastKnownReader != null) {
             logger.d("Auto-connecting to last known reader: ${lastKnownReader.id}")
-            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+            markBluetoothReaderSelected(lastKnownReader.type)
             tracker.trackAutoConnectionStarted()
             connectToReader(lastKnownReader)
             return
@@ -402,7 +402,7 @@ class WooPosCardReaderConnectionController(
         val lastKnownPhone = findLastKnownPhone(phones)
         if (lastKnownPhone != null) {
             logger.d("Auto-connecting to last known phone: ${lastKnownPhone.name}")
-            cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+            markPhoneReaderSelected()
             tracker.trackAutoConnectionStarted()
             onPhoneConnectClicked(lastKnownPhone)
             return
@@ -466,15 +466,14 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun onConnectToReaderClicked(reader: CardReader) {
-        cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        markBluetoothReaderSelected(reader.type)
         tracker.trackOnConnectTapped()
         connectToReader(reader)
     }
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+        markPhoneReaderSelected()
         tracker.trackOnConnectTapped()
         selectedReader = null
         _state.value = WooPosCardReaderConnectionState.Connecting
@@ -484,6 +483,26 @@ class WooPosCardReaderConnectionController(
             val result = remoteReaderSession.connect(phone)
             handleRemoteConnectionResult(phone, result)
         }
+    }
+
+    private fun clearReaderTrackingInfo() {
+        cardReaderTrackingInfoKeeper.setTransport(null)
+        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
+    }
+
+    // Must run before any phone event is tracked, or a model and battery level left over from a
+    // previous Bluetooth connection get reported against this wifi_lan session.
+    private fun markPhoneReaderSelected() {
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setCardReaderModel(null)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
+    }
+
+    private fun markBluetoothReaderSelected(readerModel: String) {
+        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setCardReaderModel(readerModel)
+        cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
     private fun onPhoneRetryConnectClicked(phone: WooPosDiscoveredReader.Phone) {

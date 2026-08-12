@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.BillingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
@@ -50,6 +51,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val listItemMapper: ListItemMapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
+    private val refreshProductsSignal: RefreshProductsSignal,
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
 ) {
     suspend fun createOrUpdateOrder(order: Order, source: OrderCreationSource, giftCard: String = ""): Result<Order> {
@@ -103,6 +105,11 @@ class OrderCreateEditRepository @Inject constructor(
                         previousStatusKey = previousStatusKey,
                         newStatusKey = updatedOrder.status.value,
                     )
+                }
+                // Creating/editing a non-draft order can change its products' stock server-side; refresh those rows.
+                // Draft syncs (AUTO_DRAFT) don't affect stock, so skip the needless refresh.
+                if (updatedOrder.status.value != AUTO_DRAFT) {
+                    refreshProductsSignal.notifyProductsChanged(updatedOrder.getProductIds())
                 }
                 Result.success(updatedOrder)
             }

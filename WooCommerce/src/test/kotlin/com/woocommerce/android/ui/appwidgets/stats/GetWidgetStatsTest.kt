@@ -8,9 +8,11 @@ import com.woocommerce.android.ui.appwidgets.IsDeviceBatterySaverActive
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsBatterySaverActive
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -25,6 +27,8 @@ import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWidgetStatsTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
 
     private val accountRepository: AccountRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
@@ -32,12 +36,14 @@ class GetWidgetStatsTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock()
     private val isDeviceBatterySaverActive: IsDeviceBatterySaverActive = mock()
 
-    private val defaultRange = StatsTimeRangeSelection.build(
-        selectionType = SelectionType.TODAY,
-        referenceDate = Date(),
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault()
-    )
+    private val defaultRange by lazy {
+        StatsTimeRangeSelection.build(
+            selectionType = SelectionType.TODAY,
+            referenceDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
+    }
     private val defaultSiteModel = SiteModel().apply {
         siteId = 1
         origin = SiteModel.ORIGIN_WPCOM_REST

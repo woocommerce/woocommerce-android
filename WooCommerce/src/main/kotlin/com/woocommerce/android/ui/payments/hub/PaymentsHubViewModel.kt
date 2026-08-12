@@ -9,6 +9,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -49,6 +50,7 @@ import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.OnboardingEr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
@@ -78,6 +80,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val developerOptionsRepository: DeveloperOptionsRepository,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -150,6 +153,9 @@ class PaymentsHubViewModel @Inject constructor(
         }
 
     init {
+        // Must run before anything below reads Tap to Pay availability — Stripe cannot answer
+        // whether the device supports it until Terminal is initialized.
+        initializeCardReaderManagerIfNeeded()
         handleOpenInHubParameter()
         listenForSoftwareUpdateAvailability()
     }
@@ -179,6 +185,16 @@ class PaymentsHubViewModel @Inject constructor(
                 else -> createOnboardingFailedState(state)
             }
         }
+    }
+
+    private fun initializeCardReaderManagerIfNeeded() {
+        if (cardReaderManager.initialized) return
+        cardReaderManager.initialize(
+            updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
+            useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
+            useEftpos = developerOptionsRepository.isEftposPaymentEnabled(),
+            isDebug = BuildConfig.DEBUG,
+        )
     }
 
     private val cardReaderPurchaseUrl: String by lazy {

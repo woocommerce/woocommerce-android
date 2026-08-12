@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
@@ -117,6 +118,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
     private val cardReaderManager: CardReaderManager = mock()
     private val orderRepository: OrderDetailRepository = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
     private val selectedSite: SelectedSite = mock()
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val tracker: PaymentsFlowTracker = mock()
@@ -232,6 +234,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = cardReaderFlowParam,
             cardReaderType = cardReaderType,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            refreshProductsSignal = refreshProductsSignal,
             crashLogging = crashLogging,
         )
     }
@@ -768,6 +771,19 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             assertThat(controller.paymentState.value)
                 .isInstanceOf(PaymentSuccessful.BuiltInReaderPaymentSuccessful::class.java)
+        }
+
+    @Test
+    fun `when payment completed, then products refresh is signalled with the re-fetched order's product ids`() =
+        testBlocking {
+            whenever(mockedOrder.getProductIds()).thenReturn(listOf(101L, 102L))
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            controller.start()
+
+            verify(refreshProductsSignal).notifyProductsChanged(listOf(101L, 102L))
         }
 
     @Test
@@ -3976,6 +3992,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
             paymentOrRefund = param,
             cardReaderType = CardReaderType.EXTERNAL,
             isTTPPaymentInProgress = isTTPinProgressProp,
+            refreshProductsSignal = refreshProductsSignal,
             crashLogging = crashLogging,
         )
     }

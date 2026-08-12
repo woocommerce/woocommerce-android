@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
@@ -53,6 +55,9 @@ import java.util.Calendar
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardStatsViewModelTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     companion object {
         val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE

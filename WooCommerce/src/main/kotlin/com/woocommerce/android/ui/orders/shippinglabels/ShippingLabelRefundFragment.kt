@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentShippingLabelRefundBinding
-import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
+import com.woocommerce.android.extensions.formatToLocalizedMediumWithTime
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingLabel
@@ -89,7 +89,7 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
             setOnClickListener { viewModel.onRefundShippingLabelButtonClicked() }
         }
 
-        shippingLabelRefundPurchaseDate.text = shippingLabel.createdDate?.formatToMMMddYYYYhhmm()
+        shippingLabelRefundPurchaseDate.text = shippingLabel.createdDate?.formatToLocalizedMediumWithTime()
     }
 
     override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_request_refund)

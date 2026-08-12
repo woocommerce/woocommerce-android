@@ -2,7 +2,7 @@
 
 package com.woocommerce.android.e2e.tests.ui
 
-import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase

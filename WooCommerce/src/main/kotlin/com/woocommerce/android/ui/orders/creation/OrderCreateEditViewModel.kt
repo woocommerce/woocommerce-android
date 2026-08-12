@@ -1199,10 +1199,6 @@ class OrderCreateEditViewModel @Inject constructor(
             triggerEvent(
                 SelectItems(
                     selectedItems,
-                    listOf(
-                        ProductRestriction.NonPublishedProducts,
-                        ProductRestriction.VariableProductsWithNoVariations
-                    ),
                     args.mode,
                     args.orderCurrency?.takeIf { isCurrencyQueryParamSupported() }
                 )

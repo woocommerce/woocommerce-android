@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.FragmentProductPricingBinding
 import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
@@ -106,10 +106,10 @@ class ProductPricingFragment :
                 updateProductTaxClassList(it, viewModel.pricingData)
             }
             new.pricingData.saleStartDate?.takeIfNotEqualTo(old?.pricingData?.saleStartDate) {
-                binding.scheduleSaleStartDate.setText(it.formatToMMMddYYYY())
+                binding.scheduleSaleStartDate.setText(it.formatToLocalizedMonthDayYear())
             }
             new.pricingData.saleEndDate?.takeIfNotEqualTo(old?.pricingData?.saleEndDate) {
-                binding.scheduleSaleEndDate.setText(it.formatToMMMddYYYY())
+                binding.scheduleSaleEndDate.setText(it.formatToLocalizedMonthDayYear())
             }
             new.isRemoveEndDateButtonVisible.takeIfNotEqualTo(old?.isRemoveEndDateButtonVisible) { isVisible ->
                 binding.scheduleSaleRemoveEndDateButton.visibility = if (isVisible) {
@@ -337,7 +337,7 @@ class ProductPricingFragment :
         val dateString = if (spinnerEditText.getText().isNotBlank()) {
             dateUtils.formatToYYYYmmDD(spinnerEditText.getText())
         } else {
-            dateUtils.formatToYYYYmmDD(Date().formatToMMMddYYYY())
+            dateUtils.formatToYYYYmmDD(Date().formatToLocalizedMonthDayYear())
         }
         val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
@@ -390,11 +390,11 @@ class ProductPricingFragment :
     }
 
     /**
-     * Formats the given [date] or the current date if it's null to `'MMM dd, YYYY'`
+     * Formats the given [date] or the current date if it's null to the localized medium date format
      */
     private fun Date?.formatForDisplay(): String {
         val date = this ?: Date()
-        return date.formatToMMMddYYYY()
+        return date.formatToLocalizedMonthDayYear()
     }
 
     private fun Int.formatSubscriptionInterval() =
