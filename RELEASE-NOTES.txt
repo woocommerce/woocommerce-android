@@ -11,6 +11,7 @@
 - [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
 - [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
 - [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
+- [*] Fixed the horizontal padding of the stock status dropdown when bulk-editing products [https://github.com/woocommerce/woocommerce-android/pull/16399]
 
 25.4
 -----

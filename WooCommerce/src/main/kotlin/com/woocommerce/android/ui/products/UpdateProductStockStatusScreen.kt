@@ -77,7 +77,6 @@ fun UpdateProductStockStatusScreen(
                     onStockStatusChanged(newStatus)
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
 
