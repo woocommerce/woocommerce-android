@@ -3,6 +3,7 @@ package com.woocommerce.android.extensions
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.lifecycleScope
@@ -304,7 +305,7 @@ fun Fragment.showDateRangePicker(
     val datePicker = MaterialDatePicker.Builder.dateRangePicker()
         .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
         .setSelection(
-            androidx.core.util.Pair(
+            Pair(
                 TimeUnit.DAYS.toMillis(fromDate.toEpochDay().coerceAtMost(maxDay)),
                 TimeUnit.DAYS.toMillis(toDate.toEpochDay().coerceAtMost(maxDay))
             )
