@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failur
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.troubleshooting.FailureType
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -30,6 +32,9 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoreAnalyticsCheckUseCaseTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private lateinit var sut: StoreAnalyticsCheckUseCase
     private lateinit var getStats: GetStats
     private lateinit var selectedSite: SelectedSite

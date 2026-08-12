@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.extensions.formatDateToFriendlyDayHour
 import com.woocommerce.android.extensions.formatDateToFriendlyLongMonthDate
@@ -8,14 +9,17 @@ import com.woocommerce.android.extensions.formatDateToWeeksInYear
 import com.woocommerce.android.extensions.formatDateToYear
 import com.woocommerce.android.extensions.formatDateToYearMonth
 import com.woocommerce.android.extensions.formatToDateOnly
-import com.woocommerce.android.extensions.formatToMonthDateOnly
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -27,13 +31,25 @@ class DateUtilsTest {
 
     private val crashLogger: CrashLogging = mock()
 
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
     @Before
     fun setUp() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("EEEEMMMd"))).thenReturn("EEEE, MMM d")
+
         dateUtilsUnderTest = DateUtils(
             Locale.US,
             crashLogger = crashLogger,
             selectedSite = mock()
         )
+    }
+
+    @After
+    fun tearDown() {
+        dateFormatMock.close()
     }
 
     @Test
@@ -84,6 +100,30 @@ class DateUtilsTest {
         assertNull(dateUtilsUnderTest.getShortMonthDayString("-07-41"))
 
         assertNull(dateUtilsUnderTest.getShortMonthDayString(""))
+    }
+
+    @Test
+    fun `given a day-first locale, when getting the short month day string, then the day comes first`() {
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("d MMM")
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+
+        assertEquals("3 Jul", ukDateUtils.getShortMonthDayString("2018-07-03"))
+    }
+
+    @Test
+    fun `given a day-first locale, when getting the short month day and year string, then the day comes first`() {
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("d MMM y")
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+
+        assertEquals("3 Jul 2018", ukDateUtils.getShortMonthDayAndYearString("2018-07-03"))
+    }
+
+    @Test
+    fun `when a localized medium date is parsed, then it is converted to yyyy-MM-dd`() {
+        assertEquals("2020-12-02", dateUtilsUnderTest.formatToYYYYmmDD("Dec 2, 2020"))
+
+        val ukDateUtils = DateUtils(Locale.UK, crashLogger, mock())
+        assertEquals("2020-12-02", ukDateUtils.formatToYYYYmmDD("2 Dec 2020"))
     }
 
     @Test
@@ -430,34 +470,6 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `formatToMonthDateOnly() returns correct values`() {
-        assertEquals("Aug 8", "2019-08-08".formatToMonthDateOnly(Locale.US))
-        assertEquals("Feb 23", "2019-02-23".formatToMonthDateOnly(Locale.US))
-        assertEquals("Jan 2", "2019-01-02".formatToMonthDateOnly(Locale.US))
-        assertEquals("Jun 4", "2019-06-04".formatToMonthDateOnly(Locale.US))
-        assertEquals("Sep 9", "2019-09-09".formatToMonthDateOnly(Locale.US))
-        assertEquals("Dec 22", "2018-12-22".formatToMonthDateOnly(Locale.US))
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "2019".formatToMonthDateOnly(Locale.US)
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "20-W12".formatToMonthDateOnly(Locale.US)
-        }
-
-        // Test for invalid value handling
-        assertFailsWith(IllegalArgumentException::class) {
-            "".formatToMonthDateOnly(Locale.US)
-        }
-
-        assertFailsWith(IllegalArgumentException::class) {
-            "21".formatToMonthDateOnly(Locale.US)
-        }
-    }
-
-    @Test
     fun `getDateAtStartOfDay() returns correct value`() {
         val year = 1999
         val month = 11
@@ -667,7 +679,7 @@ class DateUtilsTest {
     fun `getShortMonthDayString() with a valid date returns correct value`() {
         // getShortMonthDayString returns the expected value
         val stringDate = "2023-12-27"
-        assertEquals(dateUtilsUnderTest.getShortMonthDayString(stringDate), stringDate.formatToMonthDateOnly())
+        assertEquals("Dec 27", dateUtilsUnderTest.getShortMonthDayString(stringDate))
     }
 
     @Test

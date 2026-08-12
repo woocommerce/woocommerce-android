@@ -361,6 +361,7 @@ private fun WCProductVariationModel.toAppImage(imageModel: WCProductImageModel?)
         Product.Image(
             id = it.id,
             name = it.name,
+            alt = it.alt,
             source = it.src,
             dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
             isCoverImage = false

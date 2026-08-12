@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader.remote
 
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.LogWrapper
@@ -37,6 +38,7 @@ class WooPosRemoteReaderSession @Inject constructor(
     private val clientProvider: WooPosRemoteReaderClientProvider,
     private val logger: WooPosLogWrapper,
     private val resourceProvider: ResourceProvider,
+    private val errorMapper: WooPosRemoteReaderErrorMapper,
 ) {
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> = _state.asStateFlow()
@@ -70,11 +72,13 @@ class WooPosRemoteReaderSession @Inject constructor(
         } catch (cancel: CancellationException) {
             throw cancel
         } catch (cause: Throwable) {
-            fail("Failed to fetch connection token: ${cause.message}")
+            logger.e("Failed to fetch connection token", cause)
+            failWith(R.string.woopos_remote_reader_failed_token_invalid)
             return null
         }
         if (token.isBlank()) {
-            fail("Empty connection token")
+            logger.e("Connection token was empty")
+            failWith(R.string.woopos_remote_reader_failed_token_invalid)
             return null
         }
         return token
@@ -83,10 +87,14 @@ class WooPosRemoteReaderSession @Inject constructor(
     private suspend fun fetchLocationIdOrFail(): String? {
         return when (val result = fetchLocationId()) {
             is LocationIdFetchingResult.Success -> result.locationId
-            is LocationIdFetchingResult.Error.MissingAddress -> fail(REASON_MISSING_ADDRESS).let { null }
-            is LocationIdFetchingResult.Error.InvalidPostalCode -> fail(REASON_INVALID_POSTAL_CODE).let { null }
-            is LocationIdFetchingResult.Error.Other ->
-                fail(result.error ?: "Could not fetch merchant location").let { null }
+            is LocationIdFetchingResult.Error.MissingAddress ->
+                failWith(R.string.card_reader_connect_missing_address).let { null }
+            is LocationIdFetchingResult.Error.InvalidPostalCode ->
+                failWith(R.string.card_reader_connect_invalid_postal_code_hint).let { null }
+            is LocationIdFetchingResult.Error.Other -> {
+                logger.e("Could not fetch merchant location: ${result.error}")
+                failWith(R.string.woopos_remote_reader_connect_failed_generic).let { null }
+            }
         }
     }
 
@@ -111,7 +119,15 @@ class WooPosRemoteReaderSession @Inject constructor(
                     _state.value = it
                     watchForRemoteClose(newClient)
                 }
-            is ConnectOutcome.Rejected -> fail("${outcome.code}: ${outcome.description}")
+            is ConnectOutcome.Rejected -> {
+                logger.e("Remote reader connect rejected: ${outcome.error.code} - ${outcome.description}")
+                fail(
+                    errorMapper.toUserMessage(
+                        error = outcome.error,
+                        fallback = R.string.woopos_remote_reader_connect_failed_generic,
+                    )
+                )
+            }
             is ConnectOutcome.Failed -> {
                 logger.e(
                     "Remote reader connect failed: ${outcome.cause::class.java.simpleName}",
@@ -169,6 +185,8 @@ class WooPosRemoteReaderSession @Inject constructor(
         return locationRepository.getDefaultLocationId(pluginType)
     }
 
+    private fun failWith(@StringRes message: Int): State.Failed = fail(resourceProvider.getString(message))
+
     private fun fail(message: String): State.Failed {
         logger.e("Remote reader session failed: $message")
         disconnectInternal()
@@ -188,8 +206,6 @@ class WooPosRemoteReaderSession @Inject constructor(
     }
 
     private companion object {
-        const val REASON_MISSING_ADDRESS = "missing_merchant_address"
-        const val REASON_INVALID_POSTAL_CODE = "invalid_postal_code"
         const val SIMULATED_CONNECT_DELAY_MS = 800L
     }
 }

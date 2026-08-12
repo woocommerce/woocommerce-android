@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -50,6 +51,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val refreshProductsSignal: RefreshProductsSignal,
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
     private val crashLogging: CrashLogging,
 ) {
@@ -85,6 +87,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         ),
         cardReaderType = cardReaderType,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        refreshProductsSignal = refreshProductsSignal,
         crashLogging = crashLogging,
     )
 
@@ -119,6 +122,7 @@ class WooPosCardReaderPaymentControllerFactory @Inject constructor(
         ),
         cardReaderType = CardReaderType.EXTERNAL,
         isTTPPaymentInProgress = isTTPPaymentInProgress,
+        refreshProductsSignal = refreshProductsSignal,
         crashLogging = crashLogging,
         allowCancelledStatus = false,
     )
