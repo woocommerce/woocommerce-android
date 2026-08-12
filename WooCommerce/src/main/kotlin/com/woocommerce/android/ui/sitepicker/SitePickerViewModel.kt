@@ -163,7 +163,7 @@ class SitePickerViewModel @Inject constructor(
         launch {
             val sitesInDb = getSitesFromDb()
             if (sitesInDb.isNotEmpty()) {
-                onSitesLoaded(sitesInDb)
+                onSitesLoaded(sitesInDb, isApiResponse = false)
             }
             fetchSitesFromApi(showSkeleton = sitesInDb.isEmpty() || !loginSiteAddress.isNullOrEmpty())
         }
@@ -190,7 +190,7 @@ class SitePickerViewModel @Inject constructor(
                         properties = mapOf(AnalyticsTracker.KEY_FETCH_SITES_DURATION to duration)
                     )
                 }
-                onSitesLoaded(repository.getSites())
+                onSitesLoaded(repository.getSites(), isApiResponse = true)
             }
         }
     }
@@ -224,7 +224,7 @@ class SitePickerViewModel @Inject constructor(
         )
     }
 
-    private suspend fun onSitesLoaded(sites: List<SiteModel>) {
+    private suspend fun onSitesLoaded(sites: List<SiteModel>, isApiResponse: Boolean) {
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
@@ -248,7 +248,8 @@ class SitePickerViewModel @Inject constructor(
                 )
             )
         }
-        val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
+        val shouldSelectFirstSite = shouldSelectFirstSite(wooSites.size, isApiResponse)
+        val selectedSiteId = selectedSiteId.value ?: wooSites.firstOrNull()?.id?.takeIf { shouldSelectFirstSite }
         val isSelectedSiteVisible = getWooVisibleSites().any { it.id == selectedSiteId }
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
 
@@ -270,10 +271,18 @@ class SitePickerViewModel @Inject constructor(
             processLoginSiteAddress(it)
             return
         }
-        if (navArgs.openedFromLogin && wooSites.size == 1) {
-            onSiteSelected(wooSites.first())
-            onContinueButtonClick(isAutoLogin = true)
+        if (navArgs.openedFromLogin && isApiResponse && wooSites.size == 1) {
+            wooSites.singleOrNull()?.let {
+                onSiteSelected(it)
+                onContinueButtonClick(isAutoLogin = true)
+            }
         }
+    }
+
+    private fun shouldSelectFirstSite(wooSiteCount: Int, isApiResponse: Boolean) = when {
+        !navArgs.openedFromLogin -> true
+        !isApiResponse -> false
+        else -> wooSiteCount == 1
     }
 
     private suspend fun buildSitesList(
@@ -585,7 +594,7 @@ class SitePickerViewModel @Inject constructor(
             loadedWooSites.firstOrNull { it.id == currentSelectedSiteId }?.let { return it }
         }
 
-        return loadedWooSites.firstOrNull()
+        return if (navArgs.openedFromLogin) null else loadedWooSites.firstOrNull()
     }
 
     private fun trackAppPasswordsSupport(site: SiteModel) {
@@ -690,13 +699,13 @@ class SitePickerViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     // Continue login
-                    onSitesLoaded(repository.getSites())
+                    onSitesLoaded(repository.getSites(), isApiResponse = false)
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(string.site_picker_error))
                     // This would lead to the [WooNotFoundState] again
                     // The chance of getting this state is small, because of the retry mechanism above
-                    onSitesLoaded(repository.getSites())
+                    onSitesLoaded(repository.getSites(), isApiResponse = false)
                 }
             )
         }
@@ -731,7 +740,7 @@ class SitePickerViewModel @Inject constructor(
 
     fun onWooSitesVisibilityUpdated() {
         launch {
-            onSitesLoaded(repository.getSites())
+            onSitesLoaded(repository.getSites(), isApiResponse = false)
         }
     }
 
