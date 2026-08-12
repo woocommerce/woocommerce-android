@@ -10,6 +10,8 @@ import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.showDateRangePicker
+import com.woocommerce.android.extensions.toDateAtStartOfDay
+import com.woocommerce.android.extensions.toEpochDay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -82,7 +84,7 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowCustomDateRangePicker -> openDateRangePicker(event.startDateMillis, event.endDateMillis)
+                is ShowCustomDateRangePicker -> openDateRangePicker(event.startDay, event.endDay)
                 is OnFilterOptionsSelectionUpdated -> navigateBackWithResult(
                     KEY_UPDATED_FILTER_OPTIONS,
                     event.category
@@ -96,12 +98,12 @@ class OrderFilterOptionsFragment :
         }
     }
 
-    private fun openDateRangePicker(startDateMillis: Long, endDateMillis: Long) {
+    private fun openDateRangePicker(startDay: Long, endDay: Long) {
         val siteToday = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-        val selectedStart = if (startDateMillis > 0) Date(startDateMillis) else siteToday
-        val selectedEnd = if (startDateMillis > 0) Date(endDateMillis) else siteToday
+        val selectedStart = if (startDay > 0) startDay.toDateAtStartOfDay() else siteToday
+        val selectedEnd = if (startDay > 0) endDay.toDateAtStartOfDay() else siteToday
         showDateRangePicker(selectedStart, selectedEnd, siteToday) { startDate, endDate ->
-            viewModel.onCustomDateRangeChanged(startDate.time, endDate.time)
+            viewModel.onCustomDateRangeChanged(startDate.toEpochDay(), endDate.toEpochDay())
         }
     }
 
