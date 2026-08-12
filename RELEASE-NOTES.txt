@@ -6,6 +6,7 @@
 -----
 - [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
 - [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one [https://github.com/woocommerce/woocommerce-android/pull/16400]
+- [*] Custom date ranges now follow the store's current day and no longer shift when the device time zone changes [https://github.com/woocommerce/woocommerce-android/pull/16410]
 - [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
 - [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
 - [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
