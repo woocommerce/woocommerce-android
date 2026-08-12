@@ -1652,6 +1652,7 @@
     <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
     <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
     <string name="card_reader_mode_error_close">Close</string>
+    <string name="card_reader_mode_error_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
     <string name="card_reader_mode_location_permission_header">Location permission required</string>
     <string name="card_reader_mode_location_permission_subtitle">Android requires location access to use tap-to-pay on this phone. Your location stays on this device.</string>
     <string name="card_reader_mode_location_permission_continue">Continue</string>
@@ -3881,6 +3882,9 @@
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
     <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Turn on NFC on the phone, then try again.</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Payment service error. Try reconnecting.</string>
     <string name="woopos_battery_low">Card reader battery low</string>
     <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>

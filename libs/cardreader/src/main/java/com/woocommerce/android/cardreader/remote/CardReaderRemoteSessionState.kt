@@ -15,6 +15,7 @@ sealed class CardReaderRemoteSessionState {
     ) : CardReaderRemoteSessionState()
 
     data class Error(
+        val error: CardReaderRemoteError,
         val message: String?,
         val errorDescription: String? = null,
     ) : CardReaderRemoteSessionState()

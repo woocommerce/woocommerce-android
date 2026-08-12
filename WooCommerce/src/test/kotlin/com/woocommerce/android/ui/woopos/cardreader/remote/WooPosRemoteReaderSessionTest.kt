@@ -167,6 +167,7 @@ class WooPosRemoteReaderSessionTest {
         clientProvider = clientProvider,
         logger = logger,
         resourceProvider = resourceProvider,
+        errorMapper = WooPosRemoteReaderErrorMapper(resourceProvider),
     )
 
     private fun phone(isSimulated: Boolean) = WooPosDiscoveredReader.Phone(

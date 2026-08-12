@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteCertificateKeyType
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
@@ -19,6 +21,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -55,6 +58,10 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             }
         )
     }
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.card_reader_mode_error_phone_not_eligible) }
+            .thenReturn("This phone isn't eligible for Tap to Pay. Try a different device.")
+    }
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on { wooPosRemoteReaderDeviceUUID }.thenReturn("test-device-id")
     }
@@ -75,6 +82,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                     analyticsTrackerWrapper,
                     selectedSite,
                     appPrefsWrapper,
+                    resourceProvider,
                 ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
@@ -175,17 +183,37 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given error session state, when emitted, then error view state carries the message`() = testBlocking {
+    fun `given an unmapped error, when emitted, then the raw message is not shown to the user`() = testBlocking {
         // GIVEN
         viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // WHEN
-        sessionState.value = CardReaderRemoteSessionState.Error(message = "java.net.SocketException: closed")
+        sessionState.value = CardReaderRemoteSessionState.Error(
+            error = CardReaderRemoteError.ConnectFailed,
+            message = "java.net.SocketException: closed",
+        )
         advanceUntilIdle()
 
         // THEN
         val viewState = viewModel.viewState.value as RemoteTapToPayError
-        assertThat(viewState.message).isEqualTo("java.net.SocketException: closed")
+        assertThat(viewState.message).isNull()
+    }
+
+    @Test
+    fun `given the phone is not eligible, when emitted, then the mapped copy is shown`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+        // WHEN
+        sessionState.value = CardReaderRemoteSessionState.Error(
+            error = CardReaderRemoteError.PhoneNotEligible,
+            message = "java.lang.IllegalStateException: unsupported device",
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayError
+        assertThat(viewState.message).isEqualTo("This phone isn't eligible for Tap to Pay. Try a different device.")
     }
 
     @Test
@@ -260,6 +288,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
 
             // WHEN
             sessionState.value = CardReaderRemoteSessionState.Error(
+                error = CardReaderRemoteError.ConnectFailed,
                 message = "java.lang.IllegalStateException: handshake failed",
                 errorDescription = "java.lang.IllegalStateException: handshake failed" +
                     " <- caused by: java.security.cert.CertificateException: untrusted root",
@@ -285,7 +314,10 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
             sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "iPad")
             advanceUntilIdle()
-            sessionState.value = CardReaderRemoteSessionState.Error(message = "boom")
+            sessionState.value = CardReaderRemoteSessionState.Error(
+                error = CardReaderRemoteError.ConnectFailed,
+                message = "boom",
+            )
             advanceUntilIdle()
 
             // WHEN
