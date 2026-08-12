@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.preview
 
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

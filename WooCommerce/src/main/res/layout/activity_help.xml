@@ -85,6 +85,13 @@
                 android:visibility="gone" />
 
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/mobileStatusReportContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/support_mobile_status_report"
+                app:optionValue="@string/support_mobile_status_report_detail" />
+
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
                 android:id="@+id/aiSupportChatHistoryContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

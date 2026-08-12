@@ -7,12 +7,14 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
 import com.woocommerce.android.databinding.PaymentsHubHeaderBinding
 import com.woocommerce.android.databinding.PaymentsHubListItemBinding
 import com.woocommerce.android.databinding.PaymentsHubToggelableItemBinding
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.ToggleableListItem.ToggleState
 import com.woocommerce.android.ui.payments.hub.payoutsummary.PaymentsHubPayoutSummaryView
 import com.woocommerce.android.util.UiHelpers
 
@@ -65,19 +67,26 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
             binding.paymentsHubSwitch.setOnCheckedChangeListener(null)
-            binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
-            binding.paymentsHubSwitch.isClickable = uiState.isEnabled
-            binding.paymentsHubSwitch.isChecked = uiState.isChecked
-            binding.paymentsHubSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (uiState.isEnabled) {
-                    uiState.onToggled(isChecked)
+            when (uiState.state) {
+                ToggleState.LOADING -> {
+                    binding.paymentsHubSwitch.isInvisible = true
+                    binding.paymentsHubSwitch.isClickable = false
+                    binding.root.setOnClickListener(null)
+                }
+                ToggleState.CHECKED, ToggleState.UNCHECKED -> {
+                    binding.paymentsHubSwitch.isInvisible = false
+                    binding.paymentsHubSwitch.isEnabled = uiState.isEnabled
+                    binding.paymentsHubSwitch.isClickable = false
+                    binding.paymentsHubSwitch.isChecked = uiState.state == ToggleState.CHECKED
+                    binding.root.setOnClickListener {
+                        if (uiState.isEnabled) {
+                            uiState.onToggled(!uiState.isChecked)
+                        }
+                    }
                 }
             }
             binding.paymentsHubListItemDescriptionTv.setOnClickListener {
                 uiState.onLearnMoreClicked()
-            }
-            binding.root.setOnClickListener {
-                binding.paymentsHubSwitch.isChecked = !uiState.isChecked
             }
         }
     }

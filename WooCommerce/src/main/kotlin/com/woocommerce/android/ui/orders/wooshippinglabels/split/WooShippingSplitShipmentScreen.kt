@@ -45,7 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -196,7 +196,7 @@ fun WooShippingSplitShipmentScreen(
         }
     }
 
-    val context = LocalContext.current
+    val resources = LocalResources.current
     LaunchedEffect(viewState.splitMessage) {
         val snackbarData = if (viewState.splitMessage is SplitShipmentMessage.Success) {
             viewState.splitMessage.snackbarData
@@ -210,14 +210,14 @@ fun WooShippingSplitShipmentScreen(
         val result = snackbarHostState.showSnackbar(
             visuals = ShippingLabelsSnackbarVisuals(
                 message = if (snackbarData.messageParameters.isEmpty()) {
-                    context.getString(snackbarData.message)
+                    resources.getString(snackbarData.message)
                 } else {
-                    context.getString(
+                    resources.getString(
                         snackbarData.message,
                         *snackbarData.messageParameters.toTypedArray()
                     )
                 },
-                actionLabel = context.getString(snackbarData.actionLabel),
+                actionLabel = resources.getString(snackbarData.actionLabel),
                 duration = snackbarData.duration,
                 hasSuccessCheckmark = viewState.splitMessage is SplitShipmentMessage.Success
             )

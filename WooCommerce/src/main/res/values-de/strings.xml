@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 09:58:31+0000
+Translation-Revision-Date: 2026-07-28 09:58:52+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Rabatt nicht angewendet</string>
+    <string name="product_duplicate_discard_changes_action">Verwerfen und duplizieren</string>
+    <string name="product_duplicate_discard_changes_message">Deine nicht gespeicherten Änderungen gehen verloren. Das Duplikat verwendet die zuletzt gespeicherte Version.</string>
+    <string name="product_duplicate_discard_changes_title">Änderungen verwerfen und duplizieren?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Du hast mindestens eine überfällige Anforderung. Du kannst sie überspringen und weiterhin Zahlungen erhalten, aber wenn dein Konto durch die Anforderung blockiert wird, können einige Transaktionen abgelehnt werden, bis du sie behebst.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Überfällige Anforderungen in deinem Konto</string>
+    <string name="order_editing_currency_mismatch_title">Diese Bestellung kann nicht in der App bearbeitet werden</string>
+    <string name="login_no_wpcom_account_found_message">Dieser Benutzer existiert nicht. Überprüfe die E-Mail-Adresse oder versuche es mit einem anderen Konto.</string>
+    <string name="login_no_wpcom_account_found_title">Falsche E-Mail-Adresse</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Dieser Bildtyp wird nicht unterstützt. Bitte wähle ein Bild in diesem Format aus: PNG, JPEG, WebP, GIF, BMP, HEIC oder HEIF.</string>
     <string name="ai_support_chat_store_connection_error_message">Mein Shop ist nicht erreichbar. Die App hat beim Versuch, meinen Shop aufzurufen, einen Verbindungsfehler erkannt. Wie kann ich das Problem beheben?</string>
     <string name="settings_crash_reporting_error_update">Beim Aktualisieren deiner Einstellung für Absturzberichte ist ein Fehler aufgetreten</string>
@@ -1187,6 +1196,7 @@ Language: de
     <string name="shipping_label_purchased_note">Hinweis: Das Wiederverwenden eines ausgedruckten Etiketts ist ein Verstoß gegen unsere Geschäftsbedingungen und kann strafrechtliche Konsequenzen nach sich ziehen.</string>
     <string name="shipping_label_purchased_success_message">Hier kannst du das Versandetikett erneut drucken oder das Papierformat des Etiketts ändern.</string>
     <string name="shipping_label_purchased_success_title">Dein Versandetikett kann jetzt gedruckt werden</string>
+    <string name="order_editing_currency_mismatch_message">Leider kannst du diese Bestellung nur im Web bearbeiten, da %1$s verwendet wird und die Währung deiner Website %2$s ist.</string>
     <string name="shipping_label_shipping_service_title">Versanddienst</string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Etikett kaufen</string>
     <string name="shipping_label_shipment_details_purchase_label">Etikett kaufen · %1$s </string>
@@ -1667,9 +1677,6 @@ Language: de
     <string name="blaze_campaign_preview_target_default_value">Alle</string>
     <string name="blaze_campaign_preview_days_duration">%1$s Tage seit %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
-    <string name="product_creation_survey_button_dont_show_again">Nicht erneut anzeigen</string>
-    <string name="product_creation_survey_button_remind_me_later">Später daran erinnern</string>
-    <string name="product_creation_survey_description">Hast du eine Minute? Hilf uns mit einem kurzen Feedback, unsere KI-gestützten Funktionen zu verbessern.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Details bestätigen</string>
     <string name="blaze_campaign_preview_details_destination_url">Ziel der Werbung</string>
     <string name="blaze_campaign_preview_details_interests">Interessen</string>
@@ -1719,8 +1726,6 @@ Language: de
     <string name="theme_picker_carousel_info_item_description_settings">Du kannst dir im WooCommerce-Theme-Shop dein perfektes Theme aussuchen.</string>
     <string name="theme_picker_current_theme_title">Aktuelles Theme</string>
     <string name="theme_picker_settings_title">Teste einen neuen Look</string>
-    <string name="product_creation_survey_button_open">Befragung starten</string>
-    <string name="product_creation_survey_title">Deine Meinung ist uns wichtig!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Wenn „Persönliche Zahlung“ aktiviert ist, können Kunden für Online-Bestellungen bei Zustellung in bar oder mit Karte zahlen.\n\nBestellungen kannst du auch ohne Aktivierung dieser Funktion weiterhin manuell erstellen.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Möchtest du „Persönliche Zahlung“ zu deinem Web-Bezahlvorgang hinzufügen?</string>
     <string name="card_reader_onboarding_contact_us">Brauchst du Hilfe? &lt;a href=\'\'&gt;Kontaktiere uns&lt;/a&gt;</string>
@@ -2303,7 +2308,6 @@ Language: de
     <string name="support_request_title">Lass uns das Problem lösen</string>
     <string name="support_request_help_title">Ich brauche Hilfe bei</string>
     <string name="support_request">Supportanfrage</string>
-    <string name="store_onboarding_menu_share_feedback">Feedback teilen</string>
     <string name="store_onboarding_full_screen_transition_name">Vollbild zum Onboarding</string>
     <string name="store_onboarding_task_view_all">Alle anzeigen (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d von %2$d Aufgaben erledigt</string>
@@ -2485,7 +2489,6 @@ Language: de
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_non_woo_stores_label">Andere Websites</string>
     <string name="payments_hub_title">Zahlungen</string>
-    <string name="login_no_wpcom_account_found">Deine E-Mail-Adresse wird nicht mit einem WordPress.com-Konto verwendet.</string>
     <string name="login_magic_link_button">Mit magischem Link anmelden</string>
     <string name="or_use_password" a8c-src-lib="module:login">Mit Passwort anmelden</string>
     <string name="login_magic_links_sent_label_short">Überprüfe dein Postfach auf diesem Gerät!</string>
@@ -3038,9 +3041,7 @@ Language: de
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">„Persönliche Zahlungen“ ist im Testmodus nicht verfügbar. Deaktiviere die Zahlungsmethode, um den Vorgang fortzusetzen.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">„Persönliche Zahlungen“ ist derzeit nicht verfügbar</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Dein Konto weist ausstehende Anforderungen auf. Erfülle diese Anforderungen bitte bis %1$s, um weiterhin persönliche Zahlungen zu erhalten.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">„Persönliche Zahlungen“ ist derzeit nicht verfügbar</string>
     <string name="card_reader_onboarding_account_under_review_hint">Du kannst persönliche Zahlungen erhalten, sobald wir mit der Prüfung deines Kontos fertig sind.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">In deinem Konto ist mindestens eine Anforderung überfällig. Erfülle bitte die Anforderung(en), um weiterhin persönliche Zahlungen zu erhalten.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Dein Konto weist ausstehende Anforderungen auf.</string>
     <string name="card_reader_onboarding_account_under_review_header">„Persönliche Zahlungen“ ist derzeit nicht verfügbar</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Nach dem Update aktualisieren</string>

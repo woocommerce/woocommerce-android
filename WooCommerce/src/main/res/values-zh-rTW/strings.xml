@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 09:57:06+0000
+Translation-Revision-Date: 2026-07-28 11:58:53+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">未套用折扣</string>
+    <string name="product_duplicate_discard_changes_action">捨棄並複製</string>
+    <string name="product_duplicate_discard_changes_message">未儲存的變更將會遺失。 重複項目將採用上次儲存的版本。</string>
+    <string name="product_duplicate_discard_changes_title">要捨棄變更並複製嗎？</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">你有至少一個逾期要求。 你可以跳過並繼續收取款項，但如果你向封鎖你的帳號提出要求，部分交易可能會遭到拒絕，直到你解決為止。</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">你的帳號有逾期要求</string>
+    <string name="order_editing_currency_mismatch_title">這筆訂單無法在應用程式中編輯</string>
+    <string name="login_no_wpcom_account_found_message">使用者不存在。 請確認電子郵件地址是否正確，或嘗試其他帳號。</string>
+    <string name="login_no_wpcom_account_found_title">錯誤的電子郵件</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">不支援此圖片類型 請選取 PNG、JPEG、WebP、GIF、BMP、HEIC 或 HEIF 圖片。</string>
     <string name="ai_support_chat_store_connection_error_message">無法連線我的商店。 應用程式嘗試連線我的商店時，偵測到連線錯誤。 如何修正問題？</string>
     <string name="settings_crash_reporting_error_update">更新當機報告設定時發生錯誤</string>
@@ -1187,6 +1196,7 @@ Language: zh_TW
     <string name="shipping_label_purchased_note">請注意：若你重複使用已印製標籤，此行為將違反我們的服務條款，並可能會導致刑事責任。</string>
     <string name="shipping_label_purchased_success_message">你可以在這裡再次印製貨運標籤，或變更標籤的紙張大小。</string>
     <string name="shipping_label_purchased_success_title">你的貨運標籤已可供印製</string>
+    <string name="order_editing_currency_mismatch_message">很抱歉，你只能在網頁上編輯這筆訂單，這是因為此訂單的幣別為「%1$s」，而貴網站採用的幣別為「%2$s」。</string>
     <string name="shipping_label_shipping_service_title">貨運服務</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">最快速</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">最便宜</string>
@@ -1667,9 +1677,6 @@ Language: zh_TW
     <string name="blaze_campaign_budget_toolbar_title">設定預算</string>
     <string name="blaze_campaign_preview_target_default_value">全部</string>
     <string name="blaze_campaign_preview_days_duration">從 %2$s起共 %1$s 天</string>
-    <string name="product_creation_survey_button_dont_show_again">不要再顯示</string>
-    <string name="product_creation_survey_button_remind_me_later">稍後再提醒我</string>
-    <string name="product_creation_survey_description">有空嗎？ 簡短的意見回饋就能幫助我們改善 AI 輔助功能。</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">確認詳細資料</string>
     <string name="blaze_campaign_preview_details_destination_url">廣告目的地</string>
     <string name="blaze_campaign_preview_details_interests">興趣</string>
@@ -1719,8 +1726,6 @@ Language: zh_TW
     <string name="theme_picker_carousel_info_item_description_settings">歡迎前往 WooCommerce 佈景主題商店，尋找最適合的佈景主題。</string>
     <string name="theme_picker_current_theme_title">目前的佈景主題</string>
     <string name="theme_picker_settings_title">嘗試新的外觀</string>
-    <string name="product_creation_survey_button_open">開始進行調查</string>
-    <string name="product_creation_survey_title">我們很重視你的意見！</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">若你啟用親自收款功能，可以讓顧客在到貨時以現金或卡片支付線上訂單款項。\n\n即使不啟用這項功能，你仍可手動建立訂單。</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">你想將親自收款新增至網頁結帳功能嗎？</string>
     <string name="card_reader_onboarding_contact_us">需要協助嗎？ &lt;a href=\'\'&gt;聯絡我們&lt;/a&gt;</string>
@@ -2304,7 +2309,6 @@ Language: zh_TW
     <string name="support_request_title">讓我們解決這個問題</string>
     <string name="support_request_help_title">我需要協助處理</string>
     <string name="support_request">支援要求</string>
-    <string name="store_onboarding_menu_share_feedback">分享意見反應</string>
     <string name="store_onboarding_full_screen_transition_name">上線全螢幕</string>
     <string name="store_onboarding_task_view_all">檢視全部 (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">已完成 %1$d 個工作，共 %2$d 個工作</string>
@@ -2483,7 +2487,6 @@ Language: zh_TW
     <string name="login_site_picker_enter_site_address">輸入網站位址</string>
     <string name="card_reader_onboarding_not_finished">我們注意到你尚未完成「親自收款」設定。 &lt;a href=\'\'&gt;繼續設定&lt;/a&gt;</string>
     <string name="payments_hub_title">付款</string>
-    <string name="login_no_wpcom_account_found">你的電子郵件並未用於 WordPress.com 帳號。</string>
     <string name="login_non_woo_stores_label">其他網站</string>
     <string name="more_menu_button_w___admin">WC 管理員</string>
     <string name="login_magic_links_email_sent">我們剛將神奇連結傳送至：</string>
@@ -3039,8 +3042,6 @@ Language: zh_TW
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">你的帳號中有待處理的要求。 請在 %1$s 前完成這些要求，以便繼續使用親自收款功能。</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">你的帳號有待處理的要求</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">你的帳號中有至少一個逾期要求。 請處理該要求以繼續使用親自收款功能</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_under_review_hint">我們審核完你的帳號後，你即可隨即開始親自收款。</string>
     <string name="card_reader_onboarding_account_under_review_header">目前無法親自收款</string>
     <string name="card_reader_onboarding_account_rejected_hint">很抱歉，此商店不支援使用親自收款功能。</string>

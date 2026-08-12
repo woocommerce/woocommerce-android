@@ -40,8 +40,5 @@ enum class FeatureFlag(
     AI_ASSISTANT("woo_mobile_ai_assistant"),
     AI_SUPPORT_CHAT("ai_support_chat"),
     SMARTER_NOTIFICATIONS("smarter_notifications", localValue = PackageUtils.isDebugBuild()),
-    IPP_COUNTRY_EXPANSION("woo_ipp_country_expansion"),
-    IPP_COUNTRY_EXPANSION_EU_EXTENDED("woo_ipp_country_expansion_eu_extended"),
-    IPP_AUSTRALIA_WOOPAYMENTS("woo_ipp_australia_woopayments"),
     QR_LOGIN("woo_qr_code_login"),
 }

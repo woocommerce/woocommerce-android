@@ -127,6 +127,12 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
+    fun onImageDetailsUpdated(updatedImage: Product.Image) {
+        viewState = viewState.copy(
+            images = images.map { image -> if (image.id == updatedImage.id) updatedImage else image }
+        )
+    }
+
     fun onMediaLibraryImagesAdded(newImages: List<Product.Image>) {
         viewState = if (isMultiSelectionAllowed) {
             viewState.copy(images = images + newImages)

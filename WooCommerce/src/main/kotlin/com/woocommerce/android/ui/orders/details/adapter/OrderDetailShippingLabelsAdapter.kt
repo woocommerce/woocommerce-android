@@ -14,7 +14,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.databinding.OrderDetailShippingLabelListItemBinding
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
-import com.woocommerce.android.extensions.formatToMMMddYYYYhhmm
+import com.woocommerce.android.extensions.formatToLocalizedMediumWithTime
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -222,7 +222,7 @@ class OrderDetailShippingLabelsAdapter(
                         context.getString(
                             R.string.orderdetail_shipping_label_refund_subtitle,
                             formatCurrencyForDisplay(shippingLabel.rate),
-                            shippingLabel.refund.requestDate?.formatToMMMddYYYYhhmm() ?: ""
+                            shippingLabel.refund.requestDate?.formatToLocalizedMediumWithTime() ?: ""
                         )
                     )
                     showTrackingItemButton(false)

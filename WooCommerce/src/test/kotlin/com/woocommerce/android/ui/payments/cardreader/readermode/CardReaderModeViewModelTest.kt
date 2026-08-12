@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteCertificateKeyType
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSession
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteSessionState
 import com.woocommerce.android.tools.SelectedSite
@@ -18,6 +21,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayStar
 import com.woocommerce.android.ui.payments.cardreader.payment.RemoteTapToPayWaitingForPayment
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -31,6 +35,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
@@ -38,6 +43,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
     private val sessionState = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
+        on { certificateKeyType }.thenReturn(CardReaderRemoteCertificateKeyType.ECDSA_256)
     }
     private val cardReaderManager: CardReaderManager = mock {
         on { initialized }.thenReturn(true)
@@ -51,6 +57,10 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                 url = "https://example.com"
             }
         )
+    }
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(R.string.card_reader_mode_error_phone_not_eligible) }
+            .thenReturn("This phone isn't eligible for Tap to Pay. Try a different device.")
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on { wooPosRemoteReaderDeviceUUID }.thenReturn("test-device-id")
@@ -72,6 +82,7 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
                     analyticsTrackerWrapper,
                     selectedSite,
                     appPrefsWrapper,
+                    resourceProvider,
                 ) as T
         }
         viewModel = ViewModelProvider(store, factory)[CardReaderModeViewModel::class.java]
@@ -172,17 +183,37 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given error session state, when emitted, then error view state carries the message`() = testBlocking {
+    fun `given an unmapped error, when emitted, then the raw message is not shown to the user`() = testBlocking {
         // GIVEN
         viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
 
         // WHEN
-        sessionState.value = CardReaderRemoteSessionState.Error(message = "java.net.SocketException: closed")
+        sessionState.value = CardReaderRemoteSessionState.Error(
+            error = CardReaderRemoteError.ConnectFailed,
+            message = "java.net.SocketException: closed",
+        )
         advanceUntilIdle()
 
         // THEN
         val viewState = viewModel.viewState.value as RemoteTapToPayError
-        assertThat(viewState.message).isEqualTo("java.net.SocketException: closed")
+        assertThat(viewState.message).isNull()
+    }
+
+    @Test
+    fun `given the phone is not eligible, when emitted, then the mapped copy is shown`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+        // WHEN
+        sessionState.value = CardReaderRemoteSessionState.Error(
+            error = CardReaderRemoteError.PhoneNotEligible,
+            message = "java.lang.IllegalStateException: unsupported device",
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val viewState = viewModel.viewState.value as RemoteTapToPayError
+        assertThat(viewState.message).isEqualTo("This phone isn't eligible for Tap to Pay. Try a different device.")
     }
 
     @Test
@@ -224,7 +255,138 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             // THEN
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
-                eq(mapOf("is_simulated" to false)),
+                eq(mapOf("is_simulated" to false, "certificate_key_type" to "ecdsa_256")),
             )
         }
+
+    @Test
+    fun `given session fell back to an rsa certificate, when started, then rsa key type is tracked`() =
+        testBlocking {
+            // GIVEN
+            whenever(session.certificateKeyType).thenReturn(CardReaderRemoteCertificateKeyType.RSA_2048)
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+            // WHEN
+            sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+                deviceName = "Pixel",
+                fingerprintSuffix = "1234",
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
+                eq(mapOf("is_simulated" to false, "certificate_key_type" to "rsa_2048")),
+            )
+        }
+
+    @Test
+    fun `given the session errors, when tracked, then the error description carries the cause chain`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+
+            // WHEN
+            sessionState.value = CardReaderRemoteSessionState.Error(
+                error = CardReaderRemoteError.ConnectFailed,
+                message = "java.lang.IllegalStateException: handshake failed",
+                errorDescription = "java.lang.IllegalStateException: handshake failed" +
+                    " <- caused by: java.security.cert.CertificateException: untrusted root",
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ERROR),
+                eq(
+                    mapOf(
+                        "error_description" to "java.lang.IllegalStateException: handshake failed" +
+                            " <- caused by: java.security.cert.CertificateException: untrusted root"
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given a tablet connected then the session errored, when cleared, then error reason is reported`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+            sessionState.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = "iPad")
+            advanceUntilIdle()
+            sessionState.value = CardReaderRemoteSessionState.Error(
+                error = CardReaderRemoteError.ConnectFailed,
+                message = "boom",
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            store.clear()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+                eq(
+                    mapOf(
+                        "reason" to "error",
+                        "last_state" to "error",
+                        "tablet_connected" to true,
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given no tablet ever connected, when cleared without an explicit exit, then dismissed is reported`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+            sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+                deviceName = "Pixel",
+                fingerprintSuffix = "1234",
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            store.clear()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+                eq(
+                    mapOf(
+                        "reason" to "dismissed",
+                        "last_state" to "ready_to_pair",
+                        "tablet_connected" to false,
+                    )
+                ),
+            )
+        }
+
+    @Test
+    fun `given the user taps the exit action, when cleared, then user exit reason is reported`() = testBlocking {
+        // GIVEN
+        viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
+        sessionState.value = CardReaderRemoteSessionState.ReadyToPair(
+            deviceName = "Pixel",
+            fingerprintSuffix = "1234",
+        )
+        advanceUntilIdle()
+        (viewModel.viewState.value as RemoteTapToPayReadyToPair).onPrimaryActionClicked()
+
+        // WHEN
+        store.clear()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_ENDED),
+            eq(
+                mapOf(
+                    "reason" to "user_exit",
+                    "last_state" to "ready_to_pair",
+                    "tablet_connected" to false,
+                )
+            ),
+        )
+    }
 }

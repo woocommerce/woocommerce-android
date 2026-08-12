@@ -29,6 +29,7 @@ class ProductImageRemoveBackgroundViewModelTest : BaseUnitTest() {
     private val testImage = Product.Image(
         id = 1L,
         name = "test.jpg",
+        alt = null,
         source = "https://example.com/test.jpg",
         dateCreated = Date(),
         isCoverImage = false
