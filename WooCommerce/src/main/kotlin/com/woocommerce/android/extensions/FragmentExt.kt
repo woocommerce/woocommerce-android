@@ -33,7 +33,7 @@ import kotlin.math.abs
  * [SavedStateHandle] after the process was killed (e.g. a tablet woken after a long idle). It is stable across
  * configuration changes and regenerated on process death. See WOOMOB-3275.
  */
-// internal (not private) so the pure envelope/staleness logic can be unit-tested — see FragmentExtTest.
+// internal so the pure envelope/staleness logic can be unit-tested — see FragmentExtTest.
 internal val navResultSessionId: String = UUID.randomUUID().toString()
 
 /**
