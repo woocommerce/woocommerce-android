@@ -13,6 +13,7 @@
 - [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
 - [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
 - [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
+- [*] Fixed the horizontal padding of the stock status dropdown when bulk-editing products [https://github.com/woocommerce/woocommerce-android/pull/16399]
 - [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
 - [*] [Internal] Remove SiteModel#mXmlRpcUrl [https://github.com/woocommerce/woocommerce-android/pull/16301]
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
