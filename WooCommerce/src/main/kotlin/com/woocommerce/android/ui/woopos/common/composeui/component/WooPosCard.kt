@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativePaint
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -148,7 +149,7 @@ private fun Modifier.drawShadow(
 ) = this.drawBehind {
     val shadowColor = color.copy(alpha = alpha).toArgb()
     val paint = Paint()
-    val frameworkPaint = paint.asFrameworkPaint()
+    val frameworkPaint = paint.nativePaint
     frameworkPaint.color = Color.Transparent.toArgb()
     frameworkPaint.setShadowLayer(
         shadowRadius.toPx(),

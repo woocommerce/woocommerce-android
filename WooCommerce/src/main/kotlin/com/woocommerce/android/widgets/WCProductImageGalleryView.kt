@@ -208,6 +208,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     Product.Image(
                         id = id,
                         name = "",
+                        alt = null,
                         source = imageUriList[index].toString(),
                         dateCreated = Date(),
                         isCoverImage = false
@@ -258,6 +259,7 @@ class WCProductImageGalleryView @JvmOverloads constructor(
                     Product.Image(
                         id = ADD_IMAGE_ITEM_ID,
                         name = "",
+                        alt = null,
                         source = "",
                         dateCreated = Date(),
                         isCoverImage = false

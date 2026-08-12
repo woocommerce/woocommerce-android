@@ -3,6 +3,12 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_edit_image_details"
+        android:title="@string/edit"
+        android:icon="@drawable/ic_edit_pencil"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/menu_remove_background"
         android:title="@string/remove_background"
         android:icon="@drawable/ic_remove_bg"

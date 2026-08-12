@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
+import android.text.format.DateFormat
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedMonthDay
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
@@ -26,11 +27,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -88,6 +94,20 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: BlazeCampaignCreationPreviewViewModel
+
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
+    @Before
+    fun setUpDateFormat() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
+    }
+
+    @After
+    fun tearDownDateFormat() {
+        dateFormatMock.close()
+    }
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
@@ -161,7 +181,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
                 resourceProvider.getString(
                     R.string.blaze_campaign_preview_days_duration,
                     defaultCampaignDetails.budget.durationInDays,
-                    defaultCampaignDetails.budget.startDate.formatToMMMdd()
+                    defaultCampaignDetails.budget.startDate.formatToLocalizedMonthDay()
                 )
             }"
         )
@@ -376,7 +396,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
                 resourceProvider.getString(
                     R.string.blaze_campaign_preview_days_duration,
                     newBudget.durationInDays,
-                    newBudget.startDate.formatToMMMdd()
+                    newBudget.startDate.formatToLocalizedMonthDay()
                 )
             }"
         )

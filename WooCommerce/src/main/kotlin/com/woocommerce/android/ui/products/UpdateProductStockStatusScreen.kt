@@ -77,7 +77,7 @@ fun UpdateProductStockStatusScreen(
                     onStockStatusChanged(newStatus)
                 },
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
@@ -148,7 +148,8 @@ fun StockStatusDropdown(
         currentValue = initialStatusDisplayString,
         mapper = { it },
         modifier = modifier,
-        focusRequester = dropdownFocusRequester
+        focusRequester = dropdownFocusRequester,
+        fillWidth = true
     )
 }
 

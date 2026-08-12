@@ -6,31 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="@style/Widget.Woo.Toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:elevation="@dimen/minor_50"
-            app:layout_collapseMode="pin"
-            tools:title="@string/app_name" />
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <View
-        android:id="@+id/app_bar_divider"
-        style="@style/Woo.Divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_bar_layout" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/filterList"
         android:layout_width="match_parent"
@@ -40,7 +15,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomDividerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/app_bar_divider"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         tools:itemCount="4"
         tools:listitem="@layout/filter_list_item" />

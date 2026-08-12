@@ -95,7 +95,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
                 logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
                 val reply = opened.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw CardReaderRemoteConnectionLostException(null)
+                    ?: throw IllegalStateException(CONNECT_FAILED_MESSAGE)
                 when (reply) {
                     is ConnectAck -> {
                         bridgeClosedSignal(opened)
@@ -126,15 +126,15 @@ internal class DefaultCardReaderRemoteTabletClient(
             throw cancel
         } catch (cause: IOException) {
             disconnect()
-            ConnectOutcome.Failed(CardReaderRemoteConnectionLostException(cause))
+            ConnectOutcome.Failed(IllegalStateException(CONNECT_FAILED_MESSAGE, cause))
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
-            ConnectOutcome.Failed(mapToConnectionLostIfIo(cause))
+            ConnectOutcome.Failed(mapToConnectFailedIfIo(cause))
         }
     }
 
-    private fun mapToConnectionLostIfIo(cause: Exception): Exception =
-        if (cause is java.io.IOException) CardReaderRemoteConnectionLostException(cause) else cause
+    private fun mapToConnectFailedIfIo(cause: Exception): Exception =
+        if (cause is IOException) IllegalStateException(CONNECT_FAILED_MESSAGE, cause) else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
@@ -203,6 +203,9 @@ internal class DefaultCardReaderRemoteTabletClient(
 
     private companion object {
         const val TAG = "CardReaderRemoteTabletClient"
+
+        // Reported while establishing a session - the reader was never connected.
+        const val CONNECT_FAILED_MESSAGE = "Could not connect to phone reader"
     }
 }
 

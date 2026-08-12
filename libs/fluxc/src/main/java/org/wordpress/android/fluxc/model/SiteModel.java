@@ -75,8 +75,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     private String mUsername;
     @Column
     private String mPassword;
-    @Column(name = "XMLRPC_URL")
-    private String mXmlRpcUrl;
     @Column
     private String mWpApiRestUrl;
 
@@ -217,14 +215,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public void setPassword(String password) {
         mPassword = password;
-    }
-
-    public String getXmlRpcUrl() {
-        return mXmlRpcUrl;
-    }
-
-    public void setXmlRpcUrl(String xmlRpcUrl) {
-        mXmlRpcUrl = xmlRpcUrl;
     }
 
     public String getWpApiRestUrl() {
@@ -476,7 +466,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 Objects.equals(mTimezone, siteModel.mTimezone) &&
                 Objects.equals(mUsername, siteModel.mUsername) &&
                 Objects.equals(mPassword, siteModel.mPassword) &&
-                Objects.equals(mXmlRpcUrl, siteModel.mXmlRpcUrl) &&
                 Objects.equals(mWpApiRestUrl, siteModel.mWpApiRestUrl) &&
                 Objects.equals(mEmail, siteModel.mEmail) &&
                 Objects.equals(mDisplayName, siteModel.mDisplayName) &&
@@ -507,7 +496,6 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
                 mSelfHostedSiteId,
                 mUsername,
                 mPassword,
-                mXmlRpcUrl,
                 mWpApiRestUrl,
                 mEmail,
                 mDisplayName,

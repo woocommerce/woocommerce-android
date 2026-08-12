@@ -16,8 +16,6 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.products.ProductFilterProductRestrictions
-import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
@@ -49,7 +47,6 @@ class ProductFilterListViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val networkStatus: NetworkStatus,
-    private val productRestrictions: ProductFilterProductRestrictions,
     private val pluginRepository: PluginRepository,
     private val selectedSite: SelectedSite,
     private val analyticsTracker: AnalyticsTrackerWrapper,
@@ -338,24 +335,22 @@ class ProductFilterListViewModel @Inject constructor(
                 )
             )
         )
-        if (!productRestrictions.restrictions.contains(ProductRestriction.NonPublishedProducts)) {
-            filterListItems.add(
-                FilterListItemUiModel(
-                    STATUS,
-                    resourceProvider.getString(R.string.product_status),
-                    addDefaultFilterOption(
-                        ProductStatus.values().map {
-                            FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
-                                resourceProvider.getString(it.stringResource),
-                                filterOptionItemValue = it.value,
-                                isSelected = productFilterOptions[STATUS] == it.value
-                            )
-                        },
-                        productFilterOptions[STATUS].isNullOrEmpty()
-                    )
+        filterListItems.add(
+            FilterListItemUiModel(
+                STATUS,
+                resourceProvider.getString(R.string.product_status),
+                addDefaultFilterOption(
+                    ProductStatus.values().map {
+                        FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                            resourceProvider.getString(it.stringResource),
+                            filterOptionItemValue = it.value,
+                            isSelected = productFilterOptions[STATUS] == it.value
+                        )
+                    },
+                    productFilterOptions[STATUS].isNullOrEmpty()
                 )
             )
-        }
+        )
         val typeFilters = getTypeFilterWithExploreOptions()
         filterListItems.add(
             FilterListItemUiModel(

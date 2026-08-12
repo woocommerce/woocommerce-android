@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.searchfilter.SearchFilterEvent.ItemSelected
 import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Empty
 import com.woocommerce.android.ui.searchfilter.SearchFilterViewState.Loaded
@@ -29,6 +31,8 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     }
 
     private val viewModel: SearchFilterViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
     private val navArgs: SearchFilterFragmentArgs by navArgs()
 
@@ -55,6 +59,7 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSearchFilterBinding.bind(view)
+        setupToolbar()
         viewModel.start(
             searchFilterItems = navArgs.items,
             searchHint = navArgs.hint,
@@ -73,6 +78,13 @@ class SearchFilterFragment : BaseFragment(R.layout.fragment_search_filter) {
     }
 
     override fun getFragmentTitle(): String = navArgs.title
+
+    private fun setupToolbar() {
+        binding.toolbar.title = navArgs.title
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
 
     private fun setupViewStateObserver() {
         viewModel.viewStateLiveData.observe(

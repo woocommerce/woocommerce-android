@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToScanToPay
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
@@ -651,7 +650,7 @@ class WooPosTotalsViewModel @Inject constructor(
             )
             when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                    childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                    notifyOrderPaidByCard()
                 }
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     uiState.value = PaymentFailed(
@@ -752,6 +751,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
+    private suspend fun notifyOrderPaidByCard() {
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
+    }
+
     private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState) {
         when (paymentState) {
             is CardReaderPaymentState.LoadingData ->
@@ -763,7 +766,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 isTTPPaymentInProgress = false
                 resetTapToPayProgress()
                 viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
-                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                notifyOrderPaidByCard()
             }
 
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
@@ -799,7 +802,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
 
             is CardReaderPaymentState.PaymentSuccessful ->
-                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                notifyOrderPaidByCard()
 
             is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
                 uiState.value = buildPaymentFailedState(paymentState)
