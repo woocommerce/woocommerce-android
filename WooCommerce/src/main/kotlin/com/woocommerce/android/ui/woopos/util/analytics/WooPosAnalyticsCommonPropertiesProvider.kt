@@ -41,6 +41,7 @@ class WooPosAnalyticsCommonPropertiesProvider @Inject constructor(
 
 @Singleton
 class WooPosAnalyticsEntryPointKeeper @Inject constructor() {
+    @Volatile
     var entryPoint: EntryPoint? = null
         private set
 
