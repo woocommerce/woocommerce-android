@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.compose
 
 import androidx.annotation.StringRes
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -55,7 +55,7 @@ fun clickableAnnotatedStringRes(
         linkInteractionListener = linkInteractionListener,
         linkStyles = TextLinkStyles(
             style = SpanStyle(
-                color = MaterialTheme.colors.primary,
+                color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.None
             ),
         )

@@ -48,8 +48,10 @@ import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,6 +67,7 @@ class DashboardFragment : TopLevelFragment() {
     }
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
+    private val scheduledImportInfoViewModel: ScheduledImportInfoViewModel by viewModels()
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
     @Inject
@@ -121,6 +124,7 @@ class DashboardFragment : TopLevelFragment() {
                 )
             }
         )
+        ScheduledImportInfoBottomSheet(viewModel = scheduledImportInfoViewModel)
     }.apply {
         id = R.id.dashboard_container
     }
@@ -177,9 +181,7 @@ class DashboardFragment : TopLevelFragment() {
                 }
 
                 is DashboardViewModel.DashboardEvent.OpenScheduledImportInfo -> {
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToScheduledImportInfoBottomSheet(event.isEnabled)
-                    )
+                    scheduledImportInfoViewModel.show(event.isEnabled)
                 }
 
                 is DashboardViewModel.DashboardEvent.ShowScheduledImportNotice ->
@@ -188,6 +190,15 @@ class DashboardFragment : TopLevelFragment() {
                         actionText = R.string.learn_more,
                         action = { dashboardViewModel.onDelayedStatsInfoClicked() }
                     )
+
+                else -> event.isHandled = false
+            }
+        }
+
+        scheduledImportInfoViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is LaunchUrlInChromeTab ->
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
 
                 else -> event.isHandled = false
             }

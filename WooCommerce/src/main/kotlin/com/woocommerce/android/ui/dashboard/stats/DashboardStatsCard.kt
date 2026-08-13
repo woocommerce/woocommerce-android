@@ -14,17 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -56,6 +48,11 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheetState
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetDismisser
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -83,14 +80,20 @@ fun DashboardStatsCard(
         }
     )
 ) {
+    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
+    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val orderDateTypeBottomSheetState = rememberWooModalBottomSheetState(skipPartiallyExpanded = true)
+    val orderDateTypeBottomSheetDismisser = rememberWooModalBottomSheetDismisser(
+        state = orderDateTypeBottomSheetState,
+    ) {
+        showOrderDateTypeBottomSheet = false
+    }
     val dateRange = viewModel.dateRangeState.observeAsState().value ?: return
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
     val isScheduledImportEnabled by parentViewModel.isScheduledImportEnabled.observeAsState(false)
     val selectedRevenueStatsType = viewModel.selectedRevenueStatsType.observeAsState().value ?: return
-    val orderDateTypeState by viewModel.orderDateTypeState.collectAsStateWithLifecycle()
-    var showOrderDateTypeBottomSheet by rememberSaveable { mutableStateOf(false) }
 
     HandleEvents(
         event = viewModel.event,
@@ -162,12 +165,15 @@ fun DashboardStatsCard(
     if (showOrderDateTypeBottomSheet) {
         OrderDateTypeBottomSheet(
             state = orderDateTypeState,
-            onDismiss = { showOrderDateTypeBottomSheet = false },
+            sheetState = orderDateTypeBottomSheetState,
+            isDismissing = orderDateTypeBottomSheetDismisser.isDismissing,
+            onDismissRequest = { showOrderDateTypeBottomSheet = false },
             onSelect = { orderDateType ->
-                viewModel.onOrderDateTypeSelected(orderDateType) {
-                    showOrderDateTypeBottomSheet = false
-                }
-            }
+                viewModel.onOrderDateTypeSelected(
+                    orderDateType = orderDateType,
+                    onSuccess = orderDateTypeBottomSheetDismisser::dismiss,
+                )
+            },
         )
     }
 }
@@ -330,7 +336,6 @@ private fun StatsChart(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RevenueStatsTypeSelector(
     selectedType: DashboardStatsViewModel.RevenueStatsType,
@@ -338,56 +343,32 @@ private fun RevenueStatsTypeSelector(
     modifier: Modifier = Modifier
 ) {
     val options = DashboardStatsViewModel.RevenueStatsType.OPTIONS
-    val segmentedButtonColors = SegmentedButtonDefaults.colors(
-        activeContainerColor = WooTheme.colors.primary,
-        activeContentColor = WooTheme.colors.onPrimary,
+    WooSegmentControl(
+        options = options.map { stringResource(id = it.labelRes) },
+        selectedIndex = options.indexOf(selectedType),
+        onSelectedIndexChange = { onTypeSelected(options[it]) },
+        modifier = modifier.padding(
+            start = WooTheme.padding.padding5,
+            top = WooTheme.padding.padding3,
+            end = WooTheme.padding.padding5,
+            bottom = WooTheme.padding.padding2,
+        ),
     )
-
-    SingleChoiceSegmentedButtonRow(
-        modifier = modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp)
-    ) {
-        options.forEachIndexed { index, type ->
-            SegmentedButton(
-                selected = selectedType == type,
-                onClick = { onTypeSelected(type) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                colors = segmentedButtonColors,
-                icon = {},
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = stringResource(id = type.labelRes),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderDateTypeBottomSheet(
     state: DashboardStatsViewModel.OrderDateTypeUiState,
-    onDismiss: () -> Unit,
+    sheetState: WooModalBottomSheetState,
+    isDismissing: Boolean,
+    onDismissRequest: () -> Unit,
     onSelect: (WCAnalyticsOrderDateType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    ModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = onDismiss,
+    WooModalBottomSheet(
+        state = sheetState,
+        onDismissRequest = onDismissRequest,
         modifier = modifier,
-        shape = RoundedCornerShape(
-            topStart = WooTheme.radius.extraLarge,
-            topEnd = WooTheme.radius.extraLarge,
-        ),
-        containerColor = WooTheme.colors.surface.default,
-        contentColor = WooTheme.colors.surface.onDefault,
-        dragHandle = {
-            BottomSheetDefaults.DragHandle(color = WooTheme.colors.outline)
-        },
     ) {
         Column(
             modifier = Modifier
@@ -416,8 +397,8 @@ private fun OrderDateTypeBottomSheet(
                 OrderDateTypeOptionRow(
                     option = option,
                     state = state,
-                    onDismiss = onDismiss,
-                    onSelect = onSelect
+                    isDismissing = isDismissing,
+                    onSelect = onSelect,
                 )
             }
 
@@ -452,23 +433,19 @@ private fun OrderDateTypeBottomSheet(
 private fun OrderDateTypeOptionRow(
     option: OrderDateTypeOption,
     state: DashboardStatsViewModel.OrderDateTypeUiState,
-    onDismiss: () -> Unit,
+    isDismissing: Boolean,
     onSelect: (WCAnalyticsOrderDateType) -> Unit
 ) {
     val isSelected = state.selectedType == option.type
     val isUpdating = state.updatingType == option.type
-    val isEnabled = state.updatingType == null && !state.isLoading
+    val isEnabled = state.updatingType == null && !state.isLoading && !isDismissing
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 60.dp)
             .clickable(enabled = isEnabled) {
-                if (isSelected) {
-                    onDismiss()
-                } else {
-                    onSelect(option.type)
-                }
+                onSelect(option.type)
             }
             .padding(horizontal = 24.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically

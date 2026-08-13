@@ -94,9 +94,6 @@
         <action
             android:id="@+id/action_dashboard_to_aiAssistantHostFragment"
             app:destination="@id/aiAssistantHostFragment" />
-        <action
-            android:id="@+id/action_dashboard_to_scheduledImportInfoBottomSheet"
-            app:destination="@id/scheduledImportInfoBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -777,15 +774,6 @@
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_aiProductPromptFragment"
             app:destination="@id/AiProductPromptFragment" />
-    </dialog>
-    <dialog
-        android:id="@+id/scheduledImportInfoBottomSheet"
-        android:name="com.woocommerce.android.ui.dashboard.ScheduledImportInfoBottomSheetFragment"
-        android:label="ScheduledImportInfoBottomSheetFragment">
-        <argument
-            android:name="isEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
     </dialog>
     <fragment
         android:id="@+id/AiProductPromptFragment"
