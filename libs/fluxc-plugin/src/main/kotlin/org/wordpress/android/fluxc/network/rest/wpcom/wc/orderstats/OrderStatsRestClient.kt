@@ -13,6 +13,9 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComNetwork
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationEvent
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationListener
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WPComSiteInvalidationReason
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
@@ -25,12 +28,14 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
 import java.util.Locale
+import java.util.Optional
 import javax.inject.Inject
 
 class OrderStatsRestClient @Inject constructor(
     private val dispatcher: Dispatcher,
     private val wooNetwork: WooNetwork,
     private val wpComNetwork: WPComNetwork,
+    private val wpComSiteInvalidationListener: Optional<WPComSiteInvalidationListener>,
     private val coroutineEngine: CoroutineEngine
 ) {
     enum class OrderStatsApiUnit {
@@ -287,6 +292,7 @@ class OrderStatsRestClient @Inject constructor(
             }
 
             is WPComGsonRequestBuilder.Response.Error -> {
+                notifyIfWPComSiteInvalidated(site, response.error)
                 val orderError = response.error.toOrderError()
                 FetchNewVisitorStatsResponsePayload(orderError, site, granularity)
             }
@@ -315,7 +321,30 @@ class OrderStatsRestClient @Inject constructor(
 
         return when (response) {
             is WPComGsonRequestBuilder.Response.Success -> WooPayload(response.data)
-            is WPComGsonRequestBuilder.Response.Error -> WooPayload(response.error.toWooError())
+            is WPComGsonRequestBuilder.Response.Error -> {
+                notifyIfWPComSiteInvalidated(site, response.error)
+                WooPayload(response.error.toWooError())
+            }
+        }
+    }
+
+    private fun notifyIfWPComSiteInvalidated(site: SiteModel, error: WPComGsonNetworkError) {
+        if (
+            error.volleyError?.networkResponse?.statusCode == HTTP_NOT_FOUND &&
+            error.apiError == INVALID_BLOG_ERROR_CODE &&
+            error.message
+                ?.trim()
+                ?.trimEnd('.')
+                ?.equals(JETPACK_CONNECTION_MISSING_ERROR_MESSAGE, ignoreCase = true) == true
+        ) {
+            wpComSiteInvalidationListener.ifPresent {
+                it.onSiteInvalidated(
+                    WPComSiteInvalidationEvent(
+                        siteId = site.siteId,
+                        reason = WPComSiteInvalidationReason.JETPACK_CONNECTION_MISSING
+                    )
+                )
+            }
         }
     }
 
@@ -329,5 +358,11 @@ class OrderStatsRestClient @Inject constructor(
             else -> OrderStatsErrorType.fromString(errorCode.orEmpty())
         }
         return OrderStatsError(orderStatsErrorType, message.orEmpty())
+    }
+
+    private companion object {
+        const val HTTP_NOT_FOUND = 404
+        const val INVALID_BLOG_ERROR_CODE = "invalid_blog"
+        const val JETPACK_CONNECTION_MISSING_ERROR_MESSAGE = "This blog does not have Jetpack connected"
     }
 }

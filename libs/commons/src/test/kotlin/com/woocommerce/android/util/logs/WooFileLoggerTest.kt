@@ -19,6 +19,7 @@ class WooFileLoggerTest : BaseUnitTest() {
 
     // Place the logs in a temporary directory for testing
     private val logsDirectory = File(System.getProperty("java.io.tmpdir", "."), "logs")
+    private val archiveDirectory = File(System.getProperty("java.io.tmpdir", "."), "logs_archive")
 
     private lateinit var testLifecycleOwner: TestLifecycleOwner
 
@@ -37,12 +38,17 @@ class WooFileLoggerTest : BaseUnitTest() {
                 dispatchers = coroutinesTestRule.testDispatchers,
                 availableDiskBytes = { Long.MAX_VALUE }
             ),
+            logFilesArchiver = LogFilesArchiver(
+                archiveDirectory = archiveDirectory,
+                dispatchers = coroutinesTestRule.testDispatchers
+            ),
         )
     }
 
     @After
     fun tearDown() {
         logsDirectory.deleteRecursively()
+        archiveDirectory.deleteRecursively()
     }
 
     @Test

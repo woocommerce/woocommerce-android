@@ -596,9 +596,20 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object ReaderReadyForCardPayment : Event() {
-            override val name: String
-                get() = "reader_ready_for_card_payment"
+        data class ReaderReadyForCardPayment(
+            val waitingTimeSeconds: Long?,
+            val transport: String?,
+        ) : Event() {
+            override val name: String = "reader_ready_for_card_payment"
+
+            init {
+                addProperties(
+                    buildMap {
+                        waitingTimeSeconds?.let { put("waiting_time", it.toString()) }
+                        transport?.let { put("transport", it) }
+                    }
+                )
+            }
         }
 
         data object RemoteTapToPayExplainerShown : Event() {

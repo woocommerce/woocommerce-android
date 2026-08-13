@@ -44,6 +44,8 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         super.onViewCreated(view, savedInstanceState)
 
         with(FragmentSettingsBetaBinding.bind(view)) {
+            // When adding a toggle here, add it to MobileStatusProvider.experimentalFeaturesSection too,
+            // otherwise support tickets won't show that the merchant has it switched on.
             bindProductAddonsToggle()
             bindJetpackAppPasswordsToggle()
             bindWooPosLocalCatalogToggle()

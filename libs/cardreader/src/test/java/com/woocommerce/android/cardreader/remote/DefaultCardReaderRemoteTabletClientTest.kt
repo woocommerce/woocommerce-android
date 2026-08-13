@@ -16,6 +16,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.net.ConnectException
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
@@ -40,7 +41,7 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given remote closes mid-connect, when connect, then Failed cause carries connection-lost message`() {
+    fun `given remote closes mid-connect, when connect, then Failed cause carries connect-failed message`() {
         runBlocking {
             // GIVEN
             val openedConnection = openConnectionPair()
@@ -53,9 +54,24 @@ class DefaultCardReaderRemoteTabletClientTest : CardReaderBaseUnitTest() {
             // THEN
             assertThat(outcome).isInstanceOf(ConnectOutcome.Failed::class.java)
             assertThat((outcome as ConnectOutcome.Failed).cause)
-                .hasMessage("Connection to phone reader was lost")
+                .hasMessage("Could not connect to phone reader")
         }
     }
+
+    @Test
+    fun `given the phone refuses the socket, when connect, then Failed cause is not reported as a lost connection`() =
+        testBlocking {
+            // GIVEN
+            whenever(tlsClient.connect(any(), any(), any())).thenAnswer { throw ConnectException("ECONNREFUSED") }
+
+            // WHEN
+            val outcome = client.connect(reader = aReader(), connectionToken = "tok", locationId = "loc")
+
+            // THEN
+            assertThat(outcome).isInstanceOf(ConnectOutcome.Failed::class.java)
+            assertThat((outcome as ConnectOutcome.Failed).cause)
+                .hasMessage("Could not connect to phone reader")
+        }
 
     @Test
     fun `given tls handshake throws, when connect, then returns Failed with the cause`() = testBlocking {

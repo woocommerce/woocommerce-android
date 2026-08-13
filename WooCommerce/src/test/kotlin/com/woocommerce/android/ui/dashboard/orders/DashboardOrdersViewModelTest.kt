@@ -1,9 +1,10 @@
 package com.woocommerce.android.ui.dashboard.orders
 
+import android.text.format.DateFormat
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedMonthDay
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.Companion.DEFAULT_FILTER_OPTION_STATUS
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -19,7 +20,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
@@ -53,6 +58,20 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
         on { formatCurrency(amount = any(), any(), any()) } doAnswer { it.arguments[0].toString() }
     }
     private lateinit var viewModel: DashboardOrdersViewModel
+
+    private lateinit var dateFormatMock: MockedStatic<DateFormat>
+
+    @Before
+    fun setUpDateFormat() {
+        dateFormatMock = Mockito.mockStatic(DateFormat::class.java)
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("MMMd"))).thenReturn("MMM d")
+        whenever(DateFormat.getBestDateTimePattern(any(), eq("yMMMd"))).thenReturn("MMM d, y")
+    }
+
+    @After
+    fun tearDownDateFormat() {
+        dateFormatMock.close()
+    }
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
@@ -97,7 +116,7 @@ class DashboardOrdersViewModelTest : BaseUnitTest() {
         (viewState as DashboardOrdersViewModel.ViewState.Content).orders.forEachIndexed { index, order ->
             assertThat(order.id).isEqualTo(sampleOrders[index].id)
             assertThat(order.number).isEqualTo("#${sampleOrders[index].number}")
-            assertThat(order.date).isEqualTo(sampleOrders[index].dateCreated.formatToMMMdd())
+            assertThat(order.date).isEqualTo(sampleOrders[index].dateCreated.formatToLocalizedMonthDay())
             assertThat(order.customerName).isEqualTo(sampleOrders[index].billingName)
             assertThat(order.status).isEqualTo(sampleOrders[index].status.value)
             assertThat(order.totalPrice)

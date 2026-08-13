@@ -2,6 +2,11 @@
 
 Uses Fragment navigation inside `LoginActivity`. Multiple paths depending on login method.
 
+## Agent auto-login
+
+Preserve and reuse a coherent authenticated session before attempting login. If login is needed, follow
+[Agent auto-login](agent-auto-login.md) for profile setup, invocation, safety constraints, outcomes, and recovery.
+
 ## Screen Detection
 
 | Screen | How to Detect |

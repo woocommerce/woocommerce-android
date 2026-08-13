@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosIsCardPaymentEnabledForCountry
 import com.woocommerce.android.ui.woopos.cardreader.MissingFineLocationPermissionException
 import com.woocommerce.android.ui.woopos.cardreader.WooPosBuiltInReaderConnector
@@ -138,6 +140,8 @@ class WooPosTotalsViewModelTest {
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
+    private val crashLogging: CrashLogging = mock()
     private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
@@ -158,6 +162,9 @@ class WooPosTotalsViewModelTest {
         paymentReceiptHelper = paymentReceiptHelper,
         cardReaderOnboardingChecker = cardReaderOnboardingChecker,
         paymentReceiptShare = paymentReceiptShare,
+        refreshProductsSignal = refreshProductsSignal,
+        newOrderNotificationSuppressionCache = mock(),
+        crashLogging = crashLogging,
     )
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
@@ -2817,6 +2824,7 @@ class WooPosTotalsViewModelTest {
             analyticsTracker = analyticsTracker,
             analyticsData = WooPosAnalyticsTrackingDataKeeper(),
             productsDataSource = productsDataSource,
+            readerReadyForPaymentTracker = mock(),
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,

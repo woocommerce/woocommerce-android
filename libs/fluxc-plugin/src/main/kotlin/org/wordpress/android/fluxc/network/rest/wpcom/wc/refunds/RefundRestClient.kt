@@ -58,7 +58,9 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      *
      * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
      * lines) — the server computes all monetary values, unless an explicit order-level [amount]
-     * override is given.
+     * override is given. The override is guarded server-side: a value below the computed line-item
+     * total is rejected with a 400, while a value above it is accepted as a goodwill over-refund,
+     * capped at the order's remaining refundable amount (422 beyond).
      *
      * [apiRefund] and [apiRestock] are always sent explicitly: the v3 endpoint defaults both to
      * `true` when omitted, and the caller must stay in control of gateway refunds and restocking.

@@ -197,14 +197,16 @@ class WooPosRefundSubmissionProcessorTest {
                 awaitComplete()
             }
 
-            // THEN — restocking is requested explicitly and no order-level amount override is sent.
+            // THEN — restocking is requested explicitly and the confirmed total is pinned via the
+            // amount override, so a server-side recomputation drifting above it fails the create
+            // before the gateway moves any money.
             verify(refundStore).createComputedItemsRefund(
                 site = eq(site),
                 orderId = eq(order.id),
                 reason = eq("Customer request"),
                 autoRefund = eq(true),
                 restockItems = eq(true),
-                amount = isNull(),
+                amount = eq(refundAmount),
                 items = eq(serverLineItems),
             )
             verify(refundStore, never()).createItemsRefund(
@@ -427,8 +429,10 @@ class WooPosRefundSubmissionProcessorTest {
                 awaitComplete()
             }
 
-            // THEN — the computed create is used, and the gateway is not asked to refund again
-            // because the reader already did (autoRefund false).
+            // THEN — the computed create is used, the gateway is not asked to refund again
+            // because the reader already did (autoRefund false), and no amount override is sent:
+            // a rejected override here would strand the already-reversed card refund behind a
+            // permanently failing retry.
             verify(refundStore).createComputedItemsRefund(
                 site = eq(site),
                 orderId = eq(order.id),
@@ -446,6 +450,46 @@ class WooPosRefundSubmissionProcessorTest {
                 restockItems = any(),
                 autoRefund = any(),
                 items = any()
+            )
+        }
+
+    @Test
+    fun `given backend-only retry with server line items, when submitted, then amount override is omitted`() =
+        runTest {
+            // GIVEN — the card was already reversed in a previous attempt; only the backend
+            // record is being retried.
+            val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+            whenever(
+                refundStore.createComputedItemsRefund(
+                    site = eq(site),
+                    orderId = eq(order.id),
+                    reason = eq("Customer request"),
+                    autoRefund = eq(false),
+                    restockItems = eq(true),
+                    amount = anyOrNull(),
+                    items = eq(serverLineItems),
+                )
+            ).thenReturn(WooResult(refundModel))
+
+            // WHEN
+            processor.submit(
+                request.copy(serverLineItems = serverLineItems, cardRefundAlreadySucceeded = true)
+            ).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Success)
+                awaitComplete()
+            }
+
+            // THEN — a rejected override would strand the already-reversed card refund behind a
+            // permanently failing retry, so the retry pins nothing and lets the server compute.
+            verify(refundStore).createComputedItemsRefund(
+                site = eq(site),
+                orderId = eq(order.id),
+                reason = eq("Customer request"),
+                autoRefund = eq(false),
+                restockItems = eq(true),
+                amount = isNull(),
+                items = eq(serverLineItems),
             )
         }
 

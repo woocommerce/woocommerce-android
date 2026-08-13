@@ -58,6 +58,7 @@ fun WooPosScanToPayScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         state = state,
         onCancelClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CancelClicked) },
         onRetryClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.RetryClicked) },
+        onCollectOnRegisterClicked = { viewModel.onUIEvent(WooPosScanToPayUIEvent.CollectOnRegisterClicked) },
     )
     BackHandler(enabled = state !is WooPosScanToPayState.PaymentDetected) { viewModel.onBackClicked() }
 }
@@ -67,6 +68,7 @@ private fun WooPosScanToPayScreen(
     state: WooPosScanToPayState,
     onCancelClicked: () -> Unit,
     onRetryClicked: () -> Unit,
+    onCollectOnRegisterClicked: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         WooPosToolbar(
@@ -84,6 +86,11 @@ private fun WooPosScanToPayScreen(
                     )
 
                 is WooPosScanToPayState.ShowingQR -> ShowingQR(state = state, onCancelClicked = onCancelClicked)
+
+                WooPosScanToPayState.PayInPersonSelected -> PayInPersonSelected(
+                    onCollectOnRegisterClicked = onCollectOnRegisterClicked,
+                    onShowQrAgainClicked = onRetryClicked,
+                )
 
                 is WooPosScanToPayState.Failed -> Failed(
                     state = state,
@@ -134,6 +141,45 @@ private fun ShowingQR(
                 .testTag(WooPosTestTags.SCAN_TO_PAY_CANCEL_BUTTON),
             text = stringResource(R.string.woopos_scan_to_pay_cancel),
             onClick = onCancelClicked,
+        )
+    }
+}
+
+@Composable
+private fun PayInPersonSelected(
+    onCollectOnRegisterClicked: () -> Unit,
+    onShowQrAgainClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WooPosSpacing.Large.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        WooPosText(
+            text = stringResource(R.string.woopos_scan_to_pay_pay_in_person_title),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        WooPosText(
+            text = stringResource(R.string.woopos_scan_to_pay_pay_in_person_message),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        WooPosButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.woopos_scan_to_pay_pay_in_person_collect),
+            onClick = onCollectOnRegisterClicked,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        WooPosOutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(R.string.woopos_scan_to_pay_pay_in_person_show_qr),
+            onClick = onShowQrAgainClicked,
         )
     }
 }
@@ -199,6 +245,7 @@ private fun WooPosScanToPayLoadingPreview() {
             state = WooPosScanToPayState.Loading,
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }
@@ -214,6 +261,20 @@ private fun WooPosScanToPayShowingQrPreview() {
             ),
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun WooPosScanToPayPayInPersonPreview() {
+    WooPosTheme {
+        WooPosScanToPayScreen(
+            state = WooPosScanToPayState.PayInPersonSelected,
+            onCancelClicked = {},
+            onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }
@@ -228,6 +289,7 @@ private fun WooPosScanToPayFailedPreview() {
             ),
             onCancelClicked = {},
             onRetryClicked = {},
+            onCollectOnRegisterClicked = {},
         )
     }
 }

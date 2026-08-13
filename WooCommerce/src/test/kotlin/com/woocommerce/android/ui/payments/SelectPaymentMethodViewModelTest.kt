@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
@@ -34,6 +35,7 @@ import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -45,6 +47,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -89,7 +92,16 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { updateOrderStatus(any(), any(), any()) }.thenReturn(
             flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
         )
+        on {
+            updateOrderStatusAndPaymentDetails(any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+        }.thenReturn(
+            flowOf(
+                WCOrderStore.UpdateOrderResult.OptimisticUpdateResult(OnOrderChanged()),
+                WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()),
+            )
+        )
     }
+    private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache = mock()
 
     private val gatewayStore: WCGatewayStore = mock()
     private val networkStatus: NetworkStatus = mock {
@@ -113,6 +125,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -449,6 +462,26 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given cash payment confirmed, when order update succeeds, then the status change is recorded`() =
+        testBlocking {
+            // GIVEN
+            whenever(orderEntity.status).thenReturn(Order.Status.Pending.value)
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(null)
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+
+            // THEN
+            verify(newOrderNotificationSuppressionCache).onOrderStatusChanged(
+                siteId = site.siteId,
+                orderId = 1L,
+                previousStatusKey = Order.Status.Pending.value,
+                newStatusKey = Order.Status.Completed.value,
+            )
+        }
+
+    @Test
     fun `given gateway NOT cached, when cash payment confirmed, then default payment title used`() =
         testBlocking {
             // GIVEN
@@ -467,6 +500,46 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 eq(DEFAULT_PAYMENT_METHOD_TITLE),
                 eq(null)
             )
+        }
+
+    @Test
+    fun `given cash payment succeeds, when cash payment confirmed, then stock change is signalled with product ids`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(101L, 102L)
+            whenever(order.getProductIds()).thenReturn(productIds)
+            whenever(
+                orderStore.updateOrderStatusAndPaymentDetails(any(), any(), any(), any(), any(), anyOrNull())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refreshProductsSignal).notifyProductsChanged(productIds)
+        }
+
+    @Test
+    fun `given share payment url flow, when completed, then stock change is not signalled`() =
+        testBlocking {
+            // GIVEN sharing the link only moves the order to Pending, which does not reduce stock
+            whenever(
+                orderStore.updateOrderStatus(any(), any(), any())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onSharePaymentUrlCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
         }
 
     @Test
@@ -1209,7 +1282,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
-            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings
+            logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
+            refreshProductsSignal = refreshProductsSignal,
+            newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache
         )
     }
 

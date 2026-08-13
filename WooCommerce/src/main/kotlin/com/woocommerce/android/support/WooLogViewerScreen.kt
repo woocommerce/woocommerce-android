@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -90,7 +91,16 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.logviewer_activity_title),
-                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() }
+                onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() },
+                actions = {
+                    IconButton(onClick = state.onShareAllClicked) {
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_share_24dp),
+                            contentDescription = stringResource(id = R.string.logviewer_share_all_logs),
+                            tint = colorResource(id = R.color.color_icon_menu)
+                        )
+                    }
+                }
             )
         },
         modifier = Modifier
@@ -139,6 +149,13 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
                 )
             }
         }
+    }
+
+    if (state.isPreparingArchive) {
+        ProgressDialog(
+            title = "",
+            subtitle = stringResource(id = R.string.logviewer_preparing_logs)
+        )
     }
 }
 
@@ -399,7 +416,8 @@ private fun LogFilesListPreview() {
     )
     val state = WooLogViewerViewModel.UiState.LogFilesList(
         logFiles = logFiles,
-        onLogFileSelected = {}
+        onLogFileSelected = {},
+        onShareAllClicked = {}
     )
     WooTheme {
         LogFilesListScreen(state)

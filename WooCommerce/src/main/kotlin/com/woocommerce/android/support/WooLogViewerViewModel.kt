@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.util.DeviceInfo
+import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
 import com.woocommerce.android.util.logs.LogFileWriter
@@ -15,7 +15,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
 import java.text.SimpleDateFormat
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WooLogViewerViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val wooFileLogger: WooFileLogger
+    private val wooFileLogger: WooFileLogger,
+    private val deviceInfo: DeviceInfoWrapper
 ) : ScopedViewModel(savedState) {
 
     private val selectedLogFile = savedState.getNullableStateFlow(
@@ -35,15 +38,17 @@ class WooLogViewerViewModel @Inject constructor(
         "selected_log_file"
     )
 
-    val uiState = selectedLogFile.map { logFile ->
+    private val isPreparingArchive = MutableStateFlow(false)
+
+    val uiState = combine(selectedLogFile, isPreparingArchive) { logFile, isPreparingArchive ->
         if (logFile == null) {
-            prepareFilesListState()
+            prepareFilesListState(isPreparingArchive)
         } else {
             prepareLogFileContentState(logFile)
         }
     }.asLiveData()
 
-    private suspend fun prepareFilesListState(): UiState.LogFilesList {
+    private suspend fun prepareFilesListState(isPreparingArchive: Boolean): UiState.LogFilesList {
         fun prepareFileDisplayName(file: File): String {
             val dateString = file.name
                 .removePrefix(LogFileWriter.LOG_FILE_NAME_PREFIX)
@@ -73,8 +78,28 @@ class WooLogViewerViewModel @Inject constructor(
             },
             onLogFileSelected = { selectedFile ->
                 selectedLogFile.value = selectedFile
-            }
+            },
+            isPreparingArchive = isPreparingArchive,
+            onShareAllClicked = { shareAllLogs() }
         )
+    }
+
+    private fun shareAllLogs() {
+        if (!isPreparingArchive.compareAndSet(expect = false, update = true)) return
+
+        launch {
+            try {
+                val archive = wooFileLogger.archiveLogFiles(deviceInfo = getDeviceInfo().toString())
+
+                if (archive != null) {
+                    triggerEvent(ShareLogsArchive(archive))
+                } else {
+                    triggerEvent(ShareLogsArchiveFailed)
+                }
+            } finally {
+                isPreparingArchive.value = false
+            }
+        }
     }
 
     private suspend fun prepareLogFileContentState(logFile: LogFile): UiState.LogFileContent {
@@ -98,15 +123,21 @@ class WooLogViewerViewModel @Inject constructor(
     }
 
     private fun getDeviceInfo(): LogEntry {
-        return with(DeviceInfo) {
-            LogEntry(WooLog.T.DEVICE, WooLog.LogLevel.w, "OS: ${OS}\nDeviceName: ${name}\nLanguage: $locale")
+        return with(deviceInfo) {
+            LogEntry(
+                WooLog.T.DEVICE,
+                WooLog.LogLevel.w,
+                "OS: $osName\nDeviceName: $name\nLanguage: $locale"
+            )
         }
     }
 
     sealed interface UiState {
         data class LogFilesList(
             val logFiles: List<LogFile>,
-            val onLogFileSelected: (LogFile) -> Unit
+            val onLogFileSelected: (LogFile) -> Unit,
+            val isPreparingArchive: Boolean = false,
+            val onShareAllClicked: () -> Unit
         ) : UiState
 
         data class LogFileContent(
@@ -127,6 +158,8 @@ class WooLogViewerViewModel @Inject constructor(
 
     data class ShareLogs(val logs: String) : MultiLiveEvent.Event()
     data class CopyLogs(val logs: String) : MultiLiveEvent.Event()
+    data class ShareLogsArchive(val archive: File) : MultiLiveEvent.Event()
+    object ShareLogsArchiveFailed : MultiLiveEvent.Event()
 
     companion object {
         // If we try to share very large number of entries, Android might throw TransactionTooLargeException
