@@ -40,7 +40,7 @@ class WooPosAnalyticsCommonPropertiesProviderTest {
     @Test
     fun `given tablet sized display, when common properties requested, then device type is tablet`() {
         // GIVEN
-        configuration.smallestScreenWidthDp = 800
+        givenDisplaySizeDp(shortSize = 800, longSize = 1280)
 
         // WHEN
         val properties = sut.commonProperties
@@ -52,13 +52,31 @@ class WooPosAnalyticsCommonPropertiesProviderTest {
     @Test
     fun `given phone sized display, when common properties requested, then device type is phone`() {
         // GIVEN
-        configuration.smallestScreenWidthDp = 411
+        givenDisplaySizeDp(shortSize = 411, longSize = 891)
 
         // WHEN
         val properties = sut.commonProperties
 
         // THEN
         assertThat(properties["device_type"]).isEqualTo("phone")
+    }
+
+    @Test
+    fun `given display below the POS tablet threshold, when common properties requested, then device type is phone`() {
+        // GIVEN
+        givenDisplaySizeDp(shortSize = 600, longSize = 960)
+
+        // WHEN
+        val properties = sut.commonProperties
+
+        // THEN
+        assertThat(properties["device_type"]).isEqualTo("phone")
+    }
+
+    private fun givenDisplaySizeDp(shortSize: Int, longSize: Int) {
+        configuration.smallestScreenWidthDp = shortSize
+        configuration.screenWidthDp = shortSize
+        configuration.screenHeightDp = longSize
     }
 
     @Test
