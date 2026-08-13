@@ -121,23 +121,21 @@ class PaymentsHubViewModel @Inject constructor(
         }
     }
 
-    private val initialState
-        get() = PaymentsHubViewState(
-            rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
-            isLoading = true,
-            onboardingErrorAction = null,
-        )
-    private val viewState = MutableLiveData(initialState)
+    private val onboardingCheck = MutableLiveData<OnboardingCheck>(OnboardingCheck.InProgress)
 
-    val viewStateData: LiveData<PaymentsHubViewState> = viewState
-        .combineWith(cashOnDeliveryState) { hubState, codState ->
-            val state = requireNotNull(hubState)
-            val cashOnDelivery = requireNotNull(codState)
-            state.copy(
-                rows = (state.rows + createCashOnDeliveryItem(cashOnDelivery)).sortedBy { it.index },
-                isLoading = state.isLoading || cashOnDelivery is CashOnDeliveryState.Loading,
-            )
+    val viewStateData: LiveData<PaymentsHubViewState> = onboardingCheck
+        .combineWith(cashOnDeliveryState) { onboarding, cashOnDelivery ->
+            createViewState(requireNotNull(onboarding), requireNotNull(cashOnDelivery))
         }
+
+    private fun createViewState(
+        onboarding: OnboardingCheck,
+        cashOnDelivery: CashOnDeliveryState,
+    ) = PaymentsHubViewState(
+        rows = (createHubRows(onboarding) + createCashOnDeliveryItem(cashOnDelivery)).sortedBy { it.index },
+        isLoading = onboarding is OnboardingCheck.InProgress || cashOnDelivery is CashOnDeliveryState.Loading,
+        onboardingErrorAction = createOnboardingErrorAction(onboarding),
+    )
 
     init {
         // Must run before anything below reads Tap to Pay availability — Stripe cannot answer
@@ -159,16 +157,15 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     fun onViewVisible() {
-        viewState.value = initialState
+        onboardingCheck.value = OnboardingCheck.InProgress
         launch {
             fetchCashOnDeliveryState()
         }
         launch {
-            val state = cardReaderChecker.getOnboardingState()
-            viewState.value = when (state) {
-                is OnboardingCompleted -> createOnboardingCompleteState()
-                is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
-                else -> createOnboardingFailedState(state)
+            onboardingCheck.value = when (val state = cardReaderChecker.getOnboardingState()) {
+                is OnboardingCompleted -> OnboardingCheck.Completed
+                is StripeAccountPendingRequirement -> OnboardingCheck.PendingRequirements(state)
+                else -> OnboardingCheck.Failed(state)
             }
         }
     }
@@ -350,34 +347,28 @@ class PaymentsHubViewModel @Inject constructor(
         onLearnMoreClicked = ::onLearnMoreCodClicked
     )
 
-    private fun createOnboardingCompleteState(): PaymentsHubViewState {
-        return PaymentsHubViewState(
-            rows = if (isCardReaderPluginExplicitlySelected()) {
-                createHubListWhenSinglePluginInstalled(true) + createAdditionalItemWhenMultiplePluginsInstalled()
-            } else {
-                createHubListWhenSinglePluginInstalled(true)
-            },
-            isLoading = false,
-            onboardingErrorAction = null,
-        )
+    private fun createHubRows(check: OnboardingCheck): List<ListItem> {
+        val isOnboardingComplete = when (check) {
+            OnboardingCheck.InProgress, is OnboardingCheck.Failed -> false
+            OnboardingCheck.Completed, is OnboardingCheck.PendingRequirements -> true
+        }
+        val rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete)
+        return if (isOnboardingComplete && isCardReaderPluginExplicitlySelected()) {
+            rows + createAdditionalItemWhenMultiplePluginsInstalled()
+        } else {
+            rows
+        }
     }
 
-    private fun createOnboardingWithPendingRequirementsState(state: CardReaderOnboardingState) =
-        createOnboardingCompleteState().copy(
-            onboardingErrorAction = OnboardingErrorAction(
-                text = UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
-                onClick = { onOnboardingErrorClicked(state) }
-            )
+    private fun createOnboardingErrorAction(check: OnboardingCheck): OnboardingErrorAction? = when (check) {
+        OnboardingCheck.InProgress, OnboardingCheck.Completed -> null
+        is OnboardingCheck.PendingRequirements -> OnboardingErrorAction(
+            text = UiStringRes(R.string.card_reader_onboarding_with_pending_requirements, containsHtml = true),
+            onClick = { onOnboardingErrorClicked(check.state) }
         )
-
-    private fun createOnboardingFailedState(state: CardReaderOnboardingState): PaymentsHubViewState {
-        return PaymentsHubViewState(
-            rows = createHubListWhenSinglePluginInstalled(false),
-            isLoading = false,
-            onboardingErrorAction = OnboardingErrorAction(
-                text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
-                onClick = { onOnboardingErrorClicked(state) }
-            ),
+        is OnboardingCheck.Failed -> OnboardingErrorAction(
+            text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
+            onClick = { onOnboardingErrorClicked(check.state) }
         )
     }
 
@@ -650,6 +641,13 @@ class PaymentsHubViewModel @Inject constructor(
     enum class CashOnDeliverySource {
         ONBOARDING,
         PAYMENTS_HUB
+    }
+
+    private sealed interface OnboardingCheck {
+        data object InProgress : OnboardingCheck
+        data object Completed : OnboardingCheck
+        data class PendingRequirements(val state: CardReaderOnboardingState) : OnboardingCheck
+        data class Failed(val state: CardReaderOnboardingState) : OnboardingCheck
     }
 
     private sealed interface CashOnDeliveryState {
