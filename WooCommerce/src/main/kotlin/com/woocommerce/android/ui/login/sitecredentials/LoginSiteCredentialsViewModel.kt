@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
@@ -31,7 +32,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -126,15 +126,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         loadingMessage.map { message -> message.takeIf { it != 0 } },
-        combine(authError, endpointRecovery) { error, recovery -> error to recovery }
-    ) { siteAddress, username, password, loadingMessage, errors ->
+        authError,
+        endpointRecovery
+    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
             loadingMessage = loadingMessage,
-            authenticationError = errors.first,
-            endpointRecovery = errors.second
+            authenticationError = authenticationError,
+            endpointRecovery = endpointRecovery
         )
     }.asLiveData()
 
