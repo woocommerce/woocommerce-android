@@ -669,15 +669,16 @@ class WooPosRefundSubmissionProcessorTest {
     fun `given mapped refund error, when backend refund fails, then failure carries the specific message`() = runTest {
         whenever(resourceProvider.getString(R.string.woopos_refund_error_order_not_refundable))
             .thenReturn("This order can't be refunded")
+        val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
         whenever(
-            refundStore.createItemsRefund(
+            refundStore.createComputedItemsRefund(
                 site = any(),
                 orderId = any(),
-                amount = any(),
                 reason = any(),
-                restockItems = any(),
                 autoRefund = any(),
-                items = any()
+                restockItems = any(),
+                amount = anyOrNull(),
+                items = any(),
             )
         ).thenReturn(
             WooResult(
@@ -689,7 +690,7 @@ class WooPosRefundSubmissionProcessorTest {
                 )
             )
         )
-        val retryRequest = request.copy(cardRefundAlreadySucceeded = true)
+        val retryRequest = request.copy(cardRefundAlreadySucceeded = true, serverLineItems = serverLineItems)
 
         processor.submit(retryRequest).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
