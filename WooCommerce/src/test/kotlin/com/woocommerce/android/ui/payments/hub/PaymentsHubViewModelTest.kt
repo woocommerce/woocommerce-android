@@ -50,9 +50,11 @@ import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -1077,6 +1079,92 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(cashOnDeliveryItem().isChecked).isTrue
+        }
+
+    @Test
+    fun `given cod toggle in flight, when a pending gateway fetch completes, then the toggled value is kept`() =
+        testBlocking {
+            // GIVEN
+            val pendingFetch = CompletableDeferred<Unit>()
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).doSuspendableAnswer {
+                pendingFetch.await()
+                codGatewayResult(isEnabled = false)
+            }
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).doSuspendableAnswer {
+                awaitCancellation()
+            }
+            viewModel.onViewVisible()
+            toggleCashOnDeliveryAndConfirm(true)
+
+            // WHEN
+            pendingFetch.complete(Unit)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(cashOnDeliveryItem().isChecked).isTrue
+            assertThat(cashOnDeliveryItem().isEnabled).isFalse
+        }
+
+    @Test
+    fun `given a slow gateway fetch, when a cod toggle completes first, then the toggled value is kept`() =
+        testBlocking {
+            // GIVEN
+            val pendingFetch = CompletableDeferred<Unit>()
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).doSuspendableAnswer {
+                pendingFetch.await()
+                codGatewayResult(isEnabled = false)
+            }
+            whenever(cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true))
+                .thenReturn(WooResult(codGateway(isEnabled = true)))
+            viewModel.onViewVisible()
+            toggleCashOnDeliveryAndConfirm(true)
+
+            // WHEN
+            pendingFetch.complete(Unit)
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(cashOnDeliveryItem().isChecked).isTrue
+            assertThat(cashOnDeliveryItem().isEnabled).isTrue
+        }
+
+    @Test
+    fun `given a cod toggle in flight, when the screen becomes visible again, then the gateway is not re-fetched`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).doSuspendableAnswer {
+                awaitCancellation()
+            }
+            toggleCashOnDeliveryAndConfirm(true)
+            clearInvocations(cashOnDeliverySettingsRepository)
+
+            // WHEN
+            viewModel.onViewVisible()
+
+            // THEN
+            verify(cashOnDeliverySettingsRepository, never()).fetchCashOnDeliveryGateway()
+        }
+
+    @Test
+    fun `given cod status already loaded, when a later fetch fails, then the known value stays usable`() =
+        testBlocking {
+            // GIVEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(codGatewayResult(isEnabled = true))
+            initViewModel()
+
+            // WHEN
+            whenever(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway())
+                .thenReturn(getFailureWooResult())
+            viewModel.onViewVisible()
+
+            // THEN
+            assertThat(cashOnDeliveryItem().state).isEqualTo(ToggleState.CHECKED)
+            assertThat(cashOnDeliveryItem().isEnabled).isTrue
         }
 
     @Test
