@@ -982,26 +982,15 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             // GIVEN
             whenever(
                 cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
-            ).thenReturn(
-                getSuccessWooResult()
-            )
-            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
-            viewModel.viewStateData.observeForever {
-                receivedViewStates.add(it)
+            ).doSuspendableAnswer {
+                awaitCancellation()
             }
 
             // WHEN
             toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
-            assertThat(
-                (
-                    receivedViewStates[1].rows.find {
-                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                    }
-                        as ToggleableListItem
-                    ).isEnabled
-            ).isFalse
+            assertThat(cashOnDeliveryItem().isEnabled).isFalse
         }
 
     @Test
@@ -1013,23 +1002,12 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getSuccessWooResult()
             )
-            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
-            viewModel.viewStateData.observeForever {
-                receivedViewStates.add(it)
-            }
 
             // WHEN
             toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
-            assertThat(
-                (
-                    receivedViewStates[2].rows.find {
-                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                    }
-                        as ToggleableListItem
-                    ).isEnabled
-            ).isTrue
+            assertThat(cashOnDeliveryItem().isEnabled).isTrue
         }
 
     @Test
@@ -1041,23 +1019,12 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getFailureWooResult()
             )
-            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
-            viewModel.viewStateData.observeForever {
-                receivedViewStates.add(it)
-            }
 
             // WHEN
             toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
-            assertThat(
-                (
-                    receivedViewStates[2].rows.find {
-                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                    }
-                        as ToggleableListItem
-                    ).isEnabled
-            ).isTrue
+            assertThat(cashOnDeliveryItem().isEnabled).isTrue
         }
 
     @Test
@@ -1069,23 +1036,12 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getSuccessWooResult()
             )
-            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
-            viewModel.viewStateData.observeForever {
-                receivedViewStates.add(it)
-            }
 
             // WHEN
             toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
-            assertThat(
-                (
-                    receivedViewStates[2].rows.find {
-                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                    }
-                        as ToggleableListItem
-                    ).isChecked
-            ).isTrue
+            assertThat(cashOnDeliveryItem().isChecked).isTrue
         }
 
     @Test
@@ -1097,23 +1053,29 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             ).thenReturn(
                 getFailureWooResult()
             )
-            val receivedViewStates = mutableListOf<PaymentsHubViewState>()
-            viewModel.viewStateData.observeForever {
-                receivedViewStates.add(it)
+
+            // WHEN
+            toggleCashOnDeliveryAndConfirm(true)
+
+            // THEN
+            assertThat(cashOnDeliveryItem().isChecked).isFalse
+        }
+
+    @Test
+    fun `given cash on delivery api in progress, when cod toggled, then the new value is shown optimistically`() =
+        testBlocking {
+            // GIVEN
+            whenever(
+                cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(true)
+            ).doSuspendableAnswer {
+                awaitCancellation()
             }
 
             // WHEN
             toggleCashOnDeliveryAndConfirm(true)
 
             // THEN
-            assertThat(
-                (
-                    receivedViewStates[2].rows.find {
-                        it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-                    }
-                        as ToggleableListItem
-                    ).isChecked
-            ).isFalse
+            assertThat(cashOnDeliveryItem().isChecked).isTrue
         }
 
     @Test
@@ -1933,12 +1895,13 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
     //endregion
 
+    private fun cashOnDeliveryItem() =
+        viewModel.viewStateData.getOrAwaitValue().rows.find {
+            it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
+        } as ToggleableListItem
+
     private fun toggleCashOnDelivery(isChecked: Boolean) {
-        (
-            viewModel.viewStateData.getOrAwaitValue().rows.find {
-                it.label == UiStringRes(R.string.card_reader_enable_pay_in_person)
-            } as ToggleableListItem
-            ).onToggled.invoke(isChecked)
+        cashOnDeliveryItem().onToggled.invoke(isChecked)
     }
 
     private fun confirmCashOnDeliveryToggle() {

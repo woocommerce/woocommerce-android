@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
@@ -56,6 +55,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.CARD_READER
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -87,24 +87,9 @@ class PaymentsHubViewModel @Inject constructor(
     private val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
         storeCountryCode
     )
-    private val cashOnDeliveryState = MutableLiveData(
-        ToggleableListItem(
-            icon = R.drawable.ic_gridicons_credit_card,
-            label = UiStringRes(R.string.card_reader_enable_pay_in_person),
-            description = UiStringRes(
-                R.string.card_reader_enable_pay_in_person_description,
-                containsHtml = true
-            ),
-            index = 2,
-            state = ToggleState.LOADING,
-            onToggled = { (::onCashOnDeliveryToggled)(it) },
-            onLearnMoreClicked = ::onLearnMoreCodClicked
-        )
-    )
+    private val cashOnDeliveryState = MutableLiveData<CashOnDeliveryState>(CashOnDeliveryState.Loading)
 
     private var cashOnDeliveryTitle: String? = null
-
-    private var isOnboardingCheckInProgress = false
 
     private fun listenForSoftwareUpdateAvailability() {
         launch {
@@ -138,18 +123,20 @@ class PaymentsHubViewModel @Inject constructor(
 
     private val initialState
         get() = PaymentsHubViewState(
-            rows = createHubListWhenSinglePluginInstalled(
-                isOnboardingComplete = false,
-                cashOnDeliveryItem = cashOnDeliveryState.value!!
-            ),
+            rows = createHubListWhenSinglePluginInstalled(isOnboardingComplete = false),
             isLoading = true,
             onboardingErrorAction = null,
         )
     private val viewState = MutableLiveData(initialState)
 
     val viewStateData: LiveData<PaymentsHubViewState> = viewState
-        .map { state ->
-            state.copy(rows = state.rows.sortedBy { it.index })
+        .combineWith(cashOnDeliveryState) { hubState, codState ->
+            val state = requireNotNull(hubState)
+            val cashOnDelivery = requireNotNull(codState)
+            state.copy(
+                rows = (state.rows + createCashOnDeliveryItem(cashOnDelivery)).sortedBy { it.index },
+                isLoading = state.isLoading || cashOnDelivery is CashOnDeliveryState.Loading,
+            )
         }
 
     init {
@@ -160,25 +147,19 @@ class PaymentsHubViewModel @Inject constructor(
         listenForSoftwareUpdateAvailability()
     }
 
-    private suspend fun checkAndUpdateCashOnDeliveryOptionState() {
+    private suspend fun fetchCashOnDeliveryState() {
         val cashOnDeliveryGateway = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
         cashOnDeliveryTitle = cashOnDeliveryGateway?.title
-        updateCashOnDeliveryOptionState(
-            cashOnDeliveryState.value?.copy(
-                state = ToggleState.fromChecked(cashOnDeliveryGateway?.isEnabled == true)
-            )!!
-        )
+        cashOnDeliveryState.value = CashOnDeliveryState.Ready(isEnabled = cashOnDeliveryGateway?.isEnabled == true)
     }
 
     fun onViewVisible() {
-        isOnboardingCheckInProgress = true
         viewState.value = initialState
         launch {
-            checkAndUpdateCashOnDeliveryOptionState()
+            fetchCashOnDeliveryState()
         }
         launch {
             val state = cardReaderChecker.getOnboardingState()
-            isOnboardingCheckInProgress = false
             viewState.value = when (state) {
                 is OnboardingCompleted -> createOnboardingCompleteState()
                 is StripeAccountPendingRequirement -> createOnboardingWithPendingRequirementsState(state)
@@ -205,15 +186,13 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private fun createHubListWhenSinglePluginInstalled(
-        isOnboardingComplete: Boolean,
-        cashOnDeliveryItem: ToggleableListItem
+        isOnboardingComplete: Boolean
     ): List<ListItem> = mutableListOf(
         PayoutSummaryListItem(index = 0),
         HeaderItem(
             label = UiStringRes(R.string.card_reader_settings_header),
             index = 1,
         ),
-        cashOnDeliveryItem,
         HeaderItem(
             label = UiStringRes(R.string.card_reader_card_readers_header),
             index = 7,
@@ -347,31 +326,32 @@ class PaymentsHubViewModel @Inject constructor(
             onClick = ::onCardReaderPaymentProviderClicked
         )
 
-    private fun updateCashOnDeliveryOptionState(cashOnDeliveryListItem: ToggleableListItem) {
-        cashOnDeliveryState.value = cashOnDeliveryListItem
-        viewState.value = viewState.value?.copy(
-            rows = (getNonTogggleableItems()!! + cashOnDeliveryListItem),
-            isLoading = isOnboardingCheckInProgress || cashOnDeliveryListItem.isLoading
-        )
-    }
-
-    private fun getNonTogggleableItems(): List<ListItem>? {
-        return viewState.value?.rows?.filter {
-            it !is ToggleableListItem
-        }
-    }
+    private fun createCashOnDeliveryItem(state: CashOnDeliveryState) = ToggleableListItem(
+        icon = R.drawable.ic_gridicons_credit_card,
+        label = UiStringRes(R.string.card_reader_enable_pay_in_person),
+        description = UiStringRes(
+            R.string.card_reader_enable_pay_in_person_description,
+            containsHtml = true
+        ),
+        index = 2,
+        isEnabled = state is CashOnDeliveryState.Ready,
+        state = when (state) {
+            CashOnDeliveryState.Loading -> ToggleState.LOADING
+            is CashOnDeliveryState.Ready -> ToggleState.fromChecked(state.isEnabled)
+            is CashOnDeliveryState.Updating -> ToggleState.fromChecked(state.willBeEnabled)
+        },
+        onToggled = ::onCashOnDeliveryToggled,
+        onLearnMoreClicked = ::onLearnMoreCodClicked
+    )
 
     private fun createOnboardingCompleteState(): PaymentsHubViewState {
         return PaymentsHubViewState(
             rows = if (isCardReaderPluginExplicitlySelected()) {
-                (
-                    createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!) +
-                        createAdditionalItemWhenMultiplePluginsInstalled()
-                    )
+                createHubListWhenSinglePluginInstalled(true) + createAdditionalItemWhenMultiplePluginsInstalled()
             } else {
-                createHubListWhenSinglePluginInstalled(true, cashOnDeliveryState.value!!)
+                createHubListWhenSinglePluginInstalled(true)
             },
-            isLoading = cashOnDeliveryState.value!!.isLoading,
+            isLoading = false,
             onboardingErrorAction = null,
         )
     }
@@ -386,8 +366,8 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun createOnboardingFailedState(state: CardReaderOnboardingState): PaymentsHubViewState {
         return PaymentsHubViewState(
-            rows = createHubListWhenSinglePluginInstalled(false, cashOnDeliveryState.value!!),
-            isLoading = cashOnDeliveryState.value!!.isLoading,
+            rows = createHubListWhenSinglePluginInstalled(false),
+            isLoading = false,
             onboardingErrorAction = OnboardingErrorAction(
                 text = UiStringRes(R.string.card_reader_onboarding_not_finished, containsHtml = true),
                 onClick = { onOnboardingErrorClicked(state) }
@@ -500,9 +480,7 @@ class PaymentsHubViewModel @Inject constructor(
     private fun updateCashOnDeliveryOption(isChecked: Boolean) {
         paymentsFlowTracker.trackCashOnDeliveryToggled(isChecked)
         launch {
-            updateCashOnDeliveryOptionState(
-                cashOnDeliveryState.value?.copy(isEnabled = false, state = ToggleState.fromChecked(isChecked))!!
-            )
+            cashOnDeliveryState.value = CashOnDeliveryState.Updating(willBeEnabled = isChecked)
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
             if (!result.isError) {
                 result.model?.let { cashOnDeliveryTitle = it.title }
@@ -515,9 +493,7 @@ class PaymentsHubViewModel @Inject constructor(
                         PAYMENTS_HUB
                     )
                 }
-                updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(isChecked))!!
-                )
+                cashOnDeliveryState.value = CashOnDeliveryState.Ready(isEnabled = isChecked)
             } else {
                 if (isChecked) {
                     paymentsFlowTracker.trackCashOnDeliveryEnabledFailure(
@@ -530,9 +506,7 @@ class PaymentsHubViewModel @Inject constructor(
                         result.error.message
                     )
                 }
-                updateCashOnDeliveryOptionState(
-                    cashOnDeliveryState.value?.copy(isEnabled = true, state = ToggleState.fromChecked(!isChecked))!!
-                )
+                cashOnDeliveryState.value = CashOnDeliveryState.Ready(isEnabled = !isChecked)
                 if (result.error.message.isNullOrEmpty()) {
                     triggerEvent(ShowToast(R.string.something_went_wrong_try_again))
                 } else {
@@ -670,6 +644,12 @@ class PaymentsHubViewModel @Inject constructor(
     enum class CashOnDeliverySource {
         ONBOARDING,
         PAYMENTS_HUB
+    }
+
+    private sealed interface CashOnDeliveryState {
+        data object Loading : CashOnDeliveryState
+        data class Ready(val isEnabled: Boolean) : CashOnDeliveryState
+        data class Updating(val willBeEnabled: Boolean) : CashOnDeliveryState
     }
 
     companion object {
