@@ -231,7 +231,13 @@ class DashboardFragment :
             }
         }
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            ((activity) as MainActivity).setSubtitle(storeName)
+            // Only drive the shared toolbar subtitle while the dashboard is actually the visible screen. When it's
+            // in the back stack (e.g. a review opened from a notification is on top) its view lifecycle is still
+            // STARTED, so a late storeName emission would otherwise paint the store name onto that screen's toolbar.
+            // On return to the dashboard, BaseFragment.onResume restores the subtitle via getFragmentSubtitle().
+            if (isResumed) {
+                (activity as MainActivity).setSubtitle(storeName)
+            }
         }
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)

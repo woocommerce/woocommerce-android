@@ -2,7 +2,7 @@ package com.woocommerce.android.model
 
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.isEquivalentTo
-import com.woocommerce.android.extensions.parseFromIso8601DateFormat
+import com.woocommerce.android.extensions.parseGmtDateFromIso8601DateFormat
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductStatus
@@ -22,6 +22,7 @@ class SubscriptionProductVariation(
     override val sku: String,
     override val globalUniqueId: String,
     override val image: Product.Image?,
+    override val editContextImage: Product.Image? = null,
     override val price: BigDecimal?,
     override val regularPrice: BigDecimal?,
     override val salePrice: BigDecimal?,
@@ -56,6 +57,7 @@ class SubscriptionProductVariation(
     sku = sku,
     globalUniqueId = globalUniqueId,
     image = image,
+    editContextImage = editContextImage,
     price = price,
     regularPrice = regularPrice,
     salePrice = salePrice,
@@ -96,6 +98,17 @@ class SubscriptionProductVariation(
                 Product.Image(
                     id = it.id,
                     name = it.name,
+                    alt = it.alt,
+                    source = it.src,
+                    dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
+                    isCoverImage = false
+                )
+            },
+            editContextImage = model.getEditContextImageModel()?.let {
+                Product.Image(
+                    id = it.id,
+                    name = it.name,
+                    alt = it.alt,
                     source = it.src,
                     dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
                     isCoverImage = false
@@ -104,8 +117,8 @@ class SubscriptionProductVariation(
             price = model.price.toBigDecimalOrNull(),
             regularPrice = model.regularPrice.toBigDecimalOrNull(),
             salePrice = model.salePrice.toBigDecimalOrNull(),
-            saleEndDateGmt = model.dateOnSaleToGmt.parseFromIso8601DateFormat(),
-            saleStartDateGmt = model.dateOnSaleFromGmt.parseFromIso8601DateFormat(),
+            saleEndDateGmt = model.dateOnSaleToGmt.parseGmtDateFromIso8601DateFormat(),
+            saleStartDateGmt = model.dateOnSaleFromGmt.parseGmtDateFromIso8601DateFormat(),
             isSaleScheduled = model.dateOnSaleFromGmt.isNotEmpty() || model.dateOnSaleToGmt.isNotEmpty(),
             stockStatus = ProductStockStatus.fromString(model.stockStatus),
             backorderStatus = ProductBackorderStatus.fromString(model.backorders),
@@ -142,7 +155,7 @@ class SubscriptionProductVariation(
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
                 globalUniqueId == variation.globalUniqueId &&
-                image?.id == variation.image?.id &&
+                editContextImage?.id == variation.editContextImage?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
                 isSaleScheduled == variation.isSaleScheduled &&
@@ -178,7 +191,7 @@ class SubscriptionProductVariation(
         result = 31 * result + remoteVariationId.hashCode()
         result = 31 * result + sku.hashCode()
         result = 31 * result + globalUniqueId.hashCode()
-        result = 31 * result + (image?.hashCode() ?: 0)
+        result = 31 * result + (editContextImage?.hashCode() ?: 0)
         result = 31 * result + (price?.hashCode() ?: 0)
         result = 31 * result + (regularPrice?.hashCode() ?: 0)
         result = 31 * result + (salePrice?.hashCode() ?: 0)
@@ -216,6 +229,7 @@ class SubscriptionProductVariation(
         sku: String,
         globalUniqueId: String,
         image: Product.Image?,
+        editContextImage: Product.Image?,
         price: BigDecimal?,
         regularPrice: BigDecimal?,
         salePrice: BigDecimal?,
@@ -251,6 +265,7 @@ class SubscriptionProductVariation(
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = image,
+            editContextImage = editContextImage,
             price = price,
             regularPrice = regularPrice,
             salePrice = salePrice,
@@ -290,6 +305,7 @@ class SubscriptionProductVariation(
         sku: String = this.sku,
         globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
+        editContextImage: Image? = this.editContextImage,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
         salePrice: BigDecimal? = this.salePrice,
@@ -326,6 +342,7 @@ class SubscriptionProductVariation(
             sku = sku,
             globalUniqueId = globalUniqueId,
             image = image,
+            editContextImage = editContextImage,
             price = price,
             regularPrice = regularPrice,
             salePrice = salePrice,

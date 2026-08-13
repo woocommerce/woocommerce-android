@@ -55,13 +55,13 @@ interface CardReaderRemoteTabletClient {
 
 sealed class ConnectOutcome {
     data class Success(val readerSerial: String?) : ConnectOutcome()
-    data class Rejected(val code: String, val description: String) : ConnectOutcome()
+    data class Rejected(val error: CardReaderRemoteError, val description: String) : ConnectOutcome()
     data class Failed(val cause: Throwable) : ConnectOutcome()
 }
 
 sealed class CollectPaymentOutcome {
     data class Success(val paymentIntentId: String, val status: String) : CollectPaymentOutcome()
-    data class Rejected(val code: String, val description: String) : CollectPaymentOutcome()
+    data class Rejected(val error: CardReaderRemoteError, val description: String) : CollectPaymentOutcome()
     data object TimedOut : CollectPaymentOutcome()
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
 }
@@ -95,7 +95,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                 opened.send(ConnectRequest(requestId, connectionToken, locationId))
                 logWrapper.d(TAG, "ConnectRequest sent, awaiting reply")
                 val reply = opened.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
+                    ?: throw IllegalStateException(CONNECT_FAILED_MESSAGE)
                 when (reply) {
                     is ConnectAck -> {
                         bridgeClosedSignal(opened)
@@ -104,7 +104,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     }
                     is ErrorMessage -> {
                         disconnect()
-                        ConnectOutcome.Rejected(reply.code, reply.description)
+                        ConnectOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                     }
                     is ConnectRequest,
                     is CollectPaymentRequest,
@@ -112,7 +112,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     is PaymentIntentResult -> {
                         disconnect()
                         ConnectOutcome.Rejected(
-                            CODE_UNEXPECTED_REPLY,
+                            CardReaderRemoteError.UnexpectedReply,
                             "Unexpected reply type: ${reply::class.simpleName}",
                         )
                     }
@@ -126,15 +126,15 @@ internal class DefaultCardReaderRemoteTabletClient(
             throw cancel
         } catch (cause: IOException) {
             disconnect()
-            ConnectOutcome.Failed(IllegalStateException(CONNECTION_LOST_MESSAGE, cause))
+            ConnectOutcome.Failed(IllegalStateException(CONNECT_FAILED_MESSAGE, cause))
         } catch (@Suppress("TooGenericExceptionCaught") cause: Exception) {
             disconnect()
-            ConnectOutcome.Failed(mapToConnectionLostIfIo(cause))
+            ConnectOutcome.Failed(mapToConnectFailedIfIo(cause))
         }
     }
 
-    private fun mapToConnectionLostIfIo(cause: Exception): Exception =
-        if (cause is java.io.IOException) IllegalStateException(CONNECTION_LOST_MESSAGE, cause) else cause
+    private fun mapToConnectFailedIfIo(cause: Exception): Exception =
+        if (cause is IOException) IllegalStateException(CONNECT_FAILED_MESSAGE, cause) else cause
 
     private fun bridgeClosedSignal(connection: CardReaderRemoteConnection) {
         closedBridgeJob?.cancel()
@@ -167,16 +167,17 @@ internal class DefaultCardReaderRemoteTabletClient(
             active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
                 active.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
+                    ?: throw CardReaderRemoteConnectionLostException(null)
             }
             when (reply) {
                 is PaymentIntentResult -> CollectPaymentOutcome.Success(reply.paymentIntentId, reply.status)
-                is ErrorMessage -> CollectPaymentOutcome.Rejected(reply.code, reply.description)
+                is ErrorMessage ->
+                    CollectPaymentOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                 is ConnectAck,
                 is ConnectRequest,
                 is Ping,
                 is CollectPaymentRequest -> CollectPaymentOutcome.Rejected(
-                    CODE_UNEXPECTED_REPLY,
+                    CardReaderRemoteError.UnexpectedReply,
                     "Unexpected reply type: ${reply::class.simpleName}",
                 )
             }
@@ -201,9 +202,10 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     private companion object {
-        const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
         const val TAG = "CardReaderRemoteTabletClient"
-        const val CONNECTION_LOST_MESSAGE = "Connection to phone reader was lost"
+
+        // Reported while establishing a session - the reader was never connected.
+        const val CONNECT_FAILED_MESSAGE = "Could not connect to phone reader"
     }
 }
 

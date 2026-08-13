@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-29 21:55:58+0000
+Translation-Revision-Date: 2026-07-28 09:57:26+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">ההנחות לא הוחלו</string>
+    <string name="product_duplicate_discard_changes_action">ביטול ושכפול</string>
+    <string name="product_duplicate_discard_changes_message">השינויים שלא נשמרו יאבדו. העותק המשוכפל ישתמש בגרסה האחרונה שנשמרה.</string>
+    <string name="product_duplicate_discard_changes_title">האם לבטל את השינויים ולשכפל?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">קיימת לפחות דרישה אחת שנמצאת באיחור. אפשר לדלג על שלב זה ולהמשיך לקבל תשלומים, אך אם הדרישה גורמת לחסימת החשבון, ייתכן שחלק מהעסקאות יידחו עד להסדרת העניין.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">דרישות בחשבון שלך שנמצאות באיחור</string>
+    <string name="order_editing_currency_mismatch_title">לא ניתן לערוך את ההזמנה הזאת באפליקציה</string>
+    <string name="login_no_wpcom_account_found_message">המשתמש לא קיים. יש לוודא שכתובת האימייל נכונה או לנסות עם חשבון אחר.</string>
+    <string name="login_no_wpcom_account_found_title">כתובת אימייל שגויה</string>
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">סוג תמונה זה אינו נתמך. יש לבחור תמונת PNG, ‏JPEG, ‏WebP, ‏GIF, ‏BMP, ‏HEIC או HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">לא ניתן להגיע לחנות שלי. האפליקציה זיהתה שגיאת התחברות בניסיון להגיע לחנות שלי. כיצד ניתן לתקן זאת?</string>
+    <string name="settings_crash_reporting_error_update">אירעה שגיאה בעת עדכון ההגדרה של דיווח על קריסות</string>
+    <string name="empty_search_guest_orders_button">הצגת הזמנות של אורחים</string>
+    <string name="empty_message_with_search_guest">רוצה לראות הזמנות שבוצעו על ידי לקוחות אורחים?</string>
+    <string name="order_refunds_gift_card_unsupported_message">הזמנה זו שולמה באמצעות כרטיס מתנה. הנפקת החזר הכספי כאן לא תשחזר את יתרת כרטיס המתנה. כדי להנפיק החזר כספי בצורה תקינה, יש לעבד את התשלום ממנהל החנות שלך ברשת.</string>
+    <string name="order_refunds_gift_card_unsupported_title">הנפקת החזר כספי ממנהל החנות שלך</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">לא הצלחנו לאמת את אישור האבטחה של אתר זה. פנה לספק האחסון שלך או למנהל האתר, ולאחר מכן נסה שוב.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">לא הצלחנו למסד חיבור מאובטח. בדוק שהתאריך והשעה במכשיר שלך נכונים, ולאחר מכן נסה שוב.</string>
     <string name="woopos_refund_preview_error">לא ניתן היה לחשב את סך הזיכוי. נא לנסות שוב.</string>
@@ -500,11 +516,6 @@ Language: he_IL
     <string name="connectivity_tool_view_technical_details">הצגת פרטים טכניים</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">מביא מוצרים בחנות שלך</string>
     <string name="user_role_access_error_fetch_failed">לא הצלחנו לאמת את התפקיד שלך בחנות זו. יש לנסות שוב. אם הבעיה נמשכת, יש לפנות לתמיכה.</string>
-    <string name="woopos_eligibility_learn_more_label">למידע נוסף</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. &lt;b&gt;יש לשדרג לתוכנית Pro&lt;/b&gt; כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">קבלת תשלומים באופן פרונטלי בעלות של 2.70% + 0.10 דולר לכל עסקה. יש לשדרג לתוכנית Pro כדי לגשת לתשלום בנגיעה בטלפון ולמערכת נקודת המכירה המלאה שלנו, עם סנכרון של מלאי והזמנות בזמן אמת.</string>
-    <string name="woopos_eligibility_ciab_title">נדרשת תוכנית Pro</string>
-    <string name="ciab_order_status_open">פתיחה</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">לא ניתן לרכוש את תווית המשלוח. יש להשלים את כתובת המוצא.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">כתובת המוצא חסרה או לא תקפה</string>
     <string name="woopos_orders_details_refund_details_background">רקע דיאלוג פרטי ההחזר הכספי</string>
@@ -1183,6 +1194,7 @@ Language: he_IL
     <string name="shipping_label_purchased_note">הערה: שימוש חוזר בתווית שהודפסה הוא הפרה של תנאי השימוש שלנו ועשוי להוביל לכתב אישום.</string>
     <string name="shipping_label_purchased_success_message">מכאן אפשר להדפיס את תווית המשלוח שוב או לשנות את גודל הדף של התווית.</string>
     <string name="shipping_label_purchased_success_title">תווית המשלוח שלך מוכנה להדפסה</string>
+    <string name="order_editing_currency_mismatch_message">מצטערים, אפשר לערוך את ההזמנה הזאת רק באתר האינטרנט, מאחר שהיא משתמשת במטבע ⁦%1$s⁩, והאתר שלך מוגדר למטבע ⁦%2$s⁩.</string>
     <string name="shipping_label_shipping_service_title">שירות משלוחים</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">המהיר ביותר</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">הזול ביותר</string>
@@ -1663,9 +1675,6 @@ Language: he_IL
     <string name="blaze_campaign_budget_toolbar_title">להגדיר את תקציב שלך</string>
     <string name="blaze_campaign_preview_target_default_value">הכול</string>
     <string name="blaze_campaign_preview_days_duration">⁦%1$s⁩ ימים מ-⁦%2$s⁩</string>
-    <string name="product_creation_survey_button_dont_show_again">אל תציגו לי את זה שוב</string>
-    <string name="product_creation_survey_button_remind_me_later">הזכירו לי מאוחר יותר</string>
-    <string name="product_creation_survey_description">אפשר רגע מזמנך? אנחנו רוצים לבקש את עזרתך בשיפור האפשרויות שמבוססות על בינה מלאכותית על ידי מענה על משוב קצר.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">לאשר את הפרטים</string>
     <string name="blaze_campaign_preview_details_destination_url">היעד של הפרסומת</string>
     <string name="blaze_campaign_preview_details_interests">תחומי עניין</string>
@@ -1715,8 +1724,6 @@ Language: he_IL
     <string name="theme_picker_carousel_info_item_description_settings">אפשר למצוא את ערכת העיצוב המושלמת בחנות ערכות העיצוב של WooCommerce.</string>
     <string name="theme_picker_current_theme_title">ערכת העיצוב הנוכחית</string>
     <string name="theme_picker_settings_title">לנסות מראה חדש</string>
-    <string name="product_creation_survey_button_open">להתחיל לענות על הסקר</string>
-    <string name="product_creation_survey_title">אנחנו מעריכים את המשוב שלך!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">הפעלת האפשרות \'לשלם באופן אישי\' תאפשר ללקוחות לשלם לך על הזמנות מקוונות במעמד המשלוח באמצעות מזומן או כרטיס.\n\nעדיין ניתן ליצור הזמנות באופן ידני ללא הפעלת האפשרות הזו.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">האם ברצונך להוסיף את \'לשלם באופן אישי\' אל תהליך התשלום בקופה באתר?</string>
     <string name="card_reader_onboarding_contact_us">נדרשת לך עזרה? &lt;a href=\'\'&gt;ליצירת קשר&lt;/a&gt;</string>
@@ -2300,7 +2307,6 @@ Language: he_IL
     <string name="support_request_title">ננסה לתקן את הבעיה עכשיו</string>
     <string name="support_request_help_title">דרושה לי עזרה לגבי</string>
     <string name="support_request">בקשת תמיכה</string>
-    <string name="store_onboarding_menu_share_feedback">לשלוח משוב</string>
     <string name="store_onboarding_full_screen_transition_name">תצוגה מלאה להצטרפות</string>
     <string name="store_onboarding_task_view_all">להציג הכול (⁦%1$d⁩)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">⁦%1$d⁩ מתוך ⁦%2$d⁩ משימות הושלמו</string>
@@ -2479,7 +2485,6 @@ Language: he_IL
     <string name="login_site_picker_enter_site_address">להזין כתובת אתר</string>
     <string name="card_reader_onboarding_not_finished">שמנו לב שעדיין לא השלמת את ההגדרה של \'תשלומים באופן אישי\'. &lt;a href=\'\'&gt;להמשיך להתקנה&lt;/a&gt;</string>
     <string name="payments_hub_title">תשלומים</string>
-    <string name="login_no_wpcom_account_found">כתובת האימייל שלך לא מקושרת לחשבון ב-WordPress.com.</string>
     <string name="login_non_woo_stores_label">אתרים אחרים</string>
     <string name="more_menu_button_w___admin">מנהל מערכת של WC</string>
     <string name="login_magic_links_email_sent">שלחנו כעת קישור ישיר אל</string>
@@ -3035,8 +3040,6 @@ Language: he_IL
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">תשלומים באופן אישי אינם זמינים כרגע</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">ישנן דרישות ממתינות בחשבון שלך. כדי להמשיך ולקבל תשלומים באופן אישי, על ⁦%1$s⁩ להשלים את הדרישות הללו.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">לחשבון שלך יש דרישות שממתינות לאישור</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">יש לך לפחות דרישה אחת בחשבונך שעבר המועד שלה. יש לטפל בה כדי לחדש פעולת התשלומים באופן אישי</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">תשלומים באופן אישי אינם זמינים כרגע</string>
     <string name="card_reader_onboarding_account_under_review_hint">ניתן יהיה לקבל תשלומים באופן אישי ברגע שנסיים לבחון את חשבונך.</string>
     <string name="card_reader_onboarding_account_under_review_header">תשלומים באופן אישי אינם זמינים כרגע</string>
     <string name="card_reader_onboarding_account_rejected_hint">אנחנו מצטערים, אבל אין באפשרותנו לתמוך בתשלומים באופן אישי עבור חנות זו.</string>

@@ -19,6 +19,8 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
 
     fun isVariableProduct() = this == VARIABLE || this == VARIABLE_SUBSCRIPTION
 
+    fun isSubscriptionProduct() = this == SUBSCRIPTION || this == VARIABLE_SUBSCRIPTION
+
     companion object {
         fun fromString(type: String): ProductType {
             return when (type.lowercase(Locale.US)) {

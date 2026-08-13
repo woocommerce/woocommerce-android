@@ -24,16 +24,23 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
 
     private val loginListener: LoginListener
         get() = requireActivity() as LoginListener
+
+    override val title: String
+        get() = getString(R.string.login_no_wpcom_account_found_title)
+
     override val text: CharSequence
-        get() = getString(R.string.login_no_wpcom_account_found)
+        get() = getString(R.string.login_no_wpcom_account_found_message)
 
     override val illustration: Int
-        get() = R.drawable.img_wpcom_error
+        get() = R.drawable.img_woo_generic_error
+
+    override val onNavigationButtonClick: () -> Unit
+        get() = { dismiss() }
 
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_EMAIL
 
-    override val secondaryButton: LoginErrorButton
+    override val primaryButton: LoginErrorButton
         get() = LoginErrorButton(
             title = R.string.login_try_another_account,
             onClick = {
@@ -43,6 +50,8 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
                 dismiss()
             }
         )
+
+    override val secondaryButton: LoginErrorButton? = null
 
     override val inlineButtons: List<LoginErrorButton>
         get() = listOf(

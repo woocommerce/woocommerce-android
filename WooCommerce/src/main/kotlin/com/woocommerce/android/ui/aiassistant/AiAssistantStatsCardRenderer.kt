@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.aiassistant
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
@@ -21,11 +21,10 @@ internal class AiAssistantStatsCardRenderer(
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
-        val context = LocalContext.current
         AiAssistantStatsCard(
             state = card.toStatsCardState(
                 currencyFormatter = currencyFormatter,
-                unavailableValue = context.getString(R.string.ai_assistant_stats_card_metric_unavailable),
+                unavailableValue = stringResource(R.string.ai_assistant_stats_card_metric_unavailable),
             ),
             onClick = card.toStatsCardClickHandler(onAction),
             modifier = modifier,

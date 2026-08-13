@@ -16,9 +16,12 @@ internal fun wooColors(useDarkTheme: Boolean): WooColors {
     val context = LocalContext.current
 
     return remember(context, configuration, useDarkTheme) {
-        context.createWooColorContext(useDarkTheme = useDarkTheme).loadWooColors()
+        loadWooColors(context = context, useDarkTheme = useDarkTheme)
     }
 }
+
+internal fun loadWooColors(context: Context, useDarkTheme: Boolean): WooColors =
+    context.createWooColorContext(useDarkTheme = useDarkTheme).loadWooColorsFromResources()
 
 internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPaletteColors(
     sandstone = WooSandstoneColors(
@@ -76,10 +79,12 @@ internal fun loadWooPaletteColors(context: Context): WooPaletteColors = WooPalet
         shade90 = context.color(R.color.woo_ds_color_palette_woo_purple_shade90),
         shade100 = context.color(R.color.woo_ds_color_palette_woo_purple_shade100),
     ),
+    white = context.color(R.color.woo_ds_color_palette_white),
+    black = context.color(R.color.woo_ds_color_palette_black),
 )
 
 @Suppress("LongMethod")
-private fun Context.loadWooColors(): WooColors {
+private fun Context.loadWooColorsFromResources(): WooColors {
     val palette = loadWooPaletteColors(this)
 
     return WooColors(
@@ -101,11 +106,13 @@ private fun Context.loadWooColors(): WooColors {
         ),
         surface = WooSurfaceColors(
             default = color(R.color.woo_ds_color_surface_default),
+            bright = color(R.color.woo_ds_color_surface_bright),
             surfaceDim = color(R.color.woo_ds_color_surface_dim),
             surfaceContainerHighest = color(R.color.woo_ds_color_surface_container_highest),
             onDefault = color(R.color.woo_ds_color_surface_on_default),
             onVariant = color(R.color.woo_ds_color_surface_on_variant),
             onVariantLowest = color(R.color.woo_ds_color_surface_on_variant_lowest),
+            onVariantHighest = color(R.color.woo_ds_color_surface_on_variant_highest),
             inverted = color(R.color.woo_ds_color_surface_inverted),
             onInverted = color(R.color.woo_ds_color_surface_on_inverted),
         ),
@@ -156,6 +163,18 @@ private fun Context.loadWooColors(): WooColors {
                 opacity10 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity10),
                 opacity16 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity16),
                 opacity24 = color(R.color.woo_ds_color_tint_layer_primary_container_opacity24),
+            ),
+            onSurface = WooOpacityColors(
+                opacity08 = color(R.color.woo_ds_color_tint_layer_on_surface_opacity08),
+                opacity10 = color(R.color.woo_ds_color_tint_layer_on_surface_opacity10),
+                opacity16 = color(R.color.woo_ds_color_tint_layer_on_surface_opacity16),
+                opacity24 = color(R.color.woo_ds_color_tint_layer_on_surface_opacity24),
+            ),
+            primary = WooOpacityColors(
+                opacity08 = color(R.color.woo_ds_color_tint_layer_primary_opacity08),
+                opacity10 = color(R.color.woo_ds_color_tint_layer_primary_opacity10),
+                opacity16 = color(R.color.woo_ds_color_tint_layer_primary_opacity16),
+                opacity24 = color(R.color.woo_ds_color_tint_layer_primary_opacity24),
             ),
         ),
     )

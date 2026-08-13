@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -15,7 +16,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -28,42 +29,52 @@ import java.math.BigDecimal
 class WooPosRefundPreviewTest {
 
     private val refundStore: WCRefundStore = mock()
-    private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
-    private val availabilityCache = WooPosV4RefundAvailabilityCache()
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val availabilityCache = WooPosServerRefundAvailabilityCache()
+
+    // Defaults to a version that supports server refunds; version-gating tests override it.
+    // An unknown (null) version fails closed to the local flow.
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
+        on { invoke() } doReturn WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
+    }
     private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_REFUND_V4) } doReturn true
+        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
     }
 
     private val site = SiteModel().apply {
         id = LOCAL_SITE_ID
         siteId = SITE_ID
     }
-    private val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
+    private val lineItems = listOf(RefundPreviewLineItem.quantityBased(lineItemId = 1L, quantity = 1))
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        // The version mock defaults to null (unknown) → not below support → cases probe the network,
-        // unless a test stubs a specific version.
-        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, getWooCoreVersion, featureFlagRepository)
+        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, resolveRefundFlowFor(selectedSite))
     }
 
+    private fun resolveRefundFlowFor(selectedSite: SelectedSite) = WooPosResolveRefundFlow(
+        selectedSite = selectedSite,
+        availabilityCache = availabilityCache,
+        getWooCoreVersion = getWooCoreVersion,
+        featureFlagRepository = featureFlagRepository,
+    )
+
     @Test
-    fun `given v4 flag disabled, when invoked, then falls back without probing or marking availability`() = runTest {
+    fun `given flag disabled, when invoked, then falls back without probing or marking availability`() = runTest {
         // GIVEN
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_REFUND_V4)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
 
         // WHEN
         val result = sut(ORDER_ID, lineItems)
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isNull()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
     @Test
-    fun `given v4 available, when preview succeeds, then returns server-calculated and marks available`() = runTest {
+    fun `given eligible store, when preview succeeds, then returns server-calculated and marks available`() = runTest {
         // GIVEN
         whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
             .thenReturn(WooResult(preview()))
@@ -73,7 +84,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
-        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isTrue()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isTrue()
     }
 
     @Test
@@ -87,7 +98,7 @@ class WooPosRefundPreviewTest {
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isFalse()
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isFalse()
     }
 
     @Test
@@ -104,23 +115,22 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given WC older than 10_9_0, when invoked, then falls back without probing and marks unavailable`() = runTest {
+    fun `given WC older than 11_1_0, when invoked, then falls back without probing`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion.invoke()).thenReturn("10.8.0")
+        whenever(getWooCoreVersion.invoke()).thenReturn("11.0.5")
 
         // WHEN
         val result = sut(ORDER_ID, lineItems)
 
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
-        assertThat(availabilityCache.isV4Available(LOCAL_SITE_ID)).isFalse()
         verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
     @Test
-    fun `given WC at 10_9_0, when invoked, then probes v4`() = runTest {
+    fun `given WC at 11_1_0, when invoked, then probes the preview route`() = runTest {
         // GIVEN
-        whenever(getWooCoreVersion.invoke()).thenReturn("10.9.0")
+        whenever(getWooCoreVersion.invoke()).thenReturn("11.1.0")
         whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
             .thenReturn(WooResult(preview()))
 
@@ -133,23 +143,22 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given WC version unknown, when invoked, then still probes v4`() = runTest {
+    fun `given WC version unknown, when invoked, then falls back to local without probing`() = runTest {
         // GIVEN
         whenever(getWooCoreVersion.invoke()).thenReturn(null)
-        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
-            .thenReturn(WooResult(preview()))
 
         // WHEN
-        sut(ORDER_ID, lineItems)
+        val result = sut(ORDER_ID, lineItems)
 
         // THEN
-        verify(refundStore).previewRefund(eq(site), eq(ORDER_ID), eq(lineItems))
+        assertThat(result).isInstanceOf(WooPosRefundPreview.Result.FallbackToLocal::class.java)
+        verify(refundStore, never()).previewRefund(any(), any(), any())
     }
 
     @Test
-    fun `given v4 known unavailable, when invoked, then falls back without probing`() = runTest {
+    fun `given server refunds known unavailable, when invoked, then falls back without probing`() = runTest {
         // GIVEN
-        availabilityCache.markV4Unavailable(LOCAL_SITE_ID)
+        availabilityCache.markUnavailable(LOCAL_SITE_ID, MIN_VERSION)
 
         // WHEN
         val result = sut(ORDER_ID, lineItems)
@@ -181,9 +190,9 @@ class WooPosRefundPreviewTest {
                 id = 102
                 siteId = 0L
             }
-            availabilityCache.markV4Unavailable(siteA.localId().value)
+            availabilityCache.markUnavailable(siteA.localId().value, MIN_VERSION)
 
-            val selectedSiteB: com.woocommerce.android.tools.SelectedSite = mock()
+            val selectedSiteB: SelectedSite = mock()
             whenever(selectedSiteB.get()).thenReturn(siteB)
             whenever(refundStore.previewRefund(eq(siteB), eq(ORDER_ID), eq(lineItems)))
                 .thenReturn(WooResult(preview()))
@@ -191,16 +200,15 @@ class WooPosRefundPreviewTest {
                 refundStore,
                 selectedSiteB,
                 availabilityCache,
-                getWooCoreVersion,
-                featureFlagRepository,
+                resolveRefundFlowFor(selectedSiteB),
             )
 
             // WHEN siteB requests a preview
             val result = sutForB(ORDER_ID, lineItems)
 
-            // THEN siteA's verdict does not poison siteB — it probes v4 and is marked available.
+            // THEN siteA's verdict does not poison siteB — it probes the route and is marked available.
             assertThat(result).isInstanceOf(WooPosRefundPreview.Result.ServerCalculated::class.java)
-            assertThat(availabilityCache.isV4Available(siteB.localId().value)).isTrue()
+            assertThat(availabilityCache.isAvailable(siteB.localId().value, MIN_VERSION)).isTrue()
             verify(refundStore).previewRefund(eq(siteB), eq(ORDER_ID), eq(lineItems))
         }
 
@@ -227,5 +235,6 @@ class WooPosRefundPreviewTest {
         private const val LOCAL_SITE_ID = 11
         private const val SITE_ID = 7L
         private const val ORDER_ID = 123L
+        private const val MIN_VERSION = WooPosResolveRefundFlow.MIN_WC_VERSION_FOR_SERVER_REFUNDS
     }
 }

@@ -58,7 +58,6 @@ data object SetupWooPaymentsTaskRes : OnboardingTaskUiResources(
 )
 
 object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
-object NavigateToSurvey : MultiLiveEvent.Event()
 object NavigateToLaunchStore : MultiLiveEvent.Event()
 object NavigateToSetupPayments : MultiLiveEvent.Event() {
     val taskId = PAYMENTS.id

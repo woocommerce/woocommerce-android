@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
@@ -96,5 +95,6 @@ dependencies {
     testImplementation(libs.google.dagger.hilt.android.testing)
     testImplementation(libs.squareup.okhttp3.urlconnection)
     testImplementation(testFixtures(project(":libs:ai-assistant:core")))
+    testImplementation(testFixtures(project(":libs:fluxc")))
     kspTest(libs.google.dagger.hilt.compiler)
 }

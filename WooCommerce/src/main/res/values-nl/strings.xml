@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-01 09:54:12+0000
+Translation-Revision-Date: 2026-07-28 14:54:40+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Korting niet toegepast</string>
+    <string name="product_duplicate_discard_changes_action">Weggooien en dupliceren</string>
+    <string name="product_duplicate_discard_changes_message">Je niet-opgeslagen wijzigingen gaan verloren. Het duplicaat gebruikt de laatst opgeslagen versie.</string>
+    <string name="product_duplicate_discard_changes_title">Wijzigingen negeren en dupliceren?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Je hebt ten minste één openstaande verplichting. Je kunt doorgaan en betalingen blijven aannemen, maar als de vereiste je account blokkeert, kunnen sommige transacties worden geweigerd totdat je het oplost.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Achterstallige verplichtingen voor je account</string>
+    <string name="order_editing_currency_mismatch_title">Deze bestelling kan niet worden bewerkt in de app</string>
+    <string name="login_no_wpcom_account_found_message">Gebruiker bestaat niet. Controleer of het e-mailadres klopt of probeer het met een ander account.</string>
+    <string name="login_no_wpcom_account_found_title">Verkeerde e-mail?</string>
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Dit afbeeldingstype wordt niet ondersteund Selecteer een PNG-, JPEG-, WebP-, GIF-, BMP-, HEIC- of HEIF-afbeelding.</string>
+    <string name="ai_support_chat_store_connection_error_message">Mijn winkel is niet bereikbaar. De app heeft een verbindingsfout gedetecteerd bij het bereiken van mijn winkel. Hoe kan ik dit oplossen?</string>
+    <string name="settings_crash_reporting_error_update">Er is een fout opgetreden bij het bijwerken van je instellingen voor het melden van crashes</string>
+    <string name="empty_search_guest_orders_button">Bestellingen van gasten weergeven</string>
+    <string name="empty_message_with_search_guest">Op zoek naar bestellingen geplaatst door gasten?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Deze bestelling is betaald met een cadeaubon. Terugbetaling hier zal het cadeaubonsaldo niet herstellen. Verwerk het vanuit je websitebeheerder om het bedrag correct terug te betalen.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Terugbetaling van je winkelbeheerder</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">We konden het beveiligingscertificaat van deze site niet verifiëren. Neem contact op met je hostingprovider of sitebeheerder en probeer het opnieuw.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">We konden geen veilige verbinding tot stand brengen. Controleer of de datum en tijd van je apparaat correct zijn en probeer het opnieuw.</string>
     <string name="woopos_refund_preview_error">Kon het restitutietotaal niet berekenen. Probeer het nog eens.</string>
@@ -502,11 +518,6 @@ Language: nl
     <string name="connectivity_tool_view_technical_details">Technische gegevens weergeven</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Producten ophalen in je winkel</string>
     <string name="user_role_access_error_fetch_failed">We konden je rol in deze winkel niet verifiëren. Probeer het nog eens. Als het probleem zich blijft voordoen, neem je contact op met support.</string>
-    <string name="woopos_eligibility_learn_more_label">Meer informatie</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. &lt;b&gt;Upgrade naar Pro&lt;/b&gt; om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime voorraadsynchronisatie en synchronisatie van bestellingen.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Accepteer fysieke betalingen voor slechts 2,70% + $ 0,10 per transactie. Upgrade naar Pro om toegang te krijgen tot Tap-to-Pay op je telefoon en ons volledige point-of-sale-systeem met realtime synchronisatie van voorraad en bestellingen.</string>
-    <string name="woopos_eligibility_ciab_title">Pro-abonnement vereist.</string>
-    <string name="ciab_order_status_open">Open</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Kan het verzendlabel niet aanschaffen. Vul het oorspronkelijke adres in.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Adres van herkomst ontbreekt of is ongeldig</string>
     <string name="woopos_orders_details_refund_details_background">Achtergrond van dialoogvenster Terugbetalingsgegevens</string>
@@ -1185,6 +1196,7 @@ Language: nl
     <string name="shipping_label_purchased_note">Let op: een afgedrukt label hergebruiken is een overtreding van onze servicevoorwaarden en kan leiden tot strafrechtelijke vervolging.</string>
     <string name="shipping_label_purchased_success_message">Vanuit hier kan je het verzendlabel opnieuw afdrukken of het papierformaat van het label wijzigen.</string>
     <string name="shipping_label_purchased_success_title">Je verzendlabel kan worden afgedrukt</string>
+    <string name="order_editing_currency_mismatch_message">Je kunt deze bestelling alleen op het web bewerken, omdat het web gebruikmaakt van %1$s en je site gebruikmaakt van %2$s</string>
     <string name="shipping_label_shipping_service_title">Bezorgservice</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Snelste</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Voordeligste</string>
@@ -1654,20 +1666,17 @@ Language: nl
     <string name="blaze_campaign_edit_ad_change_image_button">Afbeelding wijzigen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Toepassen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagen</string>
+    <string name="blaze_campaign_budget_impressions_info">Impressies reflecteren hoe vaak je advertentie door potentiële klanten te zien is.\n\n\n        Door wisselend online verkeer en gebruikersgedrag kunnen er geen exacte getallen gegarandeerd worden maar we proberen er voor te zorgen dat de daadwerkelijke impressies van je advertentie zoveel mogelijk overeenkomen met het doelaantal.\n\n\n        Vergeet niet dat het bij impressies draait om zichtbaarheid en niet om de acties die worden ondernomen door de mensen die het zien.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Gereed</string>
     <string name="blaze_campaign_budget_impressions_title">Impressies</string>
     <string name="blaze_campaign_budget_update_button">Updaten</string>
     <string name="blaze_campaign_budget_edit_duration_button">Bewerken</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschatte aantal mensen dat per dag bereikt wordt</string>
-    <string name="blaze_campaign_budget_impressions_info">Impressies reflecteren hoe vaak je advertentie door potentiële klanten te zien is.\n\n\n        Door wisselend online verkeer en gebruikersgedrag kunnen er geen exacte getallen gegarandeerd worden maar we proberen er voor te zorgen dat de daadwerkelijke impressies van je advertentie zoveel mogelijk overeenkomen met het doelaantal.\n\n\n        Vergeet niet dat het bij impressies draait om zichtbaarheid en niet om de acties die worden ondernomen door de mensen die het zien.</string>
     <string name="blaze_campaign_budget_days_duration">gedurende %1$s dagen</string>
     <string name="blaze_campaign_budget_toolbar_title">Stel je budget in</string>
     <string name="blaze_campaign_preview_target_default_value">Alles</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dagen vanaf %2$s</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
-    <string name="product_creation_survey_button_dont_show_again">Niet opnieuw tonen</string>
-    <string name="product_creation_survey_button_remind_me_later">Herinner mij hier later aan</string>
-    <string name="product_creation_survey_description">Heb je een momentje? Help ons onze functies met AI te verbeteren met wat korte feedback.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Details bevestigen</string>
     <string name="blaze_campaign_preview_details_destination_url">Advertentiebestemming</string>
     <string name="blaze_campaign_preview_details_interests">Interesses</string>
@@ -1717,8 +1726,6 @@ Language: nl
     <string name="theme_picker_carousel_info_item_description_settings">Je kan jouw perfecte thema vinden in de WooCommerce Theme Store.</string>
     <string name="theme_picker_current_theme_title">Huidig thema</string>
     <string name="theme_picker_settings_title">Probeer een nieuwe look</string>
-    <string name="product_creation_survey_button_open">Begin het onderzoek</string>
-    <string name="product_creation_survey_title">We waarderen je input!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Door Fysiek betalen in te schakelen kunnen klanten bij levering met cash of kaart betalen voor online bestellingen.\n\nBestellingen kunnen nog steeds handmatig aangemaakt worden als je deze functie niet inschakelt.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Wil je Fysiek betalen toevoegen aan online betalen?</string>
     <string name="card_reader_onboarding_contact_us">Hulp nodig? &lt;a href=\'\'&gt;Neem contact met ons op&lt;/a&gt;</string>
@@ -2297,7 +2304,6 @@ Language: nl
     <string name="support_request_subject">Onderwerp</string>
     <string name="support_request_title">Laten we dit oplossen</string>
     <string name="support_request_help_title">Ik heb hulp nodig met</string>
-    <string name="store_onboarding_menu_share_feedback">Deel je feedback</string>
     <string name="store_onboarding_task_view_all">Alles weergeven (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d van %2$d taken voltooid</string>
     <string name="store_onboarding_task_payments_setup_description">Bied je klanten een eenvoudige en handige betaalmethode!</string>
@@ -2483,7 +2489,6 @@ Language: nl
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_non_woo_stores_label">Andere sites</string>
     <string name="payments_hub_title">Betalingen</string>
-    <string name="login_no_wpcom_account_found">Je e-mailadres wordt niet gebruikt met een WordPress.com-account.</string>
     <string name="login_magic_link_button">Log in met de magische link</string>
     <string name="or_use_password" a8c-src-lib="module:login">Gebruik je wachtwoord om je aan te melden</string>
     <string name="login_magic_links_sent_label_short">Controleer je e-mail op dit apparaat!</string>
@@ -3036,8 +3041,6 @@ Language: nl
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Fysieke betalingen zijn nog niet beschikbaar in de testmodus. Schakel deze uit om door te gaan.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Er zijn openstaande verplichtingen op je account. Voltooi deze verplichtingen door %1$s om fysieke betalingen te kunnen blijven aannemen.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Je hebt ten minste openstaande verplichting op je account. Rond de verplichting af om fysieke betalingen te blijven ontvangen</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>
     <string name="card_reader_onboarding_account_under_review_hint">Je kunt fysieke betalingen aannemen zodra we je account hebben gecontroleerd.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Je account heeft openstaande verplichtingen.</string>
     <string name="card_reader_onboarding_account_under_review_header">Fysieke betalingen zijn momenteel niet beschikbaar.</string>

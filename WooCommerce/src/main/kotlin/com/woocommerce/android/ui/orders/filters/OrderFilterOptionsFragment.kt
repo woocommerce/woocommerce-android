@@ -2,18 +2,16 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.WindowCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
-import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.showDateRangePicker
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
@@ -26,7 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
-    DialogFragment(R.layout.fragment_order_filter_list),
+    BaseFragment(R.layout.fragment_order_filter_list),
     BackPressListener {
 
     private var _binding: FragmentOrderFilterListBinding? = null
@@ -35,38 +33,21 @@ class OrderFilterOptionsFragment :
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-    }
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            hasShadow = false,
+            hasDivider = true
+        )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
-        binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
-        setupToolbar(binding)
+
         setUpObservers(viewModel)
         setUpFilterOptionsRecyclerView(binding)
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
-        }
-    }
-
-    private fun setupToolbar(binding: FragmentOrderFilterListBinding) {
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-            requireActivity(),
-            R.drawable.ic_back_24dp
-        )
-        binding.toolbar.setNavigationOnClickListener {
-            onRequestAllowBackPress()
         }
     }
 
@@ -91,7 +72,7 @@ class OrderFilterOptionsFragment :
     private fun setUpObservers(viewModel: OrderFilterOptionsViewModel) {
         viewModel.viewState.observe(viewLifecycleOwner) { _, newState ->
             showOrderFilterOptions(newState.filterOptions)
-            binding.toolbar.title = newState.title
+            requireActivity().title = newState.title
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

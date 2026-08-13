@@ -11,6 +11,7 @@
 
 /products/<id>/
 /products/<id>/availability/
+/products/<id>/duplicate
 /products/<id>/variations/
 /products/<id>/variations/<variation_id>
 /products/<id>/variations/batch
@@ -65,9 +66,7 @@
 
 /orders/<id>/refunds
 /orders/<id>/refunds/<refund_id>
-
-/refunds/
-/refunds/preview/
+/orders/<id>/refunds/preview/
 
 /payment_gateways
 /payment_gateways/<gateway_id>#String

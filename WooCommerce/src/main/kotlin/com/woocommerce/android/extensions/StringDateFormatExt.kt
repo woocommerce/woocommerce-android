@@ -110,37 +110,6 @@ fun String.formatToDateOnly(locale: Locale = Locale.getDefault()): String {
 }
 
 /**
- * Method to convert month string from yyyy-MM-dd format to MMM d
- * i.e. 2019-08-08 is formatted to Aug 8
- */
-@Throws(IllegalArgumentException::class)
-fun String.formatToMonthDateOnly(locale: Locale = Locale.getDefault()): String {
-    return try {
-        val (year, month, day) = this.split("-")
-        val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
-        date.formatToMMMdd(locale)
-    } catch (e: Exception) {
-        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd: $this")
-    }
-}
-
-/**
- * Method to convert month string from yyyy-MM-dd'T'hh:mm:ss format to Date object
- */
-@Throws(IllegalArgumentException::class)
-fun String?.parseFromIso8601DateFormat(locale: Locale = Locale.getDefault()): Date? {
-    return try {
-        if (!this.isNullOrEmpty()) {
-            val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale)
-            return originalFormat.parse(this)
-        }
-        null
-    } catch (e: Exception) {
-        throw IllegalArgumentException("Date string argument is not of format yyyy-MM-dd'T'HH:mm:ss: $this")
-    }
-}
-
-/**
  * Method to convert month string from yyyy-MM-dd'T'hh:mm:ss format to Date object
  */
 @Throws(IllegalArgumentException::class)

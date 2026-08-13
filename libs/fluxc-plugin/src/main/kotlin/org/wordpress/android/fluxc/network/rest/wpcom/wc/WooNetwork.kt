@@ -35,7 +35,7 @@ class WooNetwork @Inject constructor(
     private val jetpackTunnelWPAPINetwork: JetpackTunnelWPAPINetwork,
     private val jetpackApplicationPasswordsSupport: JetpackApplicationPasswordsSupport,
     private val jetpackApplicationPasswordsErrorHandler: JetpackApplicationPasswordsErrorHandler,
-    private val unknownBlogListener: Optional<UnknownBlogListener>,
+    private val wpComSiteInvalidationListener: Optional<WPComSiteInvalidationListener>,
     private val invalidSignatureListener: Optional<InvalidSignatureListener>
 ) : WPAPINetwork {
     override suspend fun <T : Any> executeGetGsonRequest(
@@ -80,13 +80,15 @@ class WooNetwork @Inject constructor(
         site: SiteModel,
         path: String,
         clazz: Class<T>,
-        body: Map<String, Any>
+        body: Map<String, Any>,
+        params: Map<String, String>
     ): WPAPIResponse<T> = handleRequest(site, RequestContext(path, "PUT")) {
         executePutGsonRequest(
             site = site,
             path = path,
             clazz = clazz,
-            body = body
+            body = body,
+            params = params
         )
     }
 
@@ -126,14 +128,21 @@ class WooNetwork @Inject constructor(
                 throw IllegalArgumentException("Unsupported site origin: ${site.origin}")
             }
         }
-        notifyIfUnknownBlog(site, response)
+        notifyIfWPComSiteInvalidated(site, response)
         notifyInvalidSignatureListener(site, response)
         return response
     }
 
-    private fun <T : Any> notifyIfUnknownBlog(site: SiteModel, response: WPAPIResponse<T>) {
+    private fun <T : Any> notifyIfWPComSiteInvalidated(site: SiteModel, response: WPAPIResponse<T>) {
         if (response is WPAPIResponse.Error && response.error.errorCode == UNKNOWN_BLOG_ERROR_CODE) {
-            unknownBlogListener.ifPresent { it.onUnknownBlog(site.siteId) }
+            wpComSiteInvalidationListener.ifPresent {
+                it.onSiteInvalidated(
+                    WPComSiteInvalidationEvent(
+                        siteId = site.siteId,
+                        reason = WPComSiteInvalidationReason.UNKNOWN_BLOG
+                    )
+                )
+            }
         }
     }
 

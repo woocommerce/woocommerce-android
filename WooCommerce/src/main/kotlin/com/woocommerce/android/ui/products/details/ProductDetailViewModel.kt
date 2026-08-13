@@ -103,6 +103,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,6 +116,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -136,7 +139,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("EmptyFunctionBlock")
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -197,7 +200,6 @@ class ProductDetailViewModel @Inject constructor(
     ) { old, new ->
         if (old?.productAggregateDraft != new.productAggregateDraft) {
             new.productAggregateDraft?.let {
-                updateCards(it)
                 draftChanges.value = it
             }
         }
@@ -363,6 +365,7 @@ class ProductDetailViewModel @Inject constructor(
                 viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
                 showShareOptionAsActionWithText = showShareOptionAsActionWithText,
+                duplicateOption = isProductStoredAtSite,
                 trashOption = !isProductUnderCreation && isTrashEnabled
             )
         }.asLiveData()
@@ -423,6 +426,30 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
+        observeCardData()
+    }
+
+    /**
+     * The detail cards and the "add more details" section depend on two independent sources: the product draft
+     * and the product's displayable custom fields (stored separately from the product). Rebuilding on either
+     * keeps the section correct regardless of the order the two load in. The custom-fields stream is derived
+     * from the draft's remote id (not [navArgs]) so it re-subscribes when a newly-created product gains a real
+     * id while the mode is still [ProductDetailFragment.Mode.AddNewProduct].
+     */
+    private fun observeCardData() {
+        draftChanges.filterNotNull()
+            .flatMapLatest { draft ->
+                if (draft.product.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID) {
+                    flowOf(draft)
+                } else {
+                    customFieldsRepository.observeDisplayableCustomFields(draft.product.remoteId)
+                        .map { it.isNotEmpty() }
+                        .distinctUntilChanged()
+                        .map { draft }
+                }
+            }
+            .onEach { updateCards(it) }
+            .launchIn(viewModelScope)
     }
 
     private fun initializeViewState() {
@@ -430,9 +457,6 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailFragment.Mode.AddNewProduct -> startAddNewProduct()
             is ProductDetailFragment.Mode.ShowProduct -> {
                 loadRemoteProduct(mode.remoteProductId)
-                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed) {
-                    triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
-                }
             }
 
             is ProductDetailFragment.Mode.Loading -> {
@@ -1041,9 +1065,11 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun startUpdateProduct(isPublish: Boolean) {
+        val afterGeneratedWithAi =
+            (navArgs.mode as? ProductDetailFragment.Mode.ShowProduct)?.afterGeneratedWithAi == true
         tracker.track(
             stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
+            properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to afterGeneratedWithAi)
         )
         viewState.productAggregateDraft?.let {
             val product = if (isPublish) it.copy(product = it.product.copy(status = ProductStatus.PUBLISH)) else it
@@ -2537,20 +2563,37 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onDuplicateProduct() {
+        val storedProduct = storedProductAggregate.value
+            ?.takeIf { it.remoteId > DEFAULT_ADD_NEW_PRODUCT_ID }
+            ?: return
+
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+        if (viewState.productAggregateDraft?.isSame(storedProduct) == false) {
+            triggerEvent(
+                ShowDialog(
+                    titleId = R.string.product_duplicate_discard_changes_title,
+                    messageId = R.string.product_duplicate_discard_changes_message,
+                    positiveButtonId = R.string.product_duplicate_discard_changes_action,
+                    negativeButtonId = R.string.cancel,
+                    positiveBtnAction = { _, _ -> duplicateStoredProduct(storedProduct) }
+                )
+            )
+        } else {
+            duplicateStoredProduct(storedProduct)
+        }
+    }
+
+    private fun duplicateStoredProduct(storedProduct: ProductAggregate) {
         launch {
-            tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
-            viewState.productAggregateDraft?.let { product ->
+            triggerEvent(ShowDuplicateProductInProgress)
+            val result = duplicateProduct(storedProduct)
 
-                triggerEvent(ShowDuplicateProductInProgress)
-                val result = duplicateProduct(product)
-
-                if (result.isSuccess) {
-                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
-                    triggerEvent(OpenProductDetails(result.getOrThrow()))
-                } else {
-                    tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
-                    triggerEvent(ShowDuplicateProductError)
-                }
+            if (result.isSuccess) {
+                tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+                triggerEvent(OpenProductDetails(result.getOrThrow()))
+            } else {
+                tracker.track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+                triggerEvent(ShowDuplicateProductError)
             }
         }
     }
@@ -2718,8 +2761,6 @@ class ProductDetailViewModel @Inject constructor(
         val productDescription: String?
     ) : Event()
 
-    object ShowAiProductCreationSurveyBottomSheet : Event()
-
     object ProductUpdated : Event()
 
     data class ShowUpdateProductError(val message: String) : Event()
@@ -2838,6 +2879,7 @@ class ProductDetailViewModel @Inject constructor(
         val viewProductOption: Boolean,
         val shareOption: Boolean,
         val showShareOptionAsActionWithText: Boolean,
+        val duplicateOption: Boolean,
         val trashOption: Boolean
     )
 }

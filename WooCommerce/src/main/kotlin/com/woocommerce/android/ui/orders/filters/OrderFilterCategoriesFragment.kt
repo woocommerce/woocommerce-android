@@ -2,22 +2,22 @@ package com.woocommerce.android.ui.orders.filters
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.WindowCompat
-import androidx.fragment.app.DialogFragment
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
-import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment.Companion.KEY_CUSTOMER_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
@@ -38,8 +38,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderFilterCategoriesFragment :
-    DialogFragment(R.layout.fragment_order_filter_list),
-    BackPressListener {
+    BaseFragment(R.layout.fragment_order_filter_list),
+    BackPressListener,
+    MenuProvider {
 
     private var _binding: FragmentOrderFilterListBinding? = null
     private val binding get() = _binding!!
@@ -51,13 +52,20 @@ class OrderFilterCategoriesFragment :
 
     private lateinit var orderFilterCategoryAdapter: OrderFilterCategoryAdapter
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Visible(
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
+            hasShadow = false,
+            hasDivider = true
+        )
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentOrderFilterListBinding.bind(view)
 
-        binding.root.edgeToEdgeHandlingForNavigationAndStatusBar(binding.appBarLayout)
-        setupToolbar(binding)
+        requireActivity().title = getString(R.string.orderfilters_filters_default_title)
+        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setUpObservers(viewModel)
 
         setUpFiltersRecyclerView(binding)
@@ -68,21 +76,8 @@ class OrderFilterCategoriesFragment :
         handleResults()
     }
 
-    private fun setupToolbar(binding: FragmentOrderFilterListBinding) {
-        binding.toolbar.title = getString(R.string.orderfilters_filters_default_title)
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            onMenuItemSelected(menuItem)
-        }
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-            requireActivity(),
-            R.drawable.ic_gridicons_cross_24dp
-        )
-        binding.toolbar.setNavigationOnClickListener {
-            if (onRequestAllowBackPress()) {
-                dismiss()
-            }
-        }
-        binding.toolbar.inflateMenu(R.menu.menu_clear)
+    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_clear, menu)
     }
 
     private fun handleResults() {
@@ -103,11 +98,11 @@ class OrderFilterCategoriesFragment :
         }
     }
 
-    fun onPrepareMenu(menu: Menu) {
+    override fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
     }
 
-    private fun onMenuItemSelected(item: MenuItem): Boolean {
+    override fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_clear -> {
                 viewModel.onClearFilters()
@@ -116,18 +111,6 @@ class OrderFilterCategoriesFragment :
             }
 
             else -> false
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.let {
-            WindowCompat.setDecorFitsSystemWindows(it, false)
         }
     }
 
@@ -152,14 +135,14 @@ class OrderFilterCategoriesFragment :
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
         val action = when (category.categoryKey) {
             CUSTOMER -> {
-                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListDialogFragment(
+                OrderFilterCategoriesFragmentDirections.actionOrderFilterCategoriesFragmentToCustomerListFragment(
                     allowCustomerCreation = false,
                     allowGuests = false
                 )
             }
             PRODUCT -> {
                 OrderFilterCategoriesFragmentDirections
-                    .actionOrderFilterCategoriesFragmentToProductSelectorDialogFragment(
+                    .actionOrderFilterCategoriesFragmentToNavGraphProductSelector(
                         selectionMode = SINGLE,
                         selectionHandling = SIMPLE,
                         screenTitleOverride = getString(R.string.product),
@@ -182,7 +165,7 @@ class OrderFilterCategoriesFragment :
             showOrderFilters(newValue.list)
         }
         viewModel.orderFilterCategoryViewState.observe(viewLifecycleOwner) {
-            onPrepareMenu(binding.toolbar.menu)
+            requireActivity().invalidateOptionsMenu()
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -197,7 +180,7 @@ class OrderFilterCategoriesFragment :
             }
         }
         viewModel.orderFilterCategoryViewState.observe(viewLifecycleOwner) { viewState ->
-            binding.toolbar.title = viewState.screenTitle
+            requireActivity().title = viewState.screenTitle
         }
     }
 

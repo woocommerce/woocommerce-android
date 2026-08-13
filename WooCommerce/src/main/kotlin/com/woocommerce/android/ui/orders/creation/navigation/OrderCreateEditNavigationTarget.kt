@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.AutoT
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.orders.creation.taxes.TaxRatesInfoDialogViewState
-import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.math.BigDecimal
@@ -19,7 +18,6 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     object EditCustomerNote : OrderCreateEditNavigationTarget()
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
-        val restrictions: List<ProductRestriction>,
         val mode: OrderCreateEditViewModel.Mode,
         val orderCurrency: String? = null,
     ) : OrderCreateEditNavigationTarget()

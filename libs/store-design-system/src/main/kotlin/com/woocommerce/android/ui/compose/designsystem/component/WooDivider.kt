@@ -22,7 +22,7 @@ fun WooDivider(
     HorizontalDivider(
         modifier = modifier,
         thickness = WooTheme.stroke.extraThin,
-        color = WooTheme.colors.outlineVariant,
+        color = WooTheme.colors.tintLayers.onSurface.opacity16,
     )
 }
 
@@ -59,6 +59,6 @@ fun WooVerticalDivider(
     VerticalDivider(
         modifier = modifier,
         thickness = WooTheme.stroke.extraThin,
-        color = WooTheme.colors.outlineVariant,
+        color = WooTheme.colors.tintLayers.onSurface.opacity16,
     )
 }

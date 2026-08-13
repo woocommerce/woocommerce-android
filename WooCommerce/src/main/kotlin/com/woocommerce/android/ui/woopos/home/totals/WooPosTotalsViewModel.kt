@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.ReaderType
+import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -34,7 +35,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToMarkOrderAsPaid
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToScanToPay
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OnNewTransactionStarted
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
@@ -650,7 +650,7 @@ class WooPosTotalsViewModel @Inject constructor(
             )
             when (result) {
                 WooPosRemoteReaderPaymentFlow.Result.Completed -> {
-                    childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                    notifyOrderPaidByCard()
                 }
                 is WooPosRemoteReaderPaymentFlow.Result.Failed -> {
                     uiState.value = PaymentFailed(
@@ -751,6 +751,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
+    private suspend fun notifyOrderPaidByCard() {
+        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.CARD))
+    }
+
     private suspend fun handleTapToPayPaymentState(paymentState: CardReaderPaymentOrRefundState) {
         when (paymentState) {
             is CardReaderPaymentState.LoadingData ->
@@ -762,7 +766,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 isTTPPaymentInProgress = false
                 resetTapToPayProgress()
                 viewModelScope.launch { builtInReaderConnector.disconnectIfConnected() }
-                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                notifyOrderPaidByCard()
             }
 
             is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment -> {
@@ -798,7 +802,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentState.PaymentCapturing -> handleCapturingPaymentState()
 
             is CardReaderPaymentState.PaymentSuccessful ->
-                childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
+                notifyOrderPaidByCard()
 
             is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
                 uiState.value = buildPaymentFailedState(paymentState)
@@ -1032,16 +1036,39 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun notifyCartAboutOrderCreation(order: Order) {
         viewModelScope.launch {
+            val updatedCoupons = mapCouponLines(order)
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.OrderCreated(
                     WooPosOrderCreatedData(
                         updatedProducts = mapItemLines(order),
-                        updatedCoupons = mapCouponLines(order)
+                        updatedCoupons = updatedCoupons,
+                        wholeCartCouponDiscountApplied = isWholeCartCouponDiscountApplied(updatedCoupons),
                     )
                 )
             )
         }
     }
+
+    // Coupons never discount fee lines (custom amounts), so the cart warns about it — but only
+    // for whole-cart coupons ("x% off" / "$x off cart"), where a merchant could expect the
+    // custom amount to be included, and only once the order response shows the coupon actually
+    // produced a discount.
+    private suspend fun isWholeCartCouponDiscountApplied(updatedCoupons: List<CouponInfo>): Boolean {
+        val discountingCoupons = updatedCoupons.filter { it.discountAmount > BigDecimal.ZERO }
+        if (discountingCoupons.isEmpty()) return false
+        val appliedCouponIds = dataState.value.itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Coupon>()
+            .map { it.id }
+        if (appliedCouponIds.isEmpty()) return false
+        return totalsRepository.getCouponsByIds(appliedCouponIds)
+            .filter { coupon -> discountingCoupons.any { it.code.equals(coupon.code, ignoreCase = true) } }
+            .any { it.appliesToWholeCart() }
+    }
+
+    private fun Coupon.appliesToWholeCart(): Boolean =
+        (type is Coupon.Type.Percent || type is Coupon.Type.FixedCart) &&
+            productIds.isEmpty() &&
+            categoryIds.isEmpty()
 
     private fun mapItemLines(order: Order) = order.items.map {
         val basePrice = if (order.pricesIncludeTax) {

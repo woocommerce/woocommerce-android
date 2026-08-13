@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.logging.FakeCrashLogging
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -61,12 +62,11 @@ class SiteStoreUnitTest {
             Dispatcher(),
             mock(),
             mock(),
-            mock(),
             mSiteSqlUtils,
             SiteStorePersistence(accountStorePersistence),
             mock(),
             initCoroutineEngine()
-        )
+        ) { FakeCrashLogging }
     }
 
     @Test
@@ -95,14 +95,12 @@ class SiteStoreUnitTest {
     fun testSelfHostedAndJetpackSites() {
         // Note: not using the helper methods to make sure of the SiteModel definition
         val ponySite = SiteModel()
-        ponySite.xmlRpcUrl = "http://pony.com/xmlrpc.php"
         ponySite.siteId = 1
         ponySite.setIsWPCom(false)
         ponySite.origin = SiteModel.ORIGIN_XMLRPC
         mSiteStorePersistence.insertOrUpdateSite(ponySite)
 
         val jetpackOverXMLRPC = SiteModel()
-        jetpackOverXMLRPC.xmlRpcUrl = "http://pony2.com/xmlrpc.php"
         jetpackOverXMLRPC.siteId = 2
         jetpackOverXMLRPC.setIsWPCom(false)
         jetpackOverXMLRPC.setIsJetpackInstalled(true)
@@ -111,7 +109,6 @@ class SiteStoreUnitTest {
         mSiteStorePersistence.insertOrUpdateSite(jetpackOverXMLRPC)
 
         val jetpackOverRest = SiteModel()
-        jetpackOverRest.xmlRpcUrl = "http://pony3.com/xmlrpc.php"
         jetpackOverRest.siteId = 3
         jetpackOverRest.setIsWPCom(false)
         jetpackOverRest.setIsJetpackInstalled(true)
@@ -181,139 +178,6 @@ class SiteStoreUnitTest {
         for (site in wpComSites) {
             assertNotEquals(jetpackSiteOverXMLRPC.id.toLong(), site.id.toLong())
         }
-    }
-
-    @Test
-    @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSites() {
-        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
-        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
-
-        // Insert a self hosted site that will later be converted to Jetpack
-        mSiteStorePersistence.insertOrUpdateSite(futureJetpack)
-
-        // Insert the same site but Jetpack powered this time
-        mSiteStorePersistence.insertOrUpdateSite(jetpack)
-
-        // Previous site should be converted to a Jetpack site and we should see only one site
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-
-        val wpComSites = mSiteSqlUtils.getSitesWith(SiteModelTable.IS_WPCOM, true).getAsModel()
-        assertEquals(0, wpComSites.size.toLong())
-        assertEquals(1, mSiteSqlUtils.sitesAccessedViaWPComRest.getAsCursor().count.toLong())
-        val jetpackSites =
-            mSiteSqlUtils.getSitesWith(SiteModelTable.IS_JETPACK_CONNECTED, true).getAsModel()
-        assertEquals(jetpack.siteId, jetpackSites[0]?.siteId)
-        assertTrue(jetpackSites[0].isJetpackConnected)
-        assertFalse(jetpackSites[0].isWPCom)
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesError() {
-        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
-        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
-
-        // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack)
-        var duplicate = false
-        try {
-            // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesDifferentSchemesError1() {
-        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
-        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
-
-        futureJetpack.xmlRpcUrl = "https://pony.com/xmlrpc.php"
-        jetpack.xmlRpcUrl = "http://pony.com/xmlrpc.php"
-
-        // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack)
-        var duplicate = false
-        try {
-            // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateSitesDifferentSchemesError2() {
-        val futureJetpack = SiteUtils.generateSelfHostedSiteFutureJetpack()
-        val jetpack = SiteUtils.generateJetpackSiteOverRestOnly()
-
-        futureJetpack.xmlRpcUrl = "http://pony.com/xmlrpc.php"
-        jetpack.xmlRpcUrl = "https://pony.com/xmlrpc.php"
-
-        // Insert a Jetpack powered site
-        mSiteStorePersistence.insertOrUpdateSite(jetpack)
-        var duplicate = false
-        try {
-            // Insert the same site but via self hosted this time (this should fail)
-            mSiteStorePersistence.insertOrUpdateSite(futureJetpack)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertTrue(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
-    fun testInsertDuplicateXmlRpcJetpackSite() {
-        val jetpackXmlRpcSite = SiteUtils.generateJetpackSiteOverXMLRPC()
-
-        jetpackXmlRpcSite.url = "http://some.url"
-
-        // Insert a Jetpack powered site over XML-RPC
-        mSiteStorePersistence.insertOrUpdateSite(jetpackXmlRpcSite)
-
-        // Set up the same site (by URL/XML-RPC URL), but don't identify it as a Jetpack site
-        // This simulates sites resulting from wp.getUsersBlogs, which don't have the site ID and can't be identified
-        // as Jetpack or not (wp.getOptions is the call that returns that information)
-        val jetpackXmlRpcSite2 = SiteUtils.generateSelfHostedNonJPSite()
-        jetpackXmlRpcSite2.xmlRpcUrl = jetpackXmlRpcSite.xmlRpcUrl
-        jetpackXmlRpcSite2.url = jetpackXmlRpcSite.url
-        jetpackXmlRpcSite2.selfHostedSiteId = jetpackXmlRpcSite.selfHostedSiteId
-        jetpackXmlRpcSite2.username = jetpackXmlRpcSite.username
-        jetpackXmlRpcSite2.password = jetpackXmlRpcSite.password
-
-        var duplicate = false
-        try {
-            // Insert the same site but not identified as a Jetpack site
-            // (this should succeed, replacing the existing site, because the site replaced is not using the REST API)
-            mSiteStorePersistence.insertOrUpdateSite(jetpackXmlRpcSite2)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
     }
 
     @Test
@@ -423,11 +287,11 @@ class SiteStoreUnitTest {
     @Throws(NoSuchMethodException::class, IllegalAccessException::class, InvocationTargetException::class)
     fun testBatchInsertSiteNoDuplicateWPCom() {
         val siteList: MutableList<SiteModel?> = ArrayList()
-        siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", "https://pony1.com/xmlrpc.php", true))
-        siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", "https://pony2.com/xmlrpc.php", true))
-        siteList.add(SiteUtils.generateTestSite(3, "https://pony3.com", "https://pony3.com/xmlrpc.php", true))
-        siteList.add(SiteUtils.generateTestSite(4, "https://pony4.com", "https://pony4.com/xmlrpc.php", true))
-        siteList.add(SiteUtils.generateTestSite(5, "https://pony5.com", "https://pony5.com/xmlrpc.php", true))
+        siteList.add(SiteUtils.generateTestSite(1, "https://pony1.com", true))
+        siteList.add(SiteUtils.generateTestSite(2, "https://pony2.com", true))
+        siteList.add(SiteUtils.generateTestSite(3, "https://pony3.com", true))
+        siteList.add(SiteUtils.generateTestSite(4, "https://pony4.com", true))
+        siteList.add(SiteUtils.generateTestSite(5, "https://pony5.com", true))
 
         val sites = SitesModel(siteList)
 
@@ -444,71 +308,11 @@ class SiteStoreUnitTest {
     @Test
     @Suppress("SwallowedException", "unused")
     @Throws(DuplicateSiteException::class)
-    fun testInsertSiteDuplicateXmlRpcTrailingSlash() {
-        // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`,
-        // sometimes just by a trailing slash
-        // This test checks that we can still identify two sites as being identical in this case, and that we quietly
-        // update the existing site rather than throw a duplicate site exception
-        val selfhostedSite = SiteUtils.generateSelfHostedNonJPSite()
-        selfhostedSite.url = "http://some.url"
-
-        mSiteStorePersistence.insertOrUpdateSite(selfhostedSite)
-
-        val selfhostedSite2 = SiteUtils.generateSelfHostedNonJPSite()
-        selfhostedSite2.url = "http://some.url/"
-
-        var duplicate = false
-        try {
-            // Insert the same site with a trailing slash (this should succeed, replacing the existing site)
-            mSiteStorePersistence.insertOrUpdateSite(selfhostedSite2)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
-    fun testInsertSiteDuplicateXmlRpcDifferentUrl() {
-        // It's possible for the URL in `wp.getOptions` to be different from the URL in `wp.getUsersBlogs`
-        // This test checks that we can still identify two sites as being identical in this case, and that we quietly
-        // update the existing site rather than throw a duplicate site exception
-        val selfhostedSite = SiteUtils.generateSelfHostedNonJPSite()
-        selfhostedSite.url = "http://some.url"
-        selfhostedSite.xmlRpcUrl = "http://some.url/xmlrpc.php"
-
-        mSiteStorePersistence.insertOrUpdateSite(selfhostedSite)
-
-        val selfhostedSite2 = SiteUtils.generateSelfHostedNonJPSite()
-        selfhostedSite2.url = "http://user5242.stagingsite.url"
-        selfhostedSite2.xmlRpcUrl = "http://some.url/xmlrpc.php"
-
-        var duplicate = false
-        try {
-            // Insert the same site with a different URL, but the same XML-RPC URL
-            // (this should succeed, replacing the existing site)
-            mSiteStorePersistence.insertOrUpdateSite(selfhostedSite2)
-        } catch (e: DuplicateSiteException) {
-            // Caught !
-            duplicate = true
-        }
-        assertFalse(duplicate)
-        val sitesCount = WellSql.select(SiteModel::class.java).getAsCursor().count
-        assertEquals(1, sitesCount.toLong())
-    }
-
-    @Test
-    @Suppress("SwallowedException", "unused")
-    @Throws(DuplicateSiteException::class)
     fun testUpdateSiteUniqueConstraintFail() {
         // Create 2 test sites
-        val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", "https://pony1.com/xmlrpc.php", false)
+        val site1 = SiteUtils.generateTestSite(0, "https://pony1.com", false)
         mSiteStorePersistence.insertOrUpdateSite(site1)
-        val site2 = SiteUtils.generateTestSite(0, "https://pony2.com", "https://pony2.com/xmlrpc.php", false)
+        val site2 = SiteUtils.generateTestSite(0, "https://pony2.com", false)
         mSiteStorePersistence.insertOrUpdateSite(site2)
 
         // Update the second site and reuse the site url and id from the first
@@ -564,7 +368,6 @@ class SiteStoreUnitTest {
                     val wpComSite = SiteUtils.generateWPComSite()
                     wpComSite.siteId = (i + 1).toLong()
                     wpComSite.url = "https://pony$i.com"
-                    wpComSite.xmlRpcUrl = "https://pony$i.com/xmlrpc.php"
                     allSites.add(wpComSite)
                 }
 
@@ -573,7 +376,6 @@ class SiteStoreUnitTest {
                     val jetpackSite = SiteUtils.generateJetpackSiteOverRestOnly()
                     jetpackSite.siteId = (i + 1).toLong()
                     jetpackSite.url = "https://pony$i.com"
-                    jetpackSite.xmlRpcUrl = "https://pony$i.com/xmlrpc.php"
                     allSites.add(jetpackSite)
                 }
 
@@ -582,7 +384,6 @@ class SiteStoreUnitTest {
                     val selfHostedSite = SiteUtils.generateSelfHostedNonJPSite()
                     selfHostedSite.siteId = (i + 1).toLong()
                     selfHostedSite.url = "https://pony$i.com"
-                    selfHostedSite.xmlRpcUrl = "https://pony$i.com/xmlrpc.php"
                     allSites.add(selfHostedSite)
                 }
             }

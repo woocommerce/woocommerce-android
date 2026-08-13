@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
@@ -16,8 +17,10 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
+import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus
@@ -42,6 +45,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -76,6 +80,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_REMOTE_ID = 1L
         private const val OFFLINE_PRODUCT_REMOTE_ID = 2L
+        private const val DUPLICATED_PRODUCT_REMOTE_ID = 3L
         private val SALE_END_DATE = Date.from(
             LocalDateTime.of(2020, 4, 1, 8, 0)
                 .toInstant(ZoneOffset.UTC)
@@ -128,6 +133,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
+    private val duplicateProduct: DuplicateProduct = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val prefsWrapper: AppPrefsWrapper = mock()
@@ -141,6 +147,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
     private val customFieldsRepository: CustomFieldsRepository = mock {
         on { hasDisplayableCustomFields(any()) } doReturn false
+        on { observeDisplayableCustomFields(any()) } doReturn flowOf(emptyList())
     }
     private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
@@ -277,7 +284,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 appPrefsWrapper = prefsWrapper,
                 addonRepository = addonRepository,
                 generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
+                duplicateProduct = duplicateProduct,
                 tracker = tracker,
                 selectedSite = selectedSite,
                 getBundledProductsCount = mock(),
@@ -301,9 +308,42 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
-            productTagsRepository
+            productTagsRepository,
+            duplicateProduct
         )
     }
+
+    @Test
+    fun `given custom fields load after the product, when metadata changes, then the add more list drops custom fields`() =
+        testBlocking {
+            val customFieldsFlow = MutableStateFlow<List<CustomField>>(emptyList())
+            var productHasCustomFields = false
+            doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+            doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+            whenever(customFieldsRepository.observeDisplayableCustomFields(any())).thenReturn(customFieldsFlow)
+            whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenAnswer { productHasCustomFields }
+
+            var bottomSheetItems: List<ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem>? = null
+            viewModel.productDetailBottomSheetList.observeForever { bottomSheetItems = it }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            viewModel.start()
+
+            // GIVEN the custom fields metadata is not yet loaded, the "add custom fields" item is shown
+            Assertions.assertThat(bottomSheetItems).anyMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+
+            // WHEN the product's custom fields metadata becomes available
+            productHasCustomFields = true
+            customFieldsFlow.value = listOf(CustomField(id = 1L, key = "key", value = "value"))
+
+            // THEN the section is recomputed and the custom fields item is removed
+            Assertions.assertThat(bottomSheetItems).noneMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+        }
 
     @Test
     fun `Displays the product detail properties correctly`() = testBlocking {
@@ -1418,6 +1458,150 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given a persisted product, when it is edited, then duplicate option remains visible`() = testBlocking {
+        // GIVEN
+        given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isTrue()
+
+        // WHEN
+        viewModel.onProductTitleChanged("Unsaved title")
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isTrue()
+    }
+
+    @Test
+    fun `given an unchanged persisted product, when duplicate is tapped, then duplicate immediately succeeds`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.success(DUPLICATED_PRODUCT_REMOTE_ID)).whenever(duplicateProduct).invoke(productAggregate)
+            viewModel.start()
+            val events = mutableListOf<MultiLiveEvent.Event>()
+            viewModel.event.observeForever(events::add)
+
+            // WHEN
+            viewModel.onDuplicateProduct()
+
+            // THEN
+            Assertions.assertThat(events).containsExactly(
+                ProductDetailViewModel.ShowDuplicateProductInProgress,
+                ProductDetailViewModel.OpenProductDetails(DUPLICATED_PRODUCT_REMOTE_ID)
+            )
+            verify(duplicateProduct).invoke(productAggregate)
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate is tapped, then confirmation is shown before duplication`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+
+            // WHEN
+            viewModel.onDuplicateProduct()
+
+            // THEN
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+            Assertions.assertThat(dialog.titleId).isEqualTo(R.string.product_duplicate_discard_changes_title)
+            Assertions.assertThat(dialog.messageId).isEqualTo(R.string.product_duplicate_discard_changes_message)
+            Assertions.assertThat(dialog.positiveButtonId)
+                .isEqualTo(R.string.product_duplicate_discard_changes_action)
+            Assertions.assertThat(dialog.negativeButtonId).isEqualTo(R.string.cancel)
+            verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate is confirmed, then stored product is duplicated`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.success(DUPLICATED_PRODUCT_REMOTE_ID)).whenever(duplicateProduct)
+                .invoke(any<ProductAggregate>())
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            val events = viewModel.event.runAndCaptureValues {
+                requireNotNull(dialog.positiveBtnAction).onClick(null, 0)
+            }
+
+            // THEN
+            Assertions.assertThat(events.filterNot { it is MultiLiveEvent.Event.ShowDialog }).containsExactly(
+                ProductDetailViewModel.ShowDuplicateProductInProgress,
+                ProductDetailViewModel.OpenProductDetails(DUPLICATED_PRODUCT_REMOTE_ID)
+            )
+            verify(duplicateProduct).invoke(productAggregate)
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, times(1)).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when duplicate confirmation is cancelled, then product is not duplicated`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            val negativeAction = dialog.negativeBtnAction
+
+            // THEN
+            Assertions.assertThat(negativeAction).isNull()
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+        }
+
+    @Test
+    fun `given an edited persisted product, when confirmed duplication fails, then draft and failure UX are preserved`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            doReturn(Result.failure<Long>(IllegalStateException("Duplication failed"))).whenever(duplicateProduct)
+                .invoke(any<ProductAggregate>())
+            viewModel.start()
+            viewModel.onProductTitleChanged("Unsaved title")
+            viewModel.onDuplicateProduct()
+            val dialog = viewModel.event.value as MultiLiveEvent.Event.ShowDialog
+
+            // WHEN
+            dialog.positiveBtnAction?.onClick(null, 0)
+
+            // THEN
+            Assertions.assertThat(viewModel.getProduct().productDraft?.name).isEqualTo("Unsaved title")
+            Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ShowDuplicateProductError)
+            verify(duplicateProduct).invoke(productAggregate)
+            verify(tracker).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
+            verify(tracker).track(AnalyticsEvent.DUPLICATE_PRODUCT_FAILED)
+            verify(tracker, never()).track(AnalyticsEvent.DUPLICATE_PRODUCT_SUCCESS)
+        }
+
+    @Test
     fun `given add new product flow, when trash action becomes possible, then trashOption remains hidden`() =
         testBlocking {
             // GIVEN: start in AddNewProduct mode (product under creation)
@@ -1523,5 +1707,40 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             // THEN: once the product is stored, trash option should be visible
             Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
+        }
+
+    @Test
+    fun `given product opened after AI generation, when save button is clicked, then is_ai_content is tracked as true`() =
+        testBlocking {
+            // GIVEN
+            savedState = ProductDetailFragmentArgs(
+                ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID, afterGeneratedWithAi = true)
+            ).toSavedStateHandle()
+            setup()
+
+            // WHEN
+            viewModel.onSaveButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to true)
+            )
+        }
+
+    @Test
+    fun `given product opened without AI generation, when save button is clicked, then is_ai_content is tracked as false`() =
+        testBlocking {
+            // GIVEN
+            setup()
+
+            // WHEN
+            viewModel.onSaveButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
+                mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to false)
+            )
         }
 }

@@ -8,8 +8,6 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.products.ProductFilterProductRestrictions
-import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
@@ -36,7 +34,6 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     private lateinit var resourceProvider: ResourceProvider
     private lateinit var productCategoriesRepository: ProductCategoriesRepository
     private lateinit var networkStatus: NetworkStatus
-    private lateinit var productRestrictions: ProductFilterProductRestrictions
     private lateinit var productFilterListViewModel: ProductFilterListViewModel
     private lateinit var pluginRepository: PluginRepository
     private lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
@@ -52,7 +49,6 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         resourceProvider = mock()
         productCategoriesRepository = mock()
         networkStatus = mock()
-        productRestrictions = mock()
         pluginRepository = mock()
         analyticsTrackerWrapper = mock()
         productFilterListViewModel = ProductFilterListViewModel(
@@ -66,7 +62,6 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             productCategoriesRepository = productCategoriesRepository,
             networkStatus = networkStatus,
-            productRestrictions = productRestrictions,
             pluginRepository = pluginRepository,
             selectedSite = selectedSiteMock,
             analyticsTracker = analyticsTrackerWrapper
@@ -76,7 +71,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given there is no NonPublish product restriction, then display product status filter`() {
+    fun `when filters are loaded, then display product status filter`() {
         val productFilters = mutableListOf<ProductFilterListViewModel.FilterListItemUiModel>()
         productFilterListViewModel.filterListItems.observeForever {
             productFilters.addAll(it)
@@ -85,25 +80,6 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         productFilterListViewModel.loadFilters()
 
         assertTrue(
-            productFilters.firstOrNull {
-                it.filterItemKey == WCProductStore.ProductFilterOption.STATUS
-            } != null
-        )
-    }
-
-    @Test
-    fun `given there is a NonPublish product restriction, then do not display product status filter`() {
-        val productFilters = mutableListOf<ProductFilterListViewModel.FilterListItemUiModel>()
-        productFilterListViewModel.filterListItems.observeForever {
-            productFilters.addAll(it)
-        }
-        whenever(productRestrictions.restrictions).thenReturn(
-            listOf(ProductRestriction.NonPublishedProducts)
-        )
-
-        productFilterListViewModel.loadFilters()
-
-        assertFalse(
             productFilters.firstOrNull {
                 it.filterItemKey == WCProductStore.ProductFilterOption.STATUS
             } != null

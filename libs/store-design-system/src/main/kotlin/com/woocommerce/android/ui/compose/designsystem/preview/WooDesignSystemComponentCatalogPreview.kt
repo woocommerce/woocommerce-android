@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,6 +53,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButt
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderInteractiveDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
@@ -117,6 +119,18 @@ private fun WooDesignSystemComponentCatalogRtlPreview() {
     WooDesignSystemPreviewTheme {
         WooDesignSystemComponentCatalogScreen(
             initialPath = STRESS_RTL_PATH,
+            onBackClick = {},
+            registerBackHandler = false,
+        )
+    }
+}
+
+@Preview(name = "Page header interactive", showBackground = true)
+@Composable
+private fun WooPageHeaderCatalogPreview() {
+    WooDesignSystemPreviewTheme {
+        WooDesignSystemComponentCatalogScreen(
+            initialPath = PRODUCTION_PAGE_HEADER_PATH,
             onBackClick = {},
             registerBackHandler = false,
         )
@@ -278,9 +292,15 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionChoicesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
+                    path = PRODUCTION_PAGE_HEADER_PATH,
+                    title = "Page header",
+                    description = "Fixed and interactive collapsible treatments.",
+                    content = { ProductionPageHeaderCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
                     path = "production/rows-cells",
                     title = "Rows and cells",
-                    description = "Headers, cells, settings rows, and switch rows.",
+                    description = "Cells, settings rows, and switch rows.",
                     content = { ProductionRowsCellsCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
@@ -402,12 +422,32 @@ private fun ProductionChoicesCatalogLeaf() {
 }
 
 @Composable
+private fun ProductionPageHeaderCatalogLeaf() {
+    CatalogSection("Page header") {
+        CatalogBodyText(
+            text = "Fixed",
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+        WooPageHeaderDemo()
+        CatalogBodyText(
+            text = "Collapsible — scroll inside the sample to collapse the header, then scroll back to expand it. " +
+                "Call scrollBehavior.expand() for programmatic expansion.",
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+        WooPageHeaderInteractiveDemo(
+            modifier = Modifier
+                .padding(horizontal = WooTheme.padding.padding5)
+                .height(PAGE_HEADER_DEMO_HEIGHT),
+        )
+    }
+}
+
+@Composable
 private fun ProductionRowsCellsCatalogLeaf() {
     CatalogSection("Rows and cells") {
         PrivacyIntro(
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5)
         )
-        WooPageHeaderDemo()
         WooCellDemo()
         WooSettingsRowDemo()
     }
@@ -643,7 +683,7 @@ private fun CatalogSection(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        color = WooTheme.colors.surface.default,
+        color = WooTheme.colors.surface.bright,
         contentColor = WooTheme.colors.surface.onDefault,
         shape = RoundedCornerShape(WooTheme.radius.medium),
     ) {
@@ -698,7 +738,9 @@ private fun CatalogLinkText(text: String) {
 
 private const val ROOT_PATH = ""
 private const val PRODUCTION_BUTTONS_PATH = "production/buttons"
+private const val PRODUCTION_PAGE_HEADER_PATH = "production/page-header"
 private const val PREVIEW_SEGMENT_CONTROL_PATH = "preview/segment-control"
 private const val STRESS_LARGE_FONT_PATH = "stress/large-font"
 private const val STRESS_LONG_TEXT_PATH = "stress/long-text"
 private const val STRESS_RTL_PATH = "stress/rtl"
+private val PAGE_HEADER_DEMO_HEIGHT = 360.dp

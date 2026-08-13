@@ -63,7 +63,6 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.Produc
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductUpdated
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowBlazeCreationScreen
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductInProgress
@@ -141,6 +140,9 @@ class ProductDetailFragment :
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
+    private val isInDetailPane: Boolean
+        get() = requireContext().isTwoPanesShouldBeUsed && parentFragment?.id == R.id.detail_nav_container
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -159,8 +161,6 @@ class ProductDetailFragment :
 
         val productListInBackstack =
             findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.PRODUCTS.id
-        val isInDetailPane =
-            requireContext().isTwoPanesShouldBeUsed && (parentFragment?.id == R.id.detail_nav_container)
         val isTrashEnabled = productListInBackstack || isInDetailPane
         viewModel.setTrashActionPossible(isTrashEnabled)
 
@@ -391,9 +391,13 @@ class ProductDetailFragment :
         }
 
         viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
-            productsCommunicationViewModel.pushEvent(
-                ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
-            )
+            // Only the detail-pane instance should report changes; a full-screen instance pushing this event
+            // could overwrite a pending ProductSelected event before the product list resubscribes
+            if (isInDetailPane) {
+                productsCommunicationViewModel.pushEvent(
+                    ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
+                )
+            }
         }
 
         observeEvents(viewModel)
@@ -433,7 +437,6 @@ class ProductDetailFragment :
                     event.productDescription
                 )
 
-                is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
                 is ProductUpdated -> productsCommunicationViewModel.pushEvent(
                     ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
                 )
@@ -442,12 +445,6 @@ class ProductDetailFragment :
                 else -> event.isHandled = false
             }
         }
-    }
-
-    private fun openAIProductCreationSurveyBottomSheet() {
-        findNavController().navigateSafely(
-            ProductDetailFragmentDirections.actionProductDetailFragmentToAIProductCreationSurveyBottomSheet()
-        )
     }
 
     private fun showAIProductDescriptionBottomSheet(title: String, description: String?) {
@@ -499,7 +496,6 @@ class ProductDetailFragment :
     private fun showProductDetails(product: Product, isImageUploadAvailable: Boolean) {
         binding.productErrorStateContainer.isVisible = false
         binding.productDetailRoot.isVisible = true
-        binding.productDetailAddMoreContainer.isVisible = true
 
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId

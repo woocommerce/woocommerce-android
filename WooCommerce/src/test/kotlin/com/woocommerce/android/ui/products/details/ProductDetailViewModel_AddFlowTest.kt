@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.details
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -11,7 +12,10 @@ import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomField
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -31,6 +35,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
@@ -43,6 +48,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -102,6 +108,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
     }
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
+    private val duplicateProduct: DuplicateProduct = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     private val prefs: AppPrefsWrapper = mock {
@@ -109,6 +116,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
     private val addonRepository: AddonRepository = mock {
         on { hasAnyProductSpecificAddons(any()) } doReturn false
+    }
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        on { hasDisplayableCustomFields(any()) } doReturn false
+        on { observeDisplayableCustomFields(any()) } doReturn flowOf(emptyList())
     }
 
     private val productUtils = ProductUtils()
@@ -182,7 +193,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 appPrefsWrapper = prefs,
                 addonRepository = addonRepository,
                 generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
+                duplicateProduct = duplicateProduct,
                 tracker = tracker,
                 selectedSite = selectedSite,
                 getBundledProductsCount = mock(),
@@ -194,7 +205,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = mock(),
                 determineProductPasswordApi = mock(),
-                customFieldsRepository = mock(),
+                customFieldsRepository = customFieldsRepository,
                 canAutoAuthenticateInWebView = mock(),
             )
         )
@@ -208,7 +219,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             productImagesServiceWrapper,
             resources,
             productCategoriesRepository,
-            productTagsRepository
+            productTagsRepository,
+            duplicateProduct
         )
     }
 
@@ -402,6 +414,39 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given a new product just saved, when its custom fields load, then the add more list drops custom fields`() =
+        testBlocking {
+            val customFieldsFlow = MutableStateFlow<List<CustomField>>(emptyList())
+            var productHasCustomFields = false
+            whenever(customFieldsRepository.observeDisplayableCustomFields(any())).thenReturn(customFieldsFlow)
+            whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenAnswer { productHasCustomFields }
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+            doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
+
+            var bottomSheetItems: List<ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem>? = null
+            viewModel.productDetailBottomSheetList.observeForever { bottomSheetItems = it }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            viewModel.start()
+            // Saving gives the draft a real remote id, but navArgs.mode stays AddNewProduct
+            viewModel.onPublishButtonClicked()
+
+            // GIVEN the saved product's custom fields haven't loaded yet, the "add custom fields" item is shown
+            Assertions.assertThat(bottomSheetItems).anyMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+
+            // WHEN the saved product's custom fields metadata becomes available
+            productHasCustomFields = true
+            customFieldsFlow.value = listOf(CustomField(id = 1L, key = "key", value = "value"))
+
+            // THEN the cards and bottom-sheet list rebuild and the custom fields item is removed
+            Assertions.assertThat(bottomSheetItems).noneMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+        }
+
+    @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
         doReturn(product).whenever(productRepository).getProductAggregate(any())
@@ -494,6 +539,33 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.updateProductDraft(title = "name")
 
         Assertions.assertThat(menuButtonsState?.saveOption).isFalse()
+    }
+
+    @Test
+    fun `given a never-saved product, when menu state loads, then duplicate option is hidden`() = testBlocking {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.duplicateOption).isFalse()
+    }
+
+    @Test
+    fun `given a never-saved product, when duplicate handler is called, then duplication is ignored`() = testBlocking {
+        // GIVEN
+        viewModel.start()
+
+        // WHEN
+        viewModel.onDuplicateProduct()
+
+        // THEN
+        verify(duplicateProduct, never()).invoke(any<ProductAggregate>())
+        verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
     }
 
     @Test

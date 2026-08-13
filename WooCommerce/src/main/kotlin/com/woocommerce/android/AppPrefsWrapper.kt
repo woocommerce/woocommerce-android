@@ -28,10 +28,6 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
 
-    var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
-
-    var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
-
     var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
 
     var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
@@ -57,7 +53,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
 
+    var isProductAddonsEnabled by AppPrefs::isProductAddonsEnabled
+
+    var wooPosLocalCatalogEnabled by AppPrefs::wooPosLocalCatalogEnabled
+
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
+
+    var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -76,6 +78,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun getCardReaderOnboardingStatus(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.getCardReaderOnboardingStatus(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun isPOSTabVisibleForSite(localSiteId: Int) = AppPrefs.isPOSTabVisibleForSite(localSiteId)
+
+    fun isPOSLaunchableForSite(localSiteId: Int) = AppPrefs.isPOSLaunchableForSite(localSiteId)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,

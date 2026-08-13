@@ -19,11 +19,13 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Revenue
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -59,6 +61,9 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
 class AnalyticsRepositoryTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val statsRepository: StatsRepository = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -342,8 +347,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
             // Then
             assertTrue(result is RevenueData)
-            assertTrue(result.revenueStat.totalDelta is DeltaPercentage.NotExist)
-            assertTrue(result.revenueStat.netDelta is DeltaPercentage.NotExist)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.revenueStat.totalDelta)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.revenueStat.netDelta)
         }
 
     @Test
@@ -457,8 +462,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             assertTrue(result is OrdersData)
             assertEquals(TEN_VALUE.toInt(), result.ordersStat.ordersCount)
             assertEquals(TEN_VALUE, result.ordersStat.avgOrderValue)
-            assertTrue(result.ordersStat.ordersCountDelta is DeltaPercentage.NotExist)
-            assertTrue(result.ordersStat.avgOrderDelta is DeltaPercentage.NotExist)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.ordersStat.ordersCountDelta)
+            assertEquals(DeltaPercentage.Value(ZERO_DELTA), result.ordersStat.avgOrderDelta)
         }
 
     @Test

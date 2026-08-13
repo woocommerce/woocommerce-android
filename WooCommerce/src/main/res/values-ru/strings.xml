@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 18:57:46+0000
+Translation-Revision-Date: 2026-07-28 18:55:14+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Скидка не применена</string>
+    <string name="product_duplicate_discard_changes_action">Отменить и создать дубликат</string>
+    <string name="product_duplicate_discard_changes_message">Несохранённые изменения будут утрачены. Дубликат будет использовать последнюю сохранённую версию.</string>
+    <string name="product_duplicate_discard_changes_title">Отменить изменения и создать дубликат?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">У вас есть по крайней мере одно просроченное требование. Вы можете пропустить его и продолжать принимать платежи, но, если это требование блокирует вашу учётную запись, некоторые транзакции могут отклоняться, пока проблема не будет решена.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Просроченные требования в вашей учётной записи</string>
+    <string name="order_editing_currency_mismatch_title">Этот заказ нельзя отредактировать в приложении</string>
+    <string name="login_no_wpcom_account_found_message">Такого пользователя нет. Убедитесь, что адрес электронной почты указан верно, или попробуйте использовать другую учётную запись.</string>
+    <string name="login_no_wpcom_account_found_title">Неверный электронный адрес</string>
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Этот тип изображения не поддерживается. Выберите изображение в формате PNG, JPEG, WebP, GIF, BMP, HEIC или HEIF.</string>
+    <string name="ai_support_chat_store_connection_error_message">Мой магазин недоступен. Приложение обнаружило ошибку подключения при попытке подключиться к моему магазину. Как решить эту проблему?</string>
+    <string name="settings_crash_reporting_error_update">При обновлении настройки отчётов о сбоях произошла ошибка</string>
+    <string name="empty_search_guest_orders_button">Показать заказы гостей</string>
+    <string name="empty_message_with_search_guest">Ищете заказы, размещённые гостевыми клиентами?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Этот заказ был оплачен подарочной картой. Возврат средств здесь не восстановит баланс подарочной карты. Чтобы правильно выполнить возврат средств, выполните обработку в учётной записи администратора магазина на веб-сайте.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Возврат средств из учётной записи администратора магазина</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Не удалось проверить сертификат безопасности этого сайта. Обратитесь к поставщику услуг хостинга или администратору сайта, а затем повторите попытку.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Не удалось установить безопасное подключение. Убедитесь в корректной настройке даты и времени на устройстве, затем повторите попытку.</string>
     <string name="woopos_refund_preview_error">Не удалось рассчитать общую сумму возврата. Повторите попытку.</string>
@@ -502,11 +518,6 @@ Language: ru
     <string name="connectivity_tool_view_technical_details">Просмотр технических данных</string>
     <string name="orderlist_connectivity_tool_store_products_check_title">Получение товаров вашего магазина</string>
     <string name="user_role_access_error_fetch_failed">Не удалось подтвердить вашу роль в этом магазине. Повторите попытку. Если устранить проблему не удалось, обратитесь в службу поддержки.</string>
-    <string name="woopos_eligibility_learn_more_label">Подробнее</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. &lt;b&gt;Перейдите на Pro&lt;/b&gt;, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">Принимайте платежи лично всего за 2,70 % + 0,10 долл. США за транзакцию. Перейдите на Pro, чтобы получить доступ к оплате касанием прямо с телефона и полноценной системе продаж с синхронизацией заказов и запасов в реальном времени.</string>
-    <string name="woopos_eligibility_ciab_title">Требуется тарифный план Pro</string>
-    <string name="ciab_order_status_open">Открыть</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Не удалось приобрести транспортную этикетку. Укажите адрес отправителя.</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Адрес отправителя отсутствует или недействителен</string>
     <string name="woopos_orders_details_refund_details_background">Фон диалогового окна сведений о возврате</string>
@@ -773,8 +784,8 @@ Language: ru
     <string name="woopos_scanning_setup_software_keyboard_bullet_one">Найдите значок клавиатуры или панель инструментов на экране.</string>
     <string name="woopos_scanning_setup_software_keyboard_hint">Нажмите здесь, чтобы проверить отображение клавиатуры</string>
     <string name="woopos_scanning_setup_software_keyboard_message_two">Если клавиатура не видна, попробуйте выполнить следующие действия.</string>
-    <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
     <string name="woopos_scanning_setup_software_keyboard_bullet_two">Перейдите в настройки устройства, выполните поиск по запросу keyboard (клавиатура) и включите параметр Show on-screen keyboard when physical keyboard connected (Отображать экранную клавиатуру при подключении физической клавиатуры). Этот параметр может находиться в настройках вашего приложения для клавиатуры.</string>
+    <string name="woopos_scanning_setup_software_keyboard_message">Android воспринимает сканер штрихкодов как физическую клавиатуру, которая может заслонять экранную клавиатуру. Давайте проверим.</string>
     <string name="woopos_scanning_setup_software_keyboard_title">Отображать экранную клавиатуру</string>
     <string name="woopos_scanning_setup_success_message">Вы можете начинать сканировать товары. В следующий раз, когда вам потребуется сканер, просто включите его и он подключится автоматически.</string>
     <string name="woopos_cart_clear_all_button_content_description">Значок «Очистить корзину»</string>
@@ -1185,6 +1196,7 @@ Language: ru
     <string name="shipping_label_purchased_note">Примечание. Повторное использование напечатанной этикетки запрещается условиями предоставления услуг и может повлечь уголовное преследование.</string>
     <string name="shipping_label_purchased_success_message">Здесь вы можете заново напечатать транспортную этикетку или изменить формат бумаги для этикетки.</string>
     <string name="shipping_label_purchased_success_title">Ваша транспортная этикетка готова к печати</string>
+    <string name="order_editing_currency_mismatch_message">К сожалению, этот заказ можно редактировать только в Интернете, так как он сделан в %1$s, а валюта вашего сайта — %2$s.</string>
     <string name="shipping_label_shipping_service_title">Служба доставки</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">По скорости</string>
     <string name="shipping_label_shipment_details_purchase_label_disabled">Купить этикетку</string>
@@ -1658,16 +1670,13 @@ Language: ru
     <string name="blaze_campaign_budget_impressions_title">Показы</string>
     <string name="blaze_campaign_budget_update_button">Обновить</string>
     <string name="blaze_campaign_budget_edit_duration_button">Изменить</string>
-    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_reach_forecast">Приблизительный ежедневный охват пользователей</string>
     <string name="blaze_campaign_budget_days_duration">на %1$s дн.</string>
     <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
     <string name="blaze_campaign_preview_target_default_value">Все</string>
     <string name="blaze_campaign_preview_days_duration">%1$s дн. с %2$s</string>
+    <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Дата начала</string>
-    <string name="product_creation_survey_button_dont_show_again">Больше не показывать</string>
-    <string name="product_creation_survey_button_remind_me_later">Напомнить позже</string>
-    <string name="product_creation_survey_description">Есть свободная минутка? Оставьте краткий отзыв и помогите нам улучшить функции на базе ИИ.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Подтвердить сведения</string>
     <string name="blaze_campaign_preview_details_destination_url">Размещение рекламного объявления</string>
     <string name="blaze_campaign_preview_details_interests">Интересы</string>
@@ -1715,12 +1724,10 @@ Language: ru
     <string name="theme_picker_carousel_info_item_description_settings">Найдите самую подходящую для вас тему в магазине тем WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Текущая тема</string>
     <string name="theme_picker_settings_title">Попробуйте новый дизайн</string>
-    <string name="product_creation_survey_button_open">Начать опрос</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Хотите добавить функцию очной оплаты к оформлению заказа онлайн?</string>
     <string name="card_reader_onboarding_contact_us">Требуется помощь? &lt;a href=\'\'&gt;Свяжитесь с нами&lt;/a&gt;</string>
     <string name="theme_preview_type_mobile">Мобильный телефон</string>
     <string name="theme_picker_carousel_error_placeholder_message">При загрузке шаблона возникла проблема. %1$s для демонстрационного режима.</string>
-    <string name="product_creation_survey_title">Мы высоко ценим ваше мнение!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Активация функции очной оплаты даёт возможность клиенту оплачивать заказ при доставке наличными или банковской картой.\n\nЗаказы можно по-прежнему создавать вручную, не активируя этой функции.</string>
     <string name="order_refunds_refund_custom_amount">Возместить индивидуальную сумму</string>
     <string name="order_refunds_custom_amount_refund">Возврат индивидуальной суммы</string>
@@ -2302,7 +2309,6 @@ Language: ru
     <string name="support_request_title">Давайте это отсортируем</string>
     <string name="support_request_help_title">Мне нужна помощь с</string>
     <string name="support_request">Запрос в службу поддержки</string>
-    <string name="store_onboarding_menu_share_feedback">Отправить отзыв</string>
     <string name="store_onboarding_full_screen_transition_name">Адаптация, во весь экран</string>
     <string name="store_onboarding_task_view_all">Посмотреть все (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">Выполнено задач: %1$d из %2$d</string>
@@ -2483,7 +2489,6 @@ Language: ru
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_non_woo_stores_label">Другие сайты</string>
     <string name="payments_hub_title">Платежи</string>
-    <string name="login_no_wpcom_account_found">Ваш адрес электронной почты не используется с учётной записью WordPress.com.</string>
     <string name="login_magic_link_button">Вход по специальной ссылке</string>
     <string name="or_use_password" a8c-src-lib="module:login">Войти с паролем</string>
     <string name="login_magic_links_sent_label_short">Проверьте почту с этого устройства!</string>
@@ -3037,8 +3042,6 @@ Language: ru
     <string name="card_reader_tutorial_collect_label">Проведите пальцем, коснитесь экрана или вставьте карту.</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Для вашей учётной записи существуют требования на утверждении. Выполните эти требования к %1$s, чтобы продолжать получать очные платежи.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Для вашей учётной записи WooCommerce Payments существуют требования на утверждении.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Для вашей учётной записи существует по крайней мере одно просроченное требование. Пожалуйста, выполните его, чтобы возобновить очные платежи.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">В настоящее время очные платежи недоступны</string>
     <string name="card_reader_onboarding_account_under_review_hint">Вы сможете получать очные платежи, как только мы завершим проверку вашей учётной записи.</string>
     <string name="card_reader_onboarding_account_rejected_hint">К сожалению, мы не можем поддерживать очные платежи для этого магазина.</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Перезагрузите после обновления</string>

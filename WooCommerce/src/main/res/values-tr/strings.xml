@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-06-30 16:58:30+0000
+Translation-Revision-Date: 2026-07-28 09:58:25+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">İndirim uygulanmadı</string>
+    <string name="product_duplicate_discard_changes_action">At ve yinele</string>
+    <string name="product_duplicate_discard_changes_message">Kaydedilmemiş değişiklikleriniz kaybolacak. Yinelenen, son kaydedilen sürümü kullanır.</string>
+    <string name="product_duplicate_discard_changes_title">Değişiklikler ve yineleme iptal edilsin mi?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Hesabınızda en az bir vadesi geçmiş gereksinim var. Bu ödemeleri atlayabilir ve almaya devam edebilirsiniz ancak gereksinim hesabınızı engelliyorsa siz çözene kadar bazı işlemler reddedilebilir.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Hesabınızda vadesi geçmiş gereksinimler</string>
+    <string name="order_editing_currency_mismatch_title">Bu sipariş uygulamada düzenlenemez</string>
+    <string name="login_no_wpcom_account_found_message">Böyle bir kullanıcı bulunamadı. E-posta adresinin doğru olduğunu doğrulayın veya farklı bir hesapla deneyin.</string>
+    <string name="login_no_wpcom_account_found_title">E-posta adresi yanlış</string>
+    <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Bu görsel türü desteklenmiyor. Lütfen bir PNG, JPEG, WebP, GIF, BMP, HEIC veya HEIF görseli seçin.</string>
+    <string name="ai_support_chat_store_connection_error_message">Mağazama ulaşılamıyor. Uygulama, mağazama ulaşmaya çalışırken bir bağlantı hatası algıladı. Bunu nasıl düzeltebilirim?</string>
+    <string name="settings_crash_reporting_error_update">Çökme bildirme ayarlarınız güncellenirken bir hata oluştu</string>
+    <string name="empty_search_guest_orders_button">Misafir siparişlerini göster</string>
+    <string name="empty_message_with_search_guest">Misafir müşteriler tarafından verilen siparişleri mi arıyorsunuz?</string>
+    <string name="order_refunds_gift_card_unsupported_message">Bu sipariş bir hediye kartıyla ödendi. Burada geri ödeme yapıldığında hediye kartı bakiyesi geri yüklenemez. Doğru iade etmek için lütfen bunu web\'deki mağaza yöneticinizden işleme alın.</string>
+    <string name="order_refunds_gift_card_unsupported_title">Mağaza yöneticinizden para iadesi</string>
     <string name="error_site_url_remote_certificate" a8c-src-lib="module:login">Bu sitenin güvenlik sertifikasını doğrulayamadık. Barındırma sağlayıcınızla veya site yöneticinizle iletişime geçip tekrar deneyin.</string>
     <string name="error_site_url_certificate_validity" a8c-src-lib="module:login">Güvenli bir bağlantı kuramadık. Cihazınızın tarih ve saatinin doğru olup olmadığını kontrol edin ve tekrar deneyin.</string>
     <string name="woopos_refund_preview_error">İade toplamı hesaplanamadı. Lütfen tekrar deneyin.</string>
@@ -501,11 +517,6 @@ Language: tr
     <string name="orderlist_connectivity_tool_store_products_check_title">Mağazanızdaki ürünler alınıyor</string>
     <string name="user_role_access_error_fetch_failed">Bu mağazadaki rolünüzü doğrulayamadık. Lütfen tekrar deneyin. Sorun devam ederse desteğe başvurun.</string>
     <string name="connectivity_tool_view_technical_details">VideoPress teknik bilgileri</string>
-    <string name="woopos_eligibility_learn_more_label">Daha Fazla Bilgi Edinin</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade_html">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için &lt;b&gt;Pro\'ya yükseltin&lt;/b&gt;.</string>
-    <string name="woopos_eligibility_reason_ciab_plan_upgrade">İşlem başına sadece %2,70 + 0,10 ile şahsen ödemeleri kabul edin. Telefonunuzda tap-to-pay\'e ve eşzamanlı envanter ve sipariş senkronizasyonu ile tam satış noktası sistemimize erişmek için Pro\'ya yükseltin.</string>
-    <string name="woopos_eligibility_ciab_title">Pro paket gerekli</string>
-    <string name="ciab_order_status_open">Açık</string>
     <string name="woo_shipping_address_notification_origin_missing_or_invalid">Menşe adresi eksik veya geçersiz</string>
     <string name="woo_shipping_labels_purchase_origin_address_error">Gönderim etiketi satın alınamıyor. Lütfen menşe adresini tamamlayın.</string>
     <string name="woopos_orders_details_refund_tax">Vergi</string>
@@ -1184,6 +1195,7 @@ Language: tr
     <string name="woo_shipping_labels_package_creation_length">Uzunluk</string>
     <string name="shipping_label_purchased_success_message">Buradan gönderim etiketini yeniden yazdırabilir veya etiketin kağıt boyutunu değiştirebilirsiniz.</string>
     <string name="shipping_label_purchased_success_title">Gönderim etiketiniz yazdırmaya hazır</string>
+    <string name="order_editing_currency_mismatch_message">Üzgünüz, bu siparişi yalnızca web üzerinden düzenleyebilirsiniz, çünkü bu sipariş %1$s kullanıyor ve sitenizin para birimi %2$s.</string>
     <string name="shipping_label_shipping_service_title">Gönderim hizmeti</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">En hızlı</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">En ucuz</string>
@@ -1653,20 +1665,17 @@ Language: tr
     <string name="blaze_campaign_edit_ad_change_image_button">Görseli değiştir</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Uygula</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s gün</string>
-    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Tamam</string>
     <string name="blaze_campaign_budget_impressions_title">İzlenimler</string>
     <string name="blaze_campaign_budget_update_button">Güncelle</string>
     <string name="blaze_campaign_budget_edit_duration_button">Düzenle</string>
+    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_reach_forecast">Gün başına ulaşılan tahmini insan sayısı</string>
     <string name="blaze_campaign_budget_days_duration">%1$s gün için</string>
     <string name="blaze_campaign_budget_toolbar_title">Bütçenizi oluşturun</string>
     <string name="blaze_campaign_preview_target_default_value">Tümü</string>
     <string name="blaze_campaign_preview_days_duration">%2$s tarihinden itibaren %1$s gün</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Başlangıç tarihi</string>
-    <string name="product_creation_survey_button_dont_show_again">Bunu tekrar gösterme</string>
-    <string name="product_creation_survey_button_remind_me_later">Daha Sonra Hatırlat</string>
-    <string name="product_creation_survey_description">Bir dakikanız var mı? Hızlı bir geri bildirim göndererek yapay zeka destekli özelliklerimizi geliştirmemize yardımcı olun.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Ayrıntıları Onayla</string>
     <string name="blaze_campaign_preview_details_destination_url">Reklam hedefi</string>
     <string name="blaze_campaign_preview_details_interests">İlgi alanları</string>
@@ -1716,11 +1725,9 @@ Language: tr
     <string name="theme_picker_carousel_info_item_description_settings">WooCommerce Tema Mağazasından mükemmel temanızı bulabilirsiniz.</string>
     <string name="theme_picker_current_theme_title">Geçerli tema</string>
     <string name="theme_picker_settings_title">Yeni bir görünüm deneyin</string>
-    <string name="product_creation_survey_button_open">Anketi Başlat</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Şahsen Ödemeyi etkinleştirmek, müşterinin çevrimiçi siparişler için ödemeyi nakit veya kart aracılığıyla teslimat sırasında yapmasını sağlar.\n\nSiparişler bu özellik etkinleştirilmeden manuel olarak da oluşturulabilir.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Web ödemenize Şahsen Ödeme özelliğini eklemek istiyor musunuz?</string>
     <string name="card_reader_onboarding_contact_us">Biraz yardıma mı ihtiyacınız var? &lt;a href=\'\'&gt;Bizimle iletişim kurun&lt;/a&gt;</string>
-    <string name="product_creation_survey_title">Fikirlerinize değer veriyoruz!</string>
     <string name="order_refunds_refund_custom_amount">Özel Tutarı İade Edin</string>
     <string name="order_refunds_custom_amount_refund">Özel tutar iadesi</string>
     <string name="barcode_scanning_scan_product_barcode_label">Ürün Barkodunu Tarayın</string>
@@ -2301,7 +2308,6 @@ Language: tr
     <string name="support_request_title">Bunu sıralayalım</string>
     <string name="support_request_help_title">Şu konuda yardıma ihtiyacım var</string>
     <string name="support_request">Destek Talebi</string>
-    <string name="store_onboarding_menu_share_feedback">Görüşlerinizi paylaşın</string>
     <string name="store_onboarding_full_screen_transition_name">Tam ekran sisteme tanıtılıyor</string>
     <string name="store_onboarding_task_view_all">Tamamını görüntüle (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%2$d görevden %1$d tanesi tamamlandı</string>
@@ -2482,7 +2488,6 @@ Language: tr
     <string name="more_menu_button_w___admin">WC Yöneticisi</string>
     <string name="login_non_woo_stores_label">Diğer siteler</string>
     <string name="payments_hub_title">Ödemeler</string>
-    <string name="login_no_wpcom_account_found">E-postanız bir WordPress.com hesabıyla kullanılmaz.</string>
     <string name="login_magic_link_button">Sihirli bağlantı ile oturum açın</string>
     <string name="or_use_password" a8c-src-lib="module:login">Oturum açmak için şifreyi kullanın</string>
     <string name="login_magic_links_sent_label_short">Bu cihazda e-postanızı kontrol edin!</string>
@@ -3035,8 +3040,6 @@ Language: tr
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_hint">Şahsen Ödemeler özelliği Test Modu\'nda kullanılamaz. Devam etmek için lütfen kapatın.</string>
     <string name="card_reader_onboarding_wcpay_in_test_mode_with_live_account_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Hesabınızda bekleyen gereksinimler var. Şahsen Ödemeleri kabul etmeye devam etmek için lütfen %1$s tarihine kadar bu gereksinimleri karşılayın.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Hesabınızda en az bir vadesi geçmiş gereksinim var. Şahsen Ödemeleri kullanmaya devam etmek için lütfen bu durumu giderin</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Şahsen Ödemeler şu anda kullanılamıyor</string>
     <string name="card_reader_onboarding_account_under_review_hint">Hesabınızın incelenmesi biter bitirmez Şahsen Ödemeleri kabul edebileceksiniz.</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Hesabınızda bekleyen gereksinimler var</string>
     <string name="card_reader_onboarding_account_under_review_header">Şahsen Ödemeler şu anda kullanılamıyor</string>

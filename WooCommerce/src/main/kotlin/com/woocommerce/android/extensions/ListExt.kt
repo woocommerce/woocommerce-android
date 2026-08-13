@@ -8,7 +8,9 @@ fun <T> List<T>.areSameAs(otherList: List<T>, isSameAs: T.(T) -> Boolean): Boole
         this.foldIndexed(true) { i, all, item -> all && item.isSameAs(otherList[i]) }
 }
 
-fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) { id == it.id }
+fun List<Image>.areSameImagesAs(images: List<Image>) = this.areSameAs(images) {
+    id == it.id && alt == it.alt && name == it.name
+}
 
 fun List<Product>.areSameProductsAs(products: List<Product>) = this.areSameAs(products) { isSameProduct(it) }
 

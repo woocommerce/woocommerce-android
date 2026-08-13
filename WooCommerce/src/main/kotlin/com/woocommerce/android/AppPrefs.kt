@@ -134,8 +134,6 @@ object AppPrefs {
         BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
         WC_STORE_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
-        TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
-        AI_PRODUCT_CREATION_SURVEY_DISMISSED,
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
         BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
         BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
@@ -236,7 +234,10 @@ object AppPrefs {
 
         IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
 
-        QR_LOGIN_ROLLOUT_BUCKET
+        QR_LOGIN_ROLLOUT_BUCKET,
+
+        // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
+        REMOTE_FEATURE_FLAGS_DEVICE_ID
     }
 
     fun init(context: Context) {
@@ -364,6 +365,10 @@ object AppPrefs {
     var wooCorePushDeviceUUID: String
         get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
         set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
+
+    var remoteFeatureFlagsDeviceId: String
+        get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
+        set(value) = setString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, value)
 
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
@@ -1239,26 +1244,6 @@ object AppPrefs {
         key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
         default = false
     )
-
-    var timesAiProductCreationSurveyDisplayed: Int
-        get() = getInt(
-            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
-            default = 0
-        )
-        set(value) = setInt(
-            key = DeletablePrefKey.TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
-            value = value
-        )
-
-    var isAiProductCreationSurveyDismissed: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
-            default = false
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
-            value = value
-        )
 
     fun incrementAIDescriptionTooltipShownNumber() {
         val currentTotal = getInt(DeletablePrefKey.NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN, 0)

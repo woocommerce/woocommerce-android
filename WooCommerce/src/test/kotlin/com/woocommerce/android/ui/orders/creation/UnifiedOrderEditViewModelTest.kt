@@ -22,6 +22,8 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.feedback.FeedbackRepository
+import com.woocommerce.android.ui.orders.CurrencyMatchResult
+import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -43,6 +45,7 @@ import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHe
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -68,6 +71,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -108,6 +112,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
     private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
+    protected lateinit var isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported
+    protected lateinit var isStoreCurrencyMatch: IsStoreCurrencyMatch
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -120,13 +126,21 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected abstract val mode: OrderCreateEditViewModel.Mode
     protected abstract val sku: String
     protected abstract val barcodeFormat: BarcodeFormat
+    protected open val orderCurrency: String? = null
 
     @Suppress("LongMethod")
     private fun initMocks() {
         val defaultOrderItem = createOrderItem()
         val emptyOrder = Order.getEmptyOrder(Date(), Date())
         viewState = OrderCreateEditViewModel.ViewState()
-        savedState = spy(OrderCreateEditFormFragmentArgs(mode, sku, barcodeFormat).toSavedStateHandle()) {
+        savedState = spy(
+            OrderCreateEditFormFragmentArgs(
+                mode = mode,
+                sku = sku,
+                barcodeFormat = barcodeFormat,
+                orderCurrency = orderCurrency
+            ).toSavedStateHandle()
+        ) {
             on { getLiveData(viewState.javaClass.name, viewState) } doReturn MutableLiveData(viewState)
             on {
                 getLiveData(
@@ -222,6 +236,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         fetchProductByIdentifier = mock()
         wooPosSurveysNotificationScheduler = mock()
+        isCurrencyQueryParamSupported = mock()
+        isStoreCurrencyMatch = mock()
+        // Only consulted when the screen was opened with an order currency, so stubbing it otherwise
+        // would trip the strict stubbing check.
+        if (orderCurrency != null) {
+            isStoreCurrencyMatch.stub {
+                on { invoke(any()) } doReturn CurrencyMatchResult(isMatch = true, storeCurrency = "USD")
+            }
+        }
     }
 
     protected abstract val tracksFlow: String
@@ -696,7 +719,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -752,7 +776,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -783,7 +808,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -810,7 +836,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -841,7 +868,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -866,7 +894,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -899,7 +928,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -931,7 +961,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -957,7 +988,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -984,7 +1016,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1008,7 +1041,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1016,6 +1050,95 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
                 any()
             )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a subscription product, then trigger event with proper message`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(R.string.product_selector_subscription_not_supported)
+            ).thenReturn("Subscription products are not supported")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                productType = "subscription"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.SubscriptionProducts)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo("Subscription products are not supported")
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a subscription product, then track event with proper properties`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(R.string.product_selector_subscription_not_supported)
+            ).thenReturn("Subscription products are not supported")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                productType = "subscription"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.SubscriptionProducts)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Failed to add a subscription product"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a variable product with no variations, then trigger event with proper message`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_no_variations
+                )
+            ).thenReturn("You cannot add a variable product that has no variations")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                isVariable = true,
+                variationIds = "[]"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.VariableProductsWithNoVariations)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo("You cannot add a variable product that has no variations")
         }
     }
 
@@ -1704,6 +1827,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given pending products in two pane mode, when configuration changes, then preserve pending products`() {
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+        val pendingItems = listOf(ProductSelectorViewModel.SelectedItem.Product(123))
+        sut.onItemsSelectionChanged(pendingItems)
+
+        sut.onDeviceConfigurationChanged(isTwoPane = true)
+
+        assertThat(sut.pendingSelectedItems.value).isEqualTo(pendingItems)
+    }
+
+    @Test
     fun `given configurable item expanded, then track configuration CTA shown`() {
         testBlocking {
             createSut()
@@ -2179,6 +2313,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
             wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
+            isCurrencyQueryParamSupported = isCurrencyQueryParamSupported,
+            isStoreCurrencyMatch = isStoreCurrencyMatch,
         )
     }
 

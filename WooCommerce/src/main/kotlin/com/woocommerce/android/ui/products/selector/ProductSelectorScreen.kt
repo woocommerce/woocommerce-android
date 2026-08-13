@@ -85,7 +85,10 @@ fun ProductSelectorScreen(
     handleInsets: Boolean,
 ) {
     val viewState by viewModel.viewState.observeAsState()
-    BackHandler(onBack = viewModel::onNavigateBack)
+    BackHandler(
+        enabled = viewModel.selectionMode != SelectionMode.LIVE || viewState?.searchState?.isActive == true,
+        onBack = viewModel::onNavigateBack
+    )
     viewState?.let { state ->
         val showToolbar = state.selectionMode != SelectionMode.LIVE
         Scaffold(topBar = {
@@ -323,7 +326,8 @@ private fun displayProductsSection(
                 enabled = state.selectionEnabled && product.enabled,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
-                }
+                },
+                isLoading = product.isLoading
             ) {
                 onProductClick(product, productSectionForTracking)
             }
@@ -445,7 +449,8 @@ private fun ProductList(
                     enabled = state.selectionEnabled && product.enabled,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
-                    }
+                    },
+                    isLoading = product.isLoading
                 ) {
                     onProductClick(product, ProductSourceForTracking.ALPHABETICAL)
                 }
@@ -509,9 +514,6 @@ private fun SelectionConfirmButton(
 
 private fun ListItem.hasVariations() =
     this is ListItem.ProductListItem && (type == VARIABLE || type == VARIABLE_SUBSCRIPTION) && numVariations > 0
-
-private val ListItem.enabled: Boolean
-    get() = selectionState !is SelectionState.DISABLED
 
 private val ListItem.disabledReason: String?
     get() = (selectionState as? SelectionState.DISABLED)?.reason

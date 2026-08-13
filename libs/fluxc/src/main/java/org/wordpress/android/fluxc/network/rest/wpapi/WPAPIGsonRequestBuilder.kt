@@ -51,9 +51,10 @@ class WPAPIGsonRequestBuilder @Inject constructor() {
         url: String,
         body: Map<String, Any> = emptyMap(),
         clazz: Class<T>,
-        nonce: String? = null
+        nonce: String? = null,
+        params: Map<String, String> = emptyMap()
     ) = suspendCancellableCoroutine<WPAPIResponse<T>> { cont ->
-        callMethod(Method.PUT, url, null, body, clazz, cont, false, 0, nonce, restClient)
+        callMethod(Method.PUT, url, params, body, clazz, cont, false, 0, nonce, restClient)
     }
 
     suspend fun <T> syncDeleteRequest(

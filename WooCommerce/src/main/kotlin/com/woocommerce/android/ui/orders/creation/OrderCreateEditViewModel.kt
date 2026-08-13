@@ -94,6 +94,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.common.CurrencyCode
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
+import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
@@ -139,7 +140,6 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
@@ -212,6 +212,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
+    private val isCurrencyQueryParamSupported: IsCurrencyQueryParamSupported,
+    private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -444,12 +446,15 @@ class OrderCreateEditViewModel @Inject constructor(
 
             is Mode.Edit -> {
                 viewModelScope.launch {
+                    val currencyMismatch = currencyMismatchBlockingEditing()
+                    isEditingBlockedByCurrency = currencyMismatch != null
                     orderDetailRepository.getOrderById(mode.orderId)?.let { order ->
                         _orderDraft.value = order
                         viewState = viewState.copy(
                             isUpdatingOrderDraft = false,
                             showOrderUpdateSnackbar = false,
-                            isEditable = order.isEditable
+                            isEditable = order.isEditable && !isEditingBlockedByCurrency,
+                            currencyMismatch = currencyMismatch
                         )
                         monitorOrderChanges()
                         updateCouponAndDiscountButtonsState(order)
@@ -462,6 +467,21 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Below the fix version the store prices any line item we add in its own currency, so editing an order in
+     * another currency would silently corrupt its totals. See [IsCurrencyQueryParamSupported].
+     */
+    private suspend fun currencyMismatchBlockingEditing(): CurrencyMismatch? {
+        val orderCurrency = args.orderCurrency ?: return null
+        val currencyMatch = isStoreCurrencyMatch(orderCurrency)
+        val storeCurrency = currencyMatch.storeCurrency
+        if (currencyMatch.isMatch || storeCurrency == null || isCurrencyQueryParamSupported()) return null
+
+        return CurrencyMismatch(orderCurrency = orderCurrency, storeCurrency = storeCurrency)
+    }
+
+    private var isEditingBlockedByCurrency = false
 
     private var _isFirstShippingLineChange = true
 
@@ -481,12 +501,15 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onDeviceConfigurationChanged(isTwoPane: Boolean) {
+        val wasTwoPane = viewState.isTwoPaneLayout
+        val enteredTwoPane = isTwoPane && !wasTwoPane
+
         if (viewState.isRecalculateNeeded && !isTwoPane) {
             // enforce items recalculation after switching to single pane mode from dual pane mode
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
         }
-        if (isTwoPane) {
+        if (enteredTwoPane) {
             // ensure that any items added in single pane mode are displayed in dual pane mode
             // in the product selector pane after switching to dual pane layout
             _pendingSelectedItems.value = _orderDraft.value.selectedItems()
@@ -976,8 +999,9 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        if (productRestrictions.isProductRestricted(product)) {
-            handleProductRestrictions(product, source, barcodeFormat)
+        val restriction = productRestrictions.getRestriction(product)
+        if (restriction != null) {
+            handleRestrictedProduct(restriction, source, barcodeFormat)
         } else if (product.isVariable()) {
             handleVariableProduct(product, source, barcodeFormat, selectedItems)
         } else {
@@ -1029,38 +1053,15 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun handleProductRestrictions(
-        product: ModelProduct,
+    private fun handleRestrictedProduct(
+        restriction: ProductRestriction,
         source: ScanningSource,
         barcodeFormat: BarcodeFormat
     ) {
-        when {
-            product.isNotPublished() -> {
-                sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(
-                        string.order_creation_barcode_scanning_unable_to_add_draft_product
-                    )
-                )
-                trackProductSearchViaSKUFailureEvent(
-                    source,
-                    barcodeFormat,
-                    "Failed to add a product that is not published"
-                )
-            }
-
-            product.hasNoPrice() -> {
-                sendAddingProductsViaScanningFailedEvent(
-                    message = resourceProvider.getString(
-                        string.order_creation_barcode_scanning_unable_to_add_product_with_invalid_price
-                    )
-                )
-                trackProductSearchViaSKUFailureEvent(
-                    source,
-                    barcodeFormat,
-                    "Failed to add a product whose price is not specified"
-                )
-            }
-        }
+        sendAddingProductsViaScanningFailedEvent(
+            message = resourceProvider.getString(restriction.scanningMessage)
+        )
+        trackProductSearchViaSKUFailureEvent(source, barcodeFormat, restriction.scanningTrackingReason)
     }
 
     private fun trackProductSearchViaSKUSuccessEvent(source: ScanningSource) {
@@ -1194,16 +1195,15 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }.orEmpty()
-        triggerEvent(
-            SelectItems(
-                selectedItems,
-                listOf(
-                    ProductRestriction.NonPublishedProducts,
-                    ProductRestriction.VariableProductsWithNoVariations
-                ),
-                args.mode
+        launch {
+            triggerEvent(
+                SelectItems(
+                    selectedItems,
+                    args.mode,
+                    args.orderCurrency?.takeIf { isCurrencyQueryParamSupported() }
+                )
             )
-        )
+        }
     }
 
     fun onRetryClicked() {
@@ -1539,7 +1539,7 @@ class OrderCreateEditViewModel @Inject constructor(
         (this.throwable as? WooException)?.error?.type == WooErrorType.INVALID_COUPON
 
     private fun isOrderEditable(updateStatus: OrderUpdateStatus.Succeeded) =
-        updateStatus.order.isEditable || mode is Mode.Creation
+        (updateStatus.order.isEditable || mode is Mode.Creation) && !isEditingBlockedByCurrency
 
     private fun trackOrderCreationFailure(it: Throwable) {
         tracker.track(
@@ -2056,6 +2056,12 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     @Parcelize
+    data class CurrencyMismatch(
+        val orderCurrency: String,
+        val storeCurrency: String
+    ) : Parcelable
+
+    @Parcelize
     data class ViewState(
         val isProgressDialogShown: Boolean = false,
         val willUpdateOrderDraft: Boolean = false,
@@ -2076,6 +2082,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isTwoPaneLayout: Boolean = false,
         val isRecalculateNeeded: Boolean = false,
         val showShippingFeedback: Boolean = false,
+        val currencyMismatch: CurrencyMismatch? = null,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -2182,9 +2189,5 @@ private fun ModelProduct.isVariable() =
     productType == ProductType.VARIABLE ||
         productType == ProductType.VARIABLE_SUBSCRIPTION ||
         productType == ProductType.VARIATION
-
-private fun ModelProduct.isNotPublished() = status != ProductStatus.PUBLISH
-
-private fun ModelProduct.hasNoPrice() = price == null
 
 fun Order.Item.isSynced() = this.itemId != Order.Item.EMPTY.itemId
