@@ -174,8 +174,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 val validatedEndpoints = endpoints.withValidatedUrls(validation)
                 endpointRecovery.value = recovery.copy(
                     url = when (recovery.type) {
-                        EndpointType.LOGIN -> requireNotNull(validatedEndpoints.loginEntryUrl)
-                        EndpointType.ADMIN -> requireNotNull(validatedEndpoints.adminBaseUrl)
+                        EndpointType.LOGIN -> validation.loginEntryUrl.toString()
+                        EndpointType.ADMIN -> validation.adminBaseUrl.toString()
                     },
                     errorMessage = null
                 )
