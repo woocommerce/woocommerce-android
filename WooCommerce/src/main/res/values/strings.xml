@@ -1472,6 +1472,7 @@
     <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
     <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
     <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
+    <string name="card_reader_pay_in_person_fetch_failed">We couldn’t check whether Pay In Person is enabled. Please try again later.</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>

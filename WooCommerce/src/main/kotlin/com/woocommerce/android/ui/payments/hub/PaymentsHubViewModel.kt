@@ -148,9 +148,14 @@ class PaymentsHubViewModel @Inject constructor(
     }
 
     private suspend fun fetchCashOnDeliveryState() {
-        val cashOnDeliveryGateway = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
-        cashOnDeliveryTitle = cashOnDeliveryGateway?.title
-        cashOnDeliveryState.value = CashOnDeliveryState.Ready(isEnabled = cashOnDeliveryGateway?.isEnabled == true)
+        val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+        cashOnDeliveryTitle = result.model?.title
+        if (result.isError) {
+            cashOnDeliveryState.value = CashOnDeliveryState.Unavailable
+            triggerEvent(ShowToast(R.string.card_reader_pay_in_person_fetch_failed))
+        } else {
+            cashOnDeliveryState.value = CashOnDeliveryState.Ready(isEnabled = result.model?.isEnabled == true)
+        }
     }
 
     fun onViewVisible() {
@@ -337,6 +342,7 @@ class PaymentsHubViewModel @Inject constructor(
         isEnabled = state is CashOnDeliveryState.Ready,
         state = when (state) {
             CashOnDeliveryState.Loading -> ToggleState.LOADING
+            CashOnDeliveryState.Unavailable -> ToggleState.UNAVAILABLE
             is CashOnDeliveryState.Ready -> ToggleState.fromChecked(state.isEnabled)
             is CashOnDeliveryState.Updating -> ToggleState.fromChecked(state.willBeEnabled)
         },
@@ -648,6 +654,7 @@ class PaymentsHubViewModel @Inject constructor(
 
     private sealed interface CashOnDeliveryState {
         data object Loading : CashOnDeliveryState
+        data object Unavailable : CashOnDeliveryState
         data class Ready(val isEnabled: Boolean) : CashOnDeliveryState
         data class Updating(val willBeEnabled: Boolean) : CashOnDeliveryState
     }

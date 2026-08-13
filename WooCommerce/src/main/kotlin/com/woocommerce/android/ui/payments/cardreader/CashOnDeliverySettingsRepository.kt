@@ -35,13 +35,19 @@ class CashOnDeliverySettingsRepository @Inject constructor(
         }
     }
 
-    suspend fun isCashOnDeliveryEnabled(): Boolean = fetchCashOnDeliveryGateway()?.isEnabled ?: false
+    suspend fun isCashOnDeliveryEnabled(): Boolean = fetchCashOnDeliveryGateway().model?.isEnabled == true
 
-    suspend fun fetchCashOnDeliveryGateway(): WCGatewayModel? {
-        val gateways = gatewayStore.fetchAllGateways(selectedSite.get()).model
-        return gateways?.firstOrNull { wcGatewayModel ->
-            wcGatewayModel.id.equals(CASH_ON_DELIVERY_GATEWAY_ID, ignoreCase = true)
-        }
+    /**
+     * A successful result with a `null` model means the store has no Cash on Delivery gateway.
+     */
+    suspend fun fetchCashOnDeliveryGateway(): WooResult<WCGatewayModel> {
+        val result = gatewayStore.fetchAllGateways(selectedSite.get())
+        if (result.isError) return WooResult(result.error)
+        return WooResult(
+            result.model?.firstOrNull { wcGatewayModel ->
+                wcGatewayModel.id.equals(CASH_ON_DELIVERY_GATEWAY_ID, ignoreCase = true)
+            }
+        )
     }
 
     companion object {
