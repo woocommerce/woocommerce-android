@@ -58,7 +58,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.combineWith
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -91,8 +90,6 @@ class PaymentsHubViewModel @Inject constructor(
     private val cashOnDeliveryState = MutableLiveData<CashOnDeliveryState>(CashOnDeliveryState.Loading)
 
     private var cashOnDeliveryTitle: String? = null
-
-    private var cashOnDeliveryFetchJob: Job? = null
 
     private fun listenForSoftwareUpdateAvailability() {
         launch {
@@ -148,19 +145,10 @@ class PaymentsHubViewModel @Inject constructor(
         listenForSoftwareUpdateAvailability()
     }
 
-    // A toggle is authoritative while it is being written, so a fetch never runs alongside one.
-    private fun refreshCashOnDeliveryState() {
-        if (cashOnDeliveryState.value is CashOnDeliveryState.Updating) return
-        cashOnDeliveryFetchJob?.cancel()
-        cashOnDeliveryFetchJob = launch { fetchCashOnDeliveryState() }
-    }
-
     private suspend fun fetchCashOnDeliveryState() {
         val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
         if (result.isError) {
-            if (cashOnDeliveryState.value !is CashOnDeliveryState.Ready) {
-                cashOnDeliveryState.value = CashOnDeliveryState.Unavailable
-            }
+            cashOnDeliveryState.value = CashOnDeliveryState.Unavailable
             triggerEvent(ShowToast(R.string.card_reader_pay_in_person_fetch_failed))
         } else {
             cashOnDeliveryTitle = result.model?.title
@@ -170,7 +158,13 @@ class PaymentsHubViewModel @Inject constructor(
 
     fun onViewVisible() {
         onboardingCheck.value = OnboardingCheck.InProgress
-        refreshCashOnDeliveryState()
+        // Fetched only until the state is known, so a fetch can never overlap a toggle being written.
+        val cashOnDelivery = cashOnDeliveryState.value
+        if (cashOnDelivery is CashOnDeliveryState.Loading || cashOnDelivery is CashOnDeliveryState.Unavailable) {
+            launch {
+                fetchCashOnDeliveryState()
+            }
+        }
         launch {
             onboardingCheck.value = when (val state = cardReaderChecker.getOnboardingState()) {
                 is OnboardingCompleted -> OnboardingCheck.Completed
@@ -486,7 +480,6 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun updateCashOnDeliveryOption(isChecked: Boolean) {
         paymentsFlowTracker.trackCashOnDeliveryToggled(isChecked)
-        cashOnDeliveryFetchJob?.cancel()
         launch {
             cashOnDeliveryState.value = CashOnDeliveryState.Updating(willBeEnabled = isChecked)
             val result = cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(isChecked)
