@@ -868,7 +868,6 @@
     <string name="filter_history_clear">Clear History</string>
     <string name="filter_history_clear_confirmation">Are you sure you want to clear all the filter history?</string>
     <string name="filter_history_delete">Delete</string>
-    <string name="filter_history_entry_content_description">Filter history</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
     <string name="orderfilters_filter_card_title_all_orders">All orders</string>
