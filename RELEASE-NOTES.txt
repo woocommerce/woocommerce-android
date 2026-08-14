@@ -5,13 +5,17 @@
 25.5
 -----
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
+- [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
+- [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
 - [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
 - [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one [https://github.com/woocommerce/woocommerce-android/pull/16400]
 - [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
 - [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
 - [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
+- [*] Store login now supports custom WordPress sign-in and dashboard addresses [https://github.com/woocommerce/woocommerce-android/pull/16398]
 - [Internal] Woo POS Scan to Pay: picking an offline method such as Pay in Person on the QR page no longer reports the order as paid, and a detected payment now shows the fullscreen success screen [https://github.com/woocommerce/woocommerce-android/pull/16363]
 - [*] Woo POS: Retrying a failed connection to a phone card reader now works without having to close and reopen the reader dialog [https://github.com/woocommerce/woocommerce-android/pull/16371]
+- [*] Woo POS: A phone used as a card reader is now discovered without granting Bluetooth and location permissions on the tablet [https://github.com/woocommerce/woocommerce-android/pull/16406]
 - [*] Fixed missing back navigation in Country and State pickers when creating shipping labels on tablets [https://github.com/woocommerce/woocommerce-android/pull/16364]
 - [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
 - [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
@@ -25,6 +29,8 @@
 
 25.4
 -----
+- [Internal] POS refunds: switched the server-calculated refund flow from the wc/v4 endpoints to wc/v3 (refund preview + compute_totals create), removing the v4 flow [https://github.com/woocommerce/woocommerce-android/pull/16335]
+- [Internal] POS refunds: server-refund availability is now tracked per WooCommerce version, so a store that changes version mid-session is re-probed instead of reusing a stale verdict [https://github.com/woocommerce/woocommerce-android/pull/16335]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation [https://github.com/woocommerce/woocommerce-android/pull/16360]
 - [*] Scanning a subscription product's barcode or SKU during order creation now explains why it can't be added [https://github.com/woocommerce/woocommerce-android/pull/16380]
 - [*] Custom amounts now use the same decimal entry as shipping and the rest of the app — enter 2.50 instead of 250 to get $2.50 [https://github.com/woocommerce/woocommerce-android/pull/16358]

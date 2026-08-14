@@ -12,9 +12,13 @@ sealed interface Nonce {
         val type: CookieNonceErrorType,
         val networkError: WPAPINetworkError? = null,
         val errorMessage: String? = null,
+        val loginEntryVerified: Boolean = false,
     ) : Nonce
 
-    data class Unknown(override val username: String?) : Nonce
+    data class Unknown(
+        override val username: String?,
+        val loginEntryVerified: Boolean = false,
+    ) : Nonce
 
     enum class CookieNonceErrorType {
         INVALID_RESPONSE,

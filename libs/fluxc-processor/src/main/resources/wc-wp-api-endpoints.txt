@@ -66,9 +66,7 @@
 
 /orders/<id>/refunds
 /orders/<id>/refunds/<refund_id>
-
-/refunds/
-/refunds/preview/
+/orders/<id>/refunds/preview/
 
 /payment_gateways
 /payment_gateways/<gateway_id>#String

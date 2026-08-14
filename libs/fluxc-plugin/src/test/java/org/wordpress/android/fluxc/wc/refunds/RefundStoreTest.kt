@@ -12,8 +12,9 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.ComputedRefundLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -23,7 +24,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient.RefundPreviewResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.SimplifiedRefundResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.dao.RefundDao
 import org.wordpress.android.fluxc.store.WCRefundStore
@@ -118,7 +118,7 @@ class RefundStoreTest {
             total = "110.00",
             maxRefundable = "200.00",
         )
-        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2))
+        val lineItems = listOf(RefundPreviewLineItem.quantityBased(lineItemId = 1L, quantity = 2))
         whenever(previewRestClient.previewRefund(site, orderId, lineItems))
             .thenReturn(WooPayload(previewResponse))
 
@@ -130,7 +130,7 @@ class RefundStoreTest {
 
     @Test
     fun `when previewRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
-        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
+        val lineItems = listOf(RefundPreviewLineItem.quantityBased(lineItemId = 1L, quantity = 1))
         val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
         whenever(previewRestClient.previewRefund(site, orderId, lineItems))
             .thenReturn(WooPayload(notFound))
@@ -142,28 +142,21 @@ class RefundStoreTest {
     }
 
     @Test
-    fun `when createSimplifiedItemsRefund succeeds, then response is mapped to model`() = test {
-        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2))
-        val response = SimplifiedRefundResponse(
-            refundId = 55L,
-            dateCreated = "2026-06-26T08:20:53",
-            amount = "110.00",
-            reason = "reason",
-            refundedPayment = true,
-            lineItems = null,
-        )
+    fun `when createComputedItemsRefund succeeds, then response is mapped to model`() = test {
+        val lineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 2))
         whenever(
-            restClient.createSimplifiedRefund(
+            restClient.createComputedRefund(
                 site = site,
                 orderId = orderId,
                 reason = "reason",
-                automaticRefund = false,
-                restockItems = true,
-                items = lineItems,
+                apiRefund = false,
+                apiRestock = true,
+                amount = null,
+                lineItems = lineItems,
             )
-        ).thenReturn(WooPayload(response))
+        ).thenReturn(WooPayload(REFUND_RESPONSE))
 
-        val result = store.createSimplifiedItemsRefund(
+        val result = store.createComputedItemsRefund(
             site = site,
             orderId = orderId,
             reason = "reason",
@@ -171,25 +164,53 @@ class RefundStoreTest {
             items = lineItems,
         )
 
-        assertThat(result.model).isEqualTo(mapper.toModel(response))
+        assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
     }
 
     @Test
-    fun `when createSimplifiedItemsRefund route is missing, then API_NOT_FOUND is surfaced for fallback`() = test {
-        val lineItems = listOf(RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 1))
-        val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
+    fun `given an amount override, when createComputedItemsRefund, then amount is passed as a string`() = test {
+        val lineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 2))
         whenever(
-            restClient.createSimplifiedRefund(
+            restClient.createComputedRefund(
                 site = site,
                 orderId = orderId,
                 reason = "",
-                automaticRefund = false,
-                restockItems = true,
-                items = lineItems,
+                apiRefund = true,
+                apiRestock = false,
+                amount = "12.34",
+                lineItems = lineItems,
+            )
+        ).thenReturn(WooPayload(REFUND_RESPONSE))
+
+        val result = store.createComputedItemsRefund(
+            site = site,
+            orderId = orderId,
+            autoRefund = true,
+            restockItems = false,
+            amount = "12.34".toBigDecimal(),
+            items = lineItems,
+        )
+
+        assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
+    }
+
+    @Test
+    fun `when createComputedItemsRefund fails, then the error is surfaced`() = test {
+        val lineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+        val notFound = WooError(WooErrorType.API_NOT_FOUND, BaseRequest.GenericErrorType.NOT_FOUND)
+        whenever(
+            restClient.createComputedRefund(
+                site = site,
+                orderId = orderId,
+                reason = "",
+                apiRefund = false,
+                apiRestock = true,
+                amount = null,
+                lineItems = lineItems,
             )
         ).thenReturn(WooPayload(notFound))
 
-        val result = store.createSimplifiedItemsRefund(
+        val result = store.createComputedItemsRefund(
             site = site,
             orderId = orderId,
             items = lineItems,

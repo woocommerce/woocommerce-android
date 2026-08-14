@@ -39,9 +39,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
     private val groupRefundItems: WooPosGroupRefundItems,
-    private val buildRefundV4LineItems: WooPosBuildRefundV4LineItems,
+    private val buildRefundLineItems: WooPosBuildRefundLineItems,
     private val refundPreview: WooPosRefundPreview,
-    private val v4RefundAvailabilityCache: WooPosV4RefundAvailabilityCache,
+    private val resolveRefundFlow: WooPosResolveRefundFlow,
+    private val serverRefundAvailabilityCache: WooPosServerRefundAvailabilityCache,
     private val calculateRefundSubtotal: WooPosCalculateRefundSubtotal,
     private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
@@ -127,9 +128,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = WooPosRefundState.Loading
 
             // Store settings (currency decimals, tax rounding mode) are only needed to calculate
-            // refund totals locally for the v3 fallback. When v4 is available the server returns the
-            // totals via the preview/create endpoints, so we defer fetching these settings until the
-            // moment we actually fall back to local calculation (see [ensureLocalCalculationSettings]).
+            // refund totals locally for the legacy fallback. When server refunds are available the
+            // server returns the totals via the preview/create endpoints, so we defer fetching these
+            // settings until we actually fall back to local calculation
+            // (see [ensureLocalCalculationSettings]).
             val orderAndRefundsResult = fetchOrderAndRefunds()
             if (orderAndRefundsResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
@@ -170,8 +172,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
         paymentMethod: String,
     ) {
         // The item-selection step does not display aggregate totals, so we build the content without
-        // computing them. Totals are resolved on "Continue": from the server (v4 preview) or, on a
-        // v4-unavailable store, calculated locally at that point (see [continueToReview]).
+        // computing them. Totals are resolved on "Continue": from the server preview or, on a store
+        // without server refunds, calculated locally at that point (see [continueToReview]).
         _state.value = buildContentShell(
             order = order,
             refundableItems = refundableItems,
@@ -213,7 +215,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     /**
      * Fetches the store settings required for local refund calculation (currency decimals and tax
-     * rounding mode) unless already cached. Only the v3 fallback path needs these.
+     * rounding mode) unless already cached. Only the local-calculation flow needs these.
      */
     private suspend fun ensureLocalCalculationSettings(): Boolean {
         if (cachedNumberOfDecimalPoints == null && fetchSiteSettings().isFailure) return false
@@ -405,32 +407,23 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * Triggered when the user commits their selection by tapping "Continue". Fetches the
-     * server-calculated totals (v4) and, on success, advances to the review step showing those
-     * authoritative totals. On a v4-unavailable store the locally-calculated totals already in
-     * [currentState] stand and we advance immediately. On a preview error the user stays on the
-     * selection step with a retry affordance.
+     * Triggered when the user commits their selection by tapping "Continue". On a server-eligible
+     * store this fetches the server-calculated totals and, on success, advances to the review step
+     * showing those authoritative totals. [WooPosRefundPreview] owns the eligibility decision and
+     * reports `FallbackToLocal` for a local-flow store (flag off, WooCommerce too old, or server
+     * refunds known unavailable), which resolves the totals on-device instead. On a preview error
+     * the user stays on the selection step with a retry affordance.
      */
     private fun continueToReview(currentState: WooPosRefundState.Content) {
         if (currentState.selectedItemIds.isEmpty()) return
         previewJob?.cancel()
 
-        val localSiteId = selectedSite.get().localId().value
         val selectedItems = currentState.refundableItems.filter { it.uniqueId in currentState.selectedItemIds }
-
-        if (v4RefundAvailabilityCache.isV4Available(localSiteId) == false) {
-            // v4 is known unavailable for this store: skip the probe and resolve totals locally.
-            _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
-            previewJob = viewModelScope.launch {
-                advanceToReviewWithLocalTotals(currentState, selectedItems)
-            }
-            return
-        }
 
         _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
 
         previewJob = viewModelScope.launch {
-            val lineItems = buildRefundV4LineItems(selectedItems)
+            val lineItems = buildRefundLineItems.forPreview(selectedItems)
             when (val result = refundPreview(currentState.orderId, lineItems)) {
                 is WooPosRefundPreview.Result.ServerCalculated ->
                     setContentIfMatchingSelection(currentState.selectedItemIds) {
@@ -450,8 +443,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * Resolves refund totals locally (the v3 path), fetching the required store settings on demand,
-     * then advances to the review step. Surfaces a preview failure if the settings can't be fetched.
+     * Resolves refund totals locally (the legacy flow), fetching the required store settings on
+     * demand, then advances to the review step. Surfaces a preview failure if the settings can't
+     * be fetched.
      */
     private suspend fun advanceToReviewWithLocalTotals(
         currentState: WooPosRefundState.Content,
@@ -496,7 +490,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
             subtotal = preview.subtotal,
             taxes = preview.tax,
             total = preview.total,
-            maxRefundable = preview.maxRefundable,
             formattedSubtotal = PriceUtils.formatCurrency(preview.subtotal, currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(preview.tax, currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(preview.total, currency, currencyFormatter),
@@ -543,30 +536,42 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * Builds the submission request. When v4 is available the server computes monetary values, so we
-     * send only the simplified line items — no client-calculated amount and no local item grouping
-     * (which would require the store's currency settings). Otherwise the v3 request is built from the
-     * locally-grouped items, reusing the currency decimals already fetched for the local calculation.
+     * Builds the submission request. On the server-computed path the server computes monetary
+     * values, so we send only the line items — no client-calculated amount and no local item
+     * grouping (which would require the store's currency settings). Otherwise the classic v3
+     * request is built from the locally-grouped items, reusing the currency decimals already
+     * fetched for the local calculation.
+     *
+     * The server branch requires the availability cache to be `true` — set only by a successful
+     * preview — on top of [resolveRefundFlow]: on stores without `compute_totals` support the
+     * unknown param is silently dropped and a quantity-only body would create a ghost zero-amount
+     * refund with restock, so eligibility alone is never enough to send a computed create.
      */
     private fun buildSubmissionRequest(
         order: Order,
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
     ): WooPosRefundSubmissionRequest? {
-        if (v4RefundAvailabilityCache.isV4Available(selectedSite.get().localId().value) == true) {
+        val flow = resolveRefundFlow()
+        val serverRefundsConfirmedAvailable = flow is WooPosRefundFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(
+                localSiteId = selectedSite.get().localId().value,
+                wooVersion = flow.wooVersion,
+            ) == true
+        if (serverRefundsConfirmedAvailable) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,
                 refundReason = contentState.refundReason,
                 refundItems = emptyList(),
-                v4LineItems = buildRefundV4LineItems(selectedItems),
+                serverLineItems = buildRefundLineItems.forComputedCreate(selectedItems),
             )
         }
 
         val numberOfDecimalPoints = cachedNumberOfDecimalPoints
             ?: wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
             ?: run {
-                WooLog.e(WooLog.T.POS, "WooPosRefund: failed to read currencyDecimalNumber for v3 refund")
+                WooLog.e(WooLog.T.POS, "WooPosRefund: failed to read currencyDecimalNumber for local refund")
                 return null
             }
         return WooPosRefundSubmissionRequest(

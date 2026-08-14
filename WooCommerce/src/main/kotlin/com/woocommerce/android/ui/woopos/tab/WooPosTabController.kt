@@ -12,7 +12,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.EntryPoint
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +24,7 @@ class WooPosTabController @Inject constructor(
     private val selectedSite: SelectedSite,
     private val shouldPosTabBeVisible: WooPosTabShouldBeVisible,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper,
     private val wooPosLog: WooPosLogWrapper
 ) : DefaultLifecycleObserver {
 
@@ -57,6 +60,7 @@ class WooPosTabController @Inject constructor(
     }
 
     fun navigateToPOS() {
+        analyticsEntryPointKeeper.onPosEntered(EntryPoint.POS_TAB)
         activity.startActivity(Intent(activity, WooPosActivity::class.java))
     }
 
