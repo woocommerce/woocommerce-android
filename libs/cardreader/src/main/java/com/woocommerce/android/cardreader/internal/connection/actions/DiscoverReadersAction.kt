@@ -51,6 +51,17 @@ internal class DiscoverReadersAction(
             DiscoveryConfiguration.BluetoothDiscoveryConfiguration(DISCOVERY_TIMEOUT_IN_SECONDS, isSimulated)
         )
 
+    fun discoverInternetReaders(
+        locationId: String? = null,
+        isSimulated: Boolean
+    ): Flow<DiscoverReadersStatus> =
+        discoverReaders(
+            DiscoveryConfiguration.InternetDiscoveryConfiguration(
+                location = locationId,
+                isSimulated = isSimulated
+            )
+        )
+
     @RequiresPermission(
         anyOf = [
             "android.permission.ACCESS_FINE_LOCATION",
