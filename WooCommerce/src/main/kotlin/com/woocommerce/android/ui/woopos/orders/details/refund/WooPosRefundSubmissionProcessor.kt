@@ -295,9 +295,6 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "message=${error.message}, " +
                     "errorData=${error.errorData}"
             )
-            // Refund-specific errors (usually a stale order state, for example another register
-            // refunded part of the order) get a cashier-facing message; anything else keeps the
-            // server message or the generic fallback.
             val mappedMessage = WooPosRefundApiError.fromCode(error.apiErrorCode)
                 ?.let { resourceProvider.getString(it.messageRes) }
             trySendState(
@@ -306,6 +303,7 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                         ?: error.message
                         ?: resourceProvider.getString(R.string.error_generic),
                     retryBackendNotificationOnly = retryBackendNotificationOnly,
+                    apiErrorCode = error.apiErrorCode,
                 )
             )
         } else {

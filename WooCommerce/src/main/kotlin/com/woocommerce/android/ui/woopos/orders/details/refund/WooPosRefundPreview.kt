@@ -70,11 +70,6 @@ class WooPosRefundPreview @Inject constructor(
         data class ServerCalculated(val preview: WCRefundPreview) : Result
         data object FallbackToLocal : Result
 
-        /**
-         * Preview failed. [apiError] carries the refund-specific error when the server returned
-         * one of the mapped refund error codes (see [WooPosRefundApiError]); null for network or
-         * unrecognized failures, which surface the generic preview error message.
-         */
         data class Error(val apiError: WooPosRefundApiError? = null) : Result
     }
 }

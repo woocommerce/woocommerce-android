@@ -2243,6 +2243,80 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given refund rejected with a mapped error code, when it fails, then error is not retryable`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Already refunded",
+                        apiErrorCode = "woocommerce_rest_line_item_already_refunded",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.canRetry).isFalse()
+        }
+
+    @Test
+    fun `given refund fails with an unmapped error code, when it fails, then error stays retryable`() =
+        runTest {
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Timeout",
+                        apiErrorCode = "woocommerce_rest_invalid_line_item",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.canRetry).isTrue()
+        }
+
+    @Test
     fun `given at select items step, when dialog dismissed, then refund flow aborted event tracked with select items step`() =
         runTest {
             val refundableItems = listOf(testRefundableItem)
