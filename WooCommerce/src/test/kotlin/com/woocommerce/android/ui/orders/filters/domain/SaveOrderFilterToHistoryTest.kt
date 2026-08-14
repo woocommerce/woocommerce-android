@@ -101,7 +101,7 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(orderFiltersRepository.customerFilter).thenReturn(null)
         whenever(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL))
             .thenReturn(emptyList())
-        whenever(orderFiltersRepository.getCustomDateRangeFilter()).thenReturn(0L to 0L)
+        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
         whenever(orderFilterHistoryMapper.toPayload(any(), any(), any())).thenReturn(A_PAYLOAD)
         whenever(orderFilterHistoryMapper.toReadableString(any())).thenReturn(A_READABLE_STRING)
 
@@ -121,7 +121,7 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(orderFiltersRepository.customerFilter).thenReturn(null)
         whenever(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL))
             .thenReturn(emptyList())
-        whenever(orderFiltersRepository.getCustomDateRangeFilter()).thenReturn(0L to 0L)
+        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
 
         sut()
 
@@ -187,7 +187,7 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(getOrderStatusFilterOptions.invoke()).thenReturn(
             listOf(OrderStatusOption("processing", "Processing", statusCount = 0, isSelected = true))
         )
-        whenever(orderFiltersRepository.getCustomDateRangeFilter()).thenReturn(111L to 222L)
+        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(111L to 222L)
 
         sut()
 
@@ -201,7 +201,7 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(orderFiltersRepository.productFilter).thenReturn(null)
         whenever(orderFiltersRepository.customerFilter).thenReturn(null)
         whenever(orderFiltersRepository.getCurrentFilterSelection(SALES_CHANNEL)).thenReturn(emptyList())
-        whenever(orderFiltersRepository.getCustomDateRangeFilter()).thenReturn(0L to 0L)
+        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
     }
 
     private fun capturedCategory(categoryKey: OrderListFilterCategory): OrderFilterCategoryUiModel {

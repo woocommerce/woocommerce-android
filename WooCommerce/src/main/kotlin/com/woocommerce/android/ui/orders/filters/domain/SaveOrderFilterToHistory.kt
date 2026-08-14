@@ -70,7 +70,9 @@ class SaveOrderFilterToHistory @Inject constructor(
             category.orderFilterOptions.any { it.isSelected && it.key != DEFAULT_ALL_KEY }
         }
         if (!hasSelection) return
-        val customDateRange = orderFiltersRepository.getCustomDateRangeFilter()
+        // Store the range in epoch days, matching the unit setCustomDateRange expects on restore
+        // (getCustomDateRangeFilter returns millis, which would corrupt the days-based pref).
+        val customDateRange = orderFiltersRepository.getCustomDateRangeDays()
         filterHistoryRepository.save(
             type = FilterHistoryType.ORDERS,
             payload = orderFilterHistoryMapper.toPayload(
