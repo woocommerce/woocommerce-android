@@ -2145,7 +2145,6 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given server-computed refund succeeds, when API call completes, then events report the server flow`() =
         runTest {
-            // GIVEN
             serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
@@ -2160,13 +2159,11 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
-            // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            // THEN
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.SERVER_COMPUTED)
             )
@@ -2205,11 +2202,9 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
 
-            // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            // THEN
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.RefundProcessingFailed(
                     refundFlow = RefundFlow.LOCAL,

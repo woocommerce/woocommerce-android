@@ -113,14 +113,11 @@ class WooPosRefundPreviewTest {
 
     @Test
     fun `given preview returns 404, when invoked, then tracks the fallback with the store woo version`() = runTest {
-        // GIVEN
         whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
             .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, GenericErrorType.NOT_FOUND)))
 
-        // WHEN
         sut(ORDER_ID, lineItems)
 
-        // THEN
         verify(analyticsTracker).track(
             WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable(wooVersion = MIN_VERSION)
         )
@@ -128,14 +125,11 @@ class WooPosRefundPreviewTest {
 
     @Test
     fun `given preview succeeds, when invoked, then does not track a fallback`() = runTest {
-        // GIVEN
         whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
             .thenReturn(WooResult(preview()))
 
-        // WHEN
         sut(ORDER_ID, lineItems)
 
-        // THEN
         verify(analyticsTracker, never()).track(any<WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable>())
     }
 
