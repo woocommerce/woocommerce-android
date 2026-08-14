@@ -1657,6 +1657,11 @@
     <string name="card_reader_mode_location_permission_continue">Continue</string>
     <string name="card_reader_mode_location_permission_denied_subtitle">Location permission is blocked. Open Settings and grant Location to use tap-to-pay on this phone.</string>
     <string name="card_reader_mode_location_permission_open_settings">Open Settings</string>
+    <string name="card_reader_mode_local_network_permission_header">Local network permission required</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android requires local network access so your tablet can find this phone. Nothing is sent outside your network.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Continue</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Local network permission is blocked. Open Settings and grant local network access to use tap-to-pay on this phone.</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Open Settings</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
@@ -4370,6 +4375,8 @@
     <string name="woopos_card_reader_location_permission_message">Location permission is required to connect to a card reader via Bluetooth.</string>
     <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth permission required</string>
     <string name="woopos_card_reader_bluetooth_permission_message">Bluetooth permission is required to connect to a card reader.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Local network permission required</string>
+    <string name="woopos_card_reader_local_network_permission_message">Local network permission is required to connect to a phone used as a card reader.</string>
     <string name="woopos_card_reader_grant_permission_button">Grant permission</string>
     <string name="woopos_card_reader_invalid_address_title">Invalid merchant address</string>
     <string name="woopos_card_reader_invalid_address_message">Your store address is missing or incomplete. Please update your store address in WooCommerce settings.</string>

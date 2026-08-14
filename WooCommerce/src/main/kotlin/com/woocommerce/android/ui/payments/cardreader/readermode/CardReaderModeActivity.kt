@@ -23,10 +23,23 @@ class CardReaderModeActivity : AppCompatActivity() {
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        viewModel.onLocationPermissionResult(
-            granted = granted,
-            shouldShowRationale = WooPermissionUtils.shouldShowFineLocationPermissionRationale(this),
-        )
+        when {
+            granted -> checkPermissionsAndStartSession()
+            WooPermissionUtils.shouldShowFineLocationPermissionRationale(this) ->
+                viewModel.onLocationPermissionMissing()
+            else -> viewModel.onLocationPermissionDenied()
+        }
+    }
+
+    private val localNetworkPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        when {
+            granted -> checkPermissionsAndStartSession()
+            WooPermissionUtils.shouldShowLocalNetworkPermissionRationale(this) ->
+                viewModel.onLocalNetworkPermissionMissing()
+            else -> viewModel.onLocalNetworkPermissionDenied()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +59,8 @@ class CardReaderModeActivity : AppCompatActivity() {
                         CardReaderModeEvent.Exit -> finish()
                         CardReaderModeEvent.RequestLocationPermission ->
                             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        CardReaderModeEvent.RequestLocalNetworkPermission ->
+                            localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
                         CardReaderModeEvent.OpenAppSettings ->
                             WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
                     }
@@ -54,11 +69,15 @@ class CardReaderModeActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            if (WooPermissionUtils.hasFineLocationPermission(this)) {
-                viewModel.onLocationPermissionResult(granted = true, shouldShowRationale = false)
-            } else {
-                viewModel.onLocationPermissionMissing()
-            }
+            checkPermissionsAndStartSession()
+        }
+    }
+
+    private fun checkPermissionsAndStartSession() {
+        when {
+            !WooPermissionUtils.hasFineLocationPermission(this) -> viewModel.onLocationPermissionMissing()
+            !WooPermissionUtils.hasLocalNetworkPermission(this) -> viewModel.onLocalNetworkPermissionMissing()
+            else -> viewModel.onPermissionsGranted()
         }
     }
 }
