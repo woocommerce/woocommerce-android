@@ -24,7 +24,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -137,9 +136,8 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
     @Test
     fun `given a selected product, when invoked, then the product name is used as the label`() = testBlocking {
         givenNothingSelected()
-        val product = mock<WCProductModel> { on { name } doReturn "Widget" }
         whenever(orderFiltersRepository.productFilter).thenReturn(PRODUCT_ID)
-        whenever(productListRepository.getProduct(PRODUCT_ID)).thenReturn(product)
+        whenever(productListRepository.getProduct(PRODUCT_ID)).thenReturn(WCProductModel().copy(name = "Widget"))
 
         sut()
 
@@ -151,13 +149,10 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
     @Test
     fun `given a selected customer, when invoked, then the customer name is used as the label`() = testBlocking {
         givenNothingSelected()
-        val customer = mock<WCCustomerModel> {
-            on { firstName } doReturn "John"
-            on { lastName } doReturn "Doe"
-        }
         whenever(orderFiltersRepository.customerFilter).thenReturn(CUSTOMER_ID)
         whenever(selectedSite.get()).thenReturn(SiteModel())
-        whenever(customerStore.getCustomerByRemoteId(any(), eq(CUSTOMER_ID))).thenReturn(customer)
+        whenever(customerStore.getCustomerByRemoteId(any(), eq(CUSTOMER_ID)))
+            .thenReturn(WCCustomerModel(firstName = "John", lastName = "Doe"))
 
         sut()
 
