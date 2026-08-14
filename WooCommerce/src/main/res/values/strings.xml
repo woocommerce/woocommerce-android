@@ -385,8 +385,19 @@
     <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site.</string>
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
+    <string name="login_site_credentials_login_url_title">Where do you sign in to your store?</string>
+    <string name="login_site_credentials_login_url_description">A security plugin may use a custom WordPress sign-in address. Enter the address you use to sign in.</string>
+    <string name="login_site_credentials_login_url_label">WordPress sign-in address</string>
+    <string name="login_site_credentials_admin_url_title">Where is your store\'s dashboard?</string>
+    <string name="login_site_credentials_admin_url_description">A security plugin may move the WordPress dashboard. Enter the address you use to open it.</string>
+    <string name="login_site_credentials_admin_url_label">WordPress dashboard address</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Enter a full web address, including http:// or https://.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Enter an address on the same site without changing its secure connection or port.</string>
+    <string name="login_site_credentials_login_url_not_found_error">We couldn\'t find a WordPress sign-in page at that address. Check it and try again.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">We couldn\'t reach the WordPress dashboard at that address. Check it and try again.</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">We couldn\'t save your store\'s sign-in settings. Please try again.</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
-    <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_use_web_authorization">Try signing in with your browser instead</string>
     <string name="login_site_credentials_http_basic_auth_error">Basic Authentication is enabled on your site. Basic Authentication is unsupported in the WooCommerce mobile app. Please disable it, or contact support for troubleshooting.</string>
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
@@ -1472,6 +1483,7 @@
     <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
     <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
     <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
+    <string name="card_reader_pay_in_person_fetch_failed">We couldn’t check whether Pay In Person is enabled. Please try again later.</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1652,6 +1664,7 @@
     <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
     <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
     <string name="card_reader_mode_error_close">Close</string>
+    <string name="card_reader_mode_error_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
     <string name="card_reader_mode_location_permission_header">Location permission required</string>
     <string name="card_reader_mode_location_permission_subtitle">Android requires location access to use tap-to-pay on this phone. Your location stays on this device.</string>
     <string name="card_reader_mode_location_permission_continue">Continue</string>
@@ -3886,6 +3899,9 @@
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
     <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Turn on NFC on the phone, then try again.</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Payment service error. Try reconnecting.</string>
     <string name="woopos_battery_low">Card reader battery low</string>
     <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4227,6 +4243,12 @@
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_refund_preview_error">Couldn\'t calculate the refund total. Please try again.</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">The selected quantity is more than what\'s left to refund</string>
+    <string name="woopos_refund_error_item_already_refunded">This item has already been fully refunded</string>
+    <string name="woopos_refund_error_order_not_refundable">This order can\'t be refunded</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item</string>
+    <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -4378,6 +4400,10 @@
     <string name="woopos_card_reader_local_network_permission_title">Local network permission required</string>
     <string name="woopos_card_reader_local_network_permission_message">Local network permission is required to connect to a phone used as a card reader.</string>
     <string name="woopos_card_reader_grant_permission_button">Grant permission</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Allow Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Turn on Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Allow location to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Turn on location to see card readers</string>
     <string name="woopos_card_reader_invalid_address_title">Invalid merchant address</string>
     <string name="woopos_card_reader_invalid_address_message">Your store address is missing or incomplete. Please update your store address in WooCommerce settings.</string>
     <string name="woopos_card_reader_invalid_postal_code_title">Invalid postal code</string>
