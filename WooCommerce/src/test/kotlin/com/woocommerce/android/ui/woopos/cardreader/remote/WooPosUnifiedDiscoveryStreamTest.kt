@@ -15,7 +15,10 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import java.net.InetAddress
@@ -53,7 +56,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         )
 
         // WHEN / THEN
-        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val btOnly = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
             assertThat(btOnly.readers).containsExactly(WooPosDiscoveredReader.Bluetooth(bluetoothReader))
@@ -62,6 +65,52 @@ class WooPosUnifiedDiscoveryStreamTest {
                 WooPosDiscoveredReader.Bluetooth(bluetoothReader),
                 phone,
             )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `given bluetooth is excluded, when discovering, then phones surface without bluetooth discovery`() = runTest {
+        // GIVEN
+        val phone = phone(name = "Pixel 7")
+        whenever(remoteDiscovery.discover()).thenReturn(flowOf(WooPosPhoneDiscoveryEvent.Added(phone)))
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            selectedSite,
+            logger,
+        )
+
+        // WHEN / THEN
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = false).test {
+            assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
+            val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+            assertThat(found.readers).containsExactly(phone)
+            cancelAndIgnoreRemainingEvents()
+        }
+        verify(cardReaderManager, never()).discoverReaders(any(), any())
+    }
+
+    @Test
+    fun `given bluetooth discovery throws before returning a flow, when discovering, then phones still surface`() = runTest {
+        // GIVEN
+        whenever(cardReaderManager.discoverReaders(false, types))
+            .thenThrow(IllegalStateException("Terminal not initialized"))
+        val phone = phone(name = "Pixel 7")
+        whenever(remoteDiscovery.discover()).thenReturn(flowOf(WooPosPhoneDiscoveryEvent.Added(phone)))
+        val sut = WooPosUnifiedDiscoveryStream(
+            cardReaderManager,
+            remoteDiscovery,
+            simulatedRemoteDiscovery,
+            selectedSite,
+            logger,
+        )
+
+        // WHEN / THEN
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
+            val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
+            assertThat(found.readers).containsExactly(phone)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -88,7 +137,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         )
 
         // WHEN / THEN
-        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val withPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
             assertThat(withPhone.readers).containsExactly(phone)
@@ -121,7 +170,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             )
 
             // WHEN / THEN
-            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
                 assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
                 val withPhone = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
                 assertThat(withPhone.readers).containsExactly(phone)
@@ -150,7 +199,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         )
 
         // WHEN / THEN
-        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             awaitComplete()
         }
@@ -175,7 +224,7 @@ class WooPosUnifiedDiscoveryStreamTest {
         )
 
         // WHEN / THEN
-        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+        sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
             assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
             val found = awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound
             assertThat(found.readers).containsExactly(matchingPhone)
@@ -220,7 +269,7 @@ class WooPosUnifiedDiscoveryStreamTest {
             )
 
             // WHEN / THEN
-            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types).test {
+            sut.discover(isSimulated = false, cardReaderTypesToDiscover = types, includeBluetooth = true).test {
                 assertThat(awaitItem()).isEqualTo(WooPosUnifiedDiscoveryEvent.Started)
                 assertThat((awaitItem() as WooPosUnifiedDiscoveryEvent.ReadersFound).readers)
                     .containsExactly(previousSession)

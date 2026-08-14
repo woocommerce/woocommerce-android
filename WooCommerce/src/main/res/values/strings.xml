@@ -4376,6 +4376,10 @@
     <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth permission required</string>
     <string name="woopos_card_reader_bluetooth_permission_message">Bluetooth permission is required to connect to a card reader.</string>
     <string name="woopos_card_reader_grant_permission_button">Grant permission</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Allow Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Turn on Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Allow location to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Turn on location to see card readers</string>
     <string name="woopos_card_reader_invalid_address_title">Invalid merchant address</string>
     <string name="woopos_card_reader_invalid_address_message">Your store address is missing or incomplete. Please update your store address in WooCommerce settings.</string>
     <string name="woopos_card_reader_invalid_postal_code_title">Invalid postal code</string>
