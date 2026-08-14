@@ -585,11 +585,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
-    /**
-     * Whether this submission will go through the server-computed create. Extracted so the flow
-     * reported in analytics is decided by the same predicate [buildSubmissionRequest] branches on,
-     * and cannot drift from the path actually taken.
-     */
     private fun isServerComputedRefundConfirmed(): Boolean {
         val flow = resolveRefundFlow()
         return flow is WooPosRefundFlow.ServerComputed &&

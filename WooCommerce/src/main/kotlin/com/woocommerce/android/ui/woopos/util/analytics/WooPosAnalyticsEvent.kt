@@ -1057,11 +1057,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        /**
-         * [apiErrorCode] is the store's REST error code when it returned one. It separates
-         * deterministic server rejections (`woocommerce_rest_*`) from transport failures, which the
-         * message cannot do — it is localized to the store and varies by wording.
-         */
         data class RefundProcessingFailed(
             val refundFlow: RefundFlow,
             val apiErrorCode: String? = null,
@@ -1078,12 +1073,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        /**
-         * Emitted when a preview probe finds the server-calculated refund route missing and the
-         * store falls back to local calculation. [wooVersion] tells us whether the version gate is
-         * behaving or the store is genuinely too old. Fired where the availability cache is marked
-         * unavailable, so it counts stores rather than refunds.
-         */
         data class RefundServerFlowUnavailable(val wooVersion: String) : Event() {
             override val name: String = "refund_server_flow_unavailable"
 
