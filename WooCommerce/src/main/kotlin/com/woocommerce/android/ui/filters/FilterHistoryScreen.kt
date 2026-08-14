@@ -12,14 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -127,8 +127,8 @@ private fun FilterHistoryList(
             item {
                 Text(
                     text = stringResource(id = R.string.filter_history_recent_header).uppercase(),
-                    style = MaterialTheme.typography.caption,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(
                         horizontal = dimensionResource(id = R.dimen.major_100),
                         vertical = dimensionResource(id = R.dimen.minor_100)
@@ -142,10 +142,10 @@ private fun FilterHistoryList(
                     onClick = { onFilterClick(filter) },
                     onDelete = { onDeleteFilter(filter) }
                 )
-                Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+                HorizontalDivider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
             }
         }
-        Divider()
+        HorizontalDivider()
         WCTextButton(
             onClick = onClearHistoryClick,
             text = stringResource(id = R.string.filter_history_clear),
@@ -206,7 +206,7 @@ private fun FilterHistoryRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable { onClick() }
             .padding(dimensionResource(id = R.dimen.major_100)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -214,8 +214,8 @@ private fun FilterHistoryRow(
     ) {
         Text(
             text = filter.readableString,
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
         SelectionCheck(
@@ -235,13 +235,13 @@ private fun FilterHistoryEmptyState(modifier: Modifier = Modifier) {
         Icon(
             painter = painterResource(id = R.drawable.ic_history_24dp),
             contentDescription = null,
-            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_64))
         )
         Text(
             text = stringResource(id = R.string.filter_history_empty),
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
         )
