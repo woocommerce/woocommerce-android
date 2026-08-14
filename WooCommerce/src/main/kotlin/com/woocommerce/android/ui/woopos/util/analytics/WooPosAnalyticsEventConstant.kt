@@ -1,6 +1,24 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
+    /**
+     * Which side calculated the refund totals. Reported on the refund processing events so success
+     * and failure rates can be compared between the two flows during the server-refunds rollout.
+     * Keep the values in step with iOS, which reports the same `refund_flow` property.
+     */
+    enum class RefundFlow(val value: String) {
+        LOCAL("local"),
+        SERVER_COMPUTED("server_computed");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val REFUND_FLOW = "refund_flow"
+        }
+    }
+
     enum class DeviceType(val value: String) {
         PHONE("phone"),
         TABLET("tablet");

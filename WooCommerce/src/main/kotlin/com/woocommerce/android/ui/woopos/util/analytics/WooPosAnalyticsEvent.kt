@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
@@ -1027,16 +1029,71 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object RefundProcessingStarted : Event() {
+        data class RefundProcessingStarted(
+            val refundFlow: RefundFlow
+        ) : Event() {
             override val name: String = "refund_processing_started"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value
+                    )
+                )
+            }
         }
 
-        data object RefundProcessingSuccess : Event() {
+        data class RefundProcessingSuccess(
+            val refundFlow: RefundFlow
+        ) : Event() {
             override val name: String = "refund_processing_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value
+                    )
+                )
+            }
         }
 
-        data object RefundProcessingFailed : Event() {
+        /**
+         * [apiErrorCode] is the store's REST error code when it returned one. It separates
+         * deterministic server rejections (`woocommerce_rest_*`) from transport failures, which the
+         * message cannot do — it is localized to the store and varies by wording.
+         */
+        data class RefundProcessingFailed(
+            val refundFlow: RefundFlow,
+            val apiErrorCode: String? = null,
+        ) : Event() {
             override val name: String = "refund_processing_failed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        put(RefundFlow.REFUND_FLOW, refundFlow.value)
+                        apiErrorCode?.let { put(AnalyticsTracker.KEY_API_ERROR_CODE, it) }
+                    }
+                )
+            }
+        }
+
+        /**
+         * Emitted when a preview probe finds the server-calculated refund route missing and the
+         * store falls back to local calculation. [wooVersion] tells us whether the version gate is
+         * behaving or the store is genuinely too old. Fired where the availability cache is marked
+         * unavailable, so it counts stores rather than refunds.
+         */
+        data class RefundServerFlowUnavailable(val wooVersion: String) : Event() {
+            override val name: String = "refund_server_flow_unavailable"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "woocommerce_version" to wooVersion
+                    )
+                )
+            }
         }
 
         data class RefundFlowAborted(val refundStep: String) : Event() {

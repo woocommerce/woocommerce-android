@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -41,6 +43,8 @@ class WooPosRefundPreviewTest {
         on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
     }
 
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
+
     private val site = SiteModel().apply {
         id = LOCAL_SITE_ID
         siteId = SITE_ID
@@ -49,7 +53,13 @@ class WooPosRefundPreviewTest {
 
     private val sut by lazy {
         whenever(selectedSite.get()).thenReturn(site)
-        WooPosRefundPreview(refundStore, selectedSite, availabilityCache, resolveRefundFlowFor(selectedSite))
+        WooPosRefundPreview(
+            refundStore,
+            selectedSite,
+            availabilityCache,
+            resolveRefundFlowFor(selectedSite),
+            analyticsTracker,
+        )
     }
 
     private fun resolveRefundFlowFor(selectedSite: SelectedSite) = WooPosResolveRefundFlow(
@@ -99,6 +109,34 @@ class WooPosRefundPreviewTest {
         // THEN
         assertThat(result).isEqualTo(WooPosRefundPreview.Result.FallbackToLocal)
         assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isFalse()
+    }
+
+    @Test
+    fun `given preview returns 404, when invoked, then tracks the fallback with the store woo version`() = runTest {
+        // GIVEN
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, GenericErrorType.NOT_FOUND)))
+
+        // WHEN
+        sut(ORDER_ID, lineItems)
+
+        // THEN the fallback is measurable, and the version says whether the gate misjudged the store
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable(wooVersion = MIN_VERSION)
+        )
+    }
+
+    @Test
+    fun `given preview succeeds, when invoked, then does not track a fallback`() = runTest {
+        // GIVEN
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(WooResult(preview()))
+
+        // WHEN
+        sut(ORDER_ID, lineItems)
+
+        // THEN
+        verify(analyticsTracker, never()).track(any<WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable>())
     }
 
     @Test
@@ -201,6 +239,7 @@ class WooPosRefundPreviewTest {
                 selectedSiteB,
                 availabilityCache,
                 resolveRefundFlowFor(selectedSiteB),
+                analyticsTracker,
             )
 
             // WHEN siteB requests a preview

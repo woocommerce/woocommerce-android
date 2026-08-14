@@ -299,6 +299,7 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                 WooPosRefundSubmissionState.Failure(
                     message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
                     retryBackendNotificationOnly = retryBackendNotificationOnly,
+                    apiErrorCode = error.apiErrorCode,
                 )
             )
         } else {

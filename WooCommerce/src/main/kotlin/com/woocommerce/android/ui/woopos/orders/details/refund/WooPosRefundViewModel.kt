@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -508,7 +509,15 @@ class WooPosRefundViewModel @AssistedInject constructor(
             contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.RefundProcessingStarted(
+                    refundFlow = if (isServerComputedRefundConfirmed()) {
+                        RefundFlow.SERVER_COMPUTED
+                    } else {
+                        RefundFlow.LOCAL
+                    }
+                )
+            )
 
             val order = currentOrder ?: run {
                 WooLog.e(
@@ -552,13 +561,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
     ): WooPosRefundSubmissionRequest? {
-        val flow = resolveRefundFlow()
-        val serverRefundsConfirmedAvailable = flow is WooPosRefundFlow.ServerComputed &&
-            serverRefundAvailabilityCache.isAvailable(
-                localSiteId = selectedSite.get().localId().value,
-                wooVersion = flow.wooVersion,
-            ) == true
-        if (serverRefundsConfirmedAvailable) {
+        if (isServerComputedRefundConfirmed()) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,
@@ -581,6 +584,23 @@ class WooPosRefundViewModel @AssistedInject constructor(
             refundItems = groupRefundItems(selectedItems, order, numberOfDecimalPoints),
         )
     }
+
+    /**
+     * Whether this submission will go through the server-computed create. Extracted so the flow
+     * reported in analytics is decided by the same predicate [buildSubmissionRequest] branches on,
+     * and cannot drift from the path actually taken.
+     */
+    private fun isServerComputedRefundConfirmed(): Boolean {
+        val flow = resolveRefundFlow()
+        return flow is WooPosRefundFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(
+                localSiteId = selectedSite.get().localId().value,
+                wooVersion = flow.wooVersion,
+            ) == true
+    }
+
+    private fun refundFlowFor(request: WooPosRefundSubmissionRequest): RefundFlow =
+        if (request.serverLineItems != null) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
 
     private fun submitRefund(
         contentState: WooPosRefundState.Content,
@@ -638,7 +658,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             is WooPosRefundSubmissionState.Failure -> {
-                handleRefundSubmissionFailure(submissionState)
+                handleRefundSubmissionFailure(submissionState, refundFlowFor(request))
             }
         }
     }
@@ -659,7 +679,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         request: WooPosRefundSubmissionRequest,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(refundFlowFor(request)))
         val receiptSentMessage = request.order.billingAddress.email
             .takeIf { it.isNotBlank() }
             ?.let { email ->
@@ -676,8 +696,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,
+        refundFlow: RefundFlow,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                refundFlow = refundFlow,
+                apiErrorCode = submissionState.apiErrorCode,
+            )
+        )
         _state.value = WooPosRefundState.Error(
             message = submissionState.message,
             errorType = WooPosRefundState.Error.ErrorType.Processing,

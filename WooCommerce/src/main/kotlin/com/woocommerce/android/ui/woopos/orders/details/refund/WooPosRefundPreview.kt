@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
@@ -21,6 +23,7 @@ class WooPosRefundPreview @Inject constructor(
     private val selectedSite: SelectedSite,
     private val availabilityCache: WooPosServerRefundAvailabilityCache,
     private val resolveRefundFlow: WooPosResolveRefundFlow,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) {
     suspend operator fun invoke(
         orderId: Long,
@@ -45,6 +48,11 @@ class WooPosRefundPreview @Inject constructor(
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
                     WooLog.i(WooLog.T.POS, "WooPosRefund: preview route not available; falling back to local")
                     availabilityCache.markUnavailable(localSiteId, flow.wooVersion)
+                    // Reported once per store and version: the cache short-circuits the resolver on
+                    // later refunds, so this counts stores that fell back rather than refunds.
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable(wooVersion = flow.wooVersion)
+                    )
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(
