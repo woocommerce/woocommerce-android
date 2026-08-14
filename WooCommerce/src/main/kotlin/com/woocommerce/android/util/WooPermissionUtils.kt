@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACCESS_LOCAL_NETWORK
 import android.Manifest.permission.BLUETOOTH_CONNECT
 import android.Manifest.permission.BLUETOOTH_SCAN
 import android.Manifest.permission.POST_NOTIFICATIONS
@@ -46,6 +47,15 @@ object WooPermissionUtils {
         if (hasFineLocationPermission(activity)) return false
 
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, ACCESS_FINE_LOCATION)
+    }
+
+    fun hasLocalNetworkPermission(context: Context) =
+        !SystemVersionUtils.isAtLeastCinnamonBun() || context.checkIfPermissionGiven(ACCESS_LOCAL_NETWORK)
+
+    fun shouldShowLocalNetworkPermissionRationale(activity: Activity): Boolean {
+        if (hasLocalNetworkPermission(activity)) return false
+
+        return ActivityCompat.shouldShowRequestPermissionRationale(activity, ACCESS_LOCAL_NETWORK)
     }
 
     fun hasBluetoothScanPermission(context: Context) =
