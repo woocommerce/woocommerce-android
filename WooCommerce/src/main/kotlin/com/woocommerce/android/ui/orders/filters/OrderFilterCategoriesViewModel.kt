@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -21,9 +22,11 @@ import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.domain.IsSalesChannelFilterSupported
+import com.woocommerce.android.ui.orders.filters.domain.SaveOrderFilterToHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OpenFilterHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
@@ -34,6 +37,8 @@ import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSel
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -58,11 +63,16 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val customerStore: WCCustomerStore,
     private val selectedSite: SelectedSite,
-    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported
+    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported,
+    private val saveOrderFilterToHistory: SaveOrderFilterToHistory,
+    private val orderFilterHistoryMapper: OrderFilterHistoryMapper,
+    featureFlagRepository: FeatureFlagRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
     }
+
+    val isFilterHistoryEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.FILTER_HISTORY)
 
     private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
         savedState[OLD_FILTER_SELECTION_KEY] ?: emptyList()
@@ -100,7 +110,27 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     fun onShowOrdersClicked() {
         saveFiltersSelection(_categories.list)
         trackFilterSelection()
+        saveOrderFilterToHistory()
         triggerEvent(OnShowOrders)
+    }
+
+    fun onFilterHistoryButtonClicked() {
+        analyticsTraWrapper.track(
+            AnalyticsEvent.FILTER_HISTORY_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_FILTER_HISTORY_SOURCE_ORDERS)
+        )
+        triggerEvent(OpenFilterHistory)
+    }
+
+    fun onPastFilterSelected(savedFilter: SavedFilter) {
+        val historyData = orderFilterHistoryMapper.fromPayload(savedFilter.payload) ?: return
+        launch {
+            OrderListFilterCategory.entries.forEach { category ->
+                orderFilterRepository.setSelectedFilters(category, historyData.selections[category.name] ?: emptyList())
+            }
+            orderFilterRepository.setCustomDateRange(historyData.customDateRangeStart, historyData.customDateRangeEnd)
+            _categories = OrderFilterCategories(buildFilterListUiModel())
+        }
     }
 
     fun onClearFilters() {
