@@ -64,11 +64,7 @@ class SiteWPAPIRestClient @Inject constructor(
 
                     applicationPasswordsAuthorizeUrl = response?.authentication?.applicationPasswords
                         ?.endpoints?.authorization
-                    if (!applicationPasswordsAuthorizeUrl.isNullOrEmpty() &&
-                        applicationPasswordsAuthorizeUrl.contains(APPLICATION_PASSWORDS_URL_SUFFIX)) {
-                        // Infer the admin URL from the application passwords authorization URL
-                        adminUrl = applicationPasswordsAuthorizeUrl.substringBefore(APPLICATION_PASSWORDS_URL_SUFFIX)
-                    }
+                    adminUrl = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl)
 
                     wpApiRestUrl = discoveredWpApiUrl
                     this.url = cleanedUrl.replaceBefore("://", urlScheme)
@@ -94,8 +90,29 @@ class SiteWPAPIRestClient @Inject constructor(
                 username = site.username,
                 password = site.password,
             )
-        )
+        ).also { refreshedSite ->
+            if (!refreshedSite.isError) {
+                site.loginUrl?.takeUnless(String::isBlank)?.let { refreshedSite.loginUrl = it }
+                site.adminUrl
+                    ?.takeUnless(String::isBlank)
+                    ?.takeUnless { it.matchesAdminBaseInferredFrom(site.applicationPasswordsAuthorizeUrl) }
+                    ?.let { refreshedSite.adminUrl = it }
+            }
+        }
     }
+
+    private fun inferAdminBaseUrl(applicationPasswordsAuthorizeUrl: String?): String? =
+        applicationPasswordsAuthorizeUrl
+            ?.takeUnless(String::isBlank)
+            ?.takeIf { it.contains(APPLICATION_PASSWORDS_URL_SUFFIX) }
+            ?.substringBefore(APPLICATION_PASSWORDS_URL_SUFFIX)
+
+    private fun String.matchesAdminBaseInferredFrom(applicationPasswordsAuthorizeUrl: String?): Boolean {
+        val inferredAdminBase = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl) ?: return false
+        return normalizeAdminBase(this) == normalizeAdminBase(inferredAdminBase)
+    }
+
+    private fun normalizeAdminBase(url: String) = url.trim().trimEnd('/')
 
     private fun discoverApiEndpoint(
         url: String
