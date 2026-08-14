@@ -120,7 +120,7 @@ class WooPosRefundPreviewTest {
         // WHEN
         sut(ORDER_ID, lineItems)
 
-        // THEN the fallback is measurable, and the version says whether the gate misjudged the store
+        // THEN
         verify(analyticsTracker).track(
             WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable(wooVersion = MIN_VERSION)
         )

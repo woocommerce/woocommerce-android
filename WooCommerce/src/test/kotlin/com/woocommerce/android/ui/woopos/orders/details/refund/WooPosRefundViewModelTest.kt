@@ -2145,7 +2145,7 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given server-computed refund succeeds, when API call completes, then events report the server flow`() =
         runTest {
-            // GIVEN — server refunds are confirmed available, so the computed create is used.
+            // GIVEN
             serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
@@ -2166,7 +2166,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            // THEN both the start and the outcome are attributable to the server flow.
+            // THEN
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.SERVER_COMPUTED)
             )
@@ -2209,7 +2209,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            // THEN the deterministic rejection is separable from a transport failure.
+            // THEN
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.RefundProcessingFailed(
                     refundFlow = RefundFlow.LOCAL,
