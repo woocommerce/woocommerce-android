@@ -16,11 +16,14 @@ import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -50,11 +53,16 @@ class ProductFilterListViewModel @Inject constructor(
     private val pluginRepository: PluginRepository,
     private val selectedSite: SelectedSite,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val saveProductFilterToHistory: SaveProductFilterToHistory,
+    private val productFilterHistoryMapper: ProductFilterHistoryMapper,
+    featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
     }
+
+    val isFilterHistoryEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.FILTER_HISTORY)
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
 
@@ -314,7 +322,29 @@ class ProductFilterListViewModel @Inject constructor(
             productCategory = getFilterByProductCategory(),
             productCategoryName = selectedCategoryName
         )
+        saveProductFilterToHistory(result)
         triggerEvent(MultiLiveEvent.Event.ExitWithResult(result))
+    }
+
+    fun onFilterHistoryButtonClicked() {
+        analyticsTracker.track(
+            AnalyticsEvent.FILTER_HISTORY_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_FILTER_HISTORY_SOURCE_PRODUCTS)
+        )
+        triggerEvent(OpenFilterHistory)
+    }
+
+    fun onPastFilterSelected(savedFilter: SavedFilter) {
+        val result = productFilterHistoryMapper.fromPayload(savedFilter.payload) ?: return
+        productFilterOptions.clear()
+        result.stockStatus?.let { productFilterOptions[STOCK_STATUS] = it }
+        result.productStatus?.let { productFilterOptions[STATUS] = it }
+        result.productType?.let { productFilterOptions[TYPE] = it }
+        result.productCategory?.let { productFilterOptions[CATEGORY] = it }
+        selectedCategoryName = result.productCategoryName
+        savedState[KEY_PRODUCT_FILTER_OPTIONS] = productFilterOptions
+        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+        loadFilters()
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
@@ -449,6 +479,8 @@ class ProductFilterListViewModel @Inject constructor(
             it.filterItemKey == CATEGORY
         }?.filterOptionListItems = categoryOptions
     }
+
+    object OpenFilterHistory : MultiLiveEvent.Event()
 
     @Parcelize
     data class ProductFilterListViewState(

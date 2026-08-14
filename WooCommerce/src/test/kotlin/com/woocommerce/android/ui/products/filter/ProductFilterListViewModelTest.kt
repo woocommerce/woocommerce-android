@@ -8,16 +8,20 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -37,6 +41,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     private lateinit var productFilterListViewModel: ProductFilterListViewModel
     private lateinit var pluginRepository: PluginRepository
     private lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private lateinit var saveProductFilterToHistory: SaveProductFilterToHistory
+    private lateinit var productFilterHistoryMapper: ProductFilterHistoryMapper
+    private lateinit var featureFlagRepository: FeatureFlagRepository
     private val siteModel: SiteModel = SiteModel().apply { id = 123 }
     private val selectedSiteMock: SelectedSite = mock {
         on { getIfExists() }.doReturn(siteModel)
@@ -51,6 +58,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         networkStatus = mock()
         pluginRepository = mock()
         analyticsTrackerWrapper = mock()
+        saveProductFilterToHistory = mock()
+        productFilterHistoryMapper = mock()
+        featureFlagRepository = mock()
         productFilterListViewModel = ProductFilterListViewModel(
             savedState = ProductFilterListFragmentArgs(
                 selectedStockStatus = "instock",
@@ -64,10 +74,75 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             networkStatus = networkStatus,
             pluginRepository = pluginRepository,
             selectedSite = selectedSiteMock,
-            analyticsTracker = analyticsTrackerWrapper
+            analyticsTracker = analyticsTrackerWrapper,
+            saveProductFilterToHistory = saveProductFilterToHistory,
+            productFilterHistoryMapper = productFilterHistoryMapper,
+            featureFlagRepository = featureFlagRepository
         )
 
         whenever(resourceProvider.getString(any())).thenReturn("")
+    }
+
+    @Test
+    fun `when show products is clicked, then the current filter is saved and returned`() {
+        productFilterListViewModel.onShowProductsClicked()
+
+        val expected = ProductFilterResult(
+            stockStatus = "instock",
+            productType = "any",
+            productStatus = "published",
+            productCategory = "1",
+            productCategoryName = "any"
+        )
+        val captor = argumentCaptor<ProductFilterResult>()
+        verify(saveProductFilterToHistory).invoke(captor.capture())
+        Assertions.assertThat(captor.firstValue).isEqualTo(expected)
+
+        val event = productFilterListViewModel.event.value
+        Assertions.assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
+        Assertions.assertThat((event as MultiLiveEvent.Event.ExitWithResult<*>).data).isEqualTo(expected)
+    }
+
+    @Test
+    fun `when filter history button is clicked, then entry point is tracked and history is opened`() {
+        productFilterListViewModel.onFilterHistoryButtonClicked()
+
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.FILTER_HISTORY_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_FILTER_HISTORY_SOURCE_PRODUCTS)
+        )
+        Assertions.assertThat(productFilterListViewModel.event.value)
+            .isEqualTo(ProductFilterListViewModel.OpenFilterHistory)
+    }
+
+    @Test
+    fun `when a past filter is selected, then all filter options are repopulated`() {
+        val applied = ProductFilterResult(
+            stockStatus = "outofstock",
+            productType = "simple",
+            productStatus = "draft",
+            productCategory = "7",
+            productCategoryName = "Boots"
+        )
+        whenever(productFilterHistoryMapper.fromPayload("payload")).thenReturn(applied)
+
+        productFilterListViewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = "r", payload = "payload"))
+        productFilterListViewModel.onShowProductsClicked()
+
+        // onShowProductsClicked rebuilds the result from the repopulated map + selectedCategoryName,
+        // so an equal result proves every field (incl. the category name) was applied.
+        val captor = argumentCaptor<ProductFilterResult>()
+        verify(saveProductFilterToHistory).invoke(captor.capture())
+        Assertions.assertThat(captor.firstValue).isEqualTo(applied)
+    }
+
+    @Test
+    fun `given an undecodable past filter, when selected, then the current selection is unchanged`() {
+        whenever(productFilterHistoryMapper.fromPayload("bad")).thenReturn(null)
+
+        productFilterListViewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = "r", payload = "bad"))
+
+        Assertions.assertThat(productFilterListViewModel.getFilterString()).isEqualTo("instock, any, published, 1")
     }
 
     @Test
