@@ -82,6 +82,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.currentWooPosBreakpoint
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.WooPermissionUtils
 import kotlinx.coroutines.delay
 import java.net.InetAddress
 
@@ -155,10 +156,7 @@ private fun WooPosCardReaderDialogInternal(
     val localNetworkPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            context as Activity,
-            Manifest.permission.ACCESS_LOCAL_NETWORK
-        )
+        val shouldShowRationale = WooPermissionUtils.shouldShowLocalNetworkPermissionRationale(context as Activity)
         viewModel.onLocalNetworkPermissionResult(granted, shouldShowRationale)
     }
 
@@ -228,7 +226,7 @@ private fun WooPosCardReaderDialogInternal(
                         locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestLocalNetworkPermission -> {
-                        localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                        WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                     }
                     WooPosCardReaderConnectionViewModel.Event.RequestEnableLocation -> {
                         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)

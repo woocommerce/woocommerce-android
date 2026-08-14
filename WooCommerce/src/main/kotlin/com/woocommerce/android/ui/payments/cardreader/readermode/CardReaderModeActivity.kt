@@ -60,7 +60,7 @@ class CardReaderModeActivity : AppCompatActivity() {
                         CardReaderModeEvent.RequestLocationPermission ->
                             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         CardReaderModeEvent.RequestLocalNetworkPermission ->
-                            localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                            WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                         CardReaderModeEvent.OpenAppSettings ->
                             WooPermissionUtils.showAppSettings(this@CardReaderModeActivity, openInNewStack = false)
                     }
