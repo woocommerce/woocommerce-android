@@ -67,10 +67,11 @@ class CardReaderModeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        if (savedInstanceState == null) {
-            checkPermissionsAndStartSession()
-        }
+    override fun onResume() {
+        super.onResume()
+        checkPermissionsAndStartSession()
     }
 
     private fun checkPermissionsAndStartSession() {
