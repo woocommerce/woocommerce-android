@@ -48,7 +48,7 @@ data class PaymentsHubViewState(
             val isLoading: Boolean get() = state == ToggleState.LOADING
 
             enum class ToggleState {
-                LOADING, CHECKED, UNCHECKED;
+                LOADING, CHECKED, UNCHECKED, UNAVAILABLE;
 
                 companion object {
                     fun fromChecked(isChecked: Boolean) = if (isChecked) CHECKED else UNCHECKED

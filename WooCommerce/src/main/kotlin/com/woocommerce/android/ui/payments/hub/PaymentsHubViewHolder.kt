@@ -67,11 +67,20 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
             binding.paymentsHubMenuIcon.setImageResource(uiState.icon)
             UiHelpers.setTextOrHide(binding.paymentsHubListItemDescriptionTv, uiState.description)
             binding.paymentsHubSwitch.setOnCheckedChangeListener(null)
+            binding.paymentsHubMenuIcon.alpha = 1.0f
+            binding.paymentsHubListItemLabelTv.alpha = 1.0f
             when (uiState.state) {
                 ToggleState.LOADING -> {
                     binding.paymentsHubSwitch.isInvisible = true
                     binding.paymentsHubSwitch.isClickable = false
                     binding.root.setOnClickListener(null)
+                }
+                ToggleState.UNAVAILABLE -> {
+                    binding.paymentsHubSwitch.isInvisible = true
+                    binding.paymentsHubSwitch.isClickable = false
+                    binding.root.setOnClickListener(null)
+                    binding.paymentsHubMenuIcon.alpha = DISABLED_BUTTON_ALPHA
+                    binding.paymentsHubListItemLabelTv.alpha = DISABLED_BUTTON_ALPHA
                 }
                 ToggleState.CHECKED, ToggleState.UNCHECKED -> {
                     binding.paymentsHubSwitch.isInvisible = false

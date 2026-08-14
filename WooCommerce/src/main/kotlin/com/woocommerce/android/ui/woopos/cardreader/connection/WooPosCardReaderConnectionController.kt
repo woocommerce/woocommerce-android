@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.BluetoothRequirement
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.FoundReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
@@ -87,9 +88,11 @@ class WooPosCardReaderConnectionController(
     private var isRequiredUpdate = true
     private var isBluetoothPermissionPermanentlyDenied = false
     private var isLocationPermissionPermanentlyDenied = false
+    private var bluetoothRequirement: BluetoothRequirement = BluetoothRequirement.Satisfied
+    private var pendingBluetoothFailure: String? = null
 
     fun showRemoteTapToPayExplainer() {
-        if (_state.value !is WooPosCardReaderConnectionState.Scanning) return
+        if (_state.value !is WooPosCardReaderConnectionState.Scanning && !isShowingBluetoothRequirement()) return
         discoveryJob?.cancel()
         _state.value = WooPosCardReaderConnectionState.RemoteTapToPayExplainer(
             onDismissClicked = ::hideRemoteTapToPayExplainer,
@@ -101,12 +104,12 @@ class WooPosCardReaderConnectionController(
 
     fun hideRemoteTapToPayExplainer() {
         if (_state.value !is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
-        _state.value = WooPosCardReaderConnectionState.Scanning
-        startDiscovery()
+        checkRequirementsAndStartDiscovery()
     }
 
     private fun enterScanningState() {
         if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        if (isShowingBluetoothRequirement()) return
         _state.value = WooPosCardReaderConnectionState.Scanning
     }
 
@@ -194,68 +197,131 @@ class WooPosCardReaderConnectionController(
     }
 
     fun recheckPermissions() {
-        val currentState = _state.value
-        if (currentState is WooPosCardReaderConnectionState.MissingBluetoothPermission ||
-            currentState is WooPosCardReaderConnectionState.MissingLocationPermission
-        ) {
+        if (isShowingBluetoothRequirement()) {
             checkRequirementsAndStartDiscovery()
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun checkRequirementsAndStartDiscovery() {
-        when {
-            !WooPermissionUtils.hasBluetoothScanPermission(context) ||
-                !WooPermissionUtils.hasBluetoothConnectPermission(context) -> {
-                logger.d("Bluetooth permission not granted")
-                _state.value = WooPosCardReaderConnectionState.MissingBluetoothPermission(
-                    onRequestPermissionClicked = {
-                        if (isBluetoothPermissionPermanentlyDenied) {
-                            emitEvent(ControllerEvent.OpenAppSettings)
-                        } else {
-                            emitEvent(ControllerEvent.RequestBluetoothPermission)
-                        }
-                    },
-                    onCancelClicked = { cancel() }
-                )
-            }
-            BluetoothAdapter.getDefaultAdapter()?.isEnabled != true -> {
-                logger.d("Bluetooth is disabled")
-                _state.value = WooPosCardReaderConnectionState.BluetoothDisabled(
-                    onEnableBluetoothClicked = { emitEvent(ControllerEvent.RequestEnableBluetooth) },
-                    onCancelClicked = { cancel() }
-                )
-            }
-            !WooPermissionUtils.hasFineLocationPermission(context) -> {
-                logger.d("Location permission not granted")
-                if (isLocationPermissionPermanentlyDenied) {
-                    tracker.trackLocationPermissionRequiredShown()
+        val requirement = evaluateBluetoothRequirement()
+        bluetoothRequirement = requirement
+
+        _state.value = when (requirement) {
+            BluetoothRequirement.Satisfied -> WooPosCardReaderConnectionState.Scanning
+            is BluetoothRequirement.Unmet ->
+                if (hasConnectedPhoneReaderBefore()) {
+                    WooPosCardReaderConnectionState.Scanning
                 } else {
-                    tracker.trackLocationPermissionPreAlertShown()
+                    requirement.toBlockingState()
                 }
-                _state.value = WooPosCardReaderConnectionState.MissingLocationPermission(
-                    onRequestPermissionClicked = {
-                        if (isLocationPermissionPermanentlyDenied) {
-                            emitEvent(ControllerEvent.OpenAppSettings)
-                        } else {
-                            emitEvent(ControllerEvent.RequestLocationPermission)
-                        }
-                    },
-                    onCancelClicked = { cancel() }
-                )
+        }
+
+        startDiscovery(includeBluetooth = requirement is BluetoothRequirement.Satisfied)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun evaluateBluetoothRequirement(): BluetoothRequirement = when {
+        !WooPermissionUtils.hasBluetoothScanPermission(context) ||
+            !WooPermissionUtils.hasBluetoothConnectPermission(context) ->
+            BluetoothRequirement.Unmet.MissingBluetoothPermission
+
+        BluetoothAdapter.getDefaultAdapter()?.isEnabled != true ->
+            BluetoothRequirement.Unmet.BluetoothOff
+
+        !WooPermissionUtils.hasFineLocationPermission(context) ->
+            BluetoothRequirement.Unmet.MissingLocationPermission
+
+        !locationUtils.isLocationEnabled() ->
+            BluetoothRequirement.Unmet.LocationOff
+
+        else -> BluetoothRequirement.Satisfied
+    }
+
+    private fun BluetoothRequirement.Unmet.toBlockingState(): WooPosCardReaderConnectionState = when (this) {
+        BluetoothRequirement.Unmet.MissingBluetoothPermission -> {
+            logger.d("Bluetooth permission not granted")
+            WooPosCardReaderConnectionState.MissingBluetoothPermission(
+                onRequestPermissionClicked = ::requestBluetoothPermission,
+                onCancelClicked = { cancel() },
+            )
+        }
+        BluetoothRequirement.Unmet.BluetoothOff -> {
+            logger.d("Bluetooth is disabled")
+            WooPosCardReaderConnectionState.BluetoothDisabled(
+                onEnableBluetoothClicked = { emitEvent(ControllerEvent.RequestEnableBluetooth) },
+                onCancelClicked = { cancel() },
+            )
+        }
+        BluetoothRequirement.Unmet.MissingLocationPermission -> {
+            logger.d("Location permission not granted")
+            if (isLocationPermissionPermanentlyDenied) {
+                tracker.trackLocationPermissionRequiredShown()
+            } else {
+                tracker.trackLocationPermissionPreAlertShown()
             }
-            !locationUtils.isLocationEnabled() -> {
-                logger.d("Location is disabled")
-                _state.value = WooPosCardReaderConnectionState.LocationDisabled(
-                    onEnableLocationClicked = { emitEvent(ControllerEvent.RequestEnableLocation) },
-                    onCancelClicked = { cancel() }
-                )
-            }
-            else -> {
-                startDiscovery()
-            }
+            WooPosCardReaderConnectionState.MissingLocationPermission(
+                onRequestPermissionClicked = ::requestLocationPermission,
+                onCancelClicked = { cancel() },
+            )
+        }
+        BluetoothRequirement.Unmet.LocationOff -> {
+            logger.d("Location is disabled")
+            WooPosCardReaderConnectionState.LocationDisabled(
+                onEnableLocationClicked = { emitEvent(ControllerEvent.RequestEnableLocation) },
+                onCancelClicked = { cancel() },
+            )
         }
     }
+
+    private fun hasConnectedPhoneReaderBefore() = appPrefsWrapper.getLastConnectedPhoneDeviceId() != null
+
+    private fun requestBluetoothPermission() {
+        if (isBluetoothPermissionPermanentlyDenied) {
+            emitEvent(ControllerEvent.OpenAppSettings)
+        } else {
+            emitEvent(ControllerEvent.RequestBluetoothPermission)
+        }
+    }
+
+    private fun requestLocationPermission() {
+        if (isLocationPermissionPermanentlyDenied) {
+            emitEvent(ControllerEvent.OpenAppSettings)
+        } else {
+            emitEvent(ControllerEvent.RequestLocationPermission)
+        }
+    }
+
+    private fun bluetoothUnavailable(): WooPosCardReaderConnectionState.BluetoothUnavailable? =
+        when (val requirement = bluetoothRequirement) {
+            BluetoothRequirement.Satisfied -> null
+            is BluetoothRequirement.Unmet -> WooPosCardReaderConnectionState.BluetoothUnavailable(
+                requirement = requirement,
+                onFixClicked = {
+                    discoveryJob?.cancel()
+                    _state.value = requirement.toBlockingState()
+                },
+            )
+        }
+
+    private fun onBluetoothDiscoveryFailed(message: String) {
+        pendingBluetoothFailure = message
+        if (!isShowingSomethingActionable()) {
+            _state.value = scanningFailedState(message)
+        }
+    }
+
+    private fun isShowingSomethingActionable(): Boolean =
+        isShowingReaders() || isShowingBluetoothRequirement()
+
+    private fun isShowingReaders(): Boolean =
+        _state.value is WooPosCardReaderConnectionState.ReaderFound ||
+            _state.value is WooPosCardReaderConnectionState.MultipleReadersFound
+
+    private fun isShowingBluetoothRequirement(): Boolean =
+        _state.value is WooPosCardReaderConnectionState.MissingBluetoothPermission ||
+            _state.value is WooPosCardReaderConnectionState.BluetoothDisabled ||
+            _state.value is WooPosCardReaderConnectionState.MissingLocationPermission ||
+            _state.value is WooPosCardReaderConnectionState.LocationDisabled
 
     private fun emitEvent(event: ControllerEvent) {
         scope.launch {
@@ -317,9 +383,10 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun startDiscovery() {
+    private fun startDiscovery(includeBluetooth: Boolean) {
         discoveryJob?.cancel()
         latestDiscoveredPhones = emptyList()
+        pendingBluetoothFailure = null
         discoveryJob = scope.launch {
             when (cardReaderManager.readerStatus.value) {
                 is CardReaderStatus.Connected -> Unit
@@ -336,7 +403,8 @@ class WooPosCardReaderConnectionController(
                     isSimulated = developerOptionsRepository.isSimulatedCardReaderEnabled(),
                     cardReaderTypesToDiscover = ExternalReaders(
                         listOf(Chipper2X, StripeM2, WisePade3)
-                    )
+                    ),
+                    includeBluetooth = includeBluetooth,
                 )
                 .flowOn(dispatchers.io)
                 .collect { event ->
@@ -367,11 +435,7 @@ class WooPosCardReaderConnectionController(
             is WooPosUnifiedDiscoveryEvent.Failed -> {
                 logger.e("Discovery failed - ${event.msg}")
                 tracker.trackReaderDiscoveryFailed(event.msg)
-                _state.value = WooPosCardReaderConnectionState.ScanningFailed(
-                    errorMessage = event.msg,
-                    onRetryClicked = { checkRequirementsAndStartDiscovery() },
-                    onCancelClicked = { cancel() }
-                )
+                onBluetoothDiscoveryFailed(event.msg)
             }
             is WooPosUnifiedDiscoveryEvent.Succeeded -> {
                 logger.d("Discovery succeeded")
@@ -411,17 +475,19 @@ class WooPosCardReaderConnectionController(
         val foundReaders = bluetoothReaders.map { it.toFoundReader() } + phones.mapNotNull { it.toFoundReader() }
 
         when (foundReaders.size) {
-            0 -> enterScanningState()
+            0 -> enterNoReadersState()
             1 -> {
                 _state.value = WooPosCardReaderConnectionState.ReaderFound(
                     reader = foundReaders.first(),
                     onKeepSearchingClicked = { continueSearching() },
+                    bluetoothUnavailable = bluetoothUnavailable(),
                 )
             }
             else -> {
                 _state.value = WooPosCardReaderConnectionState.MultipleReadersFound(
                     readers = foundReaders,
                     onCancelClicked = { cancel() },
+                    bluetoothUnavailable = bluetoothUnavailable(),
                 )
             }
         }
@@ -464,6 +530,26 @@ class WooPosCardReaderConnectionController(
     private fun continueSearching() {
         enterScanningState()
     }
+
+    private fun enterNoReadersState() {
+        if (_state.value is WooPosCardReaderConnectionState.RemoteTapToPayExplainer) return
+        if (isShowingBluetoothRequirement()) return
+
+        val requirement = bluetoothRequirement
+        val failure = pendingBluetoothFailure
+        _state.value = when {
+            requirement is BluetoothRequirement.Unmet && !hasConnectedPhoneReaderBefore() ->
+                requirement.toBlockingState()
+            failure != null -> scanningFailedState(failure)
+            else -> WooPosCardReaderConnectionState.Scanning
+        }
+    }
+
+    private fun scanningFailedState(errorMessage: String) = WooPosCardReaderConnectionState.ScanningFailed(
+        errorMessage = errorMessage,
+        onRetryClicked = { checkRequirementsAndStartDiscovery() },
+        onCancelClicked = { cancel() },
+    )
 
     private fun onConnectToReaderClicked(reader: CardReader) {
         markBluetoothReaderSelected(reader.type)
@@ -640,10 +726,7 @@ class WooPosCardReaderConnectionController(
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = errorMessage ?: "Connection failed",
                     onRetryClicked = {
-                        selectedReader?.let { connectToReader(it) } ?: run {
-                            enterScanningState()
-                            startDiscovery()
-                        }
+                        selectedReader?.let { connectToReader(it) } ?: checkRequirementsAndStartDiscovery()
                     },
                     onCancelClicked = { cancel() }
                 )
