@@ -5,6 +5,7 @@
 25.5
 -----
 - [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
+- [*] Remote Tap to Pay keeps working on Android 17: the phone now asks for local network permission before it advertises itself, and the tablet asks before it connects to a phone reader
 - [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one [https://github.com/woocommerce/woocommerce-android/pull/16400]
 - [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
 - [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
