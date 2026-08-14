@@ -4238,6 +4238,12 @@
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_refund_preview_error">Couldn\'t calculate the refund total. Please try again.</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">The selected quantity is more than what\'s left to refund</string>
+    <string name="woopos_refund_error_item_already_refunded">This item has already been fully refunded</string>
+    <string name="woopos_refund_error_order_not_refundable">This order can\'t be refunded</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item</string>
+    <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>

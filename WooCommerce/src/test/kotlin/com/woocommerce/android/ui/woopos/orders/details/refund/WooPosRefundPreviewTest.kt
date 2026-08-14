@@ -102,7 +102,7 @@ class WooPosRefundPreviewTest {
     }
 
     @Test
-    fun `given non-404 error, when invoked, then returns Error`() = runTest {
+    fun `given non-404 error, when invoked, then returns Error without api error`() = runTest {
         // GIVEN
         whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.NETWORK_ERROR)))
@@ -111,7 +111,53 @@ class WooPosRefundPreviewTest {
         val result = sut(ORDER_ID, lineItems)
 
         // THEN
-        assertThat(result).isEqualTo(WooPosRefundPreview.Result.Error)
+        assertThat(result).isEqualTo(WooPosRefundPreview.Result.Error(apiError = null))
+    }
+
+    @Test
+    fun `given mapped refund error, when invoked, then returns Error carrying the api error`() = runTest {
+        // GIVEN
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = GenericErrorType.UNKNOWN,
+                        apiErrorCode = "woocommerce_rest_preview_exceeds_max_refundable"
+                    )
+                )
+            )
+
+        // WHEN
+        val result = sut(ORDER_ID, lineItems)
+
+        // THEN — the mapped error propagates and does not poison the availability verdict.
+        assertThat(result).isEqualTo(
+            WooPosRefundPreview.Result.Error(apiError = WooPosRefundApiError.AmountExceedsOrderRemaining)
+        )
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
+    }
+
+    @Test
+    fun `given mapped refund error, when invoked, then does not fall back to local`() = runTest {
+        // GIVEN — only API_NOT_FOUND (no preview route) may trigger the local fallback.
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = GenericErrorType.UNKNOWN,
+                        apiErrorCode = "woocommerce_rest_order_not_refundable"
+                    )
+                )
+            )
+
+        // WHEN
+        val result = sut(ORDER_ID, lineItems)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosRefundPreview.Result.Error::class.java)
+        assertThat(availabilityCache.isAvailable(LOCAL_SITE_ID, MIN_VERSION)).isNull()
     }
 
     @Test
