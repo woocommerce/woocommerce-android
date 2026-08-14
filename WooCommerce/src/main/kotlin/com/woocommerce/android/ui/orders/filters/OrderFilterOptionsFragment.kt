@@ -10,6 +10,8 @@ import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.showDateRangePicker
+import com.woocommerce.android.extensions.toDateAtStartOfDay
+import com.woocommerce.android.extensions.toEpochDay
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -20,7 +22,10 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOr
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangePicker
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.util.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Date
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderFilterOptionsFragment :
@@ -32,6 +37,9 @@ class OrderFilterOptionsFragment :
 
     private val viewModel: OrderFilterOptionsViewModel by viewModels()
     lateinit var orderFilterOptionAdapter: OrderFilterOptionAdapter
+
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
@@ -76,7 +84,7 @@ class OrderFilterOptionsFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowCustomDateRangePicker -> openDateRangePicker(event.startDateMillis, event.endDateMillis)
+                is ShowCustomDateRangePicker -> openDateRangePicker(event.startDay, event.endDay)
                 is OnFilterOptionsSelectionUpdated -> navigateBackWithResult(
                     KEY_UPDATED_FILTER_OPTIONS,
                     event.category
@@ -90,17 +98,12 @@ class OrderFilterOptionsFragment :
         }
     }
 
-    private fun openDateRangePicker(startDateMillis: Long, endDateMillis: Long) {
-        val selectedStartMillis = when {
-            startDateMillis > 0 -> startDateMillis
-            else -> System.currentTimeMillis()
-        }
-        val selectedEndMillis = when {
-            startDateMillis > 0 -> endDateMillis
-            else -> System.currentTimeMillis()
-        }
-        showDateRangePicker(selectedStartMillis, selectedEndMillis) { start, end ->
-            viewModel.onCustomDateRangeChanged(start, end)
+    private fun openDateRangePicker(startDay: Long, endDay: Long) {
+        val siteToday = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+        val selectedStart = if (startDay > 0) startDay.toDateAtStartOfDay() else siteToday
+        val selectedEnd = if (startDay > 0) endDay.toDateAtStartOfDay() else siteToday
+        showDateRangePicker(selectedStart, selectedEnd, siteToday) { startDate, endDate ->
+            viewModel.onCustomDateRangeChanged(startDate.toEpochDay(), endDate.toEpochDay())
         }
     }
 

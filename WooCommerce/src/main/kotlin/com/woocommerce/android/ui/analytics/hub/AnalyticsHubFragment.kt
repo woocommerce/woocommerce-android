@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment.Companion.WEBVIEW_RESULT
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.EntryPointSource.ANALYTICS_HUB
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -50,6 +51,9 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     private var _binding: FragmentAnalyticsBinding? = null
     private val binding
@@ -100,11 +104,11 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
                 authenticatedWebViewLauncher.showAuthenticatedWebView(event)
 
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
-                event.fromMillis,
-                event.toMillis
-            ) { start, end ->
-                viewModel.onCustomRangeSelected(Date(start), Date(end))
-            }
+                event.fromDate,
+                event.toDate,
+                dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+                viewModel::onCustomRangeSelected
+            )
 
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
 

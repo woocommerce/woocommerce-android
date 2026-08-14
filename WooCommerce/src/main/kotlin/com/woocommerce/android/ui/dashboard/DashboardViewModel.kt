@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -436,9 +437,9 @@ class DashboardViewModel @Inject constructor(
         data object OpenAiAssistant : DashboardEvent()
 
         data class OpenRangePicker(
-            val start: Long,
-            val end: Long,
-            val callback: (Long, Long) -> Unit
+            val startDate: Date,
+            val endDate: Date,
+            val callback: (Date, Date) -> Unit
         ) : DashboardEvent()
 
         data object ContactSupport : DashboardEvent()
