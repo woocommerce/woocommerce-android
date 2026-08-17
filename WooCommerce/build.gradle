@@ -101,7 +101,6 @@ sentry {
     ]
 }
 
-// These tasks only exist when the upload flags are on, so this fires exactly when an upload is due.
 tasks.withType(SentryCliExecTask).configureEach {
     doFirst {
         if (sentryAuthToken == null) {
