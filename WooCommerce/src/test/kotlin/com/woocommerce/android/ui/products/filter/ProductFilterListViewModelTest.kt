@@ -126,7 +126,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         )
         whenever(productFilterHistoryMapper.fromPayload("payload")).thenReturn(applied)
 
-        productFilterListViewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = "r", payload = "payload"))
+        productFilterListViewModel.onPastFilterSelected(SavedFilter(readableString = "r", payload = "payload"))
         productFilterListViewModel.onShowProductsClicked()
 
         // onShowProductsClicked rebuilds the result from the repopulated map + selectedCategoryName,
@@ -140,7 +140,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     fun `given an undecodable past filter, when selected, then the current selection is unchanged`() {
         whenever(productFilterHistoryMapper.fromPayload("bad")).thenReturn(null)
 
-        productFilterListViewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = "r", payload = "bad"))
+        productFilterListViewModel.onPastFilterSelected(SavedFilter(readableString = "r", payload = "bad"))
 
         Assertions.assertThat(productFilterListViewModel.getFilterString()).isEqualTo("instock, any, published, 1")
     }
