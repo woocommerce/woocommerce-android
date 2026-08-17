@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 92,
-    "identityHash": "2e085b6f866a35661e003ece7274b07b",
+    "identityHash": "5a184bbefdc60bba2154a2d2a4f7bda1",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -4484,14 +4484,8 @@
       },
       {
         "tableName": "FilterHistory",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `localSiteId` INTEGER NOT NULL, `filterType` TEXT NOT NULL, `payload` TEXT NOT NULL, `readableString` TEXT NOT NULL, `dateModified` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `filterType` TEXT NOT NULL, `payload` TEXT NOT NULL, `readableString` TEXT NOT NULL, `dateModified` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `filterType`, `payload`))",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "localSiteId",
             "columnName": "localSiteId",
@@ -4524,29 +4518,18 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
-            "id"
+            "localSiteId",
+            "filterType",
+            "payload"
           ]
-        },
-        "indices": [
-          {
-            "name": "index_FilterHistory_localSiteId_filterType_payload",
-            "unique": true,
-            "columnNames": [
-              "localSiteId",
-              "filterType",
-              "payload"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_FilterHistory_localSiteId_filterType_payload` ON `${TABLE_NAME}` (`localSiteId`, `filterType`, `payload`)"
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e085b6f866a35661e003ece7274b07b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5a184bbefdc60bba2154a2d2a4f7bda1')"
     ]
   }
 }

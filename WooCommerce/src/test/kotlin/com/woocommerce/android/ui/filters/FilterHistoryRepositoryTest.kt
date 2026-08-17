@@ -37,7 +37,6 @@ class FilterHistoryRepositoryTest : BaseUnitTest() {
                 flowOf(
                     listOf(
                         FilterHistoryEntity(
-                            id = 5,
                             localSiteId = LocalId(SITE_ID),
                             filterType = "ORDERS",
                             payload = "payload",
@@ -51,7 +50,7 @@ class FilterHistoryRepositoryTest : BaseUnitTest() {
             val result = sut.observeHistory(FilterHistoryType.ORDERS).first()
 
             assertThat(result).isEqualTo(
-                listOf(SavedFilter(id = 5, readableString = "Processing", payload = "payload"))
+                listOf(SavedFilter(readableString = "Processing", payload = "payload"))
             )
         }
 
@@ -71,10 +70,10 @@ class FilterHistoryRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when removing a filter, then it is deleted by id`() = testBlocking {
-        sut.remove(SavedFilter(id = 7, readableString = "Processing", payload = "payload"))
+    fun `when removing a filter, then it is deleted by its site, type and payload`() = testBlocking {
+        sut.remove(FilterHistoryType.ORDERS, SavedFilter(readableString = "Processing", payload = "payload"))
 
-        verify(filterHistoryDao).delete(7)
+        verify(filterHistoryDao).delete(LocalId(SITE_ID), "ORDERS", "payload")
     }
 
     @Test

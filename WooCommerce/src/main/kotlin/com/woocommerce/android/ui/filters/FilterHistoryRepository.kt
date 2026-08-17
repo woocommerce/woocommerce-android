@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.filters
 
+import android.os.Parcelable
 import com.woocommerce.android.tools.SelectedSite
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.persistence.dao.FilterHistoryDao
 import org.wordpress.android.fluxc.persistence.entity.FilterHistoryEntity
@@ -47,8 +49,8 @@ class FilterHistoryRepository @Inject constructor(
         )
     }
 
-    suspend fun remove(filter: SavedFilter) {
-        filterHistoryDao.delete(filter.id)
+    suspend fun remove(type: FilterHistoryType, filter: SavedFilter) {
+        filterHistoryDao.delete(currentSiteId(), type.name, filter.payload)
     }
 
     suspend fun clear(type: FilterHistoryType) {
@@ -58,7 +60,6 @@ class FilterHistoryRepository @Inject constructor(
     private fun currentSiteId() = LocalId(selectedSite.get().id)
 
     private fun FilterHistoryEntity.toSavedFilter() = SavedFilter(
-        id = id,
         readableString = readableString,
         payload = payload
     )
@@ -75,12 +76,12 @@ enum class FilterHistoryType {
 /**
  * A single persisted filter history entry.
  *
- * @param id database id, used to [FilterHistoryRepository.remove] a specific entry.
  * @param readableString human-readable summary of the filter, shown in the history list.
- * @param payload canonical serialization of the selection, decoded by the per-surface consumer.
+ * @param payload canonical serialization of the selection; also the identity used to
+ * [FilterHistoryRepository.remove] a specific entry (unique per site and filter type).
  */
+@Parcelize
 data class SavedFilter(
-    val id: Long,
     val readableString: String,
     val payload: String
-)
+) : Parcelable

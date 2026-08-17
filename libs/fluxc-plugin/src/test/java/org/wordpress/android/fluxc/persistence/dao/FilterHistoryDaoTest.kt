@@ -77,13 +77,23 @@ class FilterHistoryDaoTest {
     }
 
     @Test
-    fun `given a saved filter, when deleted by id, then it is removed`() = runTest {
+    fun `given a saved filter, when deleted by its key, then it is removed`() = runTest {
         sut.insertOrReplace(entity(payload = "a", readableString = "A", dateModified = 1))
-        val saved = sut.observeForSite(siteId, orders).first().first()
 
-        sut.delete(saved.id)
+        sut.delete(siteId, orders, payload = "a")
 
         assertThat(sut.observeForSite(siteId, orders).first()).isEmpty()
+    }
+
+    @Test
+    fun `given the same payload for two types, when one is deleted, then the other type is untouched`() = runTest {
+        sut.insertOrReplace(entity(payload = "a", readableString = "A", dateModified = 1))
+        sut.insertOrReplace(entity(filterType = products, payload = "a", readableString = "A", dateModified = 1))
+
+        sut.delete(siteId, orders, payload = "a")
+
+        assertThat(sut.observeForSite(siteId, orders).first()).isEmpty()
+        assertThat(sut.observeForSite(siteId, products).first()).hasSize(1)
     }
 
     @Test

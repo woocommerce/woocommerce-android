@@ -15,7 +15,7 @@ interface FilterHistoryDao {
      * (localSiteId, filterType, payload) so re-saving an identical selection bumps it to the top.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(entity: FilterHistoryEntity): Long
+    suspend fun insertOrReplace(entity: FilterHistoryEntity)
 
     @Query(
         "SELECT * FROM FilterHistory WHERE localSiteId = :localSiteId AND filterType = :filterType " +
@@ -23,8 +23,11 @@ interface FilterHistoryDao {
     )
     fun observeForSite(localSiteId: LocalId, filterType: String): Flow<List<FilterHistoryEntity>>
 
-    @Query("DELETE FROM FilterHistory WHERE id = :id")
-    suspend fun delete(id: Long): Int
+    @Query(
+        "DELETE FROM FilterHistory WHERE localSiteId = :localSiteId AND filterType = :filterType " +
+            "AND payload = :payload"
+    )
+    suspend fun delete(localSiteId: LocalId, filterType: String, payload: String): Int
 
     @Query("DELETE FROM FilterHistory WHERE localSiteId = :localSiteId AND filterType = :filterType")
     suspend fun clear(localSiteId: LocalId, filterType: String): Int
