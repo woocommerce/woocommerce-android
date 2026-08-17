@@ -232,13 +232,11 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
-        return runBlocking {
-            if (remoteProductIds.isNotEmpty()) {
-                productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
-            } else {
-                0
-            }
+    suspend fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+        } else {
+            0
         }
     }
 
