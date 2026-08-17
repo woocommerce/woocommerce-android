@@ -212,8 +212,8 @@ class OrderDetailRepository @Inject constructor(
             ).toOrderStatus()
     }
 
-    fun getOrderStatusOptions() =
-        runBlocking { orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() } }
+    suspend fun getOrderStatusOptions() =
+        orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
     suspend fun getOrderNotes(orderId: Long) =
         orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = orderId)

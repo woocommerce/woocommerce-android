@@ -353,12 +353,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onEditOrderStatusSelected() {
         viewState.orderStatus?.let { orderStatus ->
-            triggerEvent(
-                ViewOrderStatusSelector(
-                    currentStatus = orderStatus.statusKey,
-                    orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+            launch {
+                triggerEvent(
+                    ViewOrderStatusSelector(
+                        currentStatus = orderStatus.statusKey,
+                        orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+                    )
                 )
-            )
+            }
         }
     }
 
