@@ -26,7 +26,6 @@ import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -349,8 +348,8 @@ class ProductDetailRepository @Inject constructor(
     suspend fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
-    fun getTaxClassesForSite(): List<TaxClass> =
-        runBlocking { taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() } }
+    suspend fun getTaxClassesForSite(): List<TaxClass> =
+        taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
      * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
