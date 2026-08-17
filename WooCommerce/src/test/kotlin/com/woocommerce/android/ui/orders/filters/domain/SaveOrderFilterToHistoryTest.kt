@@ -23,6 +23,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -102,7 +103,6 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
             .thenReturn(emptyList())
         whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
         whenever(orderFilterHistoryMapper.toPayload(any(), any(), any())).thenReturn(A_PAYLOAD)
-        whenever(orderFilterHistoryMapper.toReadableString(any())).thenReturn(A_READABLE_STRING)
 
         sut()
 
@@ -124,13 +124,9 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
 
         sut()
 
-        val categoriesCaptor = argumentCaptor<List<OrderFilterCategoryUiModel>>()
-        verify(orderFilterHistoryMapper).toReadableString(categoriesCaptor.capture())
-        val statusOption = categoriesCaptor.firstValue
-            .first { it.categoryKey == OrderListFilterCategory.ORDER_STATUS }
-            .orderFilterOptions
-            .first()
-        assertThat(statusOption.displayName).isEqualTo("Processing")
+        val readableCaptor = argumentCaptor<String>()
+        verify(filterHistoryRepository).save(any(), anyOrNull(), readableCaptor.capture())
+        assertThat(readableCaptor.firstValue).isEqualTo("Processing")
     }
 
     @Test
@@ -201,7 +197,7 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
 
     private fun capturedCategory(categoryKey: OrderListFilterCategory): OrderFilterCategoryUiModel {
         val categoriesCaptor = argumentCaptor<List<OrderFilterCategoryUiModel>>()
-        verify(orderFilterHistoryMapper).toReadableString(categoriesCaptor.capture())
+        verify(orderFilterHistoryMapper).toPayload(categoriesCaptor.capture(), any(), any())
         return categoriesCaptor.firstValue.first { it.categoryKey == categoryKey }
     }
 

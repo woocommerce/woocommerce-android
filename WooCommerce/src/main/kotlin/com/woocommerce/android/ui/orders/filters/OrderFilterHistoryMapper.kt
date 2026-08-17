@@ -3,13 +3,12 @@ package com.woocommerce.android.ui.orders.filters
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
-import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel.Companion.DEFAULT_ALL_KEY
 import javax.inject.Inject
 
 /**
  * Encodes/decodes the order filter selection to and from the opaque `payload` string persisted in the
- * filter history table, and builds the human-readable label shown in the history list.
+ * filter history table.
  *
  * The payload is a canonical JSON serialization of the active selection (categories and option keys
  * sorted) so that logically-identical selections dedup reliably. Decoding tolerates missing/unknown
@@ -19,17 +18,6 @@ import javax.inject.Inject
 class OrderFilterHistoryMapper @Inject constructor(
     private val gson: Gson
 ) {
-    fun toReadableString(categories: List<OrderFilterCategoryUiModel>): String =
-        categories
-            .flatMap { it.orderFilterOptions }
-            .filter { it.isSelected && it.key != DEFAULT_ALL_KEY }
-            .joinToString(separator = ", ") { it.readableLabel() }
-
-    // Prefer displayValue when present so a custom date range shows its dates rather than the static
-    // "Custom Range" label; other options have no displayValue and fall back to displayName.
-    private fun OrderFilterOptionUiModel.readableLabel(): String =
-        displayValue?.takeIf { it.isNotBlank() } ?: displayName
-
     fun toPayload(
         categories: List<OrderFilterCategoryUiModel>,
         customDateRangeStart: Long,

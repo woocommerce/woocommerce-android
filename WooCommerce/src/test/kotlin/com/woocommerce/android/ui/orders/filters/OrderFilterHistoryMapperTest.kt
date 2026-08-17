@@ -11,25 +11,6 @@ class OrderFilterHistoryMapperTest {
     private val sut = OrderFilterHistoryMapper(Gson())
 
     @Test
-    fun `given selected options, when building readable string, then only selected non-all names are joined`() {
-        val categories = listOf(
-            category(
-                OrderListFilterCategory.ORDER_STATUS,
-                option("processing", "Processing", isSelected = true),
-                option(OrderFilterOptionUiModel.DEFAULT_ALL_KEY, "All", isSelected = false)
-            ),
-            category(
-                OrderListFilterCategory.DATE_RANGE,
-                option("last_30_days", "Last 30 days", isSelected = true)
-            )
-        )
-
-        val readable = sut.toReadableString(categories)
-
-        assertThat(readable).isEqualTo("Processing, Last 30 days")
-    }
-
-    @Test
     fun `given a selection, when encoding then decoding, then the selection round-trips`() {
         val categories = listOf(
             category(
@@ -85,7 +66,7 @@ class OrderFilterHistoryMapperTest {
     }
 
     @Test
-    fun `given a selected All option, when encoding, then it is excluded from readable string and payload`() {
+    fun `given a selected All option, when encoding, then it is excluded from the payload`() {
         val categories = listOf(
             category(
                 OrderListFilterCategory.ORDER_STATUS,
@@ -94,7 +75,6 @@ class OrderFilterHistoryMapperTest {
             )
         )
 
-        assertThat(sut.toReadableString(categories)).isEqualTo("Processing")
         assertThat(sut.fromPayload(sut.toPayload(categories, 0, 0))?.selections).isEqualTo(
             mapOf(OrderListFilterCategory.ORDER_STATUS.name to listOf("processing"))
         )
@@ -110,23 +90,6 @@ class OrderFilterHistoryMapperTest {
         )
 
         assertThat(sut.fromPayload(sut.toPayload(categories, 0, 0))?.selections).isEmpty()
-    }
-
-    @Test
-    fun `given a selected option with a display value, when building readable, then the display value is used`() {
-        val categories = listOf(
-            category(
-                OrderListFilterCategory.DATE_RANGE,
-                OrderFilterOptionUiModel(
-                    key = "custom_range",
-                    displayName = "Custom Range",
-                    displayValue = "Jan 1 - Jan 31",
-                    isSelected = true
-                )
-            )
-        )
-
-        assertThat(sut.toReadableString(categories)).isEqualTo("Jan 1 - Jan 31")
     }
 
     private fun category(key: OrderListFilterCategory, vararg options: OrderFilterOptionUiModel) =

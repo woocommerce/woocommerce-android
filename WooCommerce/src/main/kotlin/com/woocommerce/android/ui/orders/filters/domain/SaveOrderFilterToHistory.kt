@@ -80,9 +80,20 @@ class SaveOrderFilterToHistory @Inject constructor(
                 customDateRangeStart = customDateRange.first,
                 customDateRangeEnd = customDateRange.second
             ),
-            readableString = orderFilterHistoryMapper.toReadableString(selectedCategories)
+            readableString = buildReadableString(selectedCategories)
         )
     }
+
+    // Joins the selected option labels (excluding the "All" placeholder) into the label shown in the
+    // history list. Prefers displayValue when present so a custom date range shows its dates rather than
+    // the static "Custom Range" label; other options have no displayValue and fall back to displayName.
+    private fun buildReadableString(categories: List<OrderFilterCategoryUiModel>): String =
+        categories
+            .flatMap { it.orderFilterOptions }
+            .filter { it.isSelected && it.key != DEFAULT_ALL_KEY }
+            .joinToString(
+                separator = ", "
+            ) { it.displayValue?.takeIf { value -> value.isNotBlank() } ?: it.displayName }
 
     private suspend fun buildSelectedCategories(): List<OrderFilterCategoryUiModel> = listOf(
         selectedCategory(
