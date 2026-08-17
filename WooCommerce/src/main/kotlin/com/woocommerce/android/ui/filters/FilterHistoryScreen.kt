@@ -135,10 +135,10 @@ private fun FilterHistoryList(
                     )
                 )
             }
-            items(items = viewState.filters, key = { it.id }) { filter ->
+            items(items = viewState.filters, key = { it.payload }) { filter ->
                 SwipeableFilterHistoryRow(
                     filter = filter,
-                    isSelected = filter.id == viewState.selectedFilter?.id,
+                    isSelected = filter.payload == viewState.selectedFilter?.payload,
                     onClick = { onFilterClick(filter) },
                     onDelete = { onDeleteFilter(filter) }
                 )
@@ -277,11 +277,11 @@ private fun FilterHistoryScreenPreview() {
         FilterHistoryScreen(
             viewState = ViewState(
                 filters = listOf(
-                    SavedFilter(id = 1, readableString = "Processing, Last 30 days", payload = ""),
-                    SavedFilter(id = 2, readableString = "Completed", payload = ""),
-                    SavedFilter(id = 3, readableString = "Cancelled, John Doe", payload = "")
+                    SavedFilter(readableString = "Processing, Last 30 days", payload = "1"),
+                    SavedFilter(readableString = "Completed", payload = "2"),
+                    SavedFilter(readableString = "Cancelled, John Doe", payload = "3")
                 ),
-                selectedFilter = SavedFilter(id = 2, readableString = "Completed", payload = "")
+                selectedFilter = SavedFilter(readableString = "Completed", payload = "2")
             ),
             onFilterClick = {},
             onApplyClick = {},

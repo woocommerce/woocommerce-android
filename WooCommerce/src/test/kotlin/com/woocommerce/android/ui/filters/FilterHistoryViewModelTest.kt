@@ -118,7 +118,7 @@ class FilterHistoryViewModelTest : BaseUnitTest() {
 
         viewModel.onDeleteFilter(FILTER_1)
 
-        verify(repository).remove(FILTER_1)
+        verify(repository).remove(FilterHistoryType.ORDERS, FILTER_1)
         verify(analyticsTrackerWrapper).track(
             AnalyticsEvent.FILTER_HISTORY_PAST_FILTER_REMOVED,
             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_FILTER_HISTORY_SOURCE_ORDERS)
@@ -173,8 +173,8 @@ class FilterHistoryViewModelTest : BaseUnitTest() {
     }
 
     private companion object {
-        val FILTER_1 = SavedFilter(id = 1, readableString = "Processing", payload = "status=processing")
-        val FILTER_2 = SavedFilter(id = 2, readableString = "Completed", payload = "status=completed")
+        val FILTER_1 = SavedFilter(readableString = "Processing", payload = "status=processing")
+        val FILTER_2 = SavedFilter(readableString = "Completed", payload = "status=completed")
         val FILTERS = listOf(FILTER_1, FILTER_2)
     }
 }

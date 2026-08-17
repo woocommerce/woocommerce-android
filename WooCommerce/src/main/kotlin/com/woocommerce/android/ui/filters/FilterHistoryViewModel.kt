@@ -19,7 +19,7 @@ import javax.inject.Inject
  * The concrete filter surface is passed as the [FilterHistoryFragmentArgs.filterType] navigation
  * argument, which also drives the analytics `source` property.
  *
- * The screen deals only in [SavedFilter]s (id + readable label + opaque payload); decoding the
+ * The screen deals only in [SavedFilter]s (readable label + opaque payload); decoding the
  * payload back into a concrete filter selection is the caller's responsibility (see the order and
  * product filter screens). Applying a filter returns the chosen [SavedFilter] as a nav result under
  * [FILTER_HISTORY_RESULT_KEY].
@@ -43,7 +43,7 @@ class FilterHistoryViewModel @Inject constructor(
     ) { filters, selected, showConfirmation ->
         ViewState(
             filters = filters,
-            selectedFilter = filters.firstOrNull { it.id == selected?.id },
+            selectedFilter = filters.firstOrNull { it.payload == selected?.payload },
             showClearHistoryConfirmation = showConfirmation
         )
     }.toStateFlow(ViewState())
@@ -64,8 +64,8 @@ class FilterHistoryViewModel @Inject constructor(
 
     fun onDeleteFilter(filter: SavedFilter) {
         launch {
-            repository.remove(filter)
-            if (selectedFilter.value?.id == filter.id) {
+            repository.remove(filterType, filter)
+            if (selectedFilter.value?.payload == filter.payload) {
                 selectedFilter.value = null
             }
             track(AnalyticsEvent.FILTER_HISTORY_PAST_FILTER_REMOVED)
