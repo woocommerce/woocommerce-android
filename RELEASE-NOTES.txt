@@ -5,6 +5,7 @@
 25.5
 -----
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
+- [Internal] [WEAR] Wear crash reports are now deobfuscated: ProGuard mappings upload to the `woocommerce-wear` Sentry project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
 - [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
 - [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
