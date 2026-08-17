@@ -21,7 +21,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
@@ -63,8 +62,7 @@ class ProductDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
-    private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val taxStore: WCTaxStore
 ) {
     private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -339,10 +337,6 @@ class ProductDetailRepository @Inject constructor(
         productStore.getProduct(selectedSite.get(), remoteProductId)
 
     suspend fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
-
-    suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
-        getCachedWCProductModel(remoteProductId)?.toAppModel()
-    }
 
     suspend fun getProductAggregate(remoteProductId: Long): ProductAggregate? {
         val product = getProduct(remoteProductId) ?: return null

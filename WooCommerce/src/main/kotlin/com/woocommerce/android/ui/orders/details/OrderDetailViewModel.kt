@@ -1056,7 +1056,7 @@ class OrderDetailViewModel @Inject constructor(
                 is OrderProduct.ProductItem -> first.product.productId
             }
 
-            val product = productDetailRepository.getProductAsync(firstProductId)
+            val product = productDetailRepository.getProduct(firstProductId)
             product?.let {
                 triggerEvent(
                     OrderNavigationTarget.AIThankYouNote(
