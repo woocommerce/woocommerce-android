@@ -4,14 +4,19 @@
 
 25.5
 -----
+- [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
+- [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
+- [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
 - [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
 - [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one [https://github.com/woocommerce/woocommerce-android/pull/16400]
-- [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
+- [*] Custom date ranges now follow the store's current day and no longer shift when the device time zone changes [https://github.com/woocommerce/woocommerce-android/pull/16410]
 - [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
 - [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
 - [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
+- [*] Store login now supports custom WordPress sign-in and dashboard addresses [https://github.com/woocommerce/woocommerce-android/pull/16398]
 - [Internal] Woo POS Scan to Pay: picking an offline method such as Pay in Person on the QR page no longer reports the order as paid, and a detected payment now shows the fullscreen success screen [https://github.com/woocommerce/woocommerce-android/pull/16363]
 - [*] Woo POS: Retrying a failed connection to a phone card reader now works without having to close and reopen the reader dialog [https://github.com/woocommerce/woocommerce-android/pull/16371]
+- [*] Woo POS: A phone used as a card reader is now discovered without granting Bluetooth and location permissions on the tablet [https://github.com/woocommerce/woocommerce-android/pull/16406]
 - [*] Fixed missing back navigation in Country and State pickers when creating shipping labels on tablets [https://github.com/woocommerce/woocommerce-android/pull/16364]
 - [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
 - [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
@@ -22,6 +27,7 @@
 - [*] Fixed the app freezing on the My Store screen when the POS promotion banner is evaluated [https://github.com/woocommerce/woocommerce-android/pull/16405]
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 - [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
+- [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
 
 25.4
 -----

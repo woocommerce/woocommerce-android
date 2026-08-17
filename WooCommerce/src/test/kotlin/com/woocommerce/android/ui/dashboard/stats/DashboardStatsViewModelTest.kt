@@ -52,6 +52,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardStatsViewModelTest : BaseUnitTest() {
@@ -682,4 +683,18 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         Assertions.assertThat(visitorStatsState)
             .isEqualTo(DashboardStatsViewModel.VisitorStatsViewState.Unavailable(showJetpackIcon = false))
     }
+
+    @Test
+    fun `given no custom range, when the range picker is opened, then it opens at the site's current day`() =
+        testBlocking {
+            val siteToday = Date(1754900000000)
+            whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(siteToday)
+            setup()
+
+            viewModel.onEditCustomRangeTapped()
+
+            val event = viewModel.event.getOrAwaitValue() as DashboardStatsViewModel.OpenDatePicker
+            Assertions.assertThat(event.fromDate).isEqualTo(siteToday)
+            Assertions.assertThat(event.toDate).isEqualTo(siteToday)
+        }
 }

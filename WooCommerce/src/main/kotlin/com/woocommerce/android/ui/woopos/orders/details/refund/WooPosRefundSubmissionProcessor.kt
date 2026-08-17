@@ -295,10 +295,15 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "message=${error.message}, " +
                     "errorData=${error.errorData}"
             )
+            val mappedMessage = WooPosRefundApiError.fromCode(error.apiErrorCode)
+                ?.let { resourceProvider.getString(it.messageRes) }
             trySendState(
                 WooPosRefundSubmissionState.Failure(
-                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
+                    message = mappedMessage
+                        ?: error.message
+                        ?: resourceProvider.getString(R.string.error_generic),
                     retryBackendNotificationOnly = retryBackendNotificationOnly,
+                    apiErrorCode = error.apiErrorCode,
                 )
             )
         } else {

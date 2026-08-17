@@ -28,10 +28,9 @@ sealed class WooPosRefundState {
         val paymentMethod: String,
         val refundReason: String = "",
         val step: RefundStep,
-        // Server-calculated preview status. When server refunds are unavailable the store falls
-        // back to the local calculation and these stay at their defaults (no loading/no failure).
         val isPreviewLoading: Boolean = false,
         val previewFailed: Boolean = false,
+        val previewErrorMessage: String? = null,
     ) : WooPosRefundState() {
 
         @Immutable

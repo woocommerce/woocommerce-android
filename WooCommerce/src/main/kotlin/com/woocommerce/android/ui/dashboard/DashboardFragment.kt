@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -73,6 +74,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -91,6 +93,9 @@ class DashboardFragment :
 
     @Inject
     lateinit var selectedSite: SelectedSite
+
+    @Inject
+    lateinit var dateUtils: DateUtils
 
     @Inject
     lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
@@ -193,7 +198,12 @@ class DashboardFragment :
                     )
                 }
 
-                is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
+                is OpenRangePicker -> showDateRangePicker(
+                    event.startDate,
+                    event.endDate,
+                    dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+                    event.callback
+                )
 
                 is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
 
