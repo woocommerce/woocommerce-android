@@ -147,7 +147,7 @@ class IssueRefundViewModel @Inject constructor(
 
     private val order: Order
         get() = requireNotNull(orderFlow.replayCache.firstOrNull()) {
-            "Please ensure that this property is not accessed before the order is loaded."
+            "Order is not loaded yet"
         }
 
     private val Order.allFeeLineIds: List<Long>
