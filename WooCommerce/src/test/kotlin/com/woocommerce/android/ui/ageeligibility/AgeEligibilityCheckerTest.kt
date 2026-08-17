@@ -150,18 +150,23 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a check is running, when another check starts, then only one SDK request runs`() = testBlocking {
-        val checker = createChecker()
-        client.gate = CompletableDeferred()
+    fun `given a check is running, when checks overlap, then concurrent request is skipped until first finishes`() =
+        testBlocking {
+            val checker = createChecker()
+            client.gate = CompletableDeferred()
 
-        val firstCheck = launch { checker.checkAge(activity) }
-        yield()
-        checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+            val firstCheck = launch { checker.checkAge(activity) }
+            yield()
+            checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
 
-        assertThat(client.callCount).isEqualTo(1)
-        client.gate?.complete(Unit)
-        firstCheck.join()
-    }
+            assertThat(client.callCount).isEqualTo(1)
+            client.gate?.complete(Unit)
+            firstCheck.join()
+
+            checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+
+            assertThat(client.callCount).isEqualTo(2)
+        }
 
     private fun createChecker() = AgeEligibilityChecker(
         client = client,

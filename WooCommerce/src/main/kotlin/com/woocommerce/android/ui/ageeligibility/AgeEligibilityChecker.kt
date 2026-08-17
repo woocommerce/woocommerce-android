@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.sync.Mutex
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,7 +29,7 @@ class AgeEligibilityChecker @Inject constructor(
     private val trackerWrapper: AnalyticsTrackerWrapper,
     private val evaluator: AgeEligibilityEvaluator
 ) {
-    private val checkMutex = Mutex()
+    private val isCheckInProgress = AtomicBoolean(false)
     private var persistedRestriction = readPersistedRestriction()
 
     private val _ageEligibilityState = MutableStateFlow(
@@ -48,7 +48,7 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     suspend fun checkAge(activity: Activity, trigger: AgeCheckTrigger = AgeCheckTrigger.STARTUP) {
-        if (!checkMutex.tryLock()) {
+        if (!isCheckInProgress.compareAndSet(false, true)) {
             WooLog.i(WooLog.T.UTILS, "Skipping concurrent age check triggered by ${trigger.name}")
             return
         }
@@ -56,7 +56,7 @@ class AgeEligibilityChecker @Inject constructor(
         try {
             checkAgeSingleFlight(activity)
         } finally {
-            checkMutex.unlock()
+            isCheckInProgress.set(false)
         }
     }
 
