@@ -18,7 +18,7 @@ def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?
 
 sentry {
     org = "a8c"
-    projectName = "woocommerce-android"
+    projectName = "woocommerce-wear"
     authToken = sentryAuthToken
 
     includeSourceContext = true
