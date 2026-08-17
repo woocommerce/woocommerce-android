@@ -128,10 +128,10 @@ class ProductDetailRepository @Inject constructor(
      */
     suspend fun updateProduct(updatedProductAggregate: ProductAggregate): Pair<Boolean, WCProductStore.ProductError?> {
         return try {
+            val cachedProduct = getCachedWCProductModel(updatedProductAggregate.remoteId)
             suspendCoroutineWithTimeout<Pair<Boolean, WCProductStore.ProductError?>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
-                val cachedProduct = getCachedWCProductModel(updatedProductAggregate.remoteId)
                 val product = updatedProductAggregate.product.toDataModel(cachedProduct)
                 val metadataChanges = MetadataChanges(
                     // Even though the subscription keys are passed as new metadata here, the server will replace any
@@ -335,10 +335,10 @@ class ProductDetailRepository @Inject constructor(
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 
-    private fun getCachedWCProductModel(remoteProductId: Long) =
-        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+    private suspend fun getCachedWCProductModel(remoteProductId: Long) =
+        productStore.getProduct(selectedSite.get(), remoteProductId)
 
-    fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
+    suspend fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
     suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
         getCachedWCProductModel(remoteProductId)?.toAppModel()

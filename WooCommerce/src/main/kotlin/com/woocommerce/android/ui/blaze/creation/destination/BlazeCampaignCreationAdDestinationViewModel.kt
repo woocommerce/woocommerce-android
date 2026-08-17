@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,12 +25,11 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
-    private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId)).permalink
-    private val initialDestinationValues: ViewState
+    private val initialDestination = navArgs.destinationParameters
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            productUrl = productUrl,
+            productUrl = "",
             siteUrl = selectedSite.get().url,
             targetUrl = navArgs.destinationParameters.targetUrl,
             parameters = navArgs.destinationParameters.parameters,
@@ -40,14 +40,18 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
-        initialDestinationValues = _viewState.value
+        launch {
+            val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId)).permalink
+            _viewState.update { it.copy(productUrl = productUrl) }
+        }
     }
 
     fun onBackPressed() {
-        if (initialDestinationValues != _viewState.value) {
+        val currentDestination = DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters)
+        if (initialDestination != currentDestination) {
             analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
         }
-        triggerEvent(ExitWithResult(DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters)))
+        triggerEvent(ExitWithResult(currentDestination))
     }
 
     fun onUrlPropertyTapped() {
