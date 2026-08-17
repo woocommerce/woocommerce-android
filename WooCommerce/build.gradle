@@ -64,9 +64,6 @@ fladle {
     ]
 }
 
-// A secret-injection step that resolves to nothing exports an empty SENTRY_AUTH_TOKEN rather than
-// leaving it unset, so treat blank as missing — otherwise the guard below passes and sentry-cli
-// fails mid-upload with an opaque auth error.
 def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
 
 sentry {
