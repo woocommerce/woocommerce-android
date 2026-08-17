@@ -83,9 +83,9 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         val checker = createChecker()
 
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
-            AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION)
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
         )
-        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION.name
+        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON.name
     }
 
     @Test
@@ -122,7 +122,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given prior restriction and conclusive eligible result, when checked, then restriction is cleared`() =
         testBlocking {
-            stubPriorRestriction(AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION)
+            stubPriorRestriction(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
             val checker = createChecker()
             client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 13)
 

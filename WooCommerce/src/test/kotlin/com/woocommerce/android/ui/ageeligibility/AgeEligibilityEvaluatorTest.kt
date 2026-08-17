@@ -59,7 +59,7 @@ class AgeEligibilityEvaluatorTest {
 
     @Test
     fun `given missing age, when evaluated, then prior restriction is preserved non-authoritatively`() {
-        val priorRestriction = AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION
+        val priorRestriction = AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
 
         val evaluation = evaluate(
             verificationStatus = LegacyAgeVerificationStatus.SUPERVISED,

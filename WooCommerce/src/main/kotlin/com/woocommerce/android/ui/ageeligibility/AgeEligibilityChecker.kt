@@ -42,7 +42,7 @@ class AgeEligibilityChecker @Inject constructor(
     val ageEligibilityState: StateFlow<AgeEligibilityState> = _ageEligibilityState.asStateFlow()
 
     init {
-        if (persistedRestriction == AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION) {
+        if (persistedRestriction == AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON) {
             prefsWrapper.userAgeRestrictionReason = persistedRestriction?.name.orEmpty()
         }
     }
@@ -120,7 +120,7 @@ class AgeEligibilityChecker @Inject constructor(
         return typedRestriction ?: if (prefsWrapper.isUserAgeEligibleForAppUse) {
             null
         } else {
-            AgeRestrictionReason.LEGACY_AUTHORITATIVE_RESTRICTION
+            AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
         }
     }
 
