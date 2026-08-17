@@ -1,4 +1,5 @@
 import io.sentry.android.gradle.extensions.InstrumentationFeature
+import io.sentry.android.gradle.tasks.SentryCliExecTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -63,7 +64,16 @@ fladle {
     ]
 }
 
+// A secret-injection step that resolves to nothing exports an empty SENTRY_AUTH_TOKEN rather than
+// leaving it unset, so treat blank as missing — otherwise the guard below passes and sentry-cli
+// fails mid-upload with an opaque auth error.
+def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
+
 sentry {
+    org = "a8c"
+    projectName = "woocommerce-android"
+    authToken = sentryAuthToken
+
     includeSourceContext = true
     autoUploadSourceContext = true
     tracingInstrumentation {
@@ -89,6 +99,16 @@ sentry {
     additionalSourceDirsForSourceContext = [
             '../libs/cardreader/src/main/java',
     ]
+}
+
+tasks.withType(SentryCliExecTask).configureEach {
+    doFirst {
+        if (sentryAuthToken == null) {
+            throw new GradleException(
+                    "SENTRY_AUTH_TOKEN is not set (or is blank). Set it to upload debug files to Sentry."
+            )
+        }
+    }
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
