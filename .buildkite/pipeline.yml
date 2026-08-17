@@ -20,6 +20,10 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: ":sentry: Validate Sentry Upload"
+    command: .buildkite/commands/validate-sentry-upload.sh
+    plugins: [$CI_TOOLKIT]
+
   ########################################
   - group: "🕵️ Linters"
     steps:
