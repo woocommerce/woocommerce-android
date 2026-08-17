@@ -254,7 +254,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             )
         )
 
-        viewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
 
         verify(orderFilterRepository).setSelectedFilters(
             OrderListFilterCategory.ORDER_STATUS,
@@ -271,7 +271,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             )
         )
 
-        viewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
 
         verify(orderFilterRepository).setSelectedFilters(OrderListFilterCategory.DATE_RANGE, emptyList())
         verify(orderFilterRepository).setSelectedFilters(OrderListFilterCategory.PRODUCT, emptyList())
@@ -289,7 +289,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
             )
         )
 
-        viewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
 
         verify(orderFilterRepository).setCustomDateRange(111, 222)
     }
@@ -298,7 +298,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
     fun `given an undecodable past filter, when selected, then the repository is not touched`() = testBlocking {
         whenever(orderFilterHistoryMapper.fromPayload(A_PAYLOAD)).thenReturn(null)
 
-        viewModel.onPastFilterSelected(SavedFilter(id = 1, readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
 
         verify(orderFilterRepository, never()).setSelectedFilters(any(), any())
         verify(orderFilterRepository, never()).setCustomDateRange(any(), any())
