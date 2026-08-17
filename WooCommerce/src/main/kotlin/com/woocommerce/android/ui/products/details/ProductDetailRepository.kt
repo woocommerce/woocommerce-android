@@ -18,7 +18,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toMetaData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -364,17 +363,6 @@ class ProductDetailRepository @Inject constructor(
      */
     suspend fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
-
-    fun getQuantityRules(remoteProductId: Long): QuantityRules? {
-        val product = getCachedWCProductModel(remoteProductId)
-        return product?.let {
-            QuantityRules(
-                if (product.minAllowedQuantity > 0) product.minAllowedQuantity else null,
-                if (product.maxAllowedQuantity > 0) product.maxAllowedQuantity else null,
-                if (product.groupOfQuantity > 0) product.groupOfQuantity else null
-            )
-        }
-    }
 
     suspend fun getProductMetadata(remoteProductId: Long): List<WCMetaData> {
         return productStore.getProductMetaData(selectedSite.get(), remoteProductId)
