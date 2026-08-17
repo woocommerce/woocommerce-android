@@ -8,8 +8,10 @@ import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.moremenu.customer.GetCustomerWithStats
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -19,6 +21,9 @@ import java.util.Locale
 import java.util.TimeZone
 
 class WooAssistantCardActionNavigatorTest {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val getCustomerWithStats: GetCustomerWithStats = mock()
     private val navigator = WooAssistantCardActionNavigator(getCustomerWithStats)
 

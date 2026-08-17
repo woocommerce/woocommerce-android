@@ -27,6 +27,7 @@
 - [*] Fixed the app freezing on the My Store screen when the POS promotion banner is evaluated [https://github.com/woocommerce/woocommerce-android/pull/16405]
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 - [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
+- [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
 
 25.4
 -----

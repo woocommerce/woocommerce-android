@@ -39,7 +39,7 @@ class CustomRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
         val dayDifference = selectedEndDate.time - selectedStartDate.time
 
@@ -53,6 +53,6 @@ class CustomRangeData(
             start = previousStart,
             end = previousEnd
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale)
     }
 }
