@@ -51,6 +51,7 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val repository: OrderDetailRepository = mock {
         on { hasVirtualProductsOnly(any()) } doReturn false
+        on { getOrderRefunds(any()) } doReturn emptyList()
     }
     private val resources: ResourceProvider = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()

@@ -117,6 +117,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
         on { hasVirtualProductsOnly(any()) } doReturn false
         on { getProductCountForOrder(any()) } doReturn 0
+        on { getOrderRefunds(any()) } doReturn emptyList()
     }
     private val addonsRepository: AddonRepository = mock {
         on { containsAddonsFrom(any()) } doReturn false

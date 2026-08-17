@@ -821,7 +821,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onNotesFetched()
     }
 
-    private fun loadOrderRefunds(): ListInfo<Refund> {
+    private suspend fun loadOrderRefunds(): ListInfo<Refund> {
         return ListInfo(list = orderDetailRepository.getOrderRefunds(navArgs.orderId))
     }
 
