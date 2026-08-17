@@ -222,15 +222,13 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
-        return runBlocking {
-            if (remoteProductIds.isNotEmpty()) {
-                productStore.getVirtualProductCountByRemoteIds(
-                    selectedSite.get(), remoteProductIds
-                ) == remoteProductIds.size
-            } else {
-                false
-            }
+    suspend fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getVirtualProductCountByRemoteIds(
+                selectedSite.get(), remoteProductIds
+            ) == remoteProductIds.size
+        } else {
+            false
         }
     }
 

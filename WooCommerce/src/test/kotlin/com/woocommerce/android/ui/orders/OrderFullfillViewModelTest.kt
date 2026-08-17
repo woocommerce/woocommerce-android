@@ -49,7 +49,9 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
     }
     private val selectedSite: SelectedSite = mock()
-    private val repository: OrderDetailRepository = mock()
+    private val repository: OrderDetailRepository = mock {
+        on { hasVirtualProductsOnly(any()) } doReturn false
+    }
     private val resources: ResourceProvider = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
