@@ -13,7 +13,7 @@ plugins {
 
 def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
 def shouldUploadToSentry = gradle.ext.isCi
-        && !project.properties["skipSentryProguardMappingUpload"]?.toBoolean()
+        && !project.properties["skipSentryUpload"]?.toBoolean()
 
 sentry {
     org = "a8c"
@@ -46,7 +46,7 @@ tasks.withType(SentryCliExecTask).configureEach {
         if (sentryAuthToken == null) {
             throw new GradleException("SENTRY_AUTH_TOKEN is not set (or is blank). " +
                     "Export it to upload debug files to Sentry, " +
-                    "or pass -PskipSentryProguardMappingUpload=true to skip the upload.")
+                    "or pass -PskipSentryUpload=true to skip the upload.")
         }
     }
 }
