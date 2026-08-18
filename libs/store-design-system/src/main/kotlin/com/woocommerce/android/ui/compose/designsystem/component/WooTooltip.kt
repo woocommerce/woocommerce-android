@@ -1,13 +1,30 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -18,6 +35,12 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Density
@@ -26,27 +49,148 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import kotlinx.coroutines.launch
 
+/**
+ * Hosts an always-composed [content] anchor and presents a Woo tooltip around it.
+ *
+ * Long press, hover, and keyboard focus use Material's standard tooltip triggers. Call [WooTooltipState.show] for
+ * caller-controlled presentation. [modifier] applies to the anchor interaction wrapper, not the popup surface.
+ * [preferredPlacement] requests a logical side and always flips to its opposite when it cannot be used; null
+ * chooses the roomier vertical side.
+ */
 @Composable
-fun WooTooltip(
+fun WooTooltipBox(
+    state: WooTooltipState,
     title: String,
-    arrowPosition: WooTooltipArrowPosition,
     modifier: Modifier = Modifier,
     supportingText: String? = null,
+    preferredPlacement: WooTooltipPlacement? = null,
+    content: @Composable () -> Unit,
+) = WooTooltipBoxImpl(
+    state = state,
+    title = title,
+    modifier = modifier,
+    supportingText = supportingText,
+    preferredPlacement = preferredPlacement,
+    content = content,
+)
+
+@Composable
+internal fun WooTooltipBoxImpl(
+    state: WooTooltipState,
+    title: String,
+    modifier: Modifier = Modifier,
+    supportingText: String? = null,
+    preferredPlacement: WooTooltipPlacement? = null,
+    onLayoutResult: (WooTooltipLayoutResult) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    val windowInfo = LocalWindowInfo.current
+    val cornerRadius = WooTheme.radius.large
+    val scope = rememberCoroutineScope()
+    var anchorIsVisible by remember { mutableStateOf(false) }
+    val currentLayoutDirection = rememberUpdatedState(layoutDirection)
+    val currentOnLayoutResult = rememberUpdatedState(onLayoutResult)
+    val geometryTokens = remember(density, cornerRadius) {
+        wooTooltipGeometryTokens(density, cornerRadius)
+    }
+    val layoutTokens = remember(density, geometryTokens) {
+        WooTooltipLayoutTokens(
+            windowMargin = with(density) { WINDOW_MARGIN.roundToPx() },
+            anchorGap = with(density) { ANCHOR_GAP.roundToPx() },
+            maxBubbleWidth = with(density) { MAX_TOOLTIP_WIDTH.roundToPx() },
+            minSideWidth = with(density) { MIN_SIDE_WIDTH.roundToPx() },
+            geometry = geometryTokens,
+        )
+    }
+    var layoutResult by remember {
+        mutableStateOf(
+            WooTooltipLayoutResult(
+                offset = androidx.compose.ui.unit.IntOffset.Zero,
+                side = WooTooltipPhysicalSide.Below,
+                arrowEdge = WooTooltipPhysicalEdge.Top,
+                arrowCenter = Float.NaN,
+                maxBubbleWidth = layoutTokens.maxBubbleWidth,
+            )
+        )
+    }
+    val positionProvider = remember(preferredPlacement, layoutTokens) {
+        WooTooltipPositionProvider(
+            preferredPlacement = preferredPlacement,
+            tokens = layoutTokens,
+            currentLayoutDirection = { currentLayoutDirection.value },
+            onLayoutResult = { result ->
+                if (layoutResult != result) layoutResult = result
+                currentOnLayoutResult.value(result)
+            },
+        )
+    }
+    val popupMaxWidth = with(density) { layoutResult.maxBubbleWidth.coerceAtLeast(1).toDp() }
+
+    LaunchedEffect(state) {
+        state.onAnchorVisibilityChanged(anchorIsVisible)
+        if (anchorIsVisible) state.resumeOffscreenRequest()
+    }
+
+    TooltipBox(
+        positionProvider = positionProvider,
+        tooltip = {
+            WooTooltipSurface(
+                title = title,
+                supportingText = supportingText,
+                arrowEdge = layoutResult.arrowEdge,
+                arrowCenter = layoutResult.arrowCenter,
+                cornerRadius = cornerRadius,
+                modifier = Modifier
+                    .widthIn(max = popupMaxWidth)
+                    .pointerInput(state) {
+                        detectTapGestures { state.dismiss() }
+                    },
+            )
+        },
+        state = state.hostState,
+        modifier = modifier.onGloballyPositioned { coordinates ->
+            val isVisible = isWooTooltipAnchorVisible(
+                anchorBounds = coordinates.boundsInWindow(),
+                windowSize = windowInfo.containerSize,
+            )
+            if (anchorIsVisible != isVisible) {
+                anchorIsVisible = isVisible
+                state.onAnchorVisibilityChanged(isVisible)
+                if (isVisible) scope.launch { state.resumeOffscreenRequest() }
+            }
+        },
+        focusable = false,
+        enableUserInput = true,
+        hasAction = false,
+        content = content,
+    )
+}
+
+@Composable
+internal fun WooTooltipSurface(
+    title: String,
+    supportingText: String?,
+    arrowEdge: WooTooltipPhysicalEdge,
+    arrowCenter: Float,
+    cornerRadius: Dp,
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         modifier = modifier,
         color = WooTheme.colors.surface.inverted,
         contentColor = WooTheme.colors.surface.onInverted,
         shape = WooTooltipShape(
-            arrowPosition = arrowPosition,
-            cornerRadius = WooTheme.radius.large,
+            arrowEdge = arrowEdge,
+            desiredArrowCenter = arrowCenter,
+            cornerRadius = cornerRadius,
         ),
     ) {
         Column(
-            modifier = Modifier.padding(
-                arrowPosition.contentPadding(bodyPadding = WooTheme.padding.padding6)
-            ),
+            modifier = Modifier.tooltipContentPadding(arrowEdge, WooTheme.padding.padding6),
             verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
         ) {
             Text(
@@ -63,117 +207,45 @@ fun WooTooltip(
     }
 }
 
-@PreviewLightDark
-@Composable
-private fun WooTooltipPreview() {
-    WooDesignSystemTheme {
-        Surface(color = WooTheme.colors.background.section) {
-            WooTooltipDemo(modifier = Modifier.padding(WooTheme.padding.padding5))
-        }
-    }
-}
-
-@Preview(name = "Large font", fontScale = 1.5f, showBackground = true)
-@Composable
-private fun WooTooltipLargeFontPreview() {
-    WooDesignSystemTheme {
-        Surface(color = WooTheme.colors.background.section) {
-            WooTooltip(
-                title = "Tooltip title",
-                supportingText = "Supporting information wraps and expands without clipping.",
-                arrowPosition = WooTooltipArrowPosition.TopCenter,
-                modifier = Modifier
-                    .padding(WooTheme.padding.padding5)
-                    .width(TOOLTIP_PREVIEW_WIDTH),
-            )
-        }
-    }
-}
-
-@Preview(name = "RTL", locale = "ar", showBackground = true)
-@Composable
-private fun WooTooltipRtlPreview() {
-    WooDesignSystemTheme {
-        Surface(color = WooTheme.colors.background.section) {
-            WooTooltipDemo(modifier = Modifier.padding(WooTheme.padding.padding5))
-        }
-    }
-}
-
-@Composable
-internal fun WooTooltipDemo(
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
-    ) {
-        WooTooltipArrowPosition.entries.forEach { arrowPosition ->
-            Column(verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
-                Text(
-                    text = arrowPosition.name,
-                    color = WooTheme.colors.background.onSection,
-                    style = WooTheme.text.bodySmall.regular,
-                )
-                WooTooltip(
-                    title = "Title",
-                    supportingText = "Supporting line text lorem ipsum dolor sit amet, consectetur",
-                    arrowPosition = arrowPosition,
-                    modifier = Modifier.width(TOOLTIP_PREVIEW_WIDTH),
-                )
-            }
-        }
-    }
-}
-
-private fun WooTooltipArrowPosition.contentPadding(bodyPadding: Dp): PaddingValues {
+private fun Modifier.tooltipContentPadding(
+    arrowEdge: WooTooltipPhysicalEdge,
+    bodyPadding: Dp,
+): Modifier {
     val bodyAndArrowPadding = bodyPadding + ARROW_DEPTH
-
-    return when (this) {
-        WooTooltipArrowPosition.TopStart,
-        WooTooltipArrowPosition.TopCenter,
-        WooTooltipArrowPosition.TopEnd,
-        -> PaddingValues(
-            start = bodyPadding,
+    return when (arrowEdge) {
+        WooTooltipPhysicalEdge.Top -> absolutePadding(
+            left = bodyPadding,
             top = bodyAndArrowPadding,
-            end = bodyPadding,
+            right = bodyPadding,
             bottom = bodyPadding,
         )
 
-        WooTooltipArrowPosition.BottomStart,
-        WooTooltipArrowPosition.BottomCenter,
-        WooTooltipArrowPosition.BottomEnd,
-        -> PaddingValues(
-            start = bodyPadding,
+        WooTooltipPhysicalEdge.Bottom -> absolutePadding(
+            left = bodyPadding,
             top = bodyPadding,
-            end = bodyPadding,
+            right = bodyPadding,
             bottom = bodyAndArrowPadding,
         )
 
-        WooTooltipArrowPosition.StartTop,
-        WooTooltipArrowPosition.StartCenter,
-        WooTooltipArrowPosition.StartBottom,
-        -> PaddingValues(
-            start = bodyAndArrowPadding,
+        WooTooltipPhysicalEdge.Left -> absolutePadding(
+            left = bodyAndArrowPadding,
             top = bodyPadding,
-            end = bodyPadding,
+            right = bodyPadding,
             bottom = bodyPadding,
         )
 
-        WooTooltipArrowPosition.EndTop,
-        WooTooltipArrowPosition.EndCenter,
-        WooTooltipArrowPosition.EndBottom,
-        -> PaddingValues(
-            start = bodyPadding,
+        WooTooltipPhysicalEdge.Right -> absolutePadding(
+            left = bodyPadding,
             top = bodyPadding,
-            end = bodyAndArrowPadding,
+            right = bodyAndArrowPadding,
             bottom = bodyPadding,
         )
     }
 }
 
 internal data class WooTooltipShape(
-    private val arrowPosition: WooTooltipArrowPosition,
+    private val arrowEdge: WooTooltipPhysicalEdge,
+    private val desiredArrowCenter: Float,
     private val cornerRadius: Dp,
 ) : Shape {
     override fun createOutline(
@@ -182,165 +254,127 @@ internal data class WooTooltipShape(
         density: Density,
     ): Outline {
         val geometry = wooTooltipGeometry(
-            arrowPosition = arrowPosition,
+            edge = arrowEdge,
+            desiredArrowCenter = desiredArrowCenter,
             size = size,
-            layoutDirection = layoutDirection,
-            density = density,
-            cornerRadius = cornerRadius,
+            tokens = wooTooltipGeometryTokens(density, cornerRadius),
         ) ?: return Outline.Rectangle(EMPTY_RECT)
 
-        return Outline.Generic(
-            path = tooltipOutlinePath(geometry)
-        )
+        return Outline.Generic(tooltipOutlinePath(geometry))
     }
 }
 
-internal fun wooTooltipGeometry(
-    arrowPosition: WooTooltipArrowPosition,
-    size: Size,
-    layoutDirection: LayoutDirection,
+internal data class WooTooltipGeometryTokens(
+    val cornerRadius: Float,
+    val arrowHalfBase: Float,
+    val arrowDepth: Float,
+)
+
+internal fun wooTooltipGeometryTokens(
     density: Density,
     cornerRadius: Dp,
-): WooTooltipGeometry? {
-    if (!size.width.isFinite() || !size.height.isFinite() || size.width <= 0f || size.height <= 0f) {
-        return null
-    }
-
-    val resolvedPosition = arrowPosition.resolve(layoutDirection)
-    val requestedRadius = with(density) { cornerRadius.toPx() }
-    val requestedArrowHalfBase = with(density) { ARROW_BASE.toPx() } / 2f
-    val requestedArrowDepth = with(density) { ARROW_DEPTH.toPx() }
-    val requestedEdgeOffset = with(density) { ARROW_EDGE_OFFSET.toPx() }
-    val requestedValues = listOf(
-        requestedRadius,
-        requestedArrowHalfBase,
-        requestedArrowDepth,
-        requestedEdgeOffset,
+): WooTooltipGeometryTokens = with(density) {
+    WooTooltipGeometryTokens(
+        cornerRadius = cornerRadius.toPx(),
+        arrowHalfBase = ARROW_BASE.toPx() / 2f,
+        arrowDepth = ARROW_DEPTH.toPx(),
     )
+}
+
+internal fun wooTooltipGeometry(
+    edge: WooTooltipPhysicalEdge,
+    desiredArrowCenter: Float,
+    size: Size,
+    tokens: WooTooltipGeometryTokens,
+): WooTooltipGeometry? {
+    val requestedValues = listOf(tokens.cornerRadius, tokens.arrowHalfBase, tokens.arrowDepth)
+    if (!size.width.isFinite() || !size.height.isFinite() || size.width <= 0f || size.height <= 0f) return null
     if (requestedValues.any { !it.isFinite() || it <= 0f }) return null
 
-    val edgeLength = when (resolvedPosition.edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> size.width
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> size.height
-    }
-    val containerLength = when (resolvedPosition.edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> size.height
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> size.width
-    }
-    val minimumEdgeLength = maxOf(
-        2f * (requestedRadius + requestedArrowHalfBase),
-        2f * requestedEdgeOffset,
-    )
-    val minimumContainerLength = requestedArrowDepth + 2f * requestedRadius
+    val edgeLength = edge.edgeLength(size)
+    val containerLength = edge.containerLength(size)
     val scale = minOf(
         1f,
-        edgeLength / minimumEdgeLength,
-        containerLength / minimumContainerLength,
+        edgeLength / (2f * (tokens.cornerRadius + tokens.arrowHalfBase)),
+        containerLength / (tokens.arrowDepth + 2f * tokens.cornerRadius),
     )
     if (!scale.isFinite() || scale <= 0f) return null
 
-    val scaledRadius = requestedRadius * scale
-    val scaledArrowHalfBase = requestedArrowHalfBase * scale
-    val arrowDepth = requestedArrowDepth * scale
-    val edgeOffset = requestedEdgeOffset * scale
-    val bodyBounds = resolvedPosition.bodyBounds(size, arrowDepth)
-    val radius = minOf(
-        scaledRadius,
+    val arrowDepth = tokens.arrowDepth * scale
+    val bodyBounds = edge.bodyBounds(size, arrowDepth)
+    val cornerRadius = minOf(
+        tokens.cornerRadius * scale,
         bodyBounds.width / 2f,
         bodyBounds.height / 2f,
     )
     val arrowHalfBase = minOf(
-        scaledArrowHalfBase,
-        edgeLength / 2f - radius,
+        tokens.arrowHalfBase * scale,
+        edgeLength / 2f - cornerRadius,
     )
-    if (radius <= 0f || arrowHalfBase <= 0f || bodyBounds.width <= 0f || bodyBounds.height <= 0f) {
+    if (cornerRadius <= 0f || arrowHalfBase <= 0f || bodyBounds.width <= 0f || bodyBounds.height <= 0f) {
         return null
     }
-    val minimumCenter = radius + arrowHalfBase
+    val minimumCenter = cornerRadius + arrowHalfBase
     val maximumCenter = edgeLength - minimumCenter
-    val arrowCenter = alignedArrowCenter(
-        edgeLength = edgeLength,
-        alignment = resolvedPosition.alignment,
-        edgeOffset = edgeOffset,
-        minimumCenter = minimumCenter,
-        maximumCenter = maximumCenter,
-    )
-    val (arrowTip, arrowBaseStart, arrowBaseEnd) = resolvedPosition.arrowPoints(
+    val requestedCenter = desiredArrowCenter.takeIf(Float::isFinite) ?: edgeLength / 2f
+    val arrowCenter = requestedCenter.coerceIn(minimumCenter, maximumCenter.coerceAtLeast(minimumCenter))
+    val (arrowTip, arrowBaseStart, arrowBaseEnd) = edge.arrowPoints(
         size = size,
         bodyBounds = bodyBounds,
-        radius = radius,
         arrowCenter = arrowCenter,
         arrowHalfBase = arrowHalfBase,
     )
 
     return WooTooltipGeometry(
-        edge = resolvedPosition.edge,
+        edge = edge,
         bodyBounds = bodyBounds,
-        cornerRadius = radius,
+        cornerRadius = cornerRadius,
         arrowDepth = arrowDepth,
-        arrowTip = arrowTip,
+        arrowCenter = arrowCenter,
         arrowHalfBase = arrowHalfBase,
+        arrowTip = arrowTip,
         arrowBaseStart = arrowBaseStart,
         arrowBaseEnd = arrowBaseEnd,
         scale = scale,
     )
 }
 
-private fun alignedArrowCenter(
-    edgeLength: Float,
-    alignment: WooTooltipPhysicalAlignment,
-    edgeOffset: Float,
-    minimumCenter: Float,
-    maximumCenter: Float,
-): Float {
-    val desiredCenter = when (alignment) {
-        WooTooltipPhysicalAlignment.Start -> edgeOffset
-        WooTooltipPhysicalAlignment.Center -> edgeLength / 2f
-        WooTooltipPhysicalAlignment.End -> edgeLength - edgeOffset
-    }
-    return desiredCenter.coerceIn(minimumCenter, maximumCenter.coerceAtLeast(minimumCenter))
+private fun WooTooltipPhysicalEdge.edgeLength(size: Size): Float = when (this) {
+    WooTooltipPhysicalEdge.Top,
+    WooTooltipPhysicalEdge.Bottom,
+    -> size.width
+
+    WooTooltipPhysicalEdge.Left,
+    WooTooltipPhysicalEdge.Right,
+    -> size.height
 }
 
-private fun ResolvedWooTooltipArrowPosition.bodyBounds(
-    size: Size,
-    arrowDepth: Float,
-): Rect = when (edge) {
+private fun WooTooltipPhysicalEdge.containerLength(size: Size): Float = when (this) {
+    WooTooltipPhysicalEdge.Top,
+    WooTooltipPhysicalEdge.Bottom,
+    -> size.height
+
+    WooTooltipPhysicalEdge.Left,
+    WooTooltipPhysicalEdge.Right,
+    -> size.width
+}
+
+private fun WooTooltipPhysicalEdge.bodyBounds(size: Size, arrowDepth: Float): Rect = when (this) {
     WooTooltipPhysicalEdge.Top -> Rect(0f, arrowDepth, size.width, size.height)
     WooTooltipPhysicalEdge.Bottom -> Rect(0f, 0f, size.width, size.height - arrowDepth)
     WooTooltipPhysicalEdge.Left -> Rect(arrowDepth, 0f, size.width, size.height)
     WooTooltipPhysicalEdge.Right -> Rect(0f, 0f, size.width - arrowDepth, size.height)
 }
 
-private fun ResolvedWooTooltipArrowPosition.arrowPoints(
+private fun WooTooltipPhysicalEdge.arrowPoints(
     size: Size,
     bodyBounds: Rect,
-    radius: Float,
     arrowCenter: Float,
     arrowHalfBase: Float,
 ): Triple<Offset, Offset, Offset> {
-    val edgeLength = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> size.width
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> size.height
-    }
-    val baseStart = (arrowCenter - arrowHalfBase).coerceAtLeast(radius)
-    val baseEnd = (arrowCenter + arrowHalfBase).coerceAtMost(edgeLength - radius)
-
-    return when (edge) {
+    val baseStart = arrowCenter - arrowHalfBase
+    val baseEnd = arrowCenter + arrowHalfBase
+    return when (this) {
         WooTooltipPhysicalEdge.Top -> Triple(
             Offset(arrowCenter, 0f),
             Offset(baseStart, bodyBounds.top),
@@ -382,7 +416,6 @@ private fun tooltipOutlinePath(geometry: WooTooltipGeometry): Path {
         lineTo(geometry.arrowBaseEnd.x, geometry.arrowBaseEnd.y)
         close()
     }
-
     return Path.combine(PathOperation.Union, bodyPath, arrowPath)
 }
 
@@ -391,75 +424,12 @@ internal data class WooTooltipGeometry(
     val bodyBounds: Rect,
     val cornerRadius: Float,
     val arrowDepth: Float,
-    val arrowTip: Offset,
+    val arrowCenter: Float,
     val arrowHalfBase: Float,
+    val arrowTip: Offset,
     val arrowBaseStart: Offset,
     val arrowBaseEnd: Offset,
     val scale: Float,
-)
-
-internal fun WooTooltipArrowPosition.resolve(
-    layoutDirection: LayoutDirection,
-): ResolvedWooTooltipArrowPosition {
-    val edge = when (this) {
-        WooTooltipArrowPosition.TopStart,
-        WooTooltipArrowPosition.TopCenter,
-        WooTooltipArrowPosition.TopEnd,
-        -> WooTooltipPhysicalEdge.Top
-
-        WooTooltipArrowPosition.BottomStart,
-        WooTooltipArrowPosition.BottomCenter,
-        WooTooltipArrowPosition.BottomEnd,
-        -> WooTooltipPhysicalEdge.Bottom
-
-        WooTooltipArrowPosition.StartTop,
-        WooTooltipArrowPosition.StartCenter,
-        WooTooltipArrowPosition.StartBottom,
-        -> if (layoutDirection == LayoutDirection.Ltr) WooTooltipPhysicalEdge.Left else WooTooltipPhysicalEdge.Right
-
-        WooTooltipArrowPosition.EndTop,
-        WooTooltipArrowPosition.EndCenter,
-        WooTooltipArrowPosition.EndBottom,
-        -> if (layoutDirection == LayoutDirection.Ltr) WooTooltipPhysicalEdge.Right else WooTooltipPhysicalEdge.Left
-    }
-    val alignment = when (this) {
-        WooTooltipArrowPosition.TopStart,
-        WooTooltipArrowPosition.BottomStart,
-        -> if (layoutDirection == LayoutDirection.Ltr) {
-            WooTooltipPhysicalAlignment.Start
-        } else {
-            WooTooltipPhysicalAlignment.End
-        }
-
-        WooTooltipArrowPosition.TopEnd,
-        WooTooltipArrowPosition.BottomEnd,
-        -> if (layoutDirection == LayoutDirection.Ltr) {
-            WooTooltipPhysicalAlignment.End
-        } else {
-            WooTooltipPhysicalAlignment.Start
-        }
-
-        WooTooltipArrowPosition.TopCenter,
-        WooTooltipArrowPosition.BottomCenter,
-        WooTooltipArrowPosition.StartCenter,
-        WooTooltipArrowPosition.EndCenter,
-        -> WooTooltipPhysicalAlignment.Center
-
-        WooTooltipArrowPosition.StartTop,
-        WooTooltipArrowPosition.EndTop,
-        -> WooTooltipPhysicalAlignment.Start
-
-        WooTooltipArrowPosition.StartBottom,
-        WooTooltipArrowPosition.EndBottom,
-        -> WooTooltipPhysicalAlignment.End
-    }
-
-    return ResolvedWooTooltipArrowPosition(edge, alignment)
-}
-
-internal data class ResolvedWooTooltipArrowPosition(
-    val edge: WooTooltipPhysicalEdge,
-    val alignment: WooTooltipPhysicalAlignment,
 )
 
 internal enum class WooTooltipPhysicalEdge {
@@ -469,14 +439,96 @@ internal enum class WooTooltipPhysicalEdge {
     Right,
 }
 
-internal enum class WooTooltipPhysicalAlignment {
-    Start,
-    Center,
-    End,
+@PreviewLightDark
+@Composable
+private fun WooTooltipPreview() {
+    WooDesignSystemTheme {
+        Surface(color = WooTheme.colors.background.section) {
+            WooTooltipDemo(modifier = Modifier.padding(WooTheme.padding.padding5))
+        }
+    }
 }
 
+@Preview(name = "Title-only side", showBackground = true)
+@Composable
+private fun WooTooltipTitleOnlySidePreview() {
+    WooDesignSystemTheme {
+        val state = rememberWooTooltipState()
+        LaunchedEffect(state) { state.show() }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            WooTooltipBox(
+                state = state,
+                title = "Title",
+                preferredPlacement = WooTooltipPlacement.End,
+            ) {
+                Text("Anchor")
+            }
+        }
+    }
+}
+
+@Preview(name = "RTL", locale = "ar", showBackground = true)
+@Composable
+private fun WooTooltipRtlPreview() {
+    WooDesignSystemTheme {
+        Surface(color = WooTheme.colors.background.section) {
+            WooTooltipDemo(modifier = Modifier.padding(WooTheme.padding.padding5))
+        }
+    }
+}
+
+@Composable
+internal fun WooTooltipDemo(modifier: Modifier = Modifier) {
+    val automaticState = rememberWooTooltipState()
+    val preferredState = rememberWooTooltipState()
+    val scope = rememberCoroutineScope()
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
+    ) {
+        Text(
+            text = "Long press, focus, or tap an anchor to show its tooltip.",
+            color = WooTheme.colors.background.onSection,
+            style = WooTheme.text.bodySmall.regular,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4)) {
+            WooTooltipBox(
+                state = automaticState,
+                title = "Automatic placement",
+                supportingText = "The roomier vertical side is selected.",
+            ) {
+                Button(onClick = { scope.launch { automaticState.show() } }) {
+                    Text("Automatic")
+                }
+            }
+            WooTooltipBox(
+                state = preferredState,
+                title = "Title only",
+                preferredPlacement = WooTooltipPlacement.End,
+            ) {
+                Button(onClick = { scope.launch { preferredState.show() } }) {
+                    Text("Preferred end")
+                }
+            }
+        }
+    }
+}
+
+internal val WooTooltipPhysicalSide.arrowEdge: WooTooltipPhysicalEdge
+    get() = when (this) {
+        WooTooltipPhysicalSide.Above -> WooTooltipPhysicalEdge.Bottom
+        WooTooltipPhysicalSide.Below -> WooTooltipPhysicalEdge.Top
+        WooTooltipPhysicalSide.Left -> WooTooltipPhysicalEdge.Right
+        WooTooltipPhysicalSide.Right -> WooTooltipPhysicalEdge.Left
+    }
+
+private val WINDOW_MARGIN = 8.dp
+private val ANCHOR_GAP = 4.dp
+private val MAX_TOOLTIP_WIDTH = 200.dp
+private val MIN_SIDE_WIDTH = 80.dp
 private val ARROW_DEPTH = 10.dp
 private val ARROW_BASE = 22.dp
-private val ARROW_EDGE_OFFSET = 31.dp
-private val TOOLTIP_PREVIEW_WIDTH = 200.dp
 private val EMPTY_RECT = Rect(0f, 0f, 0f, 0f)

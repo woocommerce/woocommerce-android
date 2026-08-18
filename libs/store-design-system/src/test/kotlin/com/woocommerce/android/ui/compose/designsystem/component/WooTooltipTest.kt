@@ -1,581 +1,660 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RunWith(RobolectricTestRunner::class)
 class WooTooltipTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun `when arrow positions are enumerated, then all twelve variants are exposed`() {
-        assertThat(WooTooltipArrowPosition.entries).containsExactly(
-            WooTooltipArrowPosition.TopStart,
-            WooTooltipArrowPosition.TopCenter,
-            WooTooltipArrowPosition.TopEnd,
-            WooTooltipArrowPosition.BottomStart,
-            WooTooltipArrowPosition.BottomCenter,
-            WooTooltipArrowPosition.BottomEnd,
-            WooTooltipArrowPosition.StartTop,
-            WooTooltipArrowPosition.StartCenter,
-            WooTooltipArrowPosition.StartBottom,
-            WooTooltipArrowPosition.EndTop,
-            WooTooltipArrowPosition.EndCenter,
-            WooTooltipArrowPosition.EndBottom,
-        )
-    }
-
-    @Test
-    fun `given logical arrow positions, when layout is RTL, then horizontal positions mirror`() {
-        assertThat(WooTooltipArrowPosition.TopStart.resolve(LayoutDirection.Rtl)).isEqualTo(
-            ResolvedWooTooltipArrowPosition(
-                edge = WooTooltipPhysicalEdge.Top,
-                alignment = WooTooltipPhysicalAlignment.End,
-            )
-        )
-        assertThat(WooTooltipArrowPosition.BottomEnd.resolve(LayoutDirection.Rtl)).isEqualTo(
-            ResolvedWooTooltipArrowPosition(
-                edge = WooTooltipPhysicalEdge.Bottom,
-                alignment = WooTooltipPhysicalAlignment.Start,
-            )
-        )
-        assertThat(WooTooltipArrowPosition.StartTop.resolve(LayoutDirection.Rtl)).isEqualTo(
-            ResolvedWooTooltipArrowPosition(
-                edge = WooTooltipPhysicalEdge.Right,
-                alignment = WooTooltipPhysicalAlignment.Start,
-            )
-        )
-        assertThat(WooTooltipArrowPosition.EndBottom.resolve(LayoutDirection.Rtl)).isEqualTo(
-            ResolvedWooTooltipArrowPosition(
-                edge = WooTooltipPhysicalEdge.Left,
-                alignment = WooTooltipPhysicalAlignment.End,
-            )
-        )
-    }
-
-    @Test
-    fun `given Figma dimensions, when geometry resolves, then all placement centers match`() {
-        FIGMA_ARROW_TIPS.forEach { expected ->
-            val geometry = geometryFor(
-                position = expected.position,
-                size = expected.size,
-            )
+    fun `given normal Figma sizes, when geometry resolves, then the exact arrow tokens are preserved`() {
+        EXPECTED_FIGMA_TIPS.forEach { expected ->
+            val geometry = geometry(expected.edge, expected.size, expected.desiredCenter)
 
             assertThat(geometry.arrowTip).isEqualTo(expected.tip)
+            assertThat(geometry.arrowDepth).isEqualTo(10f)
+            assertThat(geometry.arrowHalfBase).isEqualTo(11f)
+            assertThat(geometry.cornerRadius).isEqualTo(12f)
+            assertThat(geometry.scale).isEqualTo(1f)
         }
     }
 
     @Test
-    fun `given normal dimensions, when geometry resolves, then requested tokens remain unscaled`() {
-        DENSITIES.forEach { density ->
-            WooTooltipArrowPosition.entries.forEach { position ->
-                LayoutDirection.entries.forEach { layoutDirection ->
-                    val edge = position.resolve(layoutDirection).edge
-                    val size = figmaSize(edge = edge, density = density.density)
-                    val geometry = geometryFor(position, size, layoutDirection, density)
-                    val description = "$position at $size in $layoutDirection with ${density.density} density"
+    fun `given a 60dp title-only side tooltip, when geometry resolves, then it does not scale`() {
+        listOf(WooTooltipPhysicalEdge.Left, WooTooltipPhysicalEdge.Right).forEach { edge ->
+            val geometry = geometry(edge, Size(80f, 60f), desiredCenter = 30f)
 
-                    assertThat(geometry.scale).describedAs(description).isEqualTo(1f)
-                    assertThat(geometry.arrowDepth)
-                        .describedAs(description)
-                        .isCloseTo(10f * density.density, within(TOLERANCE))
-                    assertThat(geometry.arrowHalfBase)
-                        .describedAs(description)
-                        .isCloseTo(11f * density.density, within(TOLERANCE))
-                    assertThat(geometry.cornerRadius)
-                        .describedAs(description)
-                        .isCloseTo(12f * density.density, within(TOLERANCE))
-                    assertGeometryInvariants(geometry, size, description)
+            assertThat(geometry.scale).isEqualTo(1f)
+            assertThat(geometry.arrowCenter).isEqualTo(30f)
+            assertThat(geometry.arrowDepth).isEqualTo(10f)
+            assertThat(geometry.arrowHalfBase).isEqualTo(11f)
+            assertThat(geometry.cornerRadius).isEqualTo(12f)
+        }
+    }
+
+    @Test
+    fun `given constrained tooltips, when geometry resolves, then every outline remains valid and bounded`() {
+        CONSTRAINED_SIZES.forEach { size ->
+            WooTooltipPhysicalEdge.entries.forEach { edge ->
+                val geometry = geometry(edge, size, desiredCenter = -100f)
+                val edgeLength = if (edge == WooTooltipPhysicalEdge.Top || edge == WooTooltipPhysicalEdge.Bottom) {
+                    size.width
+                } else {
+                    size.height
                 }
+                val base = if (edge == WooTooltipPhysicalEdge.Top || edge == WooTooltipPhysicalEdge.Bottom) {
+                    geometry.arrowBaseStart.x..geometry.arrowBaseEnd.x
+                } else {
+                    geometry.arrowBaseStart.y..geometry.arrowBaseEnd.y
+                }
+                val outline = WooTooltipShape(edge, -100f, 12.dp).createOutline(size, LayoutDirection.Ltr, DENSITY)
+
+                assertThat(geometry.scale).isGreaterThan(0f)
+                assertThat(geometry.arrowHalfBase * 2f).isGreaterThan(0f)
+                assertThat(base.start).isGreaterThanOrEqualTo(geometry.cornerRadius)
+                assertThat(base.endInclusive).isLessThanOrEqualTo(edgeLength - geometry.cornerRadius)
+                assertThat(geometry.cornerRadius).isLessThanOrEqualTo(geometry.bodyBounds.width / 2f)
+                assertThat(geometry.cornerRadius).isLessThanOrEqualTo(geometry.bodyBounds.height / 2f)
+                assertThat(outline.bounds.left).isGreaterThanOrEqualTo(0f)
+                assertThat(outline.bounds.top).isGreaterThanOrEqualTo(0f)
+                assertThat(outline.bounds.right).isLessThanOrEqualTo(size.width)
+                assertThat(outline.bounds.bottom).isLessThanOrEqualTo(size.height)
             }
         }
     }
 
     @Test
-    fun `given natural footprint thresholds, when geometry resolves, then it scales uniformly`() {
-        DENSITIES.forEach { density ->
-            WooTooltipArrowPosition.entries.forEach { position ->
-                LayoutDirection.entries.forEach { layoutDirection ->
-                    val edge = position.resolve(layoutDirection).edge
+    fun `given tiny finite sizes, when geometry resolves, then it scales continuously toward zero`() {
+        listOf(1f, 0.5f, 0.1f).zipWithNext().forEach { (larger, smaller) ->
+            val largerGeometry = geometry(WooTooltipPhysicalEdge.Top, Size(larger, larger), larger / 2f)
+            val smallerGeometry = geometry(WooTooltipPhysicalEdge.Top, Size(smaller, smaller), smaller / 2f)
 
-                    THRESHOLD_CASES.forEach { threshold ->
-                        val size = sizeForEdge(
-                            edge = edge,
-                            edgeLength = threshold.edgeLength * density.density,
-                            containerLength = threshold.containerLength * density.density,
-                        )
-                        val geometry = geometryFor(position, size, layoutDirection, density)
-                        val expectedScale = minOf(
-                            1f,
-                            threshold.edgeLength / NATURAL_EDGE_LENGTH,
-                            threshold.containerLength / NATURAL_CONTAINER_LENGTH,
-                        )
-                        val description =
-                            "$position at $size in $layoutDirection with ${density.density} density"
-
-                        assertThat(geometry.scale)
-                            .describedAs(description)
-                            .isCloseTo(expectedScale, within(TOLERANCE))
-                        assertThat(geometry.cornerRadius / (12f * density.density))
-                            .describedAs(description)
-                            .isCloseTo(geometry.scale, within(TOLERANCE))
-                        assertThat(geometry.arrowHalfBase / (11f * density.density))
-                            .describedAs(description)
-                            .isCloseTo(geometry.scale, within(TOLERANCE))
-                        assertThat(geometry.arrowDepth / (10f * density.density))
-                            .describedAs(description)
-                            .isCloseTo(geometry.scale, within(TOLERANCE))
-                        assertGeometryInvariants(geometry, size, description)
-                    }
-                }
-            }
+            assertThat(smallerGeometry.scale).isLessThan(largerGeometry.scale)
+            assertThat(smallerGeometry.arrowDepth).isGreaterThan(0f)
+            assertThat(smallerGeometry.arrowHalfBase).isGreaterThan(0f)
         }
     }
 
     @Test
-    fun `given representative axis lengths, then physical start center and end never reverse`() {
-        DENSITIES.forEach { density ->
-            LayoutDirection.entries.forEach { layoutDirection ->
-                ORDERING_EDGE_LENGTHS.forEach { edgeLength ->
-                    WooTooltipPhysicalEdge.entries.forEach { edge ->
-                        val size = sizeForEdge(
-                            edge = edge,
-                            edgeLength = edgeLength * density.density,
-                            containerLength = ORDERING_CONTAINER_LENGTH * density.density,
-                        )
-                        val centers = WooTooltipArrowPosition.entries
-                            .filter { it.resolve(layoutDirection).edge == edge }
-                            .associate { position ->
-                                val alignment = position.resolve(layoutDirection).alignment
-                                val geometry = geometryFor(position, size, layoutDirection, density)
-                                alignment to geometry.arrowCenterAlongEdge()
-                            }
-                        val description =
-                            "$edge at ${edgeLength}dp in $layoutDirection with ${density.density} density"
+    fun `given invalid sizes, when outlines are requested, then safe empty rectangles are returned`() {
+        listOf(Size.Zero, Size.Unspecified, Size(Float.POSITIVE_INFINITY, 10f)).forEach { size ->
+            val outline = WooTooltipShape(
+                arrowEdge = WooTooltipPhysicalEdge.Top,
+                desiredArrowCenter = 20f,
+                cornerRadius = 12.dp,
+            ).createOutline(size, LayoutDirection.Ltr, DENSITY)
 
-                        assertThat(centers.getValue(WooTooltipPhysicalAlignment.Start))
-                            .describedAs(description)
-                            .isLessThanOrEqualTo(centers.getValue(WooTooltipPhysicalAlignment.Center))
-                        assertThat(centers.getValue(WooTooltipPhysicalAlignment.Center))
-                            .describedAs(description)
-                            .isLessThanOrEqualTo(centers.getValue(WooTooltipPhysicalAlignment.End))
-                    }
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `given 16 by 100 top and bottom tooltips, then arrow bases stay off rounded wings`() {
-        assertConstrainedGeometry(
-            size = Size(width = 16f, height = 100f),
-            positions = TOP_BOTTOM_POSITIONS,
-        )
-    }
-
-    @Test
-    fun `given 100 by 16 side tooltips, then arrow bases stay off rounded wings`() {
-        assertConstrainedGeometry(
-            size = Size(width = 100f, height = 16f),
-            positions = SIDE_POSITIONS,
-        )
-    }
-
-    @Test
-    fun `given 16 by 16 tooltips, then arrow and body keep a positive throat`() {
-        assertConstrainedGeometry(
-            size = Size(width = 16f, height = 16f),
-            positions = WooTooltipArrowPosition.entries,
-        )
-    }
-
-    @Test
-    fun `given small positive sizes, when outlines are created, then every path stays within its bounds`() {
-        SMALL_POSITIVE_SIZES.forEach { size ->
-            WooTooltipArrowPosition.entries.forEach { position ->
-                LayoutDirection.entries.forEach { layoutDirection ->
-                    val description = "$position at $size in $layoutDirection"
-                    val geometry = geometryFor(position, size, layoutDirection)
-
-                    assertGeometryInvariants(geometry, size, description)
-                    assertOutlineInBounds(position, size, layoutDirection, description)
-                }
-            }
-        }
-    }
-
-    @Test
-    fun `given invalid sizes, when outlines are created, then path operations are skipped safely`() {
-        val shape = WooTooltipShape(
-            arrowPosition = WooTooltipArrowPosition.TopCenter,
-            cornerRadius = FIGMA_CORNER_RADIUS,
-        )
-
-        INVALID_SIZES.forEach { size ->
-            val geometry = wooTooltipGeometry(
-                arrowPosition = WooTooltipArrowPosition.TopCenter,
-                size = size,
-                layoutDirection = LayoutDirection.Ltr,
-                density = DEFAULT_DENSITY,
-                cornerRadius = FIGMA_CORNER_RADIUS,
-            )
-            val outline = shape.createOutline(size, LayoutDirection.Ltr, DEFAULT_DENSITY)
-
-            assertThat(geometry).describedAs("geometry for $size").isNull()
-            assertThat(outline).describedAs("outline for $size").isInstanceOf(Outline.Rectangle::class.java)
-            assertThat((outline as Outline.Rectangle).rect).isEqualTo(Rect(0f, 0f, 0f, 0f))
+            assertThat(outline).isInstanceOf(Outline.Rectangle::class.java)
+            assertThat((outline as Outline.Rectangle).rect).isEqualTo(Rect.Zero)
         }
     }
 
     @Test
     fun `given equivalent parameters, when shapes are recreated, then they are value equal`() {
-        assertThat(
-            WooTooltipShape(
-                arrowPosition = WooTooltipArrowPosition.TopStart,
-                cornerRadius = FIGMA_CORNER_RADIUS,
-            )
-        ).isEqualTo(
-            WooTooltipShape(
-                arrowPosition = WooTooltipArrowPosition.TopStart,
-                cornerRadius = FIGMA_CORNER_RADIUS,
-            )
+        assertThat(WooTooltipShape(WooTooltipPhysicalEdge.Top, 31f, 12.dp)).isEqualTo(
+            WooTooltipShape(WooTooltipPhysicalEdge.Top, 31f, 12.dp)
         )
     }
 
     @Test
-    fun `given rich tooltip, when rendered, then text appears once in semantics`() {
+    fun `given a hidden tooltip, when composed, then its anchor remains and popup text is absent`() {
         composeTestRule.setContent {
             WooDesignSystemTheme {
-                WooTooltip(
+                WooTooltipBox(
+                    state = rememberWooTooltipState(),
                     title = TITLE,
-                    supportingText = SUPPORTING_TEXT,
-                    arrowPosition = WooTooltipArrowPosition.TopStart,
-                    modifier = Modifier.width(TOOLTIP_WIDTH),
-                )
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
             }
         }
 
-        composeTestRule.onAllNodesWithText(TITLE, useUnmergedTree = true).assertCountEquals(1)
-        composeTestRule.onAllNodesWithText(SUPPORTING_TEXT, useUnmergedTree = true).assertCountEquals(1)
+        composeTestRule.onNodeWithText(ANCHOR).assertExists()
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
     }
 
     @Test
-    fun `given supporting text, when rendered, then tooltip expands without clipping text`() {
+    fun `given an anchor modifier, when composed, then standard long-click semantics are on its wrapper`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooTooltipBox(
+                    state = rememberWooTooltipState(),
+                    title = TITLE,
+                    modifier = Modifier.testTag(ANCHOR_TAG),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        val longClick = composeTestRule.onNodeWithTag(ANCHOR_TAG).fetchSemanticsNode().config
+            .getOrNull(SemanticsActions.OnLongClick)
+        assertThat(longClick).isNotNull()
+    }
+
+    @Test
+    fun `given visible rich text, when values change, then popup semantics update without duplication`() {
+        var title by mutableStateOf(TITLE)
+        var supportingText by mutableStateOf(SUPPORTING_TEXT)
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                val state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = title,
+                    supportingText = supportingText,
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onAllNodesWithText(TITLE, useUnmergedTree = true).assertCountEquals(1)
+        composeTestRule.onAllNodesWithText(SUPPORTING_TEXT, useUnmergedTree = true).assertCountEquals(1)
+
+        composeTestRule.runOnIdle {
+            title = UPDATED_TITLE
+            supportingText = UPDATED_SUPPORTING_TEXT
+        }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.onNodeWithText(SUPPORTING_TEXT).assertDoesNotExist()
+        composeTestRule.onAllNodesWithText(UPDATED_TITLE, useUnmergedTree = true).assertCountEquals(1)
+        composeTestRule.onAllNodesWithText(UPDATED_SUPPORTING_TEXT, useUnmergedTree = true).assertCountEquals(1)
+    }
+
+    @Test
+    fun `given caller-controlled state, when shown and bubble is tapped, then it presents and dismisses`() {
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                WooTooltipBox(state = state, title = TITLE) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        assertThat(state.isVisible).isTrue()
+
+        composeTestRule.onNodeWithText(TITLE).performTouchInput { click() }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        assertThat(state.isVisible).isFalse()
+        composeTestRule.onNodeWithText(ANCHOR).assertExists()
+    }
+
+    @Test
+    fun `given a hoisted state, when its host is disposed and rehosted offscreen, then show remains paused`() {
+        var hostIsComposed by mutableStateOf(true)
+        var hostIsOffscreen by mutableStateOf(false)
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        lateinit var initialShowJob: Job
+        lateinit var rehostedShowJob: Job
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                if (hostIsComposed) {
+                    WooTooltipBox(
+                        state = state,
+                        title = TITLE,
+                        modifier = Modifier.offset(x = if (hostIsOffscreen) (-1000).dp else 0.dp),
+                    ) {
+                        androidx.compose.material3.Text(ANCHOR)
+                    }
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { initialShowJob = scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        assertThat(state.isVisible).isTrue()
+
+        composeTestRule.runOnIdle { hostIsComposed = false }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(initialShowJob.isCompleted).isTrue()
+            assertThat(state.isVisible).isFalse()
+        }
+
+        composeTestRule.runOnIdle {
+            hostIsOffscreen = true
+            hostIsComposed = true
+        }
+        composeTestRule.onNodeWithText(ANCHOR).assertExists()
+        composeTestRule.runOnIdle { rehostedShowJob = scope.launch { state.show() } }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(rehostedShowJob.isActive).isTrue()
+            assertThat(state.isVisible).isFalse()
+        }
+        runBlocking { rehostedShowJob.cancelAndJoin() }
+    }
+
+    @Test
+    fun `given a visible host, when its state is replaced, then the new state can show`() {
+        var useSecondState by mutableStateOf(false)
+        lateinit var firstState: WooTooltipState
+        lateinit var secondState: WooTooltipState
+        lateinit var scope: CoroutineScope
+        lateinit var firstShowJob: Job
+        lateinit var secondShowJob: Job
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                firstState = rememberWooTooltipState()
+                secondState = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                WooTooltipBox(
+                    state = if (useSecondState) secondState else firstState,
+                    title = TITLE,
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { firstShowJob = scope.launch { firstState.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        assertThat(firstState.isVisible).isTrue()
+
+        composeTestRule.runOnIdle { useSecondState = true }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(firstShowJob.isCompleted).isTrue()
+            assertThat(firstState.isVisible).isFalse()
+            assertThat(secondState.isVisible).isFalse()
+            secondShowJob = scope.launch { secondState.show() }
+        }
+
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        composeTestRule.runOnIdle {
+            assertThat(firstState.isVisible).isFalse()
+            assertThat(secondState.isVisible).isTrue()
+            assertThat(secondShowJob.isActive).isTrue()
+        }
+    }
+
+    @Test
+    fun `given two tooltip states, when the second shows, then Material global coordination dismisses the first`() {
+        lateinit var firstState: WooTooltipState
+        lateinit var secondState: WooTooltipState
+        lateinit var scope: CoroutineScope
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                firstState = rememberWooTooltipState()
+                secondState = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                Column {
+                    WooTooltipBox(state = firstState, title = TITLE) {
+                        androidx.compose.material3.Text("First anchor")
+                    }
+                    WooTooltipBox(state = secondState, title = UPDATED_TITLE) {
+                        androidx.compose.material3.Text("Second anchor")
+                    }
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { scope.launch { firstState.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+
+        composeTestRule.runOnIdle { scope.launch { secondState.show() } }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
+        assertThat(firstState.isVisible).isFalse()
+        assertThat(secondState.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given a paused request, when no newer request exists, then it resumes when the anchor reenters`() {
+        var anchorIsOffscreen by mutableStateOf(false)
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        lateinit var showJob: Job
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    modifier = Modifier.offset(x = if (anchorIsOffscreen) (-1000).dp else 0.dp),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { showJob = scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+
+        composeTestRule.runOnIdle { anchorIsOffscreen = true }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle { assertThat(showJob.isActive).isTrue() }
+
+        composeTestRule.runOnIdle { anchorIsOffscreen = false }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        assertThat(state.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given a paused request, when its show job is cancelled, then it does not resume on reentry`() {
+        var anchorIsOffscreen by mutableStateOf(false)
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        lateinit var showJob: Job
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    modifier = Modifier.offset(x = if (anchorIsOffscreen) (-1000).dp else 0.dp),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { showJob = scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+
+        composeTestRule.runOnIdle { anchorIsOffscreen = true }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle { assertThat(showJob.isActive).isTrue() }
+
+        runBlocking { showJob.cancelAndJoin() }
+        assertThat(showJob.isCancelled).isTrue()
+        assertThat(state.isVisible).isFalse()
+
+        composeTestRule.runOnIdle { anchorIsOffscreen = false }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.onNodeWithText(ANCHOR).assertExists()
+        assertThat(state.isVisible).isFalse()
+    }
+
+    @Test
+    fun `given a paused request, when a newer tooltip shows, then reentry does not displace it`() {
+        var firstAnchorIsOffscreen by mutableStateOf(false)
+        lateinit var firstState: WooTooltipState
+        lateinit var secondState: WooTooltipState
+        lateinit var scope: CoroutineScope
+        lateinit var firstShowJob: Job
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                firstState = rememberWooTooltipState()
+                secondState = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                Column {
+                    WooTooltipBox(
+                        state = firstState,
+                        title = TITLE,
+                        modifier = Modifier.offset(x = if (firstAnchorIsOffscreen) (-1000).dp else 0.dp),
+                    ) {
+                        androidx.compose.material3.Text("First anchor")
+                    }
+                    WooTooltipBox(state = secondState, title = UPDATED_TITLE) {
+                        androidx.compose.material3.Text("Second anchor")
+                    }
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { firstShowJob = scope.launch { firstState.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+
+        composeTestRule.runOnIdle { firstAnchorIsOffscreen = true }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        assertThat(firstState.isVisible).isFalse()
+        composeTestRule.runOnIdle { scope.launch { secondState.show() } }
+        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
+
+        composeTestRule.runOnIdle { firstAnchorIsOffscreen = false }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
+        composeTestRule.runOnIdle {
+            assertThat(firstShowJob.isCompleted).isTrue()
+            assertThat(firstState.isVisible).isFalse()
+            assertThat(secondState.isVisible).isTrue()
+        }
+
+        composeTestRule.runOnIdle { secondState.dismiss() }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+    }
+
+    @Test
+    fun `given high-priority presentation, when anchor leaves, then another tooltip can show without reentry`() {
+        var firstAnchorIsOffscreen by mutableStateOf(false)
+        lateinit var firstState: WooTooltipState
+        lateinit var secondState: WooTooltipState
+        lateinit var scope: CoroutineScope
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                firstState = rememberWooTooltipState()
+                secondState = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                Column {
+                    WooTooltipBox(
+                        state = firstState,
+                        title = TITLE,
+                        modifier = Modifier.offset(x = if (firstAnchorIsOffscreen) (-1000).dp else 0.dp),
+                    ) {
+                        androidx.compose.material3.Text("First anchor")
+                    }
+                    WooTooltipBox(state = secondState, title = UPDATED_TITLE) {
+                        androidx.compose.material3.Text("Second anchor")
+                    }
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle {
+            scope.launch { firstState.hostState.show(MutatePriority.PreventUserInput) }
+        }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+
+        composeTestRule.runOnIdle { firstAnchorIsOffscreen = true }
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle { scope.launch { secondState.show() } }
+        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
+
+        composeTestRule.runOnIdle { firstAnchorIsOffscreen = false }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
+    }
+
+    @Test
+    fun `given a visible preferred start tooltip, when direction changes, then host uses the current layout result`() {
+        var layoutDirection by mutableStateOf(LayoutDirection.Ltr)
+        var latestResult: WooTooltipLayoutResult? = null
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.absoluteOffset(x = 100.dp, y = 100.dp)) {
+                        CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                            WooTooltipBoxImpl(
+                                state = state,
+                                title = TITLE,
+                                preferredPlacement = WooTooltipPlacement.Start,
+                                onLayoutResult = { latestResult = it },
+                            ) {
+                                androidx.compose.material3.Text(ANCHOR)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        composeTestRule.runOnIdle { scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        composeTestRule.runOnIdle {
+            assertThat(latestResult).isNotNull()
+            assertThat(latestResult?.side).isEqualTo(WooTooltipPhysicalSide.Left)
+        }
+        val ltrResult = checkNotNull(latestResult)
+
+        composeTestRule.runOnIdle { layoutDirection = LayoutDirection.Rtl }
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        assertThat(checkNotNull(latestResult).side).isEqualTo(WooTooltipPhysicalSide.Right)
+        val rtlResult = checkNotNull(latestResult)
+
+        assertThat(ltrResult.arrowEdge).isEqualTo(WooTooltipPhysicalEdge.Right)
+        assertThat(rtlResult.arrowEdge).isEqualTo(WooTooltipPhysicalEdge.Left)
+        assertThat(rtlResult.offset.x).isGreaterThan(ltrResult.offset.x)
+        assertThat(rtlResult.arrowCenter).isFinite()
+        assertThat(rtlResult.maxBubbleWidth).isGreaterThan(ltrResult.maxBubbleWidth)
+        assertThat(rtlResult.maxBubbleWidth).isGreaterThan(0)
+        composeTestRule.waitForIdle()
+        assertThat(latestResult).isEqualTo(rtlResult)
+    }
+
+    @Test
+    fun `given long supporting text, when rendered at constrained width, then text has no visual overflow`() {
         composeTestRule.setContent {
             WooDesignSystemTheme {
                 Column {
-                    WooTooltip(
-                        title = TITLE,
-                        arrowPosition = WooTooltipArrowPosition.EndCenter,
-                        modifier = Modifier
-                            .width(TOOLTIP_WIDTH)
-                            .testTag(TITLE_ONLY_TOOLTIP_TAG),
-                    )
-                    WooTooltip(
+                    WooTooltipSurface(
                         title = TITLE,
                         supportingText = LONG_SUPPORTING_TEXT,
-                        arrowPosition = WooTooltipArrowPosition.EndCenter,
-                        modifier = Modifier
-                            .width(TOOLTIP_WIDTH)
-                            .testTag(RICH_TOOLTIP_TAG),
+                        arrowEdge = WooTooltipPhysicalEdge.Left,
+                        arrowCenter = 30f,
+                        cornerRadius = 12.dp,
+                        modifier = Modifier.width(120.dp),
                     )
                 }
             }
         }
 
-        val titleOnlyBounds = composeTestRule.onNodeWithTag(TITLE_ONLY_TOOLTIP_TAG).fetchSemanticsNode().boundsInRoot
-        val richBounds = composeTestRule.onNodeWithTag(RICH_TOOLTIP_TAG).fetchSemanticsNode().boundsInRoot
         val textLayoutResults = mutableListOf<TextLayoutResult>()
-        val textLayoutResultAction = composeTestRule
+        val action = composeTestRule
             .onNodeWithText(LONG_SUPPORTING_TEXT, useUnmergedTree = true)
             .fetchSemanticsNode()
             .config
             .getOrNull(SemanticsActions.GetTextLayoutResult)
             ?.action
 
-        assertThat(richBounds.height).isGreaterThan(titleOnlyBounds.height)
-        composeTestRule.onAllNodesWithText(LONG_SUPPORTING_TEXT, useUnmergedTree = true).assertCountEquals(1)
         composeTestRule.runOnIdle {
-            assertThat(textLayoutResultAction?.invoke(textLayoutResults)).isTrue()
-            val textLayoutResult = textLayoutResults.single()
-            assertThat(textLayoutResult.hasVisualOverflow)
-                .describedAs(
-                    "width overflow=${textLayoutResult.didOverflowWidth}, " +
-                        "height overflow=${textLayoutResult.didOverflowHeight}, " +
-                        "lines=${textLayoutResult.lineCount}, size=${textLayoutResult.size}"
-                )
-                .isFalse()
+            assertThat(action?.invoke(textLayoutResults)).isTrue()
+            assertThat(textLayoutResults.single().hasVisualOverflow).isFalse()
         }
     }
 
-    private fun assertConstrainedGeometry(
+    private fun geometry(
+        edge: WooTooltipPhysicalEdge,
         size: Size,
-        positions: List<WooTooltipArrowPosition>,
-    ) {
-        positions.forEach { position ->
-            LayoutDirection.entries.forEach { layoutDirection ->
-                val description = "$position at $size in $layoutDirection"
-                val geometry = geometryFor(position, size, layoutDirection)
-
-                assertGeometryInvariants(geometry, size, description)
-                assertOutlineInBounds(position, size, layoutDirection, description)
-            }
-        }
-    }
-
-    private fun assertGeometryInvariants(
-        geometry: WooTooltipGeometry,
-        size: Size,
-        description: String,
-    ) {
-        val baseInterval = geometry.baseInterval()
-        val edgeLength = geometry.edgeLength(size)
-        val straightEdge = geometry.cornerRadius..(edgeLength - geometry.cornerRadius)
-
-        assertThat(geometry.scale).describedAs(description).isGreaterThan(0f).isLessThanOrEqualTo(1f)
-        assertThat(geometry.arrowDepth).describedAs(description).isGreaterThan(0f)
-        assertThat(geometry.arrowHalfBase).describedAs(description).isGreaterThan(0f)
-        assertThat(geometry.cornerRadius).describedAs(description).isGreaterThan(0f)
-        assertThat(geometry.cornerRadius)
-            .describedAs(description)
-            .isLessThanOrEqualTo(geometry.bodyBounds.width / 2f)
-        assertThat(geometry.cornerRadius)
-            .describedAs(description)
-            .isLessThanOrEqualTo(geometry.bodyBounds.height / 2f)
-        assertThat(baseInterval.start).describedAs(description).isGreaterThanOrEqualTo(straightEdge.start)
-        assertThat(baseInterval.endInclusive).describedAs(description).isLessThanOrEqualTo(straightEdge.endInclusive)
-        assertThat(baseInterval.endInclusive - baseInterval.start)
-            .describedAs(description)
-            .isGreaterThan(0f)
-            .isCloseTo(geometry.arrowHalfBase * 2f, within(TOLERANCE))
-        assertThat(geometry.actualArrowDepth())
-            .describedAs(description)
-            .isCloseTo(geometry.arrowDepth, within(TOLERANCE))
-        assertPointsInBounds(geometry, size, description)
-    }
-
-    private fun assertPointsInBounds(
-        geometry: WooTooltipGeometry,
-        size: Size,
-        description: String,
-    ) {
-        listOf(geometry.arrowTip, geometry.arrowBaseStart, geometry.arrowBaseEnd).forEach { point ->
-            assertThat(point.x).describedAs(description).isBetween(0f, size.width)
-            assertThat(point.y).describedAs(description).isBetween(0f, size.height)
-        }
-        assertThat(geometry.bodyBounds.left).describedAs(description).isGreaterThanOrEqualTo(0f)
-        assertThat(geometry.bodyBounds.top).describedAs(description).isGreaterThanOrEqualTo(0f)
-        assertThat(geometry.bodyBounds.right).describedAs(description).isLessThanOrEqualTo(size.width)
-        assertThat(geometry.bodyBounds.bottom).describedAs(description).isLessThanOrEqualTo(size.height)
-    }
-
-    private fun assertOutlineInBounds(
-        position: WooTooltipArrowPosition,
-        size: Size,
-        layoutDirection: LayoutDirection,
-        description: String,
-    ) {
-        val outline = WooTooltipShape(position, FIGMA_CORNER_RADIUS).createOutline(
-            size = size,
-            layoutDirection = layoutDirection,
-            density = DEFAULT_DENSITY,
-        )
-
-        assertThat(outline).describedAs(description).isInstanceOf(Outline.Generic::class.java)
-        val bounds = (outline as Outline.Generic).path.getBounds()
-        assertThat(bounds.left).describedAs(description).isGreaterThanOrEqualTo(0f)
-        assertThat(bounds.top).describedAs(description).isGreaterThanOrEqualTo(0f)
-        assertThat(bounds.right).describedAs(description).isLessThanOrEqualTo(size.width)
-        assertThat(bounds.bottom).describedAs(description).isLessThanOrEqualTo(size.height)
-        assertThat(bounds.width).describedAs(description).isGreaterThan(0f)
-        assertThat(bounds.height).describedAs(description).isGreaterThan(0f)
-    }
-
-    private fun geometryFor(
-        position: WooTooltipArrowPosition,
-        size: Size,
-        layoutDirection: LayoutDirection = LayoutDirection.Ltr,
-        density: Density = DEFAULT_DENSITY,
+        desiredCenter: Float,
     ): WooTooltipGeometry = checkNotNull(
         wooTooltipGeometry(
-            arrowPosition = position,
+            edge = edge,
+            desiredArrowCenter = desiredCenter,
             size = size,
-            layoutDirection = layoutDirection,
-            density = density,
-            cornerRadius = FIGMA_CORNER_RADIUS,
+            tokens = TOKENS,
         )
-    )
-
-    private fun WooTooltipGeometry.baseInterval(): ClosedFloatingPointRange<Float> = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> arrowBaseStart.x..arrowBaseEnd.x
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> arrowBaseStart.y..arrowBaseEnd.y
-    }
-
-    private fun WooTooltipGeometry.edgeLength(size: Size): Float = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> size.width
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> size.height
-    }
-
-    private fun WooTooltipGeometry.actualArrowDepth(): Float = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> kotlin.math.abs(arrowTip.y - arrowBaseStart.y)
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> kotlin.math.abs(arrowTip.x - arrowBaseStart.x)
-    }
-
-    private fun WooTooltipGeometry.arrowCenterAlongEdge(): Float = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> arrowTip.x
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> arrowTip.y
-    }
-
-    private fun sizeForEdge(
-        edge: WooTooltipPhysicalEdge,
-        edgeLength: Float,
-        containerLength: Float,
-    ): Size = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> Size(width = edgeLength, height = containerLength)
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> Size(width = containerLength, height = edgeLength)
-    }
-
-    private fun figmaSize(edge: WooTooltipPhysicalEdge, density: Float): Size = when (edge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> TOP_BOTTOM_SIZE * density
-
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> SIDE_SIZE * density
-    }
-
-    private data class ExpectedArrowTip(
-        val position: WooTooltipArrowPosition,
-        val size: Size,
-        val tip: Offset,
-    )
-
-    private data class ThresholdCase(
-        val edgeLength: Float,
-        val containerLength: Float,
     )
 
     private companion object {
-        const val TITLE = "Title"
+        val DENSITY = Density(1f)
+        val TOKENS = WooTooltipGeometryTokens(12f, 11f, 10f)
+        val CONSTRAINED_SIZES = listOf(
+            Size(16f, 100f),
+            Size(100f, 16f),
+            Size(16f, 16f),
+            Size(0.1f, 0.1f),
+        )
+        val EXPECTED_FIGMA_TIPS = listOf(
+            ExpectedTip(WooTooltipPhysicalEdge.Top, Size(200f, 122f), 31f, Offset(31f, 0f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Top, Size(200f, 122f), 100f, Offset(100f, 0f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Top, Size(200f, 122f), 169f, Offset(169f, 0f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Bottom, Size(200f, 122f), 31f, Offset(31f, 122f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Bottom, Size(200f, 122f), 100f, Offset(100f, 122f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Bottom, Size(200f, 122f), 169f, Offset(169f, 122f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Left, Size(200f, 112f), 31f, Offset(0f, 31f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Left, Size(200f, 112f), 56f, Offset(0f, 56f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Left, Size(200f, 112f), 81f, Offset(0f, 81f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Right, Size(200f, 112f), 31f, Offset(200f, 31f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Right, Size(200f, 112f), 56f, Offset(200f, 56f)),
+            ExpectedTip(WooTooltipPhysicalEdge.Right, Size(200f, 112f), 81f, Offset(200f, 81f)),
+        )
+        const val TITLE = "Tooltip title"
         const val SUPPORTING_TEXT = "Supporting text"
+        const val UPDATED_TITLE = "Updated title"
+        const val UPDATED_SUPPORTING_TEXT = "Updated supporting text"
+        const val ANCHOR = "Anchor"
+        const val ANCHOR_TAG = "tooltip-anchor"
         const val LONG_SUPPORTING_TEXT =
-            "Supporting information wraps across several lines without clipping, even when the message contains " +
-                "enough detail to exceed the available width and adapt to a caller-controlled tooltip size."
-        const val TITLE_ONLY_TOOLTIP_TAG = "title-only-tooltip"
-        const val RICH_TOOLTIP_TAG = "rich-tooltip"
-        const val NATURAL_EDGE_LENGTH = 62f
-        const val NATURAL_CONTAINER_LENGTH = 34f
-        const val ORDERING_CONTAINER_LENGTH = 100f
-        const val TOLERANCE = 0.0001f
-        val TOOLTIP_WIDTH = 200.dp
-        val FIGMA_CORNER_RADIUS = 12.dp
-        val DEFAULT_DENSITY = Density(density = 1f, fontScale = 1f)
-        val DENSITIES = listOf(DEFAULT_DENSITY, Density(density = 2.625f, fontScale = 1f))
-        val TOP_BOTTOM_SIZE = Size(width = 200f, height = 122f)
-        val SIDE_SIZE = Size(width = 200f, height = 112f)
-        val TOP_BOTTOM_POSITIONS = listOf(
-            WooTooltipArrowPosition.TopStart,
-            WooTooltipArrowPosition.TopCenter,
-            WooTooltipArrowPosition.TopEnd,
-            WooTooltipArrowPosition.BottomStart,
-            WooTooltipArrowPosition.BottomCenter,
-            WooTooltipArrowPosition.BottomEnd,
-        )
-        val SIDE_POSITIONS = listOf(
-            WooTooltipArrowPosition.StartTop,
-            WooTooltipArrowPosition.StartCenter,
-            WooTooltipArrowPosition.StartBottom,
-            WooTooltipArrowPosition.EndTop,
-            WooTooltipArrowPosition.EndCenter,
-            WooTooltipArrowPosition.EndBottom,
-        )
-        val THRESHOLD_CASES = listOf(
-            ThresholdCase(edgeLength = 61.5f, containerLength = 34.5f),
-            ThresholdCase(edgeLength = 62f, containerLength = 34f),
-            ThresholdCase(edgeLength = 62.5f, containerLength = 33.5f),
-            ThresholdCase(edgeLength = 62.5f, containerLength = 34.5f),
-        )
-        val ORDERING_EDGE_LENGTHS = listOf(46f, 50f, 60f, 62f, SIDE_SIZE.height, TOP_BOTTOM_SIZE.width)
-        val SMALL_POSITIVE_SIZES = listOf(
-            Size(width = 0.5f, height = 0.5f),
-            Size(width = 1f, height = 1f),
-            Size(width = 16f, height = 100f),
-            Size(width = 100f, height = 16f),
-            Size(width = 16f, height = 16f),
-        )
-        val INVALID_SIZES = listOf(
-            Size.Zero,
-            Size(width = 0f, height = 10f),
-            Size(width = 10f, height = 0f),
-            Size(width = -1f, height = 10f),
-            Size.Unspecified,
-            Size(width = Float.NaN, height = 10f),
-            Size(width = 10f, height = Float.POSITIVE_INFINITY),
-        )
-        val FIGMA_ARROW_TIPS = listOf(
-            ExpectedArrowTip(WooTooltipArrowPosition.TopStart, TOP_BOTTOM_SIZE, Offset(31f, 0f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.TopCenter, TOP_BOTTOM_SIZE, Offset(100f, 0f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.TopEnd, TOP_BOTTOM_SIZE, Offset(169f, 0f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.BottomStart, TOP_BOTTOM_SIZE, Offset(31f, 122f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.BottomCenter, TOP_BOTTOM_SIZE, Offset(100f, 122f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.BottomEnd, TOP_BOTTOM_SIZE, Offset(169f, 122f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.StartTop, SIDE_SIZE, Offset(0f, 31f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.StartCenter, SIDE_SIZE, Offset(0f, 56f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.StartBottom, SIDE_SIZE, Offset(0f, 81f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.EndTop, SIDE_SIZE, Offset(200f, 31f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.EndCenter, SIDE_SIZE, Offset(200f, 56f)),
-            ExpectedArrowTip(WooTooltipArrowPosition.EndBottom, SIDE_SIZE, Offset(200f, 81f)),
-        )
+            "Supporting information wraps onto several lines and expands without clipping at large font scales."
     }
+
+    private data class ExpectedTip(
+        val edge: WooTooltipPhysicalEdge,
+        val size: Size,
+        val desiredCenter: Float,
+        val tip: Offset,
+    )
 }
