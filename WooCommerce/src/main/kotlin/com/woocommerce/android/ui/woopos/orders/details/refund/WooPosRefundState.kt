@@ -8,13 +8,9 @@ import java.math.BigDecimal
 sealed class WooPosRefundState {
 
     /**
-     * What the cashier can do about a failure.
-     *
-     * The refund endpoints reject with deterministic validation errors, so repeating the same
-     * request against the same order data fails identically. [RefreshItems] reloads the order and
-     * its refunds so the next selection is made against the true remaining quantities, and [None]
-     * leaves only the way out of the flow. [Retry] is for failures that can pass on a second
-     * attempt, a network error for example.
+     * What the cashier can do about a failure. Mapped refund errors always fail the same way, so
+     * [RefreshItems] reloads the order and its refunds and [None] only leaves the flow. [Retry] is
+     * for failures that can pass on a second try, such as a network error.
      */
     enum class Recovery {
         Retry,
@@ -48,8 +44,8 @@ sealed class WooPosRefundState {
     ) : WooPosRefundState() {
 
         /**
-         * A failed refund preview, kept on the selection step. [message] is the store's mapped
-         * rejection copy, or null when the failure has none and the generic copy is shown.
+         * A failed preview, shown on the selection step. [message] is the store's mapped copy, or
+         * null to show the generic one.
          */
         @Immutable
         data class PreviewFailure(

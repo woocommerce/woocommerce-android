@@ -64,8 +64,7 @@ class WooPosRefundApiErrorTest {
 
     @Test
     fun `given refund api errors, when recovering, then none of them offer a retry`() {
-        // Every mapped code is a deterministic validation rejection: the same request always gets
-        // the same answer, so a retry cannot be the way out.
+        // Every mapped code always fails the same way, so a retry cannot help.
         assertThat(WooPosRefundApiError.entries.map { it.recovery })
             .doesNotContain(WooPosRefundState.Recovery.Retry)
     }

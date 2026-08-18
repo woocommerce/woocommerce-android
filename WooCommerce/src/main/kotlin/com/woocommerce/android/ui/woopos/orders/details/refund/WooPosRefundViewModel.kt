@@ -127,10 +127,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * Reloads the order and its refunds after the store rejected a preview or a create because the
-     * order changed since the flow was opened, for example when another register refunded part of
-     * it. Returns to the item selection showing the remaining quantities, keeping what is left of
-     * the previous selection so the cashier does not have to rebuild it.
+     * Reloads the order and its refunds after the store rejected a refund because the order
+     * changed. Goes back to item selection and keeps the selection that is still refundable.
      */
     private fun refreshRefundableItems() {
         val preservedSelection = (_state.value as? WooPosRefundState.Content)?.selectedItemIds
@@ -140,10 +138,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         loadContent(preservedSelection = preservedSelection, isFlowStart = false)
     }
 
-    /**
-     * @param isFlowStart false when reloading mid-flow, so the refund flow is reported as started
-     * once per flow rather than once per reload.
-     */
+    /** @param isFlowStart false on a reload, so the flow start is tracked once per flow. */
     private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean) {
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
@@ -447,11 +442,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * A rejected preview keeps the cashier on the selection step, with the store's reason for the
-     * rejection. The recognised codes are deterministic, so instead of a retry that would be
-     * rejected again the cashier is offered a reload of the refundable items, or the terminal
-     * screen when the order has nothing refundable left. Unrecognised failures, network errors
-     * among them, stay retryable.
+     * Keeps the cashier on the selection step with the store's reason. Mapped codes offer a reload,
+     * or the terminal screen when nothing is refundable. Unmapped failures stay retryable.
      */
     private fun handlePreviewError(
         currentState: WooPosRefundState.Content,
@@ -714,9 +706,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * A rejected create is handled like a rejected preview: the order changed under the cashier,
-     * so the way forward is a fresh item list rather than resubmitting the same request. An order
-     * with nothing left to refund goes straight to the terminal screen.
+     * A rejected create is handled like a rejected preview: reload the items instead of sending the
+     * same request again. An order with nothing left to refund goes to the terminal screen.
      */
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,

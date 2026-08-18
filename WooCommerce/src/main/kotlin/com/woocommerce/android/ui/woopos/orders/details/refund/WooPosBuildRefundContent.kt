@@ -7,19 +7,15 @@ import java.math.BigDecimal
 import javax.inject.Inject
 
 /**
- * Builds the item-selection content of the refund flow.
- *
- * The selection step displays no aggregate totals, so the content starts at zero. Totals are
- * resolved when the cashier continues: from the server preview, or from the local calculation on a
- * store without server refunds.
+ * Builds the item-selection content of the refund flow. Totals start at zero: they are resolved
+ * when the cashier continues.
  */
 class WooPosBuildRefundContent @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
 ) {
     /**
-     * @param preservedSelection a selection carried over from a reload. Items the store has since
-     * refunded are gone from [refundableItems], so it is intersected with them; when nothing is
-     * left of it every item is selected, as on a freshly opened flow.
+     * @param preservedSelection selection kept from a reload. Ids that are no longer refundable are
+     * dropped. If none are left, all items are selected.
      */
     operator fun invoke(
         order: Order,

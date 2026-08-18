@@ -29,11 +29,7 @@ enum class WooPosRefundApiError(
         WooPosRefundState.Recovery.RefreshItems,
     ),
 
-    /**
-     * Nothing on the order can be refunded any more, so there is no selection to recover to. The
-     * preview and create paths route this to [WooPosRefundState.NoRefundableItems] before the
-     * recovery is read.
-     */
+    /** Nothing is left to refund. Both paths route this to [WooPosRefundState.NoRefundableItems]. */
     OrderNotRefundable(
         R.string.woopos_refund_error_order_not_refundable,
         WooPosRefundState.Recovery.None,
@@ -47,9 +43,7 @@ enum class WooPosRefundApiError(
         WooPosRefundState.Recovery.RefreshItems,
     ),
 
-    /**
-     * The amount we sent is malformed rather than too large, which a fresh item list won't fix.
-     */
+    /** The amount is malformed, not too large, so a fresh item list does not help. */
     InvalidAmount(
         R.string.woopos_refund_error_invalid_amount,
         WooPosRefundState.Recovery.None,

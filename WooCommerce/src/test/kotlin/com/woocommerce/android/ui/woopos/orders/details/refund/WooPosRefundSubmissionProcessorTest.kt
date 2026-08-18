@@ -529,9 +529,8 @@ class WooPosRefundSubmissionProcessorTest {
         processor.submit(request.copy(serverLineItems = serverLineItems)).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
 
-            // THEN — the error from the computed create reaches the cashier rather than being
-            // swallowed into a success state, as the generic message: the store's own wording is
-            // technical and in the store's locale, so it stays out of the cashier-facing slot.
+            // THEN — the failure reaches the cashier as the generic message, not the store's own
+            // technical wording.
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
             assertThat(failure.message).isEqualTo("Something went wrong")
             awaitComplete()

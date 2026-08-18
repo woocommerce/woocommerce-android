@@ -473,8 +473,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
 
-            // THEN — no mapped code, so the UI falls back to the generic preview error copy and
-            // the failure stays retryable.
+            // THEN — no mapped code, so the copy is generic and the failure stays retryable.
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.isPreviewLoading).isFalse()
@@ -503,8 +502,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
 
-            // THEN — the user stays on the selection step with the specific message, and the
-            // deterministic rejection offers a reload instead of a retry.
+            // THEN — the user stays on the selection step and is offered a reload, not a retry.
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.isPreviewLoading).isFalse()
@@ -2392,8 +2390,7 @@ class WooPosRefundViewModelTest {
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
-            // The store refunded one of the two units while the flow was open, so the reload
-            // returns a shorter list than the one the rejected refund was built from.
+            // The store refunded one of the two units, so the reload returns a shorter list.
             whenever(getRefundableItems.invoke(any(), any()))
                 .thenReturn(listOf(firstUnit, secondUnit), listOf(firstUnit))
             whenever(groupRefundItems.invoke(any(), eq(testOrder), any())).thenReturn(groupedItems)
