@@ -29,7 +29,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            productUrl = "",
+            productUrl = null,
             siteUrl = selectedSite.get().url,
             targetUrl = navArgs.destinationParameters.targetUrl,
             parameters = navArgs.destinationParameters.parameters,
@@ -75,7 +75,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val productUrl: String,
+        val productUrl: String?,
         val siteUrl: String,
         val targetUrl: String,
         val parameters: Map<String, String>,
