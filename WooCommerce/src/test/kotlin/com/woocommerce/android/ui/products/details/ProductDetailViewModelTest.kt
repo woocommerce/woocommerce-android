@@ -397,6 +397,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given offline cache miss, when product loads, then None is emitted without a product`() = testBlocking {
+        doReturn(null).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        viewModel.start()
+
+        verify(productRepository, times(1)).getProductAggregate(PRODUCT_REMOTE_ID)
+        verify(productRepository, never()).fetchAndGetProductAggregate(any())
+        Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
+        Assertions.assertThat(viewModel.getProduct().auxiliaryState)
+            .isEqualTo(ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None)
+    }
+
+    @Test
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
         doReturn(null).whenever(productRepository).getProductAggregate(any())
         doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
