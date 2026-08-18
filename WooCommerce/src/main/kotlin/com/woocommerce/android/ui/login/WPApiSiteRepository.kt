@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL
@@ -53,14 +54,19 @@ class WPApiSiteRepository @Inject constructor(
     /**
      * Handles authentication to the given [url] using wp-admin credentials.
      */
-    suspend fun login(url: String, username: String, password: String): Result<Unit> {
+    suspend fun login(
+        url: String,
+        username: String,
+        password: String,
+        endpoints: CookieNonceAuthenticationEndpoints = CookieNonceAuthenticationEndpoints(url)
+    ): Result<Unit> {
         WooLog.d(WooLog.T.LOGIN, "Authenticating in to site $url using site credentials")
 
         // Clear cookies to make sure the new credentials are correctly checked
         cookieManager.cookieStore.removeAll()
 
         val authenticationResult = cookieNonceAuthenticator.authenticate(
-            siteUrl = url,
+            endpoints = endpoints,
             username = username,
             password = password
         )
@@ -163,6 +169,45 @@ class WPApiSiteRepository @Inject constructor(
         dispatcher.dispatchAndAwait<SiteModel, OnSiteChanged>(SiteActionBuilder.newUpdateSiteAction(site))
     }
 
+    suspend fun saveAuthenticationEndpoints(
+        site: SiteModel,
+        endpoints: CookieNonceAuthenticationEndpoints
+    ): Result<SiteModel> {
+        val originalLoginUrl = site.loginUrl
+        val originalAdminUrl = site.adminUrl
+        var persistenceConfirmed = false
+
+        return try {
+            endpoints.loginEntryUrl?.let { site.loginUrl = it }
+            endpoints.adminBaseUrl?.let { site.adminUrl = it }
+
+            val event = dispatcher.dispatchAndAwait<SiteModel, OnSiteChanged>(
+                SiteActionBuilder.newUpdateSiteAction(site)
+            )
+            when {
+                event.isError -> Result.failure(OnChangedException(event.error))
+                event.rowsAffected <= 0 -> Result.failure(
+                    IllegalStateException("Authentication endpoints update did not persist any site rows")
+                )
+                else -> {
+                    persistenceConfirmed = true
+                    getSiteByLocalId(site.id)?.let { persistedSite ->
+                        Result.success(persistedSite)
+                    } ?: Result.failure(
+                        IllegalStateException(
+                            "Authentication endpoints persisted but site ${site.id} could not be reloaded"
+                        )
+                    )
+                }
+            }
+        } finally {
+            if (!persistenceConfirmed) {
+                site.loginUrl = originalLoginUrl
+                site.adminUrl = originalAdminUrl
+            }
+        }
+    }
+
     private fun Error.mapToException(): CookieNonceAuthenticationException {
         val networkStatusCode = extractNetworkStatusCode()
         val networkErrorMessage by lazy {
@@ -179,7 +224,8 @@ class WPApiSiteRepository @Inject constructor(
         return CookieNonceAuthenticationException(
             errorMessage,
             type,
-            networkStatusCode
+            networkStatusCode,
+            loginEntryVerified
         )
     }
 
@@ -193,21 +239,23 @@ class WPApiSiteRepository @Inject constructor(
                 type == INVALID_CREDENTIALS || type == INVALID_RESPONSE
             }?.let { HTTP_SUCCESS }
 
-    private fun Error.mapToUiString() = when (type) {
-        INVALID_CREDENTIALS -> message?.let { UiStringText(it) }
+    private fun Error.mapToUiString() = when {
+        type == CUSTOM_LOGIN_URL && loginEntryVerified -> null
+        type == INVALID_CREDENTIALS -> message?.let { UiStringText(it) }
             ?: UiStringRes(string.login_invalid_credentials_message)
 
-        INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
-        CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
-        CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
-        BASIC_AUTH_REQUIRED -> UiStringRes(string.login_site_credentials_http_basic_auth_error)
+        type == INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
+        type == CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
+        type == CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
+        type == BASIC_AUTH_REQUIRED -> UiStringRes(string.login_site_credentials_http_basic_auth_error)
         else -> message?.takeIf { it.isNotEmpty() }?.let { UiStringText(it) }
     }
 
     data class CookieNonceAuthenticationException(
         val errorMessage: UiString,
         val errorType: Nonce.CookieNonceErrorType,
-        val networkStatusCode: Int?
+        val networkStatusCode: Int?,
+        val loginEntryVerified: Boolean = false
     ) : Exception((errorMessage as? UiStringText)?.text)
 
     companion object {

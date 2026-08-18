@@ -2,9 +2,10 @@ package org.wordpress.android.fluxc.store
 
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.ComputedRefundLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundMapper
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
@@ -86,15 +87,16 @@ class WCRefundStore @Inject internal constructor(
     }
 
     /**
-     * Fetches a server-calculated refund preview via the v4 endpoint.
+     * Fetches a server-calculated refund preview via `POST /wc/v3/orders/<order_id>/refunds/preview`.
      *
-     * On a v4-unavailable store the result is an error with [WooErrorType.API_NOT_FOUND]; callers
-     * should detect this and fall back to the v3 + local-calculation flow.
+     * On a store whose WooCommerce does not register the preview route yet, the result is an error
+     * with [WooErrorType.API_NOT_FOUND]; callers should detect this and fall back to the
+     * local-calculation flow.
      */
     suspend fun previewRefund(
         site: SiteModel,
         orderId: Long,
-        items: List<RefundV4LineItem>,
+        items: List<RefundPreviewLineItem>,
     ): WooResult<WCRefundPreview> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "previewRefund") {
             val response = previewRestClient.previewRefund(site, orderId, items)
@@ -107,28 +109,37 @@ class WCRefundStore @Inject internal constructor(
     }
 
     /**
-     * Creates a refund through the simplified v4 endpoint. The client sends only the items being
-     * refunded; the server computes all monetary values. No client-calculated amount is sent.
+     * Creates a server-computed refund through `POST /wc/v3/orders/<order_id>/refunds` with
+     * `compute_totals=true`. The client sends only the items being refunded; the server computes
+     * all monetary values unless an explicit order-level [amount] override is given. An override
+     * below the computed line-item total is rejected with a 400; one above it is accepted as a
+     * goodwill over-refund, capped at the order's remaining refundable amount (422 beyond).
      *
-     * On a v4-unavailable store the result is an error with [WooErrorType.API_NOT_FOUND]; callers
-     * should detect this and fall back to [createItemsRefund].
+     * On a store whose refund endpoint does not support `compute_totals`, the unknown param is
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock. Only call this after a successful [previewRefund] against the same store confirmed
+     * server-side computation is available.
      */
-    suspend fun createSimplifiedItemsRefund(
+    @Suppress("LongParameterList")
+    suspend fun createComputedItemsRefund(
         site: SiteModel,
         orderId: Long,
         reason: String = "",
         autoRefund: Boolean = false,
         restockItems: Boolean = true,
-        items: List<RefundV4LineItem>,
+        amount: BigDecimal? = null,
+        items: List<ComputedRefundLineItem>,
     ): WooResult<WCRefundModel> {
-        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createSimplifiedItemsRefund") {
-            val response = restClient.createSimplifiedRefund(
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createComputedItemsRefund") {
+            val response = restClient.createComputedRefund(
                 site = site,
                 orderId = orderId,
                 reason = reason,
-                automaticRefund = autoRefund,
-                restockItems = restockItems,
-                items = items,
+                apiRefund = autoRefund,
+                apiRestock = restockItems,
+                // toPlainString: toString() can emit scientific notation for extreme scales.
+                amount = amount?.toPlainString(),
+                lineItems = items,
             )
             return@withDefaultContext when {
                 response.isError -> WooResult(response.error)

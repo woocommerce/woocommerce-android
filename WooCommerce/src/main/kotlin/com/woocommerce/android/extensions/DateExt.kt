@@ -1,10 +1,13 @@
 package com.woocommerce.android.extensions
 
 import android.content.Context
+import android.icu.text.DateIntervalFormat
+import android.icu.util.DateInterval
 import android.text.format.DateFormat
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Calendar
@@ -161,41 +164,21 @@ fun Date.oneYearAgo(): Date =
         add(Calendar.YEAR, -1)
     }.time
 
-fun Date.isInSameYearAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisYear = calendar.get(Calendar.YEAR)
-    calendar.time = other
-    val otherYear = calendar.get(Calendar.YEAR)
-    return thisYear == otherYear
-}
-
-fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisMonth = calendar.get(Calendar.MONTH)
-    calendar.time = other
-    val otherMonth = calendar.get(Calendar.MONTH)
-    return thisMonth == otherMonth && isInSameYearAs(other, calendar)
-}
-
-fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
-    val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
-        SimpleDateFormat("MMM d", locale).format(this)
-    } else {
-        SimpleDateFormat("MMM d, yyyy", locale).format(this)
-    }
-
-    val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
-        SimpleDateFormat("d, yyyy", locale).format(other)
-    } else {
-        SimpleDateFormat("MMM d, yyyy", locale).format(other)
-    }
-
-    return "$formattedStartDate – $formattedEndDate"
-}
+/**
+ * Formats the two dates as a range in the locale's own interval format, e.g. "Jul 1 – 31, 2022" in English
+ * and "1.–31. Juli 2022" in German.
+ */
+fun Date.formatAsRangeWith(other: Date, locale: Locale): String = DateIntervalFormat
+    .getInstance("yMMMd", locale)
+    .format(DateInterval(this.time, other.time))
 
 private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
 
 fun LocalDate.formatStyleFull(): String = format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
+
+fun Date.toEpochDay(): Long =
+    toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay()
+
+fun Long.toDateAtStartOfDay(): Date =
+    Date.from(LocalDate.ofEpochDay(this).atStartOfDay(ZoneId.systemDefault()).toInstant())

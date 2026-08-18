@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.hub
 
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import java.util.Date
 
 data class AnalyticsViewState(
     val refreshIndicator: RefreshIndicator,
@@ -12,7 +13,7 @@ data class AnalyticsViewState(
 )
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
-    data class OpenDatePicker(val fromMillis: Long, val toMillis: Long) : MultiLiveEvent.Event()
+    data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     object OpenDateRangeSelector : AnalyticsViewEvent()
     object SendFeedback : AnalyticsViewEvent()
     object OpenSettings : AnalyticsViewEvent()

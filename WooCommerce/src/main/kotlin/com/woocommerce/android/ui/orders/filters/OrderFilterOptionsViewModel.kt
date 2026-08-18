@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.toDateAtStartOfDay
 import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -112,7 +113,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
 
     private fun updateDateRangeFilters(dateRangeOptionClicked: OrderFilterOptionUiModel) {
         if (DateRange.fromValue(dateRangeOptionClicked.key) == DateRange.CUSTOM_RANGE) {
-            val selectedCustomDateRange = orderFilterRepository.getCustomDateRangeFilter()
+            val selectedCustomDateRange = orderFilterRepository.getCustomDateRangeDays()
             triggerEvent(
                 ShowCustomDateRangePicker(selectedCustomDateRange.first, selectedCustomDateRange.second)
             )
@@ -173,9 +174,13 @@ class OrderFilterOptionsViewModel @Inject constructor(
             SALES_CHANNEL -> resourceProvider.getString(R.string.orderfilters_sales_channel_filter)
         }
 
-    fun onCustomDateRangeChanged(startMillis: Long, endMillis: Long) {
-        orderFilterRepository.setCustomDateRange(startMillis, endMillis)
-        val dateRangeDisplayValue = toDisplayDateRange(startMillis, endMillis, dateUtils)
+    fun onCustomDateRangeChanged(startDay: Long, endDay: Long) {
+        orderFilterRepository.setCustomDateRange(startDay, endDay)
+        val dateRangeDisplayValue = toDisplayDateRange(
+            startDay.toDateAtStartOfDay().time,
+            endDay.toDateAtStartOfDay().time,
+            dateUtils
+        )
         _viewState = _viewState.copy(
             filterOptions = _viewState.filterOptions
                 .map {

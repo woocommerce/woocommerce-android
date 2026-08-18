@@ -26,9 +26,9 @@ class WCWPAPIEndpointTest {
     }
 
     @Test
-    fun `when building v4 refund paths, then namespace and routes are correct`() {
-        assertEquals("/wc/v4/refunds/", WOOCOMMERCE.refunds.pathV4)
-        assertEquals("/wc/v4/refunds/preview/", WOOCOMMERCE.refunds.preview.pathV4)
+    fun `when building refund paths, then v3 routes are correct`() {
+        assertEquals("/wc/v3/orders/123/refunds/", WOOCOMMERCE.orders.id(123).refunds.pathV3)
+        assertEquals("/wc/v3/orders/123/refunds/preview/", WOOCOMMERCE.orders.id(123).refunds.preview.pathV3)
     }
 
     @Test

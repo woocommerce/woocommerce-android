@@ -4,12 +4,14 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.util.ResultWithOutdatedFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
@@ -27,6 +29,9 @@ import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetTopPerformersTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val statsRepository: StatsRepository = mock()
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
@@ -174,11 +179,13 @@ class GetTopPerformersTest : BaseUnitTest() {
             )
         )
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
-        val ANY_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
-            selectionType = ANY_SELECTION_TYPE,
-            referenceDate = Date(),
-            calendar = Calendar.getInstance(),
-            locale = Locale.getDefault()
-        )
+        val ANY_STATS_RANGE_SELECTION by lazy {
+            StatsTimeRangeSelection.build(
+                selectionType = ANY_SELECTION_TYPE,
+                referenceDate = Date(),
+                calendar = Calendar.getInstance(),
+                locale = Locale.getDefault()
+            )
+        }
     }
 }
