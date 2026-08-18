@@ -49,7 +49,9 @@ class EditVariationAttributesViewModel @Inject constructor(
         )
     }
 
-    private val parentProduct by lazy { productRepository.getProduct(viewState.parentProductID) }
+    private val parentProductDeferred = async(start = LAZY) {
+        productRepository.getProduct(viewState.parentProductID)
+    }
 
     private val hasChanges
         get() = editableVariationAttributeList.value?.toTypedArray()
@@ -85,7 +87,7 @@ class EditVariationAttributesViewModel @Inject constructor(
     private fun loadProductAttributes() =
         viewState.copy(isSkeletonShown = true).let { viewState = it }.also {
             launch(context = dispatchers.computation) {
-                parentProduct?.variationEnabledAttributes
+                parentProductDeferred.await()?.variationEnabledAttributes
                     ?.pairAttributeWithSelectedOption()
                     ?.pairAttributeWithUnselectedOption()
                     ?.mapToAttributeSelectionGroupList()
@@ -101,9 +103,9 @@ class EditVariationAttributesViewModel @Inject constructor(
                 ?.let { Pair(attribute, it) }
         }
 
-    private fun List<Pair<ProductAttribute, VariantOption>>.pairAttributeWithUnselectedOption() =
+    private suspend fun List<Pair<ProductAttribute, VariantOption>>.pairAttributeWithUnselectedOption() =
         map { it.first }.let { selectedAttributes ->
-            parentProduct?.variationEnabledAttributes
+            parentProductDeferred.await()?.variationEnabledAttributes
                 ?.filter { selectedAttributes.contains(it).not() }
                 ?.map { it to VariantOption.empty }
                 ?.let { toMutableList().apply { addAll(it) } }

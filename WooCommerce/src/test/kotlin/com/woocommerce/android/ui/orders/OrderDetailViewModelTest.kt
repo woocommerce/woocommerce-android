@@ -115,6 +115,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
         on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+        on { hasVirtualProductsOnly(any()) } doReturn false
+        on { getProductCountForOrder(any()) } doReturn 0
+        on { getOrderRefunds(any()) } doReturn emptyList()
     }
     private val addonsRepository: AddonRepository = mock {
         on { containsAddonsFrom(any()) } doReturn false
@@ -128,6 +131,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
+        on { shouldShowWcShippingBanner(any(), any()) } doReturn false
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()

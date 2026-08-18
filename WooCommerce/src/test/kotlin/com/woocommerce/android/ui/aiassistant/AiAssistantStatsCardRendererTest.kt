@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.aiassistant
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -12,6 +14,9 @@ import org.mockito.kotlin.whenever
 import java.util.Locale
 
 class AiAssistantStatsCardRendererTest {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val currencyFormatter: AiAssistantCurrencyFormatter = mock()
 
     @Test
@@ -30,7 +35,7 @@ class AiAssistantStatsCardRendererTest {
             locale = Locale.US,
         )
 
-        assertThat(model.period).isEqualTo("May 1 - May 7, 2026")
+        assertThat(model.period).isEqualTo("May 1, 2026 – May 7, 2026")
         assertThat(model.metrics).containsExactly(
             AiAssistantStatsCardState.Metric(
                 type = AssistantCard.Stats.MetricType.TotalSales,
@@ -68,7 +73,7 @@ class AiAssistantStatsCardRendererTest {
 
         assertThat(model).isEqualTo(
             AiAssistantStatsCardState(
-                period = "May 1 - May 7, 2026",
+                period = "May 1, 2026 – May 7, 2026",
                 metrics = listOf(
                     AiAssistantStatsCardState.Metric(
                         type = AssistantCard.Stats.MetricType.TotalSales,

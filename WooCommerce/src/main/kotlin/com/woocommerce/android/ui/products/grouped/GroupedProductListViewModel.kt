@@ -86,15 +86,17 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     private fun updateProductList() {
-        _productList.value = if (selectedProductIds.isNotEmpty()) {
-            groupedProductListRepository.getProductList(selectedProductIds)
-        } else {
-            emptyList()
-        }
+        launch {
+            _productList.value = if (selectedProductIds.isNotEmpty()) {
+                groupedProductListRepository.getProductList(selectedProductIds)
+            } else {
+                emptyList()
+            }
 
-        productListViewState = productListViewState.copy(
-            isEmptyViewShown = _productList.value?.isEmpty() ?: true
-        )
+            productListViewState = productListViewState.copy(
+                isEmptyViewShown = _productList.value?.isEmpty() ?: true
+            )
+        }
     }
 
     fun onAddProductButtonClicked() {
@@ -117,21 +119,23 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     private fun loadProducts(loadMore: Boolean = false) {
-        if (selectedProductIds.isEmpty()) {
-            _productList.value = emptyList()
-            productListViewState = productListViewState.copy(isSkeletonShown = false)
-        } else {
-            val productsInDb = groupedProductListRepository.getProductList(
-                selectedProductIds
-            )
-            if (productsInDb.isNotEmpty()) {
-                _productList.value = productsInDb
+        launch {
+            if (selectedProductIds.isEmpty()) {
+                _productList.value = emptyList()
                 productListViewState = productListViewState.copy(isSkeletonShown = false)
             } else {
-                productListViewState = productListViewState.copy(isSkeletonShown = true)
-            }
+                val productsInDb = groupedProductListRepository.getProductList(
+                    selectedProductIds
+                )
+                if (productsInDb.isNotEmpty()) {
+                    _productList.value = productsInDb
+                    productListViewState = productListViewState.copy(isSkeletonShown = false)
+                } else {
+                    productListViewState = productListViewState.copy(isSkeletonShown = true)
+                }
 
-            launch { fetchProducts(selectedProductIds, loadMore = loadMore) }
+                fetchProducts(selectedProductIds, loadMore = loadMore)
+            }
         }
     }
 
