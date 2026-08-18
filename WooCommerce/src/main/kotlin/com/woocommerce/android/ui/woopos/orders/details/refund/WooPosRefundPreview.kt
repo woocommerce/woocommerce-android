@@ -48,9 +48,12 @@ class WooPosRefundPreview @Inject constructor(
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
                     WooLog.i(WooLog.T.POS, "WooPosRefund: preview route not available; falling back to local")
                     availabilityCache.markUnavailable(localSiteId, flow.wooVersion)
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable(wooVersion = flow.wooVersion)
-                    )
+                    // Reported once per store per WooCommerce version for the lifetime of the
+                    // process: the availability cache short-circuits the resolver afterwards, so
+                    // this counts stores that fell back rather than the refunds they made after.
+                    // The store's version arrives with the event as the cached_woo_core_version
+                    // property every event carries.
+                    analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable)
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(

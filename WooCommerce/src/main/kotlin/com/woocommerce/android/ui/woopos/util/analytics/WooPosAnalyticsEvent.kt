@@ -1073,16 +1073,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data class RefundServerFlowUnavailable(val wooVersion: String) : Event() {
+        data object RefundServerFlowUnavailable : Event() {
             override val name: String = "refund_server_flow_unavailable"
-
-            init {
-                addProperties(
-                    mapOf(
-                        "woocommerce_version" to wooVersion
-                    )
-                )
-            }
         }
 
         data class RefundFlowAborted(val refundStep: String) : Event() {
