@@ -1973,6 +1973,7 @@
     <string name="product_ratings_count_one">\u2022  one approved review</string>
     <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
+    <string name="product_rating_content_description">%1$.1f out of 5</string>
     <string name="product_downloadable_files">Downloadable files</string>
     <string name="product_custom_fields">Custom Fields</string>
     <string name="product_custom_fields_desc">View and edit custom fields</string>
