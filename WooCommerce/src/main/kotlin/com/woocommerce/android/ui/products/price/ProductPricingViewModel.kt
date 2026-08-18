@@ -84,7 +84,8 @@ class ProductPricingViewModel @Inject constructor(
 
         if (isProductPricing) {
             launch {
-                viewState = viewState.copy(taxClassList = productRepository.getTaxClassesForSite())
+                val taxClasses = productRepository.getTaxClassesForSite()
+                viewState = viewState.copy(taxClassList = taxClasses)
             }
         }
 

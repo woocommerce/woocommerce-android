@@ -118,7 +118,8 @@ class VariationDetailViewModel @Inject constructor(
 
     init {
         launch {
-            viewState = viewState.copy(parentProduct = productRepository.getProduct(navArgs.remoteProductId))
+            val parentProduct = productRepository.getProduct(navArgs.remoteProductId)
+            viewState = viewState.copy(parentProduct = parentProduct)
             originalVariation?.let {
                 showVariation(it.copy())
             }
