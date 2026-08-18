@@ -1,5 +1,3 @@
-import io.sentry.android.gradle.extensions.InstrumentationFeature
-import io.sentry.android.gradle.tasks.SentryCliExecTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -64,34 +62,8 @@ fladle {
     ]
 }
 
-def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
-def shouldUploadToSentry = gradle.ext.isCi
-        && !providers.gradleProperty("skipSentryUpload").orNull?.toBoolean()
-
 sentry {
-    org = "a8c"
     projectName = "woocommerce-android"
-    authToken = sentryAuthToken
-
-    includeProguardMapping = shouldUploadToSentry
-    includeSourceContext = shouldUploadToSentry
-    autoUploadSourceContext = true
-    tracingInstrumentation {
-        enabled = true
-        features = [InstrumentationFeature.DATABASE]
-        logcat {
-            enabled = false
-        }
-    }
-    autoInstallation {
-        enabled = false
-    }
-    includeDependenciesReport = false
-    /* Sentry won't send source context or add performance instrumentations for debug builds
-    so we can save build times. Sending events will still work in debug builds
-    (if enabled in WCCrashLoggingDataProvider).
-    */
-    ignoredBuildTypes = ["debug"]
 
     /* Additional source directories to be included in the source context. For now, manually:
     https://github.com/getsentry/sentry-android-gradle-plugin/issues/685
@@ -99,16 +71,6 @@ sentry {
     additionalSourceDirsForSourceContext = [
             '../libs/cardreader/src/main/java',
     ]
-}
-
-tasks.withType(SentryCliExecTask).configureEach {
-    doFirst {
-        if (sentryAuthToken == null) {
-            throw new GradleException("SENTRY_AUTH_TOKEN is not set (or is blank). " +
-                    "Export it to upload debug files to Sentry, " +
-                    "or pass -PskipSentryUpload=true to skip the upload.")
-        }
-    }
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
