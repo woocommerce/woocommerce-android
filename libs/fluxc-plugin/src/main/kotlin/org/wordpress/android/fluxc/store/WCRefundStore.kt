@@ -116,18 +116,31 @@ class WCRefundStore @Inject internal constructor(
      * goodwill over-refund, capped at the order's remaining refundable amount (422 beyond).
      *
      * On a store whose refund endpoint does not support `compute_totals`, the unknown param is
-     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
-     * restock. Only call this after a successful [previewRefund] against the same store confirmed
-     * server-side computation is available.
+     * silently dropped and the request is handled by the classic create, where a quantity-only
+     * body carries no monetary value to sum: the store books a zero-amount refund, restocks the
+     * items, and answers 201, so the caller is told it succeeded.
+     *
+     * Two conditions must hold before calling this, and a successful [previewRefund] covers only
+     * the second. The site's WooCommerce version must be known to support the `compute_totals`
+     * create, and a preview for this exact selection must have succeeded. A preview on its own is
+     * not enough — the preview route and the `compute_totals` create shipped as separate
+     * WooCommerce changes, so a preview proves only that the preview route exists. POS enforces
+     * both in `WooPosResolveRefundFlow`.
+     *
+     * No parameter has a default. Every one of [reason], [autoRefund], [restockItems] and [amount]
+     * changes what the store does with the merchant's money or stock, so a caller has to say what
+     * it wants rather than inherit it. [amount] in particular: omitting it is what makes the
+     * server own the total, which is the point of the computed create, and that should be a
+     * decision the call site records rather than the shape of least effort.
      */
     @Suppress("LongParameterList")
     suspend fun createComputedItemsRefund(
         site: SiteModel,
         orderId: Long,
-        reason: String = "",
-        autoRefund: Boolean = false,
-        restockItems: Boolean = true,
-        amount: BigDecimal? = null,
+        reason: String,
+        autoRefund: Boolean,
+        restockItems: Boolean,
+        amount: BigDecimal?,
         items: List<ComputedRefundLineItem>,
     ): WooResult<WCRefundModel> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createComputedItemsRefund") {
