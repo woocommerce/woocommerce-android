@@ -23,7 +23,11 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> readerReadyForPaymentTracker.track()
+                is CardReaderPaymentState.ProcessingPayment -> {
+                    // Matches iOS, which stamps the tap on its `processingPayment` state.
+                    analyticsData.cardTappedTimestamp = System.currentTimeMillis()
+                    readerReadyForPaymentTracker.track()
+                }
 
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.Cancelable,
