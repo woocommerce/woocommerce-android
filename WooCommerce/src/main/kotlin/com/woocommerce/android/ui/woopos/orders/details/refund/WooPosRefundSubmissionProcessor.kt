@@ -295,12 +295,14 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "message=${error.message}, " +
                     "errorData=${error.errorData}"
             )
+            // Codes we don't map fall back to the generic message, matching the preview path. The
+            // store's own message is technical, in the store's locale, and can carry internal ids,
+            // so it stays in the log and in the failure analytics instead of on the cashier's screen.
             val mappedMessage = WooPosRefundApiError.fromCode(error.apiErrorCode)
                 ?.let { resourceProvider.getString(it.messageRes) }
             trySendState(
                 WooPosRefundSubmissionState.Failure(
                     message = mappedMessage
-                        ?: error.message
                         ?: resourceProvider.getString(R.string.error_generic),
                     retryBackendNotificationOnly = retryBackendNotificationOnly,
                     apiErrorCode = error.apiErrorCode,

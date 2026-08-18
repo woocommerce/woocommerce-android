@@ -7,6 +7,21 @@ import java.math.BigDecimal
 @Immutable
 sealed class WooPosRefundState {
 
+    /**
+     * What the cashier can do about a failure.
+     *
+     * The refund endpoints reject with deterministic validation errors, so repeating the same
+     * request against the same order data fails identically. [RefreshItems] reloads the order and
+     * its refunds so the next selection is made against the true remaining quantities, and [None]
+     * leaves only the way out of the flow. [Retry] is for failures that can pass on a second
+     * attempt, a network error for example.
+     */
+    enum class Recovery {
+        Retry,
+        RefreshItems,
+        None,
+    }
+
     @Immutable
     data object Loading : WooPosRefundState()
 
@@ -29,9 +44,18 @@ sealed class WooPosRefundState {
         val refundReason: String = "",
         val step: RefundStep,
         val isPreviewLoading: Boolean = false,
-        val previewFailed: Boolean = false,
-        val previewErrorMessage: String? = null,
+        val previewFailure: PreviewFailure? = null,
     ) : WooPosRefundState() {
+
+        /**
+         * A failed refund preview, kept on the selection step. [message] is the store's mapped
+         * rejection copy, or null when the failure has none and the generic copy is shown.
+         */
+        @Immutable
+        data class PreviewFailure(
+            val message: String?,
+            val recovery: Recovery,
+        )
 
         @Immutable
         sealed class RefundStep {
@@ -85,7 +109,7 @@ sealed class WooPosRefundState {
     data class Error(
         val message: String,
         val errorType: ErrorType,
-        val canRetry: Boolean = true,
+        val recovery: Recovery = Recovery.Retry,
     ) : WooPosRefundState() {
 
         @Immutable

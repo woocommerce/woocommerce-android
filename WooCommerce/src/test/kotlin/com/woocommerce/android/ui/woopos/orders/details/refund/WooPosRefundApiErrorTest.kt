@@ -45,6 +45,32 @@ class WooPosRefundApiErrorTest {
     }
 
     @Test
+    fun `given refund api errors, when recovering, then only the ones a reload can fix offer it`() {
+        val expectedRecoveries = mapOf(
+            WooPosRefundApiError.QuantityExceedsRefundable to WooPosRefundState.Recovery.RefreshItems,
+            WooPosRefundApiError.LineItemAlreadyRefunded to WooPosRefundState.Recovery.RefreshItems,
+            WooPosRefundApiError.AmountExceedsOrderRemaining to WooPosRefundState.Recovery.RefreshItems,
+            WooPosRefundApiError.AmountExceedsItemRemaining to WooPosRefundState.Recovery.RefreshItems,
+            WooPosRefundApiError.OrderNotRefundable to WooPosRefundState.Recovery.None,
+            WooPosRefundApiError.InvalidAmount to WooPosRefundState.Recovery.None,
+        )
+
+        WooPosRefundApiError.entries.forEach { apiError ->
+            assertThat(apiError.recovery)
+                .describedAs("recovery for %s", apiError)
+                .isEqualTo(expectedRecoveries.getValue(apiError))
+        }
+    }
+
+    @Test
+    fun `given refund api errors, when recovering, then none of them offer a retry`() {
+        // Every mapped code is a deterministic validation rejection: the same request always gets
+        // the same answer, so a retry cannot be the way out.
+        assertThat(WooPosRefundApiError.entries.map { it.recovery })
+            .doesNotContain(WooPosRefundState.Recovery.Retry)
+    }
+
+    @Test
     fun `given an unknown or missing code, when mapped, then nothing is resolved`() {
         assertThat(WooPosRefundApiError.fromCode("some_unknown_code")).isNull()
         assertThat(WooPosRefundApiError.fromCode(null)).isNull()

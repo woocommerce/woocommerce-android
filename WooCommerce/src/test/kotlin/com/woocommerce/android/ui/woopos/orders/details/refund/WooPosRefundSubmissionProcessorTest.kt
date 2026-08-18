@@ -519,7 +519,7 @@ class WooPosRefundSubmissionProcessorTest {
                 error = WooError(
                     type = WooErrorType.GENERIC_ERROR,
                     original = GenericErrorType.UNKNOWN,
-                    message = "Something went wrong.",
+                    message = "Refund of 12.00 for order 42 is not allowed by gateway wc_stripe",
                     apiErrorCode = "some_unmapped_code"
                 )
             )
@@ -530,9 +530,10 @@ class WooPosRefundSubmissionProcessorTest {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.Processing)
 
             // THEN — the error from the computed create reaches the cashier rather than being
-            // swallowed into a success state.
+            // swallowed into a success state, as the generic message: the store's own wording is
+            // technical and in the store's locale, so it stays out of the cashier-facing slot.
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
-            assertThat(failure.message).isEqualTo("Something went wrong.")
+            assertThat(failure.message).isEqualTo("Something went wrong")
             awaitComplete()
         }
     }
@@ -610,7 +611,7 @@ class WooPosRefundSubmissionProcessorTest {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
 
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
-            assertThat(failure.message).isEqualTo("Backend failed")
+            assertThat(failure.message).isEqualTo("Something went wrong")
             assertThat(failure.retryBackendNotificationOnly).isTrue()
             assertThat(failure.retryCardRefund).isFalse()
             assertThat(failure.canRetry).isFalse()

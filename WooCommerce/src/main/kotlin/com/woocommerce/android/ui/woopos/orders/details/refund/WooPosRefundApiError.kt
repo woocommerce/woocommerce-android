@@ -16,13 +16,44 @@ import com.woocommerce.android.R
  * Programming-error codes (invalid line item ids, malformed payloads, etc.) intentionally have
  * no entry here: they indicate a client bug and keep the generic error message.
  */
-enum class WooPosRefundApiError(@StringRes val messageRes: Int) {
-    QuantityExceedsRefundable(R.string.woopos_refund_error_quantity_exceeds_refundable),
-    LineItemAlreadyRefunded(R.string.woopos_refund_error_item_already_refunded),
-    OrderNotRefundable(R.string.woopos_refund_error_order_not_refundable),
-    AmountExceedsOrderRemaining(R.string.woopos_refund_error_amount_exceeds_order_remaining),
-    AmountExceedsItemRemaining(R.string.woopos_refund_error_amount_exceeds_item_remaining),
-    InvalidAmount(R.string.woopos_refund_error_invalid_amount);
+enum class WooPosRefundApiError(
+    @StringRes val messageRes: Int,
+    val recovery: WooPosRefundState.Recovery,
+) {
+    QuantityExceedsRefundable(
+        R.string.woopos_refund_error_quantity_exceeds_refundable,
+        WooPosRefundState.Recovery.RefreshItems,
+    ),
+    LineItemAlreadyRefunded(
+        R.string.woopos_refund_error_item_already_refunded,
+        WooPosRefundState.Recovery.RefreshItems,
+    ),
+
+    /**
+     * Nothing on the order can be refunded any more, so there is no selection to recover to. The
+     * preview and create paths route this to [WooPosRefundState.NoRefundableItems] before the
+     * recovery is read.
+     */
+    OrderNotRefundable(
+        R.string.woopos_refund_error_order_not_refundable,
+        WooPosRefundState.Recovery.None,
+    ),
+    AmountExceedsOrderRemaining(
+        R.string.woopos_refund_error_amount_exceeds_order_remaining,
+        WooPosRefundState.Recovery.RefreshItems,
+    ),
+    AmountExceedsItemRemaining(
+        R.string.woopos_refund_error_amount_exceeds_item_remaining,
+        WooPosRefundState.Recovery.RefreshItems,
+    ),
+
+    /**
+     * The amount we sent is malformed rather than too large, which a fresh item list won't fix.
+     */
+    InvalidAmount(
+        R.string.woopos_refund_error_invalid_amount,
+        WooPosRefundState.Recovery.None,
+    );
 
     companion object {
         fun fromCode(code: String?): WooPosRefundApiError? = when (code) {
