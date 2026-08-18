@@ -107,7 +107,7 @@ class ProductDetailUiMapperTest {
     }
 
     @Test
-    fun `when an editable is mapped, then the thin row reuses it`() {
+    fun `when an immutable editable is mapped, then the thin row reuses it safely`() {
         val editable = ProductProperty.Editable(
             hint = R.string.product_detail_title_hint,
             shouldFocus = true,

@@ -4,6 +4,8 @@ import androidx.recyclerview.widget.DiffUtil.Callback
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
 
+internal data object EditableFocusPayload
+
 class ProductPropertiesDiffCallback(
     private val oldList: List<ProductProperty>,
     private val newList: List<ProductProperty>
@@ -32,7 +34,7 @@ class ProductPropertiesDiffCallback(
         val newItem = newList[newItemPosition]
         val oldItem = oldList[oldItemPosition]
         return if (oldItem is Editable && newItem is Editable && newItem.text != oldItem.text) {
-            newItem.shouldFocus = true
+            EditableFocusPayload
         } else {
             null
         }
