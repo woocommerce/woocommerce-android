@@ -4,7 +4,6 @@ import android.content.Context
 import android.icu.text.DateIntervalFormat
 import android.icu.util.DateInterval
 import android.text.format.DateFormat
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
@@ -22,8 +21,11 @@ fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDa
     locale
 ).format(this)
 
-fun Date.formatToMMMMyyyy(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM yyyy",
+/**
+ * Formats the date to a full month and year string, e.g. "August 2026" in English and "2026年8月" in Japanese.
+ */
+fun Date.formatToLocalizedMonthYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMM"),
     locale
 ).format(this)
 
@@ -42,8 +44,11 @@ fun Date.formatToYYYYWmm(locale: Locale = Locale.getDefault()): String = SimpleD
     locale
 ).format(this)
 
-fun Date.formatToMMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM dd",
+/**
+ * Formats the date to a full month and day string, e.g. "August 13" in English and "13 August" in British English.
+ */
+fun Date.formatToLocalizedFullMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "MMMMd"),
     locale
 ).format(this)
 
@@ -57,11 +62,6 @@ fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFo
  */
 fun Date.formatToLocalizedMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     DateFormat.getBestDateTimePattern(locale, "MMMd"),
-    locale
-).format(this)
-
-fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "dd MMM yyyy",
     locale
 ).format(this)
 
@@ -90,14 +90,6 @@ fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String =
 fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
     .format(this)
-
-fun Date.formatToEEEEMMMddhha(locale: Locale): String {
-    val symbols = DateFormatSymbols(locale)
-    symbols.amPmStrings = arrayOf("am", "pm")
-    val dateFormat = SimpleDateFormat("EEEE, MMM dd › ha", locale)
-    dateFormat.dateFormatSymbols = symbols
-    return dateFormat.format(this)
-}
 
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
 
