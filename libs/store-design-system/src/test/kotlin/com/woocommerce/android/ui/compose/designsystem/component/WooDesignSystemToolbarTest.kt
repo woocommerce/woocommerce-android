@@ -95,6 +95,26 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    fun `given long title and text action, when laid out, then title keeps spacing from action`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            title = "Trailblazer Trek Pants with really long name"
+            menu.add(0, TEXT_ACTION_ID, 0, "Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+        val controlSpacing = toolbar.resources.getDimensionPixelSize(
+            R.dimen.woo_ds_toolbar_title_control_spacing,
+        )
+
+        toolbar.layoutToolbar()
+        val titleView = toolbar.titleTextView(toolbar.title.toString())
+        val action = toolbar.actionChild(TEXT_ACTION_ID)
+        val actionLeft = toolbar.actionMenuView().left + action.left
+
+        assertThat(titleView.paddingStart).isEqualTo(controlSpacing)
+        assertThat(titleView.paddingEnd).isEqualTo(controlSpacing)
+        assertThat(actionLeft - (titleView.right - titleView.paddingEnd)).isGreaterThanOrEqualTo(controlSpacing)
+    }
+
+    @Test
     fun `given toolbar xml attributes, when inflated, then title navigation and menu are applied`() {
         val toolbar = LayoutInflater.from(toolbarContext())
             .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
