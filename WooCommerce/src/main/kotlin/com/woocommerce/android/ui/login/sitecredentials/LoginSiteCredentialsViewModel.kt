@@ -356,7 +356,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
             INVALID_CREDENTIALS -> authError.value = AuthenticationError(
                 errorMessage = authenticationError.errorMessage,
-                showWpAdminFallbackOption = endpoints.loginEntryUrl == null
+                showWpAdminFallbackOption = true
             )
 
             BASIC_AUTH_REQUIRED -> showNativeAuthenticationError(authenticationError.errorMessage)
@@ -376,8 +376,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when {
-            hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(
-                requireNotNull(authenticationError).errorMessage
+            hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
+                errorMessage = requireNotNull(authenticationError).errorMessage,
+                showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE
             )
 
             authenticationError?.errorType == INVALID_RESPONSE && endpoints.loginEntryUrl != null -> {

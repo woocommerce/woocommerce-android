@@ -319,7 +319,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given verified custom login, when post response fails, then retain it and show the actual error`() =
+    fun `given verified custom login, when post response fails, then retain it and offer browser fallback`() =
         testBlocking {
             val responseError = cookieNonceError(
                 Nonce.CookieNonceErrorType.INVALID_RESPONSE,
@@ -342,9 +342,13 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             val state = viewModel.viewState.value
+            assertThat(state?.username).isEqualTo(USERNAME)
+            assertThat(state?.password).isEqualTo(PASSWORD)
             assertThat(state?.endpointRecovery).isNull()
             assertThat(state?.authenticationError?.errorMessage).isEqualTo(responseError.errorMessage)
-            assertThat(state?.authenticationError?.showWpAdminFallbackOption).isFalse()
+            assertThat(state?.authenticationError?.showWpAdminFallbackOption).isTrue()
+            assertThat(savedState.get<String>(LOGIN_ENTRY_URL_STATE_KEY)).isEqualTo(LOGIN_URL)
+            assertThat(viewModel.event.value).isNull()
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
 
             viewModel.viewState.observeForTesting {
@@ -470,7 +474,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given custom login invalid credentials, when retrying and recreating, then retain it until native success`() =
+    fun `given custom login invalid credentials, when retrying and recreating, then retain it with browser fallback`() =
         testBlocking {
             val invalidCredentials = cookieNonceError(
                 Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
@@ -495,7 +499,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(firstFailureState?.endpointRecovery).isNull()
             assertThat(firstFailureState?.authenticationError?.errorMessage)
                 .isEqualTo(invalidCredentials.errorMessage)
-            assertThat(firstFailureState?.authenticationError?.showWpAdminFallbackOption).isFalse()
+            assertThat(firstFailureState?.authenticationError?.showWpAdminFallbackOption).isTrue()
+            assertThat(viewModel.event.value).isNull()
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
             verify(selectedSite, never()).set(any())
 
@@ -512,14 +517,14 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(repeatedFailureState?.endpointRecovery).isNull()
             assertThat(repeatedFailureState?.authenticationError?.errorMessage)
                 .isEqualTo(invalidCredentials.errorMessage)
-            assertThat(repeatedFailureState?.authenticationError?.showWpAdminFallbackOption).isFalse()
+            assertThat(repeatedFailureState?.authenticationError?.showWpAdminFallbackOption).isTrue()
             verify(repository).login(SITE_URL, USERNAME, STILL_WRONG_PASSWORD, PENDING_LOGIN_ENDPOINTS)
 
             val restoredState = SavedStateHandle(savedState.keys().associateWith { savedState.get<Any?>(it) })
             setup(restoredState)
             val recreatedState = viewModel.viewState.getOrAwaitValue()
             assertThat(recreatedState.endpointRecovery).isNull()
-            assertThat(recreatedState.authenticationError?.showWpAdminFallbackOption).isFalse()
+            assertThat(recreatedState.authenticationError?.showWpAdminFallbackOption).isTrue()
 
             viewModel.viewState.observeForTesting {
                 viewModel.onErrorDialogDismissed()
