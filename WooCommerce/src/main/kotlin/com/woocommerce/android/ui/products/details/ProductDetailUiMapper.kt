@@ -59,130 +59,17 @@ class ProductDetailUiMapper {
         }
     }
 
-    private fun mapRows(properties: List<ProductProperty>): List<ProductDetailRowUiModel> {
+    private fun mapRows(properties: List<ProductProperty>): List<ProductDetailRow> {
         val keyOccurrences = mutableMapOf<String, Int>()
         return properties.mapIndexed { index, property ->
             val key = property.semanticKey().withOccurrence(keyOccurrences)
-            property.toUiModel(key).let { row ->
-                if (row is ProductDetailRowUiModel.Rating) {
-                    row.copy(showDivider = index != properties.lastIndex)
-                } else {
-                    row
-                }
-            }
+            ProductDetailRow(
+                key = key,
+                property = property,
+                showDivider = (index != properties.lastIndex).takeIf { property is ProductProperty.RatingBar },
+            )
         }
     }
-
-    private fun ProductProperty.toUiModel(key: String): ProductDetailRowUiModel = when (this) {
-        ProductProperty.Divider -> ProductDetailRowUiModel.Divider(key)
-        is ProductProperty.Property -> toPropertyUiModel(key)
-        is ProductProperty.ComplexProperty -> toComplexPropertyUiModel(key)
-        is ProductProperty.RatingBar -> toRatingUiModel(key)
-        is ProductProperty.Editable -> toEditableUiModel(key)
-        is ProductProperty.PropertyGroup -> toPropertyGroupUiModel(key)
-        is ProductProperty.Link -> toLinkUiModel(key)
-        is ProductProperty.Button -> toButtonUiModel(key)
-        is ProductProperty.Switch -> toSwitchUiModel(key)
-        is ProductProperty.Warning -> ProductDetailRowUiModel.Warning(key, content)
-    }
-
-    private fun ProductProperty.Property.toPropertyUiModel(key: String) =
-        ProductDetailRowUiModel.Property(
-            key = key,
-            title = title,
-            value = value,
-            showDivider = isDividerVisible,
-        )
-
-    private fun ProductProperty.ComplexProperty.toComplexPropertyUiModel(key: String) =
-        ProductDetailRowUiModel.ComplexProperty(
-            key = key,
-            title = title,
-            value = value,
-            icon = icon,
-            showTitle = showTitle,
-            maxLines = maxLines,
-            showDivider = isDividerVisible,
-            onClick = onClick,
-        )
-
-    private fun ProductProperty.RatingBar.toRatingUiModel(key: String) =
-        ProductDetailRowUiModel.Rating(
-            key = key,
-            title = title,
-            value = value,
-            rating = rating,
-            icon = icon,
-            showDivider = false,
-            onClick = onClick,
-        )
-
-    private fun ProductProperty.Editable.toEditableUiModel(key: String) =
-        ProductDetailRowUiModel.Editable(
-            key = key,
-            hint = hint,
-            text = text,
-            shouldFocus = shouldFocus,
-            isReadOnly = isReadOnly,
-            badgeText = badgeText,
-            badgeTone = badgeColor?.let {
-                if (it == R.color.product_status_badge_pending) {
-                    ProductDetailBadgeTone.WARNING
-                } else {
-                    ProductDetailBadgeTone.NEUTRAL
-                }
-            },
-            onTextChanged = onTextChanged,
-        )
-
-    private fun ProductProperty.PropertyGroup.toPropertyGroupUiModel(key: String) =
-        ProductDetailRowUiModel.PropertyGroup(
-            key = key,
-            title = title,
-            properties = properties.entries.map { ProductDetailPropertyValueUiModel(it.key, it.value) },
-            icon = icon,
-            showTitle = showTitle,
-            showDivider = isDividerVisible,
-            isHighlighted = isHighlighted,
-            propertyFormat = propertyFormat,
-            onClick = onClick,
-        )
-
-    private fun ProductProperty.Link.toLinkUiModel(key: String) =
-        ProductDetailRowUiModel.Link(
-            key = key,
-            title = title,
-            icon = icon,
-            showDivider = isDividerVisible,
-            onClick = onClick,
-        )
-
-    private fun ProductProperty.Button.toButtonUiModel(key: String) =
-        ProductDetailRowUiModel.Button(
-            key = key,
-            text = text,
-            icon = icon,
-            showDivider = isDividerVisible,
-            tooltip = tooltip?.let {
-                ProductDetailTooltipUiModel(
-                    title = it.title,
-                    text = it.text,
-                    dismissButtonText = it.dismissButtonText,
-                    onDismiss = it.onDismiss,
-                )
-            },
-            link = link?.let { ProductDetailButtonLinkUiModel(it.text, it.onClick) },
-            onClick = onClick,
-        )
-
-    private fun ProductProperty.Switch.toSwitchUiModel(key: String) =
-        ProductDetailRowUiModel.Switch(
-            key = key,
-            title = title,
-            isOn = isOn,
-            icon = icon,
-            onStateChanged = onStateChanged,
-        )
 
     private fun ProductProperty.semanticKey(): String = when (this) {
         ProductProperty.Divider -> "divider"
