@@ -37,12 +37,14 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
 
     private lateinit var sut: AnalyticsUpdateDataStore
 
-    private val defaultSelectionData = LAST_MONTH.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault(),
-        referenceStartDate = Date(),
-        referenceEndDate = Date()
-    )
+    private val defaultSelectionData by lazy {
+        LAST_MONTH.generateSelectionData(
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault(),
+            referenceStartDate = Date(),
+            referenceEndDate = Date()
+        )
+    }
 
     @Test
     fun `given shouldUpdateAnalytics is called, when time elapsed is enough, then return true`() = testBlocking {

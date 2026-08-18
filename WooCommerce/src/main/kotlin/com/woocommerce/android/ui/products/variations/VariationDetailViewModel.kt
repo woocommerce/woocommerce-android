@@ -117,9 +117,12 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     init {
-        viewState = viewState.copy(parentProduct = productRepository.getProduct(navArgs.remoteProductId))
-        originalVariation?.let {
-            showVariation(it.copy())
+        launch {
+            val parentProduct = productRepository.getProduct(navArgs.remoteProductId)
+            viewState = viewState.copy(parentProduct = parentProduct)
+            originalVariation?.let {
+                showVariation(it.copy())
+            }
         }
 
         observeImageUploadEvents()

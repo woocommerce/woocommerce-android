@@ -37,7 +37,7 @@ class QuarterToDateRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale)
 
         val oneQuarterAgo = referenceDate.oneQuarterAgo()
         calendar.time = oneQuarterAgo
@@ -46,6 +46,6 @@ class QuarterToDateRangeData(
             start = previousStart,
             end = oneQuarterAgo
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(oneQuarterAgo, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneQuarterAgo, locale)
     }
 }
