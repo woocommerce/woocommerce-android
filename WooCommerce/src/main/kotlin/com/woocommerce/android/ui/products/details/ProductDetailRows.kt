@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooButtonSize
 import com.woocommerce.android.ui.compose.designsystem.component.WooCell
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellTrailingAffordance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
@@ -391,9 +393,11 @@ private fun ProductDetailButtonRow(
                 DropdownMenu(
                     expanded = showTooltip && row.tooltip != null,
                     onDismissRequest = { showTooltip = false },
+                    shadowElevation = 4.dp,
+                    shape = MaterialTheme.shapes.medium,
                     modifier = Modifier
                         .width(TOOLTIP_WIDTH)
-                        .background(WooTheme.colors.surface.bright),
+                        .background(WooTheme.colors.surface.surfaceContainerHighest),
                 ) {
                     row.tooltip?.let { tooltip ->
                         Column(
@@ -412,7 +416,7 @@ private fun ProductDetailButtonRow(
                                 color = WooTheme.colors.surface.onVariant,
                                 style = WooTheme.text.bodyMedium.regular,
                             )
-                            WooFilledTonalButton(
+                            WooFilledButton(
                                 text = stringResource(tooltip.dismissButtonText),
                                 onClick = {
                                     showTooltip = false

@@ -346,8 +346,8 @@ class ProductDetailViewModel @Inject constructor(
             // Show sharing option only if the product isn't being created.
             val showShareOption = !isProductUnderCreation && selectedSite.get().isSitePublic
 
-            // Show "Share" as action with text only if "Save" or "Publish" is not currently shown as action with text.
-            val showShareOptionAsActionWithText =
+            // Show "Share" as an action only if "Save" or "Publish" is not currently shown as an action with text.
+            val showShareOptionAsAction =
                 showShareOption && !showSaveOptionAsActionWithText && !showPublishOption
 
             // Show "View Product" option only if the product is published or we can auto-authenticate the user
@@ -362,7 +362,7 @@ class ProductDetailViewModel @Inject constructor(
                 publishOption = showPublishOption,
                 viewProductOption = showViewProductOption,
                 shareOption = showShareOption,
-                showShareOptionAsActionWithText = showShareOptionAsActionWithText,
+                showShareOptionAsAction = showShareOptionAsAction,
                 duplicateOption = isProductStoredAtSite,
                 trashOption = !isProductUnderCreation && isTrashEnabled
             )
@@ -514,8 +514,8 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the Share menu button is clicked in Product detail screen
      */
     fun onShareButtonClicked() {
-        menuButtonsState.value?.showShareOptionAsActionWithText?.let { isShownAsActionWithText ->
-            val source = if (isShownAsActionWithText) {
+        menuButtonsState.value?.showShareOptionAsAction?.let { isShownAsAction ->
+            val source = if (isShownAsAction) {
                 AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
             } else {
                 AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
@@ -2864,7 +2864,7 @@ class ProductDetailViewModel @Inject constructor(
         val publishOption: Boolean,
         val viewProductOption: Boolean,
         val shareOption: Boolean,
-        val showShareOptionAsActionWithText: Boolean,
+        val showShareOptionAsAction: Boolean,
         val duplicateOption: Boolean,
         val trashOption: Boolean
     )

@@ -552,6 +552,21 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product under creation, when menu state loads, then share option is hidden`() {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.shareOption).isFalse()
+        Assertions.assertThat(menuButtonsState?.showShareOptionAsAction).isFalse()
+    }
+
+    @Test
     fun `given a never-saved product, when menu state loads, then duplicate option is hidden`() = testBlocking {
         // GIVEN
         viewModel.productDetailViewStateData.observeForever { _, _ -> }

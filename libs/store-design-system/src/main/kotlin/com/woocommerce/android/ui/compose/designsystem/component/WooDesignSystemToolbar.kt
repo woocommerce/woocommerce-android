@@ -84,10 +84,24 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     private fun decorateTitle(): Boolean {
         val titleView = children.filterIsInstance<TextView>().firstOrNull { it.text == title } ?: return false
-        if (!titleView.includeFontPadding) return false
+        var changed = false
+        if (titleView.includeFontPadding) {
+            titleView.includeFontPadding = false
+            changed = true
+        }
 
-        titleView.includeFontPadding = false
-        return true
+        val controlSpacing = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_title_control_spacing)
+        if (titleView.paddingStart != controlSpacing || titleView.paddingEnd != controlSpacing) {
+            titleView.setPaddingRelative(
+                controlSpacing,
+                titleView.paddingTop,
+                controlSpacing,
+                titleView.paddingBottom,
+            )
+            changed = true
+        }
+
+        return changed
     }
 
     private fun decorateRenderedMenuActions(): Boolean {

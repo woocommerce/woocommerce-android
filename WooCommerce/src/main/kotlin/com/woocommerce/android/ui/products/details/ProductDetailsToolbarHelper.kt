@@ -5,7 +5,9 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -75,28 +77,24 @@ class ProductDetailsToolbarHelper @Inject constructor() :
         toolbar.inflateMenu(R.menu.menu_product_detail_fragment)
         this.menu = toolbar.menu
 
-        toolbar.navigationIcon =
-            when {
-                isWindowClassLargeThanCompact!!.invoke() -> {
-                    val startMode = viewModel?.startMode
-                    val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
-                    val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
-                        startMode.afterGeneratedWithAi
-                    if (isAddNewModeCreationFlow || isProductShownAfterGenerationWithAi) {
-                        AppCompatResources.getDrawable(activity!!, R.drawable.ic_back_24dp)
-                    } else {
-                        null
-                    }
-                }
-
-                isPartOfProductListFlow() -> {
-                    AppCompatResources.getDrawable(activity!!, R.drawable.ic_back_24dp)
-                }
-
-                else -> {
-                    AppCompatResources.getDrawable(activity!!, R.drawable.ic_gridicons_cross_24dp)
+        val navigation = when {
+            isWindowClassLargeThanCompact!!.invoke() -> {
+                val startMode = viewModel?.startMode
+                val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
+                val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
+                    startMode.afterGeneratedWithAi
+                if (isAddNewModeCreationFlow || isProductShownAfterGenerationWithAi) {
+                    ProductDetailToolbarNavigation.BACK
+                } else {
+                    null
                 }
             }
+
+            isPartOfProductListFlow() -> ProductDetailToolbarNavigation.BACK
+
+            else -> ProductDetailToolbarNavigation.CLOSE
+        }
+        toolbar.setProductDetailNavigation(navigation)
 
         toolbar.setNavigationOnClickListener {
             if (viewModel?.onBackButtonClickedProductDetail() == false) return@setNavigationOnClickListener
@@ -198,7 +196,7 @@ class ProductDetailsToolbarHelper @Inject constructor() :
             isVisible = state.shareOption
 
             setShowAsActionFlags(
-                if (state.showShareOptionAsActionWithText) {
+                if (state.showShareOptionAsAction) {
                     MenuItem.SHOW_AS_ACTION_IF_ROOM
                 } else {
                     MenuItem.SHOW_AS_ACTION_NEVER
@@ -212,4 +210,17 @@ class ProductDetailsToolbarHelper @Inject constructor() :
     private fun NavController.hasBackStackEntry(@IdRes destinationId: Int) = runCatching {
         getBackStackEntry(destinationId)
     }.isSuccess
+}
+
+internal fun Toolbar.setProductDetailNavigation(navigation: ProductDetailToolbarNavigation?) {
+    navigationIcon = navigation?.let { AppCompatResources.getDrawable(context, it.icon) }
+    navigationContentDescription = navigation?.let { context.getString(it.contentDescription) }
+}
+
+internal enum class ProductDetailToolbarNavigation(
+    @DrawableRes val icon: Int,
+    @StringRes val contentDescription: Int,
+) {
+    BACK(R.drawable.ic_back_24dp, R.string.back),
+    CLOSE(R.drawable.ic_gridicons_cross_24dp, R.string.close),
 }
