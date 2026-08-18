@@ -172,7 +172,7 @@ private fun WooTooltipArrowPosition.contentPadding(bodyPadding: Dp): PaddingValu
     }
 }
 
-private class WooTooltipShape(
+internal data class WooTooltipShape(
     private val arrowPosition: WooTooltipArrowPosition,
     private val cornerRadius: Dp,
 ) : Shape {
@@ -181,55 +181,45 @@ private class WooTooltipShape(
         layoutDirection: LayoutDirection,
         density: Density,
     ): Outline {
-        val resolvedPosition = arrowPosition.resolve(layoutDirection)
-        val arrowDepth = with(density) { ARROW_DEPTH.toPx() }.coerceAtMost(
-            when (resolvedPosition.edge) {
-                WooTooltipPhysicalEdge.Top,
-                WooTooltipPhysicalEdge.Bottom,
-                -> size.height
-
-                WooTooltipPhysicalEdge.Left,
-                WooTooltipPhysicalEdge.Right,
-                -> size.width
-            }
-        )
-        val arrowHalfBase = with(density) { ARROW_BASE.toPx() } / 2f
-        val bodyBounds = resolvedPosition.bodyBounds(size, arrowDepth)
-        val radius = with(density) { cornerRadius.toPx() }
-            .coerceAtMost(bodyBounds.width / 2f)
-            .coerceAtMost(bodyBounds.height / 2f)
-        val arrowTip = wooTooltipArrowTip(
+        val geometry = wooTooltipGeometry(
             arrowPosition = arrowPosition,
             size = size,
             layoutDirection = layoutDirection,
             density = density,
             cornerRadius = cornerRadius,
-        )
+        ) ?: return Outline.Rectangle(EMPTY_RECT)
 
         return Outline.Generic(
-            path = tooltipOutlinePath(
-                bodyBounds = bodyBounds,
-                cornerRadius = radius,
-                arrowTip = arrowTip,
-                arrowHalfBase = arrowHalfBase,
-                arrowEdge = resolvedPosition.edge,
-            )
+            path = tooltipOutlinePath(geometry)
         )
     }
 }
 
-internal fun wooTooltipArrowTip(
+internal fun wooTooltipGeometry(
     arrowPosition: WooTooltipArrowPosition,
     size: Size,
     layoutDirection: LayoutDirection,
     density: Density,
     cornerRadius: Dp,
-): Offset {
+): WooTooltipGeometry? {
+    if (!size.width.isFinite() || !size.height.isFinite() || size.width <= 0f || size.height <= 0f) {
+        return null
+    }
+
     val resolvedPosition = arrowPosition.resolve(layoutDirection)
-    val edgeOffset = with(density) { ARROW_EDGE_OFFSET.toPx() }
-    val arrowHalfBase = with(density) { ARROW_BASE.toPx() } / 2f
-    val minimumInset = with(density) { cornerRadius.toPx() } + arrowHalfBase
-    val axisLength = when (resolvedPosition.edge) {
+    val requestedRadius = with(density) { cornerRadius.toPx() }
+    val requestedArrowHalfBase = with(density) { ARROW_BASE.toPx() } / 2f
+    val requestedArrowDepth = with(density) { ARROW_DEPTH.toPx() }
+    val requestedEdgeOffset = with(density) { ARROW_EDGE_OFFSET.toPx() }
+    val requestedValues = listOf(
+        requestedRadius,
+        requestedArrowHalfBase,
+        requestedArrowDepth,
+        requestedEdgeOffset,
+    )
+    if (requestedValues.any { !it.isFinite() || it <= 0f }) return null
+
+    val edgeLength = when (resolvedPosition.edge) {
         WooTooltipPhysicalEdge.Top,
         WooTooltipPhysicalEdge.Bottom,
         -> size.width
@@ -238,34 +228,87 @@ internal fun wooTooltipArrowTip(
         WooTooltipPhysicalEdge.Right,
         -> size.height
     }
-    val arrowCenter = arrowCenter(
-        axisLength = axisLength,
+    val containerLength = when (resolvedPosition.edge) {
+        WooTooltipPhysicalEdge.Top,
+        WooTooltipPhysicalEdge.Bottom,
+        -> size.height
+
+        WooTooltipPhysicalEdge.Left,
+        WooTooltipPhysicalEdge.Right,
+        -> size.width
+    }
+    val minimumEdgeLength = maxOf(
+        2f * (requestedRadius + requestedArrowHalfBase),
+        2f * requestedEdgeOffset,
+    )
+    val minimumContainerLength = requestedArrowDepth + 2f * requestedRadius
+    val scale = minOf(
+        1f,
+        edgeLength / minimumEdgeLength,
+        containerLength / minimumContainerLength,
+    )
+    if (!scale.isFinite() || scale <= 0f) return null
+
+    val scaledRadius = requestedRadius * scale
+    val scaledArrowHalfBase = requestedArrowHalfBase * scale
+    val arrowDepth = requestedArrowDepth * scale
+    val edgeOffset = requestedEdgeOffset * scale
+    val bodyBounds = resolvedPosition.bodyBounds(size, arrowDepth)
+    val radius = minOf(
+        scaledRadius,
+        bodyBounds.width / 2f,
+        bodyBounds.height / 2f,
+    )
+    val arrowHalfBase = minOf(
+        scaledArrowHalfBase,
+        edgeLength / 2f - radius,
+    )
+    if (radius <= 0f || arrowHalfBase <= 0f || bodyBounds.width <= 0f || bodyBounds.height <= 0f) {
+        return null
+    }
+    val minimumCenter = radius + arrowHalfBase
+    val maximumCenter = edgeLength - minimumCenter
+    val arrowCenter = alignedArrowCenter(
+        edgeLength = edgeLength,
         alignment = resolvedPosition.alignment,
         edgeOffset = edgeOffset,
-        minimumInset = minimumInset,
+        minimumCenter = minimumCenter,
+        maximumCenter = maximumCenter,
+    )
+    val (arrowTip, arrowBaseStart, arrowBaseEnd) = resolvedPosition.arrowPoints(
+        size = size,
+        bodyBounds = bodyBounds,
+        radius = radius,
+        arrowCenter = arrowCenter,
+        arrowHalfBase = arrowHalfBase,
     )
 
-    return when (resolvedPosition.edge) {
-        WooTooltipPhysicalEdge.Top -> Offset(arrowCenter, 0f)
-        WooTooltipPhysicalEdge.Bottom -> Offset(arrowCenter, size.height)
-        WooTooltipPhysicalEdge.Left -> Offset(0f, arrowCenter)
-        WooTooltipPhysicalEdge.Right -> Offset(size.width, arrowCenter)
-    }
+    return WooTooltipGeometry(
+        edge = resolvedPosition.edge,
+        bodyBounds = bodyBounds,
+        cornerRadius = radius,
+        arrowDepth = arrowDepth,
+        arrowTip = arrowTip,
+        arrowHalfBase = arrowHalfBase,
+        arrowBaseStart = arrowBaseStart,
+        arrowBaseEnd = arrowBaseEnd,
+        scale = scale,
+    )
 }
 
-private fun arrowCenter(
-    axisLength: Float,
+private fun alignedArrowCenter(
+    edgeLength: Float,
     alignment: WooTooltipPhysicalAlignment,
     edgeOffset: Float,
-    minimumInset: Float,
+    minimumCenter: Float,
+    maximumCenter: Float,
 ): Float {
-    val safeInset = minimumInset.coerceAtMost(axisLength / 2f)
     val desiredCenter = when (alignment) {
         WooTooltipPhysicalAlignment.Start -> edgeOffset
-        WooTooltipPhysicalAlignment.Center -> axisLength / 2f
-        WooTooltipPhysicalAlignment.End -> axisLength - edgeOffset
+        WooTooltipPhysicalAlignment.Center -> edgeLength / 2f
+        WooTooltipPhysicalAlignment.End -> edgeLength - edgeOffset
     }
-    return desiredCenter.coerceIn(safeInset, axisLength - safeInset)
+    return desiredCenter.coerceIn(minimumCenter, maximumCenter.coerceAtLeast(minimumCenter))
 }
 
 private fun ResolvedWooTooltipArrowPosition.bodyBounds(
@@ -278,60 +321,82 @@ private fun ResolvedWooTooltipArrowPosition.bodyBounds(
     WooTooltipPhysicalEdge.Right -> Rect(0f, 0f, size.width - arrowDepth, size.height)
 }
 
-private fun tooltipOutlinePath(
+private fun ResolvedWooTooltipArrowPosition.arrowPoints(
+    size: Size,
     bodyBounds: Rect,
-    cornerRadius: Float,
-    arrowTip: Offset,
+    radius: Float,
+    arrowCenter: Float,
     arrowHalfBase: Float,
-    arrowEdge: WooTooltipPhysicalEdge,
-): Path {
+): Triple<Offset, Offset, Offset> {
+    val edgeLength = when (edge) {
+        WooTooltipPhysicalEdge.Top,
+        WooTooltipPhysicalEdge.Bottom,
+        -> size.width
+
+        WooTooltipPhysicalEdge.Left,
+        WooTooltipPhysicalEdge.Right,
+        -> size.height
+    }
+    val baseStart = (arrowCenter - arrowHalfBase).coerceAtLeast(radius)
+    val baseEnd = (arrowCenter + arrowHalfBase).coerceAtMost(edgeLength - radius)
+
+    return when (edge) {
+        WooTooltipPhysicalEdge.Top -> Triple(
+            Offset(arrowCenter, 0f),
+            Offset(baseStart, bodyBounds.top),
+            Offset(baseEnd, bodyBounds.top),
+        )
+
+        WooTooltipPhysicalEdge.Bottom -> Triple(
+            Offset(arrowCenter, size.height),
+            Offset(baseStart, bodyBounds.bottom),
+            Offset(baseEnd, bodyBounds.bottom),
+        )
+
+        WooTooltipPhysicalEdge.Left -> Triple(
+            Offset(0f, arrowCenter),
+            Offset(bodyBounds.left, baseStart),
+            Offset(bodyBounds.left, baseEnd),
+        )
+
+        WooTooltipPhysicalEdge.Right -> Triple(
+            Offset(size.width, arrowCenter),
+            Offset(bodyBounds.right, baseStart),
+            Offset(bodyBounds.right, baseEnd),
+        )
+    }
+}
+
+private fun tooltipOutlinePath(geometry: WooTooltipGeometry): Path {
     val bodyPath = Path().apply {
         addRoundRect(
             RoundRect(
-                rect = bodyBounds,
-                cornerRadius = CornerRadius(cornerRadius),
+                rect = geometry.bodyBounds,
+                cornerRadius = CornerRadius(geometry.cornerRadius),
             )
         )
     }
     val arrowPath = Path().apply {
-        when (arrowEdge) {
-            WooTooltipPhysicalEdge.Top,
-            WooTooltipPhysicalEdge.Bottom,
-            -> {
-                moveTo(arrowTip.x - arrowHalfBase, bodyBounds.verticalArrowEdge(arrowEdge))
-                lineTo(arrowTip.x, arrowTip.y)
-                lineTo(arrowTip.x + arrowHalfBase, bodyBounds.verticalArrowEdge(arrowEdge))
-            }
-
-            WooTooltipPhysicalEdge.Left,
-            WooTooltipPhysicalEdge.Right,
-            -> {
-                moveTo(bodyBounds.horizontalArrowEdge(arrowEdge), arrowTip.y - arrowHalfBase)
-                lineTo(arrowTip.x, arrowTip.y)
-                lineTo(bodyBounds.horizontalArrowEdge(arrowEdge), arrowTip.y + arrowHalfBase)
-            }
-        }
+        moveTo(geometry.arrowBaseStart.x, geometry.arrowBaseStart.y)
+        lineTo(geometry.arrowTip.x, geometry.arrowTip.y)
+        lineTo(geometry.arrowBaseEnd.x, geometry.arrowBaseEnd.y)
         close()
     }
 
     return Path.combine(PathOperation.Union, bodyPath, arrowPath)
 }
 
-private fun Rect.verticalArrowEdge(edge: WooTooltipPhysicalEdge): Float = when (edge) {
-    WooTooltipPhysicalEdge.Top -> top
-    WooTooltipPhysicalEdge.Bottom -> bottom
-    WooTooltipPhysicalEdge.Left,
-    WooTooltipPhysicalEdge.Right,
-    -> error("Only top and bottom edges have vertical arrow bounds.")
-}
-
-private fun Rect.horizontalArrowEdge(edge: WooTooltipPhysicalEdge): Float = when (edge) {
-    WooTooltipPhysicalEdge.Left -> left
-    WooTooltipPhysicalEdge.Right -> right
-    WooTooltipPhysicalEdge.Top,
-    WooTooltipPhysicalEdge.Bottom,
-    -> error("Only left and right edges have horizontal arrow bounds.")
-}
+internal data class WooTooltipGeometry(
+    val edge: WooTooltipPhysicalEdge,
+    val bodyBounds: Rect,
+    val cornerRadius: Float,
+    val arrowDepth: Float,
+    val arrowTip: Offset,
+    val arrowHalfBase: Float,
+    val arrowBaseStart: Offset,
+    val arrowBaseEnd: Offset,
+    val scale: Float,
+)
 
 internal fun WooTooltipArrowPosition.resolve(
     layoutDirection: LayoutDirection,
@@ -414,3 +479,4 @@ private val ARROW_DEPTH = 10.dp
 private val ARROW_BASE = 22.dp
 private val ARROW_EDGE_OFFSET = 31.dp
 private val TOOLTIP_PREVIEW_WIDTH = 200.dp
+private val EMPTY_RECT = Rect(0f, 0f, 0f, 0f)
