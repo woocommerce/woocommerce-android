@@ -53,7 +53,6 @@ class RefundRestClientTest {
             reason = "reason",
             apiRefund = true,
             apiRestock = true,
-            amount = null,
             lineItems = lineItems,
         )
 
@@ -78,7 +77,7 @@ class RefundRestClientTest {
     }
 
     @Test
-    fun `given an amount override, when createComputedRefund, then amount is included in the body`() = runTest {
+    fun `given api flags are false, when createComputedRefund, then they are sent as false`() = runTest {
         // GIVEN
         whenever(
             wooNetwork.executePostGsonRequest(
@@ -96,11 +95,10 @@ class RefundRestClientTest {
             reason = "",
             apiRefund = false,
             apiRestock = false,
-            amount = "12.34",
             lineItems = lineItems,
         )
 
-        // THEN
+        // THEN — no total is ever sent, whatever the flags are.
         val bodyCaptor = argumentCaptor<Map<String, Any>>()
         verify(wooNetwork).executePostGsonRequest(
             site = eq(site),
@@ -109,7 +107,7 @@ class RefundRestClientTest {
             body = bodyCaptor.capture(),
         )
         val body = bodyCaptor.firstValue
-        assertThat(body["amount"]).isEqualTo("12.34")
+        assertThat(body).doesNotContainKey("amount")
         assertThat(body["api_refund"]).isEqualTo("false")
         assertThat(body["api_restock"]).isEqualTo("false")
     }
@@ -137,7 +135,6 @@ class RefundRestClientTest {
             reason = "",
             apiRefund = false,
             apiRestock = true,
-            amount = null,
             lineItems = lineItems,
         )
 

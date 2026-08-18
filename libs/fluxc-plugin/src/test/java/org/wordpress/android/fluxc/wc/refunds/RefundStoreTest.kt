@@ -151,7 +151,6 @@ class RefundStoreTest {
                 reason = "reason",
                 apiRefund = false,
                 apiRestock = true,
-                amount = null,
                 lineItems = lineItems,
             )
         ).thenReturn(WooPayload(REFUND_RESPONSE))
@@ -162,35 +161,6 @@ class RefundStoreTest {
             reason = "reason",
             autoRefund = false,
             restockItems = true,
-            amount = null,
-            items = lineItems,
-        )
-
-        assertThat(result.model).isEqualTo(mapper.toModel(REFUND_RESPONSE))
-    }
-
-    @Test
-    fun `given an amount override, when createComputedItemsRefund, then amount is passed as a string`() = test {
-        val lineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 2))
-        whenever(
-            restClient.createComputedRefund(
-                site = site,
-                orderId = orderId,
-                reason = "",
-                apiRefund = true,
-                apiRestock = false,
-                amount = "12.34",
-                lineItems = lineItems,
-            )
-        ).thenReturn(WooPayload(REFUND_RESPONSE))
-
-        val result = store.createComputedItemsRefund(
-            site = site,
-            orderId = orderId,
-            reason = "",
-            autoRefund = true,
-            restockItems = false,
-            amount = "12.34".toBigDecimal(),
             items = lineItems,
         )
 
@@ -208,7 +178,6 @@ class RefundStoreTest {
                 reason = "",
                 apiRefund = false,
                 apiRestock = true,
-                amount = null,
                 lineItems = lineItems,
             )
         ).thenReturn(WooPayload(notFound))
@@ -219,7 +188,6 @@ class RefundStoreTest {
             reason = "",
             autoRefund = false,
             restockItems = true,
-            amount = null,
             items = lineItems,
         )
 

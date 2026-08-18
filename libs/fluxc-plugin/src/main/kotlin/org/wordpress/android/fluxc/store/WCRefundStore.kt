@@ -110,10 +110,11 @@ class WCRefundStore @Inject internal constructor(
 
     /**
      * Creates a server-computed refund through `POST /wc/v3/orders/<order_id>/refunds` with
-     * `compute_totals=true`. The client sends only the items being refunded; the server computes
-     * all monetary values unless an explicit order-level [amount] override is given. An override
-     * below the computed line-item total is rejected with a 400; one above it is accepted as a
-     * goodwill over-refund, capped at the order's remaining refundable amount (422 beyond).
+     * `compute_totals=true`. The client sends only the items being refunded and the server
+     * computes every monetary value. There is no way to send a total: the endpoint accepts one as
+     * an override, but exposing it would let a caller decide what the refund is worth, which is
+     * the opposite of what this method is for. Use [createItemsRefund] for the locally calculated
+     * flow.
      *
      * On a store whose refund endpoint does not support `compute_totals`, the unknown param is
      * silently dropped and the request is handled by the classic create, where a quantity-only
@@ -127,20 +128,16 @@ class WCRefundStore @Inject internal constructor(
      * WooCommerce changes, so a preview proves only that the preview route exists. POS enforces
      * both in `WooPosResolveRefundFlow`.
      *
-     * No parameter has a default. Every one of [reason], [autoRefund], [restockItems] and [amount]
-     * changes what the store does with the merchant's money or stock, so a caller has to say what
-     * it wants rather than inherit it. [amount] in particular: omitting it is what makes the
-     * server own the total, which is the point of the computed create, and that should be a
-     * decision the call site records rather than the shape of least effort.
+     * No parameter has a default. [reason], [autoRefund] and [restockItems] each change what the
+     * store does with the merchant's money or stock, so a caller has to say what it wants rather
+     * than inherit it.
      */
-    @Suppress("LongParameterList")
     suspend fun createComputedItemsRefund(
         site: SiteModel,
         orderId: Long,
         reason: String,
         autoRefund: Boolean,
         restockItems: Boolean,
-        amount: BigDecimal?,
         items: List<ComputedRefundLineItem>,
     ): WooResult<WCRefundModel> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "createComputedItemsRefund") {
@@ -150,8 +147,6 @@ class WCRefundStore @Inject internal constructor(
                 reason = reason,
                 apiRefund = autoRefund,
                 apiRestock = restockItems,
-                // toPlainString: toString() can emit scientific notation for extreme scales.
-                amount = amount?.toPlainString(),
                 lineItems = items,
             )
             return@withDefaultContext when {
