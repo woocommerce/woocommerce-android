@@ -4,6 +4,7 @@
 
 25.5
 -----
+- [WEAR][*****] The watch app's release builds are now shrunk with R8, cutting the APK from 18.1 to 6.5 MB [https://github.com/woocommerce/woocommerce-android/pull/16443]
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
 - [Internal] [WEAR] Wear stack traces in Sentry now carry source context: the source bundle uploads to the `woocommerce-wear` project rather than the phone app's [https://github.com/woocommerce/woocommerce-android/pull/16427]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
