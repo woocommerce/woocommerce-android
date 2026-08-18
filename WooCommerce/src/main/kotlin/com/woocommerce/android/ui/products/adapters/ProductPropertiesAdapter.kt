@@ -86,20 +86,4 @@ class ProductPropertiesAdapter : Adapter<ProductPropertyViewHolder>() {
             is ButtonViewHolder -> holder.bind(item as Button)
         }
     }
-
-    override fun onBindViewHolder(
-        holder: ProductPropertyViewHolder,
-        position: Int,
-        payloads: MutableList<Any>,
-    ) {
-        val focusedEditable = items[position].withEditableFocus(payloads)
-        if (holder is EditableViewHolder && focusedEditable != null) {
-            holder.bind(focusedEditable)
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
-        }
-    }
 }
-
-internal fun ProductProperty.withEditableFocus(payloads: List<Any>): Editable? =
-    (this as? Editable)?.takeIf { EditableFocusPayload in payloads }?.copy(shouldFocus = true)

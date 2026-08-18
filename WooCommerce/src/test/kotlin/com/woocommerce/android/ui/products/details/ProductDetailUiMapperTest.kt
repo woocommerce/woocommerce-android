@@ -80,7 +80,6 @@ class ProductDetailUiMapperTest {
             "Second" to "2",
         )
         val editable = rows.singleProperty<ProductProperty.Editable>()
-        assertThat(editable.shouldFocus).isTrue()
         assertThat(editable.isReadOnly).isTrue()
         editable.onTextChanged?.invoke("updated")
         rows.singleProperty<ProductProperty.ComplexProperty>().onClick?.invoke()
@@ -110,14 +109,12 @@ class ProductDetailUiMapperTest {
     fun `when an immutable editable is mapped, then the thin row reuses it safely`() {
         val editable = ProductProperty.Editable(
             hint = R.string.product_detail_title_hint,
-            shouldFocus = true,
             isReadOnly = true,
         )
 
         val mapped = mapSingleProperty(editable) as ProductProperty.Editable
 
         assertThat(mapped).isSameAs(editable)
-        assertThat(mapped.shouldFocus).isTrue()
         assertThat(mapped.isReadOnly).isTrue()
     }
 
@@ -222,7 +219,6 @@ class ProductDetailUiMapperTest {
         ProductProperty.Editable(
             hint = R.string.product_detail_title_hint,
             text = "Title",
-            shouldFocus = true,
             isReadOnly = true,
             badgeText = R.string.product_status_private,
             badgeColor = R.color.product_status_badge_pending,

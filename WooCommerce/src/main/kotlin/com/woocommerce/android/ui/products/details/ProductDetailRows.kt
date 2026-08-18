@@ -250,7 +250,7 @@ private fun ProductDetailEditableField(
     var restoreFocus by rememberSaveable(key) { mutableStateOf(false) }
     var hasEditedWhileFocused by rememberSaveable(key) { mutableStateOf(false) }
     var value by rememberSaveable(key, stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(titleFieldValue(property.text, moveCursorToEnd = property.shouldFocus))
+        mutableStateOf(titleFieldValue(property.text, moveCursorToEnd = false))
     }
     val shouldRestoreFocus = restoreFocus
 
@@ -258,7 +258,6 @@ private fun ProductDetailEditableField(
         val synchronizedState = synchronizeTitleFieldState(
             externalText = property.text,
             isFocused = isFocused,
-            shouldFocus = property.shouldFocus,
             currentState = ProductDetailTitleFieldState(
                 value = value,
                 restoreFocus = restoreFocus,
@@ -268,9 +267,6 @@ private fun ProductDetailEditableField(
         value = synchronizedState.value
         restoreFocus = synchronizedState.restoreFocus
         hasEditedWhileFocused = synchronizedState.hasEditedWhileFocused
-    }
-    LaunchedEffect(property.shouldFocus, property.isReadOnly) {
-        if (property.shouldFocus && !property.isReadOnly) focusRequester.requestFocus()
     }
     LaunchedEffect(Unit) {
         if (shouldRestoreFocus && !property.isReadOnly) focusRequester.requestFocus()
@@ -651,7 +647,6 @@ private fun synchronizeTitleFieldValue(
 internal fun synchronizeTitleFieldState(
     externalText: String,
     isFocused: Boolean,
-    shouldFocus: Boolean,
     currentState: ProductDetailTitleFieldState,
 ): ProductDetailTitleFieldState {
     val matchesExternalText = externalText == currentState.value.text
@@ -662,7 +657,7 @@ internal fun synchronizeTitleFieldState(
             currentValue = currentState.value,
             preserveCurrentValue = currentState.hasEditedWhileFocused &&
                 (isFocused || currentState.restoreFocus),
-            moveCursorToEnd = isFocused || shouldFocus,
+            moveCursorToEnd = isFocused,
         ),
         restoreFocus = currentState.restoreFocus && !shouldClearEditing,
         hasEditedWhileFocused = currentState.hasEditedWhileFocused && !shouldClearEditing,

@@ -77,7 +77,6 @@ sealed class ProductProperty(val type: Type) {
     data class Editable(
         @StringRes val hint: Int,
         val text: String = "",
-        val shouldFocus: Boolean = false,
         val isReadOnly: Boolean = false,
         @StringRes val badgeText: Int? = null,
         @ColorRes val badgeColor: Int? = null,

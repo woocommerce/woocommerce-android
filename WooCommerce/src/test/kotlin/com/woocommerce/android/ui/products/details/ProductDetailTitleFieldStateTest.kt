@@ -15,7 +15,6 @@ class ProductDetailTitleFieldStateTest {
         val result = synchronizeTitleFieldState(
             externalText = UPDATED_TITLE,
             isFocused = false,
-            shouldFocus = false,
             currentState = currentState,
         )
 
@@ -37,7 +36,6 @@ class ProductDetailTitleFieldStateTest {
         val result = synchronizeTitleFieldState(
             externalText = UPDATED_TITLE,
             isFocused = true,
-            shouldFocus = false,
             currentState = currentState,
         )
 
@@ -59,7 +57,6 @@ class ProductDetailTitleFieldStateTest {
         val result = synchronizeTitleFieldState(
             externalText = UPDATED_TITLE,
             isFocused = false,
-            shouldFocus = false,
             currentState = currentState,
         )
 
@@ -68,15 +65,14 @@ class ProductDetailTitleFieldStateTest {
     }
 
     @Test
-    fun `given the title should focus, when the external text changes, then the cursor moves to the end`() {
+    fun `given the title is focused, when the external text changes, then the cursor moves to the end`() {
         // GIVEN
         val currentState = givenTitleFieldState(text = ORIGINAL_TITLE)
 
         // WHEN
         val result = synchronizeTitleFieldState(
             externalText = UPDATED_TITLE,
-            isFocused = false,
-            shouldFocus = true,
+            isFocused = true,
             currentState = currentState,
         )
 

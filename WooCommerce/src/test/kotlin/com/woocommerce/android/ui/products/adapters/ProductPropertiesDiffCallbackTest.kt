@@ -7,21 +7,19 @@ import org.junit.Test
 
 class ProductPropertiesDiffCallbackTest {
     @Test
-    fun `given an empty editable, when text arrives, then immutable focus payload is returned`() {
+    fun `given an empty editable, when text arrives, then rebinding is requested`() {
         // GIVEN
         val oldItem = editable(text = "")
-        val newItem = editable(text = "Title")
-        val callback = ProductPropertiesDiffCallback(listOf(oldItem), listOf(newItem))
+        val callback = ProductPropertiesDiffCallback(
+            oldList = listOf(oldItem),
+            newList = listOf(editable(text = "Title")),
+        )
 
         // WHEN
-        val payload = callback.getChangePayload(0, 0)
-        val focusedItem = newItem.withEditableFocus(listOf(EditableFocusPayload))
+        val contentsAreTheSame = callback.areContentsTheSame(0, 0)
 
         // THEN
-        assertThat(callback.areContentsTheSame(0, 0)).isFalse()
-        assertThat(payload).isSameAs(EditableFocusPayload)
-        assertThat(newItem.shouldFocus).isFalse()
-        assertThat(focusedItem).isEqualTo(newItem.copy(shouldFocus = true))
+        assertThat(contentsAreTheSame).isFalse()
     }
 
     @Test
