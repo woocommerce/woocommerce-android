@@ -30,6 +30,7 @@ The current module exposes Figma-backed production Compose APIs for:
 - Horizontal and vertical dividers.
 - Icon containers.
 - Static notice banners.
+- Tooltips with directional arrows on all four edges.
 - Page headers.
 - Controlled search fields.
 - Label-only segment controls with two to five options.
@@ -130,6 +131,7 @@ component split does not add module screenshot infrastructure.
 | Switch | `WooSwitch` | material_adapter | Controlled Material 3 / token adapter with minimum touch target. Figma does not currently expose a canonical `Switch` component in the Mobile Design System library. |
 | Switch Settings Row | `WooSwitchSettingsRow` | material_adapter | Composes the Figma-backed cell layout with the `WooSwitch` Material 3 / token adapter. Keep one row-level toggle action and avoid duplicate child semantics. |
 | Tabs | `WooTabRow`, `WooTab` | production | Surface Bright top text tabs with Tint On Surface 16 dividers; bottom tab bar parity remains preview-only and app-shell-owned. |
+| Tooltip | `WooTooltip`, `WooTooltipArrowPosition` | production | Adaptive visual tooltip with optional supporting text and 12 logical arrow positions. Callers own visibility, triggering, popup lifecycle, and anchor positioning. |
 | Top App Bar | `WooTopAppBar`, `WooTopAppBarAction`, `WooDesignSystemToolbar` | production | Surface Bright Android API for Figma's `Top Navigation Bar`. `WooDesignSystemToolbar` applies matching XML chrome without replacing `MenuItem.actionView`, preserving `SearchView`, custom action views, ActionMode, collapsing behavior, overflow, and menu ownership. |
 | Segment Control | `WooSegmentControl` | production | Controlled, label-only radio group for two to five nonblank options. The caller owns selection. Figma has no disabled variant, so Android uses established disabled state-layer/content tokens for the whole-control fallback. |
 | Modal Bottom Sheet | `WooModalBottomSheet`, `WooModalBottomSheetState`, `rememberWooModalBottomSheetState`, `WooModalBottomSheetDismisser`, `rememberWooModalBottomSheetDismisser` | production | Narrow Store adapter with a Surface Bright container, On Surface content, 16dp top corners, no visible boundary, and a 32x4dp lowest-variant handle. The caller owns composition, state, dismissal, and content; the dismisser coordinates programmatic animated dismissal, while Material owns modal/platform behavior. |
