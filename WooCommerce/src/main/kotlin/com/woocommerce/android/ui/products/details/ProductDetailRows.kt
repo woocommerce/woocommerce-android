@@ -76,7 +76,6 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitch
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
