@@ -66,7 +66,7 @@ fladle {
 
 def sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").orNull?.trim() ?: null
 def shouldUploadToSentry = gradle.ext.isCi
-        && !project.properties["skipSentryUpload"]?.toBoolean()
+        && !providers.gradleProperty("skipSentryUpload").orNull?.toBoolean()
 
 sentry {
     org = "a8c"
