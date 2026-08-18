@@ -89,34 +89,34 @@ internal fun ProductDetailRow(row: ProductDetailRow) {
         ProductProperty.Divider -> WooDivider(modifier)
         is ProductProperty.Property -> ProductDetailPropertyRow(
             property = property,
-            showDivider = row.showDivider ?: property.isDividerVisible,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
             modifier = modifier,
         )
         is ProductProperty.ComplexProperty -> ProductDetailComplexPropertyRow(
             property = property,
-            showDivider = row.showDivider ?: property.isDividerVisible,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
             modifier = modifier,
         )
         is ProductProperty.RatingBar -> ProductDetailRatingRow(
             property = property,
-            showDivider = row.showDivider ?: false,
+            showDivider = row.dividerVisibility(default = false),
             modifier = modifier,
         )
         is ProductProperty.Editable -> ProductDetailEditableRow(property, row.key, modifier)
         is ProductProperty.PropertyGroup -> ProductDetailPropertyGroupRow(
             property = property,
-            showDivider = row.showDivider ?: property.isDividerVisible,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
             modifier = modifier,
         )
         is ProductProperty.Link -> ProductDetailLinkRow(
             property = property,
-            showDivider = row.showDivider ?: property.isDividerVisible,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
             modifier = modifier,
         )
         is ProductProperty.Button -> ProductDetailButtonRow(
             property = property,
             key = row.key,
-            showDivider = row.showDivider ?: property.isDividerVisible,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
             modifier = modifier,
         )
         is ProductProperty.Switch -> ProductDetailSwitchRow(property, modifier)
@@ -127,6 +127,8 @@ internal fun ProductDetailRow(row: ProductDetailRow) {
         )
     }
 }
+
+private fun ProductDetailRow.dividerVisibility(default: Boolean) = showDivider ?: default
 
 @Composable
 private fun ProductDetailPropertyRow(
