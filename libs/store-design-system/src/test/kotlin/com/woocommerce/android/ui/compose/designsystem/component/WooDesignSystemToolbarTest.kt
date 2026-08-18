@@ -186,7 +186,11 @@ class WooDesignSystemToolbarTest {
         assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
         assertThat(shadowOf(overflowButton.drawable).createdFromResId)
             .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
-        assertThat(ImageViewCompat.getImageTintList(overflowButton)).isEqualTo(expectedTint)
+        val actualTint = checkNotNull(ImageViewCompat.getImageTintList(overflowButton))
+        val disabledState = intArrayOf(-android.R.attr.state_enabled)
+        assertThat(actualTint.defaultColor).isEqualTo(expectedTint.defaultColor)
+        assertThat(actualTint.getColorForState(disabledState, actualTint.defaultColor))
+            .isEqualTo(expectedTint.getColorForState(disabledState, expectedTint.defaultColor))
         assertThat(overflowButton.contentDescription)
             .isEqualTo(toolbar.context.getString(androidx.appcompat.R.string.abc_action_menu_overflow_description))
         assertThat(overflowButton.isClickable).isTrue()
@@ -352,6 +356,11 @@ class WooDesignSystemToolbarTest {
         val action = toolbar.actionChild(TEXT_ACTION_ID) as TextView
 
         assertThat(action.text).isEqualTo("Done")
+        assertThat(action.background).isInstanceOf(RippleDrawable::class.java)
+        val ripple = action.background as RippleDrawable
+        ripple.setBounds(0, 0, action.width, action.height)
+        val rippleMask = ripple.findDrawableByLayerId(android.R.id.mask)
+        assertThat(rippleMask.bounds).isEqualTo(Rect(0, 0, action.width, action.height))
         assertThat(action.getTag(R.id.woo_ds_toolbar_action_view)).isNull()
         assertThat(action.compoundDrawablesRelative.filterNotNull()).isEmpty()
     }

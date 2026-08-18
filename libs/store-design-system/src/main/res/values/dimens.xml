@@ -5,6 +5,7 @@
     <dimen name="woo_ds_toolbar_edge_padding">24dp</dimen>
     <dimen name="woo_ds_toolbar_title_control_spacing">8dp</dimen>
     <dimen name="woo_ds_toolbar_text_action_max_width">136dp</dimen>
+    <dimen name="woo_ds_toolbar_text_action_corner_radius">24dp</dimen>
     <dimen name="woo_ds_toolbar_icon_button_size">40dp</dimen>
     <dimen name="woo_ds_toolbar_icon_touch_target">48dp</dimen>
     <dimen name="woo_ds_toolbar_icon_size">18dp</dimen>
