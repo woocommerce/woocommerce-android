@@ -20,6 +20,12 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: ":watch: Validate Wear Minification"
+    command: .buildkite/commands/validate-wear-minification.sh
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "WooCommerce-Wear/build/outputs/apk/jalapeno/release/*.apk"
+
   ########################################
   - group: "🕵️ Linters"
     steps:
