@@ -1,8 +1,8 @@
-# Smoke Test: Products - Media upload via WordPress media library
+# Smoke Test: Products - Media upload via WordPress media library and device media
 # p2: products.detail.media
 # P2 ref: Products > Media upload
 #
-# Exercises the full WP-media-library upload path end-to-end:
+# Exercises both deterministic gallery upload paths end-to-end:
 #
 #   Product detail
 #     └─ tap "Add image"
@@ -10,9 +10,11 @@
 #         ViewProductImageGallery with showChooser = true)
 #           ▼
 #   ProductImagesFragment ("Photos" screen)
-#     └─ image-source dialog auto-opens
-#        └─ tap "WordPress media library"
-#           (mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY))
+#     └─ image-source dialog auto-opens twice
+#        ├─ tap "WordPress media library"
+#        │  (mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY))
+#        └─ tap "Choose from device"
+#           (mediaPickerHelper.showMediaPicker(DEVICE))
 #              ▼
 #   MediaPickerActivity (external org.wordpress:mediapicker lib)
 #     └─ tap first image_thumbnail in the recycler
@@ -39,7 +41,7 @@
 #   - mnu_confirm_selection    — "Add N" action-mode menu item
 #   - soft_ask_view            — storage-permission prompt (guarded)
 appId: com.woocommerce.android.dev
-name: "Products - Media upload via WP media library"
+name: "Products - Media upload via WP media library and device media"
 tags:
   - smoke_extended
   - flaky_quarantine
@@ -262,6 +264,97 @@ tags:
       id: "editText"
     timeout: 10000
     label: "Wait for product detail to reappear"
+
+# Add a second image from the device library. The runner pushes a
+# deterministic JPEG and media-scans it only when this flow is selected.
+- runFlow:
+    when:
+      visible: "Add a product image"
+    commands:
+      - tapOn:
+          text: "Add a product image"
+          retryTapIfNoChange: true
+          label: "Tap empty-gallery add image row for device media"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageIcon"
+          retryTapIfNoChange: true
+          label: "Tap add image icon for device media"
+
+- runFlow:
+    when:
+      notVisible: "Select an upload method"
+    commands:
+      - tapOn:
+          id: "addImageContainer"
+          retryTapIfNoChange: true
+          label: "Tap add image container for device media"
+
+- extendedWaitUntil:
+    visible: "Select an upload method"
+    timeout: 15000
+    label: "Wait for image source dialog for device media"
+
+- tapOn:
+    text: "Choose from device"
+    label: "Choose deterministic device media"
+
+- runFlow:
+    when:
+      visible:
+        id: "soft_ask_view"
+    commands:
+      - tapOn:
+          text: ".*Allow access.*|.*Allow.*"
+
+- extendedWaitUntil:
+    visible:
+      id: "recycler"
+    timeout: 30000
+    label: "Wait for device media grid"
+
+- tapOn:
+    id: "image_thumbnail"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Select the deterministic device media item"
+
+- tapOn:
+    id: "mnu_confirm_selection"
+    retryTapIfNoChange: true
+    label: "Add the selected device media"
+
+# One product image was already added from the WP media library. Requiring
+# index 1 proves this second selection added another image instead of merely
+# matching the first image that was already visible.
+- extendedWaitUntil:
+    visible:
+      id: "productImage"
+      index: 1
+    timeout: 45000
+    label: "Wait for the second product image"
+
+- assertVisible:
+    id: "productImage"
+    index: 1
+    label: "Device image is displayed as the second product image"
+
+- takeScreenshot: media_upload_device_image_in_gallery
+
+- tapOn:
+    point: "7%,6%"
+    retryTapIfNoChange: true
+    label: "Return to product detail after device media"
+
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+    label: "Wait for product detail after device media"
 
 # Save the product so the image is persisted on the backend. On an
 # existing product the action is labelled "SAVE"; on a brand-new

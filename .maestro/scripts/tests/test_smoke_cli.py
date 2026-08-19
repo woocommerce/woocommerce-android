@@ -18,6 +18,17 @@ GOLDEN_DIR = SCRIPT_DIR / "golden"
 
 
 class SmokeCliContractTest(unittest.TestCase):
+    def test_device_media_fixture_is_prepared_only_for_the_media_flow(self) -> None:
+        source = RUNNER.read_text(encoding="utf-8")
+
+        self.assertIn('"$(basename "$flow")" == "products_media_upload.yaml"', source)
+        self.assertIn('if [[ ! -f "$MEDIA_FIXTURE" ]]; then', source)
+        self.assertIn('adb -s "$DEVICE_SERIAL" push "$MEDIA_FIXTURE"', source)
+        self.assertLess(
+            source.index("prepare_device_media_fixture\n"),
+            source.index("validate_google_login_apk()"),
+        )
+
     def test_cleanup_finishes_before_reports_and_participates_in_exit_status(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
 

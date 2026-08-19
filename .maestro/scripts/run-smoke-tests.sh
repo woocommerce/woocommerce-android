@@ -16,6 +16,8 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FLOWS_DIR="$REPO_ROOT/.maestro/flows"
 ENV_FILE="$REPO_ROOT/.maestro/.env.local"
 STRINGS_ENV_FILE="$REPO_ROOT/.maestro/strings.env"
+MEDIA_FIXTURE="$REPO_ROOT/.maestro/assets/smoke-test-image.jpg"
+MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image.jpg"
 SEED_SCRIPT="${WOO_MAESTRO_SEED_SCRIPT:-$REPO_ROOT/.maestro/scripts/seed-fixtures.py}"
 PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
@@ -754,6 +756,29 @@ restore_animation_settings() {
   done
 }
 
+prepare_device_media_fixture() {
+  local flow selected="no"
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    if [[ "$(basename "$flow")" == "products_media_upload.yaml" ]]; then
+      selected="yes"
+      break
+    fi
+  done
+  [[ "$selected" == "yes" ]] || return 0
+
+  if [[ ! -f "$MEDIA_FIXTURE" ]]; then
+    echo "Device media fixture not found at: $MEDIA_FIXTURE" >&2
+    exit 1
+  fi
+
+  echo "--- Preparing deterministic device media fixture"
+  adb -s "$DEVICE_SERIAL" shell mkdir -p /sdcard/Pictures >/dev/null
+  adb -s "$DEVICE_SERIAL" push "$MEDIA_FIXTURE" "$MEDIA_FIXTURE_DEVICE_PATH" >/dev/null
+  adb -s "$DEVICE_SERIAL" shell am broadcast \
+    -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
+    -d "file://$MEDIA_FIXTURE_DEVICE_PATH" >/dev/null
+}
+
 stop_screenrecord() {
   adb -s "$DEVICE_SERIAL" shell "pkill -INT screenrecord 2>/dev/null || true" >/dev/null 2>&1 || true
   sleep 1
@@ -790,6 +815,8 @@ if [[ -n "$APK_PATH" ]]; then
   echo "--- Installing APK"
   adb -s "$DEVICE_SERIAL" install -r -g "$APK_PATH"
 fi
+
+prepare_device_media_fixture
 
 validate_google_login_apk() {
   local flow google_flow_selected="no"
