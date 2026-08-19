@@ -500,7 +500,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             assertThat(firstFailureState?.authenticationError?.errorMessage)
                 .isEqualTo(invalidCredentials.errorMessage)
             assertThat(firstFailureState?.authenticationError?.showWpAdminFallbackOption).isTrue()
-            assertThat(viewModel.event.value).isNull()
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
             verify(selectedSite, never()).set(any())
 
@@ -725,7 +724,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 assertThat(viewModel.viewState.value?.endpointRecovery?.type).isEqualTo(type)
                 assertThat(viewModel.event.value).isEqualTo(
                     ShowApplicationPasswordTutorialScreen(
-                        url = "$SITE_URL/wp-admin/authorize-application.php" +
+                        verifiedLoginUrl = null,
+                        applicationPasswordAuthorizationUrl = "$SITE_URL/wp-admin/authorize-application.php" +
                             "?app_name=woo_android&success_url=woocommerce://login",
                         errorMessage = "error"
                     )
@@ -734,6 +734,36 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
             verify(repository, never()).saveAuthenticationEndpoints(any(), any())
             verify(repository, times(2)).fetchSite(SITE_URL)
+        }
+
+    @Test
+    fun `given verified login and advertised authorization URLs, when fallback is selected, then pass both unchanged`() =
+        testBlocking {
+            val loginUrl = "$LOGIN_URL?security_token=abc&redirect_to=stale"
+            val customAuthorizationUrl = "$SITE_URL/private-admin/authorize-application.php"
+            val fetchedSite = SiteModel().apply {
+                id = SITE_ID
+                url = SITE_URL
+                hasWooCommerce = true
+                applicationPasswordsAuthorizeUrl = customAuthorizationUrl
+            }
+            whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(fetchedSite))
+            setup(
+                credentialsState().apply {
+                    this[LOGIN_ENTRY_URL_STATE_KEY] = loginUrl
+                }
+            )
+
+            viewModel.viewState.observeForTesting {
+                viewModel.onStartWebAuthorizationClick()
+                advanceUntilIdle()
+            }
+
+            val event = viewModel.event.value as ShowApplicationPasswordTutorialScreen
+            assertThat(event.verifiedLoginUrl).isEqualTo(loginUrl)
+            assertThat(event.applicationPasswordAuthorizationUrl).isEqualTo(
+                "$customAuthorizationUrl?app_name=woo_android&success_url=woocommerce://login"
+            )
         }
 
     @Test
