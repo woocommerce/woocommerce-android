@@ -8,9 +8,8 @@ import java.math.BigDecimal
 sealed class WooPosRefundState {
 
     /**
-     * What the cashier can do about a failure. Mapped refund errors always fail the same way, so
-     * [RefreshItems] reloads the order and its refunds and [None] only leaves the flow. [Retry] is
-     * for failures that can pass on a second try, such as a network error.
+     * What the cashier can do about a failure. Mapped refund errors always fail the same way, so they
+     * get [RefreshItems] or [None]. [Retry] is for failures that can pass on a second try.
      */
     enum class Recovery {
         Retry,
@@ -43,10 +42,7 @@ sealed class WooPosRefundState {
         val previewFailure: PreviewFailure? = null,
     ) : WooPosRefundState() {
 
-        /**
-         * A failed preview, shown on the selection step. [message] is the store's mapped copy, or
-         * null to show the generic one.
-         */
+        /** A failed preview. [message] is the store's copy, or null to show the generic one. */
         @Immutable
         data class PreviewFailure(
             val message: String?,

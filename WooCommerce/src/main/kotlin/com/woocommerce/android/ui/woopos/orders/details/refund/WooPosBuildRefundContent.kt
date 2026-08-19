@@ -6,17 +6,11 @@ import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
-/**
- * Builds the item-selection content of the refund flow. Totals start at zero: they are resolved
- * when the cashier continues.
- */
+/** Builds the item-selection content. Totals start at zero and are resolved on Continue. */
 class WooPosBuildRefundContent @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
 ) {
-    /**
-     * @param preservedSelection selection kept from a reload. Ids that are no longer refundable are
-     * dropped. If none are left, all items are selected.
-     */
+    /** @param preservedSelection kept from a reload. Ids that are gone drop out; if none are left, all are selected. */
     operator fun invoke(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
