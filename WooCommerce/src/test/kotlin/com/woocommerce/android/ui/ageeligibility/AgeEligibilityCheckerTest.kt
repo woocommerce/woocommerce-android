@@ -11,6 +11,7 @@ import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
@@ -165,6 +166,32 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
 
+            assertThat(client.callCount).isEqualTo(2)
+        }
+
+    @Test
+    fun `given startup check is cancelled, when another activity resumes, then startup check is retried`() =
+        testBlocking {
+            // GIVEN
+            val checker = createChecker()
+            val nextActivity: Activity = mock()
+            client.gate = CompletableDeferred()
+            val cancelledCheck = launch { checker.checkAgeOnStartup(activity) }
+            yield()
+
+            // WHEN
+            cancelledCheck.cancelAndJoin()
+            client.gate = null
+            checker.checkAgeOnStartup(nextActivity)
+
+            // THEN
+            assertThat(client.callCount).isEqualTo(2)
+            assertThat(client.receivedActivity).isSameAs(nextActivity)
+
+            // WHEN
+            checker.checkAgeOnStartup(activity)
+
+            // THEN
             assertThat(client.callCount).isEqualTo(2)
         }
 

@@ -41,7 +41,6 @@ import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
-import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
@@ -357,8 +356,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
         }
+    }
+
+    override fun onActivityResumed(activity: Activity) {
         (activity as? LifecycleOwner)?.lifecycleScope?.launch {
-            ageEligibilityChecker.checkAge(activity, AgeCheckTrigger.STARTUP)
+            ageEligibilityChecker.checkAgeOnStartup(activity)
         }
     }
 

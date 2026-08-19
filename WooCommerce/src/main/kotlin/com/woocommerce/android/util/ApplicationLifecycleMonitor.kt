@@ -12,6 +12,7 @@ class ApplicationLifecycleMonitor(
     interface ApplicationLifecycleListener {
         fun onAppComesFromBackground()
         fun onFirstActivityResumed(activity: Activity)
+        fun onActivityResumed(activity: Activity)
         fun onAppGoesToBackground()
     }
 
@@ -34,6 +35,8 @@ class ApplicationLifecycleMonitor(
             firstActivityResumed = false
             lifecycleListener.onFirstActivityResumed(activity)
         }
+
+        lifecycleListener.onActivityResumed(activity)
     }
 
     override fun onActivityStarted(activity: Activity) {}

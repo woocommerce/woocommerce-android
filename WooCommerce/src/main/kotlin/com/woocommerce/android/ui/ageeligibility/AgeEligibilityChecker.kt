@@ -30,6 +30,7 @@ class AgeEligibilityChecker @Inject constructor(
     private val evaluator: AgeEligibilityEvaluator
 ) {
     private val isCheckInProgress = AtomicBoolean(false)
+    private val isStartupCheckPending = AtomicBoolean(true)
     private var persistedRestriction = readPersistedRestriction()
 
     private val _ageEligibilityState = MutableStateFlow(
@@ -48,13 +49,24 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     suspend fun checkAge(activity: Activity, trigger: AgeCheckTrigger = AgeCheckTrigger.STARTUP) {
+        runAgeCheckIfIdle(activity, trigger)
+    }
+
+    suspend fun checkAgeOnStartup(activity: Activity) {
+        if (isStartupCheckPending.get() && runAgeCheckIfIdle(activity, AgeCheckTrigger.STARTUP)) {
+            isStartupCheckPending.set(false)
+        }
+    }
+
+    private suspend fun runAgeCheckIfIdle(activity: Activity, trigger: AgeCheckTrigger): Boolean {
         if (!isCheckInProgress.compareAndSet(false, true)) {
             WooLog.i(WooLog.T.UTILS, "Skipping concurrent age check triggered by ${trigger.name}")
-            return
+            return false
         }
 
         try {
             checkAgeSingleFlight(activity)
+            return true
         } finally {
             isCheckInProgress.set(false)
         }
