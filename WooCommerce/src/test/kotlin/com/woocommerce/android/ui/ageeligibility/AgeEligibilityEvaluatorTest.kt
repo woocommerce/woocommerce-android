@@ -63,6 +63,23 @@ class AgeEligibilityEvaluatorTest {
     }
 
     @Test
+    fun `given shared upper age below 13 without lower bound, when evaluated, then result is restricted`() {
+        // GIVEN
+        val result = sharedResult(ageLower = null, ageUpper = 12)
+
+        // WHEN
+        val evaluation = evaluate(result)
+
+        // THEN
+        assertThat(evaluation).isEqualTo(
+            AgeEligibilityEvaluation(
+                AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE),
+                isAuthoritative = true
+            )
+        )
+    }
+
+    @Test
     fun `given a conclusive eligible shared age, when evaluated, then result is authoritatively allowed`() {
         listOf(
             sharedResult(ageLower = 13, ageUpper = 15),
@@ -84,7 +101,6 @@ class AgeEligibilityEvaluatorTest {
     fun `given missing or crossing bounds, when evaluated, then prior restriction is preserved`() {
         listOf(
             sharedResult(ageLower = null, ageUpper = null),
-            sharedResult(ageLower = null, ageUpper = 12),
             sharedResult(ageLower = 16, ageUpper = 15),
             sharedResult(ageLower = 12, ageUpper = 13)
         ).forEach { result ->

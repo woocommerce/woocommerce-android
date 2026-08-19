@@ -25,14 +25,15 @@ class AgeEligibilityEvaluator @Inject constructor() {
         signals: SharedAgeSignals?,
         priorRestriction: AgeRestrictionReason?
     ): AgeEligibilityEvaluation {
+        val ageUpper = signals?.ageUpper
+        if (ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE) {
+            return authoritativeRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
+        }
+
         val ageLower = signals?.ageLower ?: return nonAuthoritative(priorRestriction)
-        val ageUpper = signals.ageUpper
         if (ageUpper != null && ageLower > ageUpper) return nonAuthoritative(priorRestriction)
 
         return when {
-            ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE ->
-                authoritativeRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
-
             ageLower >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE -> authoritativeAllowed()
             else -> nonAuthoritative(priorRestriction)
         }
