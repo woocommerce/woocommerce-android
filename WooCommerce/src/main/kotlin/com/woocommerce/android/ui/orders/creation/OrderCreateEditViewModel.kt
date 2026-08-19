@@ -1248,6 +1248,19 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedGiftCard.update { selectedGiftCard }
     }
 
+    /**
+     * Reconciles the selected gift card with what the store actually redeemed after a sync. A used or invalid card
+     * comes back with no applied gift cards, so it is cleared (stops showing as applied) and the merchant is notified.
+     */
+    private fun reconcileGiftCardWithSyncedOrder(syncedOrder: Order) {
+        val attemptedGiftCard = _selectedGiftCard.value
+        val appliedGiftCard = syncedOrder.giftCards.firstOrNull()?.code.orEmpty()
+        _selectedGiftCard.value = appliedGiftCard
+        if (attemptedGiftCard.isNotEmpty() && appliedGiftCard != attemptedGiftCard) {
+            triggerEvent(ShowSnackbar(string.order_creation_gift_card_not_applied))
+        }
+    }
+
     fun onAddOrEditShippingClicked(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
@@ -1491,6 +1504,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                         updateStatus.order
                                     }
                                 }.also {
+                                    if (mode is Mode.Edit) {
+                                        reconcileGiftCardWithSyncedOrder(it)
+                                    }
                                     updateCouponAndDiscountButtonsState(it)
                                     updateAddShippingButtonVisibility(it)
                                     updateAddGiftCardButtonVisibility(it)
