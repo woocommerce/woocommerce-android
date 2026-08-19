@@ -218,6 +218,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "orders_menu_item_tapped"
         }
 
+        data object OrdersListLoaded : Event() {
+            override val name: String = "orders_list_loaded"
+        }
+
         data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }
@@ -1375,9 +1379,9 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
-        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
-        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable -> "site_settings_unavailable"
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> "unknown_no_positive_cache"
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "no_site_selected"
     }
 }
 
