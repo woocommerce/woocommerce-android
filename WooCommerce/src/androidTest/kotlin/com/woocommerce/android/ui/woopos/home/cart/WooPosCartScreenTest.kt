@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
