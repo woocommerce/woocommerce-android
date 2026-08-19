@@ -146,6 +146,9 @@ class AgeEligibilityChecker @Inject constructor(
         if (evaluation.isAuthoritative) {
             persistedRestriction = restriction
             prefsWrapper.userAgeRestrictionReason = restriction?.name.orEmpty()
+            if (restriction == null) {
+                prefsWrapper.clearLegacyAgeRestriction()
+            }
         }
     }
 

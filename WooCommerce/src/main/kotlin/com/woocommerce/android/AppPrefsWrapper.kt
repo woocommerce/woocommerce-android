@@ -44,6 +44,10 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var userAgeRestrictionReason by AppPrefs::userAgeRestrictionReason
 
+    fun clearLegacyAgeRestriction() {
+        AppPrefs.isUserAgeEligibleForAppUse = true
+    }
+
     var isAiAssistantEarlyAccessNoticeDismissed by AppPrefs::isAiAssistantEarlyAccessNoticeDismissed
 
     var hasSeenAnalyticsScheduledImportInfo by AppPrefs::hasSeenAnalyticsScheduledImportInfo

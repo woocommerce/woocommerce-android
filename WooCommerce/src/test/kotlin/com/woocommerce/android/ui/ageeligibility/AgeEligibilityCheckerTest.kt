@@ -18,6 +18,8 @@ import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -51,6 +53,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
         assertThat(client.receivedActivity).isSameAs(activity)
         verify(prefsWrapper).userAgeRestrictionReason = ""
+        verify(prefsWrapper).clearLegacyAgeRestriction()
         verify(accountRepository, never()).logout()
     }
 
@@ -65,6 +68,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         )
         verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
+        verify(prefsWrapper, never()).clearLegacyAgeRestriction()
         verify(accountRepository).logout()
     }
 
@@ -148,6 +152,34 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
             verify(prefsWrapper).userAgeRestrictionReason = ""
             verify(accountRepository, never()).logout()
+        }
+
+    @Test
+    fun `given migrated restriction is cleared, when checker is recreated, then access remains allowed`() =
+        testBlocking {
+            // GIVEN
+            var persistedReason = ""
+            var isPersistedEligible = false
+            whenever(prefsWrapper.userAgeRestrictionReason).thenAnswer { persistedReason }
+            whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenAnswer { isPersistedEligible }
+            doAnswer {
+                persistedReason = it.getArgument(0)
+                null
+            }.whenever(prefsWrapper).userAgeRestrictionReason = any()
+            doAnswer {
+                isPersistedEligible = true
+                null
+            }.whenever(prefsWrapper).clearLegacyAgeRestriction()
+            val checker = createChecker()
+            client.result = sharedResult(ageLower = 18, ageUpper = null)
+
+            // WHEN
+            checker.checkAge(activity)
+            val recreatedChecker = createChecker()
+
+            // THEN
+            assertThat(recreatedChecker.ageEligibilityState.value.decision)
+                .isEqualTo(AgeEligibilityDecision.Allowed)
         }
 
     @Test
