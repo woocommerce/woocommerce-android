@@ -65,7 +65,7 @@ class MediaFileUploadHandler @Inject constructor(
             .launchIn(appCoroutineScope)
     }
 
-    private fun handleMediaUploadEvent(event: Event.MediaUploadEvent) {
+    private suspend fun handleMediaUploadEvent(event: Event.MediaUploadEvent) {
         val statusList = uploadsStatus.value.toMutableList()
         val index = statusList.indexOfFirst {
             it.remoteProductId == event.productId && it.localUri == event.localUri
@@ -76,6 +76,7 @@ class MediaFileUploadHandler @Inject constructor(
         }
 
         val newStatus = event.toStatus()
+        var shouldNotifyFailure = false
 
         when (event) {
             is Event.MediaUploadEvent.FetchSucceeded -> {
@@ -84,7 +85,7 @@ class MediaFileUploadHandler @Inject constructor(
 
             is Event.MediaUploadEvent.FetchFailed -> {
                 statusList[index] = newStatus
-                showUploadFailureNotifIfNoObserver(event.productId, statusList)
+                shouldNotifyFailure = true
             }
 
             is Event.MediaUploadEvent.UploadSucceeded -> {
@@ -108,10 +109,14 @@ class MediaFileUploadHandler @Inject constructor(
                         AnalyticsTracker.KEY_ERROR_DESC to event.error.message
                     )
                 )
-                showUploadFailureNotifIfNoObserver(event.productId, statusList)
+                shouldNotifyFailure = true
             }
         }
         uploadsStatus.value = statusList
+
+        if (shouldNotifyFailure) {
+            showUploadFailureNotifIfNoObserver(event.productId, statusList)
+        }
     }
 
     private fun enqueueMediaUpload(event: Event.MediaUploadEvent.FetchSucceeded) {
@@ -154,7 +159,7 @@ class MediaFileUploadHandler @Inject constructor(
             }
     }
 
-    private fun showUploadFailureNotifIfNoObserver(productId: Long, state: List<ProductImageUploadData>) {
+    private suspend fun showUploadFailureNotifIfNoObserver(productId: Long, state: List<ProductImageUploadData>) {
         if (!externalObservers.contains(productId)) {
             WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> post upload failure notification")
             val errors = state.filter { it.remoteProductId == productId && it.uploadStatus is UploadStatus.Failed }

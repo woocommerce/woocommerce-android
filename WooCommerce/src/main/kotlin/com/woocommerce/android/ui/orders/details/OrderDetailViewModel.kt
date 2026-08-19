@@ -353,12 +353,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onEditOrderStatusSelected() {
         viewState.orderStatus?.let { orderStatus ->
-            triggerEvent(
-                ViewOrderStatusSelector(
-                    currentStatus = orderStatus.statusKey,
-                    orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+            launch {
+                triggerEvent(
+                    ViewOrderStatusSelector(
+                        currentStatus = orderStatus.statusKey,
+                        orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -819,7 +821,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onNotesFetched()
     }
 
-    private fun loadOrderRefunds(): ListInfo<Refund> {
+    private suspend fun loadOrderRefunds(): ListInfo<Refund> {
         return ListInfo(list = orderDetailRepository.getOrderRefunds(navArgs.orderId))
     }
 
@@ -1056,7 +1058,7 @@ class OrderDetailViewModel @Inject constructor(
                 is OrderProduct.ProductItem -> first.product.productId
             }
 
-            val product = productDetailRepository.getProductAsync(firstProductId)
+            val product = productDetailRepository.getProduct(firstProductId)
             product?.let {
                 triggerEvent(
                     OrderNavigationTarget.AIThankYouNote(

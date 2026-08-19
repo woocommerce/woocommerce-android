@@ -103,7 +103,7 @@ class OrderFulfillViewModel @Inject constructor(
         )
     }
 
-    private fun displayOrderProducts(order: Order) {
+    private suspend fun displayOrderProducts(order: Order) {
         val products = repository.getOrderRefunds(navArgs.orderId).getNonRefundedProducts(order.items)
         _productList.value = products
     }

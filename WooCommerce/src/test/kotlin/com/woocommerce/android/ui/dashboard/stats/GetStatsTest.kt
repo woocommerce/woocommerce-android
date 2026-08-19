@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.data.StatsRepository.StatsException
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.last
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -39,6 +41,9 @@ import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetStatsTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(siteModel)
@@ -421,12 +426,14 @@ class GetStatsTest : BaseUnitTest() {
         val GENERIC_ORDER_STATS_ERROR = OrderStatsError(GENERIC_ERROR, ANY_ERROR_MESSAGE)
         val PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR = OrderStatsError(PLUGIN_NOT_ACTIVE, ANY_ERROR_MESSAGE)
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
-        val ANY_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
-            selectionType = ANY_SELECTION_TYPE,
-            referenceDate = Date(),
-            calendar = Calendar.getInstance(),
-            locale = Locale.getDefault()
-        )
+        val ANY_STATS_RANGE_SELECTION by lazy {
+            StatsTimeRangeSelection.build(
+                selectionType = ANY_SELECTION_TYPE,
+                referenceDate = Date(),
+                calendar = Calendar.getInstance(),
+                locale = Locale.getDefault()
+            )
+        }
         val ANY_REVENUE_STATS = WCRevenueStatsModel(LocalId(1), "", "", "", "", "", "")
         val ANY_VISITOR_STATS = mapOf(
             "2020-10-01" to 1,
