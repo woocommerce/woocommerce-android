@@ -158,19 +158,24 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     @Test
     fun `given a check is running, when checks overlap, then concurrent request is skipped until first finishes`() =
         testBlocking {
+            // GIVEN
             val checker = createChecker()
             client.gate = CompletableDeferred()
 
+            // WHEN
             val firstCheck = launch { checker.checkAge(activity) }
             yield()
             checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
 
+            // THEN
             assertThat(client.callCount).isEqualTo(1)
+
+            // WHEN
             client.gate?.complete(Unit)
             firstCheck.join()
-
             checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
 
+            // THEN
             assertThat(client.callCount).isEqualTo(2)
         }
 
@@ -232,6 +237,60 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(logoutCompleted.isCompleted).isTrue()
             verify(accountRepository).logout()
         }
+
+    @Test
+    fun `given Play Store retry overlaps a running check, when resumed again, then retry is preserved`() =
+        testBlocking {
+            // GIVEN
+            val checker = createChecker()
+            client.gate = CompletableDeferred()
+            val runningCheck = launch { checker.checkAge(activity) }
+            yield()
+            checker.onPlayStoreOpenedForVerification()
+
+            // WHEN
+            checker.retryAfterReturningFromPlayStore(activity)
+
+            // THEN
+            assertThat(client.callCount).isEqualTo(1)
+
+            // WHEN
+            client.gate?.complete(Unit)
+            runningCheck.join()
+            checker.retryAfterReturningFromPlayStore(activity)
+
+            // THEN
+            assertThat(client.callCount).isEqualTo(2)
+
+            // WHEN
+            checker.retryAfterReturningFromPlayStore(activity)
+
+            // THEN
+            assertThat(client.callCount).isEqualTo(2)
+        }
+
+    @Test
+    fun `given a Play Store retry is cancelled, when resumed again, then retry is preserved`() = testBlocking {
+        // GIVEN
+        val checker = createChecker()
+        client.gate = CompletableDeferred()
+        checker.onPlayStoreOpenedForVerification()
+
+        // WHEN
+        val cancelledRetry = launch { checker.retryAfterReturningFromPlayStore(activity) }
+        yield()
+
+        // THEN
+        assertThat(client.callCount).isEqualTo(1)
+
+        // WHEN
+        cancelledRetry.cancelAndJoin()
+        client.gate = null
+        checker.retryAfterReturningFromPlayStore(activity)
+
+        // THEN
+        assertThat(client.callCount).isEqualTo(2)
+    }
 
     @Test
     fun `given Play Store was not opened, when activity resumes, then age is not checked`() = testBlocking {

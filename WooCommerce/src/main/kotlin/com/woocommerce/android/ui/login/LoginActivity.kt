@@ -17,7 +17,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.withStarted
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
@@ -1189,19 +1191,21 @@ class LoginActivity :
 
     private fun keepTrackOfAgeEligibility() {
         lifecycleScope.launch {
-            ageEligibilityChecker.ageEligibilityState.collect { ageEligibilityState ->
-                when (ageEligibilityState.decision) {
-                    AgeEligibilityDecision.Allowed -> {
-                        dismissAgeVerificationRequiredDialog()
-                        dismissAgeRestrictionDialog()
-                    }
-                    AgeEligibilityDecision.VerificationRequired -> {
-                        dismissAgeRestrictionDialog()
-                        showAgeVerificationRequiredDialog()
-                    }
-                    is AgeEligibilityDecision.Restricted -> {
-                        dismissAgeVerificationRequiredDialog()
-                        showAgeRestrictionDialog(ageEligibilityState)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                ageEligibilityChecker.ageEligibilityState.collect { ageEligibilityState ->
+                    when (ageEligibilityState.decision) {
+                        AgeEligibilityDecision.Allowed -> {
+                            dismissAgeVerificationRequiredDialog()
+                            dismissAgeRestrictionDialog()
+                        }
+                        AgeEligibilityDecision.VerificationRequired -> {
+                            dismissAgeRestrictionDialog()
+                            showAgeVerificationRequiredDialog()
+                        }
+                        is AgeEligibilityDecision.Restricted -> {
+                            dismissAgeVerificationRequiredDialog()
+                            showAgeRestrictionDialog(ageEligibilityState)
+                        }
                     }
                 }
             }

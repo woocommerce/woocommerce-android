@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -63,27 +64,41 @@ class AgeEligibilityChecker @Inject constructor(
         }
     }
 
-    private suspend fun runAgeCheckIfIdle(activity: Activity, trigger: AgeCheckTrigger): Boolean {
+    fun onPlayStoreOpenedForVerification() {
+        retryAfterPlayStore.set(true)
+    }
+
+    suspend fun retryAfterReturningFromPlayStore(activity: Activity) {
+        if (retryAfterPlayStore.get()) {
+            runAgeCheckIfIdle(
+                activity = activity,
+                trigger = AgeCheckTrigger.RETURN_FROM_PLAY_STORE,
+                onStarted = { retryAfterPlayStore.compareAndSet(true, false) },
+                onCancelled = { retryAfterPlayStore.set(true) }
+            )
+        }
+    }
+
+    private suspend fun runAgeCheckIfIdle(
+        activity: Activity,
+        trigger: AgeCheckTrigger,
+        onStarted: () -> Unit = {},
+        onCancelled: () -> Unit = {}
+    ): Boolean {
         if (!isCheckInProgress.compareAndSet(false, true)) {
             WooLog.i(WooLog.T.UTILS, "Skipping concurrent age check triggered by ${trigger.name}")
             return false
         }
 
         try {
+            onStarted()
             checkAgeSingleFlight(activity)
             return true
+        } catch (exception: CancellationException) {
+            onCancelled()
+            throw exception
         } finally {
             isCheckInProgress.set(false)
-        }
-    }
-
-    fun onPlayStoreOpenedForVerification() {
-        retryAfterPlayStore.set(true)
-    }
-
-    suspend fun retryAfterReturningFromPlayStore(activity: Activity) {
-        if (retryAfterPlayStore.compareAndSet(true, false)) {
-            checkAge(activity, AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
         }
     }
 
