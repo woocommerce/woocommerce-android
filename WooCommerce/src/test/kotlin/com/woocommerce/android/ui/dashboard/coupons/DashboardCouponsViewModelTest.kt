@@ -127,7 +127,8 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             dateRangeFormatter = dateRangeFormatter,
             customDateRangeDataStore = customDateRangeDataStore,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            dateUtils = dateUtils
         )
     }
 

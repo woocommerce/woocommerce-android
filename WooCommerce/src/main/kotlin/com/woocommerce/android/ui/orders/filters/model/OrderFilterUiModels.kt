@@ -15,8 +15,8 @@ sealed class OrderFilterEvent : MultiLiveEvent.Event() {
     ) : OrderFilterEvent()
 
     data class ShowCustomDateRangePicker(
-        val startDateMillis: Long,
-        val endDateMillis: Long
+        val startDay: Long,
+        val endDay: Long
     ) : OrderFilterEvent()
 
     object OnShowOrders : OrderFilterEvent()

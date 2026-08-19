@@ -21,7 +21,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
     val shippingPluginSupport: ShippingLabelSupport by lazy { getShippingLabelSupport() }
 
-    fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
+    suspend fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
         !shippingPluginSupport.isSupported() &&
             orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY &&
             order.currency == SUPPORTED_WCS_CURRENCY &&
@@ -34,7 +34,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         appSharedPrefs.setWcShippingBannerDismissed(dismissed = true, selectedSite.getSelectedSiteId())
     }
 
-    private fun hasVirtualProductsOnly(order: Order): Boolean {
+    private suspend fun hasVirtualProductsOnly(order: Order): Boolean {
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)

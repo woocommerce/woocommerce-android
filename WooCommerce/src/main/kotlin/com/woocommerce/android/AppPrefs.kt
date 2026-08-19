@@ -24,7 +24,9 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CLIENT_SIDE_BANNER_HIDD
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.PRODUCT_SORTING_PREFIX
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.RECEIPT_PREFIX
@@ -104,6 +106,8 @@ object AppPrefs {
         ORDER_FILTER_PREFIX,
         ORDER_FILTER_CUSTOM_DATE_RANGE_START,
         ORDER_FILTER_CUSTOM_DATE_RANGE_END,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY,
+        ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY,
         PRODUCT_SORTING_PREFIX,
         PRE_LOGIN_NOTIFICATION_WORK_REQUEST,
         PRE_LOGIN_NOTIFICATION_DISPLAYED,
@@ -989,6 +993,7 @@ object AppPrefs {
     private fun getOrderFilterKey(currentSiteId: Int, filterCategory: String) =
         PrefKeyString("$ORDER_FILTER_PREFIX:$currentSiteId:$filterCategory")
 
+    // Only used by the order filter date range migration. Delete in 25.9, see WOOMOB-3841.
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> {
         val startDateMillis = getLong(
             PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId")
@@ -999,14 +1004,29 @@ object AppPrefs {
         return Pair(startDateMillis, endDateMillis)
     }
 
-    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
+    fun removeOrderFilterCustomDateRange(selectedSiteId: Int) {
+        remove(PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId"))
+        remove(PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId"))
+    }
+
+    fun getOrderFilterCustomDateRangeDays(selectedSiteId: Int): Pair<Long, Long> {
+        val startDay = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY:$selectedSiteId")
+        )
+        val endDay = getLong(
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY:$selectedSiteId")
+        )
+        return Pair(startDay, endDay)
+    }
+
+    fun setOrderFilterCustomDateRangeDays(selectedSiteId: Int, startDay: Long, endDay: Long) {
         setLong(
-            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START:$selectedSiteId"),
-            startDateMillis
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_START_DAY:$selectedSiteId"),
+            startDay
         )
         setLong(
-            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END:$selectedSiteId"),
-            endDateMillis
+            PrefKeyString("$ORDER_FILTER_CUSTOM_DATE_RANGE_END_DAY:$selectedSiteId"),
+            endDay
         )
     }
 

@@ -1,5 +1,6 @@
 package com.woocommerce.android.wear.util
 
+import android.text.format.DateFormat
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import org.wordpress.android.fluxc.utils.SiteUtils
 import org.wordpress.android.util.DateTimeUtils
@@ -19,8 +20,11 @@ class DateUtils @Inject constructor(
 ) {
     private val selectedSite get() = loginRepository.selectedSiteFlow.value
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", locale)
-    private val friendlyMonthDayFormat = SimpleDateFormat("MMM d", locale)
-    private val friendlyMonthDayYearFormat = SimpleDateFormat("MMM d, yyyy", locale)
+    private val friendlyMonthDayFormat = localizedDateFormat("MMMd")
+    private val friendlyMonthDayYearFormat = localizedDateFormat("yMMMd")
+
+    private fun localizedDateFormat(skeleton: String) =
+        SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
 
     fun getFormattedDateWithSiteTimeZone(dateCreated: String): String? {
         val currentSiteDate = getCurrentDateInSiteTimeZone() ?: Date()

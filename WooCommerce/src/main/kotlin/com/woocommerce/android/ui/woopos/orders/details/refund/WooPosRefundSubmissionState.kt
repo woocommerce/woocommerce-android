@@ -13,11 +13,20 @@ sealed class WooPosRefundSubmissionState {
     data object ProcessingReaderRefund : WooPosRefundSubmissionState()
     data object NotifyingStore : WooPosRefundSubmissionState()
     data object Success : WooPosRefundSubmissionState()
+
+    /**
+     * [apiErrorCode] is the store's REST error code, when it returned one. Kept raw rather than
+     * pre-mapped so unrecognised codes survive for analytics too.
+     *
+     * A code that [WooPosRefundApiError] recognises makes the failure non-retryable by default:
+     * those are deterministic validation rejections, so resubmitting the same request produces the
+     * same rejection. Recovering needs the order data refreshed or the selection changed.
+     */
     data class Failure(
         val message: String,
         val retryBackendNotificationOnly: Boolean = false,
         val retryCardRefund: Boolean = false,
-        val canRetry: Boolean = !retryBackendNotificationOnly,
         val apiErrorCode: String? = null,
+        val canRetry: Boolean = !retryBackendNotificationOnly && WooPosRefundApiError.fromCode(apiErrorCode) == null,
     ) : WooPosRefundSubmissionState()
 }

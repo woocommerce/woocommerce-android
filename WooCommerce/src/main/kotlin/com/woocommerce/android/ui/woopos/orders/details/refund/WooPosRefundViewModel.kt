@@ -404,6 +404,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             itemsCount = currentState.refundableItems.count { it.uniqueId in newSelectedIds },
             isPreviewLoading = false,
             previewFailed = false,
+            previewErrorMessage = null,
         )
     }
 
@@ -421,7 +422,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
         val selectedItems = currentState.refundableItems.filter { it.uniqueId in currentState.selectedItemIds }
 
-        _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
+        _state.value = currentState.copy(
+            isPreviewLoading = true,
+            previewFailed = false,
+            previewErrorMessage = null,
+        )
 
         previewJob = viewModelScope.launch {
             val lineItems = buildRefundLineItems.forPreview(selectedItems)
@@ -435,9 +440,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundPreview.Result.FallbackToLocal ->
                     advanceToReviewWithLocalTotals(currentState, selectedItems)
 
-                WooPosRefundPreview.Result.Error ->
+                is WooPosRefundPreview.Result.Error ->
                     setContentIfMatchingSelection(currentState.selectedItemIds) {
-                        it.copy(isPreviewLoading = false, previewFailed = true)
+                        it.copy(
+                            isPreviewLoading = false,
+                            previewFailed = true,
+                            previewErrorMessage = result.apiError?.messageRes
+                                ?.let(resourceProvider::getString),
+                        )
                     }
             }
         }
@@ -455,7 +465,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         val order = currentOrder
         if (order == null || !ensureLocalCalculationSettings()) {
             setContentIfMatchingSelection(currentState.selectedItemIds) {
-                it.copy(isPreviewLoading = false, previewFailed = true)
+                it.copy(isPreviewLoading = false, previewFailed = true, previewErrorMessage = null)
             }
             return
         }
@@ -467,6 +477,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     step = WooPosRefundState.Content.RefundStep.ReviewRefund,
                     isPreviewLoading = false,
                     previewFailed = false,
+                    previewErrorMessage = null,
                 )
         }
     }
@@ -496,6 +507,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedTotal = PriceUtils.formatCurrency(preview.total, currency, currencyFormatter),
             isPreviewLoading = false,
             previewFailed = false,
+            previewErrorMessage = null,
         )
     }
 

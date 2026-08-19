@@ -666,6 +666,74 @@ class WooPosRefundSubmissionProcessorTest {
     }
 
     @Test
+    fun `given mapped refund error, when backend refund fails, then failure carries the specific message`() = runTest {
+        whenever(resourceProvider.getString(R.string.woopos_refund_error_order_not_refundable))
+            .thenReturn("This order can't be refunded")
+        val serverLineItems = listOf(ComputedRefundLineItem.quantityBased(lineItemId = 1L, quantity = 1))
+        whenever(
+            refundStore.createComputedItemsRefund(
+                site = any(),
+                orderId = any(),
+                reason = any(),
+                autoRefund = any(),
+                restockItems = any(),
+                amount = anyOrNull(),
+                items = any(),
+            )
+        ).thenReturn(
+            WooResult(
+                error = WooError(
+                    type = WooErrorType.GENERIC_ERROR,
+                    original = GenericErrorType.UNKNOWN,
+                    message = "Order is not refundable.",
+                    apiErrorCode = "woocommerce_rest_order_not_refundable"
+                )
+            )
+        )
+        val retryRequest = request.copy(cardRefundAlreadySucceeded = true, serverLineItems = serverLineItems)
+
+        processor.submit(retryRequest).test {
+            assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
+
+            val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+            assertThat(failure.message).isEqualTo("This order can't be refunded")
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `given unmapped error without message, when backend refund fails, then failure carries generic message`() =
+        runTest {
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    error = WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = GenericErrorType.UNKNOWN
+                    )
+                )
+            )
+            val retryRequest = request.copy(cardRefundAlreadySucceeded = true)
+
+            processor.submit(retryRequest).test {
+                assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
+
+                val failure = awaitItem() as WooPosRefundSubmissionState.Failure
+                assertThat(failure.message).isEqualTo("Something went wrong")
+                awaitComplete()
+            }
+        }
+
+    @Test
     fun `given interac reader failure, when submitted, then failure can retry card refund`() = runTest {
         val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
             CardReaderInteracRefundState.LoadingData {}

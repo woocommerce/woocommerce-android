@@ -1,12 +1,14 @@
 package com.woocommerce.android.wear.extensions
 
+import android.text.format.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy",
+/** Abbreviated month, day and year in the locale's own order. */
+fun Date.formatToLocalizedMonthDayYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMd"),
     locale
 ).format(this)
 
