@@ -134,18 +134,22 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
+    fun `given an order with no products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
             viewModel.start()
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+
+            assertThat(orderData?.isVirtualOrder).isEqualTo(false)
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
+    fun `given an order with only virtual products, when the screen loads, then the order is marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
@@ -154,13 +158,16 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             doReturn(true).whenever(repository).hasVirtualProductsOnly(listOf(3, 4))
             doReturn(virtualOrder).whenever(repository).getOrderById(any())
 
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(true)
+            assertThat(orderData?.isVirtualOrder).isEqualTo(true)
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
+    fun `given an order with virtual and physical products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val mixedItems = listOf(item, item.copy(productId = 2))
@@ -170,9 +177,12 @@ class OrderFullfillViewModelTest : BaseUnitTest() {
             doReturn(mixedOrder).whenever(repository).getOrderById(any())
             doReturn(testOrderShipmentTrackings).whenever(repository).getOrderShipmentTrackings(any())
 
+            var orderData: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new -> orderData = new }
+
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+            assertThat(orderData?.isVirtualOrder).isEqualTo(false)
         }
 
     @Test
