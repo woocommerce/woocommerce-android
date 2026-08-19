@@ -257,10 +257,10 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
 
-    private val _selectedGiftCard = savedState.getStateFlow(
+    private val _giftCardToApply = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = "",
-        key = "selected_gift_card"
+        key = "gift_card_to_apply"
     )
 
     private val _orderDraft = savedState.getStateFlow(
@@ -272,10 +272,10 @@ class OrderCreateEditViewModel @Inject constructor(
     )
 
     val orderDraft = _orderDraft
-        .combine(_selectedGiftCard) { order, giftCard ->
+        .combine(_giftCardToApply) { order, giftCardToApply ->
             val appliedGiftCard = order.giftCards.firstOrNull()
             order.copy(
-                selectedGiftCard = appliedGiftCard?.code ?: giftCard,
+                selectedGiftCard = appliedGiftCard?.code ?: giftCardToApply,
                 giftCardDiscountedAmount = appliedGiftCard?.used
             )
         }.asLiveData()
@@ -292,10 +292,10 @@ class OrderCreateEditViewModel @Inject constructor(
     val totalsData: LiveData<TotalsSectionsState> =
         viewStateData.liveData.combineWith(
             _orderDraft.asLiveData(),
-            _selectedGiftCard.asLiveData()
-        ) { viewState, order, selectedGiftCard ->
+            _giftCardToApply.asLiveData()
+        ) { viewState, order, giftCardToApply ->
             val appliedGiftCard = order!!.giftCards.firstOrNull()
-            val displayedGiftCard = appliedGiftCard?.code ?: selectedGiftCard
+            val displayedGiftCard = appliedGiftCard?.code ?: giftCardToApply
             totalsHelper.mapToPaymentTotalsState(
                 order = order.copy(
                     selectedGiftCard = displayedGiftCard,
@@ -866,7 +866,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
-        val hasGiftCard = order.giftCards.isNotEmpty() || _selectedGiftCard.value.isNotEmpty()
+        val hasGiftCard = order.giftCards.isNotEmpty() || _giftCardToApply.value.isNotEmpty()
         val shouldEnableAddGiftCardButton = order.hasProducts() &&
             order.isEditable &&
             !hasGiftCard
@@ -1248,9 +1248,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
-        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _selectedGiftCard.value.isNotEmpty()
+        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _giftCardToApply.value.isNotEmpty()
         trackGiftCardSet(giftCardWasRemoved)
-        _selectedGiftCard.update { selectedGiftCard }
+        _giftCardToApply.update { selectedGiftCard }
     }
 
     /**
@@ -1259,8 +1259,8 @@ class OrderCreateEditViewModel @Inject constructor(
      * used or invalid card comes back with no applied gift cards — they are notified.
      */
     private fun reconcileGiftCardWithSyncedOrder(syncedOrder: Order) {
-        val attemptedGiftCard = _selectedGiftCard.value
-        _selectedGiftCard.update { "" }
+        val attemptedGiftCard = _giftCardToApply.value
+        _giftCardToApply.update { "" }
         val appliedGiftCard = syncedOrder.giftCards.firstOrNull()?.code.orEmpty()
         if (attemptedGiftCard.isNotEmpty() && appliedGiftCard != attemptedGiftCard) {
             triggerEvent(ShowSnackbar(string.order_creation_gift_card_not_applied))
@@ -1394,11 +1394,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun createOrder(order: Order, onSuccess: (Order) -> Unit) {
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val giftCard = _selectedGiftCard.value
+            val giftCardToApply = _giftCardToApply.value
             orderCreateEditRepository.createOrUpdateOrder(
                 order,
                 source = OrderCreationSource.STORE_MANAGEMENT,
-                giftCard
+                giftCardToApply
             ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
@@ -1450,8 +1450,8 @@ class OrderCreateEditViewModel @Inject constructor(
             val changes =
                 if (mode is Mode.Edit) {
                     // Gift cards are only redeemed against a real order status, so sync them in edit mode only.
-                    combine(_orderDraft, _selectedGiftCard) { order, giftCard ->
-                        order.copy(selectedGiftCard = giftCard)
+                    combine(_orderDraft, _giftCardToApply) { order, giftCardToApply ->
+                        order.copy(selectedGiftCard = giftCardToApply)
                     }.drop(1)
                 } else {
                     // When we are in the order creation flow, we need to keep the order status as auto-draft.
