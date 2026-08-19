@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.ageeligibility
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.woocommerce.android.R
@@ -49,16 +49,14 @@ class AgeVerificationRequiredDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = composeView {
-        WooThemeWithBackground {
-            AgeVerificationRequiredScreen(
-                onOpenPlayStore = {
-                    if (playStoreLauncher.open(requireContext())) {
-                        listener.onAgeVerificationPlayStoreOpened()
-                    }
-                },
-                onRetry = listener::onAgeVerificationRetryRequested
-            )
-        }
+        AgeVerificationRequiredScreen(
+            onOpenPlayStore = {
+                if (playStoreLauncher.open(requireContext())) {
+                    listener.onAgeVerificationPlayStoreOpened()
+                }
+            },
+            onRetry = listener::onAgeVerificationRetryRequested
+        )
     }
 
     private val listener: Listener
@@ -93,7 +91,7 @@ class AgeVerificationPlayStoreLauncher @Inject constructor() {
         }
     }
 
-    private fun playStoreIntent(url: String) = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    private fun playStoreIntent(url: String) = Intent(Intent.ACTION_VIEW, url.toUri())
 }
 
 fun FragmentActivity.showAgeVerificationRequiredDialog() {
@@ -121,7 +119,7 @@ private fun AgeVerificationRequiredScreen(
     onOpenPlayStore: () -> Unit,
     onRetry: () -> Unit
 ) {
-    Surface(color = MaterialTheme.colors.surface) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -130,11 +128,11 @@ private fun AgeVerificationRequiredScreen(
         ) {
             Text(
                 text = stringResource(id = R.string.age_verification_required_title),
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.titleLarge
             )
             Text(
                 text = stringResource(id = R.string.age_verification_required_message),
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.bodyLarge
             )
             WCColoredButton(
                 onClick = onOpenPlayStore,
