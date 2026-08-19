@@ -25,37 +25,77 @@ class AgeEligibilityEvaluator @Inject constructor() {
         signals: SharedAgeSignals?,
         priorRestriction: AgeRestrictionReason?
     ): AgeEligibilityEvaluation {
-        val ageUpper = signals?.ageUpper
-        if (ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE) {
-            return authoritativeRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)
-        }
+        val ageRangeOutcome = signals.toAgeRangeOutcome()
+        return when (ageRangeOutcome) {
+            AgeRangeOutcome.BELOW_13 -> authoritativeRestriction(
+                reason = AgeRestrictionReason.BELOW_MINIMUM_AGE,
+                ageRangeOutcome = ageRangeOutcome
+            )
 
-        val ageLower = signals?.ageLower ?: return nonAuthoritative(priorRestriction)
-        if (ageUpper != null && ageLower > ageUpper) return nonAuthoritative(priorRestriction)
-
-        return when {
-            ageLower >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE -> authoritativeAllowed()
-            else -> nonAuthoritative(priorRestriction)
+            AgeRangeOutcome.AMBIGUOUS -> nonAuthoritative(priorRestriction, ageRangeOutcome)
+            AgeRangeOutcome.AGE_13_15,
+            AgeRangeOutcome.AGE_16_17,
+            AgeRangeOutcome.AGE_18_PLUS,
+            AgeRangeOutcome.ELIGIBLE -> authoritativeAllowed(ageRangeOutcome)
         }
     }
 
-    private fun authoritativeAllowed() = AgeEligibilityEvaluation(
+    private fun SharedAgeSignals?.toAgeRangeOutcome(): AgeRangeOutcome {
+        val ageUpper = this?.ageUpper
+        if (ageUpper != null && ageUpper < WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE) {
+            return AgeRangeOutcome.BELOW_13
+        }
+
+        val ageLower = this?.ageLower ?: return AgeRangeOutcome.AMBIGUOUS
+        if (ageUpper != null && ageLower > ageUpper) return AgeRangeOutcome.AMBIGUOUS
+
+        return when {
+            ageLower >= MINIMUM_ADULT_AGE -> AgeRangeOutcome.AGE_18_PLUS
+            ageLower.isWithin(ageUpper, OLDER_TEEN_MINIMUM, OLDER_TEEN_MAXIMUM) -> AgeRangeOutcome.AGE_16_17
+            ageLower.isWithin(
+                ageUpper,
+                WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE,
+                YOUNGER_TEEN_MAXIMUM
+            ) -> AgeRangeOutcome.AGE_13_15
+
+            ageLower >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE -> AgeRangeOutcome.ELIGIBLE
+            else -> AgeRangeOutcome.AMBIGUOUS
+        }
+    }
+
+    private fun Int.isWithin(upper: Int?, minimum: Int, maximum: Int) =
+        this >= minimum && upper != null && upper <= maximum
+
+    private fun authoritativeAllowed(ageRangeOutcome: AgeRangeOutcome) = AgeEligibilityEvaluation(
         decision = AgeEligibilityDecision.Allowed,
-        isAuthoritative = true
+        isAuthoritative = true,
+        ageRangeOutcome = ageRangeOutcome
     )
 
-    private fun authoritativeRestriction(reason: AgeRestrictionReason) = AgeEligibilityEvaluation(
+    private fun authoritativeRestriction(
+        reason: AgeRestrictionReason,
+        ageRangeOutcome: AgeRangeOutcome
+    ) = AgeEligibilityEvaluation(
         decision = AgeEligibilityDecision.Restricted(reason),
-        isAuthoritative = true
+        isAuthoritative = true,
+        ageRangeOutcome = ageRangeOutcome
     )
 
-    private fun nonAuthoritative(priorRestriction: AgeRestrictionReason?) = AgeEligibilityEvaluation(
+    private fun nonAuthoritative(
+        priorRestriction: AgeRestrictionReason?,
+        ageRangeOutcome: AgeRangeOutcome? = null
+    ) = AgeEligibilityEvaluation(
         decision = priorRestriction?.let(AgeEligibilityDecision::Restricted) ?: AgeEligibilityDecision.Allowed,
-        isAuthoritative = false
+        isAuthoritative = false,
+        ageRangeOutcome = ageRangeOutcome
     )
 
     companion object {
         private const val WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE = 13
+        private const val YOUNGER_TEEN_MAXIMUM = 15
+        private const val OLDER_TEEN_MINIMUM = 16
+        private const val OLDER_TEEN_MAXIMUM = 17
+        private const val MINIMUM_ADULT_AGE = 18
     }
 }
 
@@ -80,5 +120,15 @@ enum class AgeCheckTrigger {
 
 data class AgeEligibilityEvaluation(
     val decision: AgeEligibilityDecision,
-    val isAuthoritative: Boolean
+    val isAuthoritative: Boolean,
+    val ageRangeOutcome: AgeRangeOutcome? = null
 )
+
+enum class AgeRangeOutcome {
+    BELOW_13,
+    AGE_13_15,
+    AGE_16_17,
+    AGE_18_PLUS,
+    ELIGIBLE,
+    AMBIGUOUS
+}

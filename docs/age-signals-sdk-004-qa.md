@@ -47,7 +47,9 @@ Record a result and evidence link for each row. Run cold-start scenarios both lo
 | Shared age 13–15 | Access is allowed and a prior authoritative restriction is cleared. |  |  |
 | Shared age 16–17 | Access is allowed and a prior authoritative restriction is cleared. |  |  |
 | Shared age 18+ | Access is allowed and a prior authoritative restriction is cleared. |  |  |
-| Missing or crossing bounds | A prior restriction is retained; otherwise access is allowed as an ambiguous result. |  |  |
+| Missing lower bound with an upper bound below 13 | The under-13 restriction is persisted and logout occurs. |  |  |
+| Missing both bounds, crossing bounds with an upper bound of 13+, or an age range crossing 13 | A prior restriction is retained; otherwise access is allowed as an ambiguous result. |  |  |
+| Nonstandard range with a lower bound of at least 13 | Access is allowed and telemetry records an eligible range outcome. |  |  |
 | Significant change `PENDING` or `DECLINED` | The state is recorded but does not block the whole app. |  |  |
 | Offline or terminal SDK/API error | A prior restriction is retained; otherwise normal Woo access continues. |  |  |
 | Transient error recovery | At most three attempts occur, with 500 ms and 1 s backoff. |  |  |

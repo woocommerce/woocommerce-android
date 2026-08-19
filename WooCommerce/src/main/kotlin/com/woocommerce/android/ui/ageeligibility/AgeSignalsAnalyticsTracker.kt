@@ -32,7 +32,7 @@ class AgeSignalsAnalyticsTracker @Inject constructor(
             properties = mapOf(
                 KEY_AGE_SIGNALS_REQUEST_STAGE to requestStage(result, failure),
                 KEY_AGE_SIGNALS_ACCESS_STATUS to accessStatus(result, failure),
-                KEY_AGE_SIGNALS_RANGE_OUTCOME to ageRangeOutcome(result),
+                KEY_AGE_SIGNALS_RANGE_OUTCOME to ageRangeOutcome(result, evaluation),
                 KEY_AGE_SIGNALS_SIGNIFICANT_CHANGE_STATUS to significantChangeStatus(result),
                 KEY_AGE_SIGNALS_FINAL_DECISION to evaluation.decision.analyticsValue(),
                 KEY_AGE_SIGNALS_RESTRICTION_REASON to restriction?.analyticsValue().orNone(),
@@ -76,24 +76,13 @@ class AgeSignalsAnalyticsTracker @Inject constructor(
         else -> VALUE_UNAVAILABLE
     }
 
-    private fun ageRangeOutcome(result: AgeSignalsRequestResult?): String = when {
+    private fun ageRangeOutcome(
+        result: AgeSignalsRequestResult?,
+        evaluation: AgeEligibilityEvaluation
+    ): String = when {
         result == null -> VALUE_UNAVAILABLE
         result.accessStatus != AgeSignalsAccessStatus.SHARED -> VALUE_NOT_APPLICABLE
-        else -> result.ageSignals.analyticsAgeRange()
-    }
-
-    private fun SharedAgeSignals?.analyticsAgeRange(): String {
-        val lower = this?.ageLower
-        val upper = this?.ageUpper
-        return when {
-            lower == null -> AGE_RANGE_AMBIGUOUS
-            upper != null && lower > upper -> AGE_RANGE_AMBIGUOUS
-            upper != null && upper < MINIMUM_AGE -> AGE_RANGE_BELOW_13
-            lower >= MINIMUM_ADULT_AGE -> AGE_RANGE_18_PLUS
-            lower >= OLDER_TEEN_MINIMUM && upper != null && upper <= OLDER_TEEN_MAXIMUM -> AGE_RANGE_16_17
-            lower >= MINIMUM_AGE && upper != null && upper <= YOUNGER_TEEN_MAXIMUM -> AGE_RANGE_13_15
-            else -> AGE_RANGE_AMBIGUOUS
-        }
+        else -> evaluation.ageRangeOutcome?.analyticsValue() ?: VALUE_UNAVAILABLE
     }
 
     private fun significantChangeStatus(result: AgeSignalsRequestResult?): String = when {
@@ -121,6 +110,15 @@ class AgeSignalsAnalyticsTracker @Inject constructor(
         AppSignificantChangeStatus.PENDING -> SIGNIFICANT_CHANGE_PENDING
         AppSignificantChangeStatus.DECLINED -> SIGNIFICANT_CHANGE_DECLINED
         AppSignificantChangeStatus.UNEXPECTED -> VALUE_UNEXPECTED
+    }
+
+    private fun AgeRangeOutcome.analyticsValue(): String = when (this) {
+        AgeRangeOutcome.BELOW_13 -> AGE_RANGE_BELOW_13
+        AgeRangeOutcome.AGE_13_15 -> AGE_RANGE_13_15
+        AgeRangeOutcome.AGE_16_17 -> AGE_RANGE_16_17
+        AgeRangeOutcome.AGE_18_PLUS -> AGE_RANGE_18_PLUS
+        AgeRangeOutcome.ELIGIBLE -> AGE_RANGE_ELIGIBLE
+        AgeRangeOutcome.AMBIGUOUS -> AGE_RANGE_AMBIGUOUS
     }
 
     private fun AgeEligibilityDecision.analyticsValue(): String = when (this) {
@@ -153,12 +151,6 @@ class AgeSignalsAnalyticsTracker @Inject constructor(
     private fun String?.orNone() = this ?: VALUE_NONE
 
     companion object {
-        private const val MINIMUM_AGE = 13
-        private const val YOUNGER_TEEN_MAXIMUM = 15
-        private const val OLDER_TEEN_MINIMUM = 16
-        private const val OLDER_TEEN_MAXIMUM = 17
-        private const val MINIMUM_ADULT_AGE = 18
-
         private const val REQUEST_STAGE_ACCESS = "access"
         private const val REQUEST_STAGE_CHECK = "check"
         private const val ACCESS_STATUS_SHARED = "shared"
@@ -168,6 +160,7 @@ class AgeSignalsAnalyticsTracker @Inject constructor(
         private const val AGE_RANGE_13_15 = "13_15"
         private const val AGE_RANGE_16_17 = "16_17"
         private const val AGE_RANGE_18_PLUS = "18_plus"
+        private const val AGE_RANGE_ELIGIBLE = "eligible"
         private const val AGE_RANGE_AMBIGUOUS = "ambiguous"
         private const val SIGNIFICANT_CHANGE_APPROVED = "approved"
         private const val SIGNIFICANT_CHANGE_PENDING = "pending"

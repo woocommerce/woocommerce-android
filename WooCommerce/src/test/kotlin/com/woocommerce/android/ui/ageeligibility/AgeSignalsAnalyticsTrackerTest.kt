@@ -23,18 +23,20 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 class AgeSignalsAnalyticsTrackerTest {
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
     private val tracker = AgeSignalsAnalyticsTracker(trackerWrapper)
+    private val evaluator = AgeEligibilityEvaluator()
 
     @Test
     fun `given a restricted recovery result, when tracked, then the exact bounded payload is sent`() {
+        val result = sharedResult(
+            ageLower = 0,
+            ageUpper = 12,
+            significantChangeStatus = AppSignificantChangeStatus.PENDING,
+            retryCount = 2
+        )
         tracker.trackCheck(
-            result = sharedResult(
-                ageLower = 0,
-                ageUpper = 12,
-                significantChangeStatus = AppSignificantChangeStatus.PENDING,
-                retryCount = 2
-            ),
+            result = result,
             failure = null,
-            evaluation = restrictedEvaluation(),
+            evaluation = evaluator.evaluate(result, priorRestriction = null),
             trigger = AgeCheckTrigger.RETURN_FROM_PLAY_STORE
         )
 
@@ -88,12 +90,22 @@ class AgeSignalsAnalyticsTrackerTest {
 
     @Test
     fun `given each approved age band or malformed bounds, when tracked, then only band categories are sent`() {
-        assertAgeRangeOutcome(ageLower = 0, ageUpper = 12, expected = "below_13")
-        assertAgeRangeOutcome(ageLower = 13, ageUpper = 15, expected = "13_15")
-        assertAgeRangeOutcome(ageLower = 16, ageUpper = 17, expected = "16_17")
-        assertAgeRangeOutcome(ageLower = 18, ageUpper = null, expected = "18_plus")
-        assertAgeRangeOutcome(ageLower = null, ageUpper = null, expected = "ambiguous")
-        assertAgeRangeOutcome(ageLower = 16, ageUpper = 15, expected = "ambiguous")
+        // GIVEN
+        val cases = listOf(
+            AgeRangeCase(ageLower = 0, ageUpper = 12, expected = "below_13"),
+            AgeRangeCase(ageLower = 13, ageUpper = 15, expected = "13_15"),
+            AgeRangeCase(ageLower = 16, ageUpper = 17, expected = "16_17"),
+            AgeRangeCase(ageLower = 18, ageUpper = null, expected = "18_plus"),
+            AgeRangeCase(ageLower = 13, ageUpper = null, expected = "eligible"),
+            AgeRangeCase(ageLower = null, ageUpper = null, expected = "ambiguous"),
+            AgeRangeCase(ageLower = 16, ageUpper = 15, expected = "ambiguous")
+        )
+
+        // WHEN
+        val outcomes = cases.map { captureAgeRangeOutcome(it.ageLower, it.ageUpper) }
+
+        // THEN
+        assertThat(outcomes).containsExactlyElementsOf(cases.map { it.expected })
     }
 
     @Test
@@ -108,10 +120,11 @@ class AgeSignalsAnalyticsTrackerTest {
 
         expectedValues.forEach { (status, expected) ->
             val wrapper: AnalyticsTrackerWrapper = mock()
+            val result = sharedResult(18, null, status)
             AgeSignalsAnalyticsTracker(wrapper).trackCheck(
-                result = sharedResult(18, null, status),
+                result = result,
                 failure = null,
-                evaluation = allowedEvaluation(),
+                evaluation = evaluator.evaluate(result, priorRestriction = null),
                 trigger = AgeCheckTrigger.STARTUP
             )
 
@@ -145,10 +158,11 @@ class AgeSignalsAnalyticsTrackerTest {
 
     @Test
     fun `when a check is tracked, then prohibited raw fields are absent`() {
+        val result = sharedResult(13, 15, AppSignificantChangeStatus.APPROVED)
         tracker.trackCheck(
-            result = sharedResult(13, 15, AppSignificantChangeStatus.APPROVED),
+            result = result,
             failure = null,
-            evaluation = allowedEvaluation(),
+            evaluation = evaluator.evaluate(result, priorRestriction = null),
             trigger = AgeCheckTrigger.STARTUP
         )
 
@@ -166,16 +180,17 @@ class AgeSignalsAnalyticsTrackerTest {
         assertThat(properties.values).doesNotContain(13, 15)
     }
 
-    private fun assertAgeRangeOutcome(ageLower: Int?, ageUpper: Int?, expected: String) {
+    private fun captureAgeRangeOutcome(ageLower: Int?, ageUpper: Int?): String {
         val wrapper: AnalyticsTrackerWrapper = mock()
+        val result = sharedResult(ageLower, ageUpper)
         AgeSignalsAnalyticsTracker(wrapper).trackCheck(
-            result = sharedResult(ageLower, ageUpper),
+            result = result,
             failure = null,
-            evaluation = allowedEvaluation(),
+            evaluation = evaluator.evaluate(result, priorRestriction = null),
             trigger = AgeCheckTrigger.STARTUP
         )
 
-        assertThat(captureCheckProperties(wrapper)[KEY_AGE_SIGNALS_RANGE_OUTCOME]).isEqualTo(expected)
+        return captureCheckProperties(wrapper)[KEY_AGE_SIGNALS_RANGE_OUTCOME] as String
     }
 
     private fun captureCheckProperties(wrapper: AnalyticsTrackerWrapper): Map<String, *> {
@@ -192,11 +207,6 @@ class AgeSignalsAnalyticsTrackerTest {
         isAuthoritative = isAuthoritative
     )
 
-    private fun restrictedEvaluation() = AgeEligibilityEvaluation(
-        decision = AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE),
-        isAuthoritative = true
-    )
-
     private fun sharedResult(
         ageLower: Int?,
         ageUpper: Int?,
@@ -211,5 +221,11 @@ class AgeSignalsAnalyticsTrackerTest {
             significantChangeStatus = significantChangeStatus
         ),
         retryCount = retryCount
+    )
+
+    private data class AgeRangeCase(
+        val ageLower: Int?,
+        val ageUpper: Int?,
+        val expected: String
     )
 }
