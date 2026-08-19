@@ -21,7 +21,7 @@ class GetShipments @Inject constructor(
         val noRefundedProducts = refunds.getNonRefundedProducts(order.items)
 
         val orderItems = noRefundedProducts.mapNotNull { item ->
-            val product = productDetailRepository.getProductAsync(item.productId)
+            val product = productDetailRepository.getProduct(item.productId)
             if (product != null && !product.isSampleProduct && !product.isVirtual) {
                 ShippableItemModel(
                     itemId = item.itemId,

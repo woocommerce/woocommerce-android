@@ -37,7 +37,7 @@ class YearToDateRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale)
 
         val oneYearAgo = referenceDate.oneYearAgo()
         calendar.time = oneYearAgo
@@ -46,6 +46,6 @@ class YearToDateRangeData(
             start = previousStart,
             end = oneYearAgo
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(oneYearAgo, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneYearAgo, locale)
     }
 }

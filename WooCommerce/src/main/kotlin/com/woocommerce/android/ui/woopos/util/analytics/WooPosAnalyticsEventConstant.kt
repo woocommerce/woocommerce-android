@@ -1,6 +1,31 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
+    enum class DeviceType(val value: String) {
+        PHONE("phone"),
+        TABLET("tablet");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val DEVICE_TYPE = "device_type"
+        }
+    }
+
+    enum class EntryPoint(val value: String) {
+        POS_TAB("pos_tab");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val ENTRY_POINT = "entry_point"
+        }
+    }
+
     enum class ItemsListProductType(val value: String) {
         SIMPLE("simple"),
         VARIATION("variation");

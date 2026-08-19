@@ -6,6 +6,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -134,7 +135,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             verify(tracker).track(MarkAsPaidConfirmed)
             verify(tracker).track(MarkAsPaidSuccess)
             verify(childrenToParentEventSender).sendToParent(
-                eq(ChildToParentEvent.OrderSuccessfullyPaidExternally),
+                eq(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)),
             )
         }
 
@@ -198,7 +199,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         }
         verify(tracker).track(MarkAsPaidSuccess)
         verify(childrenToParentEventSender).sendToParent(
-            eq(ChildToParentEvent.OrderSuccessfullyPaidExternally),
+            eq(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)),
         )
     }
 

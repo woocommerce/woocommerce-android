@@ -7,9 +7,9 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CreateNewOrderTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosReaderReadyForPaymentTracker
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
@@ -18,14 +18,12 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
     private val productsDataSource: WooPosProductsDataSource,
+    private val readerReadyForPaymentTracker: WooPosReaderReadyForPaymentTracker,
 ) {
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> {
-                    analyticsData.readerReadyForPaymentTimestamp = System.currentTimeMillis()
-                    trackReaderReadyForPayment()
-                }
+                is CardReaderPaymentState.ProcessingPayment -> readerReadyForPaymentTracker.track()
 
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.InteracRefundFailure.Cancelable,
@@ -49,22 +47,6 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
                 CardReaderPaymentState.SharingReceipt -> Unit
             }
         }
-    }
-
-    private suspend fun trackReaderReadyForPayment() {
-        analyticsTracker.track(
-            ReaderReadyForCardPayment.apply {
-                val props = mutableMapOf<String, String>()
-                val readerReadyForPaymentTimestamp = analyticsData.readerReadyForPaymentTimestamp
-                val orderSyncTimestamp = analyticsData.orderSyncSuccessTimestamp
-                if (readerReadyForPaymentTimestamp != null && orderSyncTimestamp != null) {
-                    @Suppress("MagicNumber")
-                    val waitingTimeSeconds = (readerReadyForPaymentTimestamp - orderSyncTimestamp) / 1000
-                    props["waiting_time"] = "$waitingTimeSeconds"
-                }
-                addProperties(props)
-            }
-        )
     }
 
     fun incrementCheckoutButtonTaps() {

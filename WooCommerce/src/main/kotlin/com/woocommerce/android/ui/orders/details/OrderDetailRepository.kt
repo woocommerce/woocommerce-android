@@ -22,6 +22,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.ORDERS
@@ -52,6 +53,7 @@ class OrderDetailRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderMapper: OrderMapper,
     private val shippingLabelMapper: ShippingLabelMapper,
+    private val refreshProductsSignal: RefreshProductsSignal,
     private val newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache
 ) {
     suspend fun fetchOrderById(orderId: Long): Order? {
@@ -144,6 +146,9 @@ class OrderDetailRepository @Inject constructor(
                     previousStatusKey = previousStatusKey,
                     newStatusKey = newStatus,
                 )
+                // Changing status (e.g. to Processing/Completed) can change the order's products' stock
+                // server-side, so once the server confirms, tell the Products list to refresh those rows.
+                refreshProductsSignal.notifyProductsChanged(getOrderById(orderId)?.getProductIds().orEmpty())
             }
         }
     }
@@ -199,18 +204,16 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun getOrderStatus(key: String): OrderStatus {
+    suspend fun getOrderStatus(key: String): OrderStatus {
         return (
-            runBlocking {
-                orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel(
-                    statusKey = key, label = key
-                )
-            }
+            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), key) ?: WCOrderStatusModel(
+                statusKey = key, label = key
+            )
             ).toOrderStatus()
     }
 
-    fun getOrderStatusOptions() =
-        runBlocking { orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() } }
+    suspend fun getOrderStatusOptions() =
+        orderStore.getOrderStatusOptionsForSite(selectedSite.get()).map { it.toOrderStatus() }
 
     suspend fun getOrderNotes(orderId: Long) =
         orderStore.getOrderNotesForOrder(site = selectedSite.get(), orderId = orderId)
@@ -219,25 +222,21 @@ class OrderDetailRepository @Inject constructor(
     suspend fun fetchProductsByRemoteIds(remoteIds: List<Long>) =
         productStore.fetchProductListSynced(selectedSite.get(), remoteIds)?.map { it.toAppModel() } ?: emptyList()
 
-    fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
-        return runBlocking {
-            if (remoteProductIds.isNotEmpty()) {
-                productStore.getVirtualProductCountByRemoteIds(
-                    selectedSite.get(), remoteProductIds
-                ) == remoteProductIds.size
-            } else {
-                false
-            }
+    suspend fun hasVirtualProductsOnly(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getVirtualProductCountByRemoteIds(
+                selectedSite.get(), remoteProductIds
+            ) == remoteProductIds.size
+        } else {
+            false
         }
     }
 
-    fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
-        return runBlocking {
-            if (remoteProductIds.isNotEmpty()) {
-                productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
-            } else {
-                0
-            }
+    suspend fun getProductCountForOrder(remoteProductIds: List<Long>): Int {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductCountByRemoteIds(selectedSite.get(), remoteProductIds)
+        } else {
+            0
         }
     }
 
@@ -250,24 +249,20 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
-        return runBlocking {
-            if (remoteProductIds.isNotEmpty()) {
-                productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                    .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
-            } else {
-                false
-            }
+    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
+        } else {
+            false
         }
     }
 
-    fun getOrderRefunds(orderId: Long) = runBlocking {
-        refundStore
-            .getAllRefunds(selectedSite.get(), orderId)
-            .map { it.toAppModel() }
-            .reversed()
-            .sortedBy { it.id }
-    }
+    suspend fun getOrderRefunds(orderId: Long) = refundStore
+        .getAllRefunds(selectedSite.get(), orderId)
+        .map { it.toAppModel() }
+        .reversed()
+        .sortedBy { it.id }
 
     fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,

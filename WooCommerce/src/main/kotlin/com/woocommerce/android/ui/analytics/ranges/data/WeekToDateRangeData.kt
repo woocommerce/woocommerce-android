@@ -37,7 +37,7 @@ class WeekToDateRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale)
 
         val oneWeekAgo = referenceDate.oneWeekAgo()
         calendar.time = oneWeekAgo
@@ -46,6 +46,6 @@ class WeekToDateRangeData(
             start = startOfPreviousWeek,
             end = oneWeekAgo
         )
-        formattedPreviousRange = startOfPreviousWeek.formatAsRangeWith(oneWeekAgo, locale, calendar)
+        formattedPreviousRange = startOfPreviousWeek.formatAsRangeWith(oneWeekAgo, locale)
     }
 }

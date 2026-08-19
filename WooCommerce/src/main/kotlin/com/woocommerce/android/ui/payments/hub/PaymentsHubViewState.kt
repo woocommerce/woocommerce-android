@@ -38,12 +38,23 @@ data class PaymentsHubViewState(
             override val label: UiString,
             val description: UiString,
             override var isEnabled: Boolean = true,
-            val isChecked: Boolean,
+            val state: ToggleState,
             override val index: Int,
             override val onClick: (() -> Unit)? = null,
             val onToggled: (Boolean) -> Unit,
             val onLearnMoreClicked: () -> Unit
-        ) : ListItem()
+        ) : ListItem() {
+            val isChecked: Boolean get() = state == ToggleState.CHECKED
+            val isLoading: Boolean get() = state == ToggleState.LOADING
+
+            enum class ToggleState {
+                LOADING, CHECKED, UNCHECKED, UNAVAILABLE;
+
+                companion object {
+                    fun fromChecked(isChecked: Boolean) = if (isChecked) CHECKED else UNCHECKED
+                }
+            }
+        }
 
         data class LearnMoreListItem(
             @DrawableRes override val icon: Int,

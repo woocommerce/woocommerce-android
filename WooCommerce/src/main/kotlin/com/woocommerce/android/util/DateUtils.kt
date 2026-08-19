@@ -3,7 +3,6 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.text.format.DateFormat
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.extensions.formatToEEEEMMMddhha
 import com.woocommerce.android.extensions.formatToYYYYmm
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.tools.SelectedSite
@@ -28,13 +27,13 @@ class DateUtils @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
     private val friendlyMonthDayFormat: SimpleDateFormat
-        get() = SimpleDateFormat("MMM d", locale)
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMd"), locale)
     private val friendlyMonthDayYearFormat: SimpleDateFormat
-        get() = SimpleDateFormat("MMM d, yyyy", locale)
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yMMMd"), locale)
     private val friendlyTimeFormat: SimpleDateFormat
         get() = SimpleDateFormat("h:mm a", locale)
     private val friendlyLongMonthDayFormat: SimpleDateFormat
-        get() = SimpleDateFormat("MMMM dd", locale)
+        get() = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "MMMMd"), locale)
 
     private val weekOfYearStartingMondayFormat: SimpleDateFormat
         get() = SimpleDateFormat("yyyy-ww", locale).apply {
@@ -91,7 +90,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD hh, returns the String in short month ("EEEE, MMM d") format.
+     * Given an ISO8601 date of format YYYY-MM-DD hh, returns the String with the weekday, month and day.
      *
      * For example, given 2019-08-05 11 returns "Monday, Aug 5"
      *
@@ -99,7 +98,7 @@ class DateUtils @Inject constructor(
      */
     fun getDayMonthDateString(iso8601Date: String): String? {
         return try {
-            val targetFormat = SimpleDateFormat("EEEE, MMM d", locale)
+            val targetFormat = SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "EEEEMMMd"), locale)
             val (dateString, _) = iso8601Date.split(" ")
             val (year, month, day) = dateString.split("-")
             val date = GregorianCalendar(year.toInt(), month.toInt() - 1, day.toInt()).time
@@ -111,7 +110,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d") format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the abbreviated month and day.
      *
      * For example, given 2018-07-03 returns "Jul 3", and given 2018-07-28 returns "Jul 28".
      *
@@ -129,7 +128,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in long month ("MMMM dd") format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the full month name and day.
      *
      * For example, given 2018-07-03 returns "July 3", and given 2018-07-28 returns "July 28".
      *
@@ -165,7 +164,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD, returns the String in short month ("MMM d, YYYY") format.
+     * Given an ISO8601 date of format YYYY-MM-DD, returns the String with the abbreviated month, day and year.
      *
      * For example, given 2018-07-03 returns "Jul 3, 2018", and given 2018-07-28 returns "Jul 28, 2018".
      *
@@ -311,9 +310,9 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given an ISO8601 date of format YYYY-MM-DD HH, returns the day String in ("EEEE, MMM dd › ha") format.
+     * Given an ISO8601 date of format YYYY-MM-DD HH, returns the String with the weekday, month, day and hour.
      *
-     * For example, given 2023-12-27 12 returns "Wednesday, Dec 27 > 12 am"
+     * For example, given 2023-12-27 12 returns "Wednesday, Dec 27 › 12pm"
      *
      * return null if the argument is not a valid iso8601 date string or not in the expected format.
      */
@@ -321,14 +320,22 @@ class DateUtils @Inject constructor(
         return try {
             val originalFormat = SimpleDateFormat("yyyy-MM-dd HH", locale)
             val date = originalFormat.parse(iso8601Date)
-            date!!.formatToEEEEMMMddhha(locale)
+            date!!.toFriendlyDayHourString()
         } catch (e: Exception) {
             findMatchingDatePattern(iso8601Date)
-                ?.formatToEEEEMMMddhha(locale)
+                ?.toFriendlyDayHourString()
                 .also {
                     if (it == null) "Date string argument is not of format yyyy-MM-dd HH: $iso8601Date".reportAsError(e)
                 }
         }
+    }
+
+    private fun Date.toFriendlyDayHourString(): String {
+        val symbols = DateFormatSymbols(locale)
+        symbols.amPmStrings = arrayOf("am", "pm")
+        val dateFormat = SimpleDateFormat("${DateFormat.getBestDateTimePattern(locale, "EEEEMMMd")} › ha", locale)
+        dateFormat.dateFormatSymbols = symbols
+        return dateFormat.format(this)
     }
 
     /**
@@ -412,19 +419,18 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Method to convert date string from MMM dd, yyyy format to yyyy-MM-dd format
-     * i.e. Dec 02, 2020 is formatted to 2020-12-02
+     * Method to convert a date string with the abbreviated month, day and year to yyyy-MM-dd format
+     * i.e. Dec 2, 2020 is formatted to 2020-12-02
      */
     fun formatToYYYYmmDD(dateString: String): String? {
         return try {
-            val dateFormat = SimpleDateFormat("MMM dd, yyyy", locale)
-            val date = dateFormat.parse(dateString) ?: Date()
+            val date = friendlyMonthDayYearFormat.parse(dateString) ?: Date()
             date.formatToYYYYmmDD()
         } catch (e: Exception) {
             findMatchingDatePattern(dateString)
                 ?.formatToYYYYmmDD()
                 .also {
-                    if (it == null) "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
+                    if (it == null) "Date string argument is not a month day year date: $dateString".reportAsError(e)
                 }
         }
     }
@@ -496,9 +502,9 @@ class DateUtils @Inject constructor(
             null
         }
 
-    fun toDisplayMMMddYYYYDate(dateMillis: Long): String? =
+    fun toDisplayMediumDate(dateMillis: Long): String? =
         try {
-            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.getDefault())
                 .format(Date(dateMillis))
         } catch (e: Exception) {
             "Date string argument is not a valid date".reportAsError(e)

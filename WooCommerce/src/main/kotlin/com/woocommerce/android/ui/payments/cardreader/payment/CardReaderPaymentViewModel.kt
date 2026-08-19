@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
@@ -58,6 +59,7 @@ class CardReaderPaymentViewModel @Inject constructor(
     cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     paymentReceiptShare: PaymentReceiptShare,
     paymentStateMapper: CardReaderPaymentStateToViewStateMapper,
+    refreshProductsSignal: RefreshProductsSignal,
     newOrderNotificationSuppressionCache: NewOrderNotificationSuppressionCache,
     crashLogging: CrashLogging,
 ) : ScopedViewModel(savedState) {
@@ -93,6 +95,7 @@ class CardReaderPaymentViewModel @Inject constructor(
         paymentOrRefund = arguments.paymentOrRefund,
         cardReaderType = arguments.cardReaderType,
         isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+        refreshProductsSignal = refreshProductsSignal,
         crashLogging = crashLogging,
     )
 

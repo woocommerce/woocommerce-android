@@ -196,12 +196,20 @@ open class AppPrefsWrapper @Inject constructor() {
     fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
         AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
 
-    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
-        AppPrefs.setOrderFilterCustomDateRange(selectedSiteId, startDateMillis, endDateMillis)
-    }
-
+    // Only used by the order filter date range migration. Delete in 25.9, see WOOMOB-3841.
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> =
         AppPrefs.getOrderFilterCustomDateRange(selectedSiteId)
+
+    fun removeOrderFilterCustomDateRange(selectedSiteId: Int) {
+        AppPrefs.removeOrderFilterCustomDateRange(selectedSiteId)
+    }
+
+    fun setOrderFilterCustomDateRangeDays(selectedSiteId: Int, startDay: Long, endDay: Long) {
+        AppPrefs.setOrderFilterCustomDateRangeDays(selectedSiteId, startDay, endDay)
+    }
+
+    fun getOrderFilterCustomDateRangeDays(selectedSiteId: Int): Pair<Long, Long> =
+        AppPrefs.getOrderFilterCustomDateRangeDays(selectedSiteId)
 
     fun setV4StatsSupported(supported: Boolean) {
         AppPrefs.setV4StatsSupported(supported)

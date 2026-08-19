@@ -6,12 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -56,6 +58,7 @@ fun SelectorListItem(
     enabled: Boolean,
     onEditConfiguration: () -> Unit,
     testTag: String? = null,
+    isLoading: Boolean = false,
     onItemClick: () -> Unit,
 ) {
     Row(
@@ -133,40 +136,12 @@ fun SelectorListItem(
             }
         }
 
-        if (isArrowVisible || isCogwheelVisible) {
-            val image = ImageVector.vectorResource(
-                if (isArrowVisible) R.drawable.ic_chevron_right_24dp else R.drawable.ic_tune_24dp
-            )
-
-            val contentDescription = if (isArrowVisible) {
-                stringResource(id = R.string.product_selector_arrow_content_description)
-            } else {
-                stringResource(id = R.string.extension_configure_button)
-            }
-
-            val color = if (isArrowVisible) {
-                MaterialTheme.colors.onSurface
-            } else {
-                MaterialTheme.colors.primary
-            }
-
-            val iconModifier = if (isArrowVisible) {
-                Modifier
-                    .size(dimensionResource(id = R.dimen.major_200))
-            } else {
-                Modifier
-                    .clickable { onEditConfiguration() }
-                    .padding(8.dp)
-                    .size(dimensionResource(id = R.dimen.major_150))
-            }
-
-            Icon(
-                imageVector = image,
-                contentDescription = contentDescription,
-                modifier = iconModifier.align(Alignment.CenterVertically),
-                tint = color
-            )
-        }
+        TrailingIndicator(
+            isArrowVisible = isArrowVisible,
+            isCogwheelVisible = isCogwheelVisible,
+            isLoading = isLoading,
+            onEditConfiguration = onEditConfiguration
+        )
     }
 }
 
@@ -179,6 +154,64 @@ object ProductSelectorTestTags {
 
 private fun Modifier.optionalTestTag(tag: String?): Modifier =
     if (tag == null) this else testTag(tag)
+
+/**
+ * Takes the place of the arrow or the configure cogwheel while the item is busy, so the progress sits where the
+ * action the merchant tapped would be.
+ */
+@Composable
+private fun RowScope.TrailingIndicator(
+    isArrowVisible: Boolean,
+    isCogwheelVisible: Boolean,
+    isLoading: Boolean,
+    onEditConfiguration: () -> Unit
+) {
+    if (isLoading) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(8.dp)
+                .size(dimensionResource(id = R.dimen.major_150)),
+            strokeWidth = dimensionResource(id = R.dimen.minor_25)
+        )
+        return
+    }
+
+    if (!isArrowVisible && !isCogwheelVisible) return
+
+    val image = ImageVector.vectorResource(
+        if (isArrowVisible) R.drawable.ic_chevron_right_24dp else R.drawable.ic_tune_24dp
+    )
+
+    val contentDescription = if (isArrowVisible) {
+        stringResource(id = R.string.product_selector_arrow_content_description)
+    } else {
+        stringResource(id = R.string.extension_configure_button)
+    }
+
+    val color = if (isArrowVisible) {
+        MaterialTheme.colors.onSurface
+    } else {
+        MaterialTheme.colors.primary
+    }
+
+    val iconModifier = if (isArrowVisible) {
+        Modifier
+            .size(dimensionResource(id = R.dimen.major_200))
+    } else {
+        Modifier
+            .clickable { onEditConfiguration() }
+            .padding(8.dp)
+            .size(dimensionResource(id = R.dimen.major_150))
+    }
+
+    Icon(
+        imageVector = image,
+        contentDescription = contentDescription,
+        modifier = iconModifier.align(Alignment.CenterVertically),
+        tint = color
+    )
+}
 
 @Composable
 private fun SelectorListItemInfo(
@@ -234,6 +267,31 @@ private fun SelectorListItemPreviewDisabled() =
                     isCogwheelVisible = true,
                     enabled = false,
                     onEditConfiguration = {}
+                )
+            }
+        }
+    }
+
+@Preview
+@Composable
+private fun SelectorListItemPreviewLoading() =
+    WooThemeWithBackground {
+        LazyColumn {
+            item {
+                SelectorListItem(
+                    title = "Item name",
+                    imageUrl = null,
+                    infoLine1 = "Information 1",
+                    infoLine2 = "Information 2",
+                    selectionState = UNSELECTED,
+                    isArrowVisible = false,
+                    onItemClick = {},
+                    onClickLabel = null,
+                    imageContentDescription = null,
+                    isCogwheelVisible = true,
+                    enabled = false,
+                    onEditConfiguration = {},
+                    isLoading = true
                 )
             }
         }

@@ -9,6 +9,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderTypesToDiscover
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.RemoteTokenChannelProvider
+import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.CreatePaymentIntentResult
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RetrieveAndCollectResult
@@ -62,6 +63,9 @@ class CardReaderRemoteSession internal constructor(
     private val _state = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
     val state: StateFlow<CardReaderRemoteSessionState> = _state.asStateFlow()
 
+    var certificateKeyType: CardReaderRemoteCertificateKeyType? = null
+        private set
+
     private var sessionScope: CoroutineScope? = null
     private var tlsServer: CardReaderRemoteTlsServer? = null
     private var nsdRegistration: CardReaderRemoteNsdRegistration? = null
@@ -93,8 +97,12 @@ class CardReaderRemoteSession internal constructor(
                 _state.value = CardReaderRemoteSessionState.Idle
                 throw c
             } catch (t: Throwable) {
-                logWrapper.e(LOG_TAG, "Session ended with error: ${t::class.java.name}: ${t.message}")
-                _state.value = CardReaderRemoteSessionState.Error(message = t.toString())
+                logWrapper.e(LOG_TAG, "Session ended with error: ${t.describeWithCauses()}")
+                _state.value = CardReaderRemoteSessionState.Error(
+                    error = t.toCardReaderRemoteError(CardReaderRemoteError.ConnectFailed),
+                    message = t.toString(),
+                    errorDescription = t.describeWithCauses(),
+                )
             } finally {
                 cleanupSync()
                 if (sessionScope === scope) {
@@ -136,6 +144,7 @@ class CardReaderRemoteSession internal constructor(
 
         val server = tlsServerFactory.create().also { tlsServer = it }
         server.start()
+        certificateKeyType = server.certificateKeyType
 
         val registration = nsdFactory.create(context)
             .advertise(server.port, server.fingerprint, deviceName(), siteHash, deviceId)
@@ -224,13 +233,13 @@ class CardReaderRemoteSession internal constructor(
                 logWrapper.d(LOG_TAG, "ConnectAck sent, transitioning to WaitingForPayment")
                 _state.value = CardReaderRemoteSessionState.WaitingForPayment(tabletName = null)
             }.onFailure { err ->
-                logWrapper.e(LOG_TAG, "Connect failed: ${err::class.java.simpleName}: ${err.message}")
+                logWrapper.e(LOG_TAG, "Connect failed: ${err.describeWithCauses()}")
                 runCatching { cardReaderManager.disconnectReader() }
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
-                        code = CODE_CONNECT_FAILED,
-                        description = "${err::class.java.simpleName}: ${err.message.orEmpty()}",
+                        code = err.toCardReaderRemoteError(CardReaderRemoteError.ConnectFailed).code,
+                        description = err.describeWithCauses(),
                     )
                 )
                 tlsServer?.let { _state.value = readyToPairState(it) }
@@ -249,8 +258,10 @@ class CardReaderRemoteSession internal constructor(
             .mapNotNull { event ->
                 when (event) {
                     is CardReaderDiscoveryEvents.ReadersFound -> event.list.firstOrNull()
-                    is CardReaderDiscoveryEvents.Failed -> error(event.msg)
-                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported -> error(event.msg)
+                    is CardReaderDiscoveryEvents.Failed ->
+                        throw CardReaderRemoteFailure(CardReaderRemoteError.ConnectFailed, event.msg)
+                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                        throw CardReaderRemoteFailure(CardReaderRemoteError.PhoneNotEligible, event.msg)
                     CardReaderDiscoveryEvents.Started,
                     CardReaderDiscoveryEvents.Succeeded -> null
                 }
@@ -279,24 +290,26 @@ class CardReaderRemoteSession internal constructor(
                         )
                     )
                     is RetrieveAndCollectResult.Failed -> {
-                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.message}")
+                        logWrapper.e(LOG_TAG, "Collect payment failed: ${collectResult.cause.describeWithCauses()}")
                         accepted.send(
                             ErrorMessage(
                                 requestId = request.requestId,
-                                code = CODE_COLLECT_FAILED,
-                                description = collectResult.cause.message.orEmpty(),
+                                code = collectResult.cause
+                                    .toCardReaderRemoteError(CardReaderRemoteError.CollectFailed).code,
+                                description = collectResult.cause.describeWithCauses(),
                             )
                         )
                     }
                 }
             }
             is CreatePaymentIntentResult.Failed -> {
-                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.message}")
+                logWrapper.e(LOG_TAG, "Create payment intent failed: ${createResult.cause.describeWithCauses()}")
                 accepted.send(
                     ErrorMessage(
                         requestId = request.requestId,
-                        code = CODE_CREATE_INTENT_FAILED,
-                        description = createResult.cause.message.orEmpty(),
+                        code = createResult.cause
+                            .toCardReaderRemoteError(CardReaderRemoteError.CreateIntentFailed).code,
+                        description = createResult.cause.describeWithCauses(),
                     )
                 )
             }
@@ -382,9 +395,6 @@ class CardReaderRemoteSession internal constructor(
 
     companion object {
         private const val LOG_TAG = "CardReaderRemoteSession"
-        private const val CODE_CONNECT_FAILED = "connect_failed"
-        private const val CODE_COLLECT_FAILED = "collect_failed"
-        private const val CODE_CREATE_INTENT_FAILED = "create_intent_failed"
         private const val DEFAULT_DEVICE_NAME = "Android"
         private const val FINGERPRINT_LOG_SUFFIX_LENGTH = 8
 

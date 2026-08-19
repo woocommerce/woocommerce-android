@@ -11,6 +11,8 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -60,23 +62,32 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
     fun discover(
         isSimulated: Boolean,
         cardReaderTypesToDiscover: CardReaderTypesToDiscover,
+        includeBluetooth: Boolean,
     ): Flow<WooPosUnifiedDiscoveryEvent> = channelFlow {
         val mutex = Mutex()
         val state = DiscoveryState()
 
-        launch {
-            cardReaderManager.discoverReaders(isSimulated, cardReaderTypesToDiscover).collect { event ->
-                when (event) {
-                    is CardReaderDiscoveryEvents.Started -> send(WooPosUnifiedDiscoveryEvent.Started)
-                    is CardReaderDiscoveryEvents.ReadersFound -> {
-                        updateBluetoothAndSendSnapshot(mutex, state, event.list)
+        if (includeBluetooth) {
+            launch {
+                // discoverReaders() throws before returning its flow when Terminal is not initialised.
+                flow { emitAll(cardReaderManager.discoverReaders(isSimulated, cardReaderTypesToDiscover)) }
+                    .catch { throwable -> logger.e("BT discovery failed, degrading to phone-only", throwable) }
+                    .collect { event ->
+                        when (event) {
+                            is CardReaderDiscoveryEvents.Started -> send(WooPosUnifiedDiscoveryEvent.Started)
+                            is CardReaderDiscoveryEvents.ReadersFound -> {
+                                updateBluetoothAndSendSnapshot(mutex, state, event.list)
+                            }
+                            is CardReaderDiscoveryEvents.Failed ->
+                                send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
+                            is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
+                                send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
+                            is CardReaderDiscoveryEvents.Succeeded -> send(WooPosUnifiedDiscoveryEvent.Succeeded)
+                        }
                     }
-                    is CardReaderDiscoveryEvents.Failed -> send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
-                    is CardReaderDiscoveryEvents.FailedTapToPayDeviceUnsupported ->
-                        send(WooPosUnifiedDiscoveryEvent.Failed(event.msg))
-                    is CardReaderDiscoveryEvents.Succeeded -> send(WooPosUnifiedDiscoveryEvent.Succeeded)
-                }
             }
+        } else {
+            send(WooPosUnifiedDiscoveryEvent.Started)
         }
 
         val phoneSource: WooPosPhoneDiscoverySource =
@@ -121,12 +132,10 @@ class WooPosUnifiedDiscoveryStream @Inject constructor(
 
             val fingerprint = phone.fingerprintBase64
 
-            // The phone may have re-registered with a new fingerprint+name without us
-            // receiving the Lost event for the previous one (Android NSD goodbye is
-            // unreliable). Drop any earlier entries from the same host so we don't show
-            // the same device twice.
+            // The phone re-registers with a new fingerprint, name and port every session, and the
+            // Lost event for the previous one may never arrive (Android NSD goodbye is unreliable).
             val staleServiceNames = state.phonesByFingerprint.values
-                .filter { it.host == phone.host && it.fingerprintBase64 != fingerprint }
+                .filter { it.deviceId == phone.deviceId && it.fingerprintBase64 != fingerprint }
                 .map { it.serviceName }
             staleServiceNames.forEach { serviceName ->
                 val staleFp = state.fingerprintByServiceName.remove(serviceName)

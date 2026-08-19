@@ -16,8 +16,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 
 @ExperimentalCoroutinesApi
 class ClientSidePosBannerTest : BaseUnitTest() {
@@ -78,7 +80,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun `given non-eligible country, when shouldShow called, then returns false`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("CA"))
 
         val result = sut.shouldShow()
 
@@ -89,8 +91,8 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun `given all conditions met, when shouldShow called, then returns true`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
-        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         val result = sut.shouldShow()
 
@@ -99,21 +101,54 @@ class ClientSidePosBannerTest : BaseUnitTest() {
 
     @Test
     fun `when onDismiss called, then banner is hidden in storage`() {
+        val site = setupValidSite()
+
         sut.onDismiss()
 
-        verify(dismissalStorage).hideBanner("woo_pos_client_banner")
+        verify(dismissalStorage).hideBanner("woo_pos_client_banner", site)
     }
 
     @Test
     fun `given all conditions met, when shouldShow called, then checks the client banner feature flag`() = testBlocking {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
-        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
-        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+        whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
 
         sut.shouldShow()
 
         verify(featureFlagRepository).isEnabled(eq(FeatureFlag.WOO_POS_TABLET_PROMO_BANNER))
+    }
+
+    @Test
+    fun `given all conditions met, when shouldShow called, then the country code is not read on the main thread`() =
+        testBlocking {
+            // GIVEN
+            val site = setupValidSite()
+            whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+            whenever(wooStore.getSiteSettingsAsync(site)).thenReturn(settingsWithCountry("US"))
+            whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(false)
+
+            // WHEN
+            sut.shouldShow()
+
+            // THEN
+            verify(wooStore, never()).getStoreCountryCode(any())
+        }
+
+    @Test
+    fun `given banner already dismissed, when shouldShow called, then site settings are not read`() = testBlocking {
+        // GIVEN
+        setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(dismissalStorage.isBannerHidden(any(), any())).thenReturn(true)
+
+        // WHEN
+        val result = sut.shouldShow()
+
+        // THEN
+        assertThat(result).isFalse()
+        verify(wooStore, never()).getSiteSettingsAsync(any())
     }
 
     private fun setupValidSite(): SiteModel {
@@ -125,4 +160,7 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         whenever(selectedSite.getIfExists()).thenReturn(site)
         return site
     }
+
+    private fun settingsWithCountry(countryCode: String) =
+        WCSettingsTestUtils.generateSettings(LocalId(1)).copy(countryCode = countryCode)
 }

@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.payments.methodselection.SharePaymentUrlViaQr
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -124,6 +125,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
+    private val refreshProductsSignal: RefreshProductsSignal = mock()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -498,6 +500,46 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 eq(DEFAULT_PAYMENT_METHOD_TITLE),
                 eq(null)
             )
+        }
+
+    @Test
+    fun `given cash payment succeeds, when cash payment confirmed, then stock change is signalled with product ids`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(101L, 102L)
+            whenever(order.getProductIds()).thenReturn(productIds)
+            whenever(
+                orderStore.updateOrderStatusAndPaymentDetails(any(), any(), any(), any(), any(), anyOrNull())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refreshProductsSignal).notifyProductsChanged(productIds)
+        }
+
+    @Test
+    fun `given share payment url flow, when completed, then stock change is not signalled`() =
+        testBlocking {
+            // GIVEN sharing the link only moves the order to Pending, which does not reduce stock
+            whenever(
+                orderStore.updateOrderStatus(any(), any(), any())
+            ).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // WHEN
+            viewModel.onSharePaymentUrlCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(refreshProductsSignal, never()).notifyProductsChanged(any())
         }
 
     @Test
@@ -1241,6 +1283,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
             paymentsUtils = paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings = logOrderCurrencyMismatchWithSiteSettings,
+            refreshProductsSignal = refreshProductsSignal,
             newOrderNotificationSuppressionCache = newOrderNotificationSuppressionCache
         )
     }
