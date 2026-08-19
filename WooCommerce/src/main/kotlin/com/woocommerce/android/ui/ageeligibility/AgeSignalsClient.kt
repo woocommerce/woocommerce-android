@@ -25,12 +25,54 @@ interface AgeSignalsClient {
 class GoogleAgeSignalsClient @Inject constructor(
     private val manager: AgeSignalsManager
 ) : AgeSignalsClient {
-    @Suppress("SwallowedException")
     override suspend fun requestAgeSignals(activity: Activity): AgeSignalsRequestResult {
-        var retryCount = 0
+        val accessAttempt = executeStageWithRetry(AgeSignalsRequestStage.ACCESS) {
+            manager.requestAgeSignalsAccess(
+                AgeSignalsAccessRequest.builder()
+                    .setActivity(activity)
+                    .build()
+            ).await()
+        }
+        val rawAccessStatus = accessAttempt.value.ageSignalsStatus()
+        val accessStatus = rawAccessStatus.toAgeSignalsAccessStatus()
+
+        if (accessStatus == AgeSignalsAccessStatus.UNEXPECTED) {
+            WooLog.w(WooLog.T.UTILS, "Unexpected Age Signals access status: $rawAccessStatus")
+        }
+
+        return if (accessStatus == AgeSignalsAccessStatus.SHARED) {
+            val signalsAttempt = executeStageWithRetry(
+                stage = AgeSignalsRequestStage.CHECK,
+                initialRetryCount = accessAttempt.retryCount
+            ) {
+                manager.checkAgeSignals(AgeSignalsRequest.builder().build()).await()
+            }
+            AgeSignalsRequestResult(
+                accessStatus = accessStatus,
+                ageSignals = SharedAgeSignals(
+                    ageLower = signalsAttempt.value.ageLower(),
+                    ageUpper = signalsAttempt.value.ageUpper(),
+                    ageRangeSource = signalsAttempt.value.ageRangeSource().toAgeRangeSource(),
+                    significantChangeStatus = signalsAttempt.value.significantChangeStatus()
+                        .toSignificantChangeStatus()
+                ),
+                retryCount = signalsAttempt.retryCount
+            )
+        } else {
+            AgeSignalsRequestResult(accessStatus = accessStatus, retryCount = accessAttempt.retryCount)
+        }
+    }
+
+    @Suppress("SwallowedException")
+    private suspend fun <T> executeStageWithRetry(
+        stage: AgeSignalsRequestStage,
+        initialRetryCount: Int = 0,
+        block: suspend () -> T
+    ): StageAttempt<T> {
+        var retryCount = initialRetryCount
         while (true) {
             try {
-                return requestAgeSignalsOnce(activity).copy(retryCount = retryCount)
+                return StageAttempt(executeStage(stage, block), retryCount)
             } catch (exception: StageException) {
                 val errorCode = exception.originalException.toAgeSignalsErrorCode()
                 if (errorCode.isRetryable && retryCount < MAX_RETRY_COUNT) {
@@ -45,39 +87,6 @@ class GoogleAgeSignalsClient @Inject constructor(
                     )
                 }
             }
-        }
-    }
-
-    private suspend fun requestAgeSignalsOnce(activity: Activity): AgeSignalsRequestResult {
-        val accessRequest = AgeSignalsAccessRequest.builder()
-            .setActivity(activity)
-            .build()
-        val accessResult = executeStage(AgeSignalsRequestStage.ACCESS) {
-            manager.requestAgeSignalsAccess(accessRequest).await()
-        }
-        val rawAccessStatus = accessResult.ageSignalsStatus()
-        val accessStatus = rawAccessStatus.toAgeSignalsAccessStatus()
-
-        if (accessStatus == AgeSignalsAccessStatus.UNEXPECTED) {
-            WooLog.w(WooLog.T.UTILS, "Unexpected Age Signals access status: $rawAccessStatus")
-        }
-
-        return if (accessStatus == AgeSignalsAccessStatus.SHARED) {
-            val signalsResult = executeStage(AgeSignalsRequestStage.CHECK) {
-                manager.checkAgeSignals(AgeSignalsRequest.builder().build()).await()
-            }
-            AgeSignalsRequestResult(
-                accessStatus = accessStatus,
-                ageSignals = SharedAgeSignals(
-                    ageLower = signalsResult.ageLower(),
-                    ageUpper = signalsResult.ageUpper(),
-                    ageRangeSource = signalsResult.ageRangeSource().toAgeRangeSource(),
-                    significantChangeStatus = signalsResult.significantChangeStatus()
-                        .toSignificantChangeStatus()
-                )
-            )
-        } else {
-            AgeSignalsRequestResult(accessStatus = accessStatus)
         }
     }
 
@@ -147,6 +156,11 @@ class GoogleAgeSignalsClient @Inject constructor(
         val stage: AgeSignalsRequestStage,
         val originalException: Exception
     ) : Exception(null, originalException)
+
+    private data class StageAttempt<T>(
+        val value: T,
+        val retryCount: Int
+    )
 
     companion object {
         private const val MAX_RETRY_COUNT = 2

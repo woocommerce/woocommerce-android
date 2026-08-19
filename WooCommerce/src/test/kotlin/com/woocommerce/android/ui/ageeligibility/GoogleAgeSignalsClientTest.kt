@@ -175,7 +175,8 @@ class GoogleAgeSignalsClientTest {
     }
 
     @Test
-    fun `given a retryable check error, when retried, then both stages run again`() = runTest {
+    fun `given a retryable check error, when retried, then only the check stage runs again`() = runTest {
+        // GIVEN
         val manager: AgeSignalsManager = mock()
         whenever(manager.requestAgeSignalsAccess(any())).thenReturn(
             Tasks.forResult(accessResult(AgeSignalsStatus.SHARED))
@@ -186,12 +187,14 @@ class GoogleAgeSignalsClientTest {
             Tasks.forResult(eligibleSignalsResult())
         )
 
+        // WHEN
         val result = GoogleAgeSignalsClient(manager).requestAgeSignals(activity)
 
+        // THEN
         assertThat(result.retryCount).isEqualTo(2)
         assertThat(result.ageSignals?.ageLower).isEqualTo(18)
         assertThat(currentTime).isEqualTo(1_500L)
-        verify(manager, times(3)).requestAgeSignalsAccess(any())
+        verify(manager).requestAgeSignalsAccess(any())
         verify(manager, times(3)).checkAgeSignals(any())
     }
 
