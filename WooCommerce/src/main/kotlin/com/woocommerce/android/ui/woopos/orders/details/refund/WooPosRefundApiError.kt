@@ -28,8 +28,6 @@ enum class WooPosRefundApiError(
         R.string.woopos_refund_error_item_already_refunded,
         WooPosRefundState.Recovery.RefreshItems,
     ),
-
-    /** Nothing is left to refund. Both paths route this to [WooPosRefundState.NoRefundableItems]. */
     OrderNotRefundable(
         R.string.woopos_refund_error_order_not_refundable,
         WooPosRefundState.Recovery.None,
@@ -42,8 +40,6 @@ enum class WooPosRefundApiError(
         R.string.woopos_refund_error_amount_exceeds_item_remaining,
         WooPosRefundState.Recovery.RefreshItems,
     ),
-
-    /** The amount is malformed, not too large, so a fresh item list does not help. */
     InvalidAmount(
         R.string.woopos_refund_error_invalid_amount,
         WooPosRefundState.Recovery.None,

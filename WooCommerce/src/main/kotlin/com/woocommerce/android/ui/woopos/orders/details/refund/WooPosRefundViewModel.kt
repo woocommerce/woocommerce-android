@@ -126,7 +126,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         loadContent(preservedSelection = null, isFlowStart = true)
     }
 
-    /** Reloads the order and its refunds, then goes back to item selection keeping what is left. */
     private fun refreshRefundableItems() {
         val preservedSelection = (_state.value as? WooPosRefundState.Content)?.selectedItemIds
             ?: contentStateBeforeRefund?.selectedItemIds
@@ -135,7 +134,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         loadContent(preservedSelection = preservedSelection, isFlowStart = false)
     }
 
-    /** @param isFlowStart false on a reload, so the flow start is tracked once per flow. */
     private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean) {
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
@@ -438,7 +436,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         }
     }
 
-    /** Keeps the cashier on the selection step with the store's reason and the matching recovery. */
     private fun handlePreviewError(
         currentState: WooPosRefundState.Content,
         apiError: WooPosRefundApiError?,
@@ -699,7 +696,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
-    /** Like [handlePreviewError], for a rejected create. */
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,
     ) {

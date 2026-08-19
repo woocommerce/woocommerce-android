@@ -6,11 +6,9 @@ import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
-/** Builds the item-selection content. Totals start at zero and are resolved on Continue. */
 class WooPosBuildRefundContent @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
 ) {
-    /** @param preservedSelection kept from a reload. Ids that are gone drop out; if none are left, all are selected. */
     operator fun invoke(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
