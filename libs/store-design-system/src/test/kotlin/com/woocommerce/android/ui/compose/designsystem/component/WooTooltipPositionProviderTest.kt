@@ -161,11 +161,13 @@ class WooTooltipPositionProviderTest {
         preferred: WooTooltipPlacement? = null,
         direction: LayoutDirection = LayoutDirection.Ltr,
     ): WooTooltipLayoutResult = calculateWooTooltipLayout(
-        anchorBounds = anchor,
-        windowSize = window,
-        popupContentSize = popup,
-        layoutDirection = direction,
-        preferredPlacement = preferred,
+        input = WooTooltipLayoutInput(
+            anchorBounds = anchor,
+            windowSize = window,
+            popupContentSize = popup,
+            layoutDirection = direction,
+            preferredPlacement = preferred,
+        ),
         tokens = TOKENS,
     )
 

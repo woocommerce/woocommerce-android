@@ -67,8 +67,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchSettin
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft

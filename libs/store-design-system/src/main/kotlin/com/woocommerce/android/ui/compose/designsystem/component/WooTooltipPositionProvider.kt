@@ -25,6 +25,14 @@ internal data class WooTooltipLayoutResult(
     val maxBubbleWidth: Int,
 )
 
+internal data class WooTooltipLayoutInput(
+    val anchorBounds: IntRect,
+    val windowSize: IntSize,
+    val popupContentSize: IntSize,
+    val layoutDirection: LayoutDirection,
+    val preferredPlacement: WooTooltipPlacement?,
+)
+
 internal class WooTooltipPositionProvider(
     private val preferredPlacement: WooTooltipPlacement?,
     private val tokens: WooTooltipLayoutTokens,
@@ -38,11 +46,13 @@ internal class WooTooltipPositionProvider(
         popupContentSize: IntSize,
     ): IntOffset {
         val result = calculateWooTooltipLayout(
-            anchorBounds = anchorBounds,
-            windowSize = windowSize,
-            popupContentSize = popupContentSize,
-            layoutDirection = currentLayoutDirection(),
-            preferredPlacement = preferredPlacement,
+            input = WooTooltipLayoutInput(
+                anchorBounds = anchorBounds,
+                windowSize = windowSize,
+                popupContentSize = popupContentSize,
+                layoutDirection = currentLayoutDirection(),
+                preferredPlacement = preferredPlacement,
+            ),
             tokens = tokens,
         )
         onLayoutResult(result)
@@ -51,34 +61,84 @@ internal class WooTooltipPositionProvider(
 }
 
 internal fun calculateWooTooltipLayout(
-    anchorBounds: IntRect,
-    windowSize: IntSize,
-    popupContentSize: IntSize,
-    layoutDirection: LayoutDirection,
-    preferredPlacement: WooTooltipPlacement?,
+    input: WooTooltipLayoutInput,
     tokens: WooTooltipLayoutTokens,
 ): WooTooltipLayoutResult {
-    val room = WooTooltipAvailableRoom(
-        above = anchorBounds.top - tokens.anchorGap - tokens.windowMargin,
-        below = windowSize.height - tokens.windowMargin - anchorBounds.bottom - tokens.anchorGap,
-        left = anchorBounds.left - tokens.anchorGap - tokens.windowMargin,
-        right = windowSize.width - tokens.windowMargin - anchorBounds.right - tokens.anchorGap,
+    val room = input.availableRoom(tokens)
+    val side = input.resolveSide(room, tokens)
+    val offset = input.popupOffset(side, tokens)
+    val arrowEdge = side.arrowEdge
+    val desiredArrowCenter = input.desiredArrowCenter(arrowEdge, offset)
+    val geometry = wooTooltipGeometry(
+        edge = arrowEdge,
+        desiredArrowCenter = desiredArrowCenter,
+        size = Size(input.popupContentSize.width.toFloat(), input.popupContentSize.height.toFloat()),
+        tokens = tokens.geometry,
     )
+
+    return WooTooltipLayoutResult(
+        offset = offset,
+        side = side,
+        arrowEdge = arrowEdge,
+        arrowCenter = geometry?.arrowCenter ?: desiredArrowCenter,
+        maxBubbleWidth = input.maxBubbleWidth(side, room, tokens),
+    )
+}
+
+private fun WooTooltipLayoutInput.availableRoom(tokens: WooTooltipLayoutTokens) = WooTooltipAvailableRoom(
+    above = anchorBounds.top - tokens.anchorGap - tokens.windowMargin,
+    below = windowSize.height - tokens.windowMargin - anchorBounds.bottom - tokens.anchorGap,
+    left = anchorBounds.left - tokens.anchorGap - tokens.windowMargin,
+    right = windowSize.width - tokens.windowMargin - anchorBounds.right - tokens.anchorGap,
+)
+
+private fun WooTooltipLayoutInput.resolveSide(
+    room: WooTooltipAvailableRoom,
+    tokens: WooTooltipLayoutTokens,
+): WooTooltipPhysicalSide {
     val preferredSide = preferredPlacement?.resolve(layoutDirection)
-    val side = when (preferredSide) {
+    return when (preferredSide) {
         null -> if (room.below >= room.above) WooTooltipPhysicalSide.Below else WooTooltipPhysicalSide.Above
         else -> resolvePreferredSide(preferredSide, room, popupContentSize, tokens.minSideWidth)
     }
-    val maxBubbleWidth = when (side) {
-        WooTooltipPhysicalSide.Above,
-        WooTooltipPhysicalSide.Below,
-        -> min(tokens.maxBubbleWidth, max(0, windowSize.width - 2 * tokens.windowMargin))
+}
 
-        WooTooltipPhysicalSide.Left,
-        WooTooltipPhysicalSide.Right,
-        -> min(tokens.maxBubbleWidth, max(tokens.minSideWidth, room.forSide(side)))
-    }
-    val rawX = when (side) {
+private fun WooTooltipLayoutInput.maxBubbleWidth(
+    side: WooTooltipPhysicalSide,
+    room: WooTooltipAvailableRoom,
+    tokens: WooTooltipLayoutTokens,
+): Int = when (side) {
+    WooTooltipPhysicalSide.Above,
+    WooTooltipPhysicalSide.Below,
+    -> min(tokens.maxBubbleWidth, max(0, windowSize.width - 2 * tokens.windowMargin))
+
+    WooTooltipPhysicalSide.Left,
+    WooTooltipPhysicalSide.Right,
+    -> min(tokens.maxBubbleWidth, max(tokens.minSideWidth, room.forSide(side)))
+}
+
+private fun WooTooltipLayoutInput.popupOffset(
+    side: WooTooltipPhysicalSide,
+    tokens: WooTooltipLayoutTokens,
+): IntOffset {
+    val rawOffset = rawPopupOffset(side, tokens)
+    return IntOffset(
+        x = rawOffset.x.coerceToWindow(
+            low = tokens.windowMargin,
+            high = windowSize.width - tokens.windowMargin - popupContentSize.width,
+        ),
+        y = rawOffset.y.coerceToWindow(
+            low = tokens.windowMargin,
+            high = windowSize.height - tokens.windowMargin - popupContentSize.height,
+        ),
+    )
+}
+
+private fun WooTooltipLayoutInput.rawPopupOffset(
+    side: WooTooltipPhysicalSide,
+    tokens: WooTooltipLayoutTokens,
+): IntOffset {
+    val x = when (side) {
         WooTooltipPhysicalSide.Above,
         WooTooltipPhysicalSide.Below,
         -> anchorBounds.center.x - popupContentSize.width / 2
@@ -86,45 +146,27 @@ internal fun calculateWooTooltipLayout(
         WooTooltipPhysicalSide.Left -> anchorBounds.left - tokens.anchorGap - popupContentSize.width
         WooTooltipPhysicalSide.Right -> anchorBounds.right + tokens.anchorGap
     }
-    val rawY = when (side) {
+    val y = when (side) {
         WooTooltipPhysicalSide.Above -> anchorBounds.top - tokens.anchorGap - popupContentSize.height
         WooTooltipPhysicalSide.Below -> anchorBounds.bottom + tokens.anchorGap
         WooTooltipPhysicalSide.Left,
         WooTooltipPhysicalSide.Right,
         -> anchorBounds.center.y - popupContentSize.height / 2
     }
-    val x = rawX.coerceToWindow(
-        low = tokens.windowMargin,
-        high = windowSize.width - tokens.windowMargin - popupContentSize.width,
-    )
-    val y = rawY.coerceToWindow(
-        low = tokens.windowMargin,
-        high = windowSize.height - tokens.windowMargin - popupContentSize.height,
-    )
-    val arrowEdge = side.arrowEdge
-    val desiredArrowCenter = when (arrowEdge) {
-        WooTooltipPhysicalEdge.Top,
-        WooTooltipPhysicalEdge.Bottom,
-        -> anchorBounds.center.x - x.toFloat()
+    return IntOffset(x, y)
+}
 
-        WooTooltipPhysicalEdge.Left,
-        WooTooltipPhysicalEdge.Right,
-        -> anchorBounds.center.y - y.toFloat()
-    }
-    val geometry = wooTooltipGeometry(
-        edge = arrowEdge,
-        desiredArrowCenter = desiredArrowCenter,
-        size = Size(popupContentSize.width.toFloat(), popupContentSize.height.toFloat()),
-        tokens = tokens.geometry,
-    )
+private fun WooTooltipLayoutInput.desiredArrowCenter(
+    arrowEdge: WooTooltipPhysicalEdge,
+    popupOffset: IntOffset,
+): Float = when (arrowEdge) {
+    WooTooltipPhysicalEdge.Top,
+    WooTooltipPhysicalEdge.Bottom,
+    -> anchorBounds.center.x - popupOffset.x.toFloat()
 
-    return WooTooltipLayoutResult(
-        offset = IntOffset(x, y),
-        side = side,
-        arrowEdge = arrowEdge,
-        arrowCenter = geometry?.arrowCenter ?: desiredArrowCenter,
-        maxBubbleWidth = maxBubbleWidth,
-    )
+    WooTooltipPhysicalEdge.Left,
+    WooTooltipPhysicalEdge.Right,
+    -> anchorBounds.center.y - popupOffset.y.toFloat()
 }
 
 internal fun isWooTooltipAnchorVisible(

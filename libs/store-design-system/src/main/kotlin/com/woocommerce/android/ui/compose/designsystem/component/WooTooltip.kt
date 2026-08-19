@@ -270,6 +270,14 @@ internal data class WooTooltipGeometryTokens(
     val arrowDepth: Float,
 )
 
+private data class WooTooltipScaledDimensions(
+    val scale: Float,
+    val arrowDepth: Float,
+    val bodyBounds: Rect,
+    val cornerRadius: Float,
+    val arrowHalfBase: Float,
+)
+
 internal fun wooTooltipGeometryTokens(
     density: Density,
     cornerRadius: Dp,
@@ -287,21 +295,49 @@ internal fun wooTooltipGeometry(
     size: Size,
     tokens: WooTooltipGeometryTokens,
 ): WooTooltipGeometry? {
-    val requestedValues = listOf(tokens.cornerRadius, tokens.arrowHalfBase, tokens.arrowDepth)
-    if (!size.width.isFinite() || !size.height.isFinite() || size.width <= 0f || size.height <= 0f) return null
-    if (requestedValues.any { !it.isFinite() || it <= 0f }) return null
-
+    val scaledDimensions = edge.scaledDimensions(size, tokens) ?: return null
     val edgeLength = edge.edgeLength(size)
-    val containerLength = edge.containerLength(size)
+    val minimumCenter = scaledDimensions.cornerRadius + scaledDimensions.arrowHalfBase
+    val maximumCenter = edgeLength - minimumCenter
+    val requestedCenter = desiredArrowCenter.takeIf(Float::isFinite) ?: edgeLength / 2f
+    val arrowCenter = requestedCenter.coerceIn(minimumCenter, maximumCenter.coerceAtLeast(minimumCenter))
+    val (arrowTip, arrowBaseStart, arrowBaseEnd) = edge.arrowPoints(
+        size = size,
+        bodyBounds = scaledDimensions.bodyBounds,
+        arrowCenter = arrowCenter,
+        arrowHalfBase = scaledDimensions.arrowHalfBase,
+    )
+
+    return WooTooltipGeometry(
+        edge = edge,
+        bodyBounds = scaledDimensions.bodyBounds,
+        cornerRadius = scaledDimensions.cornerRadius,
+        arrowDepth = scaledDimensions.arrowDepth,
+        arrowCenter = arrowCenter,
+        arrowHalfBase = scaledDimensions.arrowHalfBase,
+        arrowTip = arrowTip,
+        arrowBaseStart = arrowBaseStart,
+        arrowBaseEnd = arrowBaseEnd,
+        scale = scaledDimensions.scale,
+    )
+}
+
+private fun WooTooltipPhysicalEdge.scaledDimensions(
+    size: Size,
+    tokens: WooTooltipGeometryTokens,
+): WooTooltipScaledDimensions? {
+    if (!size.hasValidTooltipDimensions || !tokens.hasValidTooltipDimensions) return null
+
+    val edgeLength = edgeLength(size)
     val scale = minOf(
         1f,
         edgeLength / (2f * (tokens.cornerRadius + tokens.arrowHalfBase)),
-        containerLength / (tokens.arrowDepth + 2f * tokens.cornerRadius),
+        containerLength(size) / (tokens.arrowDepth + 2f * tokens.cornerRadius),
     )
-    if (!scale.isFinite() || scale <= 0f) return null
+    if (!scale.isFiniteAndPositive()) return null
 
     val arrowDepth = tokens.arrowDepth * scale
-    val bodyBounds = edge.bodyBounds(size, arrowDepth)
+    val bodyBounds = bodyBounds(size, arrowDepth)
     val cornerRadius = minOf(
         tokens.cornerRadius * scale,
         bodyBounds.width / 2f,
@@ -311,33 +347,25 @@ internal fun wooTooltipGeometry(
         tokens.arrowHalfBase * scale,
         edgeLength / 2f - cornerRadius,
     )
-    if (cornerRadius <= 0f || arrowHalfBase <= 0f || bodyBounds.width <= 0f || bodyBounds.height <= 0f) {
-        return null
-    }
-    val minimumCenter = cornerRadius + arrowHalfBase
-    val maximumCenter = edgeLength - minimumCenter
-    val requestedCenter = desiredArrowCenter.takeIf(Float::isFinite) ?: edgeLength / 2f
-    val arrowCenter = requestedCenter.coerceIn(minimumCenter, maximumCenter.coerceAtLeast(minimumCenter))
-    val (arrowTip, arrowBaseStart, arrowBaseEnd) = edge.arrowPoints(
-        size = size,
-        bodyBounds = bodyBounds,
-        arrowCenter = arrowCenter,
-        arrowHalfBase = arrowHalfBase,
-    )
-
-    return WooTooltipGeometry(
-        edge = edge,
+    return WooTooltipScaledDimensions(
+        scale = scale,
+        arrowDepth = arrowDepth,
         bodyBounds = bodyBounds,
         cornerRadius = cornerRadius,
-        arrowDepth = arrowDepth,
-        arrowCenter = arrowCenter,
         arrowHalfBase = arrowHalfBase,
-        arrowTip = arrowTip,
-        arrowBaseStart = arrowBaseStart,
-        arrowBaseEnd = arrowBaseEnd,
-        scale = scale,
-    )
+    ).takeUnless(WooTooltipScaledDimensions::isDegenerate)
 }
+
+private val Size.hasValidTooltipDimensions: Boolean
+    get() = listOf(width, height).all(Float::isFiniteAndPositive)
+
+private val WooTooltipGeometryTokens.hasValidTooltipDimensions: Boolean
+    get() = listOf(cornerRadius, arrowHalfBase, arrowDepth).all(Float::isFiniteAndPositive)
+
+private val WooTooltipScaledDimensions.isDegenerate: Boolean
+    get() = listOf(cornerRadius, arrowHalfBase, bodyBounds.width, bodyBounds.height).any { it <= 0f }
+
+private fun Float.isFiniteAndPositive(): Boolean = isFinite() && this > 0f
 
 private fun WooTooltipPhysicalEdge.edgeLength(size: Size): Float = when (this) {
     WooTooltipPhysicalEdge.Top,

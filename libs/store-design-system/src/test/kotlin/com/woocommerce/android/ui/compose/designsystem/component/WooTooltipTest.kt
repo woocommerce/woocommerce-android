@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
@@ -32,6 +32,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
@@ -252,7 +253,7 @@ class WooTooltipTest {
                     WooTooltipBox(
                         state = state,
                         title = TITLE,
-                        modifier = Modifier.offset(x = if (hostIsOffscreen) (-1000).dp else 0.dp),
+                        modifier = Modifier.offsetOffscreenWhen { hostIsOffscreen },
                     ) {
                         androidx.compose.material3.Text(ANCHOR)
                     }
@@ -374,7 +375,7 @@ class WooTooltipTest {
                 WooTooltipBox(
                     state = state,
                     title = TITLE,
-                    modifier = Modifier.offset(x = if (anchorIsOffscreen) (-1000).dp else 0.dp),
+                    modifier = Modifier.offsetOffscreenWhen { anchorIsOffscreen },
                 ) {
                     androidx.compose.material3.Text(ANCHOR)
                 }
@@ -406,7 +407,7 @@ class WooTooltipTest {
                 WooTooltipBox(
                     state = state,
                     title = TITLE,
-                    modifier = Modifier.offset(x = if (anchorIsOffscreen) (-1000).dp else 0.dp),
+                    modifier = Modifier.offsetOffscreenWhen { anchorIsOffscreen },
                 ) {
                     androidx.compose.material3.Text(ANCHOR)
                 }
@@ -446,7 +447,7 @@ class WooTooltipTest {
                     WooTooltipBox(
                         state = firstState,
                         title = TITLE,
-                        modifier = Modifier.offset(x = if (firstAnchorIsOffscreen) (-1000).dp else 0.dp),
+                        modifier = Modifier.offsetOffscreenWhen { firstAnchorIsOffscreen },
                     ) {
                         androidx.compose.material3.Text("First anchor")
                     }
@@ -496,7 +497,7 @@ class WooTooltipTest {
                     WooTooltipBox(
                         state = firstState,
                         title = TITLE,
-                        modifier = Modifier.offset(x = if (firstAnchorIsOffscreen) (-1000).dp else 0.dp),
+                        modifier = Modifier.offsetOffscreenWhen { firstAnchorIsOffscreen },
                     ) {
                         androidx.compose.material3.Text("First anchor")
                     }
@@ -618,9 +619,17 @@ class WooTooltipTest {
         )
     )
 
+    private fun Modifier.offsetOffscreenWhen(isOffscreen: () -> Boolean): Modifier = offset {
+        IntOffset(
+            x = if (isOffscreen()) OFFSCREEN_OFFSET.roundToPx() else 0,
+            y = 0,
+        )
+    }
+
     private companion object {
         val DENSITY = Density(1f)
         val TOKENS = WooTooltipGeometryTokens(12f, 11f, 10f)
+        val OFFSCREEN_OFFSET = (-1000).dp
         val CONSTRAINED_SIZES = listOf(
             Size(16f, 100f),
             Size(100f, 16f),
