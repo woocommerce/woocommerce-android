@@ -4,6 +4,7 @@
 
 25.5
 -----
+- [*] You can now apply a gift card when editing an order [https://github.com/woocommerce/woocommerce-android/pull/16445]
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
 - [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
