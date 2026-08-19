@@ -880,4 +880,51 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             assertThat(orderDraft?.giftCardDiscountedAmount).isNull()
             assertThat(lastEvent).isEqualTo(Event.ShowSnackbar(R.string.order_creation_gift_card_not_applied))
         }
+
+    @Test
+    fun `given an order with an applied gift card, when loaded, then show it from the synced order`() = testBlocking {
+        val giftCard = GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00"))
+        val order = defaultOrderValue.copy(isEditable = true, giftCards = listOf(giftCard))
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        // The card is shown from the loaded order's giftCards, without any nav argument or user selection.
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+        assertThat(orderDraft?.giftCardDiscountedAmount).isEqualTo(BigDecimal("10.00"))
+    }
+
+    @Test
+    fun `given an applied gift card, when a later sync still returns it, then keep it and show no snackbar`() =
+        testBlocking {
+            val giftCard = GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00"))
+            val order = defaultOrderValue.copy(isEditable = true)
+            val orderWithGiftCard = order.copy(giftCards = listOf(giftCard))
+            val syncResult = MutableSharedFlow<CreateUpdateOrder.OrderUpdateStatus>(replay = 1)
+            orderDetailRepository.stub {
+                on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+            }
+            createUpdateOrderUseCase = mock {
+                on { invoke(any(), any()) } doReturn syncResult
+            }
+            createSut()
+            var orderDraft: Order? = null
+            sut.orderDraft.observeForever { orderDraft = it }
+            var lastEvent: Event? = null
+            sut.event.observeForever { lastEvent = it }
+
+            sut.onGiftCardSelected("1234-5678-9012-3456")
+            syncResult.emit(Succeeded(orderWithGiftCard))
+            // A later unrelated change syncs and the store still returns the applied card.
+            syncResult.emit(Succeeded(orderWithGiftCard))
+
+            assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+            assertThat(lastEvent).isNotEqualTo(Event.ShowSnackbar(R.string.order_creation_gift_card_not_applied))
+        }
 }

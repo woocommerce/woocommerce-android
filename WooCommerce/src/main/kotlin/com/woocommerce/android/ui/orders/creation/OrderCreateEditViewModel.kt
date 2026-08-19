@@ -259,7 +259,8 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val _selectedGiftCard = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = args.giftCardCode.orEmpty()
+        initialValue = "",
+        key = "selected_gift_card"
     )
 
     private val _orderDraft = savedState.getStateFlow(
@@ -272,9 +273,10 @@ class OrderCreateEditViewModel @Inject constructor(
 
     val orderDraft = _orderDraft
         .combine(_selectedGiftCard) { order, giftCard ->
+            val appliedGiftCard = order.giftCards.firstOrNull()
             order.copy(
-                selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = order.giftCards.firstOrNull()?.used
+                selectedGiftCard = appliedGiftCard?.code ?: giftCard,
+                giftCardDiscountedAmount = appliedGiftCard?.used
             )
         }.asLiveData()
 
@@ -292,14 +294,16 @@ class OrderCreateEditViewModel @Inject constructor(
             _orderDraft.asLiveData(),
             _selectedGiftCard.asLiveData()
         ) { viewState, order, selectedGiftCard ->
+            val appliedGiftCard = order!!.giftCards.firstOrNull()
+            val displayedGiftCard = appliedGiftCard?.code ?: selectedGiftCard
             totalsHelper.mapToPaymentTotalsState(
-                order = order!!.copy(
-                    selectedGiftCard = selectedGiftCard,
-                    giftCardDiscountedAmount = order.giftCards.firstOrNull()?.used
+                order = order.copy(
+                    selectedGiftCard = displayedGiftCard,
+                    giftCardDiscountedAmount = appliedGiftCard?.used
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
+                onGiftClicked = { onEditGiftCardButtonClicked(displayedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
                 onRecalculateButtonClicked = { onTotalsSectionRecalculateButtonClicked() },
@@ -862,9 +866,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
+        val hasGiftCard = order.giftCards.isNotEmpty() || _selectedGiftCard.value.isNotEmpty()
         val shouldEnableAddGiftCardButton = order.hasProducts() &&
             order.isEditable &&
-            _selectedGiftCard.value.isEmpty()
+            !hasGiftCard
 
         viewState = viewState.copy(isAddGiftCardButtonEnabled = shouldEnableAddGiftCardButton)
 
@@ -1249,13 +1254,14 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     /**
-     * Reconciles the selected gift card with what the store actually redeemed after a sync. A used or invalid card
-     * comes back with no applied gift cards, so it is cleared (stops showing as applied) and the merchant is notified.
+     * Once a sync completes, the applied gift card is reflected by the synced order's [Order.giftCards], so the pending
+     * selection is cleared (it is only sent once). If the store did not redeem the card the merchant just entered — a
+     * used or invalid card comes back with no applied gift cards — they are notified.
      */
     private fun reconcileGiftCardWithSyncedOrder(syncedOrder: Order) {
         val attemptedGiftCard = _selectedGiftCard.value
+        _selectedGiftCard.update { "" }
         val appliedGiftCard = syncedOrder.giftCards.firstOrNull()?.code.orEmpty()
-        _selectedGiftCard.value = appliedGiftCard
         if (attemptedGiftCard.isNotEmpty() && appliedGiftCard != attemptedGiftCard) {
             triggerEvent(ShowSnackbar(string.order_creation_gift_card_not_applied))
         }
