@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.CurrencyMatchResult
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -826,5 +827,29 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         assertThat(lastReceivedEvent).isInstanceOf(OrderCreateEditNavigationTarget.SelectItems::class.java)
         val event = lastReceivedEvent as OrderCreateEditNavigationTarget.SelectItems
         assertThat(event.orderCurrency).isNull()
+    }
+
+    @Test
+    fun `given editable order, when a gift card is applied, then reflect the synced total and discount`() = testBlocking {
+        val order = defaultOrderValue.copy(isEditable = true)
+        val discountedOrder = order.copy(
+            total = BigDecimal("5.00"),
+            giftCards = listOf(GiftCardSummary(id = 1L, code = "1234-5678-9012-3456", used = BigDecimal("10.00")))
+        )
+        orderDetailRepository.stub {
+            on { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            on { invoke(any(), any()) } doReturn flowOf(Succeeded(discountedOrder))
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        sut.onGiftCardSelected("1234-5678-9012-3456")
+
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+        assertThat(orderDraft?.giftCardDiscountedAmount).isEqualTo(BigDecimal("10.00"))
+        assertThat(orderDraft?.total).isEqualTo(BigDecimal("5.00"))
     }
 }

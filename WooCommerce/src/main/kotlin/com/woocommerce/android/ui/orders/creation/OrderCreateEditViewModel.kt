@@ -274,7 +274,7 @@ class OrderCreateEditViewModel @Inject constructor(
         .combine(_selectedGiftCard) { order, giftCard ->
             order.copy(
                 selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = args.giftCardAmount
+                giftCardDiscountedAmount = order.giftCards.firstOrNull()?.used
             )
         }.asLiveData()
 
@@ -295,7 +295,7 @@ class OrderCreateEditViewModel @Inject constructor(
             totalsHelper.mapToPaymentTotalsState(
                 order = order!!.copy(
                     selectedGiftCard = selectedGiftCard,
-                    giftCardDiscountedAmount = args.giftCardAmount
+                    giftCardDiscountedAmount = order.giftCards.firstOrNull()?.used
                 ),
                 mode = mode,
                 viewState = viewState!!,
@@ -1430,7 +1430,10 @@ class OrderCreateEditViewModel @Inject constructor(
             var ignoreIfOrderJustUpdatedFromRemote = false
             val changes =
                 if (mode is Mode.Edit) {
-                    _orderDraft.drop(1)
+                    // Gift cards are only redeemed against a real order status, so sync them in edit mode only.
+                    combine(_orderDraft, _selectedGiftCard) { order, giftCard ->
+                        order.copy(selectedGiftCard = giftCard)
+                    }.drop(1)
                 } else {
                     // When we are in the order creation flow, we need to keep the order status as auto-draft.
                     // In this way, when the draft of the created order needs to synchronize the price modifiers,
