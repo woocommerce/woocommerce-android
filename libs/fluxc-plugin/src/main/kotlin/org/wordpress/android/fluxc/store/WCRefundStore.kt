@@ -132,6 +132,7 @@ class WCRefundStore @Inject internal constructor(
      * store does with the merchant's money or stock, so a caller has to say what it wants rather
      * than inherit it.
      */
+    @Suppress("LongParameterList")
     suspend fun createComputedItemsRefund(
         site: SiteModel,
         orderId: Long,

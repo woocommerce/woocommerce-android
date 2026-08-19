@@ -70,6 +70,7 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      * items, and answers 201. Callers must therefore only use this method against a store known
      * to support `compute_totals` (see the POS refund flow resolver and availability cache).
      */
+    @Suppress("LongParameterList")
     suspend fun createComputedRefund(
         site: SiteModel,
         orderId: Long,
