@@ -135,18 +135,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         _binding = FragmentAddAttributeTermsBinding.bind(view)
 
+        // restore a pending rename before the views (and toolbar title) are built off attributeName
+        renamedAttributeName = savedInstanceState?.getString(KEY_RENAMED_ATTRIBUTE_NAME)
+
         initializeViews(savedInstanceState)
         setupObservers()
         setupResultHandlers()
         getAttributeTerms()
 
-        savedInstanceState?.let { bundle ->
-            if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
-                confirmRemoveAttribute()
-            }
-            if (bundle.containsKey(KEY_RENAMED_ATTRIBUTE_NAME)) {
-                renamedAttributeName = bundle.getString(KEY_RENAMED_ATTRIBUTE_NAME)
-            }
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING) == true) {
+            confirmRemoveAttribute()
         }
     }
 
@@ -355,6 +353,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             // note we always pass 0L as the attributeId since renaming is only supported for local attributes
             if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
                 renamedAttributeName = it
+                requireView().findViewById<Toolbar>(R.id.toolbar)?.title = attributeName
             }
         }
     }
