@@ -212,10 +212,31 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
-            exitAttributeTermsScreen()
-        }
+        handleExit()
         return false
+    }
+
+    private fun handleExit() {
+        when {
+            // a typed-but-unadded option always wins, so it's never discarded without a warning
+            binding.termEditText.text.isNotBlank() ->
+                confirmDiscardPendingInputThenExit(hasPendingInput = true) { exitAttributeTermsScreen() }
+            // an attribute with no options can't exist, so warn before leaving removes it
+            assignedTermsAdapter.isEmpty() ->
+                confirmRemoveEmptyAttribute()
+            else ->
+                exitAttributeTermsScreen()
+        }
+    }
+
+    private fun confirmRemoveEmptyAttribute() {
+        WooDialog.showDialog(
+            requireActivity(),
+            messageId = R.string.product_attribute_no_options_warning,
+            positiveButtonId = R.string.remove,
+            posBtnAction = { _, _ -> exitAttributeTermsScreen() },
+            negativeButtonId = R.string.cancel
+        )
     }
 
     private fun exitAttributeTermsScreen() {
@@ -293,9 +314,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
-                        exitAttributeTermsScreen()
-                    }
+                    handleExit()
                 }
                 onCreateMenu(toolbar)
             }
