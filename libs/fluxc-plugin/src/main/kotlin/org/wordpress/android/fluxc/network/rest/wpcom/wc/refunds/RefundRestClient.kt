@@ -57,18 +57,18 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      * `compute_totals=true`).
      *
      * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
-     * lines) and the server computes every monetary value. No order-level total is sent. The
-     * endpoint accepts one as an override, but this client does not expose it: sending a total
-     * would make the caller, not the order, the authority on what the refund is worth.
+     * lines) — the server computes all monetary values, unless an explicit order-level [amount]
+     * override is given. The override is guarded server-side: a value below the computed line-item
+     * total is rejected with a 400, while a value above it is accepted as a goodwill over-refund,
+     * capped at the order's remaining refundable amount (422 beyond).
      *
      * [apiRefund] and [apiRestock] are always sent explicitly: the v3 endpoint defaults both to
      * `true` when omitted, and the caller must stay in control of gateway refunds and restocking.
      *
      * On stores whose refund endpoint does not support `compute_totals`, the unknown param is
-     * silently dropped and the request is handled by the classic create, where a quantity-only
-     * body carries no monetary value to sum: the store books a zero-amount refund, restocks the
-     * items, and answers 201. Callers must therefore only use this method against a store known
-     * to support `compute_totals` (see the POS refund flow resolver and availability cache).
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock. Callers must therefore only use this method after a successful preview against the
+     * same store (see the availability cache in the POS refund flow).
      */
     @Suppress("LongParameterList")
     suspend fun createComputedRefund(
@@ -77,15 +77,17 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
         reason: String,
         apiRefund: Boolean,
         apiRestock: Boolean,
+        amount: String?,
         lineItems: List<ComputedRefundLineItem>,
     ): WooPayload<RefundResponse> {
         val body = mapOf(
             "compute_totals" to true,
             "reason" to reason,
+            "amount" to amount,
             "api_refund" to apiRefund.toString(),
             "api_restock" to apiRestock.toString(),
             "line_items" to lineItems,
-        )
+        ).filterNotNull()
 
         return createRefund(site, orderId, body)
     }

@@ -230,14 +230,17 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
     ): WooResult<WCRefundModel> {
         val serverLineItems = request.serverLineItems
         if (serverLineItems != null) {
-            // No total is sent: the server computes it from the line items. That is what the
-            // computed create is for, and it keeps the amount identical on a backend-only retry,
-            // where the card has already been reversed and a rejected create would strand that
-            // money behind a permanently failing retry (WOOMOB-3752 covers reworking that path).
+            // Pinning the confirmed total makes the server reject the create when its recomputed
+            // total drifted above it (order edited between preview and create) instead of
+            // refunding more than the cashier confirmed. Omitted on backend-only retries: the
+            // card has already been reversed, and a rejection would strand that money behind a
+            // permanently failing retry (WOOMOB-3752 covers reworking that path).
+            val amountOverride = request.refundAmount.takeUnless { retryBackendNotificationOnly }
             WooLog.i(
                 WooLog.T.POS,
                 "WooPosRefund: creating server-computed backend refund " +
                     "orderId=${request.orderId}, " +
+                    "amount=$amountOverride, " +
                     "itemCount=${serverLineItems.size}, " +
                     "autoRefund=$shouldAutoRefund, " +
                     "backendOnlyRetry=$retryBackendNotificationOnly"
@@ -248,6 +251,7 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                 reason = request.refundReason,
                 autoRefund = shouldAutoRefund,
                 restockItems = true,
+                amount = amountOverride,
                 items = serverLineItems,
             )
         }

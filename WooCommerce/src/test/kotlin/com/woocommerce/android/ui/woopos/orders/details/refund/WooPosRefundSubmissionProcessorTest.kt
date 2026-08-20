@@ -30,8 +30,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -183,6 +185,7 @@ class WooPosRefundSubmissionProcessorTest {
                     reason = eq("Customer request"),
                     autoRefund = eq(true),
                     restockItems = eq(true),
+                    amount = anyOrNull(),
                     items = eq(serverLineItems),
                 )
             ).thenReturn(WooResult(refundModel))
@@ -203,6 +206,7 @@ class WooPosRefundSubmissionProcessorTest {
                 reason = eq("Customer request"),
                 autoRefund = eq(true),
                 restockItems = eq(true),
+                amount = eq(refundAmount),
                 items = eq(serverLineItems),
             )
             verify(refundStore, never()).createItemsRefund(
@@ -410,6 +414,7 @@ class WooPosRefundSubmissionProcessorTest {
                     reason = eq("Customer request"),
                     autoRefund = eq(false),
                     restockItems = eq(true),
+                    amount = anyOrNull(),
                     items = eq(serverLineItems),
                 )
             ).thenReturn(WooResult(refundModel))
@@ -434,6 +439,7 @@ class WooPosRefundSubmissionProcessorTest {
                 reason = eq("Customer request"),
                 autoRefund = eq(false),
                 restockItems = eq(true),
+                amount = isNull(),
                 items = eq(serverLineItems),
             )
             verify(refundStore, never()).createItemsRefund(
@@ -448,7 +454,7 @@ class WooPosRefundSubmissionProcessorTest {
         }
 
     @Test
-    fun `given backend-only retry with server line items, when submitted, then computed refund is created`() =
+    fun `given backend-only retry with server line items, when submitted, then amount override is omitted`() =
         runTest {
             // GIVEN — the card was already reversed in a previous attempt; only the backend
             // record is being retried.
@@ -460,6 +466,7 @@ class WooPosRefundSubmissionProcessorTest {
                     reason = eq("Customer request"),
                     autoRefund = eq(false),
                     restockItems = eq(true),
+                    amount = anyOrNull(),
                     items = eq(serverLineItems),
                 )
             ).thenReturn(WooResult(refundModel))
@@ -481,6 +488,7 @@ class WooPosRefundSubmissionProcessorTest {
                 reason = eq("Customer request"),
                 autoRefund = eq(false),
                 restockItems = eq(true),
+                amount = isNull(),
                 items = eq(serverLineItems),
             )
         }
@@ -503,6 +511,7 @@ class WooPosRefundSubmissionProcessorTest {
                 reason = any(),
                 autoRefund = any(),
                 restockItems = any(),
+                amount = anyOrNull(),
                 items = any(),
             )
         ).thenReturn(
@@ -668,6 +677,7 @@ class WooPosRefundSubmissionProcessorTest {
                 reason = any(),
                 autoRefund = any(),
                 restockItems = any(),
+                amount = anyOrNull(),
                 items = any(),
             )
         ).thenReturn(
