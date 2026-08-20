@@ -67,8 +67,9 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      *
      * On stores whose refund endpoint does not support `compute_totals`, the unknown param is
      * silently dropped and a quantity-only body would create a ghost zero-amount refund with
-     * restock. Callers must therefore only use this method after a successful preview against the
-     * same store (see the availability cache in the POS refund flow).
+     * restock. Callers must therefore only use this method against a store known to ship
+     * `compute_totals`, and after a successful preview against that same store (see the version
+     * gate and the availability cache in the POS refund flow).
      */
     @Suppress("LongParameterList")
     suspend fun createComputedRefund(

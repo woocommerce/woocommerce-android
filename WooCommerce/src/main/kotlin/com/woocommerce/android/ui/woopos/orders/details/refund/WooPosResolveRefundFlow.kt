@@ -37,12 +37,12 @@ sealed interface WooPosRefundFlow {
  * - and the store must not already be known to lack the server endpoints
  *   (see [WooPosServerRefundAvailabilityCache]).
  *
- * The version requirement is authoritative for the create capability and cannot be bypassed by a
- * successful preview: the preview route and `compute_totals` create support ship in separate
- * WooCommerce core changes, so a preview succeeding only proves the preview route exists. A store
- * with the preview but without `compute_totals` (partial backport, or the changes splitting across
- * releases) would silently drop the parameter and create a zero-amount refund while restocking
- * items. Only a version known to contain both changes unlocks the server flow.
+ * The two checks are independent on purpose. The preview route and `compute_totals` create support
+ * shipped in one core change and one 11.1 backport, so a successful preview does prove the create
+ * is supported. The version check is kept anyway: it is cheap, it does not depend on core keeping
+ * the two together in future backports, and it is the only gate that can answer before a preview
+ * has ever run. A store that had the preview but not `compute_totals` would silently drop the
+ * parameter and create a zero-amount refund while restocking items.
  *
  * [WooPosRefundFlow.ServerComputed] is eligibility, not proof: the availability cache is only set
  * `true` by a successful preview, and only that value permits sending the computed create (see
@@ -59,8 +59,8 @@ class WooPosResolveRefundFlow @Inject constructor(
         val eligibleVersion = when {
             !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) ->
                 fallBackToLocal("feature flag disabled")
-            // Unknown version fails closed: eligibility must never rest on the preview probe alone,
-            // because the preview route does not prove `compute_totals` create support.
+            // An unknown version means the plugin info was never fetched, so there is nothing to
+            // check against. Fail closed rather than let the preview probe decide on its own.
             wooVersion == null -> fallBackToLocal("WooCommerce version unknown")
             wooVersion.semverCompareTo(MIN_WC_VERSION_FOR_SERVER_REFUNDS) < 0 ->
                 fallBackToLocal("WooCommerce $wooVersion is below $MIN_WC_VERSION_FOR_SERVER_REFUNDS")
@@ -87,10 +87,10 @@ class WooPosResolveRefundFlow @Inject constructor(
 
     companion object {
         /**
-         * The earliest WooCommerce core release guaranteed to contain BOTH the `/wc/v3` refund
-         * preview route (woocommerce/woocommerce#67042) and the `compute_totals` create support
-         * (woocommerce/woocommerce#67043). If the two land in different releases, this constant
-         * must point at the release containing the latter.
+         * The WooCommerce core release that shipped both the `/wc/v3` refund preview route
+         * (woocommerce/woocommerce#67042) and the `compute_totals` create support
+         * (woocommerce/woocommerce#67043). The two landed in one merge to core trunk and one
+         * backport to `release/11.1`, so this single constant covers both.
          */
         const val MIN_WC_VERSION_FOR_SERVER_REFUNDS = "11.1.0"
     }

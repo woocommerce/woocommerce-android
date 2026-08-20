@@ -120,12 +120,12 @@ class WCRefundStore @Inject internal constructor(
      * body carries no monetary value to sum: the store books a zero-amount refund, restocks the
      * items, and answers 201, so the caller is told it succeeded.
      *
-     * Two conditions must hold before calling this, and a successful [previewRefund] covers only
-     * the second. The site's WooCommerce version must be known to support the `compute_totals`
-     * create, and a preview for this exact selection must have succeeded. A preview on its own is
-     * not enough — the preview route and the `compute_totals` create shipped as separate
-     * WooCommerce changes, so a preview proves only that the preview route exists. POS enforces
-     * both in `WooPosResolveRefundFlow`.
+     * Two conditions must hold before calling this: the site's WooCommerce version must be known
+     * to ship the `compute_totals` create, and a preview for this exact selection must have
+     * succeeded. The `/wc/v3` preview route and the `compute_totals` create shipped in one core
+     * change and one 11.1 backport, so a successful [previewRefund] does prove `compute_totals`
+     * support; the version check is a second, independent gate that also covers a store whose
+     * version is unknown. POS enforces both in `WooPosResolveRefundFlow`.
      *
      * No parameter has a default. Every one of [reason], [autoRefund], [restockItems] and [amount]
      * changes what the store does with the merchant's money or stock, so a caller has to say what
