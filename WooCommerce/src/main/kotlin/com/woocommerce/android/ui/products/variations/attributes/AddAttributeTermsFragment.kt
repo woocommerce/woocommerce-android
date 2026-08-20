@@ -213,12 +213,17 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
     override fun onRequestAllowBackPress(): Boolean {
         confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
-            if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
-                viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
-            }
-            saveChangesAndReturn()
+            exitAttributeTermsScreen()
         }
         return false
+    }
+
+    private fun exitAttributeTermsScreen() {
+        // an attribute must have at least one option, so drop a new one that never got any
+        if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
+            viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
+        }
+        saveChangesAndReturn()
     }
 
     private fun saveChangesAndReturn() {
@@ -289,7 +294,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
                     confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
-                        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms)
+                        exitAttributeTermsScreen()
                     }
                 }
                 onCreateMenu(toolbar)

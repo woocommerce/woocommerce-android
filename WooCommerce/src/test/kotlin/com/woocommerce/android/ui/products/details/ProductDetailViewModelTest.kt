@@ -836,6 +836,42 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(draftAttribute.name).isEqualTo(newName)
     }
 
+    @Test
+    fun `given a unique name, when addLocalAttribute, then it returns true and is added to the draft`() =
+        testBlocking {
+            // GIVEN
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+            viewModel.start()
+
+            // WHEN
+            val result = viewModel.addLocalAttribute("Size", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(result).isTrue()
+            Assertions.assertThat(viewModel.productDraftAttributes).anyMatch { it.name == "Size" }
+        }
+
+    @Test
+    fun `given a duplicate name, when addLocalAttribute, then it returns false and is not added`() = testBlocking {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        viewModel.start()
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
+        viewModel.event.observeForever { if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it }
+        val countBefore = viewModel.productDraftAttributes.size
+
+        // WHEN
+        val result = viewModel.addLocalAttribute("Color", isVariationCreation = false)
+
+        // THEN
+        Assertions.assertThat(result).isFalse()
+        Assertions.assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_attribute_name_already_exists))
+        Assertions.assertThat(viewModel.productDraftAttributes).hasSize(countBefore)
+    }
+
     /**
      * Protection for a race condition bug in Variations.
      *
