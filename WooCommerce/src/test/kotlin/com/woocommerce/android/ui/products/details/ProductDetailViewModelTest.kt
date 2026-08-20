@@ -872,6 +872,43 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(viewModel.productDraftAttributes).hasSize(countBefore)
     }
 
+    @Test
+    fun `given multiple local attributes, when a term is removed from one, then the others are kept`() =
+        testBlocking {
+            // GIVEN two local attributes (both share id 0)
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            val attributes = listOf(
+                ProductAttribute(
+                    id = 0,
+                    name = "Color",
+                    terms = listOf("Red", "Blue"),
+                    isVisible = true,
+                    isVariation = true
+                ),
+                ProductAttribute(
+                    id = 0,
+                    name = "Size",
+                    terms = listOf("S", "M"),
+                    isVisible = true,
+                    isVariation = true
+                )
+            )
+            val storedProductAggregate = productAggregate.copy(
+                product = productAggregate.product.copy(attributes = attributes)
+            )
+            doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
+            viewModel.start()
+
+            // WHEN a term is removed from the first attribute
+            viewModel.removeAttributeTermFromDraft(0, "Color", "Red")
+
+            // THEN the other attribute is untouched and the edited one keeps its remaining term
+            val draft = viewModel.productDraftAttributes
+            Assertions.assertThat(draft.map { it.name }).containsExactlyInAnyOrder("Color", "Size")
+            Assertions.assertThat(draft.first { it.name == "Size" }.terms).containsExactly("S", "M")
+            Assertions.assertThat(draft.first { it.name == "Color" }.terms).containsExactly("Blue")
+        }
+
     /**
      * Protection for a race condition bug in Variations.
      *

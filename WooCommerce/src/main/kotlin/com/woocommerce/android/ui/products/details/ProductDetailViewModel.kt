@@ -1832,8 +1832,8 @@ class ProductDetailViewModel @Inject constructor(
         // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
             it.addAll(
-                draftAttributes.filter { attribute ->
-                    attribute.id != attributeId && attribute.name != attributeName
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
                 }
             )
         }.also {
