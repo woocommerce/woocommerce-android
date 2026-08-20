@@ -4,6 +4,8 @@
 
 25.5
 -----
+- [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
+- [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [Internal] Woo POS analytics: replaced the catch-all "other" reason on the POS ineligible screen with specific reasons, and added the missing orders_list_loaded event [https://github.com/woocommerce/woocommerce-android/pull/16439]
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
