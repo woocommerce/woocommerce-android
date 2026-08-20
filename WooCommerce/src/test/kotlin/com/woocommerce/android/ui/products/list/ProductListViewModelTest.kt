@@ -212,6 +212,66 @@ class ProductListViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given search is open, when the search returns no results, then the add product button is shown`() =
+        testBlocking {
+            // GIVEN
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
+            productRepository.stub {
+                on { searchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn emptyList()
+            }
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            // WHEN
+            viewModel.loadProducts()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("nomatch")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible.last()).isTrue()
+        }
+
+    @Test
+    fun `given a search returned no results, when the term is cleared, then the add product button is hidden`() =
+        testBlocking {
+            // GIVEN
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
+            productRepository.stub {
+                on { searchProductList(any(), any(), any(), anyOrNull(), any()) } doReturn emptyList()
+            }
+
+            createViewModel()
+
+            val isAddProductButtonVisible = ArrayList<Boolean>()
+            viewModel.viewStateLiveData.observeForever { old, new ->
+                new.isAddProductButtonVisible?.takeIfNotEqualTo(old?.isAddProductButtonVisible) {
+                    isAddProductButtonVisible.add(it)
+                }
+            }
+
+            // WHEN
+            viewModel.loadProducts()
+            advanceUntilIdle()
+            viewModel.onSearchOpened()
+            viewModel.onSearchQueryChanged("nomatch")
+            advanceUntilIdle()
+            viewModel.onSearchQueryChanged("")
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(isAddProductButtonVisible.last()).isFalse()
+        }
+
+    @Test
     fun `given cached products, when search closes during refresh, then add product button remains visible`() =
         testBlocking {
             // GIVEN

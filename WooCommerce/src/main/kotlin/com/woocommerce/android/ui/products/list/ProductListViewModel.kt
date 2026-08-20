@@ -147,7 +147,10 @@ class ProductListViewModel @Inject constructor(
                 searchJob?.cancelAndJoin()
 
                 updateProductList(emptyList())
-                viewState = viewState.copy(isEmptyViewVisible = false)
+                viewState = viewState.copy(
+                    isEmptyViewVisible = false,
+                    isAddProductButtonVisible = shouldShowAddProductButton()
+                )
             }
         }
     }
@@ -423,9 +426,11 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
+    // A blank search query means no search has been run yet, so there is nothing to add a product from.
+    // A query that returned nothing keeps the button, because that empty state has no add button of its own.
     private fun shouldShowAddProductButton(): Boolean =
         if (_productList.value.isNullOrEmpty()) {
-            viewState.query != null || productFilterOptions.isNotEmpty()
+            !viewState.query.isNullOrEmpty() || productFilterOptions.isNotEmpty()
         } else {
             !isSearching()
         }
