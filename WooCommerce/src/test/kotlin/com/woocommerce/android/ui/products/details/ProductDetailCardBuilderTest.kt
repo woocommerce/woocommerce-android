@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.products.details
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductAggregate
+import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
@@ -27,6 +30,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @ExperimentalCoroutinesApi
 class ProductDetailCardBuilderTest : BaseUnitTest() {
@@ -38,6 +42,15 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
     private val customFieldsRepository: CustomFieldsRepository = mock {
         on { hasDisplayableCustomFields(any()) } doReturn false
+    }
+    private val addonRepository: AddonRepository = mock {
+        on { hasAnyProductSpecificAddons(any()) } doReturn false
+    }
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel()
+    }
+    private val appPrefsWrapper: AppPrefsWrapper = mock {
+        on { isProductAddonsEnabled } doReturn false
     }
 
     private val resourceProvider: ResourceProvider = mock {
@@ -55,14 +68,6 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
         }
 
-        val addonRepo: AddonRepository = mock {
-            on { hasAnyProductSpecificAddons(any()) } doReturn false
-        }
-
-        val selectedSite: SelectedSite = mock {
-            on { get() } doReturn SiteModel()
-        }
-
         val variationRepository: VariationRepository = mock {
             on { getProductVariationList(any()) } doReturn emptyList()
         }
@@ -73,9 +78,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             resources = resources,
             currencyFormatter = mock(),
             parameters = mock(),
-            addonRepository = addonRepo,
+            addonRepository = addonRepository,
             variationRepository = variationRepository,
-            appPrefsWrapper = mock(),
+            appPrefsWrapper = appPrefsWrapper,
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = mock(),
             analyticsTrackerWrapper = mock(),
@@ -315,6 +320,122 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given Wagner icon branches, when building cards, then regular design system icons are used`() =
+        testBlocking {
+            val simpleCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProductWithTagsAndCategories()),
+                ""
+            )
+            val subscriptionCards = sut.buildPropertyCards(
+                ProductAggregate(
+                    product = ProductTestUtils.generateProduct(productType = ProductType.SUBSCRIPTION.value),
+                    subscription = ProductHelper.getDefaultSubscriptionDetails()
+                ),
+                ""
+            )
+            val externalCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(productType = ProductType.EXTERNAL.value)),
+                ""
+            )
+            val populatedVariationCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(isVariable = true)),
+                ""
+            )
+            val emptyVariationCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(isVariable = true, variationIds = "[]")),
+                ""
+            )
+            Assertions.assertThat(simpleCards.iconFor(R.string.product_short_description))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_align_left_24dp)
+            Assertions.assertThat(subscriptionCards.iconFor(R.string.product_subscription_expiration_title))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_calendar_xmark_24dp)
+            Assertions.assertThat(simpleCards.iconFor(R.string.product_categories))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_folder_24dp)
+            Assertions.assertThat(subscriptionCards.iconFor(R.string.product_subscription_free_trial_title))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_hourglass_24dp)
+            Assertions.assertThat(simpleCards.iconFor(R.string.product_inventory))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp)
+            Assertions.assertThat(populatedVariationCards.iconFor(R.string.product_variations))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_shapes_24dp)
+            Assertions.assertThat(emptyVariationCards.iconForValue(R.string.product_detail_add_variations))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_shapes_24dp)
+            Assertions.assertThat(simpleCards.iconFor(R.string.product_shipping))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_truck_24dp)
+            Assertions.assertThat(externalCards.iconFor(R.string.product_external_link))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_up_right_from_square_24dp)
+        }
+
+    @Test
+    fun `given ready simple rows, when building cards, then regular design system icons are used`() = testBlocking {
+        whenever(selectedSite.get()) doReturn SiteModel().apply { planActiveFeatures = "ai-assistant" }
+        whenever(addonRepository.hasAnyProductSpecificAddons(any())) doReturn true
+        whenever(appPrefsWrapper.isProductAddonsEnabled) doReturn true
+        whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn true
+        val simpleCards = sut.buildPropertyCards(
+            ProductAggregate(
+                ProductTestUtils.generateProductWithTagsAndCategories().copy(
+                    minAllowedQuantity = 1,
+                    upsellProductIds = listOf(2L)
+                )
+            ),
+            ""
+        )
+
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_price))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_type))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_box_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_quantity_rules_title))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_sliders_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_downloadable_files))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_cloud_24dp)
+        Assertions.assertThat(simpleCards.iconForValue(R.string.product_add_ons_title))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_circle_plus_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_detail_linked_products))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_retweet_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_tags))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_reviews))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_star_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_custom_fields))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_grid_plus_24dp)
+        Assertions.assertThat(simpleCards.iconFor(R.string.product_sharing_write_with_ai))
+            .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_sparkles_24dp)
+    }
+
+    @Test
+    fun `given ready type-specific rows, when building cards, then regular design system icons are used`() =
+        testBlocking {
+            doReturn(2).whenever(viewModel).getBundledProductsSize(any())
+            doReturn(listOf(component())).whenever(viewModel).getComponents(any())
+            val populatedVariationCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(isVariable = true)),
+                ""
+            )
+            val groupedCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(productType = ProductType.GROUPED.value)),
+                ""
+            )
+            val bundleCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(productType = ProductType.BUNDLE.value)),
+                ""
+            )
+            val compositeCards = sut.buildPropertyCards(
+                ProductAggregate(ProductTestUtils.generateProduct(productType = ProductType.COMPOSITE.value)),
+                ""
+            )
+
+            Assertions.assertThat(populatedVariationCards.iconFor(R.string.variable_product_attributes))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_screwdriver_wrench_24dp)
+            Assertions.assertThat(groupedCards.iconFor(R.string.grouped_products))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp)
+            Assertions.assertThat(bundleCards.iconFor(R.string.product_bundle))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp)
+            Assertions.assertThat(compositeCards.iconFor(R.string.product_components))
+                .isEqualTo(DesignSystemR.drawable.woo_ds_ic_regular_layer_group_24dp)
+        }
+
+    @Test
     fun `given every product detail type, when mapping builder output, then card and row order is preserved`() = testBlocking {
         doReturn(0).whenever(viewModel).getBundledProductsSize(any())
         doReturn(emptyList<com.woocommerce.android.model.Component>()).whenever(viewModel).getComponents(any())
@@ -354,4 +475,32 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
         }
     }
+
+    private fun List<ProductPropertyCard>.iconFor(title: Int): Int? =
+        flatMap { it.properties }
+            .firstNotNullOf { property ->
+                when (property) {
+                    is ProductProperty.Button -> property.icon.takeIf { property.text == title }
+                    is ProductProperty.ComplexProperty -> property.icon.takeIf { property.title == title }
+                    is ProductProperty.PropertyGroup -> property.icon.takeIf { property.title == title }
+                    is ProductProperty.RatingBar -> property.icon.takeIf { property.title == title }
+                    else -> null
+                }
+            }
+
+    private fun List<ProductPropertyCard>.iconForValue(value: Int): Int? =
+        flatMap { it.properties }
+            .filterIsInstance<ProductProperty.ComplexProperty>()
+            .first { it.value == value.toString() }
+            .icon
+
+    private fun component() = Component(
+        id = 1L,
+        title = "Component",
+        description = "",
+        queryType = QueryType.PRODUCT,
+        queryIds = listOf(1L),
+        defaultOptionId = null,
+        thumbnailUrl = null
+    )
 }

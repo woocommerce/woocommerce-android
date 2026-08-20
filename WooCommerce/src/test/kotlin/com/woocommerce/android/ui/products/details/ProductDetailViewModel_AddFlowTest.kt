@@ -67,6 +67,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
@@ -156,7 +157,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 ProductProperty.PropertyGroup(
                     R.string.product_price,
                     defaultPricingGroup,
-                    R.drawable.ic_gridicons_money,
+                    DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp,
                     showTitle = false
                 ),
                 ProductProperty.PropertyGroup(
@@ -167,13 +168,13 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                             resources.getString(R.string.product_stock_status_instock)
                         )
                     ),
-                    R.drawable.ic_gridicons_list_checkmark,
+                    DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
                     true
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
-                    R.drawable.ic_gridicons_product,
+                    DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
                     true
                 )
             )
