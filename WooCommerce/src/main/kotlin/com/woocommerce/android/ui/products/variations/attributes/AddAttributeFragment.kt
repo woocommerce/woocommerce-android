@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +39,7 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     private var layoutManager: LayoutManager? = null
     private val skeletonView = SkeletonView()
     private var moveNextMenuItem: MenuItem? = null
+    private var nextMenuItem: MenuItem? = null
 
     private val navArgs: AddAttributeFragmentArgs by navArgs()
 
@@ -59,7 +61,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductAddAttribute)
+        confirmDiscardPendingInputThenExit(!binding.attributeEditText.text.isNullOrBlank()) {
+            viewModel.onBackButtonClicked(ExitProductAddAttribute)
+        }
         return false
     }
 
@@ -81,11 +85,19 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 isVisible = false
             }
+        } else {
+            toolbar.inflateMenu(R.menu.menu_add_attribute)
+            nextMenuItem = toolbar.menu.findItem(R.id.menu_add_attribute)
+            updateNextMenuItem()
         }
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_add_attribute -> {
+                onAttributeNameEntered()
+                true
+            }
             ID_ADD_ATTRIBUTES -> {
                 viewModel.saveAttributeChanges()
                 AddAttributeFragmentDirections
@@ -95,6 +107,23 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             }
             else -> false
         }
+    }
+
+    /**
+     * Commits the typed attribute name to the draft and advances to its options screen.
+     * Shared by the keyboard action key and the toolbar "Next" button.
+     */
+    private fun onAttributeNameEntered() {
+        val attributeName = binding.attributeEditText.text?.toString().orEmpty()
+        if (attributeName.isBlank()) return
+        // keep the typed name in the field if it was rejected (e.g. duplicate), only clear on success
+        if (viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)) {
+            binding.attributeEditText.text?.clear()
+        }
+    }
+
+    private fun updateNextMenuItem() {
+        nextMenuItem?.isEnabled = !binding.attributeEditText.text.isNullOrBlank()
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
@@ -109,13 +138,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeList.itemAnimator = null
 
         binding.attributeEditText.setOnEditorActionListener { _, _, _ ->
-            val attributeName = binding.attributeEditText.text?.toString() ?: ""
-            if (attributeName.isNotBlank()) {
-                binding.attributeEditText.text?.clear()
-                viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)
-            }
+            onAttributeNameEntered()
             true
         }
+
+        binding.attributeEditText.doAfterTextChanged { updateNextMenuItem() }
 
         viewModel.fetchGlobalAttributes()
 
@@ -124,7 +151,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    viewModel.onBackButtonClicked(ExitProductAddAttribute)
+                    confirmDiscardPendingInputThenExit(!binding.attributeEditText.text.isNullOrBlank()) {
+                        viewModel.onBackButtonClicked(ExitProductAddAttribute)
+                    }
                 }
                 onCreateMenu(toolbar)
             }

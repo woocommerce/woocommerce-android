@@ -150,6 +150,7 @@
     <string name="store_name_default">Store name</string>
     <string name="sorted_by">Sorted by 1%s</string>
     <string name="add">Add %s</string>
+    <string name="add_action">Add</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <!--
         Date/Time Labels

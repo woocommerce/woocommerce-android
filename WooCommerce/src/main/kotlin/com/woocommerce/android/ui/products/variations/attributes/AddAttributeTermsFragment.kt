@@ -214,10 +214,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
-            viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
+        confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
+            if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
+                viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
+            }
+            saveChangesAndReturn()
         }
-        saveChangesAndReturn()
         return false
     }
 
@@ -274,6 +276,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
+        binding.termEditText.setImeActionLabel(getString(R.string.add_action))
         binding.termEditText.setOnEditorActionListener { termName ->
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
@@ -287,7 +290,9 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    viewModel.onBackButtonClicked(ExitProductAddAttributeTerms)
+                    confirmDiscardPendingInputThenExit(binding.termEditText.text.isNotBlank()) {
+                        viewModel.onBackButtonClicked(ExitProductAddAttributeTerms)
+                    }
                 }
                 onCreateMenu(toolbar)
             }

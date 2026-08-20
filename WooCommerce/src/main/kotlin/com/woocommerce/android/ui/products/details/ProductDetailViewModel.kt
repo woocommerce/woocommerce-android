@@ -1945,10 +1945,10 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called from the attribute list when the user enters a new attribute
      */
-    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
+    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean): Boolean {
         if (containsAttributeName(attributeName)) {
             triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
-            return
+            return false
         }
 
         // get the list of current attributes
@@ -1980,6 +1980,7 @@ class ProductDetailViewModel @Inject constructor(
                 isVariationCreation
             )
         )
+        return true
     }
 
     /**
