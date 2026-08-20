@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
@@ -57,7 +58,11 @@ import kotlinx.coroutines.launch
  * Long press, hover, and keyboard focus use Material's standard tooltip triggers. Call [WooTooltipState.show] for
  * caller-controlled presentation. [modifier] applies to the anchor interaction wrapper, not the popup surface.
  * [preferredPlacement] requests a logical side and always flips to its opposite when it cannot be used; null
- * chooses the roomier vertical side.
+ * chooses the roomier vertical side. When positioning observes that the anchor has left the viewport, the current
+ * tooltip presentation is dismissed. Returning the anchor does not automatically show it again.
+ *
+ * @param onDismissRequest called when the user clicks outside the tooltip. When null, Material dismisses the tooltip
+ * automatically. When non-null, Material calls it instead and the callback controls whether the state is dismissed.
  */
 @Composable
 fun WooTooltipBox(
@@ -66,6 +71,7 @@ fun WooTooltipBox(
     modifier: Modifier = Modifier,
     supportingText: String? = null,
     preferredPlacement: WooTooltipPlacement? = null,
+    onDismissRequest: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) = WooTooltipBoxImpl(
     state = state,
@@ -73,6 +79,7 @@ fun WooTooltipBox(
     modifier = modifier,
     supportingText = supportingText,
     preferredPlacement = preferredPlacement,
+    onDismissRequest = onDismissRequest,
     content = content,
 )
 
@@ -83,6 +90,7 @@ internal fun WooTooltipBoxImpl(
     modifier: Modifier = Modifier,
     supportingText: String? = null,
     preferredPlacement: WooTooltipPlacement? = null,
+    onDismissRequest: (() -> Unit)? = null,
     onLayoutResult: (WooTooltipLayoutResult) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -90,8 +98,6 @@ internal fun WooTooltipBoxImpl(
     val layoutDirection = LocalLayoutDirection.current
     val windowInfo = LocalWindowInfo.current
     val cornerRadius = WooTheme.radius.large
-    val scope = rememberCoroutineScope()
-    var anchorIsVisible by remember { mutableStateOf(false) }
     val currentLayoutDirection = rememberUpdatedState(layoutDirection)
     val currentOnLayoutResult = rememberUpdatedState(onLayoutResult)
     val geometryTokens = remember(density, cornerRadius) {
@@ -109,7 +115,7 @@ internal fun WooTooltipBoxImpl(
     var layoutResult by remember {
         mutableStateOf(
             WooTooltipLayoutResult(
-                offset = androidx.compose.ui.unit.IntOffset.Zero,
+                offset = IntOffset.Zero,
                 side = WooTooltipPhysicalSide.Below,
                 arrowEdge = WooTooltipPhysicalEdge.Top,
                 arrowCenter = Float.NaN,
@@ -130,11 +136,6 @@ internal fun WooTooltipBoxImpl(
     }
     val popupMaxWidth = with(density) { layoutResult.maxBubbleWidth.coerceAtLeast(1).toDp() }
 
-    LaunchedEffect(state) {
-        state.onAnchorVisibilityChanged(anchorIsVisible)
-        if (anchorIsVisible) state.resumeOffscreenRequest()
-    }
-
     TooltipBox(
         positionProvider = positionProvider,
         tooltip = {
@@ -151,18 +152,18 @@ internal fun WooTooltipBoxImpl(
                     },
             )
         },
-        state = state.hostState,
+        state = state.materialState,
         modifier = modifier.onGloballyPositioned { coordinates ->
-            val isVisible = isWooTooltipAnchorVisible(
-                anchorBounds = coordinates.boundsInWindow(),
-                windowSize = windowInfo.containerSize,
-            )
-            if (anchorIsVisible != isVisible) {
-                anchorIsVisible = isVisible
-                state.onAnchorVisibilityChanged(isVisible)
-                if (isVisible) scope.launch { state.resumeOffscreenRequest() }
+            if (
+                !isWooTooltipAnchorVisible(
+                    anchorBounds = coordinates.boundsInWindow(),
+                    windowSize = windowInfo.containerSize,
+                )
+            ) {
+                state.dismiss()
             }
         },
+        onDismissRequest = onDismissRequest,
         focusable = false,
         enableUserInput = true,
         hasAction = false,

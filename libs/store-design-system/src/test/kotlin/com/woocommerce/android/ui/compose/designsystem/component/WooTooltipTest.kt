@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.absoluteOffset
@@ -38,9 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
@@ -161,6 +158,30 @@ class WooTooltipTest {
     }
 
     @Test
+    fun `given visibility is observed in composition, when state changes, then the observation updates`() {
+        lateinit var state: WooTooltipState
+        lateinit var scope: CoroutineScope
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                scope = rememberCoroutineScope()
+                androidx.compose.material3.Text(if (state.isVisible) VISIBLE_STATUS else HIDDEN_STATUS)
+                WooTooltipBox(state = state, title = TITLE) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(HIDDEN_STATUS).assertExists()
+
+        composeTestRule.runOnIdle { scope.launch { state.show() } }
+        composeTestRule.onNodeWithText(VISIBLE_STATUS).assertExists()
+
+        composeTestRule.runOnIdle { state.dismiss() }
+        composeTestRule.onNodeWithText(HIDDEN_STATUS).assertExists()
+    }
+
+    @Test
     fun `given an anchor modifier, when composed, then standard long-click semantics are on its wrapper`() {
         composeTestRule.setContent {
             WooDesignSystemTheme {
@@ -216,11 +237,16 @@ class WooTooltipTest {
     fun `given caller-controlled state, when shown and bubble is tapped, then it presents and dismisses`() {
         lateinit var state: WooTooltipState
         lateinit var scope: CoroutineScope
+        var dismissRequests = 0
         composeTestRule.setContent {
             WooDesignSystemTheme {
                 state = rememberWooTooltipState()
                 scope = rememberCoroutineScope()
-                WooTooltipBox(state = state, title = TITLE) {
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    onDismissRequest = { dismissRequests++ },
+                ) {
                     androidx.compose.material3.Text(ANCHOR)
                 }
             }
@@ -234,57 +260,8 @@ class WooTooltipTest {
 
         composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
         assertThat(state.isVisible).isFalse()
+        assertThat(dismissRequests).isZero()
         composeTestRule.onNodeWithText(ANCHOR).assertExists()
-    }
-
-    @Test
-    fun `given a hoisted state, when its host is disposed and rehosted offscreen, then show remains paused`() {
-        var hostIsComposed by mutableStateOf(true)
-        var hostIsOffscreen by mutableStateOf(false)
-        lateinit var state: WooTooltipState
-        lateinit var scope: CoroutineScope
-        lateinit var initialShowJob: Job
-        lateinit var rehostedShowJob: Job
-        composeTestRule.setContent {
-            WooDesignSystemTheme {
-                state = rememberWooTooltipState()
-                scope = rememberCoroutineScope()
-                if (hostIsComposed) {
-                    WooTooltipBox(
-                        state = state,
-                        title = TITLE,
-                        modifier = Modifier.offsetOffscreenWhen { hostIsOffscreen },
-                    ) {
-                        androidx.compose.material3.Text(ANCHOR)
-                    }
-                }
-            }
-        }
-
-        composeTestRule.runOnIdle { initialShowJob = scope.launch { state.show() } }
-        composeTestRule.onNodeWithText(TITLE).assertExists()
-        assertThat(state.isVisible).isTrue()
-
-        composeTestRule.runOnIdle { hostIsComposed = false }
-        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.runOnIdle {
-            assertThat(initialShowJob.isCompleted).isTrue()
-            assertThat(state.isVisible).isFalse()
-        }
-
-        composeTestRule.runOnIdle {
-            hostIsOffscreen = true
-            hostIsComposed = true
-        }
-        composeTestRule.onNodeWithText(ANCHOR).assertExists()
-        composeTestRule.runOnIdle { rehostedShowJob = scope.launch { state.show() } }
-
-        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.runOnIdle {
-            assertThat(rehostedShowJob.isActive).isTrue()
-            assertThat(state.isVisible).isFalse()
-        }
-        runBlocking { rehostedShowJob.cancelAndJoin() }
     }
 
     @Test
@@ -317,14 +294,12 @@ class WooTooltipTest {
         composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
         composeTestRule.runOnIdle {
             assertThat(firstShowJob.isCompleted).isTrue()
-            assertThat(firstState.isVisible).isFalse()
             assertThat(secondState.isVisible).isFalse()
             secondShowJob = scope.launch { secondState.show() }
         }
 
         composeTestRule.onNodeWithText(TITLE).assertExists()
         composeTestRule.runOnIdle {
-            assertThat(firstState.isVisible).isFalse()
             assertThat(secondState.isVisible).isTrue()
             assertThat(secondShowJob.isActive).isTrue()
         }
@@ -363,7 +338,7 @@ class WooTooltipTest {
     }
 
     @Test
-    fun `given a paused request, when no newer request exists, then it resumes when the anchor reenters`() {
+    fun `given a visible tooltip, when its anchor leaves and reenters, then it stays dismissed`() {
         var anchorIsOffscreen by mutableStateOf(false)
         lateinit var state: WooTooltipState
         lateinit var scope: CoroutineScope
@@ -387,43 +362,10 @@ class WooTooltipTest {
 
         composeTestRule.runOnIdle { anchorIsOffscreen = true }
         composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.runOnIdle { assertThat(showJob.isActive).isTrue() }
-
-        composeTestRule.runOnIdle { anchorIsOffscreen = false }
-        composeTestRule.onNodeWithText(TITLE).assertExists()
-        assertThat(state.isVisible).isTrue()
-    }
-
-    @Test
-    fun `given a paused request, when its show job is cancelled, then it does not resume on reentry`() {
-        var anchorIsOffscreen by mutableStateOf(false)
-        lateinit var state: WooTooltipState
-        lateinit var scope: CoroutineScope
-        lateinit var showJob: Job
-        composeTestRule.setContent {
-            WooDesignSystemTheme {
-                state = rememberWooTooltipState()
-                scope = rememberCoroutineScope()
-                WooTooltipBox(
-                    state = state,
-                    title = TITLE,
-                    modifier = Modifier.offsetOffscreenWhen { anchorIsOffscreen },
-                ) {
-                    androidx.compose.material3.Text(ANCHOR)
-                }
-            }
+        composeTestRule.runOnIdle {
+            assertThat(showJob.isCompleted).isTrue()
+            assertThat(state.isVisible).isFalse()
         }
-
-        composeTestRule.runOnIdle { showJob = scope.launch { state.show() } }
-        composeTestRule.onNodeWithText(TITLE).assertExists()
-
-        composeTestRule.runOnIdle { anchorIsOffscreen = true }
-        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.runOnIdle { assertThat(showJob.isActive).isTrue() }
-
-        runBlocking { showJob.cancelAndJoin() }
-        assertThat(showJob.isCancelled).isTrue()
-        assertThat(state.isVisible).isFalse()
 
         composeTestRule.runOnIdle { anchorIsOffscreen = false }
         composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
@@ -432,7 +374,7 @@ class WooTooltipTest {
     }
 
     @Test
-    fun `given a paused request, when a newer tooltip shows, then reentry does not displace it`() {
+    fun `given an offscreen-dismissed tooltip, when a newer tooltip shows, then reentry does not displace it`() {
         var firstAnchorIsOffscreen by mutableStateOf(false)
         lateinit var firstState: WooTooltipState
         lateinit var secondState: WooTooltipState
@@ -480,48 +422,6 @@ class WooTooltipTest {
 
         composeTestRule.runOnIdle { secondState.dismiss() }
         composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-    }
-
-    @Test
-    fun `given high-priority presentation, when anchor leaves, then another tooltip can show without reentry`() {
-        var firstAnchorIsOffscreen by mutableStateOf(false)
-        lateinit var firstState: WooTooltipState
-        lateinit var secondState: WooTooltipState
-        lateinit var scope: CoroutineScope
-        composeTestRule.setContent {
-            WooDesignSystemTheme {
-                firstState = rememberWooTooltipState()
-                secondState = rememberWooTooltipState()
-                scope = rememberCoroutineScope()
-                Column {
-                    WooTooltipBox(
-                        state = firstState,
-                        title = TITLE,
-                        modifier = Modifier.offsetOffscreenWhen { firstAnchorIsOffscreen },
-                    ) {
-                        androidx.compose.material3.Text("First anchor")
-                    }
-                    WooTooltipBox(state = secondState, title = UPDATED_TITLE) {
-                        androidx.compose.material3.Text("Second anchor")
-                    }
-                }
-            }
-        }
-
-        composeTestRule.runOnIdle {
-            scope.launch { firstState.hostState.show(MutatePriority.PreventUserInput) }
-        }
-        composeTestRule.onNodeWithText(TITLE).assertExists()
-
-        composeTestRule.runOnIdle { firstAnchorIsOffscreen = true }
-        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.runOnIdle { scope.launch { secondState.show() } }
-        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
-
-        composeTestRule.runOnIdle { firstAnchorIsOffscreen = false }
-
-        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
-        composeTestRule.onNodeWithText(UPDATED_TITLE).assertExists()
     }
 
     @Test
@@ -656,6 +556,8 @@ class WooTooltipTest {
         const val UPDATED_SUPPORTING_TEXT = "Updated supporting text"
         const val ANCHOR = "Anchor"
         const val ANCHOR_TAG = "tooltip-anchor"
+        const val VISIBLE_STATUS = "Visible"
+        const val HIDDEN_STATUS = "Hidden"
         const val LONG_SUPPORTING_TEXT =
             "Supporting information wraps onto several lines and expands without clipping at large font scales."
     }
