@@ -32,7 +32,10 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.AlertDialog
@@ -166,6 +169,8 @@ private fun SwipeableFilterHistoryRow(
     modifier: Modifier = Modifier
 ) {
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
+    // Swiping is unreachable with TalkBack, so expose the delete as a custom accessibility action.
+    val deleteActionLabel = stringResource(id = R.string.filter_history_delete)
     SwipeToDismissBox(
         state = swipeToDismissBoxState,
         modifier = modifier.fillMaxWidth(),
@@ -192,7 +197,18 @@ private fun SwipeableFilterHistoryRow(
         FilterHistoryRow(
             filter = filter,
             isSelected = isSelected,
-            onClick = onClick
+            onClick = onClick,
+            modifier = Modifier.semantics {
+                customActions = listOf(
+                    CustomAccessibilityAction(
+                        label = deleteActionLabel,
+                        action = {
+                            onDelete()
+                            true
+                        }
+                    )
+                )
+            }
         )
     }
 }
