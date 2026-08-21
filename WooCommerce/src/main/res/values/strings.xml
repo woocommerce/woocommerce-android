@@ -3842,7 +3842,6 @@
     <string name="blaze_campaign_creation_no_product_modal_cta">Create Product</string>
 
     <string name="order_configuration_product_selection">Select product %s</string>
-    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See report</string>
 
