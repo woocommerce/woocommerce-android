@@ -1074,7 +1074,6 @@ Language: ar
     <string name="woo_shipping_fetching_countries_and_states_failed">تعذر علينا استرداد معلومات البلد والولاية. يرجى المحاولة مجددًا.</string>
     <string name="woo_shipping_field_required_error">هذا الحقل مطلوب.</string>
     <string name="product_upload_error_title">أخطاء رفع الصور</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">لا تدعم نقطة البيع حاليًا سوى المنتجات البسيطة والمتغيرة والافتراضية - \nأنشئ واحدة للبدء.</string>
     <string name="woo_shipping_label_phone">الهاتف</string>
     <string name="woo_shipping_label_email">البريد الإلكتروني</string>

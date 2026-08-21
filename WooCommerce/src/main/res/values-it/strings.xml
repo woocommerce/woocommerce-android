@@ -1073,7 +1073,6 @@ Language: it
     <string name="woo_shipping_fetching_countries_and_states_failed">Non siamo riusciti a recuperare le informazioni sul paese e sullo stato. Riprova.</string>
     <string name="woo_shipping_field_required_error">Questo campo è obbligatorio.</string>
     <string name="product_upload_error_title">Errori durante il caricamento dell\'immagine</string>
-    <string name="app_name">Woo!</string>
     <string name="woopos_products_empty_list_message">POS al momento supporta solo prodotti semplici, variabili e virtuali: \ncreane uno per iniziare.</string>
     <string name="woo_shipping_label_phone">Telefono</string>
     <string name="woo_shipping_label_email">E-mail</string>

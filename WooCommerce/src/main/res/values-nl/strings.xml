@@ -1074,7 +1074,6 @@ Language: nl
     <string name="woo_shipping_fetching_countries_and_states">Landen en provincies ophalen</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">We konden de land- en provinciespecifieke informatie niet ophalen. Probeer het nog eens.</string>
     <string name="product_upload_error_title">Foutmeldingen bij upload afbeelding</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
     <string name="woo_shipping_label_phone">Telefoon</string>
     <string name="woo_shipping_label_email">E-mail</string>

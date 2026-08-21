@@ -1074,7 +1074,6 @@ Language: zh_TW
     <string name="woo_shipping_fetching_countries_and_states_failed">我們無法擷取國家/地區和州/省資訊， 請再試一次。</string>
     <string name="woo_shipping_field_required_error">此欄位為必填。</string>
     <string name="product_upload_error_title">圖片上傳錯誤</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS 目前僅支援簡單、多款式與虛擬商品 – \n建立商品後便可開始作業。</string>
     <string name="woo_shipping_label_phone">電話</string>
     <string name="woo_shipping_label_email">電子郵件地址</string>

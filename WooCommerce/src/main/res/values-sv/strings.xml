@@ -1074,7 +1074,6 @@ Language: sv_SE
     <string name="woo_shipping_fetching_countries_and_states_failed">Vi kunde inte hämta information om land och delstat. Försök igen.</string>
     <string name="woo_shipping_field_required_error">Detta fält är obligatoriskt.</string>
     <string name="product_upload_error_title">Fel vid bilduppladdning</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla, variabla och virtuella produkter – \nskapa en för att komma igång.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-post</string>

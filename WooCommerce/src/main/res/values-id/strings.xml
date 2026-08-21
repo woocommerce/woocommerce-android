@@ -1073,7 +1073,6 @@ Language: id
     <string name="woo_shipping_fetching_countries_and_states_failed">Kami tidak dapat mengambil informasi negara dan negara bagian. Silakan coba lagi.</string>
     <string name="woo_shipping_field_required_error">Kolom ini wajib diisi.</string>
     <string name="product_upload_error_title">Error pengunggahan gambar</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana, bervariasi, dan virtual – \nbuat POS untuk memulai.</string>
     <string name="woo_shipping_label_phone">Telepon</string>
     <string name="woo_shipping_label_email">Email</string>
