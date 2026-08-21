@@ -110,28 +110,15 @@ class WCRefundStore @Inject internal constructor(
 
     /**
      * Creates a server-computed refund through `POST /wc/v3/orders/<order_id>/refunds` with
-     * `compute_totals=true`. The client sends only the items being refunded; the server computes
-     * all monetary values unless an explicit order-level [amount] override is given. An override
-     * below the computed line-item total is rejected with a 400; one above it is accepted as a
-     * goodwill over-refund, capped at the order's remaining refundable amount (422 beyond).
+     * `compute_totals=true`. The client sends the items, the server computes the money. [amount]
+     * is an optional override: below the computed total the store returns 400, above it the store
+     * accepts an over-refund up to the order's remaining refundable amount.
      *
-     * On a store whose refund endpoint does not support `compute_totals`, the unknown param is
-     * silently dropped and the request is handled by the classic create, where a quantity-only
-     * body carries no monetary value to sum: the store books a zero-amount refund, restocks the
-     * items, and answers 201, so the caller is told it succeeded.
+     * A store without `compute_totals` drops the param and books a zero-amount refund with a
+     * restock, and still answers 201. Call this only after [previewRefund] succeeded on a store
+     * running WooCommerce 11.1.0 or newer. POS checks both in `WooPosResolveRefundFlow`.
      *
-     * Two conditions must hold before calling this: the site's WooCommerce version must be known
-     * to ship the `compute_totals` create, and a preview for this exact selection must have
-     * succeeded. The `/wc/v3` preview route and the `compute_totals` create shipped in one core
-     * change and one 11.1 backport, so a successful [previewRefund] does prove `compute_totals`
-     * support; the version check is a second, independent gate that also covers a store whose
-     * version is unknown. POS enforces both in `WooPosResolveRefundFlow`.
-     *
-     * No parameter has a default. Every one of [reason], [autoRefund], [restockItems] and [amount]
-     * changes what the store does with the merchant's money or stock, so a caller has to say what
-     * it wants rather than inherit it. [amount] in particular: omitting it is what makes the
-     * server own the total, which is the point of the computed create, and that should be a
-     * decision the call site records rather than the shape of least effort.
+     * No parameter has a default: each one moves the merchant's money or stock.
      */
     @Suppress("LongParameterList")
     suspend fun createComputedItemsRefund(

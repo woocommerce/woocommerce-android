@@ -56,20 +56,14 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      * Creates a server-computed refund (`POST /wc/v3/orders/<order_id>/refunds` with
      * `compute_totals=true`).
      *
-     * The client sends only what to refund (line item IDs + quantities, or amounts for fee/shipping
-     * lines) — the server computes all monetary values, unless an explicit order-level [amount]
-     * override is given. The override is guarded server-side: a value below the computed line-item
-     * total is rejected with a 400, while a value above it is accepted as a goodwill over-refund,
-     * capped at the order's remaining refundable amount (422 beyond).
+     * The client sends what to refund, the server computes the money. [amount] is an optional
+     * order-level override: below the computed total the store returns 400, above it the store
+     * accepts an over-refund up to the order's remaining refundable amount.
      *
-     * [apiRefund] and [apiRestock] are always sent explicitly: the v3 endpoint defaults both to
-     * `true` when omitted, and the caller must stay in control of gateway refunds and restocking.
+     * [apiRefund] and [apiRestock] are sent explicitly because the endpoint defaults both to true.
      *
-     * On stores whose refund endpoint does not support `compute_totals`, the unknown param is
-     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
-     * restock. Callers must therefore only use this method against a store known to ship
-     * `compute_totals`, and after a successful preview against that same store (see the version
-     * gate and the availability cache in the POS refund flow).
+     * A store without `compute_totals` drops the param and books a zero-amount refund with a
+     * restock. Only call this on a store known to support it: see `WooPosResolveRefundFlow`.
      */
     @Suppress("LongParameterList")
     suspend fun createComputedRefund(
