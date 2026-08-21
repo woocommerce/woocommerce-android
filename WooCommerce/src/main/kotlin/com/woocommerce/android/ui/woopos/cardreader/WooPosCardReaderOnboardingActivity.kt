@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.cardreader
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
+import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
 import com.woocommerce.android.util.parcelable
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +29,7 @@ class WooPosCardReaderOnboardingActivity : AppCompatActivity(R.layout.activity_w
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupTopAndBottomInsets()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        lockWooPosOrientation()
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_card_reader_onboarding_nav_host_fragment
