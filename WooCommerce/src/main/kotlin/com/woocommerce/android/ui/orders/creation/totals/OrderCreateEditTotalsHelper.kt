@@ -47,7 +47,9 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     order.toShippingSection(bigDecimalFormatter),
                     order.toCouponsSection(bigDecimalFormatter),
                     order.toGiftSection(
-                        enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
+                        // Editable while the card is still pending (giftCards empty); a card the store has already
+                        // redeemed can't be edited or removed yet, so it stays locked.
+                        enabled = order.isEditable && viewState.isIdle && order.giftCards.isEmpty(),
                         bigDecimalFormatter,
                         onClick = onGiftClicked
                     ),
