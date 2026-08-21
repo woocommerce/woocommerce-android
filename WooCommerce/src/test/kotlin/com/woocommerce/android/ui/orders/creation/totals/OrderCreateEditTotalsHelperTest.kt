@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -166,7 +168,7 @@ class OrderCreateEditTotalsHelperTest {
 
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).text).isEqualTo("Gift Cards")
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).value).isEqualTo("-15.00$")
-        assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).enabled).isFalse()
+        assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).enabled).isTrue()
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).extraValue).isEqualTo("21OFF")
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).onClick == onGiftClicked).isTrue()
 
@@ -281,7 +283,65 @@ class OrderCreateEditTotalsHelperTest {
 
         assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).text).isEqualTo("Gift Cards")
         assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).value).isEqualTo("")
-        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).enabled).isFalse()
+        assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).enabled).isTrue()
         assertThat((actual.lines[1] as TotalsSectionsState.Line.Button).extraValue).isEqualTo("21OFF")
+    }
+
+    @Test
+    fun `given a gift card on a non-editable order, when mapToPaymentTotalsState, then the gift card row is disabled`() {
+        val localOrder = order.copy(
+            items = OrderTestUtils.generateTestOrderItems(),
+            isEditable = false,
+            selectedGiftCard = "21OFF",
+            giftCardDiscountedAmount = BigDecimal(15),
+        )
+        whenever(resourceProvider.getString(R.string.order_gift_card)).thenReturn("Gift Cards")
+
+        val actual = helper.mapToPaymentTotalsState(
+            localOrder,
+            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+        )
+
+        actual as TotalsSectionsState.Full
+        val giftLine = actual.lines
+            .filterIsInstance<TotalsSectionsState.Line.Button>()
+            .first { it.text == "Gift Cards" }
+        assertThat(giftLine.enabled).isFalse()
+    }
+
+    @Test
+    fun `given a gift card already redeemed by the store, when mapToPaymentTotalsState, then the row is disabled`() {
+        val localOrder = order.copy(
+            items = OrderTestUtils.generateTestOrderItems(),
+            selectedGiftCard = "21OFF",
+            giftCardDiscountedAmount = BigDecimal(15),
+            giftCards = listOf(GiftCardSummary(id = 1L, code = "21OFF", used = BigDecimal(15))),
+        )
+        whenever(resourceProvider.getString(R.string.order_gift_card)).thenReturn("Gift Cards")
+
+        val actual = helper.mapToPaymentTotalsState(
+            localOrder,
+            OrderCreateEditViewModel.Mode.Edit(1L),
+            OrderCreateEditViewModel.ViewState(),
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+        )
+
+        actual as TotalsSectionsState.Full
+        val giftLine = actual.lines
+            .filterIsInstance<TotalsSectionsState.Line.Button>()
+            .first { it.text == "Gift Cards" }
+        assertThat(giftLine.enabled).isFalse()
     }
 }
