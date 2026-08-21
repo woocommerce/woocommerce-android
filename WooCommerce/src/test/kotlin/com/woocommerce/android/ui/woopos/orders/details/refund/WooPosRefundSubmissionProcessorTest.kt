@@ -570,6 +570,7 @@ class WooPosRefundSubmissionProcessorTest {
 
     @Test
     fun `given backend notification fails after interac success, when refund is submitted, then failure is backend retry only`() = runTest {
+        // GIVEN
         val paymentState = MutableStateFlow<CardReaderPaymentOrRefundState>(
             CardReaderInteracRefundState.LoadingData {}
         )
@@ -603,12 +604,14 @@ class WooPosRefundSubmissionProcessorTest {
             )
         )
 
+        // WHEN
         processor.submit(request).test {
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.PreparingReader)
 
             paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful("$22.00")
             assertThat(awaitItem()).isEqualTo(WooPosRefundSubmissionState.NotifyingStore)
 
+            // THEN
             val failure = awaitItem() as WooPosRefundSubmissionState.Failure
             assertThat(failure.message).isEqualTo("Something went wrong")
             assertThat(failure.retryBackendNotificationOnly).isTrue()

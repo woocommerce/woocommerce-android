@@ -46,6 +46,7 @@ class WooPosRefundApiErrorTest {
 
     @Test
     fun `given refund api errors, when recovering, then only the ones a reload can fix offer it`() {
+        // GIVEN
         val expectedRecoveries = mapOf(
             WooPosRefundApiError.QuantityExceedsRefundable to WooPosRefundState.Recovery.RefreshItems,
             WooPosRefundApiError.LineItemAlreadyRefunded to WooPosRefundState.Recovery.RefreshItems,
@@ -55,6 +56,7 @@ class WooPosRefundApiErrorTest {
             WooPosRefundApiError.InvalidAmount to WooPosRefundState.Recovery.None,
         )
 
+        // THEN
         WooPosRefundApiError.entries.forEach { apiError ->
             assertThat(apiError.recovery)
                 .describedAs("recovery for %s", apiError)
@@ -64,7 +66,7 @@ class WooPosRefundApiErrorTest {
 
     @Test
     fun `given refund api errors, when recovering, then none of them offer a retry`() {
-        // Every mapped code always fails the same way, so a retry cannot help.
+        // THEN - every mapped code always fails the same way, so a retry cannot help.
         assertThat(WooPosRefundApiError.entries.map { it.recovery })
             .doesNotContain(WooPosRefundState.Recovery.Retry)
     }
