@@ -17,7 +17,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -115,7 +114,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         key = "endpoint-recovery"
     )
 
-    private val SiteModel?.fullAuthorizationUrl: String?
+    private val SiteModel?.applicationPasswordAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
             ?.let { url ->
                 "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
@@ -356,7 +355,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
             INVALID_CREDENTIALS -> authError.value = AuthenticationError(
                 errorMessage = authenticationError.errorMessage,
-                showWpAdminFallbackOption = endpoints.loginEntryUrl == null
+                showWpAdminFallbackOption = true
             )
 
             BASIC_AUTH_REQUIRED -> showNativeAuthenticationError(authenticationError.errorMessage)
@@ -376,8 +375,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when {
-            hasVerifiedCustomLoginEntry -> showNativeAuthenticationError(
-                requireNotNull(authenticationError).errorMessage
+            hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
+                errorMessage = requireNotNull(authenticationError).errorMessage,
+                showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE
             )
 
             authenticationError?.errorType == INVALID_RESPONSE && endpoints.loginEntryUrl != null -> {
@@ -419,10 +419,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
+                    val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
+                    if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
                         triggerEvent(
                             ShowApplicationPasswordTutorialScreen(
-                                url = site.fullAuthorizationUrl!!,
+                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
                                 errorMessage = errorMessage
                             )
                         )
@@ -756,7 +758,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class ShowApplicationPasswordTutorialScreen(
-        val url: String,
+        val verifiedLoginUrl: String?,
+        val applicationPasswordAuthorizationUrl: String,
         val errorMessage: String
     ) : MultiLiveEvent.Event()
 }
