@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.filters
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +32,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.AlertDialog
@@ -207,7 +208,11 @@ private fun FilterHistoryRow(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
-            .clickable { onClick() }
+            .selectable(
+                selected = isSelected,
+                role = Role.RadioButton,
+                onClick = onClick
+            )
             .padding(dimensionResource(id = R.dimen.major_100)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         verticalAlignment = Alignment.CenterVertically
@@ -218,9 +223,10 @@ private fun FilterHistoryRow(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
+        // The row conveys the selected state via its RadioButton role, so the check is decorative here.
         SelectionCheck(
             isSelected = isSelected,
-            onSelectionChange = { onClick() }
+            onSelectionChange = null
         )
     }
 }
