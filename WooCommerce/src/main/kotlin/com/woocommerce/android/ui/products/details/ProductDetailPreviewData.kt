@@ -27,6 +27,12 @@ internal object ProductDetailPreviewData {
             property = ProductProperty.Button(
                 text = R.string.product_sharing_write_with_ai,
                 icon = R.drawable.ic_ai,
+                tooltip = ProductProperty.Button.Tooltip(
+                    title = R.string.ai_product_description_tooltip_title,
+                    text = R.string.ai_product_description_tooltip_message,
+                    dismissButtonText = R.string.ai_product_description_tooltip_dismiss,
+                    onDismiss = {},
+                ),
                 link = ProductProperty.Button.Link(
                     text = R.string.ai_product_description_learn_more_link,
                     onClick = {},
@@ -94,7 +100,9 @@ internal object ProductDetailPreviewData {
                             ),
                         )
                     },
-                    addRows[2],
+                    addRows[2].let { row ->
+                        row.copy(property = (row.property as ProductProperty.Button).copy(tooltip = null))
+                    },
                 ),
             ),
             ProductDetailCardUiModel(
