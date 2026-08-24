@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.main
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
@@ -37,12 +38,16 @@ import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
+import com.woocommerce.android.util.advanceTimeAndRun
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -51,6 +56,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -59,6 +65,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import java.util.Date
 
 @ExperimentalCoroutinesApi
 class MainActivityViewModelTest : BaseUnitTest() {
@@ -79,12 +88,16 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         private const val TEST_BLAZE_REMOTE_NOTE_ID = 5604993864
         private const val TEST_BLAZE_CAMPAIGN_ID_1 = 4418L
+        private const val NOW = 1_000_000L
+        private const val ONE_DAY_MILLIS = 24 * 60 * 60 * 1000L
     }
 
     private lateinit var viewModel: MainActivityViewModel
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
+    private val selectedSiteFlow = MutableStateFlow<SiteModel?>(null)
     private val selectedSite: SelectedSite = mock {
-        on { observe() } doReturn flowOf<SiteModel?>(null)
+        on { observe() } doReturn selectedSiteFlow
+        on { getOrNull() } doAnswer { selectedSiteFlow.value }
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val invalidSignatureFlow = MutableStateFlow<Long?>(null)
@@ -135,7 +148,22 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
-    private val prefs: AppPrefs = mock()
+    private val prefsChanges = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    private var httpsWarningDismissedAt = 0L
+    private val prefs: AppPrefs = mock {
+        on { observePrefs() } doReturn prefsChanges
+        on { getHttpsConfigurationWarningDismissedAt(any()) } doAnswer { httpsWarningDismissedAt }
+        on { setHttpsConfigurationWarningDismissedAt(any(), any()) } doAnswer { invocation ->
+            httpsWarningDismissedAt = invocation.getArgument(1)
+            prefsChanges.tryEmit(Unit)
+            Unit
+        }
+    }
+    private var currentTimeMillis = NOW
+    private val currentTimeProvider: CurrentTimeProvider = mock {
+        on { currentDate() } doAnswer { Date(currentTimeMillis) }
+    }
+    private val dispatcher = FakeDispatcher()
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper = mock()
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler = mock()
     private val unseenReviewsCountHandler: UnseenReviewsCountHandler = mock {
@@ -591,6 +619,120 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given server requires HTTPS configuration, when observing warning, then show it`() = testBlocking {
+        selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues { runCurrent() }
+
+        assertThat(viewModel.httpsConfigurationWarningVisible.value).isTrue()
+    }
+
+    @Test
+    fun `given server reports secure configuration, when selected URL was HTTP, then hide warning`() = testBlocking {
+        selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_SECURE).apply {
+            url = "http://test.com"
+        }
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues { runCurrent() }
+
+        assertThat(viewModel.httpsConfigurationWarningVisible.value).isFalse()
+    }
+
+    @Test
+    fun `given unknown server state and HTTP selected address, when observing warning, then show fallback`() =
+        testBlocking {
+            selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_UNKNOWN).apply {
+                url = "http://test.com"
+            }
+            createViewModel()
+
+            viewModel.httpsConfigurationWarningVisible.runAndCaptureValues { runCurrent() }
+
+            assertThat(viewModel.httpsConfigurationWarningVisible.value).isTrue()
+        }
+
+    @Test
+    fun `given unknown server state and stored HTTP login address, when observing warning, then show fallback`() =
+        testBlocking {
+            selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_UNKNOWN)
+            whenever(prefs.getLoginSiteAddress()).thenReturn("http://test.com")
+            createViewModel()
+
+            viewModel.httpsConfigurationWarningVisible.runAndCaptureValues { runCurrent() }
+
+            assertThat(viewModel.httpsConfigurationWarningVisible.value).isTrue()
+        }
+
+    @Test
+    fun `given warning dismissed, when 24 hours elapse in foreground, then show at exact expiry`() = testBlocking {
+        selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues {
+            runCurrent()
+            viewModel.onHttpsConfigurationWarningDismissed()
+            runCurrent()
+            assertThat(viewModel.httpsConfigurationWarningVisible.value).isFalse()
+
+            currentTimeMillis += ONE_DAY_MILLIS - 1
+            advanceTimeAndRun(ONE_DAY_MILLIS - 1)
+            assertThat(viewModel.httpsConfigurationWarningVisible.value).isFalse()
+
+            currentTimeMillis += 1
+            advanceTimeAndRun(1)
+            assertThat(viewModel.httpsConfigurationWarningVisible.value).isTrue()
+        }
+    }
+
+    @Test
+    fun `given visible warning, when switching to secure store, then hide it`() = testBlocking {
+        selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues {
+            runCurrent()
+            selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_SECURE).apply { id = 2 }
+            runCurrent()
+        }
+
+        assertThat(viewModel.httpsConfigurationWarningVisible.value).isFalse()
+    }
+
+    @Test
+    fun `given visible warning, when fresh FluxC update reports secure, then hide it`() = testBlocking {
+        selectedSiteFlow.value = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues {
+            runCurrent()
+            dispatcher.emitChange(
+                OnSiteChanged(updatedSites = listOf(httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_SECURE)))
+            )
+            runCurrent()
+        }
+
+        assertThat(viewModel.httpsConfigurationWarningVisible.value).isFalse()
+    }
+
+    @Test
+    fun `given visible warning, when failed FluxC update has no fresh state, then retain it`() = testBlocking {
+        val selected = httpsWarningSite(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        selectedSiteFlow.value = selected
+        whenever(siteStore.getSiteByLocalId(selected.id)).thenReturn(selected)
+        createViewModel()
+
+        viewModel.httpsConfigurationWarningVisible.runAndCaptureValues {
+            runCurrent()
+            dispatcher.emitChange(OnSiteChanged())
+            runCurrent()
+        }
+
+        assertThat(viewModel.httpsConfigurationWarningVisible.value).isTrue()
+    }
+
+    @Test
     fun `given image uris when app opened, then a product creation is triggered using the images`() = testBlocking {
         // GIVEN
         createViewModel()
@@ -818,6 +960,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel = spy(
             MainActivityViewModel(
                 savedState = savedStateHandle,
+                dispatcher = dispatcher,
                 siteStore = siteStore,
                 selectedSite = selectedSite,
                 storeConnectionErrorMonitor = storeConnectionErrorMonitor,
@@ -829,6 +972,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 resolveAppLink = resolveAppLink,
                 privacyRepository = mock(),
                 systemVersionUtilsWrapper = systemVersionUtilsWrapper,
+                currentTimeProvider = currentTimeProvider,
                 moreMenuNewFeatureHandler = moreMenuNewFeatureHandler,
                 unseenReviewsCountHandler = unseenReviewsCountHandler,
                 determineTrialStatusBarState = mock {
@@ -837,6 +981,12 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 ageEligibilityChecker = ageEligibilityChecker,
             )
         )
+    }
+
+    private fun httpsWarningSite(@SiteModel.HttpsConfigurationState state: Int) = SiteModel().apply {
+        id = 1
+        url = "https://test.com"
+        httpsConfigurationState = state
     }
 
     private fun applicationPasswordsSite() = SiteModel().apply {

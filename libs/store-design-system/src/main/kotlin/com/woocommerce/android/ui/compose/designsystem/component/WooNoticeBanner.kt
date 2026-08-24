@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -25,6 +29,7 @@ import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.CirclePlus
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
+import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
 
 @Composable
 fun WooNoticeBanner(
@@ -33,7 +38,21 @@ fun WooNoticeBanner(
     description: String? = null,
     tone: WooNoticeBannerTone = WooNoticeBannerTone.Neutral,
     leadingIcon: (@Composable () -> Unit)? = null,
+    actionLabel: String? = null,
+    onActionClick: (() -> Unit)? = null,
+    dismissContentDescription: String? = null,
+    onDismissClick: (() -> Unit)? = null,
 ) {
+    require((actionLabel == null) == (onActionClick == null)) {
+        "WooNoticeBanner action label and callback must be provided together"
+    }
+    require((dismissContentDescription == null) == (onDismissClick == null)) {
+        "WooNoticeBanner dismiss label and callback must be provided together"
+    }
+    require(actionLabel == null || actionLabel.isNotBlank()) { "WooNoticeBanner action label must not be blank" }
+    require(dismissContentDescription == null || dismissContentDescription.isNotBlank()) {
+        "WooNoticeBanner dismiss content description must not be blank"
+    }
     val colors = tone.toNoticeBannerColors()
 
     Surface(
@@ -46,7 +65,7 @@ fun WooNoticeBanner(
         Row(
             modifier = Modifier.padding(WooTheme.padding.padding4),
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             if (leadingIcon != null) {
                 CompositionLocalProvider(LocalContentColor provides colors.contentColor) {
@@ -58,7 +77,10 @@ fun WooNoticeBanner(
                     }
                 }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
+            ) {
                 Text(
                     text = title,
                     style = WooTheme.text.titleMedium.emphasized,
@@ -67,6 +89,29 @@ fun WooNoticeBanner(
                     Text(
                         text = description,
                         style = WooTheme.text.bodyMedium.regular,
+                    )
+                }
+                if (actionLabel != null && onActionClick != null) {
+                    TextButton(
+                        onClick = onActionClick,
+                        colors = ButtonDefaults.textButtonColors(contentColor = colors.contentColor),
+                    ) {
+                        Text(
+                            text = actionLabel,
+                            style = WooTheme.text.labelLarge.emphasized,
+                        )
+                    }
+                }
+            }
+            if (dismissContentDescription != null && onDismissClick != null) {
+                IconButton(
+                    onClick = onDismissClick,
+                    colors = IconButtonDefaults.iconButtonColors(contentColor = colors.contentColor),
+                ) {
+                    Icon(
+                        imageVector = WooIcons.Regular.Xmark,
+                        contentDescription = dismissContentDescription,
+                        modifier = Modifier.size(WooTheme.iconSize.size24),
                     )
                 }
             }

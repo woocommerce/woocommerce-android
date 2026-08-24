@@ -23,8 +23,10 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -37,8 +39,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -73,6 +78,10 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InfoScreenFragment
+import com.woocommerce.android.ui.compose.designsystem.WooTheme as WooDesignSystem
+import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
+import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.StoreConnectionErrorDialog
@@ -131,6 +140,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -156,6 +166,8 @@ class MainActivity :
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
+        private const val HTTPS_CONFIGURATION_LEARN_MORE_URL =
+            "https://developer.wordpress.org/advanced-administration/security/https/"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -233,6 +245,8 @@ class MainActivity :
     // Drives the collapsing toolbar's elevation shadow from its own offset (see setupAppBarElevation).
     private var appBarVerticalOffset = 0
     private var appBarHasShadow = true
+    private var httpsConfigurationWarningRequired = false
+    private var httpsConfigurationWarningAllowedForDestination = false
 
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
@@ -307,6 +321,8 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
+                    httpsConfigurationWarningAllowedForDestination =
+                        f is TopLevelFragment && shouldShowBottomNavigation
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
@@ -332,11 +348,13 @@ class MainActivity :
                 }
 
                 AppBarStatus.Hidden -> {
+                    httpsConfigurationWarningAllowedForDestination = false
                     hideToolbar()
                     appBarHasShadow = false
                     updateAppBarElevation()
                 }
             }
+            updateHttpsConfigurationWarningVisibility()
         }
     }
 
@@ -371,6 +389,7 @@ class MainActivity :
         setContentView(binding.root)
 
         setupStoreConnectionErrorDialog()
+        setupHttpsConfigurationWarning()
 
         edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
@@ -916,6 +935,44 @@ class MainActivity :
                 }
             }
         }
+    }
+
+    private fun setupHttpsConfigurationWarning() {
+        binding.httpsConfigurationWarning.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        binding.httpsConfigurationWarning.setContent {
+            WooDesignSystemTheme {
+                WooNoticeBanner(
+                    title = getString(R.string.https_configuration_warning_title),
+                    description = getString(R.string.https_configuration_warning_message),
+                    tone = WooNoticeBannerTone.Warning,
+                    actionLabel = getString(R.string.learn_more),
+                    onActionClick = {
+                        ChromeCustomTabUtils.launchUrl(this, HTTPS_CONFIGURATION_LEARN_MORE_URL)
+                    },
+                    dismissContentDescription = getString(R.string.https_configuration_warning_dismiss),
+                    onDismissClick = viewModel::onHttpsConfigurationWarningDismissed,
+                    modifier = Modifier.padding(
+                        horizontal = WooDesignSystem.padding.padding4,
+                        vertical = WooDesignSystem.padding.padding3,
+                    ),
+                )
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.httpsConfigurationWarningVisible.collect { isVisible ->
+                    httpsConfigurationWarningRequired = isVisible
+                    updateHttpsConfigurationWarningVisibility()
+                }
+            }
+        }
+    }
+
+    private fun updateHttpsConfigurationWarningVisibility() {
+        binding.httpsConfigurationWarning.isVisible =
+            httpsConfigurationWarningRequired && httpsConfigurationWarningAllowedForDestination
     }
 
     @Suppress("ComplexMethod")
