@@ -88,6 +88,7 @@ class WooPosCardReaderConnectionController(
     private var isRequiredUpdate = true
     private var isBluetoothPermissionPermanentlyDenied = false
     private var isLocationPermissionPermanentlyDenied = false
+    private var isLocalNetworkPermissionPermanentlyDenied = false
     private var bluetoothRequirement: BluetoothRequirement = BluetoothRequirement.Satisfied
     private var pendingBluetoothFailure: String? = null
 
@@ -188,6 +189,14 @@ class WooPosCardReaderConnectionController(
         checkRequirementsAndStartDiscovery()
     }
 
+    fun onLocalNetworkPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        isLocalNetworkPermissionPermanentlyDenied = !granted && !shouldShowRationale
+        val currentState = _state.value
+        if (granted && currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission) {
+            onPhoneConnectClicked(currentState.phone)
+        }
+    }
+
     fun onBluetoothEnabled() {
         checkRequirementsAndStartDiscovery()
     }
@@ -197,8 +206,13 @@ class WooPosCardReaderConnectionController(
     }
 
     fun recheckPermissions() {
-        if (isShowingBluetoothRequirement()) {
-            checkRequirementsAndStartDiscovery()
+        val currentState = _state.value
+        when {
+            isShowingBluetoothRequirement() -> checkRequirementsAndStartDiscovery()
+
+            currentState is WooPosCardReaderConnectionState.MissingLocalNetworkPermission &&
+                WooPermissionUtils.hasLocalNetworkPermission(context) ->
+                onPhoneConnectClicked(currentState.phone)
         }
     }
 
@@ -333,6 +347,7 @@ class WooPosCardReaderConnectionController(
         data object RequestBluetoothPermission : ControllerEvent
         data object RequestEnableBluetooth : ControllerEvent
         data object RequestLocationPermission : ControllerEvent
+        data object RequestLocalNetworkPermission : ControllerEvent
         data object RequestEnableLocation : ControllerEvent
         data object OpenAppSettings : ControllerEvent
         data object Cancelled : ControllerEvent
@@ -417,7 +432,7 @@ class WooPosCardReaderConnectionController(
         if (event is WooPosUnifiedDiscoveryEvent.ReadersFound) {
             latestDiscoveredPhones = event.readers.filterIsInstance<WooPosDiscoveredReader.Phone>()
         }
-        if (isShowingConnectionOutcome()) return
+        if (shouldIgnoreDiscoveryUpdates()) return
 
         when (event) {
             is WooPosUnifiedDiscoveryEvent.Started -> {
@@ -443,9 +458,10 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun isShowingConnectionOutcome(): Boolean =
+    private fun shouldIgnoreDiscoveryUpdates(): Boolean =
         _state.value is WooPosCardReaderConnectionState.Connecting ||
             _state.value is WooPosCardReaderConnectionState.ConnectingFailed ||
+            _state.value is WooPosCardReaderConnectionState.MissingLocalNetworkPermission ||
             _state.value is Connected
 
     private fun handleReadersFound(
@@ -559,6 +575,21 @@ class WooPosCardReaderConnectionController(
 
     private fun onPhoneConnectClicked(phone: WooPosDiscoveredReader.Phone) {
         if (_state.value is WooPosCardReaderConnectionState.Connecting) return
+        if (!WooPermissionUtils.hasLocalNetworkPermission(context)) {
+            logger.d("Local network permission not granted")
+            _state.value = WooPosCardReaderConnectionState.MissingLocalNetworkPermission(
+                phone = phone,
+                onRequestPermissionClicked = {
+                    if (isLocalNetworkPermissionPermanentlyDenied) {
+                        emitEvent(ControllerEvent.OpenAppSettings)
+                    } else {
+                        emitEvent(ControllerEvent.RequestLocalNetworkPermission)
+                    }
+                },
+                onCancelClicked = { cancel() },
+            )
+            return
+        }
         markPhoneReaderSelected()
         tracker.trackOnConnectTapped()
         selectedReader = null
