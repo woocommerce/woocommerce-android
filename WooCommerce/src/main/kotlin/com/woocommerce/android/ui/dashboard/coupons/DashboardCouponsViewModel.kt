@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CouponUtils
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -62,6 +63,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val couponUtils: CouponUtils,
     private val parameterRepository: ParameterRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val dateUtils: DateUtils,
     coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -148,10 +150,11 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     fun onEditCustomRangeTapped() {
         parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
+        val siteToday = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
         triggerEvent(
             OpenDatePicker(
-                fromDate = dateRangeState.value?.customRange?.start ?: Date(),
-                toDate = dateRangeState.value?.customRange?.end ?: Date()
+                fromDate = dateRangeState.value?.customRange?.start ?: siteToday,
+                toDate = dateRangeState.value?.customRange?.end ?: siteToday
             )
         )
     }

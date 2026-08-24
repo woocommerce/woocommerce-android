@@ -78,14 +78,17 @@ Expected output:
   under `WooTheme.colors`; no separate `WooTheme.semanticColors`.
 - Source-backed `WooTheme.colors.error` / `onError` projected to Material `error` / `onError` and
   consumed by Checkbox error states.
-- `surfaceDim` and `surfaceContainerHighest` as source-backed Store roles.
+- Distinct `surface.default` and `surface.bright`, plus source-backed `surfaceDim`,
+  `surfaceContainerHighest`, and `surface.onVariantHighest` roles.
 - Public `WooTheme.colors.stateLayers.onSurface` colors for `opacity08`, `opacity10`, `opacity16`,
   and `opacity24`; no public state-alpha floats and no Material `ColorScheme` projection.
 - Live Figma component evidence maps 08 to disabled filled/tonal button containers, 10 to neutral
-  outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio and resting
-  Search placeholder, and 24 to disabled button content. High contrast remains unresolved.
-- Public `WooTheme.colors.tintLayers.primaryContainer` colors for `opacity08`, `opacity10`,
-  `opacity16`, and `opacity24`; the Segmented Control track consumes `opacity10`.
+  outlined badge and disabled outlined-button border, 16 to disabled checkbox/radio roots, and 24
+  to disabled button content, Search placeholder, and disabled choice-control marks/dots. High
+  contrast remains unresolved.
+- Public `WooTheme.colors.tintLayers.primaryContainer`, `onSurface`, and `primary` colors for
+  `opacity08`, `opacity10`, `opacity16`, and `opacity24`; the Segmented Control track consumes
+  Primary Container opacity16, while dividers/subtle boundaries consume On Surface opacity16.
 - `WooTheme.iconSize` scoped to glyph sizes only.
 - Source-backed stroke from `Shape/Stroke/Weight/*` through `WooTheme.stroke`, promoted for
   production component usage.

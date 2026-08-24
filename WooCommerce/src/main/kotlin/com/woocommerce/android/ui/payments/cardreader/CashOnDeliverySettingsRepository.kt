@@ -15,22 +15,44 @@ class CashOnDeliverySettingsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
 ) {
     suspend fun toggleCashOnDeliveryOption(shouldEnable: Boolean): WooResult<WCGatewayModel> {
-        return gatewayStore.updateGateway(
-            site = selectedSite.get(),
-            gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
-            enabled = shouldEnable,
-            title = "Pay in Person",
-            description = "Pay by card or another accepted payment method",
-            settings = Settings(
-                instructions = "Pay by card or another accepted payment method"
+        return if (shouldEnable) {
+            gatewayStore.updateGateway(
+                site = selectedSite.get(),
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = true,
+                title = PAY_IN_PERSON_TITLE,
+                description = PAY_IN_PERSON_DESCRIPTION,
+                settings = Settings(
+                    instructions = PAY_IN_PERSON_DESCRIPTION
+                )
             )
+        } else {
+            gatewayStore.updateGateway(
+                site = selectedSite.get(),
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = false
+            )
+        }
+    }
+
+    suspend fun isCashOnDeliveryEnabled(): Boolean = fetchCashOnDeliveryGateway().model?.isEnabled == true
+
+    /**
+     * A successful result with a `null` model means the store has no Cash on Delivery gateway.
+     */
+    suspend fun fetchCashOnDeliveryGateway(): WooResult<WCGatewayModel> {
+        val result = gatewayStore.fetchAllGateways(selectedSite.get())
+        if (result.isError) return WooResult(result.error)
+        return WooResult(
+            result.model?.firstOrNull { wcGatewayModel ->
+                wcGatewayModel.id.equals(CASH_ON_DELIVERY_GATEWAY_ID, ignoreCase = true)
+            }
         )
     }
 
-    suspend fun isCashOnDeliveryEnabled(): Boolean {
-        val gateways = gatewayStore.fetchAllGateways(selectedSite.get()).model
-        return gateways?.firstOrNull { wcGatewayModel ->
-            wcGatewayModel.id.equals("cod", ignoreCase = true)
-        }?.isEnabled ?: false
+    companion object {
+        const val PAY_IN_PERSON_TITLE = "Pay in Person"
+        private const val PAY_IN_PERSON_DESCRIPTION = "Pay by card or another accepted payment method"
+        private const val CASH_ON_DELIVERY_GATEWAY_ID = "cod"
     }
 }

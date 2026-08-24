@@ -53,6 +53,10 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
 
+    var isProductAddonsEnabled by AppPrefs::isProductAddonsEnabled
+
+    var wooPosLocalCatalogEnabled by AppPrefs::wooPosLocalCatalogEnabled
+
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
 
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
@@ -74,6 +78,13 @@ open class AppPrefsWrapper @Inject constructor() {
 
     fun isCardReaderPluginExplicitlySelected(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
         AppPrefs.isCardReaderPluginExplicitlySelected(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun getCardReaderOnboardingStatus(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        AppPrefs.getCardReaderOnboardingStatus(localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun isPOSTabVisibleForSite(localSiteId: Int) = AppPrefs.isPOSTabVisibleForSite(localSiteId)
+
+    fun isPOSLaunchableForSite(localSiteId: Int) = AppPrefs.isPOSLaunchableForSite(localSiteId)
 
     fun getCardReaderPreferredPlugin(
         localSiteId: Int,
@@ -185,12 +196,20 @@ open class AppPrefsWrapper @Inject constructor() {
     fun getOrderFilters(selectedSiteId: Int, filterCategory: String) =
         AppPrefs.getOrderFilters(selectedSiteId, filterCategory)
 
-    fun setOrderFilterCustomDateRange(selectedSiteId: Int, startDateMillis: Long, endDateMillis: Long) {
-        AppPrefs.setOrderFilterCustomDateRange(selectedSiteId, startDateMillis, endDateMillis)
-    }
-
+    // Only used by the order filter date range migration. Delete in 25.9, see WOOMOB-3841.
     fun getOrderFilterCustomDateRange(selectedSiteId: Int): Pair<Long, Long> =
         AppPrefs.getOrderFilterCustomDateRange(selectedSiteId)
+
+    fun removeOrderFilterCustomDateRange(selectedSiteId: Int) {
+        AppPrefs.removeOrderFilterCustomDateRange(selectedSiteId)
+    }
+
+    fun setOrderFilterCustomDateRangeDays(selectedSiteId: Int, startDay: Long, endDay: Long) {
+        AppPrefs.setOrderFilterCustomDateRangeDays(selectedSiteId, startDay, endDay)
+    }
+
+    fun getOrderFilterCustomDateRangeDays(selectedSiteId: Int): Pair<Long, Long> =
+        AppPrefs.getOrderFilterCustomDateRangeDays(selectedSiteId)
 
     fun setV4StatsSupported(supported: Boolean) {
         AppPrefs.setV4StatsSupported(supported)

@@ -218,6 +218,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "orders_menu_item_tapped"
         }
 
+        data object OrdersListLoaded : Event() {
+            override val name: String = "orders_list_loaded"
+        }
+
         data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }
@@ -596,9 +600,20 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object ReaderReadyForCardPayment : Event() {
-            override val name: String
-                get() = "reader_ready_for_card_payment"
+        data class ReaderReadyForCardPayment(
+            val waitingTimeSeconds: Long?,
+            val transport: String?,
+        ) : Event() {
+            override val name: String = "reader_ready_for_card_payment"
+
+            init {
+                addProperties(
+                    buildMap {
+                        waitingTimeSeconds?.let { put("waiting_time", it.toString()) }
+                        transport?.let { put("transport", it) }
+                    }
+                )
+            }
         }
 
         data object RemoteTapToPayExplainerShown : Event() {
@@ -1364,9 +1379,9 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
-        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
-        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable -> "site_settings_unavailable"
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> "unknown_no_positive_cache"
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "no_site_selected"
     }
 }
 

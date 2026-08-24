@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.store
 
 import android.text.TextUtils
 import com.wellsql.generated.SiteModelTable
+import dagger.Lazy
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.wordpress.android.fluxc.Dispatcher
@@ -11,19 +12,17 @@ import org.wordpress.android.fluxc.action.SiteAction.DESIGNATED_PRIMARY_DOMAIN
 import org.wordpress.android.fluxc.action.SiteAction.DESIGNATE_PRIMARY_DOMAIN
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_CONNECT_SITE_INFO
 import org.wordpress.android.fluxc.action.SiteAction.FETCHED_DOMAIN_SUPPORTED_STATES
-import org.wordpress.android.fluxc.action.SiteAction.FETCHED_PROFILE_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_CONNECT_SITE_INFO
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_DOMAIN_SUPPORTED_STATES
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_PROFILE_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITE
 import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES
-import org.wordpress.android.fluxc.action.SiteAction.FETCH_SITES_XML_RPC
 import org.wordpress.android.fluxc.action.SiteAction.REMOVE_ALL_SITES
 import org.wordpress.android.fluxc.action.SiteAction.REMOVE_SITE
 import org.wordpress.android.fluxc.action.SiteAction.SUGGESTED_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.SUGGEST_DOMAINS
 import org.wordpress.android.fluxc.action.SiteAction.UPDATE_SITE
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger
 import org.wordpress.android.fluxc.model.PlanModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.SitesModel
@@ -42,7 +41,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainPriceResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.DomainSuggestionResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SiteRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.site.SupportedStateResponse
-import org.wordpress.android.fluxc.network.xmlrpc.site.SiteXMLRPCClient
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
@@ -73,22 +71,16 @@ import javax.inject.Singleton
 open class SiteStore @Inject constructor(
     dispatcher: Dispatcher?,
     private val siteRestClient: SiteRestClient,
-    private val siteXMLRPCClient: SiteXMLRPCClient,
     private val siteWPAPIRestClient: SiteWPAPIRestClient,
     private val siteSqlUtils: SiteSqlUtils,
     private val siteStorePersistence: SiteStorePersistence,
     private val domainDao: DomainDao,
-    private val coroutineEngine: CoroutineEngine
+    private val coroutineEngine: CoroutineEngine,
+    private val crashLogger: Lazy<FluxCCrashLogger>
 ) : Store(dispatcher) {
     @Inject internal lateinit var applicationPasswordsManagerProvider: Provider<ApplicationPasswordsManager>
 
     // Payloads
-    data class RefreshSitesXMLRPCPayload(
-        @JvmField val username: String = "",
-        @JvmField val password: String = "",
-        @JvmField val url: String = ""
-    ) : Payload<BaseNetworkError>()
-
     data class FetchWPAPISitePayload(
         val url: String,
         val username: String? = null,
@@ -195,7 +187,6 @@ open class SiteStore @Inject constructor(
     ) : OnChangedError
 
     // OnChanged Events
-    data class OnProfileFetched(@JvmField val site: SiteModel) : OnChanged<SiteError>()
     data class OnSiteChanged(
         @JvmField val rowsAffected: Int = 0,
         @JvmField val updatedSites: List<SiteModel> = emptyList()
@@ -423,12 +414,6 @@ open class SiteStore @Inject constructor(
     }
 
     /**
-     * Returns sites accessed via XMLRPC (self-hosted sites or Jetpack sites accessed via XMLRPC).
-     */
-    val sitesAccessedViaXMLRPC: List<SiteModel>
-        get() = siteSqlUtils.sitesAccessedViaXMLRPC.asModel
-
-    /**
      * Given a .COM site ID (either a .COM site id, or the .COM id of a Jetpack site), returns the site as a
      * [SiteModel].
      */
@@ -455,16 +440,11 @@ open class SiteStore @Inject constructor(
     override fun onAction(action: Action<*>) {
         val actionType = action.type as? SiteAction ?: return
         when (actionType) {
-            FETCH_PROFILE_XML_RPC -> fetchProfileXmlRpc(action.payload as SiteModel)
-            FETCHED_PROFILE_XML_RPC -> updateSiteProfile(action.payload as SiteModel)
             FETCH_SITE -> coroutineEngine.launch(T.MAIN, this, "Fetch site") {
                 emitChange(fetchSite(action.payload as SiteModel))
             }
             FETCH_SITES -> coroutineEngine.launch(T.MAIN, this, "Fetch sites") {
                 emitChange(fetchSites(action.payload as FetchSitesPayload))
-            }
-            FETCH_SITES_XML_RPC -> coroutineEngine.launch(T.MAIN, this, "Fetch XMLRPC sites") {
-                emitChange(fetchSitesXmlRpc(action.payload as RefreshSitesXMLRPCPayload))
             }
             UPDATE_SITE -> {
                 emitChange(updateSite(action.payload as SiteModel))
@@ -484,19 +464,16 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    private fun fetchProfileXmlRpc(site: SiteModel) {
-        siteXMLRPCClient.fetchProfile(site)
-    }
-
     suspend fun fetchSite(site: SiteModel): OnSiteChanged {
         return coroutineEngine.withDefaultContext(T.API, this, "Fetch site") {
-            val updatedSite = when (site.origin) {
-                SiteModel.ORIGIN_WPCOM_REST -> siteRestClient.fetchSite(site)
-                SiteModel.ORIGIN_WPAPI -> siteWPAPIRestClient.fetchWPAPISite(site)
-                else -> siteXMLRPCClient.fetchSite(site)
+            when (site.origin) {
+                SiteModel.ORIGIN_WPCOM_REST -> updateSite(siteRestClient.fetchSite(site))
+                SiteModel.ORIGIN_WPAPI -> updateSite(siteWPAPIRestClient.fetchWPAPISite(site))
+                else -> {
+                    reportXmlrpcTry()
+                    OnSiteChanged(SiteError(SiteErrorType.GENERIC_ERROR))
+                }
             }
-
-            updateSite(updatedSite)
         }
     }
 
@@ -507,32 +484,10 @@ open class SiteStore @Inject constructor(
         }
     }
 
-    suspend fun fetchSitesXmlRpc(payload: RefreshSitesXMLRPCPayload): OnSiteChanged {
-        return coroutineEngine.withDefaultContext(T.API, this, "Fetch sites") {
-            updateSites(siteXMLRPCClient.fetchSites(payload.url, payload.username, payload.password))
-        }
-    }
-
     suspend fun fetchWPAPISite(payload: FetchWPAPISitePayload): OnSiteChanged {
         return coroutineEngine.withDefaultContext(T.MAIN, this, "Fetch WPAPI Site") {
             updateSite(siteWPAPIRestClient.fetchWPAPISite(payload))
         }
-    }
-
-    @Suppress("ForbiddenComment", "SwallowedException")
-    private fun updateSiteProfile(siteModel: SiteModel) {
-        val event = OnProfileFetched(siteModel)
-        if (siteModel.isError) {
-            // TODO: what kind of error could we get here?
-            event.error = SiteErrorUtils.genericToSiteError(siteModel.error)
-        } else {
-            try {
-                insertOrUpdateSite(siteModel)
-            } catch (e: SiteStorePersistence.DuplicateSiteException) {
-                event.error = SiteError(DUPLICATE_SITE)
-            }
-        }
-        emitChange(event)
     }
 
     @Suppress("ForbiddenComment", "SwallowedException")
@@ -547,22 +502,6 @@ open class SiteStore @Inject constructor(
                 OnSiteChanged(SiteError(DUPLICATE_SITE))
             }
         }
-    }
-
-    @Suppress("ForbiddenComment")
-    private fun updateSites(sitesModel: SitesModel): OnSiteChanged {
-        val event = if (sitesModel.isError) {
-            // TODO: what kind of error could we get here?
-            OnSiteChanged(SiteErrorUtils.genericToSiteError(sitesModel.error))
-        } else {
-            val res = createOrUpdateSites(sitesModel)
-            if (res.duplicateSiteFound) {
-                OnSiteChanged(res.rowsAffected, SiteError(DUPLICATE_SITE))
-            } else {
-                OnSiteChanged(res.rowsAffected)
-            }
-        }
-        return event
     }
 
     @Suppress("ForbiddenComment")
@@ -778,5 +717,13 @@ open class SiteStore @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun reportXmlrpcTry() {
+        crashLogger.get().sendReport(
+            null,
+            emptyMap(),
+            "Requested SiteStore XMLRPC connection. This should not happen."
+        )
     }
 }

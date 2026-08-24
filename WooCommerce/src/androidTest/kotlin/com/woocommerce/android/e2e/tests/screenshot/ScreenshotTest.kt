@@ -2,7 +2,7 @@ package com.woocommerce.android.e2e.tests.screenshot
 
 import android.Manifest
 import android.content.Intent
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule

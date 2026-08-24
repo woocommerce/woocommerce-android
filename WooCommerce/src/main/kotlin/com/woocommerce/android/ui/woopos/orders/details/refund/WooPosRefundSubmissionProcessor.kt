@@ -228,23 +228,31 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
         shouldAutoRefund: Boolean,
         retryBackendNotificationOnly: Boolean,
     ): WooResult<WCRefundModel> {
-        val v4LineItems = request.v4LineItems
-        if (v4LineItems != null) {
+        val serverLineItems = request.serverLineItems
+        if (serverLineItems != null) {
+            // Pinning the confirmed total makes the server reject the create when its recomputed
+            // total drifted above it (order edited between preview and create) instead of
+            // refunding more than the cashier confirmed. Omitted on backend-only retries: the
+            // card has already been reversed, and a rejection would strand that money behind a
+            // permanently failing retry (WOOMOB-3752 covers reworking that path).
+            val amountOverride = request.refundAmount.takeUnless { retryBackendNotificationOnly }
             WooLog.i(
                 WooLog.T.POS,
-                "WooPosRefund: creating simplified v4 backend refund " +
+                "WooPosRefund: creating server-computed backend refund " +
                     "orderId=${request.orderId}, " +
-                    "itemCount=${v4LineItems.size}, " +
+                    "amount=$amountOverride, " +
+                    "itemCount=${serverLineItems.size}, " +
                     "autoRefund=$shouldAutoRefund, " +
                     "backendOnlyRetry=$retryBackendNotificationOnly"
             )
-            return refundStore.createSimplifiedItemsRefund(
+            return refundStore.createComputedItemsRefund(
                 site = selectedSite.get(),
                 orderId = request.orderId,
                 reason = request.refundReason,
                 autoRefund = shouldAutoRefund,
                 restockItems = true,
-                items = v4LineItems,
+                amount = amountOverride,
+                items = serverLineItems,
             )
         }
 
@@ -287,10 +295,15 @@ class WooPosRefundSubmissionProcessor @Inject constructor(
                     "message=${error.message}, " +
                     "errorData=${error.errorData}"
             )
+            val mappedMessage = WooPosRefundApiError.fromCode(error.apiErrorCode)
+                ?.let { resourceProvider.getString(it.messageRes) }
             trySendState(
                 WooPosRefundSubmissionState.Failure(
-                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
+                    message = mappedMessage
+                        ?: error.message
+                        ?: resourceProvider.getString(R.string.error_generic),
                     retryBackendNotificationOnly = retryBackendNotificationOnly,
+                    apiErrorCode = error.apiErrorCode,
                 )
             )
         } else {

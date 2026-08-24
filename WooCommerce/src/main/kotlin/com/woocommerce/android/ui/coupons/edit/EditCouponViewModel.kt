@@ -31,7 +31,6 @@ import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenCo
 import com.woocommerce.android.ui.coupons.edit.EditCouponNavigationTarget.OpenDescriptionEditor
 import com.woocommerce.android.ui.coupons.tracking.StoreManagementCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFlowTrackerEventProvider
 import com.woocommerce.android.util.CouponUtils
@@ -58,7 +57,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
-import java.util.Date
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -167,9 +166,9 @@ class EditCouponViewModel @Inject constructor(
         }
     }
 
-    fun onExpiryDateChanged(expiryDate: Date?) {
+    fun onExpiryDateChanged(expiryDate: LocalDate?) {
         couponDraft.update {
-            it?.copy(dateExpires = expiryDate)
+            it?.copy(dateExpiresLocal = expiryDate)
         }
     }
 
@@ -207,15 +206,7 @@ class EditCouponViewModel @Inject constructor(
             it.productIds.map { productOrVariationId ->
                 SelectedItem.ProductOrVariation(productOrVariationId)
             }.let { selectedItems ->
-                triggerEvent(
-                    EditIncludedProducts(
-                        selectedItems,
-                        listOf(
-                            ProductRestriction.NonPublishedProducts,
-                            ProductRestriction.VariableProductsWithNoVariations
-                        )
-                    )
-                )
+                triggerEvent(EditIncludedProducts(selectedItems))
             }
         }
     }
@@ -255,7 +246,7 @@ class EditCouponViewModel @Inject constructor(
         }
 
         when (mode.value) {
-            is Mode.Edit -> updateCoupon(newCoupon)
+            is Mode.Edit -> updateCoupon(oldCoupon, newCoupon)
             is Mode.Create -> addCoupon(newCoupon)
         }
 
@@ -298,8 +289,8 @@ class EditCouponViewModel @Inject constructor(
             }
     }
 
-    private suspend fun updateCoupon(newCoupon: Coupon) {
-        couponRepository.updateCoupon(newCoupon)
+    private suspend fun updateCoupon(oldCoupon: Coupon, newCoupon: Coupon) {
+        couponRepository.updateCoupon(newCoupon, oldCoupon)
             .onSuccess {
                 triggerEvent(ShowSnackbar(R.string.coupon_edit_coupon_updated))
                 exitFlow()
@@ -335,7 +326,7 @@ class EditCouponViewModel @Inject constructor(
         val wasCouponDescriptionUpdated = oldCoupon.description != newCoupon.description
         val wereCouponProdsOrCatsUpdated = oldCoupon.productIds != newCoupon.productIds ||
             oldCoupon.categoryIds != newCoupon.categoryIds
-        val wasCouponExpiryDateUpdated = oldCoupon.dateExpires != newCoupon.dateExpires
+        val wasCouponExpiryDateUpdated = oldCoupon.dateExpiresLocal != newCoupon.dateExpiresLocal
         val wereCouponUsageRestrictionsUpdated = oldCoupon.restrictions != newCoupon.restrictions
 
         analyticsTrackerWrapper.track(
@@ -368,7 +359,7 @@ class EditCouponViewModel @Inject constructor(
             trackingEventProvider.COUPON_CREATION_INITIATED,
             mapOf(
                 KEY_COUPON_DISCOUNT_TYPE to type,
-                KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpires != null),
+                KEY_HAS_EXPIRY_DATE to (newCoupon.dateExpiresLocal != null),
                 KEY_INCLUDES_FREE_SHIPPING to newCoupon.isShippingFree,
                 KEY_HAS_DESCRIPTION to (newCoupon.description != null),
                 KEY_HAS_PRODUCT_OR_CATEGORY_RESTRICTIONS to hasProductOrCategoryRestrictions,

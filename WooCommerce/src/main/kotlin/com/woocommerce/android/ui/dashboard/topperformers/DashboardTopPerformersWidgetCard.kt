@@ -20,6 +20,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -62,7 +63,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.commons.stats.StatsTimeRange
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DashboardTopPerformersWidgetCard(
@@ -105,7 +105,7 @@ fun DashboardTopPerformersWidgetCard(
         }
     }
 
-    val openDatePicker = { start: Long, end: Long, callback: (Long, Long) -> Unit ->
+    val openDatePicker = { start: Date, end: Date, callback: (Date, Date) -> Unit ->
         parentViewModel.onDashboardWidgetEvent(
             OpenRangePicker(start, end, callback)
         )
@@ -113,8 +113,8 @@ fun DashboardTopPerformersWidgetCard(
     HandleEvents(
         topPerformersViewModel.event,
         openDatePicker = { fromDate, toDate ->
-            openDatePicker(fromDate, toDate) { from, to ->
-                topPerformersViewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+            openDatePicker(fromDate, toDate) { startDate, endDate ->
+                topPerformersViewModel.onCustomRangeSelected(StatsTimeRange(startDate, endDate))
             }
         }
     )
@@ -161,7 +161,7 @@ fun DashboardTopPerformersContent(
 @Composable
 private fun HandleEvents(
     event: LiveData<Event>,
-    openDatePicker: (Long, Long) -> Unit,
+    openDatePicker: (Date, Date) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -175,7 +175,7 @@ private fun HandleEvents(
                     )
                 )
 
-                is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
+                is OpenDatePicker -> openDatePicker(event.fromDate, event.toDate)
                 is OpenAnalytics -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
@@ -392,7 +392,7 @@ private fun TopPerformersWidgetCardPreview() {
             referenceStartDate = Date(),
             referenceEndDate = Date(),
             calendar = Calendar.getInstance(),
-            locale = Locale.getDefault(),
+            locale = LocalLocale.current.platformLocale,
         ),
         customRange = null,
         dateFormatted = "Today"

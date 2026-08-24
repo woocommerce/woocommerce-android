@@ -7,16 +7,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 class WooPosPaymentStateAnalyticsTracker @Inject constructor(
-    private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
+    private val readerReadyForPaymentTracker: WooPosReaderReadyForPaymentTracker,
 ) {
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.ProcessingPayment -> {
-                    analyticsData.readerReadyForPaymentTimestamp = System.currentTimeMillis()
-                    trackReaderReadyForPayment()
-                }
+                is CardReaderPaymentState.ProcessingPayment -> readerReadyForPaymentTracker.track()
 
                 is CardReaderPaymentState.PaymentCapturing -> {
                     analyticsData.cardTappedTimestamp = System.currentTimeMillis()
@@ -42,21 +39,5 @@ class WooPosPaymentStateAnalyticsTracker @Inject constructor(
                 CardReaderPaymentState.SharingReceipt -> Unit
             }
         }
-    }
-
-    private suspend fun trackReaderReadyForPayment() {
-        analyticsTracker.track(
-            WooPosAnalyticsEvent.Event.ReaderReadyForCardPayment.apply {
-                val props = mutableMapOf<String, String>()
-                val readerReadyForPaymentTimestamp = analyticsData.readerReadyForPaymentTimestamp
-                val orderSyncTimestamp = analyticsData.orderSyncSuccessTimestamp
-                if (readerReadyForPaymentTimestamp != null && orderSyncTimestamp != null) {
-                    @Suppress("MagicNumber")
-                    val waitingTimeSeconds = (readerReadyForPaymentTimestamp - orderSyncTimestamp) / 1000
-                    props["waiting_time"] = "$waitingTimeSeconds"
-                }
-                addProperties(props)
-            }
-        )
     }
 }

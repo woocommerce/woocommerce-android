@@ -4,6 +4,8 @@ import com.android.volley.RequestQueue
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.discovery.DiscoveryUtils
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
@@ -54,21 +56,23 @@ class SiteWPAPIRestClient @Inject constructor(
         return when (result) {
             is Success -> {
                 val response = result.data
-                SiteModel().apply {
-                    name = response?.name
-                    timezone = response?.gmtOffset
-                    origin = SiteModel.ORIGIN_WPAPI
-                    hasWooCommerce = response?.namespaces?.any {
-                        it.startsWith(WOO_API_NAMESPACE_PREFIX)
-                    } ?: false
-
-                    applicationPasswordsAuthorizeUrl = response?.authentication?.applicationPasswords
-                        ?.endpoints?.authorization
-                    if (!applicationPasswordsAuthorizeUrl.isNullOrEmpty() &&
-                        applicationPasswordsAuthorizeUrl.contains(APPLICATION_PASSWORDS_URL_SUFFIX)) {
-                        // Infer the admin URL from the application passwords authorization URL
-                        adminUrl = applicationPasswordsAuthorizeUrl.substringBefore(APPLICATION_PASSWORDS_URL_SUFFIX)
+                if (response?.namespaces.isNullOrEmpty()) {
+                    return SiteModel().apply {
+                        error = BaseNetworkError(INVALID_RESPONSE)
                     }
+                }
+
+                SiteModel().apply {
+                    name = response.name
+                    timezone = response.gmtOffset
+                    origin = SiteModel.ORIGIN_WPAPI
+                    hasWooCommerce = response.namespaces.any {
+                        it.startsWith(WOO_API_NAMESPACE_PREFIX)
+                    }
+
+                    applicationPasswordsAuthorizeUrl = response.authentication?.applicationPasswords
+                        ?.endpoints?.authorization
+                    adminUrl = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl)
 
                     wpApiRestUrl = discoveredWpApiUrl
                     this.url = cleanedUrl.replaceBefore("://", urlScheme)
@@ -94,8 +98,29 @@ class SiteWPAPIRestClient @Inject constructor(
                 username = site.username,
                 password = site.password,
             )
-        )
+        ).also { refreshedSite ->
+            if (!refreshedSite.isError) {
+                site.loginUrl?.takeUnless(String::isBlank)?.let { refreshedSite.loginUrl = it }
+                site.adminUrl
+                    ?.takeUnless(String::isBlank)
+                    ?.takeUnless { it.matchesAdminBaseInferredFrom(site.applicationPasswordsAuthorizeUrl) }
+                    ?.let { refreshedSite.adminUrl = it }
+            }
+        }
     }
+
+    private fun inferAdminBaseUrl(applicationPasswordsAuthorizeUrl: String?): String? =
+        applicationPasswordsAuthorizeUrl
+            ?.takeUnless(String::isBlank)
+            ?.takeIf { it.contains(APPLICATION_PASSWORDS_URL_SUFFIX) }
+            ?.substringBefore(APPLICATION_PASSWORDS_URL_SUFFIX)
+
+    private fun String.matchesAdminBaseInferredFrom(applicationPasswordsAuthorizeUrl: String?): Boolean {
+        val inferredAdminBase = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl) ?: return false
+        return normalizeAdminBase(this) == normalizeAdminBase(inferredAdminBase)
+    }
+
+    private fun normalizeAdminBase(url: String) = url.trim().trimEnd('/')
 
     private fun discoverApiEndpoint(
         url: String

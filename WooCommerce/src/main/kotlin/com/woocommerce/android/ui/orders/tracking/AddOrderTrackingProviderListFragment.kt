@@ -43,7 +43,7 @@ class AddOrderTrackingProviderListFragment :
     private val viewModel: AddOrderTrackingProviderListViewModel by viewModels()
 
     private val providerListAdapter: AddOrderTrackingProviderListAdapter by lazy {
-        val countryName = StringUtils.getCountryByCountryCode(requireContext(), viewModel.countryCode)
+        val countryName = StringUtils.getCountryByCountryCode(viewModel.countryCode)
         AddOrderTrackingProviderListAdapter(
             context,
             countryName,

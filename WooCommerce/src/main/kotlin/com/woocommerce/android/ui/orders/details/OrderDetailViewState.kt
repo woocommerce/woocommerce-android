@@ -32,6 +32,7 @@ data class OrderDetailViewState(
     @Parcelize
     data class OrderInfo(
         val order: Order? = null,
+        val isVirtualOrder: Boolean = false,
         val isPaymentCollectableWithCardReader: Boolean = false,
         val receiptButtonStatus: ReceiptButtonStatus = ReceiptButtonStatus.Hidden,
     ) : Parcelable

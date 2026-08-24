@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHe
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -612,6 +613,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when a gift card is selected, then the order draft carries the gift card code`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        sut.onGiftCardSelected("1234-5678-9012-3456")
+
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+    }
+
     // region Scanned and Deliver
     @Test
     fun `when scan succeeds, then set isUpdatingOrderDraft to true`() {
@@ -718,7 +731,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -774,7 +788,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
             var newOrder: Order? = null
             sut.orderDraft.observeForever { newOrderData ->
                 newOrder = newOrderData
@@ -805,7 +820,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -832,7 +848,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -863,7 +880,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -888,7 +906,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -921,7 +940,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -953,7 +973,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -979,7 +1000,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1006,7 +1028,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.NonPurchasableProducts)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1030,7 +1053,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
                 Result.success(product)
             )
-            whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.ProductWithPriceNotSpecified)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1038,6 +1062,95 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 eq(PRODUCT_SEARCH_VIA_SKU_SUCCESS),
                 any()
             )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a subscription product, then trigger event with proper message`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(R.string.product_selector_subscription_not_supported)
+            ).thenReturn("Subscription products are not supported")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                productType = "subscription"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.SubscriptionProducts)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo("Subscription products are not supported")
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a subscription product, then track event with proper properties`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(R.string.product_selector_subscription_not_supported)
+            ).thenReturn("Subscription products are not supported")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                productType = "subscription"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.SubscriptionProducts)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            verify(tracker).track(
+                PRODUCT_SEARCH_VIA_SKU_FAILURE,
+                mapOf(
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
+                    KEY_SCANNING_FAILURE_REASON to "Failed to add a subscription product"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when SKU search succeeds for a variable product with no variations, then trigger event with proper message`() {
+        testBlocking {
+            whenever(
+                resourceProvider.getString(
+                    R.string.order_creation_barcode_scanning_unable_to_add_product_with_no_variations
+                )
+            ).thenReturn("You cannot add a variable product that has no variations")
+            createSut()
+            val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
+            val product = ProductTestUtils.generateProduct(
+                productId = 10L,
+                customStatus = ProductStatus.PUBLISH.name,
+                isVariable = true,
+                variationIds = "[]"
+            )
+            whenever(fetchProductByIdentifier.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
+            whenever(productRestrictions.getRestriction(product))
+                .thenReturn(ProductRestriction.VariableProductsWithNoVariations)
+
+            sut.handleBarcodeScannedStatus(scannedStatus)
+
+            assertThat(
+                (sut.event.value as OnAddingProductViaScanningFailed).message
+            ).isEqualTo("You cannot add a variable product that has no variations")
         }
     }
 

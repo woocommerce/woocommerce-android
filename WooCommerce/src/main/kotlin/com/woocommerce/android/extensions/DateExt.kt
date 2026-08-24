@@ -1,10 +1,12 @@
 package com.woocommerce.android.extensions
 
 import android.content.Context
+import android.icu.text.DateIntervalFormat
+import android.icu.util.DateInterval
 import android.text.format.DateFormat
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Calendar
@@ -19,8 +21,11 @@ fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDa
     locale
 ).format(this)
 
-fun Date.formatToMMMMyyyy(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM yyyy",
+/**
+ * Formats the date to a full month and year string, e.g. "August 2026" in English and "2026年8月" in Japanese.
+ */
+fun Date.formatToLocalizedMonthYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMM"),
     locale
 ).format(this)
 
@@ -39,8 +44,11 @@ fun Date.formatToYYYYWmm(locale: Locale = Locale.getDefault()): String = SimpleD
     locale
 ).format(this)
 
-fun Date.formatToMMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM dd",
+/**
+ * Formats the date to a full month and day string, e.g. "August 13" in English and "13 August" in British English.
+ */
+fun Date.formatToLocalizedFullMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "MMMMd"),
     locale
 ).format(this)
 
@@ -49,45 +57,39 @@ fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFo
     locale
 ).format(this)
 
-fun Date.formatToMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d",
-    locale
-).format(this)
-
-fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "dd MMM yyyy",
-    locale
-).format(this)
-
-fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy",
+/**
+ * Formats the date to an abbreviated month and day string, e.g. "Aug 13" in English and "13 Ağu" in Turkish.
+ */
+fun Date.formatToLocalizedMonthDay(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "MMMd"),
     locale
 ).format(this)
 
 /**
- * Formats the date to a string in the format "MMM d, yyyy" considering the current locale.
+ * Formats the date to an abbreviated month, day and year string, e.g. "Aug 3, 2026" in English and
+ * "3. Aug. 2026" in German. Pairs with [formatToLocalizedMonthDay], which keeps the month name in every locale.
+ */
+fun Date.formatToLocalizedMonthDayYear(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    DateFormat.getBestDateTimePattern(locale, "yMMMd"),
+    locale
+).format(this)
+
+/**
+ * Formats the date with the locale's medium date style, e.g. "Aug 3, 2026" in English, "3 Aug 2026" in British
+ * English and "03.08.2026" in German.
  */
 fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
     .getDateInstance(SimpleDateFormat.MEDIUM, locale)
     .format(this)
 
-fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy hh:mm a",
-    locale
-).format(this)
-
-fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
-    "d, yyyy",
-    locale
-).format(this)
-
-fun Date.formatToEEEEMMMddhha(locale: Locale): String {
-    val symbols = DateFormatSymbols(locale)
-    symbols.amPmStrings = arrayOf("am", "pm")
-    val dateFormat = SimpleDateFormat("EEEE, MMM dd › ha", locale)
-    dateFormat.dateFormatSymbols = symbols
-    return dateFormat.format(this)
-}
+/**
+ * Formats the date and time with the locale's medium date style and short time style, e.g. "Aug 3, 2026, 9:30 AM"
+ * in English and "3 Aug 2026, 09:30" in British English. The time style follows the locale, not the system
+ * 12h/24h setting.
+ */
+fun Date.formatToLocalizedMediumWithTime(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
+    .getDateTimeInstance(SimpleDateFormat.MEDIUM, SimpleDateFormat.SHORT, locale)
+    .format(this)
 
 fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(context).format(this.time)
 
@@ -154,41 +156,21 @@ fun Date.oneYearAgo(): Date =
         add(Calendar.YEAR, -1)
     }.time
 
-fun Date.isInSameYearAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisYear = calendar.get(Calendar.YEAR)
-    calendar.time = other
-    val otherYear = calendar.get(Calendar.YEAR)
-    return thisYear == otherYear
-}
-
-fun Date.isInSameMonthAs(other: Date, baseCalendar: Calendar): Boolean {
-    val calendar = baseCalendar.clone() as Calendar
-    calendar.time = this
-    val thisMonth = calendar.get(Calendar.MONTH)
-    calendar.time = other
-    val otherMonth = calendar.get(Calendar.MONTH)
-    return thisMonth == otherMonth && isInSameYearAs(other, calendar)
-}
-
-fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): String {
-    val formattedStartDate = if (this.isInSameYearAs(other, calendar)) {
-        this.formatToMMMdd(locale)
-    } else {
-        this.formatToMMMddYYYY(locale)
-    }
-
-    val formattedEndDate = if (this.isInSameMonthAs(other, calendar)) {
-        other.formatToDDyyyy(locale)
-    } else {
-        other.formatToMMMddYYYY(locale)
-    }
-
-    return "$formattedStartDate – $formattedEndDate"
-}
+/**
+ * Formats the two dates as a range in the locale's own interval format, e.g. "Jul 1 – 31, 2022" in English
+ * and "1.–31. Juli 2022" in German.
+ */
+fun Date.formatAsRangeWith(other: Date, locale: Locale): String = DateIntervalFormat
+    .getInstance("yMMMd", locale)
+    .format(DateInterval(this.time, other.time))
 
 private const val THREE_MONTHS = 3
 private const val SEVEN_DAYS = 7
 
 fun LocalDate.formatStyleFull(): String = format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL))
+
+fun Date.toEpochDay(): Long =
+    toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toEpochDay()
+
+fun Long.toDateAtStartOfDay(): Date =
+    Date.from(LocalDate.ofEpochDay(this).atStartOfDay(ZoneId.systemDefault()).toInstant())

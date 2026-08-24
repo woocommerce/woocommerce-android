@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.ProgressDialog
@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -42,7 +43,9 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             viewState = it,
             onUsernameChanged = viewModel::onUsernameChanged,
             onPasswordChanged = viewModel::onPasswordChanged,
+            onEndpointUrlChanged = viewModel::onEndpointUrlChanged,
             onContinueClick = viewModel::onContinueClick,
+            onEndpointRecoveryCancelClick = viewModel::onEndpointRecoveryCancelClick,
             onResetPasswordClick = viewModel::onResetPasswordClick,
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
@@ -57,7 +60,9 @@ fun LoginSiteCredentialsScreen(
     viewState: LoginSiteCredentialsViewModel.ViewState,
     onUsernameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    onEndpointUrlChanged: (String) -> Unit,
     onContinueClick: () -> Unit,
+    onEndpointRecoveryCancelClick: () -> Unit,
     onResetPasswordClick: () -> Unit,
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
@@ -86,35 +91,41 @@ fun LoginSiteCredentialsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
-                Text(
-                    text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
-                    style = MaterialTheme.typography.body2
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                WCOutlinedTextField(
-                    value = viewState.username,
-                    onValueChange = onUsernameChanged,
-                    label = stringResource(id = R.string.username),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-                WCPasswordField(
-                    value = viewState.password,
-                    onValueChange = onPasswordChanged,
-                    label = stringResource(id = R.string.password),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { onContinueClick() }
+                if (viewState.endpointRecovery != null) {
+                    EndpointRecoveryForm(
+                        recovery = viewState.endpointRecovery,
+                        onUrlChanged = onEndpointUrlChanged,
+                        onContinueClick = onContinueClick
                     )
-                )
-                WCTextButton(onClick = onResetPasswordClick) {
-                    Text(text = stringResource(id = R.string.reset_your_password))
+                } else {
+                    Text(
+                        text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
+                        style = MaterialTheme.typography.body2
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                    WCOutlinedTextField(
+                        value = viewState.username,
+                        onValueChange = onUsernameChanged,
+                        label = stringResource(id = R.string.username),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    )
+                    WCPasswordField(
+                        value = viewState.password,
+                        onValueChange = onPasswordChanged,
+                        label = stringResource(id = R.string.password),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { onContinueClick() })
+                    )
+                    WCTextButton(onClick = onResetPasswordClick) {
+                        Text(text = stringResource(id = R.string.reset_your_password))
+                    }
                 }
             }
 
             WCColoredButton(
                 onClick = onContinueClick,
-                enabled = viewState.isValid,
+                enabled = viewState.endpointRecovery?.url?.isNotBlank() ?: viewState.isValid,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
@@ -122,6 +133,20 @@ fun LoginSiteCredentialsScreen(
                 Text(
                     text = stringResource(id = R.string.continue_button)
                 )
+            }
+            if (viewState.endpointRecovery != null) {
+                WCTextButton(
+                    onClick = onStartWebAuthorizationClick,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                }
+                WCTextButton(
+                    onClick = onEndpointRecoveryCancelClick,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
@@ -173,41 +198,110 @@ fun LoginSiteCredentialsScreen(
     }
 }
 
-@Preview
 @Composable
-private fun LoginSiteCredentialsScreenPreview() {
-    WooThemeWithBackground {
-        LoginSiteCredentialsScreen(
-            viewState = LoginSiteCredentialsViewModel.ViewState(
-                siteUrl = "https://wordpress.com"
-            ),
-            onUsernameChanged = {},
-            onPasswordChanged = {},
-            onContinueClick = {},
-            onResetPasswordClick = {},
-            onBackClick = {},
-            onHelpButtonClick = {},
-            onErrorDialogDismissed = {},
-            onStartWebAuthorizationClick = {}
+private fun EndpointRecoveryForm(
+    recovery: LoginSiteCredentialsViewModel.EndpointRecovery,
+    onUrlChanged: (String) -> Unit,
+    onContinueClick: () -> Unit
+) {
+    val strings = if (recovery.type == LoginSiteCredentialsViewModel.EndpointType.LOGIN) {
+        Triple(
+            R.string.login_site_credentials_login_url_title,
+            R.string.login_site_credentials_login_url_description,
+            R.string.login_site_credentials_login_url_label
+        )
+    } else {
+        Triple(
+            R.string.login_site_credentials_admin_url_title,
+            R.string.login_site_credentials_admin_url_description,
+            R.string.login_site_credentials_admin_url_label
         )
     }
+    Text(
+        text = stringResource(strings.first),
+        style = MaterialTheme.typography.h6
+    )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+    Text(
+        text = stringResource(strings.second),
+        style = MaterialTheme.typography.body2
+    )
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    WCOutlinedTextField(
+        value = recovery.url,
+        onValueChange = onUrlChanged,
+        label = stringResource(strings.third),
+        helperText = recovery.errorMessage?.getText(),
+        isError = recovery.errorMessage != null,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onContinueClick() })
+    )
 }
 
-@Preview
+@LightDarkThemePreviews
+@Composable
+private fun LoginSiteCredentialsScreenPreview() {
+    LoginSiteCredentialsScreenPreview(
+        LoginSiteCredentialsViewModel.ViewState(siteUrl = "https://wordpress.com")
+    )
+}
+
+@LightDarkThemePreviews
 @Composable
 private fun LoginSiteCredentialsScreenWithErrorPreview() {
+    LoginSiteCredentialsScreenPreview(
+        LoginSiteCredentialsViewModel.ViewState(
+            siteUrl = "https://wordpress.com",
+            authenticationError = LoginSiteCredentialsViewModel.AuthenticationError(
+                errorMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed),
+                showWpAdminFallbackOption = true
+            )
+        )
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun LoginSiteCredentialsLoginRecoveryPreview() {
+    LoginSiteCredentialsScreenPreview(
+        LoginSiteCredentialsViewModel.ViewState(
+            siteUrl = "example.com",
+            endpointRecovery = LoginSiteCredentialsViewModel.EndpointRecovery(
+                type = LoginSiteCredentialsViewModel.EndpointType.LOGIN,
+                url = "https://example.com/wp-login.php"
+            )
+        )
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun LoginSiteCredentialsAdminRecoveryErrorPreview() {
+    LoginSiteCredentialsScreenPreview(
+        LoginSiteCredentialsViewModel.ViewState(
+            siteUrl = "example.com",
+            endpointRecovery = LoginSiteCredentialsViewModel.EndpointRecovery(
+                type = LoginSiteCredentialsViewModel.EndpointType.ADMIN,
+                url = "https://example.com/dashboard",
+                errorMessage = UiString.UiStringRes(
+                    R.string.login_site_credentials_admin_url_not_found_error
+                )
+            )
+        )
+    )
+}
+
+@Composable
+private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsViewModel.ViewState) {
     WooThemeWithBackground {
         LoginSiteCredentialsScreen(
-            viewState = LoginSiteCredentialsViewModel.ViewState(
-                siteUrl = "https://wordpress.com",
-                authenticationError = LoginSiteCredentialsViewModel.AuthenticationError(
-                    errorMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed),
-                    showWpAdminFallbackOption = true
-                )
-            ),
+            viewState = viewState,
             onUsernameChanged = {},
             onPasswordChanged = {},
+            onEndpointUrlChanged = {},
             onContinueClick = {},
+            onEndpointRecoveryCancelClick = {},
             onResetPasswordClick = {},
             onBackClick = {},
             onHelpButtonClick = {},

@@ -61,6 +61,7 @@ sealed interface WooPosCardReaderConnectionState {
     data class ReaderFound(
         val reader: FoundReader,
         val onKeepSearchingClicked: () -> Unit,
+        val bluetoothUnavailable: BluetoothUnavailable?,
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = true
     }
@@ -68,8 +69,25 @@ sealed interface WooPosCardReaderConnectionState {
     data class MultipleReadersFound(
         val readers: List<FoundReader>,
         val onCancelClicked: () -> Unit,
+        val bluetoothUnavailable: BluetoothUnavailable?,
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = true
+    }
+
+    data class BluetoothUnavailable(
+        val requirement: BluetoothRequirement.Unmet,
+        val onFixClicked: () -> Unit,
+    )
+
+    sealed interface BluetoothRequirement {
+        data object Satisfied : BluetoothRequirement
+
+        sealed interface Unmet : BluetoothRequirement {
+            data object MissingBluetoothPermission : Unmet
+            data object BluetoothOff : Unmet
+            data object MissingLocationPermission : Unmet
+            data object LocationOff : Unmet
+        }
     }
 
     data object Connecting : WooPosCardReaderConnectionState

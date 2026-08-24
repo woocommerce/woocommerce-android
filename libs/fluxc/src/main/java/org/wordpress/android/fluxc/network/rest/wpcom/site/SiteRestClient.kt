@@ -638,11 +638,6 @@ class SiteRestClient @Inject constructor(
         if (from.capabilities != null) {
             site.hasCapabilityManageOptions = from.capabilities.manage_options
         }
-        if (from.meta != null) {
-            if (from.meta.links != null) {
-                site.xmlRpcUrl = from.meta.links.xmlrpc
-            }
-        }
         // Only set the isWPCom flag for "pure" WPCom sites
         if (!from.jetpack_connection) {
             site.setIsWPCom(true)

@@ -5,11 +5,13 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -24,6 +26,8 @@ import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
 
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
     private val backgroundUpdateAnalyticsRepository: BackgroundUpdateAnalyticsRepository = mock()
@@ -68,12 +72,14 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
         analyticsUpdateDataStore = analyticsUpdateDataStore
     )
 
-    private val defaultRangeSelection = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault(),
-        referenceStartDate = Date(),
-        referenceEndDate = Date()
-    )
+    private val defaultRangeSelection by lazy {
+        StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault(),
+            referenceStartDate = Date(),
+            referenceEndDate = Date()
+        )
+    }
 
     @Test
     fun `when there are visible cards then refresh visible and forced cards data`() = runTest {

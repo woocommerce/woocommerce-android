@@ -24,6 +24,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
@@ -78,9 +79,15 @@ class ProductPricingViewModel @Inject constructor(
             currency = parameters.currencySymbol,
             currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
             decimals = decimals,
-            taxClassList = if (isProductPricing) productRepository.getTaxClassesForSite() else null,
             isTaxSectionVisible = isProductPricing
         )
+
+        if (isProductPricing) {
+            launch {
+                val taxClasses = productRepository.getTaxClassesForSite()
+                viewState = viewState.copy(taxClassList = taxClasses)
+            }
+        }
 
         originalPricingData = navArgs.pricingData
 

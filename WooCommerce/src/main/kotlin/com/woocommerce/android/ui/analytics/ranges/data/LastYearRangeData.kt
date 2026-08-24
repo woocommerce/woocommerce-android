@@ -38,7 +38,7 @@ class LastYearRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
         val twoYearsAgo = oneYearAgo.oneYearAgo()
         calendar.time = twoYearsAgo
@@ -48,6 +48,6 @@ class LastYearRangeData(
             start = previousStart,
             end = previousEnd
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale)
     }
 }

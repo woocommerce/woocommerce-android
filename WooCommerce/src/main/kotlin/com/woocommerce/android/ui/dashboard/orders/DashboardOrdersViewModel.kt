@@ -9,7 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedMonthDay
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.ORDERS
 import com.woocommerce.android.model.Order
@@ -122,7 +122,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                 ViewState.OrderItem(
                                     id = order.id,
                                     number = "#${order.number}",
-                                    date = order.dateCreated.formatToMMMdd(),
+                                    date = order.dateCreated.formatToLocalizedMonthDay(),
                                     customerName = order.billingName.ifEmpty {
                                         resourceProvider.getString(R.string.orderdetail_customer_name_default)
                                     },

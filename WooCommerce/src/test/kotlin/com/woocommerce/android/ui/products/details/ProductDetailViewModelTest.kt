@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
+import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.DuplicateProduct
@@ -44,6 +45,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -145,6 +147,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
     private val customFieldsRepository: CustomFieldsRepository = mock {
         on { hasDisplayableCustomFields(any()) } doReturn false
+        on { observeDisplayableCustomFields(any()) } doReturn flowOf(emptyList())
     }
     private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
@@ -309,6 +312,38 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             duplicateProduct
         )
     }
+
+    @Test
+    fun `given custom fields load after the product, when metadata changes, then the add more list drops custom fields`() =
+        testBlocking {
+            val customFieldsFlow = MutableStateFlow<List<CustomField>>(emptyList())
+            var productHasCustomFields = false
+            doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+            doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+            whenever(customFieldsRepository.observeDisplayableCustomFields(any())).thenReturn(customFieldsFlow)
+            whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenAnswer { productHasCustomFields }
+
+            var bottomSheetItems: List<ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem>? = null
+            viewModel.productDetailBottomSheetList.observeForever { bottomSheetItems = it }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            viewModel.start()
+
+            // GIVEN the custom fields metadata is not yet loaded, the "add custom fields" item is shown
+            Assertions.assertThat(bottomSheetItems).anyMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+
+            // WHEN the product's custom fields metadata becomes available
+            productHasCustomFields = true
+            customFieldsFlow.value = listOf(CustomField(id = 1L, key = "key", value = "value"))
+
+            // THEN the section is recomputed and the custom fields item is removed
+            Assertions.assertThat(bottomSheetItems).noneMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+        }
 
     @Test
     fun `Displays the product detail properties correctly`() = testBlocking {

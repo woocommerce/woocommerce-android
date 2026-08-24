@@ -86,14 +86,6 @@ public class SiteWPComRestResponse implements Response {
     }
 
 
-    public static class Meta {
-        public static class Links {
-            public String xmlrpc;
-        }
-
-        public Links links;
-    }
-
     public class ZendeskSiteMeta {
         public String plan;
         public List<String> addon;
@@ -121,7 +113,6 @@ public class SiteWPComRestResponse implements Response {
     public Capabilities capabilities;
     public Plan plan;
     public Icon icon;
-    public Meta meta;
     public Quota quota;
     public ZendeskSiteMeta zendesk_site_meta;
     public boolean was_ecommerce_trial;

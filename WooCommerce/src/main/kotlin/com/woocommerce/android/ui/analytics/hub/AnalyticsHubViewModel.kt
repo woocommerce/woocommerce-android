@@ -230,9 +230,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     fun onCustomDateRangeClicked() {
-        val startTimestamp = ranges.currentRange.start.time
-        val endTimestamp = ranges.currentRange.end.time
-        triggerEvent(AnalyticsViewEvent.OpenDatePicker(startTimestamp, endTimestamp))
+        triggerEvent(AnalyticsViewEvent.OpenDatePicker(ranges.currentRange.start, ranges.currentRange.end))
     }
 
     fun onRefreshRequested() {

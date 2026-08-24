@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-14 21:56:16+0000
+Translation-Revision-Date: 2026-07-28 16:54:15+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_cart_custom_amount_discount_not_applied">Desconto não aplicado</string>
+    <string name="product_duplicate_discard_changes_action">Descartar e duplicar</string>
+    <string name="product_duplicate_discard_changes_message">Suas alterações não salvas serão perdidas. A duplicação usará a última versão salva.</string>
+    <string name="product_duplicate_discard_changes_title">Descartar alterações e duplicar?</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_hint">Há pelo menos um requisito pendente. Você pode pular e continuar aceitando pagamentos, mas se o requisito estiver bloqueando sua conta, algumas transações podem ser recusadas até que você resolva isso.</string>
+    <string name="card_reader_onboarding_account_overdue_requirements_header">Requisitos vencidos na sua conta</string>
+    <string name="order_editing_currency_mismatch_title">Este pedido não pode ser editado no aplicativo</string>
+    <string name="login_no_wpcom_account_found_message">O usuário não existe. Verifique se o endereço de e-mail está correto ou tente com uma conta diferente.</string>
+    <string name="login_no_wpcom_account_found_title">E-mail incorreto</string>
     <string name="blaze_campaign_edit_ad_unsupported_image_type_description">Este tipo de imagem não é compatível. Selecione uma imagem PNG, JPEG, WebP, GIF, BMP, HEIC ou HEIF.</string>
     <string name="ai_support_chat_store_connection_error_message">Não é possível acessar minha loja. O aplicativo detectou um erro de conexão ao tentar acessá-la. Como posso corrigir isso?</string>
     <string name="settings_crash_reporting_error_update">Ocorreu um erro ao atualizar suas configurações em \"Reportar travamentos\"</string>
@@ -1187,6 +1196,7 @@ Language: pt_BR
     <string name="shipping_label_purchased_note">Observação: reutilizar uma etiqueta impressa é uma violação dos nossos termos de serviço e pode resultar em acusações criminais.</string>
     <string name="shipping_label_purchased_success_message">Aqui você pode imprimir a etiqueta de envio novamente ou alterar o tamanho do papel da etiqueta.</string>
     <string name="shipping_label_purchased_success_title">Sua etiqueta de envio está pronta para impressão</string>
+    <string name="order_editing_currency_mismatch_message">Você só pode editar este pedido no navegador Web, pois ele usa %1$s, e a moeda do seu site é %2$s.</string>
     <string name="shipping_label_shipping_service_title">Serviço de entrega</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Mais rápido</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Mais barato</string>
@@ -1655,10 +1665,10 @@ Language: pt_BR
     <string name="blaze_campaign_edit_ad_change_image_button">Mudar imagem</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Aplicar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dias</string>
-    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Concluído</string>
     <string name="blaze_campaign_budget_impressions_title">Impressões</string>
     <string name="blaze_campaign_budget_update_button">Atualizar</string>
+    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_edit_duration_button">Editar</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimativa de pessoas alcançadas por dia</string>
     <string name="blaze_campaign_budget_days_duration">por %1$s dias</string>
@@ -1667,9 +1677,6 @@ Language: pt_BR
     <string name="blaze_campaign_preview_days_duration">%1$s dias a partir de %2$s</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Detalhamento</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Data inicial</string>
-    <string name="product_creation_survey_button_dont_show_again">Não mostrar novamente</string>
-    <string name="product_creation_survey_button_remind_me_later">Lembrar depois</string>
-    <string name="product_creation_survey_description">Tem um minuto? Ajude a melhorar nossas funcionalidades assistidas por IA dando um feedback rápido.</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirmar detalhes</string>
     <string name="blaze_campaign_preview_details_destination_url">Destino do anúncio</string>
     <string name="blaze_campaign_preview_details_interests">Interesses</string>
@@ -1719,8 +1726,6 @@ Language: pt_BR
     <string name="theme_picker_carousel_info_item_description_settings">Encontre o tema perfeito na loja de temas do WooCommerce.</string>
     <string name="theme_picker_current_theme_title">Tema atual</string>
     <string name="theme_picker_settings_title">Dê uma repaginada</string>
-    <string name="product_creation_survey_button_open">Iniciar pesquisa</string>
-    <string name="product_creation_survey_title">Valorizamos sua opinião!</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_hint">Ao ativar o pagamento presencial, você permite que o cliente pague pedidos online no momento da entrega em dinheiro ou cartão.\n\nOs pedidos ainda podem ser criados manualmente sem essa funcionalidade.</string>
     <string name="card_reader_onboarding_cash_on_delivery_disabled_error_header">Quer adicionar a opção de pagamento presencial à finalização da compra online?</string>
     <string name="card_reader_onboarding_contact_us">Precisa de ajuda? &lt;a href=\'\'&gt;Fale conosco&lt;/a&gt;</string>
@@ -2303,7 +2308,6 @@ Language: pt_BR
     <string name="support_request_title">Vamos resolver isso</string>
     <string name="support_request_help_title">Preciso de ajuda com</string>
     <string name="support_request">Solicitação de suporte</string>
-    <string name="store_onboarding_menu_share_feedback">Compartilhar feedback</string>
     <string name="store_onboarding_task_view_all">Visualizar tudo (%1$d)</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d de %2$d tarefas concluídas</string>
     <string name="store_onboarding_task_payments_setup_description">Ofereça aos seus clientes uma maneira fácil e conveniente de pagar.</string>
@@ -2485,7 +2489,6 @@ Language: pt_BR
     <string name="more_menu_button_w___admin">WC Admin</string>
     <string name="login_non_woo_stores_label">Outros sites</string>
     <string name="payments_hub_title">Pagamentos</string>
-    <string name="login_no_wpcom_account_found">Seu e-mail não é usado com uma conta do WordPress.com.</string>
     <string name="login_magic_links_sent_label_short">Verifique seu e-mail neste dispositivo.</string>
     <string name="login_magic_links_email_sent">Acabamos de enviar um link mágico para</string>
     <string name="login_magic_link_button">Fazer login com link mágico</string>
@@ -3039,8 +3042,6 @@ Language: pt_BR
     <string name="card_reader_onboarding_account_under_review_hint">Você poderá aceitar pagamentos presenciais assim que analisarmos sua conta.</string>
     <string name="card_reader_tutorial_collect_label">Insira, passe ou aproxime o cartão</string>
     <string name="card_reader_onboarding_account_pending_requirements_hint">Há requisitos pendentes na sua conta. Preencha-os até %1$s para continuar aceitando pagamentos presenciais.</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_hint">Há pelo menos um requisito pendente na sua conta. Preencha-o para voltar a aceitar pagamentos presenciais</string>
-    <string name="card_reader_onboarding_account_overdue_requirements_header">Os pagamentos presenciais não estão disponíveis</string>
     <string name="card_reader_onboarding_account_pending_requirements_header">Sua conta tem requisitos pendentes</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_refresh_button">Recarregue a página depois de atualizar</string>
     <string name="card_reader_onboarding_wcpay_unsupported_version_hint">Uma versão desatualizada da extensão do WooCommerce Payments está instalada na sua loja. Atualize-a para aceitar pagamentos presenciais.</string>

@@ -73,7 +73,7 @@ import java.util.Date
 
 @Composable
 fun DashboardStatsCard(
-    openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
+    openDatePicker: (Date, Date, (Date, Date) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
     viewModel: DashboardStatsViewModel = hiltViewModel(
@@ -94,8 +94,8 @@ fun DashboardStatsCard(
     HandleEvents(
         event = viewModel.event,
         openDatePicker = { fromDate, toDate ->
-            openDatePicker(fromDate, toDate) { from, to ->
-                viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+            openDatePicker(fromDate, toDate) { startDate, endDate ->
+                viewModel.onCustomRangeSelected(StatsTimeRange(startDate, endDate))
             }
         }
     )
@@ -520,7 +520,7 @@ private val orderDateTypeOptions = listOf(
 @Composable
 private fun HandleEvents(
     event: LiveData<MultiLiveEvent.Event>,
-    openDatePicker: (Long, Long) -> Unit,
+    openDatePicker: (Date, Date) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -529,7 +529,7 @@ private fun HandleEvents(
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardStatsViewModel.OpenDatePicker -> {
-                    openDatePicker(event.fromDate.time, event.toDate.time)
+                    openDatePicker(event.fromDate, event.toDate)
                 }
 
                 is DashboardStatsViewModel.OpenAnalytics -> {

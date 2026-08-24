@@ -26,6 +26,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -98,7 +99,9 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         )
         doReturn(SiteModel()).whenever(selectedSite).get()
         doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
-        doReturn(taxClasses).whenever(productRepository).getTaxClassesForSite()
+        productRepository.stub {
+            on { getTaxClassesForSite() } doReturn taxClasses
+        }
 
         viewModel = ProductPricingViewModel(
             savedState,

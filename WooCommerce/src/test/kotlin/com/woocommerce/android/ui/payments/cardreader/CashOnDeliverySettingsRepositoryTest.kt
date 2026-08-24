@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
@@ -12,17 +13,49 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.gateways.GatewayRestClient
+import org.wordpress.android.fluxc.store.Settings
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
 class CashOnDeliverySettingsRepositoryTest {
+    private val site = SiteModel()
     private val selectedSite: SelectedSite = mock {
-        on(it.get()).thenReturn(SiteModel())
+        on(it.get()).thenReturn(site)
     }
     private val gatewayStore: WCGatewayStore = mock()
     private val cashOnDeliverySettingsRepository = CashOnDeliverySettingsRepository(
         gatewayStore,
         selectedSite
     )
+
+    @Test
+    fun `when cod is enabled, then title description and instructions are updated`() {
+        runTest {
+            cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(shouldEnable = true)
+
+            verify(gatewayStore).updateGateway(
+                site = site,
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = true,
+                title = "Pay in Person",
+                description = "Pay by card or another accepted payment method",
+                settings = Settings(instructions = "Pay by card or another accepted payment method")
+            )
+        }
+    }
+
+    @Test
+    fun `when cod is disabled, then title description and instructions are left untouched`() {
+        runTest {
+            cashOnDeliverySettingsRepository.toggleCashOnDeliveryOption(shouldEnable = false)
+
+            verify(gatewayStore).updateGateway(
+                site = site,
+                gatewayId = GatewayRestClient.GatewayId.CASH_ON_DELIVERY,
+                enabled = false
+            )
+        }
+    }
 
     @Test
     fun `when cod enabled, then return true when queried for cod status`() {
@@ -62,11 +95,53 @@ class CashOnDeliverySettingsRepositoryTest {
         }
     }
 
-    private fun getSuccessWooResult(paymentType: String, isPaymentTypeEnabled: Boolean) = WooResult(
+    @Test
+    fun `when cod has a custom title, then that title is returned with the gateway`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+                getSuccessWooResult("cod", true, title = "Cash on delivery")
+            )
+
+            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway().model?.title)
+                .isEqualTo("Cash on delivery")
+        }
+    }
+
+    @Test
+    fun `when cod payment type is not present, then no gateway is returned`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(
+                getSuccessWooResult("cheque", true)
+            )
+
+            val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isNull()
+        }
+    }
+
+    @Test
+    fun `when api result is error, then the gateway fetch fails`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(getFailureWooResult())
+
+            val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+
+            assertThat(result.isError).isTrue
+            assertThat(result.model).isNull()
+        }
+    }
+
+    private fun getSuccessWooResult(
+        paymentType: String,
+        isPaymentTypeEnabled: Boolean,
+        title: String = ""
+    ) = WooResult(
         model = listOf(
             WCGatewayModel(
                 id = paymentType,
-                title = "",
+                title = title,
                 description = "",
                 order = 0,
                 isEnabled = isPaymentTypeEnabled,
