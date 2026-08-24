@@ -39,6 +39,7 @@ import org.wordpress.android.fluxc.store.SiteStore.SiteFilter.WPCOM
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.util.UrlUtils
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
@@ -85,6 +86,7 @@ class SiteRestClientTest {
             jetpackTunnelGsonRequestBuilder = jetpackTunnelGsonRequestBuilder,
             coroutineEngine = initCoroutineEngine(),
             discoveryWPAPIRestClient = discoveryWPAPIRestClient,
+            httpsUrlNormalizer = HttpsUrlNormalizer(),
             accessToken = accessToken,
             userAgent = userAgent
         )
@@ -107,6 +109,29 @@ class SiteRestClientTest {
             .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12")
         assertThat(paramsCaptor.lastValue).isEqualTo(mapOf("fields" to SiteRestClient.SITE_FIELDS))
     }
+
+    @Test
+    fun `given WPCom response advertises HTTP, when fetching site, then normalize fields and require configuration`() =
+        test {
+            val response = SiteWPComRestResponse().apply {
+                ID = siteId
+                name = "Store"
+                URL = "http://site.example/store"
+                options = SiteWPComRestResponse.Options().apply {
+                    admin_url = "http://site.example/store/wp-admin/"
+                    login_url = "http://site.example/store/wp-login.php"
+                }
+            }
+            initSiteResponse(response)
+
+            val responseModel = restClient.fetchSite(site)
+
+            assertThat(responseModel.url).isEqualTo("https://site.example/store")
+            assertThat(responseModel.adminUrl).isEqualTo("https://site.example/store/wp-admin/")
+            assertThat(responseModel.loginUrl).isEqualTo("https://site.example/store/wp-login.php")
+            assertThat(responseModel.httpsConfigurationState)
+                .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        }
 
     @Test
     fun `fetchSite returns error when API call fails`() = test {
@@ -297,6 +322,25 @@ class SiteRestClientTest {
     }
 
     @Test
+    fun `given HTTP login address, when fetching site info, then send and return only HTTPS`() = test {
+        initGetResponse(
+            ConnectSiteInfoResponse::class.java,
+            ConnectSiteInfoResponse().apply {
+                exists = true
+                isWordPress = true
+                urlAfterRedirects = "http://test.com/redirected"
+            }
+        )
+
+        val result = restClient.fetchConnectSiteInfoSync("http://test.com")
+
+        assertThat(paramsCaptor.lastValue["url"]).isEqualTo("https://test.com")
+        assertThat(result.url).isEqualTo("https://test.com")
+        assertThat(result.urlAfterRedirects).isEqualTo("https://test.com/redirected")
+        assertThat(result.wasUrlNormalizedToHttps).isTrue()
+    }
+
+    @Test
     fun `given ordinary site info error, when fetching site info, then WP API discovery state is attached`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
         try {
@@ -382,42 +426,58 @@ class SiteRestClientTest {
     fun `given eligible site info error and successful probe, when fetching site info, then WP API base URL is attached`() =
         test {
             val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "origin failed"))
-            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("test.com")).thenReturn("https://test.com/wp-json/")
+            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("https://test.com"))
+                .thenReturn("https://test.com/wp-json/")
             whenever(discoveryWPAPIRestClient.verifyWPAPIV2Support("https://test.com/wp-json/"))
                 .thenReturn("https://test.com/wp-json/")
 
             val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error!!.wpApiDiscovery!!.wpApiBaseUrl).isEqualTo("https://test.com/wp-json/")
-            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("test.com")
+            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("https://test.com")
             verify(discoveryWPAPIRestClient).verifyWPAPIV2Support("https://test.com/wp-json/")
         }
+
+    @Test
+    fun `given discovery advertises HTTP API root, when verifying fallback, then upgrade it to HTTPS`() = test {
+        val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "origin failed"))
+        whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("https://test.com"))
+            .thenReturn("http://test.com/wp-json/")
+        whenever(discoveryWPAPIRestClient.verifyWPAPIV2Support("https://test.com/wp-json/"))
+            .thenReturn("https://test.com/wp-json/")
+
+        val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
+
+        assertThat(result.error?.wpApiDiscovery?.wpApiBaseUrl).isEqualTo("https://test.com/wp-json/")
+        verify(discoveryWPAPIRestClient).verifyWPAPIV2Support("https://test.com/wp-json/")
+    }
 
     @Test
     fun `given eligible site info error and missing link header, when fetching site info, then WP API base URL is null`() =
         test {
             val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "origin failed"))
-            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("test.com")).thenReturn(null)
+            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("https://test.com")).thenReturn(null)
 
             val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error!!.wpApiDiscovery).isNotNull
             assertThat(result.error!!.wpApiDiscovery!!.wpApiBaseUrl).isNull()
-            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("test.com")
+            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("https://test.com")
         }
 
     @Test
     fun `given eligible site info error and unsupported WP API, when fetching site info, then WP API base URL is null`() =
         test {
             val error = WPComGsonNetworkError(BaseNetworkError(GenericErrorType.INVALID_RESPONSE, "origin failed"))
-            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("test.com")).thenReturn("https://test.com/wp-json/")
+            whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("https://test.com"))
+                .thenReturn("https://test.com/wp-json/")
             whenever(discoveryWPAPIRestClient.verifyWPAPIV2Support("https://test.com/wp-json/")).thenReturn(null)
 
             val result = fetchConnectSiteInfoWithError(error, discoverWPAPIOnFailure = true)
 
             assertThat(result.error!!.wpApiDiscovery).isNotNull
             assertThat(result.error!!.wpApiDiscovery!!.wpApiBaseUrl).isNull()
-            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("test.com")
+            verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("https://test.com")
             verify(discoveryWPAPIRestClient).verifyWPAPIV2Support("https://test.com/wp-json/")
         }
 
@@ -648,6 +708,50 @@ class SiteRestClientTest {
     }
 
     @Test
+    fun `given root endpoint advertises HTTP, when fetching site, then normalize and require configuration`() = test {
+        val jetpackCPSite = SiteModel().apply { setIsJetpackConnected(false) }
+        initRootEndpointResponse(
+            RootWPAPIRestResponse(
+                url = "http://test.com",
+                namespaces = listOf("wc/v3"),
+                authentication = RootWPAPIRestResponse.Authentication(
+                    applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                        endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                            authorization = "http://test.com/application-passwords"
+                        )
+                    )
+                ),
+            )
+        )
+
+        val result = restClient.fetchSite(jetpackCPSite)
+
+        assertThat(result.url).isEqualTo("https://test.com")
+        assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo("https://test.com/application-passwords")
+        assertThat(result.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+    }
+
+    @Test
+    fun `given root endpoint server URL is invalid, when fetching site, then fail without changing stored state`() = test {
+        val jetpackCPSite = SiteModel().apply {
+            url = "https://test.com"
+            name = "Original"
+            httpsConfigurationState = SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+            setIsJetpackConnected(false)
+        }
+        initRootEndpointResponse(RootWPAPIRestResponse(name = "Updated", url = "ftp://test.com"))
+
+        val result = restClient.fetchSite(jetpackCPSite)
+
+        assertThat(result.isError).isTrue()
+        assertThat(result.error.type).isEqualTo(GenericErrorType.INVALID_RESPONSE)
+        assertThat(jetpackCPSite.name).isEqualTo("Original")
+        assertThat(jetpackCPSite.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+    }
+
+    @Test
     fun `given Jetpack CP sites, when fetching sites, then use root endpoint for additional data`() = test {
         val wpComSiteResponse = SiteWPComRestResponse()
         wpComSiteResponse.ID = siteId
@@ -791,7 +895,8 @@ class SiteRestClientTest {
 
     private suspend fun assertOptedInConnectivityErrorDiscoversWPAPI(type: GenericErrorType) {
         val error = WPComGsonNetworkError(BaseNetworkError(type, VolleyError("Android connectivity failure")))
-        whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("test.com")).thenReturn("https://test.com/wp-json/")
+        whenever(discoveryWPAPIRestClient.discoverWPAPIBaseURL("https://test.com"))
+            .thenReturn("https://test.com/wp-json/")
         whenever(discoveryWPAPIRestClient.verifyWPAPIV2Support("https://test.com/wp-json/"))
             .thenReturn("https://test.com/wp-json/")
 
@@ -802,7 +907,7 @@ class SiteRestClientTest {
         assertThat(result.error!!.wpApiDiscovery).isNotNull
         assertThat(result.error!!.wpApiDiscovery!!.connectSiteInfoApiError).isEqualTo(error.apiError)
         assertThat(result.error!!.wpApiDiscovery!!.wpApiBaseUrl).isEqualTo("https://test.com/wp-json/")
-        verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("test.com")
+        verify(discoveryWPAPIRestClient).discoverWPAPIBaseURL("https://test.com")
         verify(discoveryWPAPIRestClient).verifyWPAPIV2Support("https://test.com/wp-json/")
     }
 

@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
 import org.wordpress.android.fluxc.test
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 
 @Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
@@ -27,6 +28,7 @@ class SiteWPAPIRestClientTest {
     private val subject = SiteWPAPIRestClient(
         wpapiGsonRequestBuilder = requestBuilder,
         discoveryWPAPIRestClient = discoveryClient,
+        httpsUrlNormalizer = HttpsUrlNormalizer(),
         dispatcher = mock<Dispatcher>(),
         requestQueue = mock<RequestQueue>(),
         userAgent = mock<UserAgent>()
@@ -95,6 +97,86 @@ class SiteWPAPIRestClientTest {
         val refreshedSite = subject.fetchWPAPISite(existingSite)
 
         assertThat(refreshedSite.adminUrl).isEqualTo(REST_ADMIN_URL)
+    }
+
+    @Test
+    fun `given server advertises HTTP, when fetching a WPAPI site, then normalize fields and require configuration`() =
+        test {
+            givenSiteResponse(
+                RootWPAPIRestResponse(
+                    url = HTTP_SITE_URL,
+                    authentication = RootWPAPIRestResponse.Authentication(
+                        applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                            endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                                authorization = HTTP_REST_ADMIN_AUTHORIZATION_URL
+                            )
+                        )
+                    ),
+                    namespaces = listOf("wc/v3")
+                )
+            )
+
+            val site = subject.fetchWPAPISite(FetchWPAPISitePayload(HTTP_SITE_URL))
+
+            assertThat(site.url).isEqualTo(SITE_URL)
+            assertThat(site.wpApiRestUrl).isEqualTo(WP_API_URL)
+            assertThat(site.adminUrl).isEqualTo(REST_ADMIN_URL)
+            assertThat(site.applicationPasswordsAuthorizeUrl).isEqualTo(REST_ADMIN_AUTHORIZATION_URL)
+            assertThat(site.httpsConfigurationState)
+                .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+        }
+
+    @Test
+    fun `given HTTP input and server advertises HTTPS, when fetching site, then server state is secure`() = test {
+        givenSiteResponse(
+            RootWPAPIRestResponse(
+                url = SITE_URL,
+                namespaces = listOf("wc/v3"),
+            )
+        )
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(HTTP_SITE_URL))
+
+        assertThat(site.url).isEqualTo(SITE_URL)
+        assertThat(site.httpsConfigurationState).isEqualTo(SiteModel.HTTPS_CONFIGURATION_SECURE)
+    }
+
+    @Test
+    fun `given existing application-password site, when refreshing, then retain its local ID`() = test {
+        val existingSite = existingSite().apply { id = 42 }
+        givenSiteResponse(REST_ADMIN_AUTHORIZATION_URL)
+
+        val refreshedSite = subject.fetchWPAPISite(existingSite)
+
+        assertThat(refreshedSite.id).isEqualTo(42)
+    }
+
+    @Test
+    fun `given refresh omits server URL, when prior state requires configuration, then retain prior state`() = test {
+        val existingSite = existingSite().apply {
+            httpsConfigurationState = SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+        }
+        givenSiteResponse(REST_ADMIN_AUTHORIZATION_URL)
+
+        val refreshedSite = subject.fetchWPAPISite(existingSite)
+
+        assertThat(refreshedSite.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+    }
+
+    @Test
+    fun `given server URL has unsupported scheme, when fetching site, then return invalid response`() = test {
+        givenSiteResponse(
+            RootWPAPIRestResponse(
+                url = "ftp://site.example",
+                namespaces = listOf("wc/v3"),
+            )
+        )
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(SITE_URL))
+
+        assertThat(site.isError).isTrue()
+        assertThat(site.error.type).isEqualTo(INVALID_RESPONSE)
     }
 
     @Test
@@ -175,6 +257,7 @@ class SiteWPAPIRestClientTest {
 
     private companion object {
         const val SITE_URL = "https://site.example"
+        const val HTTP_SITE_URL = "http://site.example"
         const val WP_API_URL = "$SITE_URL/wp-json/"
         const val USERNAME = "merchant"
         const val PASSWORD = "password"
@@ -184,6 +267,8 @@ class SiteWPAPIRestClientTest {
         const val STALE_REST_ADMIN_AUTHORIZATION_URL = "${STALE_REST_ADMIN_URL}authorize-application.php"
         const val REST_ADMIN_URL = "$SITE_URL/wp-admin/"
         const val REST_ADMIN_AUTHORIZATION_URL = "${REST_ADMIN_URL}authorize-application.php"
+        const val HTTP_REST_ADMIN_AUTHORIZATION_URL =
+            "http://site.example/wp-admin/authorize-application.php"
         const val FETCH_API_CALL_FIELDS =
             "name,description,gmt_offset,url,authentication,namespaces"
     }

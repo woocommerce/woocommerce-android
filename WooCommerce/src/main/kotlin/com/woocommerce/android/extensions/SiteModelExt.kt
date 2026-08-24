@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.time.Clock
@@ -44,10 +45,14 @@ val SiteModel.isSimpleWPComSite
     get() = isWPCom
 
 val SiteModel.adminUrlOrDefault
-    get() = adminUrl ?: url.slashJoin("wp-admin")
+    get() = (adminUrl ?: url.slashJoin("wp-admin")).normalizedToHttps()
 
 val SiteModel.loginUrlOrDefault
-    get() = loginUrl ?: url.slashJoin("wp-login.php")
+    get() = (loginUrl ?: url.slashJoin("wp-login.php")).normalizedToHttps()
+
+private val httpsUrlNormalizer = HttpsUrlNormalizer()
+
+private fun String.normalizedToHttps() = httpsUrlNormalizer.normalize(this).normalizedUrl
 
 val SiteModel.clock: Clock
     @Suppress("TooGenericExceptionCaught")

@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.ResponseWithHeaders
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -42,6 +43,7 @@ class ApplicationPasswordsNetworkTests {
     private val userAgent: UserAgent = mock()
     private val listener: ApplicationPasswordsListener = mock()
     private val mApplicationPasswordsManager: ApplicationPasswordsManager = mock()
+    private var lastRequestUrl: String? = null
     private lateinit var network: ApplicationPasswordsNetwork
 
     @Before
@@ -49,7 +51,8 @@ class ApplicationPasswordsNetworkTests {
         network = ApplicationPasswordsNetwork(
             requestQueue = requestQueue,
             userAgent = userAgent,
-            listener = Optional.of(listener)
+            listener = Optional.of(listener),
+            httpsUrlNormalizer = HttpsUrlNormalizer(),
         ).apply {
             mApplicationPasswordsManager = this@ApplicationPasswordsNetworkTests.mApplicationPasswordsManager
         }
@@ -64,6 +67,17 @@ class ApplicationPasswordsNetworkTests {
         network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
 
         verify(mApplicationPasswordsManager).getApplicationCredentials(testSite)
+    }
+
+    @Test
+    fun `given HTTP site, when sending request, then use HTTPS`() = runTest {
+        givenSuccessResponse()
+        whenever(mApplicationPasswordsManager.getApplicationCredentials(testSite))
+            .thenReturn(ApplicationPasswordCreationResult.Existing(testCredentials))
+
+        network.executeGetGsonRequest(testSite, "path", TestResponse::class.java)
+
+        assertEquals("https://test-site.com/wp-json/path", lastRequestUrl)
     }
 
     @Test
@@ -148,6 +162,7 @@ class ApplicationPasswordsNetworkTests {
     private fun givenSuccessResponse(response: TestResponse = TestResponse("")) {
         whenever(requestQueue.add(any<WPAPIGsonRequest<TestResponse>>())).thenAnswer { invocation ->
             val request = (invocation.arguments.first() as WPAPIGsonRequest<TestResponse>)
+            lastRequestUrl = request.url
 
             val deliverMethod = Request::class.java.getDeclaredMethod("deliverResponse", Any::class.java)
             deliverMethod.isAccessible = true
@@ -161,6 +176,7 @@ class ApplicationPasswordsNetworkTests {
     private fun givenErrorResponse(error: VolleyError) {
         whenever(requestQueue.add(any<WPAPIGsonRequest<TestResponse>>())).thenAnswer { invocation ->
             val request = (invocation.arguments.first() as WPAPIGsonRequest<TestResponse>)
+            lastRequestUrl = request.url
             request.deliverError(error)
 
             return@thenAnswer request
