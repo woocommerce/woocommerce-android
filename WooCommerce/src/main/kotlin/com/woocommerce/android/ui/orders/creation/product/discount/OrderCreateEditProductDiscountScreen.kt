@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEd
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Amount
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountType.Percentage
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.ViewState
+import com.woocommerce.android.ui.orders.creation.views.getQuantityWithTotalText
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,10 +99,8 @@ fun OrderCreateEditProductDiscountScreen(
                 ProductCard(
                     imageUrl = viewState.value.productDetailsState?.imageUrl,
                     productName = productItem.value.item.name,
-                    productPrice = productItem.value.item.pricePreDiscount,
-                    productQuantity = productItem.value.item.quantity,
-                    subTotalPerProduct = productItem.value.item.subtotal,
-                    state = state.value
+                    quantityWithPrice = getQuantityWithTotalText(productItem.value),
+                    subTotalPerProduct = productItem.value.productInfo.priceSubtotal,
                 )
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
@@ -202,10 +201,8 @@ private fun Toolbar(
 private fun ProductCard(
     imageUrl: String?,
     productName: String,
-    productPrice: BigDecimal,
-    productQuantity: Float,
-    subTotalPerProduct: BigDecimal,
-    state: ViewState
+    quantityWithPrice: String,
+    subTotalPerProduct: String,
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -257,7 +254,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "$productQuantity x ${state.currency}$productPrice",
+            text = quantityWithPrice,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40),
             modifier = Modifier
@@ -273,7 +270,7 @@ private fun ProductCard(
         )
 
         Text(
-            text = "${state.currency}$subTotalPerProduct",
+            text = subTotalPerProduct,
             modifier = Modifier
                 .constrainAs(totalText) {
                     end.linkTo(parent.end)
@@ -330,11 +327,6 @@ data class DiscountInputFieldConfig(
 fun CalculatedAmount(
     state: ViewState,
 ) {
-    val discountAmount = when (state.discountType) {
-        is Percentage -> "${state.currency}${state.calculatedPriceAfterDiscount}"
-        is Amount -> "${state.calculatedPriceAfterDiscount}%"
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -355,7 +347,7 @@ fun CalculatedAmount(
             color = colorResource(id = R.color.woo_gray_40)
         )
         Text(
-            text = discountAmount,
+            text = state.calculatedAmount,
             style = MaterialTheme.typography.body2,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -383,7 +375,7 @@ private fun PriceAfterDiscount(
             style = MaterialTheme.typography.body1,
         )
         Text(
-            text = "${state.currency}${state.priceAfterDiscount}",
+            text = state.priceAfterDiscount,
             style = MaterialTheme.typography.body1,
             color = colorResource(id = R.color.woo_gray_40)
         )
@@ -460,13 +452,7 @@ fun ProductCardPreview() {
     ProductCard(
         imageUrl = "",
         productName = "Product Name",
-        productPrice = BigDecimal.ZERO,
-        productQuantity = 1f,
-        subTotalPerProduct = BigDecimal.ZERO,
-        state = ViewState(
-            "$",
-            BigDecimal.ZERO,
-            isRemoveButtonVisible = true,
-        )
+        quantityWithPrice = "1 × $10.00",
+        subTotalPerProduct = "$10.00",
     )
 }
