@@ -1,0 +1,2 @@
+25.4:
+Pembayaran lebih andal: kini, jika pembayaran tagihan melalui kartu berhasil tetapi konfirmasinya gagal, aplikasi akan melakukan verifikasi dan menampilkan status berhasil sehingga mencegah penagihan ganda. Memutar perangkat di tengah proses pembayaran tidak lagi menyebabkan crash. Perbaikan masalah masih munculnya pesanan yang dikembalikan dananya dalam filter Selesai, dan penambahan prompt sebelum membuang editan pesanan yang belum disimpan. Plus perbaikan POS dan login.

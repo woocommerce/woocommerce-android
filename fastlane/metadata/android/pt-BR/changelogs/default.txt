@@ -1,0 +1,2 @@
+25.4:
+Os pagamentos estão mais confiáveis: se uma cobrança de cartão for feita, mas a confirmação falhar, o aplicativo verificará e mostrará que foi bem-sucedida, evitando cobranças duplas. Girar a tela do seu dispositivo durante uma transação não resulta mais em travamento. Pedidos reembolsados não permanecem mais no filtro Concluído, e agora aparece uma mensagem antes do descarte de edições de pedidos que não foram salvas. Além disso, fizemos correções no ponto de venda e login.
