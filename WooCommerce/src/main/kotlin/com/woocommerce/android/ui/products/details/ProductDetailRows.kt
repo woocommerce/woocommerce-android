@@ -405,7 +405,6 @@ private fun ProductDetailButtonRow(
     modifier: Modifier,
 ) {
     var isTooltipConsumed by rememberSaveable(key) { mutableStateOf(false) }
-    var hasAcknowledgedTooltip by rememberSaveable(key) { mutableStateOf(false) }
     val onClick by rememberUpdatedState(property.onClick)
     val onTooltipActionClick by rememberUpdatedState(property.tooltip?.onDismiss)
     val button = @Composable {
@@ -440,12 +439,7 @@ private fun ProductDetailButtonRow(
                     preferredPlacement = WooTooltipPlacement.Below,
                     action = WooTooltipAction(
                         label = stringResource(tooltip.dismissButtonText),
-                        onClick = {
-                            if (!hasAcknowledgedTooltip) {
-                                hasAcknowledgedTooltip = true
-                                onTooltipActionClick?.invoke()
-                            }
-                        },
+                        onClick = { onTooltipActionClick?.invoke() },
                     ),
                 ) {
                     button()
