@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 14:54:40+0000
+Translation-Revision-Date: 2026-08-11 16:55:16+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Code opnieuw verzenden via sms</string>
+    <string name="login_text_otp">Code opnieuw verzenden via sms</string>
+    <string name="enter_verification_code_sms_generic">We hebben een sms gestuurd. Voer de verificatiecode van het bericht in.</string>
+    <string name="enter_verification_code">Voer een verificatiecode in om door te gaan.</string>
+    <string name="logviewer_share_all_logs_error">Kan de logs niet voorbereiden om te delen</string>
+    <string name="logviewer_preparing_logs">Logs voorbereiden …</string>
+    <string name="logviewer_share_all_logs">Alle logs delen</string>
+    <string name="support_mobile_status_report_share_error">Kan mobielstatusrapport niet delen</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Fout bij kopiëren van mobielstatusrapport naar klembord</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobielstatusrapport gekopieerd naar klembord</string>
+    <string name="support_mobile_status_report_share_label">Mobielstatusrapport delen</string>
+    <string name="support_mobile_status_report_copy_label">Mobielstatusrapport kopiëren naar klembord</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce-mobielstatusrapport</string>
+    <string name="support_mobile_status_report_detail">App-, apparaat- en winkelinformatie van deze app</string>
+    <string name="support_mobile_status_report">Mobielstatusrapport</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Korting niet toegepast</string>
     <string name="product_duplicate_discard_changes_action">Weggooien en dupliceren</string>
     <string name="product_duplicate_discard_changes_message">Je niet-opgeslagen wijzigingen gaan verloren. Het duplicaat gebruikt de laatst opgeslagen versie.</string>
@@ -3986,7 +4001,6 @@ Language: nl
     <string name="signup_magic_link_error">Er is een fout opgetreden bij het verzenden van de e-mail. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
     <string name="notification_channel_general_title">Algemeen</string>
-    <string name="login_text_otp_another">Stuur me via SMS een andere code.</string>
     <string name="enter_verification_code_sms">We hebben een sms gestuurd naar het telefoonnummer dat eindigt op %s. Voer de verificatiecode in de sms in.</string>
     <string name="enter_wpcom_password_google">Om door te gaan met dit Google-account moet je eerst het wachtwoord van WordPress.com opgeven. Je hoeft dit slechts één keer in te vullen.</string>
     <string name="login_log_in_for_share_intent">Log in op WordPress.com om inhoud te delen.</string>
@@ -4005,7 +4019,6 @@ Language: nl
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="requesting_otp">Verificatiecode via sms aanvragen.</string>
-    <string name="login_text_otp">Sms de code in plaats daarvan naar me.</string>
     <string name="open_mail">Open e-mail</string>
     <string name="next">Volgende</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
@@ -4092,7 +4105,6 @@ Language: nl
     <string name="orderdetail_note_private">Privé</string>
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
     <string name="order_error_fetch_notes_generic">Fout bij ophalen notities</string>
-    <string name="enter_verification_code">Bijna klaar! Voer de verificatiecode voor WordPress.com uit je Authenticator-app in.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>
