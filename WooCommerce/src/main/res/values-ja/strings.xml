@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:56:59+0000
+Translation-Revision-Date: 2026-08-12 09:56:10+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">テキストメッセージでコードを再送</string>
+    <string name="login_text_otp">テキストメッセージでコードを再送</string>
+    <string name="enter_verification_code_sms_generic">テキストメッセージを送信しました。 メッセージから認証コードを入力してください。</string>
+    <string name="enter_verification_code">続行するには認証コードを入力してください。</string>
+    <string name="logviewer_share_all_logs_error">共有するログを準備できません</string>
+    <string name="logviewer_preparing_logs">ログを準備中…</string>
+    <string name="logviewer_share_all_logs">すべてのログを共有</string>
+    <string name="support_mobile_status_report_share_error">モバイルステータスレポートを共有できません</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">モバイルステータスレポートをクリップボードにコピーする際にエラーが発生しました</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">モバイルステータスレポートをクリップボードにコピーしました</string>
+    <string name="support_mobile_status_report_share_label">モバイルステータスレポートを共有</string>
+    <string name="support_mobile_status_report_copy_label">モバイルステータスレポートをクリップボードにコピー</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce モバイルステータスレポート</string>
+    <string name="support_mobile_status_report_detail">このアプリのアプリ、端末、ストア情報</string>
+    <string name="support_mobile_status_report">モバイルステータスレポート</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">割引は適用されません</string>
     <string name="product_duplicate_discard_changes_action">破棄して複製</string>
     <string name="product_duplicate_discard_changes_message">保存されていない変更は失われます。 複製には最後に保存されたバージョンが使用されます。</string>
@@ -4001,10 +4016,7 @@ Language: ja_JP
     <string name="login_magic_link_email_requesting">ログインメールのリクエスト</string>
     <string name="password_incorrect">このパスワードは間違っているようです。入力した情報をもう一度確認してから、やり直してください。</string>
     <string name="requesting_otp">SMS 経由で認証コードをリクエスト。</string>
-    <string name="login_text_otp_another">代わりに別のコードを送信する。</string>
-    <string name="login_text_otp">代わりに SMS でコードを送信する。</string>
     <string name="enter_verification_code_sms">末尾が%sで終わる電話番号にテキストメッセージを送信しました。SMS の認証コードを入力してください。</string>
-    <string name="enter_verification_code">もう少しです ! 認証アプリから WordPress.com の認証コードを入力してください。</string>
     <string name="open_mail">メールを開く</string>
     <string name="next">次へ</string>
     <string name="log_in">ログイン</string>

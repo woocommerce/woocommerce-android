@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:57:26+0000
+Translation-Revision-Date: 2026-08-10 21:54:48+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">שליחת קוד מחדש באמצעות הודעת טקסט</string>
+    <string name="login_text_otp">שליחת קוד מחדש באמצעות הודעת טקסט</string>
+    <string name="enter_verification_code_sms_generic">שלחנו הודעת טקסט. יש להזין את קוד האימות מההודעה.</string>
+    <string name="enter_verification_code">יש להזין את קוד האימות כדי להמשיך.</string>
+    <string name="logviewer_share_all_logs_error">אין אפשרות להכין את היומנים לשיתוף</string>
+    <string name="logviewer_preparing_logs">מכינים יומנים…</string>
+    <string name="logviewer_share_all_logs">שיתוף כל היומנים</string>
+    <string name="support_mobile_status_report_share_error">אין אפשרות לשתף את דוח סטטוס המובייל</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">שגיאה בהעתקת דוח סטטוס המובייל ללוח</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">דוח סטטוס המובייל הועתק ללוח</string>
+    <string name="support_mobile_status_report_share_label">שיתוף דוח סטטוס מובייל</string>
+    <string name="support_mobile_status_report_copy_label">העתקת דוח סטטוס המובייל ללוח</string>
+    <string name="support_mobile_status_report_clipboard_label">דוח סטטוס המובייל של WooCommerce</string>
+    <string name="support_mobile_status_report_detail">מידע על האפליקציה, המכשיר והחנות מאפליקציה זו</string>
+    <string name="support_mobile_status_report">דוח סטטוס מובייל</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">ההנחות לא הוחלו</string>
     <string name="product_duplicate_discard_changes_action">ביטול ושכפול</string>
     <string name="product_duplicate_discard_changes_message">השינויים שלא נשמרו יאבדו. העותק המשוכפל ישתמש בגרסה האחרונה שנשמרה.</string>
@@ -3999,10 +4014,7 @@ Language: he_IL
     <string name="login_magic_link_email_requesting">שולח בקשה לאימייל להתחברות</string>
     <string name="password_incorrect">נראה שהסיסמה הזו שגויה. יש לבדוק את המידע שהזנת ולנסות שוב.</string>
     <string name="requesting_otp">שולח קוד אימות באמצעות SMS.</string>
-    <string name="login_text_otp_another">שליחת קוד נוסף בהודעת טקסט במקום.</string>
-    <string name="login_text_otp">שלחו לי הודעת טקסט עם קוד במקום.</string>
     <string name="enter_verification_code_sms">שלחנו לך הודעת טקסט למספר הטלפון שמסתיים בספרות %s. יש להזין את קוד האימות שהתקבל בהודעת הטקסט.</string>
-    <string name="enter_verification_code">כמעט סיימת! יש להזין את קוד האימות עבור WordPress.com מאפליקציית האימות.</string>
     <string name="open_mail">פתיחת דואר</string>
     <string name="next">הבא</string>
     <string name="log_in">התחבר</string>

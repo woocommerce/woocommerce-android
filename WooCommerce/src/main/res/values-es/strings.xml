@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-29 09:56:37+0000
+Translation-Revision-Date: 2026-08-12 09:56:33+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Volver a enviar código por SMS</string>
+    <string name="login_text_otp">Volver a enviar código por SMS</string>
+    <string name="enter_verification_code_sms_generic">Hemos enviado un SMS. Introduce el código de verificación del mensaje.</string>
+    <string name="enter_verification_code">Introduce un código de verificación para continuar.</string>
+    <string name="logviewer_share_all_logs_error">No se pueden preparar los registros para compartir.</string>
+    <string name="logviewer_preparing_logs">Preparando registros…</string>
+    <string name="logviewer_share_all_logs">Compartir todos los registros</string>
+    <string name="support_mobile_status_report_share_error">No se puede compartir el informe de estado del móvil.</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Error al copiar el informe de estado del móvil en el portapapeles</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Se ha copiado el informe de estado del móvil en el portapapeles.</string>
+    <string name="support_mobile_status_report_share_label">Compartir el informe de estado del móvil</string>
+    <string name="support_mobile_status_report_copy_label">Copiar el informe de estado del móvil al portapapeles</string>
+    <string name="support_mobile_status_report_clipboard_label">Informe de estado del móvil de WooCommerce</string>
+    <string name="support_mobile_status_report_detail">Información de la aplicación, el dispositivo y la tienda de esta aplicación</string>
+    <string name="support_mobile_status_report">Informe de estado del móvil</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Descuento no aplicado</string>
     <string name="product_duplicate_discard_changes_action">Descartar y duplicar</string>
     <string name="product_duplicate_discard_changes_message">Se perderán los cambios que no hayas guardado. El duplicado utilizará la última versión guardada.</string>
@@ -4001,10 +4016,7 @@ Language: es
     <string name="login_magic_link_email_requesting">Solicitando el correo electrónico de acceso</string>
     <string name="password_incorrect">Parece que esta contraseña es incorrecta. Por favor, vuelve a comprobar tu información e inténtalo de nuevo.</string>
     <string name="requesting_otp">Solicitando un código de verificación por SMS.</string>
-    <string name="login_text_otp_another">Mándame otro código.</string>
-    <string name="login_text_otp">Envíame un código en texto en su lugar.</string>
     <string name="enter_verification_code_sms">Hemos enviado un mensaje de texto al número de teléfono terminado en %s. Por favor, introduce el código de verificación del SMS.</string>
-    <string name="enter_verification_code">¡Ya casi estamos! Introduce el código de verificación de WordPress.com desde tu aplicación de Autenticación.</string>
     <string name="open_mail">Abrir correo electrónico</string>
     <string name="next">Siguiente</string>
     <string name="log_in">Acceder</string>

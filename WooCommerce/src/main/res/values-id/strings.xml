@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:55:28+0000
+Translation-Revision-Date: 2026-08-11 09:54:51+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Kirim lagi kode via pesan teks</string>
+    <string name="login_text_otp">Kirim lagi kode via pesan teks</string>
+    <string name="enter_verification_code_sms_generic">Kami mengirimkan pesan teks. Masukkan kode verifikasi dari pesan.</string>
+    <string name="enter_verification_code">Masukkan kode verifikasi untuk melanjutkan.</string>
+    <string name="logviewer_share_all_logs_error">Tidak dapat menyiapkan log untuk dibagikan</string>
+    <string name="logviewer_preparing_logs">Menyiapkan log…</string>
+    <string name="logviewer_share_all_logs">Bagikan semua log</string>
+    <string name="support_mobile_status_report_share_error">Tidak dapat membagikan laporan status seluler</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Error saat menyalin laporan status seluler ke clipboard</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Laporan status seluler disalin ke clipboard</string>
+    <string name="support_mobile_status_report_share_label">Bagikan laporan status seluler</string>
+    <string name="support_mobile_status_report_copy_label">Salin laporan status seluler ke clipboard</string>
+    <string name="support_mobile_status_report_clipboard_label">Laporan status seluler WooCommerce</string>
+    <string name="support_mobile_status_report_detail">Informasi aplikasi, perangkat, dan toko dari aplikasi ini</string>
+    <string name="support_mobile_status_report">Laporan status seluler</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Diskon tidak diterapkan</string>
     <string name="product_duplicate_discard_changes_action">Buang &amp; duplikasikan</string>
     <string name="product_duplicate_discard_changes_message">Perubahan yang belum disimpan akan hilang. Hasil duplikasi akan menggunakan versi terakhir yang disimpan.</string>
@@ -3984,7 +3999,6 @@ Language: id
     <string name="signup_magic_link_error">Ada beberapa masalah saat mengirim email. Anda dapat mencoba lagi sekarang atau menutupnya dan mencoba lagi nanti.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
     <string name="notification_channel_general_title">Umum</string>
-    <string name="login_text_otp_another">Kirimi saya kode baru.</string>
     <string name="enter_verification_code_sms">Kami mengirimkan SMS ke nomor ponsel yang berakhiran %s. Masukkan kode verifikasi yang tercantum di SMS tersebut.</string>
     <string name="enter_wpcom_password_google">Untuk melanjutkan dengan akun Google ini, silakan masukkan kata sandi WordPress.com yang sesuai. Tindakan ini hanya akan ditanyakan satu kali.</string>
     <string name="login_log_in_for_share_intent">Login ke WordPress.com untuk membagikan konten.</string>
@@ -4003,7 +4017,6 @@ Language: id
     <string name="login_magic_link_email_requesting">Meminta email login</string>
     <string name="password_incorrect">Sepertinya kata sandi ini salah. Periksa lagi informasi Anda dan coba lagi.</string>
     <string name="requesting_otp">Meminta kode verifikasi melalui SMS.</string>
-    <string name="login_text_otp">Kirimi saya kode saja.</string>
     <string name="open_mail">Buka email</string>
     <string name="next">Selanjutnya</string>
     <string name="already_logged_in_wpcom">Anda sudah login ke akun WordPress.com, Anda tidak dapat menambahkan situs WordPress.com yang terikat ke akun lain.</string>
@@ -4090,7 +4103,6 @@ Language: id
     <string name="orderdetail_note_private">Pribadi</string>
     <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>
     <string name="order_error_fetch_notes_generic">Terjadi error saat mengambil catatan</string>
-    <string name="enter_verification_code">Hampir selesai! Masukkan kode verifikasi untuk WordPress.com dari aplikasi pengautentikasi.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

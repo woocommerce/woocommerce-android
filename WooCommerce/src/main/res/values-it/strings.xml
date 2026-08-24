@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 14:55:27+0000
+Translation-Revision-Date: 2026-08-11 09:57:56+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Rinvia il codice via messaggio</string>
+    <string name="login_text_otp">Rinvia il codice via messaggio</string>
+    <string name="enter_verification_code_sms_generic">Abbiamo inviato un messaggio. Inserisci il codice di verifica dal messaggio.</string>
+    <string name="enter_verification_code">Inserisci un codice di verifica per continuare.</string>
+    <string name="logviewer_share_all_logs_error">Impossibile preparare i log per la condivisione</string>
+    <string name="logviewer_preparing_logs">Preparazione dei log…</string>
+    <string name="logviewer_share_all_logs">Condividi tutti i log</string>
+    <string name="support_mobile_status_report_share_error">Impossibile condividere il rapporto sullo stato mobile</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Errore durante la copia del rapporto sullo stato mobile negli appunti</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Rapporto sullo stato mobile copiato negli appunti</string>
+    <string name="support_mobile_status_report_share_label">Condividi il rapporto sullo stato mobile</string>
+    <string name="support_mobile_status_report_copy_label">Copia il rapporto sullo stato mobile negli appunti</string>
+    <string name="support_mobile_status_report_clipboard_label">Rapporto sullo stato mobile di WooCommerce</string>
+    <string name="support_mobile_status_report_detail">Informazioni su app, dispositivo e negozio di questa app</string>
+    <string name="support_mobile_status_report">Rapporto sullo stato mobile</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Sconto non applicato</string>
     <string name="product_duplicate_discard_changes_action">Elimina e duplica</string>
     <string name="product_duplicate_discard_changes_message">Le modifiche non salvate andranno perse. Il duplicato utilizzerà l\'ultima versione salvata.</string>
@@ -3984,7 +3999,6 @@ Language: it
     <string name="enter_wpcom_or_jetpack_site">Inserisci un sito web WordPress.com o un sito web WordPress.com ospitato personalmente connesso a Jetpack.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">segnaposto</string>
     <string name="notification_channel_general_title">Generale</string>
-    <string name="login_text_otp_another">Inviami invece un messaggio con un altro codice.</string>
     <string name="enter_verification_code_sms">Abbiamo inviato un messaggio di testo al numero di telefono che termina in %s. Inserisci il codice di verifica contenuto nell\'SMS.</string>
     <string name="enter_wpcom_password_google">Per procedere con questo account Google, fornisci la password WordPress.com corrispondente. Verrà richiesta solo una volta.</string>
     <string name="login_log_in_for_share_intent">Accedi a WordPress.com per condividere il contenuto.</string>
@@ -4003,7 +4017,6 @@ Language: it
     <string name="login_magic_link_email_requesting">Richiesta e-mail di accesso</string>
     <string name="password_incorrect">Sembra che la password non sia corretta. Verifica attentamente le informazioni e riprova.</string>
     <string name="requesting_otp">Richiesta codice di verifica tramite SMS.</string>
-    <string name="login_text_otp">Inviami un codice.</string>
     <string name="open_mail">Apri mail</string>
     <string name="next">Successivo</string>
     <string name="already_logged_in_wpcom">Sei già connesso a un account WordPress.com, non puoi aggiungere un sito WordPress.com legato a un altro account.</string>
@@ -4090,7 +4103,6 @@ Language: it
     <string name="orderdetail_note_private">Privato</string>
     <string name="dashboard_top_performers_empty">Nessuna attività per questo periodo</string>
     <string name="order_error_fetch_notes_generic">Errore durante il recupero delle note</string>
-    <string name="enter_verification_code">Ci sei quasi! Inserisci il codice di verifica per WordPress.com dalla tua app di autenticazione.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

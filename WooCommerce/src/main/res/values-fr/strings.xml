@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 16:55:10+0000
+Translation-Revision-Date: 2026-08-11 11:57:52+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Renvoyer le code par SMS</string>
+    <string name="login_text_otp">Renvoyer le code par SMS</string>
+    <string name="enter_verification_code_sms_generic">Nous avons envoyé un SMS. Saisissez le code de vérification du message.</string>
+    <string name="enter_verification_code">Saisissez un code de vérification pour continuer.</string>
+    <string name="logviewer_share_all_logs_error">Impossible de préparer les journaux pour le partage</string>
+    <string name="logviewer_preparing_logs">Préparation des journaux…</string>
+    <string name="logviewer_share_all_logs">Partager tous les journaux</string>
+    <string name="support_mobile_status_report_share_error">Impossible de partager le rapport sur l’état mobile</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Erreur lors de la copie du rapport sur l’état mobile dans le presse-papiers</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Le rapport sur l’état mobile a été copié dans le presse-papiers</string>
+    <string name="support_mobile_status_report_share_label">Partager le rapport sur l’état mobile</string>
+    <string name="support_mobile_status_report_copy_label">Copier le rapport sur l’état mobile dans le presse-papiers</string>
+    <string name="support_mobile_status_report_clipboard_label">Rapport d’état mobile WooCommerce</string>
+    <string name="support_mobile_status_report_detail">Informations sur l’application, l’appareil et la boutique de cette application</string>
+    <string name="support_mobile_status_report">Rapport sur l’état mobile</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Remise non appliquée</string>
     <string name="product_duplicate_discard_changes_action">Ignorer et dupliquer</string>
     <string name="product_duplicate_discard_changes_message">Vos modifications non enregistrées seront perdues. L’élément dupliqué utilisera la dernière version enregistrée.</string>
@@ -4001,10 +4016,7 @@ Language: fr
     <string name="login_magic_link_email_requesting">Demande de l’e-mail de connexion</string>
     <string name="password_incorrect">Il semblerait que ce mot de passe est incorrect. Veuillez vérifier et essayer à nouveau.</string>
     <string name="requesting_otp">Demande d’un code de vérification par SMS.</string>
-    <string name="login_text_otp_another">Envoyez moi un autre code à la place.</string>
-    <string name="login_text_otp">Envoyez-moi un code à la place.</string>
     <string name="enter_verification_code_sms">Nous envoyons un message texte au numéro de téléphone se terminant par %s. Veuillez saisir le code de vérification dans le SMS.</string>
-    <string name="enter_verification_code">Vous y êtes presque ! Veuillez saisir le code de vérification WordPress.com de votre application d’authentification.</string>
     <string name="open_mail">Ouvrir les e-mails</string>
     <string name="next">Suivant</string>
     <string name="log_in">Connexion</string>

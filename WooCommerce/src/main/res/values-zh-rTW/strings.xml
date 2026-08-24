@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 11:58:53+0000
+Translation-Revision-Date: 2026-08-11 09:54:32+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">透過簡訊重新傳送驗證碼</string>
+    <string name="login_text_otp">透過簡訊重新傳送驗證碼</string>
+    <string name="enter_verification_code_sms_generic">我們已傳送簡訊。 輸入簡訊中的驗證碼。</string>
+    <string name="enter_verification_code">輸入驗證碼以繼續。</string>
+    <string name="logviewer_share_all_logs_error">無法準備要分享的記錄</string>
+    <string name="logviewer_preparing_logs">正在準備記錄…</string>
+    <string name="logviewer_share_all_logs">分享所有記錄</string>
+    <string name="support_mobile_status_report_share_error">無法分享行動應用程式狀態報告</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">複製行動應用程式狀態報告至剪貼簿時發生錯誤</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">已將行動應用程式狀態報告複製至剪貼簿</string>
+    <string name="support_mobile_status_report_share_label">分享行動應用程式狀態報告</string>
+    <string name="support_mobile_status_report_copy_label">複製行動應用程式狀態報告至剪貼簿</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce 行動應用程式狀態報告</string>
+    <string name="support_mobile_status_report_detail">此應用程式的應用程式、裝置和商店資訊</string>
+    <string name="support_mobile_status_report">行動應用程式狀態報告</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">未套用折扣</string>
     <string name="product_duplicate_discard_changes_action">捨棄並複製</string>
     <string name="product_duplicate_discard_changes_message">未儲存的變更將會遺失。 重複項目將採用上次儲存的版本。</string>
@@ -4001,10 +4016,7 @@ Language: zh_TW
     <string name="login_magic_link_email_requesting">要求登入的電子郵件</string>
     <string name="password_incorrect">看來你輸入的密碼不正確。請重新確認你的資訊，然後再試一次。</string>
     <string name="requesting_otp">透過 SMS 要求驗證碼。</string>
-    <string name="login_text_otp_another">請使用簡訊傳送另一個驗證碼給我。</string>
-    <string name="login_text_otp">請改用簡訊傳送驗證碼給我。</string>
     <string name="enter_verification_code_sms">我們已將簡訊傳送至結尾為 %s 的電話號碼。請輸入簡訊中的驗證碼。</string>
-    <string name="enter_verification_code">快完成了！ 請輸入驗證器應用程式上的 WordPress.com 驗證碼。</string>
     <string name="open_mail">開啟郵件</string>
     <string name="next">下一篇</string>
     <string name="log_in">登入</string>

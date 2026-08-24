@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 
 sealed interface WooPosCardReaderConnectionState {
@@ -45,6 +46,14 @@ sealed interface WooPosCardReaderConnectionState {
     }
 
     data class MissingLocationPermission(
+        val onRequestPermissionClicked: () -> Unit,
+        val onCancelClicked: () -> Unit,
+    ) : WooPosCardReaderConnectionState {
+        override val showCloseButton: Boolean = false
+    }
+
+    data class MissingLocalNetworkPermission(
+        val phone: WooPosDiscoveredReader.Phone,
         val onRequestPermissionClicked: () -> Unit,
         val onCancelClicked: () -> Unit,
     ) : WooPosCardReaderConnectionState {
