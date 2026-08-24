@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.6
+-----
+- [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
+
 25.5
 -----
 - [*] Woo POS on phones: the "Install WooCommerce Payments" prompt no longer rotates the screen to landscape [https://github.com/woocommerce/woocommerce-android/pull/16447]

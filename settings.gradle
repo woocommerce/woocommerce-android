@@ -211,7 +211,7 @@ gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source
 
 gradle.ext {
     compileSdkVersion = 37
-    targetSdkVersion = 36
+    targetSdkVersion = 37
     minSdkVersion = 26
 }
 
