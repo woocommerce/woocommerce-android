@@ -1,0 +1,2 @@
+25.4:
+Zahlungen sind zuverlässiger: Wenn eine Kartenabbuchung erfolgreich ist, die Bestätigung aber fehlschlägt, prüft die App dies nun automatisch und zeigt den Erfolg an. Das verhindert doppelte Abbuchungen. Keine Abstürze mehr beim Drehen des Geräts während der Zahlung. Rückerstattete Bestellungen hängen nicht mehr im Filter „Abgeschlossen“ fest. Zudem warnt die App jetzt vor dem Verwerfen ungespeicherter Änderungen. Außerdem: Behebungen bei POS und Anmeldung.

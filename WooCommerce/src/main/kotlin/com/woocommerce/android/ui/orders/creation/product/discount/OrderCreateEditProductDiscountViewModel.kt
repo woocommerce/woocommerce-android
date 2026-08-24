@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ORDER_
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -37,10 +38,12 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     siteParamsRepo: ParameterRepository,
     currencySymbolFinder: CurrencySymbolFinder,
+    currencyFormatter: CurrencyFormatter,
 ) : ScopedViewModel(savedStateHandle) {
     private val args =
         OrderCreateEditProductDiscountFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val currency = currencySymbolFinder.findCurrencySymbol(args.currency)
+    private val formatCurrency = currencyFormatter.buildBigDecimalFormatter(args.currency)
     val productItem: MutableStateFlow<OrderCreationProduct> =
         savedStateHandle.getStateFlow(
             scope = this,
@@ -81,8 +84,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 discountValidationState = checkDiscountValidationState(discount, type),
                 isRemoveButtonVisible = getRemoveButtonVisibility(),
                 discountType = type,
-                priceAfterDiscount = getPriceAfterDiscount(),
-                calculatedPriceAfterDiscount = getCalculatedPriceAfterDiscount(),
+                priceAfterDiscount = formatCurrency(getPriceAfterDiscount()),
+                calculatedAmount = getCalculatedAmountText(),
                 productDetailsState = ProductDetailsState(
                     imageUrl = productItem.value.productInfo.imageUrl
                 )
@@ -208,28 +211,20 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         }
     }
 
-    private fun getPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) {
-            BigDecimal.ZERO
-        } else {
-            productItem.value.item.subtotal - getDiscountAmount()
-                .setScale(2, RoundingMode.HALF_UP)
-        }
-    }
+    private fun getPriceAfterDiscount(): BigDecimal =
+        productItem.value.item.subtotal - getDiscountAmount().setScale(2, RoundingMode.HALF_UP)
 
-    private fun getCalculatedPriceAfterDiscount(): BigDecimal {
-        return if (discount.value == null) {
-            BigDecimal.ZERO
-        } else if (discountType.value == DiscountType.Percentage) {
-            discount.value?.let {
-                calculateDiscountAmount(it)
-                    .setScale(2, RoundingMode.HALF_UP)
-            } ?: BigDecimal.ZERO
-        } else {
-            discount.value?.let {
-                calculateDiscountPercentage(it)
-                    .setScale(2, RoundingMode.HALF_UP)
-            } ?: BigDecimal.ZERO
+    private fun getCalculatedAmountText(): String {
+        val enteredDiscount = discount.value
+        return when (discountType.value) {
+            DiscountType.Percentage -> formatCurrency(
+                enteredDiscount?.let { calculateDiscountAmount(it) } ?: BigDecimal.ZERO
+            )
+
+            is DiscountType.Amount -> {
+                val percentage = enteredDiscount?.let { calculateDiscountPercentage(it) } ?: BigDecimal.ZERO
+                "${percentage.setScale(2, RoundingMode.HALF_UP)}$PERCENTAGE_SYMBOL"
+            }
         }
     }
 
@@ -244,8 +239,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         val isDoneButtonEnabled: Boolean = discountValidationState is DiscountAmountValidationState.Valid,
         val isRemoveButtonVisible: Boolean = false,
         val discountType: DiscountType = DiscountType.Amount(currency),
-        val priceAfterDiscount: BigDecimal = BigDecimal.ZERO,
-        val calculatedPriceAfterDiscount: BigDecimal = BigDecimal.ZERO,
+        val priceAfterDiscount: String = "",
+        val calculatedAmount: String = "",
         val productDetailsState: ProductDetailsState? = null,
     )
 

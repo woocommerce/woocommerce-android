@@ -1,0 +1,2 @@
+25.4:
+Ödemeler daha güvenilirdir: Kart ödemesi başarılı olursa ancak onay başarısız olursa uygulama şimdi bunu doğrular ve başarıyı göstererek çift ücret ödemeyi engeller. Cihazınızı ödeme ortasında döndürmek artık çökmeye neden olmaz. Ayrıca Tamamlandı filtresinde kalan iade siparişlerini düzelttik ve kaydedilmemiş sipariş düzenlemelerini atmadan önce bir istem ekledik. Ayrıca POS ve oturum açma düzeltmeleri.

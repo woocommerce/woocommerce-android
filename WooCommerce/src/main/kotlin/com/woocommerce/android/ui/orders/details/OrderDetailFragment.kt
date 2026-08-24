@@ -398,7 +398,7 @@ class OrderDetailFragment :
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
-                showOrderDetail(it.order!!, it.receiptButtonStatus)
+                showOrderDetail(it.order!!, it.isVirtualOrder, it.receiptButtonStatus)
                 if (requireContext().isTwoPanesShouldBeUsed) {
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
@@ -645,12 +645,13 @@ class OrderDetailFragment :
 
     private fun showOrderDetail(
         order: Order,
+        isVirtualOrder: Boolean,
         receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isVirtualOrder = isVirtualOrder,
             isReadOnly = false,
             viewOrdersButtonVissible = shouldShowViewCustomerOrdersButton()
         )

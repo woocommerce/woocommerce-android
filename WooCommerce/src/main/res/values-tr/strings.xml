@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:58:25+0000
+Translation-Revision-Date: 2026-08-10 16:54:48+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Kodu kısa mesaj aracılığıyla yeniden gönder</string>
+    <string name="login_text_otp">Kodu kısa mesaj aracılığıyla yeniden gönder</string>
+    <string name="enter_verification_code_sms_generic">Kısa mesaj gönderdik. Mesajdaki doğrulama kodunu girin.</string>
+    <string name="enter_verification_code">Devam etmek için bir doğrulama kodu girin.</string>
+    <string name="logviewer_share_all_logs_error">Günlükler paylaşıma hazırlanamıyor</string>
+    <string name="logviewer_preparing_logs">Günlükler hazırlanıyor…</string>
+    <string name="logviewer_share_all_logs">Tüm günlükleri paylaş</string>
+    <string name="support_mobile_status_report_share_error">Sistem durum raporu paylaşılamıyor</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Mobil durum raporu panoya kopyalanırken hata oluştu</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobil sistem durum raporu panoya kopyalandı</string>
+    <string name="support_mobile_status_report_share_label">Mobil durum raporunu paylaş</string>
+    <string name="support_mobile_status_report_copy_label">Mobil durum raporunu panoya kopyala</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce mobil durum raporu</string>
+    <string name="support_mobile_status_report_detail">Bu uygulamadan uygulama, cihaz ve mağaza bilgileri</string>
+    <string name="support_mobile_status_report">Mobil durum raporu</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">İndirim uygulanmadı</string>
     <string name="product_duplicate_discard_changes_action">At ve yinele</string>
     <string name="product_duplicate_discard_changes_message">Kaydedilmemiş değişiklikleriniz kaybolacak. Yinelenen, son kaydedilen sürümü kullanır.</string>
@@ -3985,7 +4000,6 @@ Language: tr
     <string name="xmlrpc_endpoint_forbidden_error">Bağlantı kurulamadı. Erişim sırasında 403 hatası alındı:\n sitesi XMLRPC uç noktası. Uygulama, sitenizle bağlantı kurabilmek için buna gereksinim duyuyor. Bu sorunu çözmek için barındırma sağlayıcınızla\n iletişime geçin.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">yer tutucu</string>
     <string name="notification_channel_general_title">Genel</string>
-    <string name="login_text_otp_another">Bana SMS ile başka bir kod gönder.</string>
     <string name="enter_verification_code_sms">%s ile biten telefon numaranıza mesaj gönderdik. Lütfen SMS ile aldığınız doğrulama kodunu giriniz.</string>
     <string name="enter_wpcom_password_google">Bu Google hesabıyla devam etmek için lütfen eşleşen WordPress.com parolasını sağlayın. Bu yalnızca bir kez sorulacak.</string>
     <string name="login_log_in_for_share_intent">İçeriği paylaşmak için WordPress.com\'a giriş yapın.</string>
@@ -4004,7 +4018,6 @@ Language: tr
     <string name="login_magic_link_email_requesting">Oturum açma e-postası istemek</string>
     <string name="password_incorrect">Bu parola yanlış gibi görünüyor. Lütfen bilgilerinizi iki kez kontrol edin ve tekrar deneyin.</string>
     <string name="requesting_otp">SMS ile bir doğrulama kodu istemek.</string>
-    <string name="login_text_otp">Bunun yerine bana SMS ile bir kod gönder.</string>
     <string name="open_mail">E-postayı aç</string>
     <string name="next">Sonraki</string>
     <string name="already_logged_in_wpcom">Zaten WordPress.com hesabınıza giriş yapmış durumdasınız, başka bir hesapla ilişkişi WordPress.com hesabını ekleyemezsiniz.</string>
@@ -4091,7 +4104,6 @@ Language: tr
     <string name="orderdetail_note_private">Özel</string>
     <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
     <string name="order_error_fetch_notes_generic">Notlar alınırken hata oluştu</string>
-    <string name="enter_verification_code">Çok az kaldı! Lütfen WordPress.com için kimlik doğrulayıcı uygulamanızdaki doğrulama kodunu girin.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

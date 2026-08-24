@@ -1,0 +1,2 @@
+25.4:
+I pagamenti sono più affidabili: se l'addebito su carta va a buon fine ma la conferma fallisce, l'app ora lo verifica e ne mostra l'esito positivo, evitando doppi addebiti. Ruotare il dispositivo durante un pagamento non causa più un arresto anomalo. Abbiamo anche risolto il problema degli ordini rimborsati che rimanevano nel filtro "Completati" e aggiunto un avviso prima di scartare le modifiche non salvate agli ordini. In più, correzioni al POS e all'accesso.

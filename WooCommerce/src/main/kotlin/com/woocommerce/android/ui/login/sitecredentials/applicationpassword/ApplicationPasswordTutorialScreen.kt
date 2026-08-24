@@ -20,6 +20,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebViewClient
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -41,11 +43,15 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
     BackHandler { viewModel.onNavigationButtonClicked() }
 
     val viewState = viewModel.viewState.observeAsState()
+    val webViewClient = remember(viewModel) {
+        ApplicationPasswordWebViewClient(viewModel::onWebNavigationRequested)
+    }
     ApplicationPasswordTutorialScreen(
         authorizationStarted = viewState.value?.authorizationStarted ?: false,
         errorMessage = viewState.value?.errorMessage,
-        webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
+        webViewUrl = viewState.value?.webViewUrl.orEmpty(),
         webViewUserAgent = viewModel.userAgent,
+        webViewClient = webViewClient,
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onPageLoaded = viewModel::onWebPageLoaded,
@@ -59,6 +65,7 @@ fun ApplicationPasswordTutorialScreen(
     authorizationStarted: Boolean,
     webViewUrl: String,
     webViewUserAgent: UserAgent?,
+    webViewClient: WCWebViewClient = remember { WCWebViewClient() },
     errorMessage: String?,
     onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
@@ -80,6 +87,7 @@ fun ApplicationPasswordTutorialScreen(
                 url = webViewUrl,
                 userAgent = webViewUserAgent,
                 onPageFinished = onPageLoaded,
+                webViewClient = webViewClient,
                 modifier = modifier
             )
         } else {

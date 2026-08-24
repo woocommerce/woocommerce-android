@@ -77,6 +77,7 @@ class WooPosOrdersListViewModel @Inject constructor(
 
     init {
         if (singleOrderId == null) {
+            viewModelScope.launch { ordersAnalyticsTracker.trackOrdersListLoaded() }
             loadOrders()
         }
         observeOrderRefreshed()

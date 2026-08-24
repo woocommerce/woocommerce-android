@@ -33,11 +33,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -61,6 +59,10 @@ class IssueRefundViewModel @Inject constructor(
             orderStore.getOrderByIdAndSite(arguments.orderId, selectedSite.get())?.let { orderMapper.toAppModel(it) }
         )
         emit(order)
+    }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
+
+    private val refundsFlow: SharedFlow<List<Refund>> = flow {
+        emit(refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() })
     }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val refundItems = savedState.getNullableListStateFlow(
@@ -90,12 +92,13 @@ class IssueRefundViewModel @Inject constructor(
     private val feesRefundSection = combine(
         isFeesMainSwitchChecked,
         refundFeeLines.filterNotNull(),
-        orderFlow.map { it.refundableFeeLineIds }
-    ) { isFeesMainSwitchChecked, feeLines, refundableFeeLineIds ->
+        orderFlow,
+        refundsFlow
+    ) { isFeesMainSwitchChecked, feeLines, order, refunds ->
         prepareFeesRefundSection(
             isFeesMainSwitchChecked = isFeesMainSwitchChecked,
             feeLines = feeLines,
-            refundableFeeLineIds = refundableFeeLineIds
+            refundableFeeLineIds = order.refundableFeeLineIds(refunds)
         )
     }
 
@@ -113,12 +116,17 @@ class IssueRefundViewModel @Inject constructor(
     private val shippingRefundSection = combine(
         isShippingMainSwitchChecked,
         refundShippingLines.filterNotNull(),
-        orderFlow.map { it.refundableShippingLineIds }
-    ) { isShippingMainSwitchChecked, shippingLines, refundableShippingLineIds ->
-        prepareShippingRefundSection(shippingLines, refundableShippingLineIds, isShippingMainSwitchChecked)
+        orderFlow,
+        refundsFlow
+    ) { isShippingMainSwitchChecked, shippingLines, order, refunds ->
+        prepareShippingRefundSection(
+            shippingLines,
+            order.refundableShippingLineIds(refunds),
+            isShippingMainSwitchChecked
+        )
     }
 
-    private val refundNotice = orderFlow.map { order -> prepareRefundNotice(order) }
+    private val refundNotice = combine(orderFlow, refundsFlow) { order, refunds -> prepareRefundNotice(order, refunds) }
 
     val viewState = combine(
         orderFlow,
@@ -139,21 +147,20 @@ class IssueRefundViewModel @Inject constructor(
 
     private val order: Order
         get() = requireNotNull(orderFlow.replayCache.firstOrNull()) {
-            "Please ensure that this property is not accessed before the order is loaded."
+            "Order is not loaded yet"
         }
 
-    private val refunds: List<Refund>
     private val Order.allFeeLineIds: List<Long>
         get() = feesLines.map { it.id }
-    private val Order.refundableFeeLineIds: List<Long>
-        get() = allFeeLineIds.filterNot { feeId ->
+    private fun Order.refundableFeeLineIds(refunds: List<Refund>): List<Long> =
+        allFeeLineIds.filterNot { feeId ->
             refunds.any { refund -> refund.feeLines.any { it.id == feeId } }
         }
 
     private val Order.allShippingLineIds: List<Long>
         get() = shippingLines.map { it.itemId }
-    private val Order.refundableShippingLineIds: List<Long>
-        get() = allShippingLineIds.filterNot { shippingId ->
+    private fun Order.refundableShippingLineIds(refunds: List<Refund>): List<Long> =
+        allShippingLineIds.filterNot { shippingId ->
             refunds.any { refund -> refund.shippingLines.any { it.itemId == shippingId } }
         }
 
@@ -171,10 +178,6 @@ class IssueRefundViewModel @Inject constructor(
         )
 
     init {
-        refunds = runBlocking {
-            refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
-        }
-
         viewModelScope.launch {
             initRefundItems()
         }
@@ -186,6 +189,7 @@ class IssueRefundViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val order = orderFlow.first()
+            val refunds = refundsFlow.first()
             val maxQuantities = refunds.getMaxRefundQuantities(order.items)
                 .map { (id, quantity) -> id to quantity }
                 .toMap()
@@ -205,13 +209,13 @@ class IssueRefundViewModel @Inject constructor(
 
             /* Grab all shipping lines listed in the Order, but remove those that are already refunded previously */
             val shippingLines = order.shippingLines
-                .filter { order.refundableShippingLineIds.contains(it.itemId) }
+                .filter { order.refundableShippingLineIds(refunds).contains(it.itemId) }
                 .map { ShippingRefundListItem(it, isSelected = true) }
             refundShippingLines.value = shippingLines
 
             /* Grab all fees lines listed in the Order, but remove those that are already refunded previously */
             val feeLines = order.feesLines
-                .filter { order.refundableFeeLineIds.contains(it.id) }
+                .filter { order.refundableFeeLineIds(refunds).contains(it.id) }
                 .map { FeeRefundListItem(it, isSelected = true) }
             refundFeeLines.value = feeLines
 
@@ -282,8 +286,8 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    private fun prepareRefundNotice(order: Order): String? {
-        return if (order.refundableShippingLineIds.size > 1) {
+    private fun prepareRefundNotice(order: Order, refunds: List<Refund>): String? {
+        return if (order.refundableShippingLineIds(refunds).size > 1) {
             resourceProvider.getString(
                 R.string.order_refunds_shipping_refund_variable_notice,
                 resourceProvider.getString(R.string.multiple_shipping).lowercase(Locale.getDefault())

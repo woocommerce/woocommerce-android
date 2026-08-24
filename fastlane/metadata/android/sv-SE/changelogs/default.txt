@@ -1,0 +1,2 @@
+25.4:
+Betalningar är mer tillförlitliga: Om en kortdebitering lyckas men bekräftelsen misslyckas verifierar appen den nu och bekräftar detta, vilket förhindrar dubbeldebiteringar. Att rotera din enhet under betalningen orsakar inte längre någon krasch. Vi har också åtgärdat problemet med återbetalda beställningar som dröjde sig kvar i filtret Slutfört och lagt till en prompt innan osparade beställningsredigeringar kastas. Dessutom har vi gjort både POS- och inloggningskorrigeringar.
