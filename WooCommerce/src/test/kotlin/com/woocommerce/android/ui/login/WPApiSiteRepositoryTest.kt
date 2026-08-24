@@ -23,11 +23,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.SiteAction
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NO_CONNECTION
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Success
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
@@ -94,6 +97,42 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
                 UiStringRes(R.string.login_site_credentials_http_error, listOf(UiStringText("404")))
             )
             assertThat(exception.loginEntryVerified).isTrue()
+        }
+
+    @Test
+    fun `given direct WPAPI certificate failure, when logging in, then show security certificate guidance`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ENDPOINTS, USERNAME, PASSWORD)).thenReturn(
+                Error(
+                    type = UNKNOWN,
+                    message = "low-level TLS exception",
+                    networkError = BaseNetworkError(INVALID_SSL_CERTIFICATE)
+                )
+            )
+
+            val exception = repository.login(SITE_URL, USERNAME, PASSWORD, ENDPOINTS).exceptionOrNull()
+                as WPApiSiteRepository.CookieNonceAuthenticationException
+
+            assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_site_url_remote_certificate))
+            assertThat(exception.message).isNull()
+        }
+
+    @Test
+    fun `given direct WPAPI offline failure, when logging in, then hide low-level details behind generic error`() =
+        testBlocking {
+            whenever(authenticator.authenticate(ENDPOINTS, USERNAME, PASSWORD)).thenReturn(
+                Error(
+                    type = UNKNOWN,
+                    message = "socket details",
+                    networkError = BaseNetworkError(NO_CONNECTION)
+                )
+            )
+
+            val exception = repository.login(SITE_URL, USERNAME, PASSWORD, ENDPOINTS).exceptionOrNull()
+                as WPApiSiteRepository.CookieNonceAuthenticationException
+
+            assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_generic))
+            assertThat(exception.message).isNull()
         }
 
     @Test

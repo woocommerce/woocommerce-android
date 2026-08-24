@@ -202,6 +202,7 @@ class LoginActivity :
     private lateinit var binding: ActivityLoginBinding
 
     private var connectSiteInfo: ConnectSiteInfo? = null
+    private var pendingSiteAddressWasNormalizedToHttps = false
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -764,6 +765,7 @@ class LoginActivity :
         // in the login process.
         val siteAddressClean = inputSiteAddress.replaceFirst(PROTOCOL_REGEX, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
+        pendingSiteAddressWasNormalizedToHttps = result.wasUrlNormalizedToHttps
         if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
             showEmailLoginScreen(null)
         } else {
@@ -994,11 +996,13 @@ class LoginActivity :
             siteAddress = requireNotNull(siteAddress),
             isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
             username = inputUsername,
-            password = inputPassword
+            password = inputPassword,
+            wasUrlNormalizedToHttps = pendingSiteAddressWasNormalizedToHttps ||
+                siteAddress.startsWith("http://", ignoreCase = true),
         ),
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
-    )
+    ).also { pendingSiteAddressWasNormalizedToHttps = false }
 
     override fun onApplicationPasswordHelpRequired(
         verifiedLoginUrl: String?,
@@ -1070,6 +1074,7 @@ class LoginActivity :
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
         if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
+            pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
             LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)
                 .show(LoginSiteInfoFallbackDialogFragment.TAG)
         } else if (!siteInfo.isWordPress) {
