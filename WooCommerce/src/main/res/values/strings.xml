@@ -4245,6 +4245,7 @@
     <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order.</string>
     <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item.</string>
     <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid.</string>
+    <string name="woopos_refund_error_store_not_updated">The card was refunded, but your store wasn\'t updated. Record this refund in your store admin.</string>
     <string name="woopos_refund_review_remaining_items_button">Review remaining items</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>

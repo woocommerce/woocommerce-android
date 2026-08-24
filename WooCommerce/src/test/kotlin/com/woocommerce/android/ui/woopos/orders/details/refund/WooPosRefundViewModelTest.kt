@@ -147,6 +147,8 @@ class WooPosRefundViewModelTest {
         )
 
         whenever(resourceProvider.getString(R.string.error_generic)).thenReturn("An error occurred")
+        whenever(resourceProvider.getString(R.string.woopos_refund_error_store_not_updated))
+            .thenReturn("The card was refunded, but your store wasn't updated.")
         whenever(selectedSite.get()).thenReturn(testSite)
         whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(testSettings)
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
@@ -198,6 +200,7 @@ class WooPosRefundViewModelTest {
             wooCommerceStore = wooCommerceStore,
             getPaymentMethod = loadPaymentMethod,
             buildRefundContent = WooPosBuildRefundContent(currencyFormatter),
+            mapRefundFailure = WooPosMapRefundFailure(resourceProvider),
             refundSubmissionProcessor = refundSubmissionProcessor,
             analyticsTracker = analyticsTracker,
             cardReaderFacade = cardReaderFacade
@@ -2246,7 +2249,7 @@ class WooPosRefundViewModelTest {
 
             // THEN
             val errorState = viewModel.state.value as WooPosRefundState.Error
-            assertThat(errorState.message).isEqualTo("Backend failed")
+            assertThat(errorState.message).isEqualTo("The card was refunded, but your store wasn't updated.")
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
         }
 
@@ -2294,7 +2297,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given the card was refunded, when the store reports the order is not refundable, then the error is kept`() =
+    fun `given the card was refunded, when the store reports the order is not refundable, then the cashier is told to record it`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -2333,7 +2336,50 @@ class WooPosRefundViewModelTest {
 
             // THEN
             val errorState = viewModel.state.value as WooPosRefundState.Error
-            assertThat(errorState.message).isEqualTo("This order can no longer be refunded.")
+            assertThat(errorState.message).isEqualTo("The card was refunded, but your store wasn't updated.")
+            assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the card was refunded, when the failure claims to be retryable, then no recovery is offered`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.ProcessingReaderRefund,
+                    WooPosRefundSubmissionState.NotifyingStore,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Backend failed",
+                        retryBackendNotificationOnly = true,
+                        canRetry = true,
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val errorState = viewModel.state.value as WooPosRefundState.Error
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
         }
 

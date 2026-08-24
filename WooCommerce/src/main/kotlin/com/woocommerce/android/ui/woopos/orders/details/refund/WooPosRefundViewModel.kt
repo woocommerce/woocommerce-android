@@ -50,6 +50,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val getPaymentMethod: WooPosGetPaymentMethod,
     private val buildRefundContent: WooPosBuildRefundContent,
+    private val mapRefundFailure: WooPosMapRefundFailure,
     private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val cardReaderFacade: WooPosCardReaderFacade,
@@ -702,27 +703,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         analyticsTracker.track(
             WooPosAnalyticsEvent.Event.RefundProcessingFailed(apiErrorCode = submissionState.apiErrorCode)
         )
-        // On a backend-only notification the card is already reversed and only the store call
-        // failed, so the mapped code is ignored: every recovery it offers leads back into the flow,
-        // and walking it again would refund the card a second time.
-        val apiError = WooPosRefundApiError
-            .fromCode(submissionState.apiErrorCode)
-            .takeIf { !submissionState.retryBackendNotificationOnly }
-        if (apiError == WooPosRefundApiError.OrderNotRefundable) {
-            _state.value = WooPosRefundState.NoRefundableItems
-            return
-        }
-
-        _state.value = WooPosRefundState.Error(
-            message = submissionState.message,
-            errorType = WooPosRefundState.Error.ErrorType.Processing,
-            recovery = apiError?.recovery
-                ?: if (submissionState.canRetry) {
-                    WooPosRefundState.Recovery.Retry
-                } else {
-                    WooPosRefundState.Recovery.None
-                },
-        )
+        _state.value = mapRefundFailure(submissionState)
     }
 
     private fun cancelRefundSubmission() {
