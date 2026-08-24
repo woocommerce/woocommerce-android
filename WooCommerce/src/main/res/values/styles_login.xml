@@ -74,6 +74,7 @@
     </style>
 
     <style name="Theme.LoginFlow.Dialog" parent="Theme.Woo.Dialog">
+        <item name="android:windowBackground">@drawable/mtrl_dialog_background</item>
         <item name="android:progressBarStyle">@style/Widget.LoginFlow.ProgressBar</item>
     </style>
 
