@@ -114,9 +114,11 @@ class WCRefundStore @Inject internal constructor(
      * is an optional override: below the computed total the store returns 400, above it the store
      * accepts an over-refund up to the order's remaining refundable amount.
      *
-     * A store without `compute_totals` drops the param and books a zero-amount refund with a
-     * restock, and still answers 201. Call this only after [previewRefund] succeeded on a store
-     * running WooCommerce 11.1.0 or newer. POS checks both in `WooPosResolveRefundFlow`.
+     * A store without `compute_totals` drops the param and books a zero-amount refund, and still
+     * answers 201. It also restocks when [restockItems] is true. Call this only after
+     * [previewRefund] succeeded on a store running WooCommerce 11.1.0 or newer. POS checks the
+     * version in `WooPosResolveRefundFlow` and the preview result in
+     * `WooPosRefundViewModel.buildSubmissionRequest`.
      *
      * No parameter has a default: each one moves the merchant's money or stock.
      */

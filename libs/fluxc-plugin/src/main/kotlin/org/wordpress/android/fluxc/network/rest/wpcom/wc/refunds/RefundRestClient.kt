@@ -62,8 +62,10 @@ class RefundRestClient @Inject constructor(private val wooNetwork: WooNetwork) {
      *
      * [apiRefund] and [apiRestock] are sent explicitly because the endpoint defaults both to true.
      *
-     * A store without `compute_totals` drops the param and books a zero-amount refund with a
-     * restock. Only call this on a store known to support it: see `WooPosResolveRefundFlow`.
+     * A store without `compute_totals` drops the param and books a zero-amount refund, and
+     * restocks when [apiRestock] is true. Only call this on a store known to support it: POS checks
+     * the version in `WooPosResolveRefundFlow` and the preview result in
+     * `WooPosRefundViewModel.buildSubmissionRequest`.
      */
     @Suppress("LongParameterList")
     suspend fun createComputedRefund(
