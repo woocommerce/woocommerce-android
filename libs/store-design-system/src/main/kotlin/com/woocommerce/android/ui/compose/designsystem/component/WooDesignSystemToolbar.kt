@@ -51,6 +51,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         // ActionMenuItemView centers icon-only items from the current icon bounds during measure.
         decorateNavigationButton()
         decorateRenderedMenuActions()
+        applyToolbarControlEdgeMargins()
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         if (decorateTitle() || decorateNavigationButton() || decorateRenderedMenuActions()) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -58,10 +59,11 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        applyToolbarControlEdgeMargins()
         super.onLayout(changed, left, top, right, bottom)
         decorateNavigationButton()
         decorateRenderedMenuActions()
-        applyToolbarControlEdgeInsets()
+        centerToolbarControlsVertically()
     }
 
     private fun applyStaticChrome() {
@@ -189,64 +191,33 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     private fun View.isIconOnlyAction(): Boolean =
         this !is TextView || text.isNullOrEmpty()
 
-    private fun applyToolbarControlEdgeInsets() {
+    private fun applyToolbarControlEdgeMargins() {
         val controlEdgeInset = (
             resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
                 resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
             ).roundToInt()
-        val isRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
-        val toolbarWidth = width
+        val navigationLayoutParams = children.filterIsInstance<AppCompatImageButton>()
+            .firstOrNull()?.layoutParams as? ViewGroup.MarginLayoutParams
+        val actionMenuLayoutParams = children.filterIsInstance<ActionMenuView>()
+            .firstOrNull()?.layoutParams as? ViewGroup.MarginLayoutParams
+
+        navigationLayoutParams?.marginStart = controlEdgeInset
+        actionMenuLayoutParams?.marginEnd = controlEdgeInset
+    }
+
+    private fun centerToolbarControlsVertically() {
         val toolbarHeight = height
-
-        children.filterIsInstance<AppCompatImageButton>().firstOrNull()?.layoutWithStartInset(
-            edgeInset = controlEdgeInset,
-            toolbarWidth = toolbarWidth,
-            toolbarHeight = toolbarHeight,
-            isRtl = isRtl,
-        )
-
+        children.filterIsInstance<AppCompatImageButton>().firstOrNull()?.centerVertically(toolbarHeight)
         children.filterIsInstance<ActionMenuView>().firstOrNull()?.let { actionMenuView ->
-            actionMenuView.layoutWithEndInset(
-                edgeInset = controlEdgeInset,
-                toolbarWidth = toolbarWidth,
-                toolbarHeight = toolbarHeight,
-                isRtl = isRtl,
-            )
+            actionMenuView.centerVertically(toolbarHeight)
             actionMenuView.centerOutlinedActionsVertically(toolbarHeight)
         }
     }
 }
 
-private fun View.layoutWithStartInset(
-    edgeInset: Int,
-    toolbarWidth: Int,
-    toolbarHeight: Int,
-    isRtl: Boolean,
-) {
-    val childWidth = measuredWidth
+private fun View.centerVertically(toolbarHeight: Int) {
     val childTop = ((toolbarHeight - measuredHeight) / 2f).roundToInt()
-    val childLeft = if (isRtl) {
-        toolbarWidth - edgeInset - childWidth
-    } else {
-        edgeInset
-    }
-    layout(childLeft, childTop, childLeft + childWidth, childTop + measuredHeight)
-}
-
-private fun View.layoutWithEndInset(
-    edgeInset: Int,
-    toolbarWidth: Int,
-    toolbarHeight: Int,
-    isRtl: Boolean,
-) {
-    val childWidth = measuredWidth
-    val childTop = ((toolbarHeight - measuredHeight) / 2f).roundToInt()
-    val childLeft = if (isRtl) {
-        edgeInset
-    } else {
-        toolbarWidth - edgeInset - childWidth
-    }
-    layout(childLeft, childTop, childLeft + childWidth, childTop + measuredHeight)
+    layout(left, childTop, right, childTop + measuredHeight)
 }
 
 private fun ActionMenuView.centerOutlinedActionsVertically(toolbarHeight: Int) {

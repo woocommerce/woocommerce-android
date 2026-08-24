@@ -115,6 +115,33 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    fun `given long title with icon and overflow actions, when laid out, then title keeps spacing from actions`() {
+        // GIVEN
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            title = "Beanie with Logo - Enormous Leather Company Limited ".repeat(10).trim()
+            navigationIcon = AppCompatResources.getDrawable(
+                context,
+                R.drawable.woo_ds_ic_regular_angle_left_24dp,
+            )
+            navigationContentDescription = "Back"
+            addIconAction(title = "Share")
+            addOverflowAction()
+        }
+        val controlSpacing = toolbar.resources.getDimensionPixelSize(
+            R.dimen.woo_ds_toolbar_title_control_spacing,
+        )
+
+        // WHEN
+        toolbar.layoutToolbar(widthDp = 480)
+
+        // THEN
+        val titleView = toolbar.titleTextView(toolbar.title.toString())
+        val action = toolbar.actionChild(ACTION_ID)
+        val actionLeft = toolbar.actionMenuView().left + action.left
+        assertThat(actionLeft - (titleView.right - titleView.paddingEnd)).isGreaterThanOrEqualTo(controlSpacing)
+    }
+
+    @Test
     fun `given toolbar xml attributes, when inflated, then title navigation and menu are applied`() {
         val toolbar = LayoutInflater.from(toolbarContext())
             .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
