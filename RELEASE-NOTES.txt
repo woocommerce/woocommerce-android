@@ -5,14 +5,10 @@
 25.6
 -----
 
-
-25.6
+25.5
 -----
 - [*] Remote Tap to Pay keeps working on Android 17: the phone now asks for local network permission before it advertises itself, and the tablet asks before it connects to a phone reader
 - [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
-
-25.5
------
 - [*] Woo POS on phones: the "Install WooCommerce Payments" prompt no longer rotates the screen to landscape [https://github.com/woocommerce/woocommerce-android/pull/16447]
 - [*] You can now apply a gift card when editing an order [https://github.com/woocommerce/woocommerce-android/pull/16445]
 - [Internal] Woo POS analytics: replaced the catch-all "other" reason on the POS ineligible screen with specific reasons, and added the missing orders_list_loaded event [https://github.com/woocommerce/woocommerce-android/pull/16439]
