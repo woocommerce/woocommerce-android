@@ -699,7 +699,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingFailed(apiErrorCode = submissionState.apiErrorCode)
+        )
         val apiError = WooPosRefundApiError.fromCode(submissionState.apiErrorCode)
         if (apiError == WooPosRefundApiError.OrderNotRefundable) {
             _state.value = WooPosRefundState.NoRefundableItems

@@ -2202,7 +2202,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingFailed(apiErrorCode = null))
             val errorState = viewModel.state.value as WooPosRefundState.Error
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.Retry)
         }
@@ -2248,6 +2248,49 @@ class WooPosRefundViewModelTest {
             val errorState = viewModel.state.value as WooPosRefundState.Error
             assertThat(errorState.message).isEqualTo("Backend failed")
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the store returns an error code, when the refund fails, then the code is tracked`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Something went wrong",
+                        apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                    apiErrorCode = "woocommerce_rest_gateway_refund_rejected"
+                )
+            )
         }
 
     @Test

@@ -1039,8 +1039,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "refund_processing_success"
         }
 
-        data object RefundProcessingFailed : Event() {
+        data class RefundProcessingFailed(val apiErrorCode: String?) : Event() {
             override val name: String = "refund_processing_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "api_error_code" to (apiErrorCode ?: "unknown")
+                    )
+                )
+            }
         }
 
         data class RefundFlowAborted(val refundStep: String) : Event() {
