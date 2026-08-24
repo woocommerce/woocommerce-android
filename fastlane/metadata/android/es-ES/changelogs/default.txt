@@ -1,2 +1,0 @@
-25,4:
-Pagos más fiables: si el cargo con tarjeta se realiza pero la confirmación falla, la aplicación lo verifica y muestra que se realizó correctamente, lo que evita cargos duplicados. Al girar el dispositivo durante un pago, este ya no se bloquea. También hemos corregido los pedidos reembolsados que permanecían en el filtro Completado y hemos añadido una sugerencia antes de descartar las ediciones de pedidos sin guardar. Además, se han corregido puntos de venta y accesos.

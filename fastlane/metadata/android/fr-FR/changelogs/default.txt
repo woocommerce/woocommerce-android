@@ -1,2 +1,0 @@
-25.4 :
-Les paiements sont plus fiables : en cas de débit d’une carte sans confirmation, l’application vérifie l’opération et confirme la réussite pour éviter une double facturation. La rotation de l’appareil en cours de paiement n’a plus d’incidence. Nous avons également corrigé les commandes remboursées en attente dans le filtre Terminé et ajouté un message avant d’annuler les modifications de commande non enregistrées. Plus des corrections pour les PDV et la connexion.

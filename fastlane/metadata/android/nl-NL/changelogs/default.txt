@@ -1,2 +1,0 @@
-25.4:
-Betalingen zijn betrouwbaarder: als een kaartbetaling slaagt maar de bevestiging mislukt, verifieert de app deze nu en toont of de betaling geslaagd is, waardoor dubbele kosten worden voorkomen. Het roteren van je apparaat halverwege de betaling zorg niet meer voor een crash. We hebben ook terugbetaalde bestellingen opgelost die in het filter Voltooid bleven hangen en een prompt toegevoegd voordat we niet-opgeslagen bewerkingen van bestellingen ongedaan maken. Plus POS- en inlogfixes.
