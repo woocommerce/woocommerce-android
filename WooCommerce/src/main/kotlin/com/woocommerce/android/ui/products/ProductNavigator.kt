@@ -11,7 +11,6 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
@@ -457,11 +456,7 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
-            is ProductNavigationTarget.ExitProduct -> {
-                if (!fragment.findNavController().navigateUp() && fragment is BaseFragment) {
-                    fragment.continueBackNavigation()
-                }
-            }
+            is ProductNavigationTarget.ExitProduct -> fragment.findNavController().navigateUp()
 
             is ProductNavigationTarget.ViewFirstProductCelebration -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
