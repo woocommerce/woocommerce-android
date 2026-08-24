@@ -38,7 +38,7 @@ class LastQuarterRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
         val twoQuartersAgo = oneQuarterAgo.oneQuarterAgo()
         calendar.time = twoQuartersAgo
@@ -48,6 +48,6 @@ class LastQuarterRangeData(
             start = previousStart,
             end = previousEnd
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale)
     }
 }

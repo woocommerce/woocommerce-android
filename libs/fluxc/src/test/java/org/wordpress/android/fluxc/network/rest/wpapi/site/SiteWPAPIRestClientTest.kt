@@ -10,13 +10,16 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.network.discovery.RootWPAPIRestResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
 import org.wordpress.android.fluxc.test
 
+@Suppress("UnitTestNamingRule")
 @RunWith(RobolectricTestRunner::class)
 class SiteWPAPIRestClientTest {
     private val requestBuilder: WPAPIGsonRequestBuilder = mock()
@@ -94,6 +97,49 @@ class SiteWPAPIRestClientTest {
         assertThat(refreshedSite.adminUrl).isEqualTo(REST_ADMIN_URL)
     }
 
+    @Test
+    fun `given application passwords and empty namespaces, when fetching site, then return invalid response error`() =
+        test {
+            givenSiteResponse(
+                RootWPAPIRestResponse(
+                    namespaces = emptyList(),
+                    authentication = RootWPAPIRestResponse.Authentication(
+                        applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                            endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                                authorization = REST_ADMIN_AUTHORIZATION_URL
+                            )
+                        )
+                    )
+                )
+            )
+
+            val site = subject.fetchWPAPISite(FetchWPAPISitePayload(SITE_URL))
+
+            assertThat(site.isError).isTrue()
+            assertThat(site.error.type).isEqualTo(INVALID_RESPONSE)
+            assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
+        }
+
+    @Test
+    fun `given missing namespaces, when fetching site, then return invalid response error`() = test {
+        givenSiteResponse(RootWPAPIRestResponse(namespaces = null))
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(SITE_URL))
+
+        assertThat(site.isError).isTrue()
+        assertThat(site.error.type).isEqualTo(INVALID_RESPONSE)
+    }
+
+    @Test
+    fun `given non-empty namespaces without WooCommerce, when fetching site, then return non-Woo site`() = test {
+        givenSiteResponse(RootWPAPIRestResponse(namespaces = listOf("wp/v2")))
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(SITE_URL))
+
+        assertThat(site.isError).isFalse()
+        assertThat(site.hasWooCommerce).isFalse()
+    }
+
     private fun existingSite() = SiteModel().apply {
         url = SITE_URL
         username = USERNAME
@@ -102,22 +148,27 @@ class SiteWPAPIRestClientTest {
     }
 
     private suspend fun givenSiteResponse(applicationPasswordsAuthorizationUrl: String) {
-        val response = RootWPAPIRestResponse(
-            authentication = RootWPAPIRestResponse.Authentication(
-                applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
-                    endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
-                        authorization = applicationPasswordsAuthorizationUrl
+        givenSiteResponse(
+            RootWPAPIRestResponse(
+                authentication = RootWPAPIRestResponse.Authentication(
+                    applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
+                        endpoints = RootWPAPIRestResponse.Authentication.ApplicationPasswords.Endpoints(
+                            authorization = applicationPasswordsAuthorizationUrl
+                        )
                     )
-                )
-            ),
-            namespaces = listOf("wc/v3")
+                ),
+                namespaces = listOf("wc/v3")
+            )
         )
+    }
+
+    private suspend fun givenSiteResponse(response: RootWPAPIRestResponse) {
         whenever(
             requestBuilder.syncGetRequest(
                 restClient = subject,
                 url = WP_API_URL,
                 clazz = RootWPAPIRestResponse::class.java,
-                params = mapOf("_fields" to "name,description,gmt_offset,url,authentication,namespaces")
+                params = mapOf("_fields" to FETCH_API_CALL_FIELDS)
             )
         ).thenReturn(WPAPIResponse.Success(response, emptyList()))
     }
@@ -133,5 +184,7 @@ class SiteWPAPIRestClientTest {
         const val STALE_REST_ADMIN_AUTHORIZATION_URL = "${STALE_REST_ADMIN_URL}authorize-application.php"
         const val REST_ADMIN_URL = "$SITE_URL/wp-admin/"
         const val REST_ADMIN_AUTHORIZATION_URL = "${REST_ADMIN_URL}authorize-application.php"
+        const val FETCH_API_CALL_FIELDS =
+            "name,description,gmt_offset,url,authentication,namespaces"
     }
 }

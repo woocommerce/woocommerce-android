@@ -38,7 +38,7 @@ class LastWeekRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(currentEnd, locale)
 
         val twoWeeksAgo = oneWeekAgo.oneWeekAgo()
         calendar.time = twoWeeksAgo
@@ -48,6 +48,6 @@ class LastWeekRangeData(
             start = previousStart,
             end = previousEnd
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(previousEnd, locale)
     }
 }

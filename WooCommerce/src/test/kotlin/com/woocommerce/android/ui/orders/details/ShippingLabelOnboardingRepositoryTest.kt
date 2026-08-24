@@ -10,11 +10,11 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
@@ -36,7 +36,9 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         val ORDER_PAYED_IN_EUROS = ELIGIBLE_ORDER_FOR_WCS_LABELS.copy(currency = "EUR")
     }
 
-    private val orderDetailRepository: OrderDetailRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock {
+        on { hasVirtualProductsOnly(any()) } doReturn false
+    }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
 
@@ -57,9 +59,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertTrue {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
-        }
+        assertTrue(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
     }
 
     @Test
@@ -67,9 +67,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = true, active = true)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
     }
 
     @Test
@@ -77,9 +75,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode("ES")
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
     }
 
     @Test
@@ -87,9 +83,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ORDER_PAYED_IN_EUROS, eligibleForIpp = false)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ORDER_PAYED_IN_EUROS, eligibleForIpp = false))
     }
 
     @Test
@@ -98,9 +92,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenOrderHasVirtualProductsOnly()
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
     }
 
     @Test
@@ -108,9 +100,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = true)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = true))
     }
 
     @Test
@@ -119,9 +109,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
 
-        assertFalse {
-            sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false)
-        }
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
     }
 
     @Test
@@ -200,10 +188,8 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
             .thenReturn(countryCode)
     }
 
-    private fun givenOrderHasVirtualProductsOnly() {
-        runBlocking {
-            whenever(orderDetailRepository.hasVirtualProductsOnly(any())).thenReturn(true)
-        }
+    private suspend fun givenOrderHasVirtualProductsOnly() {
+        whenever(orderDetailRepository.hasVirtualProductsOnly(any())).thenReturn(true)
     }
 
     private fun givenWcShippingBannerIsDismissed(dismissed: Boolean) {

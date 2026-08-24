@@ -115,6 +115,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val pluginsInfo = HashMap<String, WooPlugin>()
     private val orderDetailRepository: OrderDetailRepository = mock {
         on { getOrderDetailsPluginsInfo() } doReturn pluginsInfo
+        on { hasVirtualProductsOnly(any()) } doReturn false
+        on { getProductCountForOrder(any()) } doReturn 0
+        on { getOrderRefunds(any()) } doReturn emptyList()
     }
     private val addonsRepository: AddonRepository = mock {
         on { containsAddonsFrom(any()) } doReturn false
@@ -128,6 +131,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
         doReturn(ShippingLabelSupport.WCS_SUPPORTED).whenever(it).shippingPluginSupport
+        on { shouldShowWcShippingBanner(any(), any()) } doReturn false
     }
     private val shippingLabelRepository: WooShippingLabelRepository = mock()
     private val shippingEligibilityDataStore: WooShippingEligibilityDataStore = mock()
@@ -449,7 +453,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns false if there are no products for the order`() =
+    fun `given an order with no products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val order = order.copy(items = emptyList())
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
@@ -463,11 +467,12 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any(), any())
 
             viewModel.start()
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isFalse()
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns true if and only if there are no physical products for the order`() =
+    fun `given an order with only virtual products, when the screen loads, then the order is marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val virtualItems = listOf(item.copy(productId = 3), item.copy(productId = 4))
@@ -483,11 +488,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(true)
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isTrue()
         }
 
     @Test
-    fun `hasVirtualProductsOnly returns false if there are both virtual and physical products for the order`() =
+    fun `given an order with virtual and physical products, when the screen loads, then the order is not marked as virtual`() =
         testBlocking {
             val item = OrderTestUtils.generateTestOrder().items.first().copy(productId = 1)
             val mixedItems = listOf(item, item.copy(productId = 2))
@@ -506,7 +511,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            assertThat(viewModel.hasVirtualProductsOnly()).isEqualTo(false)
+            assertThat(currentViewStateValue!!.orderInfo!!.isVirtualOrder).isFalse()
         }
 
     @Test

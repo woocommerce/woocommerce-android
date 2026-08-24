@@ -136,7 +136,6 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import java.lang.ref.WeakReference
-import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
@@ -1299,14 +1298,10 @@ class MainActivity :
 
     fun showOrderCreation(
         mode: OrderCreateEditViewModel.Mode,
-        giftCardCode: String?,
-        giftCardAmount: BigDecimal?,
         orderCurrency: String? = null,
     ) {
         NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
-            giftCardCode = giftCardCode,
-            giftCardAmount = giftCardAmount,
             orderCurrency = orderCurrency
         ).apply {
             navController.navigateSafely(this)

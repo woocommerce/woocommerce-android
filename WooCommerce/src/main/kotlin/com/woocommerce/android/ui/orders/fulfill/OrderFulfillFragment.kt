@@ -99,7 +99,7 @@ class OrderFulfillFragment :
     private fun setupObservers(binding: FragmentOrderFulfillBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.order?.takeIfNotEqualTo(old?.order) {
-                showOrderDetail(it, binding)
+                showOrderDetail(it, new.isVirtualOrder, binding)
             }
             new.toolbarTitle?.takeIfNotEqualTo(old?.toolbarTitle) { screenTitle = it }
             new.isShipmentTrackingAvailable?.takeIfNotEqualTo(old?.isShipmentTrackingAvailable) {
@@ -131,10 +131,10 @@ class OrderFulfillFragment :
         }
     }
 
-    private fun showOrderDetail(order: Order, binding: FragmentOrderFulfillBinding) {
+    private fun showOrderDetail(order: Order, isVirtualOrder: Boolean, binding: FragmentOrderFulfillBinding) {
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
-            isVirtualOrder = viewModel.hasVirtualProductsOnly(),
+            isVirtualOrder = isVirtualOrder,
             isReadOnly = true
         )
         binding.buttonMarkOrderCompete.setOnClickListener {
