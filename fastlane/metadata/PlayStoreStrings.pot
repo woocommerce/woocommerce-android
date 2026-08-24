@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-07 08:12+0000\n"
+"PO-Revision-Date: 2026-08-24 12:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: fastlane-plugin-wpmreleasetoolkit 14.11.2\n"
+"X-Generator: fastlane-plugin-wpmreleasetoolkit 14.11.3\n"
 
 #. translators: Title to be displayed in the Play Store. Limit to 50 characters including spaces and commas!
 msgctxt "play_store_app_title"
@@ -116,20 +116,19 @@ msgid ""
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_254"
+msgctxt "release_note_255"
 msgid ""
-"25.4:\n"
-"Payments are more reliable: if a card charge succeeds but confirmation fails, "
-"the app now verifies it and shows success, preventing double charges. Rotating"
-" your device mid-payment no longer crashes. We also fixed refunded orders ling"
-"ering in the Completed filter, and added a prompt before discarding unsaved or"
-"der edits. Plus POS and login fixes.\n"
+"25.5:\n"
+"On Android 17, Remote Tap to Pay asks for local network access so your phone a"
+"nd tablet can connect. Store management is easier, too: apply gift cards while"
+" editing orders, update product image alt text and titles, see dates in your l"
+"anguage's preferred order, and enjoy smoother bundle setup and sign-in.\n"
 msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
 msgid ""
-"This release includes internal updates and maintenance improvements for a smoo"
-"ther, more reliable WooCommerce Wear experience."
+"Dates for orders and store stats on your watch now match your language's prefe"
+"rred date order, making them easier to read at a glance."
 msgstr ""
 
