@@ -18,6 +18,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -65,6 +66,20 @@ class CreateUpdateOrderTests : BaseUnitTest() {
                     ).getOrThrow()
                 )
         }
+
+        job.cancel()
+    }
+
+    @Test
+    fun `given an order with a gift card, when updating, then send the gift card to the repository`() = testBlocking {
+        val giftCardCode = "1234-5678-9012-3456"
+        orderDraftChanges.update { it.copy(selectedGiftCard = giftCardCode) }
+        val job = sut(orderDraftChanges, retryTrigger)
+            .launchIn(this)
+
+        advanceUntilIdle()
+
+        verify(orderCreateEditRepository).createOrUpdateOrder(any(), any(), eq(giftCardCode))
 
         job.cancel()
     }

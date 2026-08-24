@@ -32,7 +32,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import javax.inject.Inject
@@ -89,45 +88,43 @@ class OrderFulfillViewModel @Inject constructor(
         launch {
             val order = repository.getOrderById(navArgs.orderId)
             order?.let {
-                displayOrderDetails(it)
+                val isVirtualOrder = hasVirtualProductsOnly(it)
+                displayOrderDetails(it, isVirtualOrder)
                 displayOrderProducts(it)
-                displayShipmentTrackings()
+                displayShipmentTrackings(isVirtualOrder)
             }
         }
     }
 
-    private fun displayOrderDetails(order: Order) {
+    private fun displayOrderDetails(order: Order, isVirtualOrder: Boolean) {
         viewState = viewState.copy(
             order = order,
+            isVirtualOrder = isVirtualOrder,
             toolbarTitle = resourceProvider.getString(R.string.order_fulfill_title)
         )
     }
 
-    private fun displayOrderProducts(order: Order) {
+    private suspend fun displayOrderProducts(order: Order) {
         val products = repository.getOrderRefunds(navArgs.orderId).getNonRefundedProducts(order.items)
         _productList.value = products
     }
 
-    private fun displayShipmentTrackings() {
+    private fun displayShipmentTrackings(isVirtualOrder: Boolean) {
         val isShippingLabelAvailable = repository.getOrderShippingLabels(navArgs.orderId).isNotEmpty()
         val trackingAvailable = appPrefs.isTrackingExtensionAvailable() &&
-            !hasVirtualProductsOnly() && !isShippingLabelAvailable
+            !isVirtualOrder && !isShippingLabelAvailable
         viewState = viewState.copy(isShipmentTrackingAvailable = trackingAvailable)
         if (trackingAvailable) {
             _shipmentTrackings.value = repository.getOrderShipmentTrackings(navArgs.orderId)
         }
     }
 
-    fun hasVirtualProductsOnly(): Boolean {
-        return runBlocking {
-            if (order.items.isNotEmpty()) {
-                val remoteProductIds = order.getProductIds()
-                repository.hasVirtualProductsOnly(remoteProductIds)
-            } else {
-                false
-            }
+    private suspend fun hasVirtualProductsOnly(order: Order): Boolean =
+        if (order.items.isNotEmpty()) {
+            repository.hasVirtualProductsOnly(order.getProductIds())
+        } else {
+            false
         }
-    }
 
     fun onMarkOrderCompleteButtonClicked() {
         if (networkStatus.isConnected()) {
@@ -244,6 +241,7 @@ class OrderFulfillViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val order: Order? = null,
+        val isVirtualOrder: Boolean = false,
         val toolbarTitle: String? = null,
         val isShipmentTrackingAvailable: Boolean? = null,
         val shouldRefreshShipmentTracking: Boolean = false

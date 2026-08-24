@@ -53,7 +53,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val items = result.first().items
 
         assertTrue(items.isEmpty())
-        verify(productDetailRepository, never()).getProductAsync(any())
+        verify(productDetailRepository, never()).getProduct(any())
     }
 
     @Test
@@ -64,7 +64,7 @@ class GetShipmentsTests : BaseUnitTest() {
             items = OrderTestUtils.generateTestOrderItems(count = itemsSize)
         )
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val productId = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
@@ -87,7 +87,7 @@ class GetShipmentsTests : BaseUnitTest() {
         )
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val id = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = id, productName = "Product $id")
         }
@@ -109,7 +109,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val order = OrderTestUtils.generateTestOrder().copy(items = orderItems)
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val id = invocation.arguments[0] as Long
             val isVirtual = id == virtualProductId
             val isSample = id == sampleProductId
@@ -142,7 +142,7 @@ class GetShipmentsTests : BaseUnitTest() {
 
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(item))
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn refunds
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val productId = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
@@ -192,7 +192,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val labelId = 123L
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val productId = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
@@ -239,7 +239,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val labelId = 123L
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val productId = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }
@@ -286,7 +286,7 @@ class GetShipmentsTests : BaseUnitTest() {
         val labelId = 12L
 
         whenever(orderDetailRepository.getOrderRefunds(eq(order.id))) doReturn emptyList()
-        whenever(productDetailRepository.getProductAsync(any())).thenAnswer { invocation ->
+        whenever(productDetailRepository.getProduct(any())).thenAnswer { invocation ->
             val productId = invocation.arguments[0] as Long
             ProductTestUtils.generateProduct(productId = productId, productName = "Product $productId")
         }

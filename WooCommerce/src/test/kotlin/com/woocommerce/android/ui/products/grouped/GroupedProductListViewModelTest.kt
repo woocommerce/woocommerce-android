@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -22,7 +23,9 @@ class GroupedProductListViewModelTest : BaseUnitTest() {
     private val networkStatus: NetworkStatus = mock {
         on { isConnected() } doReturn true
     }
-    private val productRepository: GroupedProductListRepository = mock()
+    private val productRepository: GroupedProductListRepository = mock {
+        on { getProductList(any()) } doReturn emptyList()
+    }
     private val savedState = GroupedProductListFragmentArgs(
         remoteProductId = PRODUCT_REMOTE_ID,
         productIds = GROUPED_PRODUCT_IDS,
