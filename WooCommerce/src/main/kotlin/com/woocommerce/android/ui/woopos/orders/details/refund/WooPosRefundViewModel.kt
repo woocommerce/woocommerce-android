@@ -702,7 +702,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
         analyticsTracker.track(
             WooPosAnalyticsEvent.Event.RefundProcessingFailed(apiErrorCode = submissionState.apiErrorCode)
         )
-        val apiError = WooPosRefundApiError.fromCode(submissionState.apiErrorCode)
+        // On a backend-only notification the card is already reversed and only the store call
+        // failed, so the mapped code is ignored: every recovery it offers leads back into the flow,
+        // and walking it again would refund the card a second time.
+        val apiError = WooPosRefundApiError
+            .fromCode(submissionState.apiErrorCode)
+            .takeIf { !submissionState.retryBackendNotificationOnly }
         if (apiError == WooPosRefundApiError.OrderNotRefundable) {
             _state.value = WooPosRefundState.NoRefundableItems
             return
