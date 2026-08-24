@@ -16,9 +16,11 @@ class WooPosBuildRefundContent @Inject constructor(
         preservedSelection: Set<String>? = null,
     ): WooPosRefundState.Content {
         val allItemIds = refundableItems.map { it.uniqueId }.toSet()
+        // A preserved selection that no longer matches anything leaves the selection empty rather
+        // than falling back to every remaining item: the cashier picks again instead of confirming
+        // items they never chose.
         val selectedItemIds = preservedSelection
             ?.filterTo(mutableSetOf()) { it in allItemIds }
-            ?.takeIf { it.isNotEmpty() }
             ?: allItemIds
         val zero = PriceUtils.formatCurrency(BigDecimal.ZERO, order.currency, currencyFormatter)
 

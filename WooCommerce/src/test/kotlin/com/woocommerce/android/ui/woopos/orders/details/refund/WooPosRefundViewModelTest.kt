@@ -2443,7 +2443,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given the whole selection was refunded elsewhere, when items are refreshed, then what is left is selected`() =
+    fun `given the whole selection was refunded elsewhere, when items are refreshed, then nothing is selected`() =
         runTest {
             // GIVEN
             val selectedUnit = testRefundableItem.copy(rowIndex = 0)
@@ -2484,7 +2484,9 @@ class WooPosRefundViewModelTest {
             // THEN
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.refundableItems).isEqualTo(listOf(otherItem))
-            assertThat(content.selectedItemIds).isEqualTo(setOf(otherItem.uniqueId))
+            assertThat(content.selectedItemIds).isEmpty()
+            assertThat(content.itemsCount).isEqualTo(0)
+            assertThat(content.allItemsSelected).isFalse()
         }
 
     @Test
