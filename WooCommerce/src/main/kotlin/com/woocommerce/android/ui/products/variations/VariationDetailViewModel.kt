@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewMediaUploadErrors
@@ -85,9 +84,7 @@ class VariationDetailViewModel @Inject constructor(
             }
         }
 
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState)
-    }
+    private var cardBuilder: VariationDetailCardBuilder? = null
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -107,13 +104,13 @@ class VariationDetailViewModel @Inject constructor(
     private val _variationDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val variationDetailCards: LiveData<List<ProductPropertyCard>> = _variationDetailCards
 
-    private val cardBuilder by lazy {
-        VariationDetailCardBuilder(
+    private fun getCardBuilder(): VariationDetailCardBuilder {
+        return cardBuilder ?: VariationDetailCardBuilder(
             this,
             resources,
             currencyFormatter,
-            parameters,
-        )
+            parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState),
+        ).also { cardBuilder = it }
     }
 
     init {
@@ -426,7 +423,7 @@ class VariationDetailViewModel @Inject constructor(
                     )
                 )
             } else {
-                _variationDetailCards.value = cardBuilder.buildPropertyCards(
+                _variationDetailCards.value = getCardBuilder().buildPropertyCards(
                     variation,
                     variation.sku,
                     viewState.parentProduct
