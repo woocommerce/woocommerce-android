@@ -12,6 +12,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -60,9 +61,13 @@ class OrderEditingViewModel @Inject constructor(
             } else {
                 orderId
             }
-            order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
-                "Order $orderId not found in the database."
+            val loadedOrder = orderDetailRepository.getOrderById(orderId)
+            if (loadedOrder == null) {
+                WooLog.w(WooLog.T.ORDERS, "Order $orderId not found in the database.")
+                triggerEvent(OrderLoadFailed)
+                return@launch
             }
+            order = loadedOrder
             triggerEvent(OrderLoaded)
         }
     }
@@ -170,6 +175,7 @@ class OrderEditingViewModel @Inject constructor(
     ) : Parcelable
 
     object OrderLoaded : MultiLiveEvent.Event()
+    object OrderLoadFailed : MultiLiveEvent.Event()
     object OrderEdited : MultiLiveEvent.Event()
     data class OrderEditFailed(@StringRes val message: Int) : MultiLiveEvent.Event()
 }

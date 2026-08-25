@@ -63,6 +63,24 @@ class OrderEditingViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given order not in database, when started, then OrderLoadFailed is emitted and no crash`() =
+        testBlocking {
+            orderDetailRepository.stub {
+                on { getOrderById(any()) } doReturn null
+            }
+            var orderLoadFailedEmitted = false
+
+            sut.start()
+
+            observeEvents { event ->
+                if (event is OrderEditingViewModel.OrderLoadFailed) orderLoadFailedEmitted = true
+            }
+
+            assertThat(orderLoadFailedEmitted).isTrue
+            assertThat(sut.isOrderLoaded).isFalse
+        }
+
+    @Test
     fun `given order not loaded, when an update is requested, then nothing is dispatched`() =
         testBlocking {
             val dispatched = sut.updateShippingAddress(addressToUpdate)
