@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Suppress("LongParameterList")
@@ -51,6 +50,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val getPaymentMethod: WooPosGetPaymentMethod,
+    private val buildRefundContent: WooPosBuildRefundContent,
+    private val mapRefundFailure: WooPosMapRefundFailure,
     private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val cardReaderFacade: WooPosCardReaderFacade,
@@ -124,6 +125,18 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun loadRefundableItems() {
         if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
+        loadContent(preservedSelection = null, isFlowStart = true)
+    }
+
+    private fun refreshRefundableItems() {
+        val preservedSelection = (_state.value as? WooPosRefundState.Content)?.selectedItemIds
+            ?: contentStateBeforeRefund?.selectedItemIds
+        cancelPreview()
+        cancelRefundSubmission()
+        loadContent(preservedSelection = preservedSelection, isFlowStart = false)
+    }
+
+    private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean) {
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
@@ -163,7 +176,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
-            showRefundableItems(order, refundableItems, paymentMethodResult.getOrThrow())
+            showRefundableItems(
+                order = order,
+                refundableItems = refundableItems,
+                paymentMethod = paymentMethodResult.getOrThrow(),
+                preservedSelection = preservedSelection,
+                isFlowStart = isFlowStart,
+            )
         }
     }
 
@@ -171,47 +190,21 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
         paymentMethod: String,
+        preservedSelection: Set<String>? = null,
+        isFlowStart: Boolean = true,
     ) {
-        // The item-selection step does not display aggregate totals, so we build the content without
-        // computing them. Totals are resolved on "Continue": from the server preview or, on a store
-        // without server refunds, calculated locally at that point (see [continueToReview]).
-        _state.value = buildContentShell(
+        _state.value = buildRefundContent(
             order = order,
             refundableItems = refundableItems,
             paymentMethod = paymentMethod,
+            preservedSelection = preservedSelection,
         )
-        viewModelScope.launch {
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
+
+        if (isFlowStart) {
+            viewModelScope.launch {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
+            }
         }
-    }
-
-    private fun buildContentShell(
-        order: Order,
-        refundableItems: List<WooPosRefundableItem>,
-        paymentMethod: String,
-        selectedItemIds: Set<String> = refundableItems.map { it.uniqueId }.toSet()
-    ): WooPosRefundState.Content {
-        val selectedItems = refundableItems.filter { it.uniqueId in selectedItemIds }
-        val allItemIds = refundableItems.map { it.uniqueId }.toSet()
-        val zero = PriceUtils.formatCurrency(BigDecimal.ZERO, order.currency, currencyFormatter)
-
-        return WooPosRefundState.Content(
-            orderId = order.id,
-            orderNumber = "#${order.number}",
-            currency = order.currency,
-            refundableItems = refundableItems,
-            selectedItemIds = selectedItemIds,
-            allItemsSelected = selectedItemIds.containsAll(allItemIds),
-            itemsCount = selectedItems.size,
-            subtotal = BigDecimal.ZERO,
-            taxes = BigDecimal.ZERO,
-            total = BigDecimal.ZERO,
-            formattedSubtotal = zero,
-            formattedTaxes = zero,
-            formattedTotal = zero,
-            paymentMethod = paymentMethod,
-            step = WooPosRefundState.Content.RefundStep.SelectItems
-        )
     }
 
     /**
@@ -256,6 +249,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RefundFlowOpened -> loadRefundableItems()
             WooPosRefundUIEvent.RefundFlowDismissed -> handleRefundFlowDismissed()
             WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
+            WooPosRefundUIEvent.RefreshRefundableItems -> refreshRefundableItems()
             WooPosRefundUIEvent.RetryCreateRefund -> {
                 val contentState = contentStateBeforeRefund
                 if (contentState != null) {
@@ -330,6 +324,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RefundFlowDismissed,
             WooPosRefundUIEvent.RefundFlowOpened,
             WooPosRefundUIEvent.RetryLoadRefundableItems,
+            WooPosRefundUIEvent.RefreshRefundableItems,
             WooPosRefundUIEvent.RetryCreateRefund,
             WooPosRefundUIEvent.CancelRefund -> Unit
         }
@@ -403,8 +398,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             allItemsSelected = newSelectedIds.containsAll(allItemIds),
             itemsCount = currentState.refundableItems.count { it.uniqueId in newSelectedIds },
             isPreviewLoading = false,
-            previewFailed = false,
-            previewErrorMessage = null,
+            previewFailure = null,
         )
     }
 
@@ -424,8 +418,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
         _state.value = currentState.copy(
             isPreviewLoading = true,
-            previewFailed = false,
-            previewErrorMessage = null,
+            previewFailure = null,
         )
 
         previewJob = viewModelScope.launch {
@@ -440,16 +433,30 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundPreview.Result.FallbackToLocal ->
                     advanceToReviewWithLocalTotals(currentState, selectedItems)
 
-                is WooPosRefundPreview.Result.Error ->
-                    setContentIfMatchingSelection(currentState.selectedItemIds) {
-                        it.copy(
-                            isPreviewLoading = false,
-                            previewFailed = true,
-                            previewErrorMessage = result.apiError?.messageRes
-                                ?.let(resourceProvider::getString),
-                        )
-                    }
+                is WooPosRefundPreview.Result.Error -> handlePreviewError(currentState, result.apiError)
             }
+        }
+    }
+
+    private fun handlePreviewError(
+        currentState: WooPosRefundState.Content,
+        apiError: WooPosRefundApiError?,
+    ) {
+        if (apiError == WooPosRefundApiError.OrderNotRefundable) {
+            if (_state.value is WooPosRefundState.Content) {
+                _state.value = WooPosRefundState.NoRefundableItems
+            }
+            return
+        }
+
+        setContentIfMatchingSelection(currentState.selectedItemIds) {
+            it.copy(
+                isPreviewLoading = false,
+                previewFailure = WooPosRefundState.Content.PreviewFailure(
+                    message = apiError?.messageRes?.let(resourceProvider::getString),
+                    recovery = apiError?.recovery ?: WooPosRefundState.Recovery.Retry,
+                ),
+            )
         }
     }
 
@@ -465,7 +472,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
         val order = currentOrder
         if (order == null || !ensureLocalCalculationSettings()) {
             setContentIfMatchingSelection(currentState.selectedItemIds) {
-                it.copy(isPreviewLoading = false, previewFailed = true, previewErrorMessage = null)
+                it.copy(
+                    isPreviewLoading = false,
+                    previewFailure = WooPosRefundState.Content.PreviewFailure(
+                        message = null,
+                        recovery = WooPosRefundState.Recovery.Retry,
+                    ),
+                )
             }
             return
         }
@@ -476,8 +489,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 .copy(
                     step = WooPosRefundState.Content.RefundStep.ReviewRefund,
                     isPreviewLoading = false,
-                    previewFailed = false,
-                    previewErrorMessage = null,
+                    previewFailure = null,
                 )
         }
     }
@@ -506,8 +518,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedTaxes = PriceUtils.formatCurrency(preview.tax, currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(preview.total, currency, currencyFormatter),
             isPreviewLoading = false,
-            previewFailed = false,
-            previewErrorMessage = null,
+            previewFailure = null,
         )
     }
 
@@ -521,13 +532,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
             contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
+            val serverComputed = isServerComputedRefundConfirmed()
             analyticsTracker.track(
                 WooPosAnalyticsEvent.Event.RefundProcessingStarted(
-                    refundFlow = if (isServerComputedRefundConfirmed()) {
-                        RefundFlow.SERVER_COMPUTED
-                    } else {
-                        RefundFlow.LOCAL
-                    }
+                    refundFlow = if (serverComputed) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
                 )
             )
 
@@ -544,7 +552,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
-            val request = buildSubmissionRequest(order, contentState, selectedItems) ?: run {
+            val request = buildSubmissionRequest(order, contentState, selectedItems, serverComputed) ?: run {
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic),
                     errorType = WooPosRefundState.Error.ErrorType.Processing
@@ -563,17 +571,20 @@ class WooPosRefundViewModel @AssistedInject constructor(
      * request is built from the locally-grouped items, reusing the currency decimals already
      * fetched for the local calculation.
      *
-     * The server branch requires the availability cache to be `true` — set only by a successful
-     * preview — on top of [resolveRefundFlow]: on stores without `compute_totals` support the
-     * unknown param is silently dropped and a quantity-only body would create a ghost zero-amount
-     * refund with restock, so eligibility alone is never enough to send a computed create.
+     * [serverComputed] comes from [isServerComputedRefundConfirmed], read once by the caller so the
+     * branch taken here and the flow reported to analytics cannot disagree. It requires the
+     * availability cache to be `true` — set only by a successful preview — on top of
+     * [resolveRefundFlow]: on stores without `compute_totals` support the unknown param is
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock, so eligibility alone is never enough to send a computed create.
      */
     private fun buildSubmissionRequest(
         order: Order,
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
+        serverComputed: Boolean,
     ): WooPosRefundSubmissionRequest? {
-        if (isServerComputedRefundConfirmed()) {
+        if (serverComputed) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,
@@ -711,11 +722,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 apiErrorCode = submissionState.apiErrorCode,
             )
         )
-        _state.value = WooPosRefundState.Error(
-            message = submissionState.message,
-            errorType = WooPosRefundState.Error.ErrorType.Processing,
-            canRetry = submissionState.canRetry,
-        )
+        _state.value = mapRefundFailure(submissionState)
     }
 
     private fun cancelRefundSubmission() {

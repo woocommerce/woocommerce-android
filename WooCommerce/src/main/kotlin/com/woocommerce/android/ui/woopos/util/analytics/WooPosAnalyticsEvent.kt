@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -218,6 +217,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
+        }
+
+        data object OrdersListLoaded : Event() {
+            override val name: String = "orders_list_loaded"
         }
 
         data object OrdersListPullToRefreshTriggered : Event() {
@@ -929,14 +932,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_stale_warning_dismissed"
         }
 
-        data object WooCommerceVersionSunsetWarningShown : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_shown"
-        }
-
-        data object WooCommerceVersionSunsetWarningDismissed : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_dismissed"
-        }
-
         data class LocalCatalogBlockedFellBackToRemote(val wooCommerceVersion: String?) : Event() {
             override val name: String = "local_catalog_blocked_fell_back_to_remote"
 
@@ -1059,16 +1054,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class RefundProcessingFailed(
             val refundFlow: RefundFlow,
-            val apiErrorCode: String? = null,
+            val apiErrorCode: String?,
         ) : Event() {
             override val name: String = "refund_processing_failed"
 
             init {
                 addProperties(
-                    buildMap {
-                        put(RefundFlow.REFUND_FLOW, refundFlow.value)
-                        apiErrorCode?.let { put(AnalyticsTracker.KEY_API_ERROR_CODE, it) }
-                    }
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value,
+                        "api_error_code" to (apiErrorCode ?: "unknown")
+                    )
                 )
             }
         }
@@ -1413,9 +1408,9 @@ internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Str
 internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): String {
     return when (this) {
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
-        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
-        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
-        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable -> "site_settings_unavailable"
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> "unknown_no_positive_cache"
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "no_site_selected"
     }
 }
 

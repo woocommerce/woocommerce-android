@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.5
+On Android 17, Remote Tap to Pay asks for local network access so your phone and tablet can connect. Store management is easier, too: apply gift cards while editing orders, update product image alt text and titles, see dates in your language's preferred order, and enjoy smoother bundle setup and sign-in.
+
 ## 25.4
 Payments are more reliable: if a card charge succeeds but confirmation fails, the app now verifies it and shows success, preventing double charges. Rotating your device mid-payment no longer crashes. We also fixed refunded orders lingering in the Completed filter, and added a prompt before discarding unsaved order edits. Plus POS and login fixes.
 

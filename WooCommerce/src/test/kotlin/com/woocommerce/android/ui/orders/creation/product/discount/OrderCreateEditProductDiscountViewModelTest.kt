@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -31,6 +32,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -74,6 +77,12 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
     }
 
     private val tracker: AnalyticsTrackerWrapper = mock()
+
+    private val currencyFormatter: CurrencyFormatter = mock {
+        on { buildBigDecimalFormatter(anyString()) } doReturn { amount: BigDecimal ->
+            "$" + amount.setScale(2, RoundingMode.HALF_UP).toPlainString()
+        }
+    }
 
     @Test
     fun `given discount bigger than item's total price, when done clicked, then should return Invalid state`() =
@@ -221,7 +230,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given discount amount selected, when amount provided, then calculatedPriceAfterDiscount should return discount percentage`() =
+    fun `given discount amount selected, when amount provided, then calculatedAmount should return discount percentage`() =
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
@@ -236,12 +245,12 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             sut.onDiscountAmountChange(4.29.toBigDecimal())
             sut.viewState.test {
                 val viewState = awaitItem()
-                assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("13.00")
+                assertThat(viewState.calculatedAmount).isEqualTo("13.00%")
             }
         }
 
     @Test
-    fun `given discount percentage selected, when discount provided, the calculatedPriceAfterDiscount should return discount amount`() =
+    fun `given discount percentage selected, when discount provided, then calculatedAmount should return discount amount`() =
         testBlocking {
             val item = Order.Item.EMPTY.copy(
                 quantity = 1F,
@@ -257,9 +266,31 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             sut.onDiscountAmountChange(13.toBigDecimal())
             sut.viewState.test {
                 val viewState = awaitItem()
-                assertThat(viewState.calculatedPriceAfterDiscount).isEqualTo("4.29")
+                assertThat(viewState.calculatedAmount).isEqualTo("$4.29")
             }
         }
+
+    @Test
+    fun `given no discount entered, when the screen opens, then price after discount shows the subtotal`() = testBlocking {
+        // GIVEN
+        val item = Order.Item.EMPTY.copy(
+            quantity = 2F,
+            subtotal = 36.toBigDecimal(),
+            total = 36.toBigDecimal(),
+        )
+        val savedStateHandle: SavedStateHandle = OrderCreateEditProductDiscountFragmentArgs(
+            createProductItem(item),
+            "usd"
+        ).toSavedStateHandle()
+
+        // WHEN
+        val sut = createSut(savedStateHandle)
+
+        // THEN
+        sut.viewState.test {
+            assertThat(awaitItem().priceAfterDiscount).isEqualTo("$36.00")
+        }
+    }
 
     @Test
     fun `given discount amount provided, then show correct price after discount`() = testBlocking {
@@ -276,7 +307,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         sut.onDiscountAmountChange(4.29.toBigDecimal())
         sut.viewState.test {
             val viewState = awaitItem()
-            assertThat(viewState.priceAfterDiscount).isEqualTo("28.71")
+            assertThat(viewState.priceAfterDiscount).isEqualTo("$28.71")
         }
     }
 
@@ -384,6 +415,7 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
             tracker,
             parameterRepository,
             currencySymbolFinder,
+            currencyFormatter,
         )
     }
 

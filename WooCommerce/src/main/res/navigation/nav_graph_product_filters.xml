@@ -37,6 +37,21 @@
             app:nullable="false"
             app:argType="integer" />
     </action>
+    <action
+        android:id="@+id/action_productFilterListFragment_to_filterHistoryFragment"
+        app:destination="@id/productFilterHistoryFragment"
+        app:enterAnim="@anim/default_enter_anim"
+        app:exitAnim="@anim/default_exit_anim"
+        app:popEnterAnim="@anim/default_pop_enter_anim"
+        app:popExitAnim="@anim/default_pop_exit_anim" />
+    <fragment
+        android:id="@+id/productFilterHistoryFragment"
+        android:name="com.woocommerce.android.ui.filters.FilterHistoryFragment"
+        android:label="FilterHistoryFragment">
+        <argument
+            android:name="filterType"
+            app:argType="com.woocommerce.android.ui.filters.FilterHistoryType" />
+    </fragment>
     <fragment
         android:id="@+id/productFilterOptionListFragment"
         android:name="com.woocommerce.android.ui.products.filter.ProductFilterOptionListFragment"

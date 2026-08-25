@@ -1000,9 +1000,17 @@ class LoginActivity :
         tag = LoginSiteCredentialsFragment.TAG
     )
 
-    override fun onApplicationPasswordHelpRequired(url: String, errorMessage: String) {
+    override fun onApplicationPasswordHelpRequired(
+        verifiedLoginUrl: String?,
+        applicationPasswordAuthorizationUrl: String,
+        errorMessage: String
+    ) {
         changeFragment(
-            fragment = ApplicationPasswordTutorialFragment.newInstance(url, errorMessage),
+            fragment = ApplicationPasswordTutorialFragment.newInstance(
+                verifiedLoginUrl = verifiedLoginUrl,
+                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
+                errorMessage = errorMessage
+            ),
             shouldAddToBackStack = true,
             tag = ApplicationPasswordTutorialFragment.TAG
         )

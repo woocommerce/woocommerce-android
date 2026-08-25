@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
@@ -15,6 +16,10 @@ import javax.inject.Inject
 class WooPosOrdersAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker
 ) {
+    suspend fun trackOrdersListLoaded() {
+        analyticsTracker.track(OrdersListLoaded)
+    }
+
     suspend fun trackOrdersListFetched(elapsedMs: Long) {
         analyticsTracker.track(OrdersListFetched(elapsedMs))
     }
