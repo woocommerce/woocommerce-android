@@ -430,13 +430,15 @@ private fun ProductDetailButtonRow(
                 val tooltipState = rememberWooTooltipState()
                 LaunchedEffect(tooltipState) {
                     tooltipState.show()
-                    isTooltipConsumed = true
                 }
                 WooTooltipBox(
                     state = tooltipState,
                     title = stringResource(tooltip.title),
                     supportingText = stringResource(tooltip.text),
                     preferredPlacement = WooTooltipPlacement.Below,
+                    onDismissRequest = {
+                        isTooltipConsumed = true
+                    },
                     action = WooTooltipAction(
                         label = stringResource(tooltip.dismissButtonText),
                         onClick = { onTooltipActionClick?.invoke() },
