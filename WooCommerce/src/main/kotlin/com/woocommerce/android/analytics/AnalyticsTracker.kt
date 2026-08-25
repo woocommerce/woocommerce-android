@@ -473,6 +473,7 @@ class AnalyticsTracker private constructor(
         const val KEY_REFUND_METHOD = "gateway"
         const val KEY_AMOUNT = "amount"
         const val KEY_AMOUNT_NORMALIZED = "amount_normalized"
+        const val KEY_URL_WAS_NORMALIZED_TO_HTTPS = "url_was_normalized_to_https"
         const val KEY_CURRENCY = "currency"
 
         const val KEY_PAYMENT_METHOD = "payment_method"

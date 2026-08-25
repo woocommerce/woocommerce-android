@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
 import org.wordpress.android.login.LoginAnalyticsListener
 
@@ -118,32 +119,30 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given scheme-less site, when recovering with full http or https login URL, then validate matching origin`() =
+    fun `given scheme-less site, when recovering with HTTPS login URL, then validate matching origin`() =
         testBlocking {
-            listOf("http", "https").forEach { scheme ->
-                val loginUrl = "$scheme://$SCHEMELESS_SITE/private-login"
-                val expectedEndpoints = CookieNonceAuthenticationEndpoints(
-                    siteUrl = "$scheme://$SCHEMELESS_SITE/",
-                    loginEntryUrl = loginUrl
-                )
-                val invalidCredentials = cookieNonceError(
-                    Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
-                    loginEntryVerified = true
-                )
-                whenever(repository.login(eq(SCHEMELESS_SITE), eq(USERNAME), eq(PASSWORD), any()))
-                    .thenReturn(Result.failure(invalidCredentials))
-                setup(recoveryState(EndpointType.LOGIN, loginUrl, SCHEMELESS_SITE))
+            val loginUrl = "https://$SCHEMELESS_SITE/private-login"
+            val expectedEndpoints = CookieNonceAuthenticationEndpoints(
+                siteUrl = "$SITE_URL/",
+                loginEntryUrl = loginUrl
+            )
+            val invalidCredentials = cookieNonceError(
+                Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
+                loginEntryVerified = true
+            )
+            whenever(repository.login(eq(SITE_URL), eq(USERNAME), eq(PASSWORD), any()))
+                .thenReturn(Result.failure(invalidCredentials))
+            setup(recoveryState(EndpointType.LOGIN, loginUrl, SCHEMELESS_SITE))
 
-                viewModel.viewState.observeForTesting {
-                    viewModel.onContinueClick()
-                    advanceUntilIdle()
-                }
-
-                assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
-                assertThat(viewModel.viewState.value?.authenticationError?.errorMessage)
-                    .isEqualTo(invalidCredentials.errorMessage)
-                verify(repository).login(SCHEMELESS_SITE, USERNAME, PASSWORD, expectedEndpoints)
+            viewModel.viewState.observeForTesting {
+                viewModel.onContinueClick()
+                advanceUntilIdle()
             }
+
+            assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
+            assertThat(viewModel.viewState.value?.authenticationError?.errorMessage)
+                .isEqualTo(invalidCredentials.errorMessage)
+            verify(repository).login(SITE_URL, USERNAME, PASSWORD, expectedEndpoints)
         }
 
     @Test
@@ -153,9 +152,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             url = SCHEMELESS_SITE
             hasWooCommerce = true
         }
-        whenever(repository.login(eq(SCHEMELESS_SITE), eq(USERNAME), eq(PASSWORD), any()))
+        whenever(repository.login(eq(SITE_URL), eq(USERNAME), eq(PASSWORD), any()))
             .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
-        whenever(repository.fetchSite(SCHEMELESS_SITE)).thenReturn(Result.success(schemeLessSite))
+        whenever(repository.fetchSite(SITE_URL)).thenReturn(Result.success(schemeLessSite))
         setup(siteAddress = SCHEMELESS_SITE)
 
         viewModel.viewState.observeForTesting {
@@ -169,7 +168,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 "https://$SCHEMELESS_SITE/wp-login.php"
             )
         )
-        verify(repository).login(SCHEMELESS_SITE, USERNAME, PASSWORD, SCHEMELESS_ENDPOINTS)
+        verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
     }
 
     @Test
@@ -233,15 +232,12 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given discovery returns reconciled site URL, when native retry succeeds, then complete login`() =
+    fun `given HTTP input, when logging in, then authentication and fetch use only HTTPS`() =
         testBlocking {
             val originalSiteUrl = "http://site.example"
-            val originalEndpoints = CookieNonceAuthenticationEndpoints(originalSiteUrl)
-            whenever(repository.login(originalSiteUrl, USERNAME, PASSWORD, originalEndpoints))
-                .thenReturn(Result.failure(cookieNonceError(Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL)))
-            whenever(repository.fetchSite(originalSiteUrl)).thenReturn(Result.success(site))
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.success(Unit))
+            whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD)).thenReturn(Result.success(site))
             setup(siteAddress = originalSiteUrl)
 
             viewModel.viewState.observeForTesting {
@@ -249,8 +245,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 advanceUntilIdle()
             }
 
-            verify(repository).login(originalSiteUrl, USERNAME, PASSWORD, originalEndpoints)
             verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
+            verify(repository).fetchSite(SITE_URL, USERNAME, PASSWORD)
+            verify(repository, never()).login(eq(originalSiteUrl), any(), any(), any())
             verify(repository).checkIfUserIsEligible(site)
             assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
             assertThat(viewModel.event.value).isEqualTo(LoggedIn(0))
@@ -632,7 +629,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 properties = mapOf(
                     AnalyticsTracker.KEY_STEP to
                         LoginSiteCredentialsViewModel.Step.ENDPOINT_PERSISTENCE.name.lowercase(),
-                    AnalyticsTracker.KEY_NETWORK_STATUS_CODE to ""
+                    AnalyticsTracker.KEY_NETWORK_STATUS_CODE to "",
+                    AnalyticsTracker.KEY_URL_WAS_NORMALIZED_TO_HTTPS to "false"
                 ),
                 errorContext = SiteError::class.java.simpleName,
                 errorType = SiteErrorType.GENERIC_ERROR.name,
@@ -821,6 +819,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         )
         viewModel = LoginSiteCredentialsViewModel(
             savedState,
+            HttpsUrlNormalizer(),
             repository,
             selectedSite,
             loginAnalytics,
@@ -915,7 +914,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         const val ADMIN_BASE_URL_STATE_KEY = "admin-base-url"
         const val WEB_SUCCESS_URL = "woocommerce://login?user_login=$USERNAME&password=$PASSWORD"
         val DEFAULT_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL)
-        val SCHEMELESS_ENDPOINTS = CookieNonceAuthenticationEndpoints(SCHEMELESS_SITE)
         val LOGIN_ENDPOINTS = CookieNonceAuthenticationEndpoints("$SITE_URL/", loginEntryUrl = LOGIN_URL)
         val PENDING_LOGIN_ENDPOINTS = CookieNonceAuthenticationEndpoints(SITE_URL, loginEntryUrl = LOGIN_URL)
         val ADMIN_RETRY_ENDPOINTS = CookieNonceAuthenticationEndpoints(
