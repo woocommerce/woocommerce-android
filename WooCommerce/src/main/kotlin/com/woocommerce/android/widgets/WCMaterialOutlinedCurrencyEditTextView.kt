@@ -14,8 +14,11 @@ import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.use
+import androidx.core.view.doOnAttach
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.R
@@ -23,9 +26,11 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.FILL
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.EditTextLayoutMode.WRAP
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
@@ -68,12 +73,12 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             currencyEditText.imeOptions = value
         }
 
-    val siteParameters = parameterRepository.getParameters()
+    private var siteParameters: SiteParameters? = null
 
     var orderCurrency: String? = null
         set(value) {
             field = value
-            siteParameters.currencyFormattingParameters?.let {
+            siteParameters?.currencyFormattingParameters?.let {
                 when (it.currencyPosition) {
                     LEFT, LEFT_SPACE -> prefixText = orderCurrency
                     RIGHT, RIGHT_SPACE -> suffixText = orderCurrency
@@ -128,13 +133,24 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             )
         }
 
-        siteParameters.currencyFormattingParameters?.let {
-            when (it.currencyPosition) {
-                LEFT, LEFT_SPACE -> prefixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
-                RIGHT, RIGHT_SPACE -> suffixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
+        doOnAttach {
+            if (siteParameters == null) {
+                findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
+                    applySiteParameters(parameterRepository.getParameters())
+                }
             }
         }
-        currencyEditText.initView(siteParameters.currencyFormattingParameters)
+    }
+
+    private fun applySiteParameters(parameters: SiteParameters) {
+        siteParameters = parameters
+        parameters.currencyFormattingParameters?.let {
+            when (it.currencyPosition) {
+                LEFT, LEFT_SPACE -> prefixText = orderCurrency ?: parameters.currencySymbol.orEmpty()
+                RIGHT, RIGHT_SPACE -> suffixText = orderCurrency ?: parameters.currencySymbol.orEmpty()
+            }
+        }
+        currencyEditText.initView(parameters.currencyFormattingParameters)
     }
 
     override fun getEditText(): TextInputEditText {
@@ -238,9 +254,16 @@ private class CurrencyEditText(context: Context) :
         )
 
         isInitialized = true
-        if (!supportsEmptyState) {
-            setValue(BigDecimal.ZERO)
-            setSelection(text!!.length)
+        val currentText = text?.toString().orEmpty()
+        when {
+            currentText.isNotEmpty() -> {
+                setText(currentText.toBigDecimalOrNull()?.stripTrailingZeros()?.toPlainString() ?: currentText)
+                setSelection(text?.length ?: 0)
+            }
+            !supportsEmptyState -> {
+                setValue(BigDecimal.ZERO)
+                setSelection(text?.length ?: 0)
+            }
         }
     }
 
