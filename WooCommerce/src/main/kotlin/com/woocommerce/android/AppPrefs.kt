@@ -62,6 +62,8 @@ import java.util.Date
 @SuppressLint("StaticFieldLeak")
 @SuppressWarnings("LargeClass")
 object AppPrefs {
+    private const val HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX =
+        "HTTPS_CONFIGURATION_WARNING_DISMISSAL"
     interface PrefKey
 
     @JvmInline
@@ -544,6 +546,16 @@ object AppPrefs {
             selfHostedSiteId
         )
     )
+
+    fun getHttpsConfigurationWarningDismissedAt(localSiteId: Int): Long =
+        getLong(getHttpsConfigurationWarningDismissalKey(localSiteId))
+
+    fun setHttpsConfigurationWarningDismissedAt(localSiteId: Int, dismissedAt: Long) {
+        setLong(getHttpsConfigurationWarningDismissalKey(localSiteId), dismissedAt)
+    }
+
+    private fun getHttpsConfigurationWarningDismissalKey(localSiteId: Int) =
+        "$HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX:$localSiteId"
 
     private fun getCardReaderUpsellDismissedForeverKey(
         localSiteId: Int,
@@ -1424,7 +1436,10 @@ object AppPrefs {
     private fun removePreferencesWithDynamicKey(editor: Editor) {
         getPreferences()
             .all
-            .filter { it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) }
+            .filter {
+                it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
+                    it.key.startsWith(HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX)
+            }
             .forEach {
                 editor.remove(it.key)
             }

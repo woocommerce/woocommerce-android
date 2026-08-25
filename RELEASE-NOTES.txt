@@ -16,6 +16,7 @@
 - [*] The unread reviews count on the Menu tab and the Reviews row no longer gets stuck on stores where the app cannot track which reviews were read [https://github.com/woocommerce/woocommerce-android/pull/16473]
 - [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
+- [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 
 25.5
 -----
