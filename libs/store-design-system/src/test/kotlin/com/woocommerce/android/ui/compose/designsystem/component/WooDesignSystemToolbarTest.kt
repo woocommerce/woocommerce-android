@@ -215,6 +215,7 @@ class WooDesignSystemToolbarTest {
             .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
         val actualTint = checkNotNull(ImageViewCompat.getImageTintList(overflowButton))
         val disabledState = intArrayOf(-android.R.attr.state_enabled)
+        assertThat(actualTint.isStateful).isEqualTo(expectedTint.isStateful)
         assertThat(actualTint.defaultColor).isEqualTo(expectedTint.defaultColor)
         assertThat(actualTint.getColorForState(disabledState, actualTint.defaultColor))
             .isEqualTo(expectedTint.getColorForState(disabledState, expectedTint.defaultColor))
@@ -287,31 +288,23 @@ class WooDesignSystemToolbarTest {
     @Test
     @Config(qualifiers = "ldrtl")
     fun `given rtl layout with overflow, when laid out, then actions honor the logical end inset`() {
-        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+        val toolbar = WooDesignSystemToolbar(rtlToolbarContext()).apply {
             addOverflowAction()
         }
         val controlEdgeInset = (
             toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
                 toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
             ).roundToInt()
-        val applicationInfo = toolbar.context.applicationInfo
-        val originalApplicationFlags = applicationInfo.flags
+        toolbar.measure(
+            exactMeasureSpec(toolbar.dp(360)),
+            exactMeasureSpec(toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_height)),
+        )
+        toolbar.layoutDirection = View.LAYOUT_DIRECTION_RTL
+        toolbar.layout(0, 0, toolbar.measuredWidth, toolbar.measuredHeight)
 
-        try {
-            applicationInfo.flags = applicationInfo.flags or ApplicationInfo.FLAG_SUPPORTS_RTL
-            toolbar.measure(
-                exactMeasureSpec(toolbar.dp(360)),
-                exactMeasureSpec(toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_height)),
-            )
-            toolbar.layoutDirection = View.LAYOUT_DIRECTION_RTL
-            toolbar.layout(0, 0, toolbar.measuredWidth, toolbar.measuredHeight)
-
-            assertThat(toolbar.layoutDirection).isEqualTo(View.LAYOUT_DIRECTION_RTL)
-            assertThat(toolbar.actionMenuView().left).isEqualTo(controlEdgeInset)
-            assertThat((toolbar.overflowButton().layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
-        } finally {
-            applicationInfo.flags = originalApplicationFlags
-        }
+        assertThat(toolbar.layoutDirection).isEqualTo(View.LAYOUT_DIRECTION_RTL)
+        assertThat(toolbar.actionMenuView().left).isEqualTo(controlEdgeInset)
+        assertThat((toolbar.overflowButton().layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
     }
 
     @Test
@@ -490,6 +483,17 @@ class WooDesignSystemToolbarTest {
         ApplicationProvider.getApplicationContext(),
         com.google.android.material.R.style.Theme_MaterialComponents_DayNight_NoActionBar,
     )
+
+    private fun rtlToolbarContext() = object : ContextThemeWrapper(
+        ApplicationProvider.getApplicationContext(),
+        com.google.android.material.R.style.Theme_MaterialComponents_DayNight_NoActionBar,
+    ) {
+        private val rtlApplicationInfo = ApplicationInfo(super.getApplicationInfo()).apply {
+            flags = flags or ApplicationInfo.FLAG_SUPPORTS_RTL
+        }
+
+        override fun getApplicationInfo() = rtlApplicationInfo
+    }
 
     private fun WooDesignSystemToolbar.addIconAction(
         showAsAction: Int = MenuItem.SHOW_AS_ACTION_ALWAYS,
