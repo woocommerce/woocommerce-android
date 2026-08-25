@@ -5,6 +5,7 @@
 25.6
 -----
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
 
 25.5
 -----
