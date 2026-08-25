@@ -94,8 +94,6 @@ class EditCouponViewModel @Inject constructor(
     }
 
     private val couponDraft = savedStateHandle.getNullableStateFlow(viewModelScope, null, Coupon::class.java)
-    private val currencyCode
-        get() = parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
 
     private val isSaving = MutableStateFlow(false)
 
@@ -107,7 +105,7 @@ class EditCouponViewModel @Inject constructor(
         ViewState(
             couponDraft = coupon,
             screenTitle = getScreenTitle(coupon),
-            amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else currencyCode,
+            amountUnit = if (coupon.type == Coupon.Type.Percent) "%" else getCurrencyCode(),
             hasChanges = !coupon.isSameCoupon(storedCoupon.await()),
             isSaving = isSaving,
             saveButtonText = getSaveButtonText()
@@ -128,6 +126,9 @@ class EditCouponViewModel @Inject constructor(
 
     private fun getEditModeScreenTitle(localizedType: String?) =
         localizedType ?: resourceProvider.getString(R.string.coupon_edit_screen_title_default)
+
+    private fun getCurrencyCode() =
+        parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
 
     init {
         if (couponDraft.value == null) {
@@ -180,24 +181,27 @@ class EditCouponViewModel @Inject constructor(
 
     fun onUsageRestrictionsClick() {
         couponDraft.value?.let {
-            // If a Coupon has no set minimum or maximum spend restriction, the REST API returns their values
-            // as BigDecimal `0.00`. Yet, in wp-admin, a Coupon with no minimum or maximum spend restriction has the
-            // "No minimum" or "No maximum" placeholders displayed, instead of `0.00`.
-            // To replicate that behavior on the app's Coupon Restriction Screen, here we set `0.00` values as null.
-            val minimumAmount =
-                if (it.restrictions.minimumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.minimumAmount
-            val maximumAmount =
-                if (it.restrictions.maximumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.maximumAmount
-            triggerEvent(
-                OpenCouponRestrictions(
-                    restrictions = it.restrictions.copy(
-                        minimumAmount = minimumAmount,
-                        maximumAmount = maximumAmount
-                    ),
-                    currencyCode = currencyCode,
-                    showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
+            launch {
+                // If a Coupon has no set minimum or maximum spend restriction, the REST API returns their values
+                // as BigDecimal `0.00`. Yet, in wp-admin, a Coupon with no minimum or maximum spend restriction has
+                // the "No minimum" or "No maximum" placeholders displayed, instead of `0.00`.
+                // To replicate that behavior on the app's Coupon Restriction Screen, here we set `0.00` values as
+                // null.
+                val minimumAmount =
+                    if (it.restrictions.minimumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.minimumAmount
+                val maximumAmount =
+                    if (it.restrictions.maximumAmount isEqualTo BigDecimal.ZERO) null else it.restrictions.maximumAmount
+                triggerEvent(
+                    OpenCouponRestrictions(
+                        restrictions = it.restrictions.copy(
+                            minimumAmount = minimumAmount,
+                            maximumAmount = maximumAmount
+                        ),
+                        currencyCode = getCurrencyCode(),
+                        showLimitUsageToXItems = it.type != Coupon.Type.FixedCart
+                    )
                 )
-            )
+            }
         }
     }
 
