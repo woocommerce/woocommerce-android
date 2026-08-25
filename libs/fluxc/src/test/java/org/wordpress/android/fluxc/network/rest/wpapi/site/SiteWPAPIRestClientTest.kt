@@ -100,7 +100,7 @@ class SiteWPAPIRestClientTest {
     }
 
     @Test
-    fun `given server advertises HTTP, when fetching a WPAPI site, then normalize fields`() =
+    fun `given server advertises HTTP, when fetching a WPAPI site, then normalize fields and require configuration`() =
         test {
             givenSiteResponse(
                 RootWPAPIRestResponse(
@@ -122,7 +122,24 @@ class SiteWPAPIRestClientTest {
             assertThat(site.wpApiRestUrl).isEqualTo(WP_API_URL)
             assertThat(site.adminUrl).isEqualTo(REST_ADMIN_URL)
             assertThat(site.applicationPasswordsAuthorizeUrl).isEqualTo(REST_ADMIN_AUTHORIZATION_URL)
+            assertThat(site.httpsConfigurationState)
+                .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
         }
+
+    @Test
+    fun `given HTTP input and server advertises HTTPS, when fetching site, then server state is secure`() = test {
+        givenSiteResponse(
+            RootWPAPIRestResponse(
+                url = SITE_URL,
+                namespaces = listOf("wc/v3"),
+            )
+        )
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(HTTP_SITE_URL))
+
+        assertThat(site.url).isEqualTo(SITE_URL)
+        assertThat(site.httpsConfigurationState).isEqualTo(SiteModel.HTTPS_CONFIGURATION_SECURE)
+    }
 
     @Test
     fun `given existing application-password site, when refreshing, then retain its local ID`() = test {
@@ -132,6 +149,19 @@ class SiteWPAPIRestClientTest {
         val refreshedSite = subject.fetchWPAPISite(existingSite)
 
         assertThat(refreshedSite.id).isEqualTo(42)
+    }
+
+    @Test
+    fun `given refresh omits server URL, when prior state requires configuration, then retain prior state`() = test {
+        val existingSite = existingSite().apply {
+            httpsConfigurationState = SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+        }
+        givenSiteResponse(REST_ADMIN_AUTHORIZATION_URL)
+
+        val refreshedSite = subject.fetchWPAPISite(existingSite)
+
+        assertThat(refreshedSite.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
     }
 
     @Test

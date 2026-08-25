@@ -427,7 +427,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        wpApiSiteRepository.fetchSite(url = siteAddress).fold(
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
+        ).fold(
             onSuccess = { site ->
                 val canonicalUrl = site.url
                 if (!hasReconciledSiteUrl && !canonicalUrl.isNullOrEmpty() && canonicalUrl != siteAddress) {
@@ -477,7 +480,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         wpApiSiteRepository.fetchSite(
             url = siteAddress,
             username = viewState?.username,
-            password = viewState?.password
+            password = viewState?.password,
+            wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
         ).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
@@ -668,7 +672,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private suspend fun handleEndpointRecovery(type: EndpointType, isRetry: Boolean) {
         if (!isRetry && !hasReconciledSiteUrl) {
-            val canonicalUrl = wpApiSiteRepository.fetchSite(url = siteAddress).getOrNull()?.url
+            val canonicalUrl = wpApiSiteRepository.fetchSite(
+                url = siteAddress,
+                wasUrlNormalizedToHttps = wasSiteAddressNormalizedToHttps,
+            ).getOrNull()?.url
             val reconciledSiteAddress = canonicalUrl?.toSafeReconciledSiteAddress()
             if (reconciledSiteAddress != null) {
                 hasReconciledSiteUrl = true

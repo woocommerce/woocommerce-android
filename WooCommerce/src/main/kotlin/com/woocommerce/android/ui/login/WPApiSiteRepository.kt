@@ -90,14 +90,20 @@ class WPApiSiteRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchSite(url: String, username: String? = null, password: String? = null): Result<SiteModel> {
+    suspend fun fetchSite(
+        url: String,
+        username: String? = null,
+        password: String? = null,
+        wasUrlNormalizedToHttps: Boolean = false,
+    ): Result<SiteModel> {
         WooLog.d(WooLog.T.LOGIN, "Fetching site using WP REST API")
 
         return siteStore.fetchWPAPISite(
             FetchWPAPISitePayload(
                 url = url,
                 username = username,
-                password = password
+                password = password,
+                wasUrlNormalizedToHttps = wasUrlNormalizedToHttps,
             )
         ).let { result ->
             when {

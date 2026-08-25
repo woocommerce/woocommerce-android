@@ -36,7 +36,7 @@ class SiteWPAPIRestClient @Inject constructor(
         private const val APPLICATION_PASSWORDS_URL_SUFFIX = "authorize-application.php"
     }
 
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "CyclomaticComplexMethod")
     suspend fun fetchWPAPISite(
         payload: FetchWPAPISitePayload
     ): SiteModel {
@@ -77,6 +77,10 @@ class SiteWPAPIRestClient @Inject constructor(
                     name = response.name
                     timezone = response.gmtOffset
                     origin = SiteModel.ORIGIN_WPAPI
+                    httpsConfigurationState = configurationState(
+                        serverUrl,
+                        inputUrl.wasUpgraded || payload.wasUrlNormalizedToHttps,
+                    )
                     hasWooCommerce = response.namespaces.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
                     }
@@ -109,10 +113,14 @@ class SiteWPAPIRestClient @Inject constructor(
                 url = site.url,
                 username = site.username,
                 password = site.password,
+                wasUrlNormalizedToHttps = site.url.startsWith("http://", ignoreCase = true),
             )
         ).also { refreshedSite ->
             if (!refreshedSite.isError) {
                 refreshedSite.id = site.id
+                if (refreshedSite.httpsConfigurationState == SiteModel.HTTPS_CONFIGURATION_UNKNOWN) {
+                    refreshedSite.httpsConfigurationState = site.httpsConfigurationState
+                }
                 site.loginUrl?.takeUnless(String::isBlank)?.normalizeOptionalUrl()
                     ?.let { refreshedSite.loginUrl = it }
                 site.adminUrl
@@ -121,6 +129,16 @@ class SiteWPAPIRestClient @Inject constructor(
                     ?.normalizeOptionalUrl()
                     ?.let { refreshedSite.adminUrl = it }
             }
+        }
+    }
+
+    @SiteModel.HttpsConfigurationState
+    private fun configurationState(serverUrl: HttpsUrlNormalizer.Result?, inputWasUpgraded: Boolean): Int {
+        return when {
+            serverUrl?.wasUpgraded == true -> SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+            serverUrl != null -> SiteModel.HTTPS_CONFIGURATION_SECURE
+            inputWasUpgraded -> SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+            else -> SiteModel.HTTPS_CONFIGURATION_UNKNOWN
         }
     }
 
