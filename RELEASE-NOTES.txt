@@ -7,7 +7,7 @@
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
 - [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
-- [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app
+- [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 
 25.5
 -----
