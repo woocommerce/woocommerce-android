@@ -931,14 +931,6 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_stale_warning_dismissed"
         }
 
-        data object WooCommerceVersionSunsetWarningShown : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_shown"
-        }
-
-        data object WooCommerceVersionSunsetWarningDismissed : Event() {
-            override val name: String = "woocommerce_version_sunset_warning_dismissed"
-        }
-
         data class LocalCatalogBlockedFellBackToRemote(val wooCommerceVersion: String?) : Event() {
             override val name: String = "local_catalog_blocked_fell_back_to_remote"
 
