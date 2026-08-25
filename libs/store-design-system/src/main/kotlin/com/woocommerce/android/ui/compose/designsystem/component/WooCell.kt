@@ -46,12 +46,14 @@ internal fun WooCellContent(
             text = title,
             color = if (enabled) colors.surface.onDefault else colors.surface.onVariantLowest,
             style = WooTheme.text.bodyLarge.emphasized,
+            modifier = Modifier.fillMaxWidth(),
         )
         if (description != null) {
             Text(
                 text = description,
                 color = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
                 style = WooTheme.text.bodyMedium.regular,
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -117,7 +119,7 @@ internal fun WooCellLayout(
             .fillMaxWidth()
             .heightIn(min = MIN_TOUCH_TARGET_SIZE)
             .background(style.containerColor)
-            .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
+            .padding(WooTheme.padding.padding7),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (leadingContent != null) {
