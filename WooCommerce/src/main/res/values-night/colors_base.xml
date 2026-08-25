@@ -137,13 +137,6 @@
     -->
     <color name="jetpack_install_progressbar">@color/woo_white</color>
 
-    <!--
-    More menu button
-    -->
-    <color name="more_menu_button_background">#232323</color>
-    <color name="more_menu_button_icon_background">#383838</color>
-
-
     <!-- Text colors -->
     <color name="link_text">@color/woo_blue_30</color>
 
