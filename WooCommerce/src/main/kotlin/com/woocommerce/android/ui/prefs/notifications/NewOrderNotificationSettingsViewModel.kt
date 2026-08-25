@@ -32,11 +32,18 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val _viewState = MutableStateFlow(
         ViewState(
-            currencySymbol = parameterRepository.getParameters().currencySymbol.orEmpty(),
+            currencySymbol = null,
             newOrderNotificationSoundStatus = notificationChannelsHandler.checkNewOrderNotificationSound()
         )
     )
     val viewState = _viewState.asLiveData()
+
+    init {
+        launch {
+            val currencySymbol = parameterRepository.getParameters().currencySymbol.orEmpty()
+            _viewState.update { it.copy(currencySymbol = currencySymbol) }
+        }
+    }
 
     fun refreshNotificationSettings() {
         _viewState.update {
@@ -72,7 +79,7 @@ class NewOrderNotificationSettingsViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val currencySymbol: String,
+        val currencySymbol: String?,
         val newOrderNotificationSoundStatus: NewOrderNotificationSoundStatus
     )
 }
