@@ -71,85 +71,89 @@ fun ChangeDueCalculatorScreen(
                     .background(MaterialTheme.colorScheme.surface)
                     .fillMaxSize()
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    var inputText by remember { mutableStateOf<BigDecimal?>(uiState.amountDue) }
-
-                    LaunchedEffect(uiState.amountReceived) {
-                        inputText = uiState.amountReceived
-                    }
-
-                    val focusRequester = remember { FocusRequester() }
-                    val keyboardController = LocalSoftwareKeyboardController.current
-
-                    LaunchedEffect(Unit) {
-                        focusRequester.requestFocus()
-                        keyboardController?.show()
-                    }
-
-                    WCOutlinedTypedTextField(
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        value = inputText,
-                        label = stringResource(R.string.cash_payments_cash_received),
-                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            decimalSeparator = uiState.decimalSeparator,
-                            numberOfDecimals = uiState.numberOfDecimals
-                        ),
-                        onValueChange = { newValue ->
-                            if (newValue == null || newValue.toPlainString().length <= MAX_INPUT_CHARS) {
-                                inputText = newValue
-                                onAmountReceivedChanged(newValue)
-                            }
-                        },
-                        visualTransformation = CurrencyVisualTransformation(
-                            uiState.currencySymbol,
-                            uiState.currencyPosition
-                        ),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal
+                            .padding(paddingValues)
+                            .verticalScroll(rememberScrollState())
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        var inputText by remember { mutableStateOf<BigDecimal?>(uiState.amountDue) }
+
+                        LaunchedEffect(uiState.amountReceived) {
+                            inputText = uiState.amountReceived
+                        }
+
+                        val focusRequester = remember { FocusRequester() }
+                        val keyboardController = LocalSoftwareKeyboardController.current
+
+                        LaunchedEffect(Unit) {
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+
+                        WCOutlinedTypedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+                            value = inputText,
+                            label = stringResource(R.string.cash_payments_cash_received),
+                            valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                                decimalSeparator = uiState.decimalSeparator,
+                                numberOfDecimals = uiState.numberOfDecimals
+                            ),
+                            onValueChange = { newValue ->
+                                if (newValue == null || newValue.toPlainString().length <= MAX_INPUT_CHARS) {
+                                    inputText = newValue
+                                    onAmountReceivedChanged(newValue)
+                                }
+                            },
+                            visualTransformation = CurrencyVisualTransformation(
+                                uiState.currencySymbol,
+                                uiState.currencyPosition
+                            ),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal
+                            )
                         )
-                    )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    Text(
-                        text = stringResource(R.string.cash_payments_change_due),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Text(
-                        text = uiState.changeDueText,
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        Text(
+                            text = stringResource(R.string.cash_payments_change_due),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Text(
+                            text = uiState.changeDueText,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
-                    RecordTransactionDetailsNote(
-                        modifier = Modifier.fillMaxWidth(),
-                        checked = uiState.recordTransactionDetailsChecked,
-                        onCheckedChange = onRecordTransactionDetailsCheckedChanged
-                    )
+                        RecordTransactionDetailsNote(
+                            modifier = Modifier.fillMaxWidth(),
+                            checked = uiState.recordTransactionDetailsChecked,
+                            onCheckedChange = onRecordTransactionDetailsCheckedChanged
+                        )
 
-                    MarkOrderAsCompleteButton(
-                        loading = uiState.loading,
-                        enabled = uiState.canCompleteOrder,
-                        onClick = onCompleteOrderClick,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
+                        MarkOrderAsCompleteButton(
+                            loading = uiState.isMarkingOrderComplete,
+                            enabled = uiState.canCompleteOrder,
+                            onClick = onCompleteOrderClick,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        )
+                    }
                 }
             }
         }
@@ -213,7 +217,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
-            loading = false,
+            isMarkingOrderComplete = false,
             recordTransactionDetailsChecked = false,
             canCompleteOrder = true,
             currencySymbol = "$",
@@ -237,7 +241,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
-            loading = true,
+            isMarkingOrderComplete = true,
             recordTransactionDetailsChecked = true,
             canCompleteOrder = true,
             currencySymbol = "€",
@@ -261,7 +265,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
-            loading = false,
+            isMarkingOrderComplete = false,
             recordTransactionDetailsChecked = true,
             canCompleteOrder = false,
             currencySymbol = "€",
