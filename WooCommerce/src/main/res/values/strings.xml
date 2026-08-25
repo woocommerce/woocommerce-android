@@ -3900,10 +3900,6 @@
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
 
-    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce soon</string>
-    <string name="woopos_wc_version_sunset_banner_message">Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later. Update WooCommerce on your store or ask your store administrator.</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Dismiss WooCommerce update warning</string>
-
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
