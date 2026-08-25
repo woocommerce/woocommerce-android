@@ -6,15 +6,19 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +35,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
@@ -41,6 +46,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Density
@@ -59,7 +65,8 @@ import kotlinx.coroutines.launch
  * caller-controlled presentation. [modifier] applies to the anchor interaction wrapper, not the popup surface.
  * [preferredPlacement] requests a logical side and always flips to its opposite when it cannot be used; null
  * chooses the roomier vertical side. When positioning observes that the anchor has left the viewport, the current
- * tooltip presentation is dismissed. Returning the anchor does not automatically show it again.
+ * tooltip presentation is dismissed. Returning the anchor does not automatically show it again. [action] adds one
+ * dismissing button whose callback is invoked only by that button.
  *
  * @param onDismissRequest called when the user clicks outside the tooltip. When null, Material dismisses the tooltip
  * automatically. When non-null, Material calls it instead and the callback controls whether the state is dismissed.
@@ -72,6 +79,7 @@ fun WooTooltipBox(
     supportingText: String? = null,
     preferredPlacement: WooTooltipPlacement? = null,
     onDismissRequest: (() -> Unit)? = null,
+    action: WooTooltipAction? = null,
     content: @Composable () -> Unit,
 ) = WooTooltipBoxImpl(
     state = state,
@@ -80,6 +88,7 @@ fun WooTooltipBox(
     supportingText = supportingText,
     preferredPlacement = preferredPlacement,
     onDismissRequest = onDismissRequest,
+    action = action,
     content = content,
 )
 
@@ -91,6 +100,7 @@ internal fun WooTooltipBoxImpl(
     supportingText: String? = null,
     preferredPlacement: WooTooltipPlacement? = null,
     onDismissRequest: (() -> Unit)? = null,
+    action: WooTooltipAction? = null,
     onLayoutResult: (WooTooltipLayoutResult) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
@@ -142,6 +152,11 @@ internal fun WooTooltipBoxImpl(
             WooTooltipSurface(
                 title = title,
                 supportingText = supportingText,
+                action = action,
+                onActionClick = { tooltipAction ->
+                    state.dismiss()
+                    tooltipAction.onClick()
+                },
                 arrowEdge = layoutResult.arrowEdge,
                 arrowCenter = layoutResult.arrowCenter,
                 cornerRadius = cornerRadius,
@@ -166,7 +181,7 @@ internal fun WooTooltipBoxImpl(
         onDismissRequest = onDismissRequest,
         focusable = false,
         enableUserInput = true,
-        hasAction = false,
+        hasAction = action != null,
         content = content,
     )
 }
@@ -175,6 +190,8 @@ internal fun WooTooltipBoxImpl(
 internal fun WooTooltipSurface(
     title: String,
     supportingText: String?,
+    action: WooTooltipAction? = null,
+    onActionClick: (WooTooltipAction) -> Unit = { it.onClick() },
     arrowEdge: WooTooltipPhysicalEdge,
     arrowCenter: Float,
     cornerRadius: Dp,
@@ -203,6 +220,25 @@ internal fun WooTooltipSurface(
                     text = supportingText,
                     style = WooTheme.text.bodyMedium.regular,
                 )
+            }
+            if (action != null) {
+                TextButton(
+                    onClick = { onActionClick(action) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = WooTheme.colors.surface.onInverted,
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text(
+                        text = action.label,
+                        modifier = Modifier.weight(1f),
+                        color = WooTheme.colors.surface.onInverted,
+                        style = WooTheme.text.labelLarge.emphasized,
+                        textAlign = TextAlign.Start,
+                    )
+                }
             }
         }
     }
@@ -509,10 +545,64 @@ private fun WooTooltipRtlPreview() {
     }
 }
 
+@PreviewLightDark
+@Composable
+private fun WooTooltipActionSurfacePreview() {
+    WooTooltipSurfacePreview(
+        title = "Customise your store",
+        supportingText = "You can return to these settings at any time.",
+        actionLabel = "Review advanced store settings",
+    )
+}
+
+@Preview(name = "Action surface RTL", locale = "ar", widthDp = 240, showBackground = true)
+@Composable
+private fun WooTooltipActionSurfaceRtlPreview() {
+    WooTooltipSurfacePreview(
+        title = "خصّص متجرك",
+        supportingText = "يمكنك العودة إلى هذه الإعدادات في أي وقت.",
+        actionLabel = "مراجعة إعدادات المتجر المتقدمة",
+    )
+}
+
+@Preview(name = "Action surface large font", fontScale = 2f, widthDp = 240, showBackground = true)
+@Composable
+private fun WooTooltipActionSurfaceLargeFontPreview() {
+    WooTooltipSurfacePreview(
+        title = "Customise your store",
+        supportingText = "You can return to these settings at any time.",
+        actionLabel = "Review advanced store settings",
+    )
+}
+
+@Composable
+private fun WooTooltipSurfacePreview(
+    title: String,
+    supportingText: String,
+    actionLabel: String,
+) {
+    WooDesignSystemTheme {
+        Surface(color = WooTheme.colors.background.section) {
+            WooTooltipSurface(
+                title = title,
+                supportingText = supportingText,
+                action = WooTooltipAction(label = actionLabel, onClick = {}),
+                arrowEdge = WooTooltipPhysicalEdge.Top,
+                arrowCenter = Float.NaN,
+                cornerRadius = WooTheme.radius.large,
+                modifier = Modifier
+                    .padding(WooTheme.padding.padding5)
+                    .widthIn(max = MAX_TOOLTIP_WIDTH),
+            )
+        }
+    }
+}
+
 @Composable
 internal fun WooTooltipDemo(modifier: Modifier = Modifier) {
     val automaticState = rememberWooTooltipState()
     val preferredState = rememberWooTooltipState()
+    val actionState = rememberWooTooltipState()
     val scope = rememberCoroutineScope()
     Column(
         modifier = modifier,
@@ -541,6 +631,16 @@ internal fun WooTooltipDemo(modifier: Modifier = Modifier) {
                 Button(onClick = { scope.launch { preferredState.show() } }) {
                     Text("Preferred end")
                 }
+            }
+        }
+        WooTooltipBox(
+            state = actionState,
+            title = "Actionable tooltip",
+            supportingText = "The action dismisses this tooltip before its callback runs.",
+            action = WooTooltipAction(label = "Got it", onClick = {}),
+        ) {
+            Button(onClick = { scope.launch { actionState.show() } }) {
+                Text("With action")
             }
         }
     }

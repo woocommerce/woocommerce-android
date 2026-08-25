@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -287,6 +288,30 @@ private fun ProductDetailError(@androidx.annotation.StringRes message: Int) {
 @PreviewLightDark
 @Composable
 private fun ProductDetailAddPreview() {
+    WooDesignSystemThemeWithBackground {
+        ProductDetailPreview(ProductDetailPreviewData.addProductState)
+    }
+}
+
+@Preview(name = "Write with AI tooltip - RTL", locale = "ar", widthDp = 320, heightDp = 640)
+@Composable
+private fun ProductDetailTooltipRtlPreview() {
+    WooDesignSystemThemeWithBackground {
+        ProductDetailPreview(ProductDetailPreviewData.addProductState)
+    }
+}
+
+@Preview(name = "Write with AI tooltip - compact", widthDp = 320, heightDp = 480)
+@Composable
+private fun ProductDetailTooltipCompactPreview() {
+    WooDesignSystemThemeWithBackground {
+        ProductDetailPreview(ProductDetailPreviewData.addProductState)
+    }
+}
+
+@Preview(name = "Write with AI tooltip - compact 2x font", widthDp = 320, heightDp = 480, fontScale = 2f)
+@Composable
+private fun ProductDetailTooltipCompactLargeFontPreview() {
     WooDesignSystemThemeWithBackground {
         ProductDetailPreview(ProductDetailPreviewData.addProductState)
     }

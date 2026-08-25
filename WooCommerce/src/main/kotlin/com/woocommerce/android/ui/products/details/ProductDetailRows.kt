@@ -16,13 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,11 +69,14 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooButtonSize
 import com.woocommerce.android.ui.compose.designsystem.component.WooCell
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellTrailingAffordance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
-import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitch
+import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipAction
+import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipBox
+import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipPlacement
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooTooltipState
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -404,9 +404,17 @@ private fun ProductDetailButtonRow(
     showDivider: Boolean,
     modifier: Modifier,
 ) {
-    var showTooltip by rememberSaveable(key) { mutableStateOf(property.tooltip != null) }
+    var isTooltipConsumed by rememberSaveable(key) { mutableStateOf(false) }
     val onClick by rememberUpdatedState(property.onClick)
-    val onTooltipDismiss by rememberUpdatedState(property.tooltip?.onDismiss)
+    val onTooltipActionClick by rememberUpdatedState(property.tooltip?.onDismiss)
+    val button = @Composable {
+        WooFilledTonalButton(
+            text = stringResource(property.text),
+            onClick = onClick,
+            size = WooButtonSize.Small,
+            leadingIcon = property.icon?.let { icon -> { ProductDetailIcon(icon) } },
+        )
+    }
 
     Column {
         Column(
@@ -417,49 +425,29 @@ private fun ProductDetailButtonRow(
             ),
             horizontalAlignment = Alignment.Start,
         ) {
-            Box {
-                WooFilledTonalButton(
-                    text = stringResource(property.text),
-                    onClick = onClick,
-                    size = WooButtonSize.Small,
-                    leadingIcon = property.icon?.let { icon -> { ProductDetailIcon(icon) } },
-                )
-                DropdownMenu(
-                    expanded = showTooltip && property.tooltip != null,
-                    onDismissRequest = { showTooltip = false },
-                    shadowElevation = 4.dp,
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier
-                        .width(TOOLTIP_WIDTH)
-                        .background(WooTheme.colors.surface.surfaceContainerHighest),
-                ) {
-                    property.tooltip?.let { tooltip ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(WooTheme.padding.padding5),
-                            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
-                        ) {
-                            Text(
-                                text = stringResource(tooltip.title),
-                                color = WooTheme.colors.surface.onDefault,
-                                style = WooTheme.text.titleMedium.emphasized,
-                            )
-                            Text(
-                                text = stringResource(tooltip.text),
-                                color = WooTheme.colors.surface.onVariant,
-                                style = WooTheme.text.bodyMedium.regular,
-                            )
-                            WooFilledButton(
-                                text = stringResource(tooltip.dismissButtonText),
-                                onClick = {
-                                    showTooltip = false
-                                    onTooltipDismiss?.invoke()
-                                },
-                            )
-                        }
-                    }
+            val tooltip = property.tooltip
+            if (tooltip != null && !isTooltipConsumed) {
+                val tooltipState = rememberWooTooltipState()
+                LaunchedEffect(tooltipState) {
+                    tooltipState.show()
                 }
+                WooTooltipBox(
+                    state = tooltipState,
+                    title = stringResource(tooltip.title),
+                    supportingText = stringResource(tooltip.text),
+                    preferredPlacement = WooTooltipPlacement.Below,
+                    onDismissRequest = {
+                        isTooltipConsumed = true
+                    },
+                    action = WooTooltipAction(
+                        label = stringResource(tooltip.dismissButtonText),
+                        onClick = { onTooltipActionClick?.invoke() },
+                    ),
+                ) {
+                    button()
+                }
+            } else {
+                button()
             }
             property.link?.let { link ->
                 Spacer(modifier = Modifier.size(WooTheme.spacing.space3))
@@ -732,4 +720,3 @@ private fun Modifier.disabledWhen(isDisabled: Boolean) = if (isDisabled) {
 private const val RATING_STAR_COUNT = 5
 private val MIN_ROW_HEIGHT = 56.dp
 private val MIN_EDITABLE_HEIGHT = 64.dp
-private val TOOLTIP_WIDTH = 280.dp

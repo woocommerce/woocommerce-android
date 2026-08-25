@@ -18,16 +18,24 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.click
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
@@ -39,6 +47,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -231,6 +240,167 @@ class WooTooltipTest {
         composeTestRule.onNodeWithText(SUPPORTING_TEXT).assertDoesNotExist()
         composeTestRule.onAllNodesWithText(UPDATED_TITLE, useUnmergedTree = true).assertCountEquals(1)
         composeTestRule.onAllNodesWithText(UPDATED_SUPPORTING_TEXT, useUnmergedTree = true).assertCountEquals(1)
+    }
+
+    @Test
+    fun `given a visible text-only tooltip, when semantics are inspected, then no click action is exposed`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                val state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(state = state, title = TITLE) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        composeTestRule.onAllNodes(hasClickAction()).assertCountEquals(0)
+    }
+
+    @Test
+    fun `given a visible actionable tooltip, when semantics are inspected, then its label is a button`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                val state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    action = WooTooltipAction(label = ACTION_LABEL, onClick = {}),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(ACTION_LABEL)
+            .assertHasClickAction()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+    }
+
+    @Test
+    fun `given a visible actionable tooltip, when its action is semantically clicked, then dismiss and invoke one callback`() {
+        var invocationCount = 0
+        lateinit var state: WooTooltipState
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    action = WooTooltipAction(
+                        label = ACTION_LABEL,
+                        onClick = { invocationCount++ },
+                    ),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(ACTION_LABEL).performClick()
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(invocationCount).isEqualTo(1)
+        }
+    }
+
+    @Test
+    fun `given a visible actionable tooltip, when its action is touched, then the surface does not steal the tap`() {
+        var invocationCount = 0
+        lateinit var state: WooTooltipState
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    action = WooTooltipAction(
+                        label = ACTION_LABEL,
+                        onClick = { invocationCount++ },
+                    ),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(ACTION_LABEL).performTouchInput { click() }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(invocationCount).isEqualTo(1)
+            assertThat(state.isVisible).isFalse()
+        }
+    }
+
+    @Test
+    fun `given a visible actionable tooltip, when its background is touched, then dismiss without callback`() {
+        var invocationCount = 0
+        lateinit var state: WooTooltipState
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    action = WooTooltipAction(
+                        label = ACTION_LABEL,
+                        onClick = { invocationCount++ },
+                    ),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(TITLE).performTouchInput { click() }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            assertThat(invocationCount).isZero()
+            assertThat(state.isVisible).isFalse()
+        }
+    }
+
+    @Test
+    fun `given a visible actionable tooltip, when state dismisses it, then callback is not invoked`() {
+        var invocationCount = 0
+        lateinit var state: WooTooltipState
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                state = rememberWooTooltipState()
+                LaunchedEffect(state) { state.show() }
+                WooTooltipBox(
+                    state = state,
+                    title = TITLE,
+                    action = WooTooltipAction(
+                        label = ACTION_LABEL,
+                        onClick = { invocationCount++ },
+                    ),
+                ) {
+                    androidx.compose.material3.Text(ANCHOR)
+                }
+            }
+        }
+
+        composeTestRule.onNodeWithText(TITLE).assertExists()
+        composeTestRule.runOnIdle { state.dismiss() }
+
+        composeTestRule.onNodeWithText(TITLE).assertDoesNotExist()
+        composeTestRule.runOnIdle { assertThat(invocationCount).isZero() }
+    }
+
+    @Test
+    fun `given a blank label, when an action is created, then throw`() {
+        assertThatIllegalArgumentException().isThrownBy {
+            WooTooltipAction(label = " ", onClick = {})
+        }.withMessage("WooTooltipAction label must not be blank")
     }
 
     @Test
@@ -506,6 +676,50 @@ class WooTooltipTest {
         }
     }
 
+    @Test
+    fun `given a long localized action at large font, when constrained, then text is soft-wrapped and bounded`() {
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                val density = LocalDensity.current
+                CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = 2f)) {
+                    WooTooltipSurface(
+                        title = TITLE,
+                        supportingText = SUPPORTING_TEXT,
+                        action = WooTooltipAction(label = LONG_LOCALIZED_ACTION_LABEL, onClick = {}),
+                        arrowEdge = WooTooltipPhysicalEdge.Left,
+                        arrowCenter = 30f,
+                        cornerRadius = 12.dp,
+                        modifier = Modifier
+                            .width(120.dp)
+                            .testTag(TOOLTIP_SURFACE_TAG),
+                    )
+                }
+            }
+        }
+
+        val textLayoutResults = mutableListOf<TextLayoutResult>()
+        val textNode = composeTestRule
+            .onNodeWithText(LONG_LOCALIZED_ACTION_LABEL, useUnmergedTree = true)
+            .fetchSemanticsNode()
+        val action = textNode.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action
+        val actionBounds = composeTestRule.onNodeWithText(LONG_LOCALIZED_ACTION_LABEL)
+            .fetchSemanticsNode()
+            .boundsInRoot
+        val surfaceBounds = composeTestRule.onNodeWithTag(TOOLTIP_SURFACE_TAG)
+            .fetchSemanticsNode()
+            .boundsInRoot
+
+        composeTestRule.runOnIdle {
+            assertThat(action?.invoke(textLayoutResults)).isTrue()
+            val textLayoutResult = textLayoutResults.single()
+            assertThat(textLayoutResult.layoutInput.softWrap).isTrue()
+            assertThat(textLayoutResult.size.width.toFloat()).isLessThanOrEqualTo(actionBounds.width)
+            assertThat(actionBounds.left).isGreaterThanOrEqualTo(surfaceBounds.left)
+            assertThat(actionBounds.right).isLessThanOrEqualTo(surfaceBounds.right)
+            assertThat(textLayoutResult.hasVisualOverflow).isFalse()
+        }
+    }
+
     private fun geometry(
         edge: WooTooltipPhysicalEdge,
         size: Size,
@@ -558,8 +772,12 @@ class WooTooltipTest {
         const val ANCHOR_TAG = "tooltip-anchor"
         const val VISIBLE_STATUS = "Visible"
         const val HIDDEN_STATUS = "Hidden"
+        const val TOOLTIP_SURFACE_TAG = "tooltip-surface"
+        const val ACTION_LABEL = "Got it"
         const val LONG_SUPPORTING_TEXT =
             "Supporting information wraps onto several lines and expands without clipping at large font scales."
+        const val LONG_LOCALIZED_ACTION_LABEL =
+            "Erweiterte Produkteinstellungen überprüfen und die Darstellung anpassen"
     }
 
     private data class ExpectedTip(
