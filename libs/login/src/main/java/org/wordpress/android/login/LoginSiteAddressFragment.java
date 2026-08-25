@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.store.SiteStore.FetchConnectSiteInfoPayload;
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked;
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType;
 import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult;
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer;
 import org.wordpress.android.login.util.SiteUtils;
 import org.wordpress.android.login.widgets.WPLoginInputRow;
 import org.wordpress.android.login.widgets.WPLoginInputRow.OnEditorCommitListener;
@@ -83,6 +84,7 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
     @Inject Dispatcher mDispatcher;
     @Inject HTTPAuthManager mHTTPAuthManager;
     @Inject MemorizingTrustManager mMemorizingTrustManager;
+    @Inject HttpsUrlNormalizer mHttpsUrlNormalizer;
 
     @Override
     protected @LayoutRes int getContentLayout() {
@@ -223,6 +225,14 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
         mRequestedSiteAddress = mLoginSiteAddressValidator.getCleanedSiteAddress();
 
         String cleanedUrl = stripKnownPaths(mRequestedSiteAddress);
+        if (mLoginListener.getLoginMode() == LoginMode.WOO_LOGIN_MODE) {
+            try {
+                cleanedUrl = mHttpsUrlNormalizer.normalize(cleanedUrl, true).getNormalizedUrl();
+            } catch (IllegalArgumentException exception) {
+                showError(R.string.invalid_site_url_message);
+                return;
+            }
+        }
 
         mAnalyticsListener.trackConnectedSiteInfoRequested(cleanedUrl);
         mDispatcher.dispatch(SiteActionBuilder.newFetchConnectSiteInfoAction(
@@ -403,7 +413,8 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                                 mRequestedSiteAddress,
                                 null,
                                 mConnectSiteInfoCalculatedHasJetpack,
-                                true
+                                true,
+                                event.info.wasUrlNormalizedToHttps
                         )
                 );
             } else {
@@ -470,7 +481,9 @@ public class LoginSiteAddressFragment extends LoginBaseDiscoveryFragment impleme
                     new ConnectSiteInfoResult(
                             mConnectSiteInfoUrl,
                             mConnectSiteInfoUrlRedirect,
-                            mConnectSiteInfoCalculatedHasJetpack
+                            mConnectSiteInfoCalculatedHasJetpack,
+                            false,
+                            siteInfo.wasUrlNormalizedToHttps
                     )
             );
         }

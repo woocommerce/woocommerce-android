@@ -54,9 +54,8 @@ import org.wordpress.android.fluxc.store.SiteStore.SuggestDomainsResponsePayload
 import org.wordpress.android.fluxc.store.SiteStore.WPAPIDiscoveryResult
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.UrlUtils
-import java.net.URI
 import java.security.cert.CertificateException
 import java.security.cert.CertificateExpiredException
 import java.security.cert.CertificateNotYetValidException
@@ -80,6 +79,7 @@ class SiteRestClient @Inject constructor(
     private val jetpackTunnelGsonRequestBuilder: JetpackTunnelGsonRequestBuilder,
     private val coroutineEngine: CoroutineEngine,
     private val discoveryWPAPIRestClient: DiscoveryWPAPIRestClient,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
     accessToken: AccessToken?,
     userAgent: UserAgent?
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
@@ -238,16 +238,24 @@ class SiteRestClient @Inject constructor(
 
         return when {
             result is JetpackResponse.JetpackSuccess && result.data != null -> {
+                val serverUrl = try {
+                    result.data.url?.let(httpsUrlNormalizer::normalize)
+                } catch (_: IllegalArgumentException) {
+                    return SiteModel().apply { error = BaseNetworkError(GenericErrorType.INVALID_RESPONSE) }
+                }
                 // Keep existing fields, and update only fields fetched from the root endpoint
                 site.apply {
                     name = result.data.name
                     timezone = result.data.gmtOffset
+                    serverUrl?.let {
+                        url = it.normalizedUrl
+                    }
                     hasWooCommerce = result.data.namespaces?.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
                     } ?: false
 
                     applicationPasswordsAuthorizeUrl = result.data.authentication?.applicationPasswords
-                        ?.endpoints?.authorization
+                        ?.endpoints?.authorization?.normalizeOptionalUrl()
                 }
             }
 
@@ -270,7 +278,9 @@ class SiteRestClient @Inject constructor(
         )
 
         return (result as? JetpackResponse.JetpackSuccess)?.let {
-            Result.success(it.data?.authentication?.applicationPasswords?.endpoints?.authorization)
+            Result.success(
+                it.data?.authentication?.applicationPasswords?.endpoints?.authorization?.normalizeOptionalUrl()
+            )
         } ?: Result.failure(Exception((result as? JetpackResponse.JetpackError)?.error?.message ?: "Unknown error"))
     }
 
@@ -380,7 +390,13 @@ class SiteRestClient @Inject constructor(
         siteUrl: String,
         discoverWPAPIOnFailure: Boolean = false
     ): ConnectSiteInfoPayload {
-        fun ConnectSiteInfoResponse.toConnectSiteInfoPayload(url: String): ConnectSiteInfoPayload {
+        fun ConnectSiteInfoResponse.toConnectSiteInfoPayload(
+            url: String,
+            inputWasUpgraded: Boolean,
+        ): ConnectSiteInfoPayload {
+            val redirectResult = urlAfterRedirects?.let {
+                runCatching { httpsUrlNormalizer.normalize(it) }.getOrNull()
+            }
             return ConnectSiteInfoPayload(
                 url,
                 exists,
@@ -389,20 +405,20 @@ class SiteRestClient @Inject constructor(
                 isJetpackActive,
                 isJetpackConnected,
                 isWordPressDotCom, // CHECKSTYLE IGNORE
-                urlAfterRedirects
+                redirectResult?.normalizedUrl,
+                inputWasUpgraded || redirectResult?.wasUpgraded == true,
             )
         }
 
-        // Get a proper URI to reliably retrieve the scheme.
-        val uri: URI = try {
-            URI.create(UrlUtils.addUrlSchemeIfNeeded(siteUrl, false))
+        val normalizedSiteUrl = try {
+            httpsUrlNormalizer.normalize(siteUrl, addHttpsSchemeIfMissing = true)
         } catch (e: IllegalArgumentException) {
             val siteError = SiteError(INVALID_SITE)
             return ConnectSiteInfoPayload(siteUrl, siteError)
         }
 
         val params = mutableMapOf<String, String>()
-        params["url"] = uri.toString()
+        params["url"] = normalizedSiteUrl.normalizedUrl
 
         // Make the call.
         val url = WPCOMREST.connect.site_info.urlV1_1
@@ -419,15 +435,24 @@ class SiteRestClient @Inject constructor(
                 val discovery = siteError.wpApiDiscovery
                 if (discovery != null) {
                     val wpApiBaseUrl = withContext(Dispatchers.IO) {
-                        discoveryWPAPIRestClient.discoverWPAPIBaseURL(uri.toString())
+                        discoveryWPAPIRestClient.discoverWPAPIBaseURL(normalizedSiteUrl.normalizedUrl)
+                            ?.let { runCatching { httpsUrlNormalizer.normalize(it).normalizedUrl }.getOrNull() }
                             ?.let { discoveryWPAPIRestClient.verifyWPAPIV2Support(it) }
                     }
                     siteError = siteError.copy(wpApiDiscovery = discovery.copy(wpApiBaseUrl = wpApiBaseUrl))
                 }
-                ConnectSiteInfoPayload(siteUrl, siteError)
+                ConnectSiteInfoPayload(
+                    url = normalizedSiteUrl.normalizedUrl,
+                    wasUrlNormalizedToHttps = normalizedSiteUrl.wasUpgraded,
+                ).apply {
+                    error = siteError
+                }
             }
             is Success -> {
-                response.data.toConnectSiteInfoPayload(siteUrl)
+                response.data.toConnectSiteInfoPayload(
+                    normalizedSiteUrl.normalizedUrl,
+                    normalizedSiteUrl.wasUpgraded,
+                )
             }
         }
     }
@@ -597,9 +622,10 @@ class SiteRestClient @Inject constructor(
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun siteResponseToSiteModelOrThrow(from: SiteWPComRestResponse): SiteModel {
+        val normalizedSiteUrl = httpsUrlNormalizer.normalize(from.URL, addHttpsSchemeIfMissing = true)
         val site = SiteModel()
         site.siteId = from.ID
-        site.url = from.URL
+        site.url = normalizedSiteUrl.normalizedUrl
         site.name = StringEscapeUtils.unescapeHtml4(from.name)
         site.setIsJetpackConnected(from.jetpack && from.jetpack_connection)
         site.setIsJetpackInstalled(from.jetpack)
@@ -610,8 +636,8 @@ class SiteRestClient @Inject constructor(
             site.setIsWpComStore(from.options.is_wpcom_store)
             site.publishedStatus = from.options.blog_public
             site.hasWooCommerce = from.options.woocommerce_is_active
-            site.adminUrl = from.options.admin_url
-            site.loginUrl = from.options.login_url
+            site.adminUrl = from.options.admin_url?.normalizeOptionalUrl()
+            site.loginUrl = from.options.login_url?.normalizeOptionalUrl()
             site.timezone = from.options.gmt_offset
             site.jetpackVersion = from.options.jetpack_version
             site.setIsWPComAtomic(from.options.is_wpcom_atomic)
@@ -648,11 +674,14 @@ class SiteRestClient @Inject constructor(
         return site
     }
 
+    private fun String.normalizeOptionalUrl(): String? =
+        runCatching { httpsUrlNormalizer.normalize(this).normalizedUrl }.getOrNull()
+
     companion object {
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
             "options,plan,capabilities,meta,jetpack_modules"
-        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,url,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"

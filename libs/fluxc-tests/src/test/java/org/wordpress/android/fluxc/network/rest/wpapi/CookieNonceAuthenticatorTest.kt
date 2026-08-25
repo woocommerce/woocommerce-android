@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.network.discovery.DiscoveryWPAPIRestClient
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -28,7 +29,13 @@ class CookieNonceAuthenticatorTest {
 
     @Before
     fun setUp() {
-        subject = CookieNonceAuthenticator(nonceClient, discoveryClient, siteStore, initCoroutineEngine())
+        subject = CookieNonceAuthenticator(
+            nonceClient,
+            discoveryClient,
+            siteStore,
+            initCoroutineEngine(),
+            HttpsUrlNormalizer(),
+        )
     }
 
     @Test

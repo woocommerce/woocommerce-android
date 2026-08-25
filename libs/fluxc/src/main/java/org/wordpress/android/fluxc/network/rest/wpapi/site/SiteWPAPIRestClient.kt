@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi.site
 
 import com.android.volley.RequestQueue
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -16,7 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Success
 import org.wordpress.android.fluxc.store.SiteStore.FetchWPAPISitePayload
-import org.wordpress.android.util.UrlUtils
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -25,6 +24,7 @@ import javax.inject.Singleton
 class SiteWPAPIRestClient @Inject constructor(
     private val wpapiGsonRequestBuilder: WPAPIGsonRequestBuilder,
     private val discoveryWPAPIRestClient: DiscoveryWPAPIRestClient,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
     dispatcher: Dispatcher,
     @Named("custom-ssl") requestQueue: RequestQueue,
     userAgent: UserAgent
@@ -36,15 +36,21 @@ class SiteWPAPIRestClient @Inject constructor(
         private const val APPLICATION_PASSWORDS_URL_SUFFIX = "authorize-application.php"
     }
 
+    @Suppress("ReturnCount")
     suspend fun fetchWPAPISite(
         payload: FetchWPAPISitePayload
     ): SiteModel {
-        val cleanedUrl = UrlUtils.addUrlSchemeIfNeeded(payload.url, false).let { urlWithScheme ->
-            DiscoveryUtils.stripKnownPaths(urlWithScheme)
+        val inputUrl = try {
+            httpsUrlNormalizer.normalize(payload.url, addHttpsSchemeIfMissing = true)
+        } catch (_: IllegalArgumentException) {
+            return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
         }
-
-        val discoveredWpApiUrl = discoverApiEndpoint(cleanedUrl)
-        val urlScheme = discoveredWpApiUrl.toHttpUrl().scheme
+        val cleanedUrl = DiscoveryUtils.stripKnownPaths(inputUrl.normalizedUrl)
+        val discoveredWpApiUrl = try {
+            httpsUrlNormalizer.normalize(discoverApiEndpoint(cleanedUrl)).normalizedUrl
+        } catch (_: IllegalArgumentException) {
+            return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
+        }
 
         val result = wpapiGsonRequestBuilder.syncGetRequest(
             restClient = this,
@@ -61,6 +67,11 @@ class SiteWPAPIRestClient @Inject constructor(
                         error = BaseNetworkError(INVALID_RESPONSE)
                     }
                 }
+                val serverUrl = try {
+                    response.url?.let(httpsUrlNormalizer::normalize)
+                } catch (_: IllegalArgumentException) {
+                    return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
+                }
 
                 SiteModel().apply {
                     name = response.name
@@ -72,10 +83,11 @@ class SiteWPAPIRestClient @Inject constructor(
 
                     applicationPasswordsAuthorizeUrl = response.authentication?.applicationPasswords
                         ?.endpoints?.authorization
+                        ?.normalizeOptionalUrl()
                     adminUrl = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl)
 
                     wpApiRestUrl = discoveredWpApiUrl
-                    this.url = cleanedUrl.replaceBefore("://", urlScheme)
+                    this.url = serverUrl?.normalizedUrl ?: cleanedUrl
                     this.username = payload.username
                     this.password = payload.password
                 }
@@ -100,14 +112,20 @@ class SiteWPAPIRestClient @Inject constructor(
             )
         ).also { refreshedSite ->
             if (!refreshedSite.isError) {
-                site.loginUrl?.takeUnless(String::isBlank)?.let { refreshedSite.loginUrl = it }
+                refreshedSite.id = site.id
+                site.loginUrl?.takeUnless(String::isBlank)?.normalizeOptionalUrl()
+                    ?.let { refreshedSite.loginUrl = it }
                 site.adminUrl
                     ?.takeUnless(String::isBlank)
                     ?.takeUnless { it.matchesAdminBaseInferredFrom(site.applicationPasswordsAuthorizeUrl) }
+                    ?.normalizeOptionalUrl()
                     ?.let { refreshedSite.adminUrl = it }
             }
         }
     }
+
+    private fun String.normalizeOptionalUrl(): String? =
+        runCatching { httpsUrlNormalizer.normalize(this).normalizedUrl }.getOrNull()
 
     private fun inferAdminBaseUrl(applicationPasswordsAuthorizeUrl: String?): String? =
         applicationPasswordsAuthorizeUrl

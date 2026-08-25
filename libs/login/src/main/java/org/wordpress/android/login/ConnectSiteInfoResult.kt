@@ -8,4 +8,5 @@ data class ConnectSiteInfoResult @JvmOverloads constructor(
      * Whether the site is suspended on WordPress.com and can't be connected using Jetpack
      */
     val isWPComSuspended: Boolean = false,
+    val wasUrlNormalizedToHttps: Boolean = false,
 )
