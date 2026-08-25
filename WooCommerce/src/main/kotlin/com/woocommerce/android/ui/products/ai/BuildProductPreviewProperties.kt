@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.details.ProductDetailCardBuilder
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -23,30 +24,33 @@ class BuildProductPreviewProperties @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val parameterRepository: ParameterRepository,
 ) {
-    private val siteParameters by lazy { parameterRepository.getParameters() }
+    private var siteParameters: SiteParameters? = null
 
-    operator fun invoke(product: Product): List<List<ProductPropertyCard>> = buildList {
-        add(
-            listOf(product.productType())
-        )
+    operator fun invoke(product: Product): List<List<ProductPropertyCard>> {
+        val parameters = siteParameters ?: parameterRepository.getParameters().also { siteParameters = it }
+        return buildList {
+            add(
+                listOf(product.productType())
+            )
 
-        add(
-            buildList {
-                add(product.price())
+            add(
+                buildList {
+                    add(product.price(parameters))
 
-                add(product.inventory())
+                    add(product.inventory())
 
-                if (product.categories.isNotEmpty()) {
-                    add(product.categories())
+                    if (product.categories.isNotEmpty()) {
+                        add(product.categories())
+                    }
+
+                    if (product.tags.isNotEmpty()) {
+                        add(product.tags())
+                    }
+
+                    add(product.shipping(parameters))
                 }
-
-                if (product.tags.isNotEmpty()) {
-                    add(product.tags())
-                }
-
-                add(product.shipping())
-            }
-        )
+            )
+        }
     }
 
     operator fun invoke(
@@ -83,7 +87,7 @@ class BuildProductPreviewProperties @Inject constructor(
         )
     }
 
-    private fun Product.price() = ProductPropertyCard(
+    private fun Product.price(siteParameters: SiteParameters) = ProductPropertyCard(
         icon = R.drawable.ic_gridicons_money,
         title = R.string.product_price,
         content = PriceUtils.formatCurrency(
@@ -112,7 +116,7 @@ class BuildProductPreviewProperties @Inject constructor(
         content = tags.joinToString(transform = { it.name })
     )
 
-    private fun Product.shipping(): ProductPropertyCard {
+    private fun Product.shipping(siteParameters: SiteParameters): ProductPropertyCard {
         val weightFormatted = getWeightWithUnits(siteParameters.weightUnit)
         val dimensionsFormatted = getSizeWithUnits(siteParameters.dimensionUnit)
 
