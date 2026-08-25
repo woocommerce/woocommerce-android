@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.filters.FilterHistoryRepository
 import com.woocommerce.android.ui.filters.FilterHistoryType
 import com.woocommerce.android.ui.orders.filters.OrderFilterHistoryMapper
+import com.woocommerce.android.ui.orders.filters.data.DateRange
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -70,9 +71,14 @@ class SaveOrderFilterToHistory @Inject constructor(
             category.orderFilterOptions.any { it.isSelected && it.key != DEFAULT_ALL_KEY }
         }
         if (!hasSelection) return
-        // Store the range in epoch days, matching the unit setCustomDateRange expects on restore
-        // (getCustomDateRangeFilter returns millis, which would corrupt the days-based pref).
-        val customDateRange = orderFiltersRepository.getCustomDateRangeDays()
+        // Only persist the custom range when Custom Range is the active date selection. Stored in epoch
+        // days to match the unit setCustomDateRange expects on restore (getCustomDateRangeFilter returns
+        // millis, which would corrupt the days-based pref).
+        val customDateRange = if (isCustomDateRangeSelected(selectedCategories)) {
+            orderFiltersRepository.getCustomDateRangeDays()
+        } else {
+            0L to 0L
+        }
         filterHistoryRepository.save(
             type = FilterHistoryType.ORDERS,
             payload = orderFilterHistoryMapper.toPayload(
@@ -94,6 +100,15 @@ class SaveOrderFilterToHistory @Inject constructor(
             .joinToString(
                 separator = ", "
             ) { it.displayValue?.takeIf { value -> value.isNotBlank() } ?: it.displayName }
+
+    // getCustomDateRangeDays() keeps the last-picked range even after the user switches Date Range back
+    // to a preset or "All", so we serialize it only while Custom Range is the active selection to keep
+    // the payload canonical (otherwise logically-identical filters would dedup as separate entries).
+    private fun isCustomDateRangeSelected(categories: List<OrderFilterCategoryUiModel>): Boolean =
+        categories
+            .firstOrNull { it.categoryKey == DATE_RANGE }
+            ?.orderFilterOptions
+            ?.any { it.isSelected && it.key == DateRange.CUSTOM_RANGE.filterKey } == true
 
     private suspend fun buildSelectedCategories(): List<OrderFilterCategoryUiModel> = listOf(
         selectedCategory(

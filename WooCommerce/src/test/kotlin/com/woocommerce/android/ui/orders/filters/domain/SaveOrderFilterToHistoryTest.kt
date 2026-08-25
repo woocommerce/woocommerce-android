@@ -4,6 +4,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.filters.FilterHistoryRepository
 import com.woocommerce.android.ui.filters.FilterHistoryType
 import com.woocommerce.android.ui.orders.filters.OrderFilterHistoryMapper
+import com.woocommerce.android.ui.orders.filters.data.DateRange
+import com.woocommerce.android.ui.orders.filters.data.DateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -101,7 +103,6 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(orderFiltersRepository.customerFilter).thenReturn(null)
         whenever(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL))
             .thenReturn(emptyList())
-        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
         whenever(orderFilterHistoryMapper.toPayload(any(), any(), any())).thenReturn(A_PAYLOAD)
 
         sut()
@@ -120,7 +121,6 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         whenever(orderFiltersRepository.customerFilter).thenReturn(null)
         whenever(orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.SALES_CHANNEL))
             .thenReturn(emptyList())
-        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
 
         sut()
 
@@ -173,20 +173,36 @@ class SaveOrderFilterToHistoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given a custom date range, when invoked, then its bounds are forwarded to the payload`() = testBlocking {
+    fun `given custom range is the active date selection, when invoked, then its bounds are forwarded`() =
+        testBlocking {
+            givenNothingSelected()
+            whenever(getDateRangeFilterOptions.invoke()).thenReturn(
+                listOf(DateRangeFilterOption(DateRange.CUSTOM_RANGE, isSelected = true, startDate = 0, endDate = 0))
+            )
+            whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(111L to 222L)
+
+            sut()
+
+            verify(orderFilterHistoryMapper).toPayload(any(), eq(111L), eq(222L))
+        }
+
+    @Test
+    fun `given date range is not custom, when invoked, then a stale custom range is not serialized`() = testBlocking {
         givenNothingSelected()
-        whenever(getOrderStatusFilterOptions.invoke()).thenReturn(
-            listOf(OrderStatusOption("processing", "Processing", statusCount = 0, isSelected = true))
+        whenever(getDateRangeFilterOptions.invoke()).thenReturn(
+            listOf(DateRangeFilterOption(DateRange.LAST_7_DAYS, isSelected = true, startDate = 0, endDate = 0))
         )
-        whenever(orderFiltersRepository.getCustomDateRangeDays()).thenReturn(111L to 222L)
 
         sut()
 
-        verify(orderFilterHistoryMapper).toPayload(any(), eq(111L), eq(222L))
+        // The stale custom range is neither read nor serialized when Custom Range isn't the active selection.
+        verify(orderFilterHistoryMapper).toPayload(any(), eq(0L), eq(0L))
+        verify(orderFiltersRepository, never()).getCustomDateRangeDays()
     }
 
     private suspend fun givenNothingSelected() {
         whenever(featureFlagRepository.isEnabled(FeatureFlag.FILTER_HISTORY)).thenReturn(true)
+        whenever(resourceProvider.getString(any())).thenReturn("")
         whenever(getOrderStatusFilterOptions.invoke()).thenReturn(emptyList())
         whenever(getDateRangeFilterOptions.invoke()).thenReturn(emptyList())
         whenever(orderFiltersRepository.productFilter).thenReturn(null)
