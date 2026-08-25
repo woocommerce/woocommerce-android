@@ -30,6 +30,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -72,6 +73,7 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
         givenOrderStatusOptionsAvailable()
         givenDateRangeFiltersAvailable()
         whenever(isSalesChannelFilterSupported.invoke()).thenReturn(false)
+        whenever(orderFilterRepository.getCustomDateRangeDays()).thenReturn(0L to 0L)
         initViewModel()
     }
 
@@ -344,6 +346,19 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
         verify(orderFilterRepository, never()).setSelectedFilters(any(), any())
         verify(orderFilterRepository, never()).setCustomDateRange(any(), any())
+    }
+
+    @Test
+    fun `given a changed selection, when discarding, then the original custom date range is restored`() = testBlocking {
+        savedStateHandle = SavedStateHandle()
+        whenever(orderFilterRepository.getCustomDateRangeDays()).thenReturn(10L to 20L)
+        initViewModel()
+        givenAFilterOptionHasBeenSelected(AN_ORDER_STATUS_FILTER_CATEGORY_WITH_SELECTED_FILTER)
+
+        viewModel.onBackPressed()
+        (viewModel.event.value as MultiLiveEvent.Event.ShowDialog).positiveBtnAction?.onClick(null, 0)
+
+        verify(orderFilterRepository).setCustomDateRange(10, 20)
     }
 
     private fun allFilterOptionsAreUnselected() = currentCategoryList

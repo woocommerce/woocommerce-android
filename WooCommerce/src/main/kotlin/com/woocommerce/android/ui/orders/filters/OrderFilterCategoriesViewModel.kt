@@ -70,12 +70,18 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
+        const val OLD_CUSTOM_DATE_RANGE_KEY = "old_custom_date_range_key"
     }
 
     val isFilterHistoryEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.FILTER_HISTORY)
 
     private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
         savedState[OLD_FILTER_SELECTION_KEY] ?: emptyList()
+
+    // The custom date range days aren't captured in [oldFilterSelection] (which only holds option keys),
+    // so snapshot them separately to restore the range when the user discards their changes.
+    private var oldCustomDateRange: Pair<Long, Long> =
+        savedState.get<LongArray>(OLD_CUSTOM_DATE_RANGE_KEY)?.let { it[0] to it[1] } ?: (0L to 0L)
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -99,6 +105,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 _categories = OrderFilterCategories(buildFilterListUiModel())
                 oldFilterSelection = _categories.list
                 savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
+                oldCustomDateRange = orderFilterRepository.getCustomDateRangeDays()
+                savedState[OLD_CUSTOM_DATE_RANGE_KEY] =
+                    longArrayOf(oldCustomDateRange.first, oldCustomDateRange.second)
             }
         }
     }
@@ -202,6 +211,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
                         saveFiltersSelection(oldFilterSelection)
+                        orderFilterRepository.setCustomDateRange(oldCustomDateRange.first, oldCustomDateRange.second)
                         triggerEvent(Exit)
                     },
                     negativeButtonId = R.string.keep_changes
