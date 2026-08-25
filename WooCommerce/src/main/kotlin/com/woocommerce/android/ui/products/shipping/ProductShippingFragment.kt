@@ -51,23 +51,38 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         _binding = null
     }
 
+    private fun showMeasurementValues(
+        old: ProductShippingViewModel.ViewState?,
+        new: ProductShippingViewModel.ViewState
+    ) {
+        if (new.shippingData.weight != old?.shippingData?.weight || new.weightUnit != old?.weightUnit) {
+            new.shippingData.weight?.let { weight ->
+                showValue(binding.productWeight, R.string.product_weight, weight, new.weightUnit)
+            }
+        }
+        if (new.shippingData.length != old?.shippingData?.length || new.dimensionUnit != old?.dimensionUnit) {
+            new.shippingData.length?.let { length ->
+                showValue(binding.productLength, R.string.product_length, length, new.dimensionUnit)
+            }
+        }
+        if (new.shippingData.width != old?.shippingData?.width || new.dimensionUnit != old?.dimensionUnit) {
+            new.shippingData.width?.let { width ->
+                showValue(binding.productWidth, R.string.product_width, width, new.dimensionUnit)
+            }
+        }
+        if (new.shippingData.height != old?.shippingData?.height || new.dimensionUnit != old?.dimensionUnit) {
+            new.shippingData.height?.let { height ->
+                showValue(binding.productHeight, R.string.product_height, height, new.dimensionUnit)
+            }
+        }
+    }
+
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isShippingClassSectionVisible?.takeIfNotEqualTo(old?.isShippingClassSectionVisible) { isVisible ->
                 binding.productShippingClassSpinner.isVisible = isVisible
             }
-            new.shippingData.weight?.takeIfNotEqualTo(old?.shippingData?.weight) { weight ->
-                showValue(binding.productWeight, R.string.product_weight, weight, viewModel.parameters.weightUnit)
-            }
-            new.shippingData.length?.takeIfNotEqualTo(old?.shippingData?.length) { length ->
-                showValue(binding.productLength, R.string.product_length, length, viewModel.parameters.dimensionUnit)
-            }
-            new.shippingData.width?.takeIfNotEqualTo(old?.shippingData?.width) { width ->
-                showValue(binding.productWidth, R.string.product_width, width, viewModel.parameters.dimensionUnit)
-            }
-            new.shippingData.height?.takeIfNotEqualTo(old?.shippingData?.height) { height ->
-                showValue(binding.productHeight, R.string.product_height, height, viewModel.parameters.dimensionUnit)
-            }
+            showMeasurementValues(old, new)
             new.shippingData.shippingClassId?.takeIfNotEqualTo(old?.shippingData?.shippingClassId) { classId ->
                 val selectedText = runBlocking { viewModel.getShippingClassByRemoteShippingClassId(classId) }
                 binding.productShippingClassSpinner.setText(selectedText)
