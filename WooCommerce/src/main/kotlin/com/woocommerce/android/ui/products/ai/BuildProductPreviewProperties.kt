@@ -26,7 +26,7 @@ class BuildProductPreviewProperties @Inject constructor(
 ) {
     private var siteParameters: SiteParameters? = null
 
-    operator fun invoke(product: Product): List<List<ProductPropertyCard>> {
+    suspend operator fun invoke(product: Product): List<List<ProductPropertyCard>> {
         val parameters = siteParameters ?: parameterRepository.getParameters().also { siteParameters = it }
         return buildList {
             add(
@@ -53,7 +53,7 @@ class BuildProductPreviewProperties @Inject constructor(
         }
     }
 
-    operator fun invoke(
+    suspend operator fun invoke(
         product: AIProductModel,
         variant: Int
     ): List<List<ProductPropertyCard>> = invoke(product.toProduct(variant))

@@ -48,7 +48,7 @@ class ShippingPackageSelectorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(parameterRepository.getParameters(any(), any<SavedStateHandle>())).thenReturn(
+        whenever(parameterRepository.getParametersBlocking(any(), any<SavedStateHandle>())).thenReturn(
             SiteParameters(
                 currencyCode = "USD",
                 currencySymbol = "$",

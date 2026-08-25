@@ -42,7 +42,7 @@ class ShippingPackageSelectorViewModel @Inject constructor(
     private var viewState by viewStateData
 
     val dimensionUnit: String by lazy {
-        parameterRepository.getParameters(KEY_PARAMETERS, savedState).dimensionUnit ?: ""
+        parameterRepository.getParametersBlocking(KEY_PARAMETERS, savedState).dimensionUnit ?: ""
     }
 
     init {

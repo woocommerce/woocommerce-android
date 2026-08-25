@@ -183,7 +183,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     private var siteParameters: SiteParameters? = null
 
-    private fun getParameters(): SiteParameters {
+    private suspend fun getParameters(): SiteParameters {
         return siteParameters ?: parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
             .also { siteParameters = it }
     }
@@ -289,7 +289,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private var cardBuilder: ProductDetailCardBuilder? = null
 
-    private fun getCardBuilder(): ProductDetailCardBuilder {
+    private suspend fun getCardBuilder(): ProductDetailCardBuilder {
         return cardBuilder ?: ProductDetailCardBuilder(
             viewModel = this,
             selectedSite = selectedSite,

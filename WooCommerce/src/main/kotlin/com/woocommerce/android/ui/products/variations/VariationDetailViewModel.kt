@@ -104,7 +104,7 @@ class VariationDetailViewModel @Inject constructor(
     private val _variationDetailCards = MutableLiveData<List<ProductPropertyCard>>()
     val variationDetailCards: LiveData<List<ProductPropertyCard>> = _variationDetailCards
 
-    private fun getCardBuilder(): VariationDetailCardBuilder {
+    private suspend fun getCardBuilder(): VariationDetailCardBuilder {
         return cardBuilder ?: VariationDetailCardBuilder(
             this,
             resources,

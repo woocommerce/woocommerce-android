@@ -127,7 +127,7 @@ class EditCouponViewModel @Inject constructor(
     private fun getEditModeScreenTitle(localizedType: String?) =
         localizedType ?: resourceProvider.getString(R.string.coupon_edit_screen_title_default)
 
-    private fun getCurrencyCode() =
+    private suspend fun getCurrencyCode() =
         parameterRepository.getParameters(PARAMETERS_KEY, savedState).currencySymbol.orEmpty()
 
     init {
