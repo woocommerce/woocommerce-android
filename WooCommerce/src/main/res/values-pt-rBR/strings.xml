@@ -1089,7 +1089,6 @@ Language: pt_BR
     <string name="woo_shipping_fetching_countries_and_states_failed">Não conseguimos recuperar informações do país ou estado. Tente novamente.</string>
     <string name="woo_shipping_field_required_error">Este campo é obrigatório.</string>
     <string name="product_upload_error_title">Erros no upload da imagem</string>
-    <string name="app_name">Eba!</string>
     <string name="woopos_products_empty_list_message">No momento, o ponto de venda só aceita produtos simples, variáveis e virtuais: \ncrie um para começar.</string>
     <string name="woo_shipping_label_phone">Telefone</string>
     <string name="woo_shipping_label_email">E-mail</string>

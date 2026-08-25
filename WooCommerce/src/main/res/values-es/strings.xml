@@ -1089,7 +1089,6 @@ Language: es
     <string name="woo_shipping_fetching_countries_and_states_failed">No hemos podido obtener la información del país y el estado. Inténtalo de nuevo.</string>
     <string name="woo_shipping_field_required_error">Este campo es obligatorio.</string>
     <string name="product_upload_error_title">Errores al subir la imagen</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">El TPV solo admite productos simples, variables y virtuales: \ncrea uno para empezar.</string>
     <string name="woo_shipping_label_phone">Teléfono</string>
     <string name="woo_shipping_label_email">Correo electrónico</string>

@@ -1089,7 +1089,6 @@ Language: zh_CN
     <string name="woo_shipping_fetching_countries_and_states">正在获取国家/地区和州/省/自治区/直辖市。</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">我们无法检索到国家/地区和州/省/自治区/直辖市信息。 请重试。</string>
     <string name="product_upload_error_title">图片上传发生错误</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品、可变产品和虚拟产品 — \n创建一个以开始。</string>
     <string name="woo_shipping_label_phone">电话</string>
     <string name="woo_shipping_label_email">电子邮件</string>
