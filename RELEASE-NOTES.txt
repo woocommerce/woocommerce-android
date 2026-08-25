@@ -5,6 +5,7 @@
 25.6
 -----
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Order editing: opening the customer note or address editor no longer crashes the app when the order is missing from the local database [https://github.com/woocommerce/woocommerce-android/pull/16467]
 
 25.5
 -----
