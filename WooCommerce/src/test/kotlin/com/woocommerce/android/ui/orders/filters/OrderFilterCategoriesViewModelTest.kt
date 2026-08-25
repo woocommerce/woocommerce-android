@@ -246,9 +246,10 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given a past filter, when selected, then its selection is applied to the repository`() = testBlocking {
+        val availableStatusKey = generateOrderStatusOptions().first().statusKey
         whenever(orderFilterHistoryMapper.fromPayload(A_PAYLOAD)).thenReturn(
             OrderFilterHistoryMapper.OrderFilterHistoryData(
-                selections = mapOf(OrderListFilterCategory.ORDER_STATUS.name to listOf(ANY_ORDER_STATUS_KEY)),
+                selections = mapOf(OrderListFilterCategory.ORDER_STATUS.name to listOf(availableStatusKey)),
                 customDateRangeStart = 0,
                 customDateRangeEnd = 0
             )
@@ -258,9 +259,50 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
         verify(orderFilterRepository).setSelectedFilters(
             OrderListFilterCategory.ORDER_STATUS,
-            listOf(ANY_ORDER_STATUS_KEY)
+            listOf(availableStatusKey)
         )
         verify(orderFilterRepository).setCustomDateRange(0, 0)
+    }
+
+    @Test
+    fun `given a past filter with an unavailable category, when selected, then that value is dropped`() = testBlocking {
+        // Sales Channel is unavailable in this test (isSalesChannelFilterSupported = false).
+        whenever(orderFilterHistoryMapper.fromPayload(A_PAYLOAD)).thenReturn(
+            OrderFilterHistoryMapper.OrderFilterHistoryData(
+                selections = mapOf(OrderListFilterCategory.SALES_CHANNEL.name to listOf(SalesChannel.POS.key))
+            )
+        )
+
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+
+        verify(orderFilterRepository).setSelectedFilters(OrderListFilterCategory.SALES_CHANNEL, emptyList())
+    }
+
+    @Test
+    fun `given a past filter with an order status that no longer exists, when selected, then it is dropped`() =
+        testBlocking {
+            whenever(orderFilterHistoryMapper.fromPayload(A_PAYLOAD)).thenReturn(
+                OrderFilterHistoryMapper.OrderFilterHistoryData(
+                    selections = mapOf(OrderListFilterCategory.ORDER_STATUS.name to listOf("deleted-status"))
+                )
+            )
+
+            viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+
+            verify(orderFilterRepository).setSelectedFilters(OrderListFilterCategory.ORDER_STATUS, emptyList())
+        }
+
+    @Test
+    fun `given a past filter with a product, when selected, then the product value is applied as-is`() = testBlocking {
+        whenever(orderFilterHistoryMapper.fromPayload(A_PAYLOAD)).thenReturn(
+            OrderFilterHistoryMapper.OrderFilterHistoryData(
+                selections = mapOf(OrderListFilterCategory.PRODUCT.name to listOf("123"))
+            )
+        )
+
+        viewModel.onPastFilterSelected(SavedFilter(readableString = A_READABLE_STRING, payload = A_PAYLOAD))
+
+        verify(orderFilterRepository).setSelectedFilters(OrderListFilterCategory.PRODUCT, listOf("123"))
     }
 
     @Test

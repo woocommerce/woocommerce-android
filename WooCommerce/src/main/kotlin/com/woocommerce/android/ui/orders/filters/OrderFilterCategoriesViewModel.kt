@@ -125,8 +125,25 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     fun onPastFilterSelected(savedFilter: SavedFilter) {
         val historyData = orderFilterHistoryMapper.fromPayload(savedFilter.payload) ?: return
         launch {
+            // Reconcile the stored selection against what this store can currently show, so values that
+            // are no longer available (e.g. the whole Sales Channel category on WooCommerce < 9.9, or a
+            // deleted order status) aren't applied and left stuck active with no visible way to remove them.
+            val availableCategories = buildFilterListUiModel()
             OrderListFilterCategory.entries.forEach { category ->
-                orderFilterRepository.setSelectedFilters(category, historyData.selections[category.name] ?: emptyList())
+                val availableOptionKeys = availableCategories
+                    .firstOrNull { it.categoryKey == category }
+                    ?.orderFilterOptions
+                    ?.map { it.key }
+                    ?.toSet()
+                val storedValues = historyData.selections[category.name] ?: emptyList()
+                val reconciledValues = when {
+                    // Category isn't available on this store, drop it entirely.
+                    availableOptionKeys == null -> emptyList()
+                    // Product/Customer options are derived from the value itself, so apply the stored value as-is.
+                    category == PRODUCT || category == CUSTOMER -> storedValues
+                    else -> storedValues.filter { it in availableOptionKeys }
+                }
+                orderFilterRepository.setSelectedFilters(category, reconciledValues)
             }
             orderFilterRepository.setCustomDateRange(historyData.customDateRangeStart, historyData.customDateRangeEnd)
             _categories = OrderFilterCategories(buildFilterListUiModel())
