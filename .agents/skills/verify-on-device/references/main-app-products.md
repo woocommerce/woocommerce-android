@@ -19,11 +19,13 @@ Fragment: `ProductListFragment` -- Tap `products` bottom tab.
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
-| **Primary** | `productDetail_root` | Root CoordinatorLayout |
-| Toolbar | `productDetailToolbar` | Shows product name |
-| Image gallery | `imageGallery` | Product image carousel |
-| Product cards | `cardsRecyclerView` | Product detail cards (scrollable) |
-| Add more container | `productDetail_addMoreContainer` | Bottom add-more section |
+| **Primary** | `productDetail_root` | Programmatic root ComposeView resource ID |
+| Page | `productDetailPage` | Complete Compose hierarchy |
+| Top app bar | `productDetailToolbar` | Compose semantics tag; shows product name |
+| Top app bar overflow | `productDetailToolbarOverflow` | Compose semantics tag |
+| Image gallery | `product_detail_image_gallery` | Compose semantics tag |
+| Product cards | `productDetailList` | Compose LazyColumn semantics tag |
+| Add more footer | `productDetailFooter` | Fixed Compose footer semantics tag |
 
 ## Workflows
 
@@ -81,10 +83,10 @@ All reachable by tapping the corresponding section on the Product Detail screen.
 | Step | Action | Element |
 |------|--------|---------|
 | 1 | Edit fields | various product sections |
-| 2 | Tap "Update" / "Save" | toolbar save button |
-| 3 | Duplicate product | toolbar menu -> "Duplicate" |
-| 4 | Share product | toolbar menu -> "Share" |
-| 5 | Delete product | toolbar menu -> "Trash" |
+| 2 | Tap "Update" / "Save" | top app bar save button |
+| 3 | Duplicate product | top app bar menu -> "Duplicate" |
+| 4 | Share product | top app bar menu -> "Share" |
+| 5 | Delete product | top app bar menu -> "Trash" |
 
 ### Variations (Variable Products)
 

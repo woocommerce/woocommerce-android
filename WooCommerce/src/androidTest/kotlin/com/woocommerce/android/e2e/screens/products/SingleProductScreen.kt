@@ -2,9 +2,6 @@ package com.woocommerce.android.e2e.screens.products
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.ComposeUiAutomator
@@ -12,7 +9,6 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.allText
 import com.woocommerce.android.ui.products.details.ProductDetailTestTags
-import org.hamcrest.Matchers
 
 class SingleProductScreen : Screen {
     constructor() : super(R.id.productDetail_root)
@@ -33,14 +29,10 @@ class SingleProductScreen : Screen {
     }
 
     fun assertSingleProductScreen(product: ProductData): SingleProductScreen {
-        // Navigation bar:
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.productDetailToolbar),
-                ViewMatchers.withChild(ViewMatchers.withText(product.name))
-            )
-        )
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        val topAppBar = composeUi.waitForTag(ProductDetailTestTags.TOP_APP_BAR)
+        check(product.name in topAppBar.allText()) {
+            "Expected top app bar title '${product.name}', found ${topAppBar.allText()}"
+        }
 
         // Product name:
         val title = composeUi.waitForTag(ProductDetailTestTags.TITLE)
