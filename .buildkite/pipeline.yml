@@ -1,134 +1,15 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-# Nodes with values to reuse in the pipeline.
-common_params:
-  # Common plugin settings to use with the `plugins` key.
-  - &test_collector_common_params
-      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-      format: "junit"
+# Validation-only for woocommerce/woocommerce-android#16464. Close; do not merge.
 
 agents:
   queue: "android"
 
 steps:
-  - label: Gradle Wrapper Validation
-    command: validate_gradle_wrapper
-    agents:
-      queue: linter
-
-  # Wait for Gradle Wrapper to be validated before running any other jobs
-  - wait
-
-  ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: ":danger: Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "detekt"
-        command: |
-          if .buildkite/commands/should-skip-job.sh --job-type validation; then
-            exit 0
-          fi
-          ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
-      - label: "lint"
-        command: .buildkite/commands/lint.sh
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff/*"
-
-      - label: "Merged Manifest Diff"
-        command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff_manifest/**/**/*"
-
-  ########################################
-  - group: "🚀 Prototype Build"
-    # Mobile Prototype Builds are on-demand on `trunk`, but always built on PRs
-    # WearOS Prototype Builds are on-demand both on `trunk` and PRs
-    steps:
-      - input: Create a Mobile Prototype Build?
-        prompt: Share a Mobile Prototype Build via Firebase App Distribution?
-        key: mobile_prototype_build_triggered
-        if: build.branch == "trunk"
-      - label: ":firebase: Mobile Prototype Build"
-        # Buildkite considers this implicitly satisfied if `depends_on` step is skipped due to `if:` condition, so this will run unconditionally on PRs
-        # https://buildkite.com/docs/pipelines/configure/dependencies#how-skipped-steps-affect-dependencies
-        depends_on: mobile_prototype_build_triggered
-        command: .buildkite/commands/prototype-build.sh WooCommerce
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "WooCommerce/build/outputs/apk/**/*"
-
-      - input: Create a Wear Prototype Build?
-        prompt: Share a Wear Prototype Build? (it will be uploaded to AWS S3)
-        key: wear_prototype_build_triggered
-      - label: ":amazon-s3: Wear Prototype Build"
-        depends_on: wear_prototype_build_triggered
-        command: .buildkite/commands/prototype-build.sh WooCommerce-Wear
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "WooCommerce-Wear/build/outputs/apk/**/*"
-
-  ########################################
-  - group: "🔬 Tests"
-    steps:
-
-      - label: "Unit tests"
-        key: unit-tests
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
-
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
-
-
-  - label: "🐘 Populate Gradle build cache"
-    command: .buildkite/commands/gradle-cache-build.sh
+  - label: ":android: Validate build_and_upload_beta (no Play Store upload)"
+    key: validate_build_lane
+    command: ".buildkite/commands/validate-build-lane.sh"
     plugins: [$CI_TOOLKIT]
-
-  ########################################
-  # Claude Build Analysis - dynamically uploaded so Build result conditions evaluate at runtime after the wait
-  ########################################
-  - wait: ~
-    continue_on_failure: true
-
-  - label: ":claude: 🕵️ Build Analysis"
-    command: .buildkite/commands/upload-claude-analysis.sh
-    agents:
-      queue: upload
+    artifact_paths:
+      - "artifacts/*.aab"

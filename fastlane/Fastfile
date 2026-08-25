@@ -759,23 +759,10 @@ platform :android do
     version = version_name_current
     aab_file_path = build_bundle(app: app, version: version, flavor: 'Vanilla')
 
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
-
-    upload_to_play_store(
-      package_name: APP_PACKAGE_NAME,
-      aab: aab_file_path,
-      track: track(app: app, track_name: 'beta'),
-      release_status: 'completed',
-      rollout: '1.0', # Rollout to 100% of testers on the beta track
-      metadata_path: METADATA_DIR_PATH[app],
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
-    )
-
-    create_gh_release(app: app, version: version, beta_release: true) if options[:create_release]
+    # THROW AWAY: assert the bundle and stop. The Play Store upload and GitHub release are deleted on this branch.
+    UI.user_error!("VALIDATION: expected AAB at #{aab_file_path}") unless File.exist?(aab_file_path)
+    UI.user_error!("VALIDATION: AAB at #{aab_file_path} is empty") if File.empty?(aab_file_path)
+    UI.success("VALIDATION: bundle built (#{File.size(aab_file_path)} bytes at #{aab_file_path}); stopping before Play Store upload")
   end
 
   # This lane triggers a stable release build on CI. If the lane is run locally, it will trigger a build on Buildkite CI.
