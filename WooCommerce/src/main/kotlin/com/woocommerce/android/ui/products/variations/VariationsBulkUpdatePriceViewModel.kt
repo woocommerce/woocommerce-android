@@ -7,11 +7,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UP
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UPDATE_SALE_PRICE_DONE_TAPPED
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -28,10 +28,6 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     private val data: PriceUpdateData = args.priceUpdateData
     private val variationsToUpdate: List<ProductVariation> = args.priceUpdateData.variationsToUpdate
 
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters("key_product_parameters", savedState)
-    }
-
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -43,11 +39,14 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
 
     init {
         viewState = viewState.copy(
-            currency = parameters.currencySymbol,
             pricesGroupType = data.getPriceCollection().groupType(),
             priceType = data.priceType,
             variationsToUpdateCount = data.variationsToUpdate.size,
         )
+        launch {
+            val parameters = parameterRepository.getParameters("key_product_parameters", savedState)
+            viewState = viewState.copy(currency = parameters.currencySymbol)
+        }
     }
 
     fun onPriceEntered(price: String) {
