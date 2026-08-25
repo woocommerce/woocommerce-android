@@ -85,6 +85,9 @@ class MediaFilesRepository @Inject constructor(
             } catch (e: IOException) {
                 WooLog.e(T.MEDIA, "MediaFilesRepository > Error getting image details from uri: $uri", e)
                 return@withContext UNDECODABLE_IMAGE_DETAILS
+            } catch (e: SecurityException) {
+                WooLog.e(T.MEDIA, "MediaFilesRepository > No access to uri: $uri", e)
+                return@withContext UNDECODABLE_IMAGE_DETAILS
             }
         }
     }
