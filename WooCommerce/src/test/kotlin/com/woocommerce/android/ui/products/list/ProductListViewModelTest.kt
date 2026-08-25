@@ -237,7 +237,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(isAddProductButtonVisible.last()).isTrue()
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true)
         }
 
     @Test
@@ -268,7 +268,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(isAddProductButtonVisible.last()).isFalse()
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true, false)
         }
 
     @Test
@@ -294,7 +294,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(isAddProductButtonVisible.last()).isFalse()
+            assertThat(isAddProductButtonVisible).containsExactly(true, false)
         }
 
     @Test
@@ -325,7 +325,7 @@ class ProductListViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            assertThat(isAddProductButtonVisible.last()).isFalse()
+            assertThat(isAddProductButtonVisible).containsExactly(true, false, true, false)
         }
 
     @Test
