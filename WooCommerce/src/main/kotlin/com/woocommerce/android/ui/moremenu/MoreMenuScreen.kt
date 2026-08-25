@@ -464,8 +464,6 @@ private fun MoreMenuIcon(
         R.drawable.ic_more_menu_reviews -> DesignSystemIcon(WooIcons.Regular.Star, modifier = modifier)
         R.drawable.icon_multiple_users -> DesignSystemIcon(WooIcons.Regular.UserGroup, modifier = modifier)
         R.drawable.ic_more_menu_inbox -> DesignSystemIcon(WooIcons.Regular.Inbox, modifier = modifier)
-        R.drawable.google_logo,
-        R.drawable.ic_blaze -> BrandIconContainer(drawable = icon, modifier = modifier)
         else -> BrandIconContainer(drawable = icon, modifier = modifier)
     }
 }
