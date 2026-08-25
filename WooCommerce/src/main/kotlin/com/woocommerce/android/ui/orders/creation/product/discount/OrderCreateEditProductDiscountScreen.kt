@@ -78,10 +78,11 @@ fun OrderCreateEditProductDiscountScreen(
     onDiscountAmountChange: (BigDecimal?) -> Unit,
     onPercentageDiscountSelected: () -> Unit,
     onAmountDiscountSelected: () -> Unit,
-    discountInputFieldConfig: DiscountInputFieldConfig,
+    discountInputFieldConfig: StateFlow<DiscountInputFieldConfig>,
     productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
+    val inputFieldConfig = discountInputFieldConfig.collectAsState()
     Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
         Box(
@@ -117,8 +118,8 @@ fun OrderCreateEditProductDiscountScreen(
                             .weight(1f),
                         value = state.value.discountAmount,
                         valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            discountInputFieldConfig.decimalSeparator,
-                            discountInputFieldConfig.numberOfDecimals
+                            inputFieldConfig.value.decimalSeparator,
+                            inputFieldConfig.value.numberOfDecimals
                         ),
                         onValueChange = onDiscountAmountChange,
                         label = stringResource(
@@ -408,9 +409,11 @@ fun OrderCreateEditProductDiscountScreenPreview() =
         {},
         {},
         {},
-        DiscountInputFieldConfig(
-            decimalSeparator = ".",
-            numberOfDecimals = 2
+        MutableStateFlow(
+            DiscountInputFieldConfig(
+                decimalSeparator = ".",
+                numberOfDecimals = 2
+            )
         ),
         productItem = MutableStateFlow(
             OrderCreationProduct.ProductItem(

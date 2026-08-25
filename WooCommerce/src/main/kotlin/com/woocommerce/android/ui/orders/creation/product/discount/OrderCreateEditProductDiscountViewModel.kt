@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -64,17 +65,28 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         key = "key_discount_type"
     )
 
-    private val currencyFormattingParameters =
-        siteParamsRepo.getParameters("key_site_params", savedStateHandle).currencyFormattingParameters
-    private val decimalSeparator = currencyFormattingParameters?.currencyDecimalSeparator
-        ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
-    private val numberOfDecimals = currencyFormattingParameters?.currencyDecimalNumber
-        ?: DEFAULT_DECIMALS_NUMBER
+    private val defaultDecimalSeparator = DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
 
-    val discountInputFieldConfig = DiscountInputFieldConfig(
-        decimalSeparator = decimalSeparator,
-        numberOfDecimals = numberOfDecimals
+    private val _discountInputFieldConfig = MutableStateFlow(
+        DiscountInputFieldConfig(
+            decimalSeparator = defaultDecimalSeparator,
+            numberOfDecimals = DEFAULT_DECIMALS_NUMBER
+        )
     )
+    val discountInputFieldConfig: StateFlow<DiscountInputFieldConfig> = _discountInputFieldConfig
+
+    init {
+        launch {
+            val currencyFormattingParameters =
+                siteParamsRepo.getParameters("key_site_params", savedStateHandle).currencyFormattingParameters
+            _discountInputFieldConfig.value = DiscountInputFieldConfig(
+                decimalSeparator = currencyFormattingParameters?.currencyDecimalSeparator
+                    ?: defaultDecimalSeparator,
+                numberOfDecimals = currencyFormattingParameters?.currencyDecimalNumber
+                    ?: DEFAULT_DECIMALS_NUMBER
+            )
+        }
+    }
 
     val viewState: StateFlow<ViewState> =
         combine(discount, discountType) { discount, type ->
