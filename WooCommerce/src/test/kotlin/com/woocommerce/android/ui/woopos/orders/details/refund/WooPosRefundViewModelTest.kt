@@ -2739,6 +2739,111 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given only the last unit of a line was selected, when items are refreshed, then one unit stays selected`() =
+        runTest {
+            // GIVEN — three units of one line, and the cashier keeps only the last one
+            val units = List(3) { testRefundableItem.copy(rowIndex = it) }
+            val remainingUnits = units.take(2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            // The store refunded one of the three units, so the reload renumbers the survivors
+            // from zero and none of the preserved row ids matches.
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(units, remainingUnits)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.QuantityExceedsRefundable)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[0].uniqueId))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[1].uniqueId))
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.refundableItems).isEqualTo(remainingUnits)
+            assertThat(content.selectedItemIds).containsExactly(remainingUnits[0].uniqueId)
+            assertThat(content.itemsCount).isEqualTo(1)
+            assertThat(content.allItemsSelected).isFalse()
+        }
+
+    @Test
+    fun `given a selection over two lines and one shrank, when items are refreshed, then the other line is kept`() =
+        runTest {
+            // GIVEN — one unit selected on each of two lines
+            val firstLine = List(2) { testRefundableItem.copy(orderItemId = 1L, rowIndex = it) }
+            val secondLine = List(2) { testRefundableItem.copy(orderItemId = 2L, name = "Other", rowIndex = it) }
+            val remaining = listOf(firstLine[0]) + secondLine
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(firstLine + secondLine, remaining)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.QuantityExceedsRefundable)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(firstLine[1].uniqueId))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(secondLine[1].uniqueId))
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.selectedItemIds)
+                .containsExactlyInAnyOrder(firstLine[0].uniqueId, secondLine[0].uniqueId)
+            assertThat(content.itemsCount).isEqualTo(2)
+        }
+
+    @Test
+    fun `given a selected fee, when items are refreshed, then the fee stays selected`() =
+        runTest {
+            // GIVEN — one unit of a two-unit line plus a fee are selected
+            val units = List(2) { testRefundableItem.copy(rowIndex = it) }
+            val fee = testRefundableItem.copy(orderItemId = 99L, name = "Fee", rowIndex = 0, isLumpSum = true)
+            val remaining = listOf(units[0], fee)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(units + fee, remaining)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.QuantityExceedsRefundable)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[1].uniqueId))
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.selectedItemIds).containsExactlyInAnyOrder(units[0].uniqueId, fee.uniqueId)
+            assertThat(content.itemsCount).isEqualTo(2)
+        }
+
+    @Test
     fun `given at select items step, when dialog dismissed, then refund flow aborted event tracked with select items step`() =
         runTest {
             val refundableItems = listOf(testRefundableItem)
