@@ -156,7 +156,7 @@ class OrderMapper @Inject constructor(
                 )
             }
 
-    private fun OrderAddress.mapAddress(): Address {
+    private suspend fun OrderAddress.mapAddress(): Address {
         val (country, state) = getLocations(this.country, stateCode = this.state)
         return Address(
             company = this.company,

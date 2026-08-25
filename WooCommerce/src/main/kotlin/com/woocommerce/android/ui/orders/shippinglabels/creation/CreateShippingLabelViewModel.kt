@@ -495,7 +495,7 @@ class CreateShippingLabelViewModel @Inject constructor(
         )
     }
 
-    private fun getStoreAddress(): Address {
+    private suspend fun getStoreAddress(): Address {
         val siteSettings = wooStore.getSiteSettings(site.get())
         val (country, state) = getLocations(
             countryCode = siteSettings?.countryCode.orEmpty(),
