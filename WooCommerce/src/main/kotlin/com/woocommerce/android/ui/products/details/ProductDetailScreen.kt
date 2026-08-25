@@ -88,10 +88,6 @@ fun ProductDetailScreen(
                 state = state.topAppBar,
                 callbacks = callbacks.topAppBar,
             )
-            ProductDetailUploadError(
-                isVisible = state.showUploadError,
-                onClick = callbacks.onUploadErrorClicked,
-            )
             Box(modifier = Modifier.weight(1F)) {
                 ProductDetailPageBody(
                     state = state,
@@ -120,6 +116,8 @@ private fun ProductDetailPageBody(
             imageState = state.image,
             imageCallbacks = callbacks.image,
             galleryListState = galleryListState,
+            showUploadError = state.showUploadError,
+            onUploadErrorClicked = callbacks.onUploadErrorClicked,
         )
         is ProductDetailScreenState.Empty -> screen.message?.let { ProductDetailError(it) } ?: ProductDetailEmpty()
         is ProductDetailScreenState.Error -> ProductDetailError(screen.message)
@@ -129,6 +127,7 @@ private fun ProductDetailPageBody(
             callbacks = callbacks,
             contentListState = contentListState,
             galleryListState = galleryListState,
+            showUploadError = state.showUploadError,
         )
     }
 }
@@ -140,6 +139,7 @@ private fun ProductDetailContent(
     callbacks: ProductDetailPageCallbacks,
     contentListState: LazyListState,
     galleryListState: LazyListState,
+    showUploadError: Boolean,
 ) {
     LazyColumn(
         state = contentListState,
@@ -159,6 +159,14 @@ private fun ProductDetailContent(
                     )
                 },
             )
+        }
+        if (showUploadError) {
+            stickyHeader(key = UPLOAD_ERROR_KEY) {
+                ProductDetailUploadError(
+                    isVisible = true,
+                    onClick = callbacks.onUploadErrorClicked,
+                )
+            }
         }
         if (state.showLinkedProductPromo) {
             item(key = LINKED_PROMO_KEY) {
@@ -197,12 +205,18 @@ private fun ProductDetailLoadingPage(
     imageState: ProductDetailImageUiState,
     imageCallbacks: ProductDetailImageCallbacks,
     galleryListState: LazyListState,
+    showUploadError: Boolean,
+    onUploadErrorClicked: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ProductDetailImageSection(
             state = imageState,
             callbacks = imageCallbacks,
             galleryListState = galleryListState,
+        )
+        ProductDetailUploadError(
+            isVisible = showUploadError,
+            onClick = onUploadErrorClicked,
         )
         ProductDetailLoading()
     }
@@ -686,6 +700,7 @@ private fun previewTopAppBar(
 private const val LINKED_PROMO_KEY = "linked_product_promo"
 private const val IMAGE_HEADER_KEY = "product_detail_image_header"
 private const val IMAGE_HEADER_CONTENT_TYPE = "product_detail_image_header"
+private const val UPLOAD_ERROR_KEY = "product_detail_upload_error"
 private const val CARD_CAPTION_KEY = "caption"
 private const val CARD_SPACER_KEY = "spacer"
 private const val LOADING_DELAY_MS = 250L
