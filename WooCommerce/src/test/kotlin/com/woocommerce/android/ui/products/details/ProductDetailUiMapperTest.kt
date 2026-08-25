@@ -47,46 +47,49 @@ class ProductDetailUiMapperTest {
             ProductDetailCardStyle.SECONDARY,
         )
         assertThat(result[1].caption).isEqualTo("Details")
-        assertThat(result[1].rows.map { it::class.java }).containsExactly(
-            ProductDetailRowUiModel.Divider::class.java,
-            ProductDetailRowUiModel.Property::class.java,
-            ProductDetailRowUiModel.ComplexProperty::class.java,
-            ProductDetailRowUiModel.Rating::class.java,
-            ProductDetailRowUiModel.Editable::class.java,
-            ProductDetailRowUiModel.PropertyGroup::class.java,
-            ProductDetailRowUiModel.Link::class.java,
-            ProductDetailRowUiModel.Button::class.java,
-            ProductDetailRowUiModel.Switch::class.java,
-            ProductDetailRowUiModel.Warning::class.java,
+        assertThat(result[1].rows.map { it.property::class.java }).containsExactly(
+            ProductProperty.Divider::class.java,
+            ProductProperty.Property::class.java,
+            ProductProperty.ComplexProperty::class.java,
+            ProductProperty.RatingBar::class.java,
+            ProductProperty.Editable::class.java,
+            ProductProperty.PropertyGroup::class.java,
+            ProductProperty.Link::class.java,
+            ProductProperty.Button::class.java,
+            ProductProperty.Switch::class.java,
+            ProductProperty.Warning::class.java,
         )
     }
 
     @Test
     fun `when properties are mapped, then values callbacks and ordered groups are preserved`() {
         val callbackResults = mutableListOf<String>()
-        val properties = allPropertyVariants(onCallback = callbackResults::add)
 
         val rows = mapper.map(
-            listOf(ProductPropertyCard(ProductPropertyCard.Type.SECONDARY, properties = properties))
+            listOf(
+                ProductPropertyCard(
+                    ProductPropertyCard.Type.SECONDARY,
+                    properties = allPropertyVariants(callbackResults::add),
+                )
+            )
         ).single().rows
 
-        val group = rows.filterIsInstance<ProductDetailRowUiModel.PropertyGroup>().single()
-        assertThat(group.properties).containsExactly(
-            ProductDetailPropertyValueUiModel("First", "1"),
-            ProductDetailPropertyValueUiModel("Second", "2"),
+        val group = rows.singleProperty<ProductProperty.PropertyGroup>()
+        assertThat(group.properties.entries.map { it.key to it.value }).containsExactly(
+            "First" to "1",
+            "Second" to "2",
         )
-        val editable = rows.filterIsInstance<ProductDetailRowUiModel.Editable>().single()
-        assertThat(editable.shouldFocus).isTrue()
+        val editable = rows.singleProperty<ProductProperty.Editable>()
         assertThat(editable.isReadOnly).isTrue()
         editable.onTextChanged?.invoke("updated")
-        rows.filterIsInstance<ProductDetailRowUiModel.ComplexProperty>().single().onClick?.invoke()
-        rows.filterIsInstance<ProductDetailRowUiModel.Rating>().single().onClick?.invoke()
+        rows.singleProperty<ProductProperty.ComplexProperty>().onClick?.invoke()
+        rows.singleProperty<ProductProperty.RatingBar>().onClick?.invoke()
         group.onClick?.invoke()
-        rows.filterIsInstance<ProductDetailRowUiModel.Link>().single().onClick?.invoke()
-        val button = rows.filterIsInstance<ProductDetailRowUiModel.Button>().single()
+        rows.singleProperty<ProductProperty.Link>().onClick?.invoke()
+        val button = rows.singleProperty<ProductProperty.Button>()
         button.tooltip?.onDismiss?.invoke()
         button.link?.onClick?.invoke()
-        rows.filterIsInstance<ProductDetailRowUiModel.Switch>().single().onStateChanged?.invoke(false)
+        rows.singleProperty<ProductProperty.Switch>().onStateChanged?.invoke(false)
         button.onClick()
 
         assertThat(callbackResults).containsExactly(
@@ -103,30 +106,20 @@ class ProductDetailUiMapperTest {
     }
 
     @Test
-    fun `when mutable editable flags change after mapping, then mapped values remain a snapshot`() {
+    fun `when an immutable editable is mapped, then the thin row reuses it safely`() {
         val editable = ProductProperty.Editable(
             hint = R.string.product_detail_title_hint,
-            shouldFocus = true,
             isReadOnly = true,
         )
 
-        val mapped = mapper.map(
-            listOf(
-                ProductPropertyCard(
-                    ProductPropertyCard.Type.PRIMARY,
-                    properties = listOf(editable),
-                )
-            )
-        ).single().rows.single() as ProductDetailRowUiModel.Editable
-        editable.shouldFocus = false
-        editable.isReadOnly = false
+        val mapped = mapSingleProperty(editable) as ProductProperty.Editable
 
-        assertThat(mapped.shouldFocus).isTrue()
+        assertThat(mapped).isSameAs(editable)
         assertThat(mapped.isReadOnly).isTrue()
     }
 
     @Test
-    fun `when rating position is mapped, then its legacy divider is hidden only at the end of a card`() {
+    fun `when rating position is mapped, then divider override is hidden only at the end of a card`() {
         val rating = ProductProperty.RatingBar(
             title = R.string.product_reviews,
             value = "4 reviews",
@@ -140,71 +133,70 @@ class ProductDetailUiMapperTest {
                     properties = listOf(rating, ProductProperty.Warning("Warning")),
                 )
             )
-        ).single().rows.first() as ProductDetailRowUiModel.Rating
+        ).single().rows.first()
         val finalRating = mapper.map(
             listOf(ProductPropertyCard(ProductPropertyCard.Type.SECONDARY, properties = listOf(rating)))
-        ).single().rows.single() as ProductDetailRowUiModel.Rating
+        ).single().rows.single()
 
         assertThat(followedRating.showDivider).isTrue()
         assertThat(finalRating.showDivider).isFalse()
     }
 
     @Test
-    fun `when semantic rows repeat, then keys are stable and unique without list indexes`() {
-        val properties = listOf(
-            ProductProperty.Property(R.string.product_price, "10"),
-            ProductProperty.Property(R.string.product_price, "20"),
+    fun `when semantic cards and rows repeat, then keys use stable occurrence suffixes`() {
+        val card = ProductPropertyCard(
+            ProductPropertyCard.Type.SECONDARY,
+            properties = listOf(
+                ProductProperty.Property(R.string.product_price, "10"),
+                ProductProperty.Property(R.string.product_price, "20"),
+            ),
         )
 
-        val first = mapper.map(
-            listOf(ProductPropertyCard(ProductPropertyCard.Type.SECONDARY, properties = properties))
-        )
-        val second = mapper.map(
-            listOf(ProductPropertyCard(ProductPropertyCard.Type.SECONDARY, properties = properties))
-        )
+        val first = mapper.map(listOf(card, card))
+        val second = mapper.map(listOf(card, card))
 
-        assertThat(first.single().rows.map { it.key }).containsExactly(
+        assertThat(first.map { it.key }).containsExactly("secondary", "secondary_1")
+        assertThat(first.first().rows.map { it.key }).containsExactly(
             "property_${R.string.product_price}",
             "property_${R.string.product_price}_1",
         )
-        assertThat(second.single().rows.map { it.key }).isEqualTo(first.single().rows.map { it.key })
+        assertThat(second.map { it.key }).isEqualTo(first.map { it.key })
+        assertThat(second.first().rows.map { it.key }).isEqualTo(first.first().rows.map { it.key })
     }
 
     @Test
-    fun `given Add is persisted, when cards are remapped, then semantic keys stay stable and callbacks are current`() {
+    fun `given Add is persisted, when cards are remapped, then keys stay stable and callbacks are current`() {
         var callback = ""
-        val initialCards = listOf(
-            ProductPropertyCard(
-                ProductPropertyCard.Type.PRIMARY,
-                properties = listOf(
-                    ProductProperty.Editable(
-                        hint = R.string.product_detail_title_hint,
-                        onTextChanged = { callback = "initial:$it" },
-                    )
-                ),
-            )
-        )
-        val persistedCards = listOf(
-            ProductPropertyCard(
-                ProductPropertyCard.Type.PRIMARY,
-                properties = listOf(
-                    ProductProperty.Editable(
-                        hint = R.string.product_detail_title_hint,
-                        onTextChanged = { callback = "persisted:$it" },
-                    )
-                ),
-            )
-        )
+        val initial = mapEditable { callback = "initial:$it" }
+        val persisted = mapEditable { callback = "persisted:$it" }
 
-        val initial = mapper.map(initialCards)
-        val persisted = mapper.map(persistedCards)
-        val editable = persisted.single().rows.single() as ProductDetailRowUiModel.Editable
-        editable.onTextChanged?.invoke("Title")
+        (persisted.single().rows.single().property as ProductProperty.Editable).onTextChanged?.invoke("Title")
 
         assertThat(persisted.map { it.key }).isEqualTo(initial.map { it.key })
         assertThat(persisted.single().rows.map { it.key }).isEqualTo(initial.single().rows.map { it.key })
         assertThat(callback).isEqualTo("persisted:Title")
     }
+
+    private fun mapSingleProperty(property: ProductProperty): ProductProperty = mapper.map(
+        listOf(ProductPropertyCard(ProductPropertyCard.Type.PRIMARY, properties = listOf(property)))
+    ).single().rows.single().property
+
+    private fun mapEditable(onTextChanged: (String) -> Unit) = mapper.map(
+        listOf(
+            ProductPropertyCard(
+                ProductPropertyCard.Type.PRIMARY,
+                properties = listOf(
+                    ProductProperty.Editable(
+                        hint = R.string.product_detail_title_hint,
+                        onTextChanged = onTextChanged,
+                    )
+                ),
+            )
+        )
+    )
+
+    private inline fun <reified T : ProductProperty> List<ProductDetailRow>.singleProperty() =
+        map { it.property }.filterIsInstance<T>().single()
 
     private fun allPropertyVariants(
         onCallback: (String) -> Unit = {},
@@ -227,7 +219,6 @@ class ProductDetailUiMapperTest {
         ProductProperty.Editable(
             hint = R.string.product_detail_title_hint,
             text = "Title",
-            shouldFocus = true,
             isReadOnly = true,
             badgeText = R.string.product_status_private,
             badgeColor = R.color.product_status_badge_pending,

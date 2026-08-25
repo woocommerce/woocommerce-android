@@ -80,31 +80,60 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooSwitch
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
+import com.woocommerce.android.ui.products.models.ProductProperty
 
 @Composable
-internal fun ProductDetailRow(row: ProductDetailRowUiModel) {
+internal fun ProductDetailRow(row: ProductDetailRow) {
     val modifier = Modifier.testTag(ProductDetailTestTags.row(row.key))
-    when (row) {
-        is ProductDetailRowUiModel.Divider -> WooDivider(modifier)
-        is ProductDetailRowUiModel.Property -> ProductDetailPropertyRow(row, modifier)
-        is ProductDetailRowUiModel.ComplexProperty -> ProductDetailComplexPropertyRow(row, modifier)
-        is ProductDetailRowUiModel.Rating -> ProductDetailRatingRow(row, modifier)
-        is ProductDetailRowUiModel.Editable -> ProductDetailEditableRow(row, modifier)
-        is ProductDetailRowUiModel.PropertyGroup -> ProductDetailPropertyGroupRow(row, modifier)
-        is ProductDetailRowUiModel.Link -> ProductDetailLinkRow(row, modifier)
-        is ProductDetailRowUiModel.Button -> ProductDetailButtonRow(row, modifier)
-        is ProductDetailRowUiModel.Switch -> ProductDetailSwitchRow(row, modifier)
-        is ProductDetailRowUiModel.Warning -> WooNoticeBanner(
-            title = row.content,
+    when (val property = row.property) {
+        ProductProperty.Divider -> WooDivider(modifier)
+        is ProductProperty.Property -> ProductDetailPropertyRow(
+            property = property,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
+            modifier = modifier,
+        )
+        is ProductProperty.ComplexProperty -> ProductDetailComplexPropertyRow(
+            property = property,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
+            modifier = modifier,
+        )
+        is ProductProperty.RatingBar -> ProductDetailRatingRow(
+            property = property,
+            showDivider = row.dividerVisibility(default = false),
+            modifier = modifier,
+        )
+        is ProductProperty.Editable -> ProductDetailEditableRow(property, row.key, modifier)
+        is ProductProperty.PropertyGroup -> ProductDetailPropertyGroupRow(
+            property = property,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
+            modifier = modifier,
+        )
+        is ProductProperty.Link -> ProductDetailLinkRow(
+            property = property,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
+            modifier = modifier,
+        )
+        is ProductProperty.Button -> ProductDetailButtonRow(
+            property = property,
+            key = row.key,
+            showDivider = row.dividerVisibility(property.isDividerVisible),
+            modifier = modifier,
+        )
+        is ProductProperty.Switch -> ProductDetailSwitchRow(property, modifier)
+        is ProductProperty.Warning -> WooNoticeBanner(
+            title = property.content,
             tone = WooNoticeBannerTone.Warning,
             modifier = modifier.padding(WooTheme.padding.padding5),
         )
     }
 }
 
+private fun ProductDetailRow.dividerVisibility(default: Boolean) = showDivider ?: default
+
 @Composable
 private fun ProductDetailPropertyRow(
-    row: ProductDetailRowUiModel.Property,
+    property: ProductProperty.Property,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
     Column(modifier = modifier) {
@@ -117,67 +146,69 @@ private fun ProductDetailPropertyRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(row.title),
+                text = stringResource(property.title),
                 color = WooTheme.colors.surface.onDefault,
                 style = WooTheme.text.bodyLarge.emphasized,
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = row.value,
+                text = property.value,
                 color = WooTheme.colors.surface.onVariant,
                 style = WooTheme.text.bodyLarge.regular,
             )
         }
         ProductDetailOptionalDivider(
-            show = row.showDivider,
+            show = showDivider,
         )
     }
 }
 
 @Composable
 private fun ProductDetailComplexPropertyRow(
-    row: ProductDetailRowUiModel.ComplexProperty,
+    property: ProductProperty.ComplexProperty,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
-    val title = row.title?.let { stringResource(it) }.orEmpty()
-    val value = AnnotatedString.fromHtml(row.value)
+    val title = property.title?.let { stringResource(it) }.orEmpty()
+    val value = AnnotatedString.fromHtml(property.value)
     Column {
         ProductDetailPropertyCell(
-            title = if (row.showTitle && row.title != null) title else value.text,
-            description = value.takeIf { row.showTitle && row.title != null },
-            icon = row.icon,
-            maxLines = row.maxLines,
-            onClick = row.onClick,
+            title = if (property.showTitle && property.title != null) title else value.text,
+            description = value.takeIf { property.showTitle && property.title != null },
+            icon = property.icon,
+            maxLines = property.maxLines,
+            onClick = property.onClick,
             modifier = modifier,
         )
         ProductDetailOptionalDivider(
-            show = row.showDivider,
-            hasLeadingIcon = row.icon != null,
+            show = showDivider,
+            hasLeadingIcon = property.icon != null,
         )
     }
 }
 
 @Composable
 private fun ProductDetailRatingRow(
-    row: ProductDetailRowUiModel.Rating,
+    property: ProductProperty.RatingBar,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
     Column {
         ProductDetailPropertyCell(
-            title = stringResource(row.title),
+            title = stringResource(property.title),
             description = null,
-            icon = row.icon,
-            onClick = row.onClick,
+            icon = property.icon,
+            onClick = property.onClick,
             modifier = modifier,
             additionalContent = {
                 ProductDetailRatingSummary(
-                    rating = row.rating,
-                    reviewCount = row.value,
+                    rating = property.rating,
+                    reviewCount = property.value,
                 )
             },
         )
         ProductDetailOptionalDivider(
-            show = row.showDivider,
+            show = showDivider,
             hasLeadingIcon = true,
         )
     }
@@ -185,7 +216,8 @@ private fun ProductDetailRatingRow(
 
 @Composable
 private fun ProductDetailEditableRow(
-    row: ProductDetailRowUiModel.Editable,
+    property: ProductProperty.Editable,
+    key: String,
     modifier: Modifier,
 ) {
     Column {
@@ -197,8 +229,8 @@ private fun ProductDetailEditableRow(
             horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ProductDetailEditableField(row, Modifier.weight(1f))
-            ProductDetailEditableBadge(row)
+            ProductDetailEditableField(property, key, Modifier.weight(1f))
+            ProductDetailEditableBadge(property)
         }
         WooDivider()
     }
@@ -206,26 +238,26 @@ private fun ProductDetailEditableRow(
 
 @Composable
 private fun ProductDetailEditableField(
-    row: ProductDetailRowUiModel.Editable,
+    property: ProductProperty.Editable,
+    key: String,
     modifier: Modifier,
 ) {
-    val callback by rememberUpdatedState(row.onTextChanged)
-    val focusRequester = remember(row.key) { FocusRequester() }
+    val callback by rememberUpdatedState(property.onTextChanged)
+    val focusRequester = remember(key) { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var isFocused by remember(row.key) { mutableStateOf(false) }
-    var restoreFocus by rememberSaveable(row.key) { mutableStateOf(false) }
-    var hasEditedWhileFocused by rememberSaveable(row.key) { mutableStateOf(false) }
-    var value by rememberSaveable(row.key, stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(titleFieldValue(row.text, moveCursorToEnd = row.shouldFocus))
+    var isFocused by remember(key) { mutableStateOf(false) }
+    var restoreFocus by rememberSaveable(key) { mutableStateOf(false) }
+    var hasEditedWhileFocused by rememberSaveable(key) { mutableStateOf(false) }
+    var value by rememberSaveable(key, stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(titleFieldValue(property.text, moveCursorToEnd = false))
     }
     val shouldRestoreFocus = restoreFocus
 
-    LaunchedEffect(row.text, isFocused, restoreFocus, hasEditedWhileFocused) {
+    LaunchedEffect(property.text, isFocused, restoreFocus, hasEditedWhileFocused) {
         val synchronizedState = synchronizeTitleFieldState(
-            externalText = row.text,
+            externalText = property.text,
             isFocused = isFocused,
-            shouldFocus = row.shouldFocus,
             currentState = ProductDetailTitleFieldState(
                 value = value,
                 restoreFocus = restoreFocus,
@@ -236,11 +268,8 @@ private fun ProductDetailEditableField(
         restoreFocus = synchronizedState.restoreFocus
         hasEditedWhileFocused = synchronizedState.hasEditedWhileFocused
     }
-    LaunchedEffect(row.shouldFocus, row.isReadOnly) {
-        if (row.shouldFocus && !row.isReadOnly) focusRequester.requestFocus()
-    }
     LaunchedEffect(Unit) {
-        if (shouldRestoreFocus && !row.isReadOnly) focusRequester.requestFocus()
+        if (shouldRestoreFocus && !property.isReadOnly) focusRequester.requestFocus()
     }
 
     fun finishEditing() {
@@ -277,7 +306,7 @@ private fun ProductDetailEditableField(
                 }
             }
             .testTag(ProductDetailTestTags.TITLE),
-        enabled = !row.isReadOnly,
+        enabled = !property.isReadOnly,
         singleLine = true,
         textStyle = WooTheme.text.titleLarge.regular.copy(color = WooTheme.colors.surface.onDefault),
         cursorBrush = SolidColor(WooTheme.colors.primary),
@@ -287,7 +316,7 @@ private fun ProductDetailEditableField(
             Box(contentAlignment = Alignment.CenterStart) {
                 if (value.text.isEmpty()) {
                     Text(
-                        text = stringResource(row.hint),
+                        text = stringResource(property.hint),
                         color = WooTheme.colors.surface.onVariant,
                         style = WooTheme.text.titleLarge.regular,
                     )
@@ -299,13 +328,14 @@ private fun ProductDetailEditableField(
 }
 
 @Composable
-private fun ProductDetailEditableBadge(row: ProductDetailRowUiModel.Editable) {
-    if (row.badgeText != null && row.badgeTone != null) {
+private fun ProductDetailEditableBadge(property: ProductProperty.Editable) {
+    if (property.badgeText != null && property.badgeColor != null) {
         WooBadge(
-            text = stringResource(row.badgeText),
-            tone = when (row.badgeTone) {
-                ProductDetailBadgeTone.NEUTRAL -> WooBadgeTone.Neutral
-                ProductDetailBadgeTone.WARNING -> WooBadgeTone.Warning
+            text = stringResource(property.badgeText),
+            tone = if (property.badgeColor == R.color.product_status_badge_pending) {
+                WooBadgeTone.Warning
+            } else {
+                WooBadgeTone.Neutral
             },
         )
     }
@@ -313,66 +343,70 @@ private fun ProductDetailEditableBadge(row: ProductDetailRowUiModel.Editable) {
 
 @Composable
 private fun ProductDetailPropertyGroupRow(
-    row: ProductDetailRowUiModel.PropertyGroup,
+    property: ProductProperty.PropertyGroup,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
     val propertyValue = buildString {
-        row.properties.forEach { property ->
+        property.properties.forEach { (label, value) ->
             when {
-                property.label.isEmpty() -> append(property.value)
-                property.value.isNotEmpty() -> {
+                label.isEmpty() -> append(value)
+                value.isNotEmpty() -> {
                     if (isNotEmpty()) append('\n')
-                    append(stringResource(row.propertyFormat, property.label, property.value))
+                    append(stringResource(property.propertyFormat, label, value))
                 }
             }
         }
     }
-    val isSingleUntitledValue = row.properties.size == 1 && !row.showTitle
+    val isSingleUntitledValue = property.properties.size == 1 && !property.showTitle
     Column {
         ProductDetailPropertyCell(
-            title = if (isSingleUntitledValue) propertyValue else stringResource(row.title),
+            title = if (isSingleUntitledValue) propertyValue else stringResource(property.title),
             description = propertyValue.takeUnless { isSingleUntitledValue }?.let(::AnnotatedString),
-            icon = row.icon,
-            onClick = row.onClick,
-            isHighlighted = row.isHighlighted,
+            icon = property.icon,
+            onClick = property.onClick,
+            isHighlighted = property.isHighlighted,
             modifier = modifier,
         )
         ProductDetailOptionalDivider(
-            show = row.showDivider,
-            hasLeadingIcon = row.icon != null,
+            show = showDivider,
+            hasLeadingIcon = property.icon != null,
         )
     }
 }
 
 @Composable
 private fun ProductDetailLinkRow(
-    row: ProductDetailRowUiModel.Link,
+    property: ProductProperty.Link,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
     Column {
         WooCell(
-            title = stringResource(row.title),
-            onClick = row.onClick,
-            enabled = row.onClick != null,
-            modifier = modifier.disabledWhen(row.onClick == null),
-            leadingContent = row.icon?.let { icon -> { ProductDetailIcon(icon) } },
-            trailingContent = row.onClick?.let { { WooCellTrailingAffordance() } },
+            title = stringResource(property.title),
+            onClick = property.onClick,
+            enabled = property.onClick != null,
+            modifier = modifier.disabledWhen(property.onClick == null),
+            leadingContent = property.icon?.let { icon -> { ProductDetailIcon(icon) } },
+            trailingContent = property.onClick?.let { { WooCellTrailingAffordance() } },
         )
         ProductDetailOptionalDivider(
-            show = row.showDivider,
-            hasLeadingIcon = row.icon != null,
+            show = showDivider,
+            hasLeadingIcon = property.icon != null,
         )
     }
 }
 
 @Composable
 private fun ProductDetailButtonRow(
-    row: ProductDetailRowUiModel.Button,
+    property: ProductProperty.Button,
+    key: String,
+    showDivider: Boolean,
     modifier: Modifier,
 ) {
-    var showTooltip by rememberSaveable(row.key) { mutableStateOf(row.tooltip != null) }
-    val onClick by rememberUpdatedState(row.onClick)
-    val onTooltipDismiss by rememberUpdatedState(row.tooltip?.onDismiss)
+    var showTooltip by rememberSaveable(key) { mutableStateOf(property.tooltip != null) }
+    val onClick by rememberUpdatedState(property.onClick)
+    val onTooltipDismiss by rememberUpdatedState(property.tooltip?.onDismiss)
 
     Column {
         Column(
@@ -385,13 +419,13 @@ private fun ProductDetailButtonRow(
         ) {
             Box {
                 WooFilledTonalButton(
-                    text = stringResource(row.text),
+                    text = stringResource(property.text),
                     onClick = onClick,
                     size = WooButtonSize.Small,
-                    leadingIcon = row.icon?.let { icon -> { ProductDetailIcon(icon) } },
+                    leadingIcon = property.icon?.let { icon -> { ProductDetailIcon(icon) } },
                 )
                 DropdownMenu(
-                    expanded = showTooltip && row.tooltip != null,
+                    expanded = showTooltip && property.tooltip != null,
                     onDismissRequest = { showTooltip = false },
                     shadowElevation = 4.dp,
                     shape = MaterialTheme.shapes.medium,
@@ -399,7 +433,7 @@ private fun ProductDetailButtonRow(
                         .width(TOOLTIP_WIDTH)
                         .background(WooTheme.colors.surface.surfaceContainerHighest),
                 ) {
-                    row.tooltip?.let { tooltip ->
+                    property.tooltip?.let { tooltip ->
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -427,7 +461,7 @@ private fun ProductDetailButtonRow(
                     }
                 }
             }
-            row.link?.let { link ->
+            property.link?.let { link ->
                 Spacer(modifier = Modifier.size(WooTheme.spacing.space3))
                 Text(
                     text = productDetailAiAttributionText(
@@ -441,28 +475,28 @@ private fun ProductDetailButtonRow(
             }
         }
         ProductDetailOptionalDivider(
-            show = row.showDivider,
+            show = showDivider,
         )
     }
 }
 
 @Composable
 private fun ProductDetailSwitchRow(
-    row: ProductDetailRowUiModel.Switch,
+    property: ProductProperty.Switch,
     modifier: Modifier,
 ) {
-    val onStateChanged by rememberUpdatedState(row.onStateChanged)
+    val onStateChanged by rememberUpdatedState(property.onStateChanged)
     WooCell(
-        title = stringResource(row.title),
-        enabled = row.onStateChanged != null,
-        onClick = row.onStateChanged?.let { { onStateChanged?.invoke(!row.isOn) } },
-        modifier = modifier.disabledWhen(row.onStateChanged == null),
-        leadingContent = row.icon?.let { icon -> { ProductDetailIcon(icon) } },
+        title = stringResource(property.title),
+        enabled = property.onStateChanged != null,
+        onClick = property.onStateChanged?.let { { onStateChanged?.invoke(!property.isOn) } },
+        modifier = modifier.disabledWhen(property.onStateChanged == null),
+        leadingContent = property.icon?.let { icon -> { ProductDetailIcon(icon) } },
         trailingContent = {
             WooSwitch(
-                checked = row.isOn,
+                checked = property.isOn,
                 onCheckedChange = null,
-                enabled = row.onStateChanged != null,
+                enabled = property.onStateChanged != null,
             )
         },
     )
@@ -613,7 +647,6 @@ private fun synchronizeTitleFieldValue(
 internal fun synchronizeTitleFieldState(
     externalText: String,
     isFocused: Boolean,
-    shouldFocus: Boolean,
     currentState: ProductDetailTitleFieldState,
 ): ProductDetailTitleFieldState {
     val matchesExternalText = externalText == currentState.value.text
@@ -624,7 +657,7 @@ internal fun synchronizeTitleFieldState(
             currentValue = currentState.value,
             preserveCurrentValue = currentState.hasEditedWhileFocused &&
                 (isFocused || currentState.restoreFocus),
-            moveCursorToEnd = isFocused || shouldFocus,
+            moveCursorToEnd = isFocused,
         ),
         restoreFocus = currentState.restoreFocus && !shouldClearEditing,
         hasEditedWhileFocused = currentState.hasEditedWhileFocused && !shouldClearEditing,

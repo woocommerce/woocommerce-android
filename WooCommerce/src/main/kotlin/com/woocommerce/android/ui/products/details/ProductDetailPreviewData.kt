@@ -1,75 +1,69 @@
 package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.products.models.ProductProperty
 
 internal object ProductDetailPreviewData {
     private val addRows = listOf(
-        ProductDetailRowUiModel.Editable(
+        ProductDetailRow(
             key = "title",
-            hint = R.string.product_detail_title_hint,
-            text = "",
-            shouldFocus = false,
-            isReadOnly = false,
-            badgeText = null,
-            badgeTone = null,
-            onTextChanged = {},
+            property = ProductProperty.Editable(
+                hint = R.string.product_detail_title_hint,
+                onTextChanged = {},
+            ),
         ),
-        ProductDetailRowUiModel.ComplexProperty(
+        ProductDetailRow(
             key = "description",
-            title = R.string.product_description,
-            value = "Describe your product",
-            icon = null,
-            showTitle = false,
-            maxLines = 1,
-            showDivider = false,
-            onClick = {},
-        ),
-        ProductDetailRowUiModel.Button(
-            key = "write_with_ai",
-            text = R.string.product_sharing_write_with_ai,
-            icon = R.drawable.ic_ai,
-            showDivider = true,
-            tooltip = null,
-            link = ProductDetailButtonLinkUiModel(
-                text = R.string.ai_product_description_learn_more_link,
+            property = ProductProperty.ComplexProperty(
+                title = R.string.product_description,
+                value = "Describe your product",
+                showTitle = false,
+                isDividerVisible = false,
                 onClick = {},
             ),
-            onClick = {},
+        ),
+        ProductDetailRow(
+            key = "write_with_ai",
+            property = ProductProperty.Button(
+                text = R.string.product_sharing_write_with_ai,
+                icon = R.drawable.ic_ai,
+                link = ProductProperty.Button.Link(
+                    text = R.string.ai_product_description_learn_more_link,
+                    onClick = {},
+                ),
+                onClick = {},
+            ),
         ),
     )
 
     private val addDetails = listOf(
-        ProductDetailRowUiModel.PropertyGroup(
+        ProductDetailRow(
             key = "price",
-            title = R.string.product_price,
-            properties = listOf(ProductDetailPropertyValueUiModel("", "Add price")),
-            icon = R.drawable.ic_gridicons_money,
-            showTitle = false,
-            showDivider = true,
-            isHighlighted = false,
-            propertyFormat = R.string.product_property_default_formatter,
-            onClick = {},
+            property = ProductProperty.PropertyGroup(
+                title = R.string.product_price,
+                properties = mapOf("" to "Add price"),
+                icon = R.drawable.ic_gridicons_money,
+                showTitle = false,
+                onClick = {},
+            ),
         ),
-        ProductDetailRowUiModel.PropertyGroup(
+        ProductDetailRow(
             key = "inventory",
-            title = R.string.product_inventory,
-            properties = listOf(ProductDetailPropertyValueUiModel("Stock status", "In stock")),
-            icon = R.drawable.ic_gridicons_list_checkmark,
-            showTitle = true,
-            showDivider = true,
-            isHighlighted = false,
-            propertyFormat = R.string.product_property_default_formatter,
-            onClick = {},
+            property = ProductProperty.PropertyGroup(
+                title = R.string.product_inventory,
+                properties = mapOf("Stock status" to "In stock"),
+                icon = R.drawable.ic_gridicons_list_checkmark,
+                onClick = {},
+            ),
         ),
-        ProductDetailRowUiModel.ComplexProperty(
+        ProductDetailRow(
             key = "type",
-            title = R.string.product_type,
-            value = "Physical product",
-            icon = R.drawable.ic_gridicons_product,
-            showTitle = true,
-            maxLines = 1,
-            showDivider = false,
-            onClick = null,
+            property = ProductProperty.ComplexProperty(
+                title = R.string.product_type,
+                value = "Physical product",
+                icon = R.drawable.ic_gridicons_product,
+                isDividerVisible = false,
+            ),
         ),
     )
 
@@ -89,11 +83,17 @@ internal object ProductDetailPreviewData {
                 style = ProductDetailCardStyle.PRIMARY,
                 caption = "",
                 rows = listOf(
-                    addRows.first().let { (it as ProductDetailRowUiModel.Editable).copy(text = "Beanie") },
-                    (addRows[1] as ProductDetailRowUiModel.ComplexProperty).copy(
-                        value = "A warm beanie for every season.",
-                        showTitle = true,
-                    ),
+                    addRows.first().let { row ->
+                        row.copy(property = (row.property as ProductProperty.Editable).copy(text = "Beanie"))
+                    },
+                    addRows[1].let { row ->
+                        row.copy(
+                            property = (row.property as ProductProperty.ComplexProperty).copy(
+                                value = "A warm beanie for every season.",
+                                showTitle = true,
+                            ),
+                        )
+                    },
                     addRows[2],
                 ),
             ),
@@ -101,14 +101,16 @@ internal object ProductDetailPreviewData {
                 key = "details",
                 style = ProductDetailCardStyle.SECONDARY,
                 caption = "",
-                rows = addDetails + ProductDetailRowUiModel.Rating(
+                rows = addDetails + ProductDetailRow(
                     key = "reviews",
-                    title = R.string.product_reviews,
-                    value = "6 approved reviews",
-                    rating = 4.5f,
-                    icon = R.drawable.ic_reviews,
+                    property = ProductProperty.RatingBar(
+                        title = R.string.product_reviews,
+                        value = "6 approved reviews",
+                        rating = 4.5f,
+                        icon = R.drawable.ic_reviews,
+                        onClick = {},
+                    ),
                     showDivider = true,
-                    onClick = {},
                 ),
             ),
         ),
@@ -123,16 +125,19 @@ internal object ProductDetailPreviewData {
                 style = ProductDetailCardStyle.SECONDARY,
                 caption = "",
                 rows = listOf(
-                    ProductDetailRowUiModel.Warning("warning", "Some variations are missing a price."),
-                    ProductDetailRowUiModel.ComplexProperty(
+                    ProductDetailRow(
+                        key = "warning",
+                        property = ProductProperty.Warning("Some variations are missing a price."),
+                    ),
+                    ProductDetailRow(
                         key = "variations",
-                        title = R.string.product_variations,
-                        value = "3 variations",
-                        icon = R.drawable.ic_gridicons_types,
-                        showTitle = true,
-                        maxLines = 1,
-                        showDivider = false,
-                        onClick = {},
+                        property = ProductProperty.ComplexProperty(
+                            title = R.string.product_variations,
+                            value = "3 variations",
+                            icon = R.drawable.ic_gridicons_types,
+                            isDividerVisible = false,
+                            onClick = {},
+                        ),
                     ),
                 ),
             ),
