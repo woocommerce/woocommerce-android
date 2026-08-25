@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -2247,6 +2248,122 @@ class WooPosRefundViewModelTest {
             verify(analyticsTracker).track(
                 WooPosAnalyticsEvent.Event.RefundProcessingSuccess(RefundFlow.SERVER_COMPUTED)
             )
+        }
+
+    @Test
+    fun `given server-computed refund is rejected, when API call completes, then the failure reports the server flow`() =
+        runTest {
+            // GIVEN
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Something went wrong",
+                        apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                    )
+                )
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN rejection rates stay comparable between the two flows
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                    refundFlow = RefundFlow.SERVER_COMPUTED,
+                    apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                )
+            )
+        }
+
+    @Test
+    fun `given a server-computed refund awaits the reader, when availability flips, then success reports the sent flow`() =
+        runTest {
+            // GIVEN
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired),
+                flowOf(WooPosRefundSubmissionState.Success)
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val waitingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(waitingState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+
+            // WHEN the verdict flips while the cashier connects the reader
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            advanceUntilIdle()
+
+            // THEN the flow reported is the one the stored request was built on, not the current verdict
+            verify(refundSubmissionProcessor, times(2)).submit(any())
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingSuccess(RefundFlow.SERVER_COMPUTED)
+            )
+        }
+
+    @Test
+    fun `given server totals but no currency settings, when refund is confirmed, then a precondition failure is tracked`() =
+        runTest {
+            // GIVEN a server-computed preview, so the local currency settings were never fetched
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(null)
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // WHEN the verdict flips, so submission falls back to a local request it cannot build
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN the started event has a terminal event to pair with
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.LOCAL))
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingPreconditionFailed(
+                    refundFlow = RefundFlow.LOCAL,
+                    reason = RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE,
+                )
+            )
+            verify(refundSubmissionProcessor, never()).submit(any())
         }
 
     @Test

@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -533,30 +534,18 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             val serverComputed = isServerComputedRefundConfirmed()
-            analyticsTracker.track(
-                WooPosAnalyticsEvent.Event.RefundProcessingStarted(
-                    refundFlow = if (serverComputed) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
-                )
-            )
+            val refundFlow = if (serverComputed) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(refundFlow))
 
             val order = currentOrder ?: run {
-                WooLog.e(
-                    WooLog.T.POS,
-                    "WooPosRefund: currentOrder is null during processRefund"
-                )
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+                WooLog.e(WooLog.T.POS, "WooPosRefund: currentOrder is null during processRefund")
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.ORDER_UNAVAILABLE)
                 return@launch
             }
 
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
             val request = buildSubmissionRequest(order, contentState, selectedItems, serverComputed) ?: run {
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE)
                 return@launch
             }
 
@@ -577,6 +566,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
      * [resolveRefundFlow]: on stores without `compute_totals` support the unknown param is
      * silently dropped and a quantity-only body would create a ghost zero-amount refund with
      * restock, so eligibility alone is never enough to send a computed create.
+     *
+     * Returns null only when the store's currency settings cannot be read; the caller reports that
+     * as [RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE].
      */
     private fun buildSubmissionRequest(
         order: Order,
@@ -619,6 +611,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun refundFlowFor(request: WooPosRefundSubmissionRequest): RefundFlow =
         if (request.serverLineItems != null) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+
+    /** Ends a refund that stopped after `refund_processing_started` but before submission. */
+    private suspend fun failBeforeSubmission(refundFlow: RefundFlow, reason: RefundPreconditionReason) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingPreconditionFailed(refundFlow, reason)
+        )
+        _state.value = WooPosRefundState.Error(
+            message = resourceProvider.getString(R.string.error_generic),
+            errorType = WooPosRefundState.Error.ErrorType.Processing
+        )
+    }
 
     private fun submitRefund(
         contentState: WooPosRefundState.Content,

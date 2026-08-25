@@ -4,6 +4,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -47,13 +49,20 @@ class WooPosRefundPreview @Inject constructor(
             response.isError -> {
                 if (response.error.type == WooErrorType.API_NOT_FOUND) {
                     WooLog.i(WooLog.T.POS, "WooPosRefund: preview route not available; falling back to local")
-                    availabilityCache.markUnavailable(localSiteId, flow.wooVersion)
                     // Reported once per store per WooCommerce version for the lifetime of the
                     // process: the availability cache short-circuits the resolver afterwards, so
                     // this counts stores that fell back rather than the refunds they made after.
                     // The store's version arrives with the event as the cached_woo_core_version
                     // property every event carries.
-                    analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable)
+                    //
+                    // Non-cancellable because the caller cancels this job whenever the selection
+                    // changes or the refund is confirmed. Marking the cache without reporting
+                    // would lose the event for the rest of the process, since the resolver never
+                    // probes again.
+                    withContext(NonCancellable) {
+                        availabilityCache.markUnavailable(localSiteId, flow.wooVersion)
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable)
+                    }
                     Result.FallbackToLocal
                 } else {
                     WooLog.e(

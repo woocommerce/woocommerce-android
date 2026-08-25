@@ -15,6 +15,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -134,6 +135,33 @@ class WooPosRefundPreviewTest {
         sut(ORDER_ID, lineItems)
 
         // THEN
+        verify(analyticsTracker, never()).track(any<WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable>())
+    }
+
+    @Test
+    fun `given preview returned 404, when invoked again, then tracks the fallback only once`() = runTest {
+        // GIVEN
+        whenever(refundStore.previewRefund(eq(site), eq(ORDER_ID), eq(lineItems)))
+            .thenReturn(WooResult(WooError(WooErrorType.API_NOT_FOUND, GenericErrorType.NOT_FOUND)))
+        sut(ORDER_ID, lineItems)
+
+        // WHEN the store refunds again in the same process
+        sut(ORDER_ID, lineItems)
+
+        // THEN the event counts stores that fell back, not the refunds they made after
+        verify(analyticsTracker, times(1)).track(WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable)
+        verify(refundStore, times(1)).previewRefund(any(), any(), any())
+    }
+
+    @Test
+    fun `given flag disabled, when invoked, then does not track a fallback`() = runTest {
+        // GIVEN
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS)).thenReturn(false)
+
+        // WHEN
+        sut(ORDER_ID, lineItems)
+
+        // THEN a store that never probes the route has not fallen back for lack of it
         verify(analyticsTracker, never()).track(any<WooPosAnalyticsEvent.Event.RefundServerFlowUnavailable>())
     }
 
