@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
+import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductImageGallery
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -343,6 +345,44 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(bottomSheetItems).noneMatch {
                 it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
             }
+        }
+
+    @Test
+    fun `given a persisted product, when its image is clicked, then analytics and navigation emit once`() =
+        testBlocking {
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+            savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
+            setup()
+            clearInvocations(tracker)
+
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onImageClicked()
+            }
+
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            assertThat(events.filterIsInstance<ViewProductImageGallery>()).containsExactly(
+                ViewProductImageGallery(PRODUCT_REMOTE_ID, productAggregate.product.images)
+            )
+        }
+
+    @Test
+    fun `given a persisted product, when add image is clicked, then add analytics and chooser emit once`() =
+        testBlocking {
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+            savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
+            setup()
+            clearInvocations(tracker)
+
+            val events = viewModel.event.runAndCaptureValues {
+                viewModel.onAddImageButtonClicked()
+            }
+
+            verify(tracker, times(1)).track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
+            verify(tracker, never()).track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+            assertThat(events.filterIsInstance<ViewProductImageGallery>()).containsExactly(
+                ViewProductImageGallery(PRODUCT_REMOTE_ID, productAggregate.product.images, true)
+            )
         }
 
     @Test

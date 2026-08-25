@@ -16,28 +16,31 @@ import org.wordpress.android.util.PhotonUtils
  * Coil/Compose extension for loading a Photon image with a fallback to the original URL.
  * Generates an ImageRequest that tries the Photon URL first, and if it fails, falls back to the original URL.
  * If the URL is already a Photon URL, no fallback is applied since the "original" would be the same URL.
+ * Width and height default to 0, which Photon treats as unconstrained.
  */
 @Composable
 fun rememberPhotonImageRequest(
     originalUrl: String,
-    imageSizePx: Int,
-    configure: ImageRequest.Builder.() -> Unit = {}
+    width: Int = 0,
+    height: Int = 0,
+    quality: PhotonUtils.Quality = PhotonUtils.Quality.MEDIUM,
+    configure: ImageRequest.Builder.() -> Unit = {},
 ): ImageRequest {
     val context = LocalContext.current
-    val photonUrl = remember(originalUrl, imageSizePx) {
-        PhotonUtils.getPhotonImageUrl(originalUrl, imageSizePx, imageSizePx)
+    val photonUrl = remember(originalUrl, width, height, quality) {
+        PhotonUtils.getPhotonImageUrl(originalUrl, width, height, quality)
     }
+    val fallbackUrl = remember(originalUrl) { originalUrl.takeUnless { it.isPhotonUrl() } }
+    var currentUrl by remember(originalUrl, width, height, quality) { mutableStateOf(photonUrl) }
 
-    var currentUrl by remember(originalUrl, photonUrl) { mutableStateOf(photonUrl) }
-
-    return remember(currentUrl, context) {
+    return remember(currentUrl, context, originalUrl, width, height, quality) {
         ImageRequest.Builder(context)
             .data(currentUrl)
             .apply(configure)
             .listener(
                 onError = { _, _ ->
-                    if (!originalUrl.isPhotonUrl() && currentUrl != originalUrl) {
-                        currentUrl = originalUrl
+                    if (fallbackUrl != null && currentUrl != fallbackUrl) {
+                        currentUrl = fallbackUrl
                     }
                 }
             )

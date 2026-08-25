@@ -28,7 +28,8 @@ fun ProductThumbnail(
     val imageSizePx = with(LocalDensity.current) { imageSize.roundToPx() }
     val imageRequest = rememberPhotonImageRequest(
         originalUrl = imageUrl,
-        imageSizePx = imageSizePx
+        width = imageSizePx,
+        height = imageSizePx,
     ) {
         crossfade(true)
         placeholder(placeHolderDrawableId)

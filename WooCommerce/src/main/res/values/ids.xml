@@ -6,4 +6,5 @@
     <item type="id" name="product_configuration_view" />
     <item type="id" name="analytics_hub_settings_view" />
     <item type="id" name="dashboard_container" />
+    <item type="id" name="productDetail_root" />
 </resources>
