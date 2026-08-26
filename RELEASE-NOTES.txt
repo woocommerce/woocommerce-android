@@ -5,18 +5,54 @@
 25.6
 -----
 - [*] Fixed the add product button staying on screen after clearing the product search term [https://github.com/woocommerce/woocommerce-android/pull/16451]
+- [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
+- [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
+- [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
 
 25.5
 -----
+- [*] Remote Tap to Pay keeps working on Android 17: the phone now asks for local network permission before it advertises itself, and the tablet asks before it connects to a phone reader
+- [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
+- [*] Woo POS on phones: the "Install WooCommerce Payments" prompt no longer rotates the screen to landscape [https://github.com/woocommerce/woocommerce-android/pull/16447]
+- [*] You can now apply a gift card when editing an order [https://github.com/woocommerce/woocommerce-android/pull/16445]
+- [Internal] Woo POS analytics: replaced the catch-all "other" reason on the POS ineligible screen with specific reasons, and added the missing orders_list_loaded event [https://github.com/woocommerce/woocommerce-android/pull/16439]
+- [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
+- [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
+- [*] Woo POS: when the store rejects a refund because the order changed - another register refunded part of it - the refund screen now offers to reload the remaining items instead of a retry that cannot succeed [https://github.com/woocommerce/woocommerce-android/pull/16440]
+- [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
+- [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
+- [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
+- [*] QR login now asks you to choose a store when your WordPress.com account has multiple sites instead of preselecting one [https://github.com/woocommerce/woocommerce-android/pull/16400]
+- [*] Store login now shows a connection error when a site's REST API hides its namespaces instead of continuing into misleading setup screens [https://github.com/woocommerce/woocommerce-android/pull/16408]
+- [*] Custom date ranges now follow the store's current day and no longer shift when the device time zone changes [https://github.com/woocommerce/woocommerce-android/pull/16410]
+- [Internal] Close analytics gaps in the Remote Tap to Pay flow: transport on the reader-ready event, cause chains in error descriptions, no stale card reader model, and a real session ended reason [https://github.com/woocommerce/woocommerce-android/pull/16368]
+- [*] Tap to Pay no longer disappears from the Payments screen shortly after it appears [https://github.com/woocommerce/woocommerce-android/pull/16370]
+- [*] Fixed a crash when pressing Back on the "You're already signed in" warning shown after opening a QR login link while signed in [https://github.com/woocommerce/woocommerce-android/pull/16347]
+- [*] Store login now supports custom WordPress sign-in and dashboard addresses [https://github.com/woocommerce/woocommerce-android/pull/16398]
 - [Internal] Woo POS Scan to Pay: picking an offline method such as Pay in Person on the QR page no longer reports the order as paid, and a detected payment now shows the fullscreen success screen [https://github.com/woocommerce/woocommerce-android/pull/16363]
 - [*] Woo POS: Retrying a failed connection to a phone card reader now works without having to close and reopen the reader dialog [https://github.com/woocommerce/woocommerce-android/pull/16371]
-
+- [*] Woo POS: A phone used as a card reader is now discovered without granting Bluetooth and location permissions on the tablet [https://github.com/woocommerce/woocommerce-android/pull/16406]
+- [*] Fixed missing back navigation in Country and State pickers when creating shipping labels on tablets [https://github.com/woocommerce/woocommerce-android/pull/16364]
+- [*] Fixed the "Add more details" section showing on products that already have every detail filled in [https://github.com/woocommerce/woocommerce-android/pull/16369]
+- [*] Bundles with a choice the app can't detect up front (like a variation of a bundled variable product) no longer skip the configuration screen when added to an order [https://github.com/woocommerce/woocommerce-android/pull/16383]
+- [*] Bundles containing a subscription product can no longer be added to an order [https://github.com/woocommerce/woocommerce-android/pull/16381]
+- [*] Fixed the horizontal padding of the stock status dropdown when bulk-editing products [https://github.com/woocommerce/woocommerce-android/pull/16399]
+- [*****] [Internal] Update Compose BOM from 2025.11.01 to 2026.06.01, which moves Compose from 1.9.5 to 1.11.4 [https://github.com/woocommerce/woocommerce-android/pull/16357]
+- [*] [Internal] Remove SiteModel#mXmlRpcUrl [https://github.com/woocommerce/woocommerce-android/pull/16301]
+- [*] Fixed the app freezing on the My Store screen when the POS promotion banner is evaluated [https://github.com/woocommerce/woocommerce-android/pull/16405]
+- [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
+- [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
+- [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
 
 25.4
 -----
+- [Internal] POS refunds: switched the server-calculated refund flow from the wc/v4 endpoints to wc/v3 (refund preview + compute_totals create), removing the v4 flow [https://github.com/woocommerce/woocommerce-android/pull/16335]
+- [Internal] POS refunds: server-refund availability is now tracked per WooCommerce version, so a store that changes version mid-session is re-probed instead of reusing a stale verdict [https://github.com/woocommerce/woocommerce-android/pull/16335]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation [https://github.com/woocommerce/woocommerce-android/pull/16360]
 - [*] Scanning a subscription product's barcode or SKU during order creation now explains why it can't be added [https://github.com/woocommerce/woocommerce-android/pull/16380]
 - [*] Custom amounts now use the same decimal entry as shipping and the rest of the app — enter 2.50 instead of 250 to get $2.50 [https://github.com/woocommerce/woocommerce-android/pull/16358]
+- [*] Fixed an order status sometimes reverting on tablets after reopening the app following a long period of inactivity [https://github.com/woocommerce/woocommerce-android/pull/16392]
 - [*] Fixed bundled variable products not asking for a variation when configuring a bundle during order creation
 - [Internal] Improved recovery when the selected store is no longer available through WordPress.com, including when its Jetpack connection has been removed. [https://github.com/woocommerce/woocommerce-android/pull/16327]
 - [Internal] Attach a Mobile Status Report (device, OS, connectivity, notifications, feature flags) to support tickets [https://github.com/woocommerce/woocommerce-android/pull/16325]
@@ -27,6 +63,7 @@
 - [*] Turning off the Pay in Person toggle no longer renames the Cash on Delivery payment gateway [https://github.com/woocommerce/woocommerce-android/pull/16349]
 - [*] Toggling Pay in Person now asks for confirmation and explains what changes at your store's checkout [https://github.com/woocommerce/woocommerce-android/pull/16350]
 - [*] Leaving the order note or address editor via the toolbar back button now asks to discard unsaved changes instead of silently dropping them [https://github.com/woocommerce/woocommerce-android/pull/16318]
+- [*] The Products list now updates stock automatically after an order takes payment, is fulfilled, refunded, or edited — no pull-to-refresh needed [https://github.com/woocommerce/woocommerce-android/pull/16278]
 - [Internal] Support tickets now report the device's free space correctly, instead of roughly double the real figure capped at megabytes [https://github.com/woocommerce/woocommerce-android/pull/16340]
 - [*] Fixed a crash when the payment screen was recreated, such as rotating the device, while an in-person card payment was being processed — the payment now keeps running instead of freezing [https://github.com/woocommerce/woocommerce-android/pull/16359]
 - [*] Woo POS: Fixed some phones failing to start reader mode, so the POS tablet could never discover them [https://github.com/woocommerce/woocommerce-android/pull/16367]

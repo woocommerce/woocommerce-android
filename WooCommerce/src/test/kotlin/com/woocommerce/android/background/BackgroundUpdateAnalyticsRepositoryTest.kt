@@ -6,10 +6,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
@@ -37,6 +39,8 @@ import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BackgroundUpdateAnalyticsRepositoryTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
 
     private val statsRepository: StatsRepository = mock()
     private val googleAdsStore: WCGoogleStore = mock()
@@ -46,12 +50,14 @@ class BackgroundUpdateAnalyticsRepositoryTest : BaseUnitTest() {
     private val testTimeZone = TimeZone.getDefault()
     private val testCalendar = Calendar.getInstance(testLocale)
 
-    private val testSelectionData: StatsTimeRangeSelection = CUSTOM.generateSelectionData(
-        referenceStartDate = "2024-10-02".dayStartFrom(),
-        referenceEndDate = "2024-10-02".dayEndFrom(),
-        calendar = testCalendar,
-        locale = testLocale
-    )
+    private val testSelectionData: StatsTimeRangeSelection by lazy {
+        CUSTOM.generateSelectionData(
+            referenceStartDate = "2024-10-02".dayStartFrom(),
+            referenceEndDate = "2024-10-02".dayEndFrom(),
+            calendar = testCalendar,
+            locale = testLocale
+        )
+    }
 
     private val backgroundUpdateAnalyticsRepository = BackgroundUpdateAnalyticsRepository(
         statsRepository,

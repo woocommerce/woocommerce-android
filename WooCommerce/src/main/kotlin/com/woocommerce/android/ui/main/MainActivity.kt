@@ -18,6 +18,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -136,7 +137,6 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
 import java.lang.ref.WeakReference
-import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
@@ -148,7 +148,6 @@ class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
-    BackPressTrackerOwner,
     MainBottomNavigationView.MainNavigationListener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
@@ -208,9 +207,6 @@ class MainActivity :
 
     @Inject
     lateinit var posTabController: WooPosTabController
-
-    @Inject
-    override lateinit var backPressTracker: BackPressTracker
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -360,6 +356,7 @@ class MainActivity :
         // Drop stale main-flow state when no site is selected so login can take over cleanly.
         val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
         super.onCreate(bundle)
+        setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
@@ -399,7 +396,6 @@ class MainActivity :
             null
         }
         navController.setGraph(navGraph, startDestinationArgs)
-        backPressTracker.register(this, navHostFragment.childFragmentManager)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
@@ -437,6 +433,25 @@ class MainActivity :
         }
 
         viewModel.showFeatureAnnouncementIfNeeded()
+    }
+
+    private fun setOnBackNavigationCallback() {
+        onBackPressedDispatcher.addCallback(this) {
+            AnalyticsTracker.trackBackPressed(this@MainActivity)
+            val fragment = getActiveChildFragment()
+            if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+                return@addCallback
+            }
+            supportFragmentManager.primaryNavigationFragment?.let {
+                updateAppBarVisibility(it)
+            }
+            // Disable this callback temporarily to prevent infinite recursion from onBackPressed() call below.
+            isEnabled = false
+            // Trigger the default back press behavior.
+            onBackPressedDispatcher.onBackPressed()
+            // Re-enable the callback for future custom back presses handling.
+            isEnabled = true
+        }
     }
 
     private fun handleIncomingImages() {
@@ -567,6 +582,17 @@ class MainActivity :
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         return navHostFragment.childFragmentManager.primaryNavigationFragment as? TopLevelFragment
+    }
+
+    /**
+     * Returns the fragment currently shown by the navigation component, or null if we're at the root
+     */
+    private fun getActiveChildFragment(): Fragment? {
+        return if (isChildFragmentShowing()) {
+            getHostChildFragment()
+        } else {
+            null
+        }
     }
 
     /**
@@ -1299,14 +1325,10 @@ class MainActivity :
 
     fun showOrderCreation(
         mode: OrderCreateEditViewModel.Mode,
-        giftCardCode: String?,
-        giftCardAmount: BigDecimal?,
         orderCurrency: String? = null,
     ) {
         NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
-            giftCardCode = giftCardCode,
-            giftCardAmount = giftCardAmount,
             orderCurrency = orderCurrency
         ).apply {
             navController.navigateSafely(this)

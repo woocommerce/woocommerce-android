@@ -12,6 +12,7 @@ import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.DuplicateProduct
@@ -34,6 +35,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
@@ -91,9 +93,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         on { invoke() } doReturn false
     }
-    private val customFieldsRepository: CustomFieldsRepository = mock {
-        on { hasDisplayableCustomFields(any()) } doReturn false
-    }
     private var savedState: SavedStateHandle =
         ProductDetailFragmentArgs(
             mode = ProductDetailFragment.Mode.AddNewProduct
@@ -119,6 +118,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
     private val addonRepository: AddonRepository = mock {
         on { hasAnyProductSpecificAddons(any()) } doReturn false
+    }
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        on { hasDisplayableCustomFields(any()) } doReturn false
+        on { observeDisplayableCustomFields(any()) } doReturn flowOf(emptyList())
     }
 
     private val productUtils = ProductUtils()
@@ -411,6 +414,39 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onBackButtonClickedProductDetail()
         Assertions.assertThat(saveAsDraftShown).isFalse()
     }
+
+    @Test
+    fun `given a new product just saved, when its custom fields load, then the add more list drops custom fields`() =
+        testBlocking {
+            val customFieldsFlow = MutableStateFlow<List<CustomField>>(emptyList())
+            var productHasCustomFields = false
+            whenever(customFieldsRepository.observeDisplayableCustomFields(any())).thenReturn(customFieldsFlow)
+            whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenAnswer { productHasCustomFields }
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+            doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
+
+            var bottomSheetItems: List<ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem>? = null
+            viewModel.productDetailBottomSheetList.observeForever { bottomSheetItems = it }
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+            viewModel.start()
+            // Saving gives the draft a real remote id, but navArgs.mode stays AddNewProduct
+            viewModel.onPublishButtonClicked()
+
+            // GIVEN the saved product's custom fields haven't loaded yet, the "add custom fields" item is shown
+            Assertions.assertThat(bottomSheetItems).anyMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+
+            // WHEN the saved product's custom fields metadata becomes available
+            productHasCustomFields = true
+            customFieldsFlow.value = listOf(CustomField(id = 1L, key = "key", value = "value"))
+
+            // THEN the cards and bottom-sheet list rebuild and the custom fields item is removed
+            Assertions.assertThat(bottomSheetItems).noneMatch {
+                it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
+            }
+        }
 
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {

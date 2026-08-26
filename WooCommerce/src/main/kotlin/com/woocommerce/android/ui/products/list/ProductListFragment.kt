@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -86,9 +85,6 @@ class ProductListFragment :
 
     @Inject
     lateinit var isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact
-
-    @Inject
-    lateinit var backPressTracker: BackPressTracker
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
     private val productListViewModel: ProductListViewModel by viewModels()
@@ -294,23 +290,33 @@ class ProductListFragment :
                 true
             }
 
-            isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
+            else -> handleDetailBackPressed()
+        }
 
+        if (consumed) {
+            AnalyticsTracker.trackBackPressed(requireActivity())
+            updateBackPressedCallbackState()
+        } else {
+            continueBackNavigationPastProductList()
+        }
+    }
+
+    private fun handleDetailBackPressed(): Boolean {
+        val detailNavHost = childFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment
+        val detailsFragment = detailNavHost?.childFragmentManager?.fragments?.firstOrNull()
+        if (detailsFragment is MainActivity.Companion.BackPressListener && !detailsFragment.onRequestAllowBackPress()) {
+            return true
+        }
+
+        return when {
+            isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
             binding.productsComposeContainer.isVisible.not() -> {
                 if (detailNavController?.navigateUp() != true) {
                     displayListPaneOnly()
                 }
                 true
             }
-
             else -> false
-        }
-
-        if (consumed) {
-            backPressTracker.trackBackPressed(requireActivity())
-            updateBackPressedCallbackState()
-        } else {
-            continueBackNavigationPastProductList()
         }
     }
 

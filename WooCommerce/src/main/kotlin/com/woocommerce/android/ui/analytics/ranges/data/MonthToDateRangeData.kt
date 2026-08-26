@@ -37,7 +37,7 @@ class MonthToDateRangeData(
             start = currentStart,
             end = currentEnd
         )
-        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale, calendar)
+        formattedCurrentRange = currentStart.formatAsRangeWith(referenceDate, locale)
 
         val oneMonthAgo = referenceDate.oneMonthAgo()
         calendar.time = oneMonthAgo
@@ -46,6 +46,6 @@ class MonthToDateRangeData(
             start = previousStart,
             end = oneMonthAgo
         )
-        formattedPreviousRange = previousStart.formatAsRangeWith(oneMonthAgo, locale, calendar)
+        formattedPreviousRange = previousStart.formatAsRangeWith(oneMonthAgo, locale)
     }
 }

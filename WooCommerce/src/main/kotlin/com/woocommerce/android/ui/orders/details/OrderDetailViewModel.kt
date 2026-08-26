@@ -90,7 +90,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -124,7 +123,7 @@ class OrderDetailViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
-    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -268,9 +267,10 @@ class OrderDetailViewModel @Inject constructor(
     fun hasOrder() = viewState.orderInfo?.order != null
 
     private suspend fun displayOrderDetails() {
-        updateOrderState()
+        val isVirtualOrder = hasVirtualProductsOnly(awaitOrder())
+        updateOrderState(isVirtualOrder)
         loadOrderNotes()
-        displayProductAndShippingDetails()
+        displayProductAndShippingDetails(isVirtualOrder)
         displayCustomAmounts()
         trackGiftCardShownIfNeeded()
     }
@@ -339,26 +339,23 @@ class OrderDetailViewModel @Inject constructor(
         launch { fetchOrder(false) }
     }
 
-    fun hasVirtualProductsOnly(): Boolean {
-        return runBlocking {
-            val orderFetched = awaitOrder()
-            if (orderFetched.items.isNotEmpty()) {
-                val remoteProductIds = orderFetched.getProductIds()
-                orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
-            } else {
-                false
-            }
+    private suspend fun hasVirtualProductsOnly(order: Order): Boolean =
+        if (order.items.isNotEmpty()) {
+            orderDetailRepository.hasVirtualProductsOnly(order.getProductIds())
+        } else {
+            false
         }
-    }
 
     fun onEditOrderStatusSelected() {
         viewState.orderStatus?.let { orderStatus ->
-            triggerEvent(
-                ViewOrderStatusSelector(
-                    currentStatus = orderStatus.statusKey,
-                    orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+            launch {
+                triggerEvent(
+                    ViewOrderStatusSelector(
+                        currentStatus = orderStatus.statusKey,
+                        orderStatusList = orderDetailRepository.getOrderStatusOptions().toTypedArray()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -395,12 +392,9 @@ class OrderDetailViewModel @Inject constructor(
         launch {
             val order = awaitOrder()
             tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-            val firstGiftCard = order.giftCards.firstOrNull()
             triggerEvent(
                 EditOrder(
                     orderId = order.id,
-                    giftCard = firstGiftCard?.code,
-                    appliedDiscount = firstGiftCard?.used,
                     orderCurrency = order.currency
                 )
             )
@@ -772,12 +766,13 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateOrderState() {
+    private suspend fun updateOrderState(isVirtualOrder: Boolean) {
         val order = awaitOrder()
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
+                isVirtualOrder = isVirtualOrder,
                 isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader(order),
                 receiptButtonStatus = if (paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid) {
                     OrderDetailViewState.ReceiptButtonStatus.Visible
@@ -819,7 +814,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onNotesFetched()
     }
 
-    private fun loadOrderRefunds(): ListInfo<Refund> {
+    private suspend fun loadOrderRefunds(): ListInfo<Refund> {
         return ListInfo(list = orderDetailRepository.getOrderRefunds(navArgs.orderId))
     }
 
@@ -862,9 +857,12 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
     }
 
-    private fun loadShipmentTracking(shippingLabels: ListInfo<ShippingLabelModel>): ListInfo<OrderShipmentTracking> {
+    private fun loadShipmentTracking(
+        shippingLabels: ListInfo<ShippingLabelModel>,
+        isVirtualOrder: Boolean
+    ): ListInfo<OrderShipmentTracking> {
         val trackingList = orderDetailRepository.getOrderShipmentTrackings(navArgs.orderId)
-        return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || hasVirtualProductsOnly()) {
+        return if (!appPrefs.isTrackingExtensionAvailable() || shippingLabels.isVisible || isVirtualOrder) {
             ListInfo(isVisible = false)
         } else {
             ListInfo(list = trackingList)
@@ -934,10 +932,10 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(isVisible = false)
     }
 
-    private suspend fun displayProductAndShippingDetails() {
+    private suspend fun displayProductAndShippingDetails(isVirtualOrder: Boolean) {
         val wooShippingShipments = loadWooShippingShipments()
         val shippingLabels = loadOrderShippingLabels()
-        val shipmentTracking = loadShipmentTracking(shippingLabels)
+        val shipmentTracking = loadShipmentTracking(shippingLabels, isVirtualOrder)
         val orderRefunds = loadOrderRefunds()
         val orderProducts = loadOrderProducts(orderRefunds)
 
@@ -1008,13 +1006,16 @@ class OrderDetailViewModel @Inject constructor(
         launch {
             _order.collect { newOrder ->
                 newOrder?.let {
+                    val isVirtualOrder = hasVirtualProductsOnly(it)
                     viewState = viewState.copy(
                         orderInfo = viewState.orderInfo?.copy(
                             order = it,
+                            isVirtualOrder = isVirtualOrder,
                             isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
                                 ?: false
                         ) ?: OrderDetailViewState.OrderInfo(
                             it,
+                            isVirtualOrder = isVirtualOrder,
                             isPaymentCollectableWithCardReader = false
                         )
                     )
@@ -1056,7 +1057,7 @@ class OrderDetailViewModel @Inject constructor(
                 is OrderProduct.ProductItem -> first.product.productId
             }
 
-            val product = productDetailRepository.getProductAsync(firstProductId)
+            val product = productDetailRepository.getProduct(firstProductId)
             product?.let {
                 triggerEvent(
                     OrderNavigationTarget.AIThankYouNote(

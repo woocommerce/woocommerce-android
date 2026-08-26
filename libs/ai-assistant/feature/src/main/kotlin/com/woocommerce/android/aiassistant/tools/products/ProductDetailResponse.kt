@@ -214,7 +214,7 @@ private fun WCProductModel.ProductAttribute.toCompactProductAttribute() = Compac
 internal fun WCProductImageModel.toCompactProductImage() = CompactProductImage(
     id = id,
     src = src.takeIf { it.isNotBlank() },
-    alt = alt.takeIf { it.isNotBlank() },
+    alt = alt?.takeIf { it.isNotBlank() },
     name = name.takeIf { it.isNotBlank() },
 )
 

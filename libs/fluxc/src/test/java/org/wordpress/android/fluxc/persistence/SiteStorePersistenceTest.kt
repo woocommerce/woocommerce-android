@@ -12,7 +12,6 @@ import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.SiteStorePersistence.DuplicateSiteException
 
 @RunWith(RobolectricTestRunner::class)
 class SiteStorePersistenceTest {
@@ -57,7 +56,7 @@ class SiteStorePersistenceTest {
 
     // endregion
 
-    // region insert (case 6)
+    // region insert (case 4)
 
     @Test
     fun `given new site, when insert or update, then inserts and returns 1`() {
@@ -145,104 +144,73 @@ class SiteStorePersistenceTest {
 
     // endregion
 
-    // region duplicate site exception (case 4)
+    // region same URL, different origins
 
-    @Test(expected = DuplicateSiteException::class)
-    fun `given wpcom site exists, when xmlrpc site with same url inserted, then throws`() {
+    @Test
+    fun `given wpcom site exists, when wpapi site with same url inserted, then inserts both`() {
         val wpComSite = SiteModel().apply {
             siteId = 42
             url = "https://test.com"
-            xmlRpcUrl = "https://test.com/xmlrpc.php"
             origin = SiteModel.ORIGIN_WPCOM_REST
         }
         sut.insertOrUpdateSite(wpComSite)
 
-        val xmlRpcSite = SiteModel().apply {
+        val wpApiSite = SiteModel().apply {
             siteId = 0
-            url = "https://selfhosted.com"
-            xmlRpcUrl = "https://test.com/xmlrpc.php"
-            origin = SiteModel.ORIGIN_XMLRPC
+            url = "https://test.com"
+            origin = SiteModel.ORIGIN_WPAPI
         }
-        sut.insertOrUpdateSite(xmlRpcSite)
-    }
-
-    // endregion
-
-    // region update by XMLRPC_URL for XML-RPC site (case 5)
-
-    @Test
-    fun `given xmlrpc site exists, when xmlrpc site with same url inserted, then updates`() {
-        val original = SiteModel().apply {
-            siteId = 0
-            url = "https://selfhosted.com"
-            xmlRpcUrl = "https://selfhosted.com/xmlrpc.php"
-            origin = SiteModel.ORIGIN_XMLRPC
-        }
-        sut.insertOrUpdateSite(original)
-
-        val incoming = SiteModel().apply {
-            siteId = 0
-            url = "https://selfhosted.com"
-            xmlRpcUrl = "https://selfhosted.com/xmlrpc.php"
-            origin = SiteModel.ORIGIN_XMLRPC
-            name = "Updated"
-        }
-        val result = sut.insertOrUpdateSite(incoming)
+        val result = sut.insertOrUpdateSite(wpApiSite)
 
         assertThat(result).isEqualTo(1)
-        assertThat(siteSqlUtils.getSites()).hasSize(1)
+        assertThat(siteSqlUtils.getSites()).hasSize(2)
+    }
+
+    @Test
+    fun `given wpapi site exists, when wpcom site with same url inserted, then inserts both and keeps wpapi row`() {
+        val wpApiSite = SiteModel().apply {
+            siteId = 0
+            url = "https://test.com"
+            origin = SiteModel.ORIGIN_WPAPI
+            username = "storeuser"
+        }
+        sut.insertOrUpdateSite(wpApiSite)
+
+        val wpComSite = SiteModel().apply {
+            siteId = 42
+            url = "https://test.com"
+            origin = SiteModel.ORIGIN_WPCOM_REST
+        }
+        val result = sut.insertOrUpdateSite(wpComSite)
+
+        assertThat(result).isEqualTo(1)
+        assertThat(siteSqlUtils.getSites()).hasSize(2)
+        val wpApiRow = siteSqlUtils.getSites().first { it.origin == SiteModel.ORIGIN_WPAPI }
+        assertThat(wpApiRow.username).isEqualTo("storeuser")
     }
 
     // endregion
 
-    // region identity crisis — both WP.com with same XMLRPC URL
+    // region identity crisis — both WP.com with same URL
 
     @Test
-    fun `given wpcom site exists, when another wpcom site with same xmlrpc url, then inserts both`() {
+    fun `given wpcom site exists, when another wpcom site with same url, then inserts both`() {
         val site1 = SiteModel().apply {
             siteId = 42
-            url = "https://site1.com"
-            xmlRpcUrl = "https://shared.com/xmlrpc.php"
+            url = "https://shared.com"
             origin = SiteModel.ORIGIN_WPCOM_REST
         }
         sut.insertOrUpdateSite(site1)
 
         val site2 = SiteModel().apply {
             siteId = 43
-            url = "https://site2.com"
-            xmlRpcUrl = "https://shared.com/xmlrpc.php"
+            url = "https://shared.com"
             origin = SiteModel.ORIGIN_WPCOM_REST
         }
         val result = sut.insertOrUpdateSite(site2)
 
         assertThat(result).isEqualTo(1)
         assertThat(siteSqlUtils.getSites()).hasSize(2)
-    }
-
-    // endregion
-
-    // region XMLRPC URL http/https matching
-
-    @Test
-    fun `given site with http xmlrpc url, when matching with https variant, then updates`() {
-        val original = SiteModel().apply {
-            siteId = 0
-            url = "http://selfhosted.com"
-            xmlRpcUrl = "http://selfhosted.com/xmlrpc.php"
-            origin = SiteModel.ORIGIN_XMLRPC
-        }
-        sut.insertOrUpdateSite(original)
-
-        val incoming = SiteModel().apply {
-            siteId = 0
-            url = "https://other.com"
-            xmlRpcUrl = "https://selfhosted.com/xmlrpc.php"
-            origin = SiteModel.ORIGIN_XMLRPC
-        }
-        val result = sut.insertOrUpdateSite(incoming)
-
-        assertThat(result).isEqualTo(1)
-        assertThat(siteSqlUtils.getSites()).hasSize(1)
     }
 
     // endregion

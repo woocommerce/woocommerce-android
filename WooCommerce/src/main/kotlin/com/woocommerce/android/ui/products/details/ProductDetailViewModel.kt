@@ -103,6 +103,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -115,6 +116,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -136,7 +139,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("EmptyFunctionBlock")
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -197,7 +200,6 @@ class ProductDetailViewModel @Inject constructor(
     ) { old, new ->
         if (old?.productAggregateDraft != new.productAggregateDraft) {
             new.productAggregateDraft?.let {
-                updateCards(it)
                 draftChanges.value = it
             }
         }
@@ -424,6 +426,30 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
+        observeCardData()
+    }
+
+    /**
+     * The detail cards and the "add more details" section depend on two independent sources: the product draft
+     * and the product's displayable custom fields (stored separately from the product). Rebuilding on either
+     * keeps the section correct regardless of the order the two load in. The custom-fields stream is derived
+     * from the draft's remote id (not [navArgs]) so it re-subscribes when a newly-created product gains a real
+     * id while the mode is still [ProductDetailFragment.Mode.AddNewProduct].
+     */
+    private fun observeCardData() {
+        draftChanges.filterNotNull()
+            .flatMapLatest { draft ->
+                if (draft.product.remoteId == DEFAULT_ADD_NEW_PRODUCT_ID) {
+                    flowOf(draft)
+                } else {
+                    customFieldsRepository.observeDisplayableCustomFields(draft.product.remoteId)
+                        .map { it.isNotEmpty() }
+                        .distinctUntilChanged()
+                        .map { draft }
+                }
+            }
+            .onEach { updateCards(it) }
+            .launchIn(viewModelScope)
     }
 
     private fun initializeViewState() {

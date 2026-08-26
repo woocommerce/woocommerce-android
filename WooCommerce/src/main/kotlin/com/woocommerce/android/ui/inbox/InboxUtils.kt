@@ -33,7 +33,7 @@ fun String.formatNoteCreationDate(dateUtils: DateUtils, resourceProvider: Resour
     }
     return resourceProvider.getString(
         R.string.inbox_note_recency_date_time,
-        dateUtils.toDisplayMMMddYYYYDate(creationDate?.time ?: 0) ?: ""
+        dateUtils.toDisplayMediumDate(creationDate?.time ?: 0) ?: ""
     )
 }
 

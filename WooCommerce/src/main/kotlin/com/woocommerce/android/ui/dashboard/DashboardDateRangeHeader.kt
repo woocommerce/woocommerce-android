@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +37,6 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 @Composable
 fun DashboardDateRangeHeader(
@@ -157,7 +157,7 @@ fun DashboardDateRangeHeaderPreview() {
                 Date(),
                 Date(),
                 Calendar.getInstance(),
-                Locale.getDefault()
+                LocalLocale.current.platformLocale
             ),
             dateFormatted = "Today",
             onCustomRangeClick = {},

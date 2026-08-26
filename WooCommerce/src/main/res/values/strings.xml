@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Woo</string>
+    <string name="app_name" translatable="false">Woo</string>
 
     <!-- Android O notification channels, these show in the Android app settings -->
     <string name="notification_channel_general_title">General</string>
@@ -385,8 +385,19 @@
     <string name="login_site_credentials_invalid_response">Login failed with an unexpected response from your site.</string>
     <string name="login_site_credentials_custom_login_url">Unable to login because we cannot identify your store\'s login URL</string>
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
+    <string name="login_site_credentials_login_url_title">Where do you sign in to your store?</string>
+    <string name="login_site_credentials_login_url_description">A security plugin may use a custom WordPress sign-in address. Enter the address you use to sign in.</string>
+    <string name="login_site_credentials_login_url_label">WordPress sign-in address</string>
+    <string name="login_site_credentials_admin_url_title">Where is your store\'s dashboard?</string>
+    <string name="login_site_credentials_admin_url_description">A security plugin may move the WordPress dashboard. Enter the address you use to open it.</string>
+    <string name="login_site_credentials_admin_url_label">WordPress dashboard address</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Enter a full web address, including http:// or https://.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Enter an address on the same site without changing its secure connection or port.</string>
+    <string name="login_site_credentials_login_url_not_found_error">We couldn\'t find a WordPress sign-in page at that address. Check it and try again.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">We couldn\'t reach the WordPress dashboard at that address. Check it and try again.</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">We couldn\'t save your store\'s sign-in settings. Please try again.</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
-    <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_use_web_authorization">Try signing in with your browser instead</string>
     <string name="login_site_credentials_http_basic_auth_error">Basic Authentication is enabled on your site. Basic Authentication is unsupported in the WooCommerce mobile app. Please disable it, or contact support for troubleshooting.</string>
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
@@ -808,6 +819,7 @@
     <string name="order_creation_collapse_expand_product_card_content_description">Collapse/expand product card</string>
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
+    <string name="order_creation_gift_card_not_applied">This gift card couldn\'t be applied</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
     <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
@@ -854,6 +866,15 @@
     <string name="orderfilters_sales_channel_filter">Sales Channel</string>
     <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
+    <!-- Filter history -->
+    <string name="filter_history_title">Filter History</string>
+    <string name="filter_history_recent_header">Recent</string>
+    <string name="filter_history_apply">Apply</string>
+    <string name="filter_history_cancel">Cancel</string>
+    <string name="filter_history_empty">No past filters found</string>
+    <string name="filter_history_clear">Clear History</string>
+    <string name="filter_history_clear_confirmation">Are you sure you want to clear all the filter history?</string>
+    <string name="filter_history_delete">Delete</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
     <string name="orderfilters_filter_card_title_all_orders">All orders</string>
@@ -1479,6 +1500,7 @@
     <string name="card_reader_disable_pay_in_person_dialog_title">Disable Pay In Person?</string>
     <string name="card_reader_disable_pay_in_person_dialog_message">This disables the Cash on Delivery payment method at your store’s checkout, so customers won’t be able to select it.</string>
     <string name="card_reader_disable_pay_in_person_dialog_button">Disable</string>
+    <string name="card_reader_pay_in_person_fetch_failed">We couldn’t check whether Pay In Person is enabled. Please try again later.</string>
     <string name="card_reader_purchase_card_reader">Order Card Reader</string>
     <string name="card_reader_manage_payment_provider">Change Payment Provider</string>
     <string name="card_reader_bbpos_manual_card_reader" translatable="false">BBPOS Chipper™ 2X BT</string>
@@ -1659,11 +1681,17 @@
     <string name="card_reader_mode_error_header">Card Reader Mode failed to start</string>
     <string name="card_reader_mode_error_subtitle">Check your Wi-Fi connection and try again.</string>
     <string name="card_reader_mode_error_close">Close</string>
+    <string name="card_reader_mode_error_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
     <string name="card_reader_mode_location_permission_header">Location permission required</string>
     <string name="card_reader_mode_location_permission_subtitle">Android requires location access to use tap-to-pay on this phone. Your location stays on this device.</string>
     <string name="card_reader_mode_location_permission_continue">Continue</string>
     <string name="card_reader_mode_location_permission_denied_subtitle">Location permission is blocked. Open Settings and grant Location to use tap-to-pay on this phone.</string>
     <string name="card_reader_mode_location_permission_open_settings">Open Settings</string>
+    <string name="card_reader_mode_local_network_permission_header">Local network permission required</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android requires local network access so your tablet can find this phone. Nothing is sent outside your network.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Continue</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Local network permission is blocked. Open Settings and grant local network access to use tap-to-pay on this phone.</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Open Settings</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
@@ -2286,6 +2314,11 @@
     <string name="remove_background_no_subject_detected">No clear subject detected. Try with a different image.</string>
     <string name="save_processed_image_error">Failed to save image</string>
     <string name="save_processed_image_success">Image saved successfully</string>
+    <string name="product_image_details_title">Image details</string>
+    <string name="product_image_details_alt_text_label">Alt text</string>
+    <string name="product_image_details_name_label">Title</string>
+    <string name="product_image_details_alt_text_removal_blocked">The app doesn\'t support removing alt text. Please use wp-admin to remove it.</string>
+    <string name="product_image_details_name_removal_blocked">The app doesn\'t support removing the title. Please use wp-admin to remove it.</string>
     <string name="discard_changes_question">Discard changes?</string>
     <string name="changes_not_saved_message">Your changes are not saved</string>
     <string name="save_copy">Save copy</string>
@@ -3067,6 +3100,7 @@
     <string name="product_selector_recent_products_heading">Last Sold</string>
     <string name="product_selector_products_heading">Products</string>
     <string name="product_selector_subscription_not_supported">Subscription products are not supported for order creation</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">This bundle contains a subscription product, which is not supported for order creation</string>
 
     <!-- WC Shipping installation flow -->
     <string name="install_wc_shipping_flow_onboarding_screen_title">Fulfill your orders with WooCommerce Shipping</string>
@@ -3818,7 +3852,6 @@
     <string name="blaze_campaign_creation_no_product_modal_cta">Create Product</string>
 
     <string name="order_configuration_product_selection">Select product %s</string>
-    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See report</string>
 
@@ -3877,14 +3910,13 @@
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
 
-    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce soon</string>
-    <string name="woopos_wc_version_sunset_banner_message">Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later. Update WooCommerce on your store or ask your store administrator.</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Dismiss WooCommerce update warning</string>
-
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_reader_reconnecting">Reconnecting…</string>
     <string name="woopos_remote_reader_connect_failed_generic">Connection failed</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">This phone isn\'t eligible for Tap to Pay. Try a different device.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Turn on NFC on the phone, then try again.</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Payment service error. Try reconnecting.</string>
     <string name="woopos_battery_low">Card reader battery low</string>
     <string name="woopos_battery_critical">Card reader battery critical</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4226,6 +4258,14 @@
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_refund_preview_error">Couldn\'t calculate the refund total. Please try again.</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">The selected quantity is more than what\'s left to refund.</string>
+    <string name="woopos_refund_error_item_already_refunded">One of the selected items has already been fully refunded.</string>
+    <string name="woopos_refund_error_order_not_refundable">This order can\'t be refunded.</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order.</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item.</string>
+    <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid.</string>
+    <string name="woopos_refund_error_store_not_updated">The card was refunded, but your store wasn\'t updated. Record this refund in your store admin.</string>
+    <string name="woopos_refund_review_remaining_items_button">Review remaining items</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -4374,7 +4414,13 @@
     <string name="woopos_card_reader_location_permission_message">Location permission is required to connect to a card reader via Bluetooth.</string>
     <string name="woopos_card_reader_bluetooth_permission_title">Bluetooth permission required</string>
     <string name="woopos_card_reader_bluetooth_permission_message">Bluetooth permission is required to connect to a card reader.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Local network permission required</string>
+    <string name="woopos_card_reader_local_network_permission_message">Local network permission is required to connect to a phone used as a card reader.</string>
     <string name="woopos_card_reader_grant_permission_button">Grant permission</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Allow Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Turn on Bluetooth to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Allow location to see card readers</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Turn on location to see card readers</string>
     <string name="woopos_card_reader_invalid_address_title">Invalid merchant address</string>
     <string name="woopos_card_reader_invalid_address_message">Your store address is missing or incomplete. Please update your store address in WooCommerce settings.</string>
     <string name="woopos_card_reader_invalid_postal_code_title">Invalid postal code</string>

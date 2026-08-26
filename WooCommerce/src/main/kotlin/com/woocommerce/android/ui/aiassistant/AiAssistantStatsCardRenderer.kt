@@ -2,14 +2,18 @@ package com.woocommerce.android.ui.aiassistant
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.aiassistant.R
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCard
 import com.woocommerce.android.aiassistant.ui.cards.AiAssistantStatsCardState
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCard
 import com.woocommerce.android.aiassistant.ui.cards.AssistantCardAction
+import com.woocommerce.android.extensions.formatAsRangeWith
+import com.woocommerce.android.extensions.formatToLocalizedMonthDayYear
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 
 internal class AiAssistantStatsCardRenderer(
@@ -21,11 +25,10 @@ internal class AiAssistantStatsCardRenderer(
         onAction: (AssistantCardAction) -> Unit,
         modifier: Modifier,
     ) {
-        val context = LocalContext.current
         AiAssistantStatsCard(
             state = card.toStatsCardState(
                 currencyFormatter = currencyFormatter,
-                unavailableValue = context.getString(R.string.ai_assistant_stats_card_metric_unavailable),
+                unavailableValue = stringResource(R.string.ai_assistant_stats_card_metric_unavailable),
             ),
             onClick = card.toStatsCardClickHandler(onAction),
             modifier = modifier,
@@ -54,20 +57,15 @@ private fun formatStatsPeriod(
             .filter { it.isNotBlank() }
             .joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
             .ifBlank { unavailableValue }
-        start == end -> start.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale))
-        start.year == end.year -> listOf(
-            start.format(DateTimeFormatter.ofPattern("MMM d", locale)),
-            end.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
-        ).joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
-        else -> listOf(
-            start.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
-            end.format(DateTimeFormatter.ofPattern("MMM d, yyyy", locale)),
-        ).joinToString(ASSISTANT_STATS_PERIOD_SEPARATOR)
+        start == end -> start.toDate().formatToLocalizedMonthDayYear(locale)
+        else -> start.toDate().formatAsRangeWith(end.toDate(), locale)
     }
 }
 
 private fun String.toStatsLocalDate(): LocalDate? =
     runCatching { LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE) }.getOrNull()
+
+private fun LocalDate.toDate(): Date = Date.from(atStartOfDay(ZoneId.systemDefault()).toInstant())
 
 private fun formatStatsMoney(
     value: String,

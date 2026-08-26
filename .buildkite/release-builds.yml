@@ -10,7 +10,7 @@ agents:
 steps:
   - label: "Gradle Wrapper Validation"
     command: |
-      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+      checkout_release_branch "$RELEASE_VERSION"
 
       validate_gradle_wrapper
     priority: 1
@@ -21,7 +21,7 @@ steps:
 
   - label: "🛠 Release Build (Mobile App)"
     command: |
-      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+      checkout_release_branch "$RELEASE_VERSION"
 
       .buildkite/commands/release-build.sh "WooCommerce"
     priority: 1
@@ -35,7 +35,7 @@ steps:
 
   - label: "🛠 Release Build (Wear App)"
     command: |
-      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+      checkout_release_branch "$RELEASE_VERSION"
 
       .buildkite/commands/release-build.sh "WooCommerce-Wear"
     priority: 1

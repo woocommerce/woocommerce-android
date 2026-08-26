@@ -65,8 +65,8 @@ fun DashboardCouponsCard(
         event = viewModel.event,
         openDatePicker = { fromDate, toDate ->
             parentViewModel.onDashboardWidgetEvent(
-                DashboardViewModel.DashboardEvent.OpenRangePicker(fromDate, toDate) { from, to ->
-                    viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+                DashboardViewModel.DashboardEvent.OpenRangePicker(fromDate, toDate) { startDate, endDate ->
+                    viewModel.onCustomRangeSelected(StatsTimeRange(startDate, endDate))
                 }
             )
         }
@@ -89,7 +89,7 @@ fun DashboardCouponsCard(
 @Composable
 private fun HandleEvents(
     event: LiveData<MultiLiveEvent.Event>,
-    openDatePicker: (Long, Long) -> Unit,
+    openDatePicker: (Date, Date) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -98,7 +98,7 @@ private fun HandleEvents(
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardCouponsViewModel.OpenDatePicker -> {
-                    openDatePicker(event.fromDate.time, event.toDate.time)
+                    openDatePicker(event.fromDate, event.toDate)
                 }
 
                 DashboardCouponsViewModel.ViewAllCoupons -> {

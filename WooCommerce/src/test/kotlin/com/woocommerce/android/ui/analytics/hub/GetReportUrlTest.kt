@@ -4,9 +4,11 @@ package com.woocommerce.android.ui.analytics.hub
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -18,6 +20,9 @@ import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class GetReportUrlTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val sampleAdminURL = "https://testing.com/wp-admin/"
     private val defaultSite = SiteModel().apply {
         adminUrl = sampleAdminURL

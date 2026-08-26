@@ -613,6 +613,18 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when a gift card is selected, then the order draft carries the gift card code`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        sut.onGiftCardSelected("1234-5678-9012-3456")
+
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+    }
+
     // region Scanned and Deliver
     @Test
     fun `when scan succeeds, then set isUpdatingOrderDraft to true`() {

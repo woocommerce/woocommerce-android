@@ -16,7 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
-import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -31,16 +31,24 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.Endpoint as ValidationEndpoint
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.ValidationError.INVALID_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.ValidationResult
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -70,6 +78,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val USERNAME_PARAMETER = "user_login"
         private const val PASSWORD_PARAMETER = "password"
         private const val HAS_RECONCILED_SITE_URL_KEY = "has-reconciled-site-url"
+        private const val LOGIN_ENTRY_URL_KEY = "login-entry-url"
+        private const val ADMIN_BASE_URL_KEY = "admin-base-url"
     }
 
     private var siteAddress: String
@@ -97,8 +107,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
 
     private val loadingMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "loading-message")
+    private val endpointRecovery = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = EndpointRecovery::class.java,
+        key = "endpoint-recovery"
+    )
 
-    private val SiteModel?.fullAuthorizationUrl: String?
+    private val SiteModel?.applicationPasswordAuthorizationUrl: String?
         get() = this?.applicationPasswordsAuthorizeUrl
             ?.let { url ->
                 "$url?app_name=${applicationPasswordsConfiguration.applicationName}&success_url=$REDIRECTION_URL"
@@ -109,14 +125,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         loadingMessage.map { message -> message.takeIf { it != 0 } },
-        authError
-    ) { siteAddress, username, password, loadingMessage, authError ->
+        authError,
+        endpointRecovery
+    ) { siteAddress, username, password, loadingMessage, authenticationError, endpointRecovery ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
             loadingMessage = loadingMessage,
-            authenticationError = authError
+            authenticationError = authenticationError,
+            endpointRecovery = endpointRecovery
         )
     }.asLiveData()
 
@@ -144,7 +162,53 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         fetchedSiteId.value = -1
     }
 
+    fun onEndpointUrlChanged(url: String) {
+        endpointRecovery.value = endpointRecovery.value?.copy(url = url, errorMessage = null)
+    }
+
+    private suspend fun continueEndpointRecovery(recovery: EndpointRecovery) {
+        val endpoints = currentAuthenticationEndpoints(recovery).withSiteSchemeFrom(recovery.url)
+        when (val validation = endpoints.validate()) {
+            is ValidationResult.Valid -> {
+                val validatedEndpoints = endpoints.withValidatedUrls(validation)
+                endpointRecovery.value = recovery.copy(
+                    url = when (recovery.type) {
+                        EndpointType.LOGIN -> validation.loginEntryUrl.toString()
+                        EndpointType.ADMIN -> validation.adminBaseUrl.toString()
+                    },
+                    errorMessage = null
+                )
+                login(validatedEndpoints, recovery.type)
+            }
+
+            is ValidationResult.Invalid -> {
+                val errorMessage = validation.error.toUiString()
+                if (validation.endpoint == recovery.type.validationEndpoint) {
+                    endpointRecovery.value = recovery.copy(errorMessage = errorMessage)
+                } else {
+                    endpointRecovery.value = recovery.copy(errorMessage = null)
+                    authError.value = AuthenticationError(
+                        errorMessage = if (validation.endpoint == ValidationEndpoint.CANONICAL) {
+                            UiStringRes(R.string.error_generic)
+                        } else {
+                            errorMessage
+                        },
+                        showWpAdminFallbackOption = true
+                    )
+                }
+            }
+        }
+    }
+
+    fun onEndpointRecoveryCancelClick() {
+        endpointRecovery.value = null
+    }
+
     fun onContinueClick() = launch {
+        endpointRecovery.value?.let {
+            continueEndpointRecovery(it)
+            return@launch
+        }
         loginAnalyticsListener.trackSubmitClicked()
         val site = fetchedSiteId.value.takeIf { it != -1 }?.let { wpApiSiteRepository.getSiteByLocalId(it) }
         if (site?.username != null) {
@@ -221,47 +285,121 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         login()
     }
 
-    private suspend fun login() {
+    private suspend fun login(
+        endpoints: CookieNonceAuthenticationEndpoints = currentAuthenticationEndpoints(),
+        retryingEndpoint: EndpointType? = null
+    ) {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value)
         loadingMessage.value = R.string.logging_in
-        wpApiSiteRepository.login(
+        val result = wpApiSiteRepository.login(
             url = siteAddress,
             username = state.username,
-            password = state.password
-        ).fold(
-            onSuccess = {
-                fetchSite()
-            },
-            onFailure = { exception ->
-                val authenticationError = exception as? CookieNonceAuthenticationException
-
-                when (authenticationError?.errorType) {
-                    INVALID_CREDENTIALS -> authError.value = AuthenticationError(
-                        errorMessage = authenticationError.errorMessage,
-                        showWpAdminFallbackOption = true
-                    )
-
-                    BASIC_AUTH_REQUIRED -> authError.value = AuthenticationError(
-                        errorMessage = authenticationError.errorMessage,
-                        showWpAdminFallbackOption = false
-                    )
-
-                    else -> {
-                        fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
-                        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
-                    }
-                }
-
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType?.name,
-                    errorDescription = exception.message,
-                    statusCode = authenticationError?.networkStatusCode
-                )
-            }
+            password = state.password,
+            endpoints = endpoints
+        )
+        result.fold(
+            onSuccess = { completeNativeAuthentication(endpoints) },
+            onFailure = { handleLoginFailure(it, endpoints, retryingEndpoint) }
         )
         loadingMessage.value = 0
+    }
+
+    private suspend fun completeNativeAuthentication(endpoints: CookieNonceAuthenticationEndpoints) {
+        promoteValidatedEndpoints(endpoints)
+        endpointRecovery.value = null
+        fetchSite()
+    }
+
+    private suspend fun handleLoginFailure(
+        exception: Throwable,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?
+    ) {
+        val authenticationError = exception as? CookieNonceAuthenticationException
+        val loginEntryWasVerified = authenticationError?.loginEntryVerified == true ||
+            authenticationError?.errorType == CUSTOM_ADMIN_URL
+        val hasVerifiedCustomLoginEntry = endpoints.loginEntryUrl != null && loginEntryWasVerified
+
+        if (retryingEndpoint == EndpointType.LOGIN && hasVerifiedCustomLoginEntry) {
+            promoteValidatedEndpoint(EndpointType.LOGIN, endpoints)
+            endpointRecovery.value = null
+        }
+
+        routeLoginFailure(authenticationError, endpoints, retryingEndpoint, hasVerifiedCustomLoginEntry)
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = exception.javaClass.simpleName,
+            errorType = authenticationError?.errorType?.name,
+            errorDescription = exception.message,
+            statusCode = authenticationError?.networkStatusCode
+        )
+    }
+
+    private suspend fun routeLoginFailure(
+        authenticationError: CookieNonceAuthenticationException?,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?,
+        hasVerifiedCustomLoginEntry: Boolean
+    ) {
+        when (authenticationError?.errorType) {
+            CUSTOM_LOGIN_URL -> if (hasVerifiedCustomLoginEntry) {
+                showNativeAuthenticationError(authenticationError.errorMessage)
+            } else {
+                handleEndpointRecovery(EndpointType.LOGIN, retryingEndpoint == EndpointType.LOGIN)
+            }
+
+            CUSTOM_ADMIN_URL -> handleEndpointRecovery(
+                EndpointType.ADMIN,
+                retryingEndpoint == EndpointType.ADMIN
+            )
+
+            INVALID_CREDENTIALS -> authError.value = AuthenticationError(
+                errorMessage = authenticationError.errorMessage,
+                showWpAdminFallbackOption = true
+            )
+
+            BASIC_AUTH_REQUIRED -> showNativeAuthenticationError(authenticationError.errorMessage)
+            else -> routeUnknownLoginFailure(
+                authenticationError,
+                endpoints,
+                retryingEndpoint,
+                hasVerifiedCustomLoginEntry
+            )
+        }
+    }
+
+    private suspend fun routeUnknownLoginFailure(
+        authenticationError: CookieNonceAuthenticationException?,
+        endpoints: CookieNonceAuthenticationEndpoints,
+        retryingEndpoint: EndpointType?,
+        hasVerifiedCustomLoginEntry: Boolean
+    ) {
+        when {
+            hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
+                errorMessage = requireNotNull(authenticationError).errorMessage,
+                showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE
+            )
+
+            authenticationError?.errorType == INVALID_RESPONSE && endpoints.loginEntryUrl != null -> {
+                showEndpointRecovery(EndpointType.LOGIN, showError = true)
+            }
+
+            retryingEndpoint != null || endpoints.loginEntryUrl != null -> showNativeAuthenticationError(
+                authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+            )
+
+            else -> {
+                fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
+                analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
+            }
+        }
+    }
+
+    private fun showNativeAuthenticationError(errorMessage: UiString) {
+        authError.value = AuthenticationError(
+            errorMessage = errorMessage,
+            showWpAdminFallbackOption = false
+        )
     }
 
     private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
@@ -281,10 +419,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
+                    val applicationPasswordAuthorizationUrl = site.applicationPasswordAuthorizationUrl
+                    if (!applicationPasswordAuthorizationUrl.isNullOrEmpty()) {
                         triggerEvent(
                             ShowApplicationPasswordTutorialScreen(
-                                url = site.fullAuthorizationUrl!!,
+                                verifiedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY),
+                                applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
                                 errorMessage = errorMessage
                             )
                         )
@@ -318,8 +458,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         ).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
-                    fetchedSiteId.value = site.id
-                    fetchUserInfo()
+                    persistAuthenticationEndpoints(site)
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
@@ -345,11 +484,32 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         )
     }
 
-    private suspend fun fetchUserInfo() {
-        loadingMessage.value = R.string.logging_in
-        val site = requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
+    private suspend fun persistAuthenticationEndpoints(site: SiteModel) {
+        val endpoints = currentAuthenticationEndpoints(recovery = null)
+        if (endpoints.loginEntryUrl == null && endpoints.adminBaseUrl == null) {
+            fetchedSiteId.value = site.id
+            fetchUserInfo(site)
+        } else {
+            wpApiSiteRepository.saveAuthenticationEndpoints(site, endpoints).fold(
+                onSuccess = {
+                    fetchedSiteId.value = it.id
+                    fetchUserInfo(it)
+                },
+                onFailure = ::handleEndpointPersistenceFailure
+            )
+        }
+    }
+
+    private suspend fun fetchUserInfo(site: SiteModel? = null) {
+        val resolvedSite = site ?: requireNotNull(wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)) {
             "Site credentials login: Site not found in DB after login"
         }
+        loadingMessage.value = R.string.logging_in
+        checkEligibilityAndCompleteLogin(resolvedSite)
+        loadingMessage.value = 0
+    }
+
+    private suspend fun checkEligibilityAndCompleteLogin(site: SiteModel) {
         wpApiSiteRepository.checkIfUserIsEligible(site).fold(
             onSuccess = { isEligible ->
                 if (isEligible) {
@@ -361,31 +521,41 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 selectedSite.set(site)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
-            onFailure = { exception ->
-                triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
-                when (exception) {
-                    is ApplicationPasswordGenerationException -> {
-                        trackLoginFailure(
-                            step = Step.APPLICATION_PASSWORD_GENERATION,
-                            errorContext = exception.networkError.javaClass.simpleName,
-                            errorType = exception.networkError.type.name,
-                            errorDescription = exception.message
-                        )
-                    }
-
-                    else -> {
-                        val wooError = (exception as? WooException)?.error
-                        trackLoginFailure(
-                            step = Step.USER_ROLE,
-                            errorContext = (wooError ?: exception).javaClass.simpleName,
-                            errorType = wooError?.type?.name,
-                            errorDescription = exception.message
-                        )
-                    }
-                }
-            }
+            onFailure = ::handleUserInfoFailure
         )
-        loadingMessage.value = 0
+    }
+
+    private fun handleEndpointPersistenceFailure(exception: Throwable) {
+        triggerEvent(ShowSnackbar(R.string.login_site_credentials_endpoint_persistence_failed))
+        val siteError = (exception as? OnChangedException)?.error as? SiteError
+        val error = (exception as? OnChangedException)?.error ?: exception
+        trackLoginFailure(
+            step = Step.ENDPOINT_PERSISTENCE,
+            errorContext = error.javaClass.simpleName,
+            errorType = siteError?.type?.name,
+            errorDescription = exception.message
+        )
+    }
+
+    private fun handleUserInfoFailure(exception: Throwable) {
+        triggerEvent(ShowSnackbar(R.string.user_role_access_error_fetch_failed))
+        val applicationPasswordError = (exception as? ApplicationPasswordGenerationException)?.networkError
+        if (applicationPasswordError != null) {
+            trackLoginFailure(
+                step = Step.APPLICATION_PASSWORD_GENERATION,
+                errorContext = applicationPasswordError.javaClass.simpleName,
+                errorType = applicationPasswordError.type.name,
+                errorDescription = exception.message
+            )
+        } else {
+            val wooError = (exception as? WooException)?.error
+            trackLoginFailure(
+                step = Step.USER_ROLE,
+                errorContext = (wooError ?: exception).javaClass.simpleName,
+                errorType = wooError?.type?.name,
+                errorDescription = exception.message
+            )
+        }
     }
 
     private fun trackLoginFailure(
@@ -413,6 +583,116 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
+    private fun currentAuthenticationEndpoints(
+        recovery: EndpointRecovery? = endpointRecovery.value
+    ): CookieNonceAuthenticationEndpoints {
+        val savedLoginUrl = savedStateHandle.get<String>(LOGIN_ENTRY_URL_KEY)
+        val savedAdminUrl = savedStateHandle.get<String>(ADMIN_BASE_URL_KEY)
+        return CookieNonceAuthenticationEndpoints(
+            siteUrl = siteAddress,
+            loginEntryUrl = if (recovery?.type == EndpointType.LOGIN) recovery.url else savedLoginUrl,
+            adminBaseUrl = if (recovery?.type == EndpointType.ADMIN) recovery.url else savedAdminUrl,
+            adminBaseVerification = if (recovery?.type == EndpointType.ADMIN) {
+                AdminBaseVerification.AUTHENTICATED_DASHBOARD
+            } else {
+                AdminBaseVerification.NONE
+            }
+        )
+    }
+
+    private fun promoteValidatedEndpoints(endpoints: CookieNonceAuthenticationEndpoints) {
+        val validation = endpoints.withSiteSchemeFrom(
+            endpoints.loginEntryUrl ?: endpoints.adminBaseUrl
+        ).validate() as? ValidationResult.Valid ?: return
+        val validatedEndpoints = endpoints.withValidatedUrls(validation)
+        EndpointType.entries.forEach { type ->
+            promoteEndpoint(type, validatedEndpoints)
+        }
+    }
+
+    private fun promoteValidatedEndpoint(
+        type: EndpointType,
+        endpoints: CookieNonceAuthenticationEndpoints
+    ) {
+        val validation = endpoints.withSiteSchemeFrom(type.urlFrom(endpoints)).validate()
+            as? ValidationResult.Valid ?: return
+        promoteEndpoint(type, endpoints.withValidatedUrls(validation))
+    }
+
+    private fun promoteEndpoint(type: EndpointType, endpoints: CookieNonceAuthenticationEndpoints) {
+        when (type) {
+            EndpointType.LOGIN -> endpoints.loginEntryUrl?.let { savedStateHandle[LOGIN_ENTRY_URL_KEY] = it }
+            EndpointType.ADMIN -> endpoints.adminBaseUrl?.let { savedStateHandle[ADMIN_BASE_URL_KEY] = it }
+        }
+    }
+
+    private fun showEndpointRecovery(type: EndpointType, showError: Boolean) {
+        val endpoints = currentAuthenticationEndpoints(recovery = null)
+        val defaults = endpoints.withSiteSchemeFrom(
+            type.urlFrom(endpoints) ?: endpoints.loginEntryUrl ?: endpoints.adminBaseUrl
+        ).validate() as? ValidationResult.Valid
+        val url = endpointRecovery.value?.takeIf { it.type == type }?.url ?: when (type) {
+            EndpointType.LOGIN -> endpoints.loginEntryUrl ?: defaults?.loginEntryUrl?.toString().orEmpty()
+            EndpointType.ADMIN -> endpoints.adminBaseUrl ?: defaults?.adminBaseUrl?.toString().orEmpty()
+        }
+        endpointRecovery.value = EndpointRecovery(
+            type = type,
+            url = url,
+            errorMessage = UiStringRes(type.missingUrlError).takeIf { showError }
+        )
+    }
+
+    private suspend fun handleEndpointRecovery(type: EndpointType, isRetry: Boolean) {
+        if (!isRetry && !hasReconciledSiteUrl) {
+            val canonicalUrl = wpApiSiteRepository.fetchSite(url = siteAddress).getOrNull()?.url
+            val reconciledSiteAddress = canonicalUrl?.toSafeReconciledSiteAddress()
+            if (reconciledSiteAddress != null) {
+                hasReconciledSiteUrl = true
+                siteAddress = reconciledSiteAddress
+                login()
+                return
+            }
+        }
+        showEndpointRecovery(type, isRetry)
+    }
+
+    private fun String.toSafeReconciledSiteAddress(): String? {
+        if (isEmpty() || this == siteAddress) return null
+        val currentEndpoints = CookieNonceAuthenticationEndpoints(siteAddress)
+            .withSiteSchemeFrom(this)
+            .validate() as? ValidationResult.Valid ?: return null
+        val candidateEndpoints = CookieNonceAuthenticationEndpoints(this).validate()
+            as? ValidationResult.Valid ?: return null
+        return takeIf { currentEndpoints.allows(candidateEndpoints.siteUrl) }
+    }
+
+    private fun CookieNonceAuthenticationEndpoints.withSiteSchemeFrom(
+        endpointUrl: String?
+    ): CookieNonceAuthenticationEndpoints {
+        if (siteUrl.toHttpUrlOrNull() != null) return this
+        val scheme = endpointUrl?.toHttpUrlOrNull()?.scheme ?: "https"
+        val schemeLessSiteUrl = siteUrl.substringAfter("://").trimStart('/')
+        return copy(
+            siteUrl = "$scheme://$schemeLessSiteUrl"
+        )
+    }
+
+    private fun CookieNonceAuthenticationEndpoints.withValidatedUrls(
+        validation: ValidationResult.Valid
+    ) = copy(
+        siteUrl = validation.siteUrl.toString(),
+        loginEntryUrl = loginEntryUrl?.let { validation.loginEntryUrl.toString() },
+        adminBaseUrl = adminBaseUrl?.let { validation.adminBaseUrl.toString() }
+    )
+
+    private fun CookieNonceAuthenticationEndpoints.ValidationError.toUiString() = UiStringRes(
+        if (this == INVALID_URL) {
+            R.string.login_site_credentials_endpoint_invalid_url_error
+        } else {
+            R.string.login_site_credentials_endpoint_same_site_error
+        }
+    )
+
     @Suppress("SpreadOperator")
     private fun UiString.toPresentableString(): String = when (this) {
         is UiStringRes -> resourceProvider.getString(
@@ -427,7 +707,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val username: String = "",
         val password: String = "",
         @StringRes val loadingMessage: Int? = null,
-        val authenticationError: AuthenticationError? = null
+        val authenticationError: AuthenticationError? = null,
+        val endpointRecovery: EndpointRecovery? = null
     ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
@@ -438,9 +719,29 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val showWpAdminFallbackOption: Boolean = true
     ) : Parcelable
 
+    enum class EndpointType(
+        @StringRes val missingUrlError: Int,
+        val validationEndpoint: ValidationEndpoint
+    ) {
+        LOGIN(R.string.login_site_credentials_login_url_not_found_error, ValidationEndpoint.LOGIN),
+        ADMIN(R.string.login_site_credentials_admin_url_not_found_error, ValidationEndpoint.ADMIN);
+
+        fun urlFrom(endpoints: CookieNonceAuthenticationEndpoints) = when (this) {
+            LOGIN -> endpoints.loginEntryUrl
+            ADMIN -> endpoints.adminBaseUrl
+        }
+    }
+
+    @Parcelize
+    data class EndpointRecovery(
+        val type: EndpointType,
+        val url: String,
+        val errorMessage: UiString? = null
+    ) : Parcelable
+
     @VisibleForTesting
     enum class Step {
-        AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, USER_ROLE
+        AUTHENTICATION, APPLICATION_PASSWORD_GENERATION, ENDPOINT_PERSISTENCE, USER_ROLE
     }
 
     data class LoggedIn(val localSiteId: Int) : MultiLiveEvent.Event()
@@ -457,7 +758,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     ) : MultiLiveEvent.Event()
 
     data class ShowApplicationPasswordTutorialScreen(
-        val url: String,
+        val verifiedLoginUrl: String?,
+        val applicationPasswordAuthorizationUrl: String,
         val errorMessage: String
     ) : MultiLiveEvent.Event()
 }

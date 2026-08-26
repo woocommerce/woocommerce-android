@@ -98,6 +98,7 @@ class SubscriptionProductVariation(
                 Product.Image(
                     id = it.id,
                     name = it.name,
+                    alt = it.alt,
                     source = it.src,
                     dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
                     isCoverImage = false
@@ -107,6 +108,7 @@ class SubscriptionProductVariation(
                 Product.Image(
                     id = it.id,
                     name = it.name,
+                    alt = it.alt,
                     source = it.src,
                     dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
                     isCoverImage = false

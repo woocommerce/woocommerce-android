@@ -18,17 +18,14 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toMetaData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.PRODUCTS
 import com.woocommerce.android.util.suspendCoroutineWithTimeout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -64,8 +61,7 @@ class ProductDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
-    private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val taxStore: WCTaxStore
 ) {
     private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -129,10 +125,10 @@ class ProductDetailRepository @Inject constructor(
      */
     suspend fun updateProduct(updatedProductAggregate: ProductAggregate): Pair<Boolean, WCProductStore.ProductError?> {
         return try {
+            val cachedProduct = getCachedWCProductModel(updatedProductAggregate.remoteId)
             suspendCoroutineWithTimeout<Pair<Boolean, WCProductStore.ProductError?>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
-                val cachedProduct = getCachedWCProductModel(updatedProductAggregate.remoteId)
                 val product = updatedProductAggregate.product.toDataModel(cachedProduct)
                 val metadataChanges = MetadataChanges(
                     // Even though the subscription keys are passed as new metadata here, the server will replace any
@@ -336,14 +332,10 @@ class ProductDetailRepository @Inject constructor(
         return wooResult.model?.map { it.toAppModel() } ?: emptyList()
     }
 
-    private fun getCachedWCProductModel(remoteProductId: Long) =
-        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+    private suspend fun getCachedWCProductModel(remoteProductId: Long) =
+        productStore.getProduct(selectedSite.get(), remoteProductId)
 
-    fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
-
-    suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
-        getCachedWCProductModel(remoteProductId)?.toAppModel()
-    }
+    suspend fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
     suspend fun getProductAggregate(remoteProductId: Long): ProductAggregate? {
         val product = getProduct(remoteProductId) ?: return null
@@ -351,30 +343,19 @@ class ProductDetailRepository @Inject constructor(
         return ProductAggregate(product, subscriptionDetails)
     }
 
-    fun isSkuAvailableLocally(sku: String) = runBlocking { !productStore.isProductExists(selectedSite.get(), sku) }
+    suspend fun isSkuAvailableLocally(sku: String) = !productStore.isProductExists(selectedSite.get(), sku)
 
     suspend fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
-    fun getTaxClassesForSite(): List<TaxClass> =
-        runBlocking { taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() } }
+    suspend fun getTaxClassesForSite(): List<TaxClass> =
+        taxStore.getTaxClassListForSite(selectedSite.get()).map { it.toAppModel() }
 
     /**
      * Returns the cached (SQLite) shipping class for the given [remoteShippingClassId]
      */
     suspend fun getProductShippingClassByRemoteId(remoteShippingClassId: Long) =
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
-
-    fun getQuantityRules(remoteProductId: Long): QuantityRules? {
-        val product = getCachedWCProductModel(remoteProductId)
-        return product?.let {
-            QuantityRules(
-                if (product.minAllowedQuantity > 0) product.minAllowedQuantity else null,
-                if (product.maxAllowedQuantity > 0) product.maxAllowedQuantity else null,
-                if (product.groupOfQuantity > 0) product.groupOfQuantity else null
-            )
-        }
-    }
 
     suspend fun getProductMetadata(remoteProductId: Long): List<WCMetaData> {
         return productStore.getProductMetaData(selectedSite.get(), remoteProductId)

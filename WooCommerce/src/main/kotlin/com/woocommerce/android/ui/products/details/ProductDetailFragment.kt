@@ -134,6 +134,9 @@ class ProductDetailFragment :
 
     private val navArgs: ProductDetailFragmentArgs by navArgs()
 
+    private val isInDetailPane: Boolean
+        get() = requireContext().isTwoPanesShouldBeUsed && parentFragment?.id == R.id.detail_nav_container
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -152,8 +155,6 @@ class ProductDetailFragment :
 
         val productListInBackstack =
             findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.PRODUCTS.id
-        val isInDetailPane =
-            requireContext().isTwoPanesShouldBeUsed && (parentFragment?.id == R.id.detail_nav_container)
         val isTrashEnabled = productListInBackstack || isInDetailPane
         viewModel.setTrashActionPossible(isTrashEnabled)
 
@@ -413,9 +414,13 @@ class ProductDetailFragment :
         }
 
         viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
-            productsCommunicationViewModel.pushEvent(
-                ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
-            )
+            // Only the detail-pane instance should report changes; a full-screen instance pushing this event
+            // could overwrite a pending ProductSelected event before the product list resubscribes
+            if (isInDetailPane) {
+                productsCommunicationViewModel.pushEvent(
+                    ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
+                )
+            }
         }
 
         observeEvents(viewModel)

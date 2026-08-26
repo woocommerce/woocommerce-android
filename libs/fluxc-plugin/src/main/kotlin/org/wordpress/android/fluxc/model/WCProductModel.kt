@@ -124,14 +124,17 @@ data class WCProductModel(
     val attributeList: Array<ProductAttribute>
         get() = Gson().fromJson(attributes, Array<ProductAttribute>::class.java) ?: emptyArray()
 
+    /**
+     * A bundle with any bundled items is configurable, matching iOS. The `bundled_items` metadata can't reveal
+     * everything a merchant may need to choose (e.g. a variable child's variation), so no attempt is made to
+     * detect whether there is actually anything to configure.
+     */
     val isConfigurable: Boolean
         get() = when (type) {
             CoreProductType.BUNDLE.value -> {
                 runCatching { Gson().fromJson(bundledItems, Array<WCBundledProduct>::class.java) }
                     .takeIf { it.isSuccess }?.getOrNull()
-                    ?.let { products ->
-                        products.any { it.isConfigurable() }
-                    } ?: false
+                    ?.isNotEmpty() ?: false
             }
             else -> false
         }
@@ -230,7 +233,7 @@ data class WCProductModel(
                 WCProductImageModel(this.getLong("id")).also {
                     it.name = this.getString("name") ?: ""
                     it.src = this.getString("src") ?: ""
-                    it.alt = this.getString("alt") ?: ""
+                    it.alt = this.getString("alt")
                     imageList.add(it)
                 }
             }
@@ -417,7 +420,7 @@ data class WCProductModel(
 
     /**
      * Compares this product's images with the passed product's images, returns true only if both
-     * lists contain the same images in the same order
+     * lists contain the same images in the same order with the same alt text and name
      */
     fun hasSameImages(updatedProduct: WCProductModel): Boolean {
         val updatedImages = updatedProduct.getImageListOrEmpty()
@@ -426,7 +429,10 @@ data class WCProductModel(
             return false
         }
         for (i in thisImages.indices) {
-            if (thisImages[i].id != updatedImages[i].id) {
+            if (thisImages[i].id != updatedImages[i].id ||
+                thisImages[i].alt != updatedImages[i].alt ||
+                thisImages[i].name != updatedImages[i].name
+            ) {
                 return false
             }
         }

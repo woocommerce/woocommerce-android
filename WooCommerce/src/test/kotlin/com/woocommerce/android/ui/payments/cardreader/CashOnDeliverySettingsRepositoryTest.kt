@@ -102,7 +102,7 @@ class CashOnDeliverySettingsRepositoryTest {
                 getSuccessWooResult("cod", true, title = "Cash on delivery")
             )
 
-            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()?.title)
+            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway().model?.title)
                 .isEqualTo("Cash on delivery")
         }
     }
@@ -114,7 +114,22 @@ class CashOnDeliverySettingsRepositoryTest {
                 getSuccessWooResult("cheque", true)
             )
 
-            assertThat(cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()).isNull()
+            val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isNull()
+        }
+    }
+
+    @Test
+    fun `when api result is error, then the gateway fetch fails`() {
+        runTest {
+            whenever(gatewayStore.fetchAllGateways(selectedSite.get())).thenReturn(getFailureWooResult())
+
+            val result = cashOnDeliverySettingsRepository.fetchCashOnDeliveryGateway()
+
+            assertThat(result.isError).isTrue
+            assertThat(result.model).isNull()
         }
     }
 

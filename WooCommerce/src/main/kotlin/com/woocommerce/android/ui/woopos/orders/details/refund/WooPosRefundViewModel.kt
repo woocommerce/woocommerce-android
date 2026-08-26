@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -28,7 +30,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.refunds.WCRefundPreview
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Suppress("LongParameterList")
@@ -39,9 +40,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
     private val groupRefundItems: WooPosGroupRefundItems,
-    private val buildRefundV4LineItems: WooPosBuildRefundV4LineItems,
+    private val buildRefundLineItems: WooPosBuildRefundLineItems,
     private val refundPreview: WooPosRefundPreview,
-    private val v4RefundAvailabilityCache: WooPosV4RefundAvailabilityCache,
+    private val resolveRefundFlow: WooPosResolveRefundFlow,
+    private val serverRefundAvailabilityCache: WooPosServerRefundAvailabilityCache,
     private val calculateRefundSubtotal: WooPosCalculateRefundSubtotal,
     private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
@@ -49,6 +51,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val getPaymentMethod: WooPosGetPaymentMethod,
+    private val buildRefundContent: WooPosBuildRefundContent,
+    private val mapRefundFailure: WooPosMapRefundFailure,
     private val refundSubmissionProcessor: WooPosRefundSubmissionProcessor,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val cardReaderFacade: WooPosCardReaderFacade,
@@ -122,14 +126,27 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun loadRefundableItems() {
         if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
+        loadContent(preservedSelection = null, isFlowStart = true)
+    }
+
+    private fun refreshRefundableItems() {
+        val preservedSelection = (_state.value as? WooPosRefundState.Content)?.selectedItemIds
+            ?: contentStateBeforeRefund?.selectedItemIds
+        cancelPreview()
+        cancelRefundSubmission()
+        loadContent(preservedSelection = preservedSelection, isFlowStart = false)
+    }
+
+    private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean) {
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
             // Store settings (currency decimals, tax rounding mode) are only needed to calculate
-            // refund totals locally for the v3 fallback. When v4 is available the server returns the
-            // totals via the preview/create endpoints, so we defer fetching these settings until the
-            // moment we actually fall back to local calculation (see [ensureLocalCalculationSettings]).
+            // refund totals locally for the legacy fallback. When server refunds are available the
+            // server returns the totals via the preview/create endpoints, so we defer fetching these
+            // settings until we actually fall back to local calculation
+            // (see [ensureLocalCalculationSettings]).
             val orderAndRefundsResult = fetchOrderAndRefunds()
             if (orderAndRefundsResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
@@ -160,7 +177,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
-            showRefundableItems(order, refundableItems, paymentMethodResult.getOrThrow())
+            showRefundableItems(
+                order = order,
+                refundableItems = refundableItems,
+                paymentMethod = paymentMethodResult.getOrThrow(),
+                preservedSelection = preservedSelection,
+                isFlowStart = isFlowStart,
+            )
         }
     }
 
@@ -168,52 +191,26 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
         paymentMethod: String,
+        preservedSelection: Set<String>? = null,
+        isFlowStart: Boolean = true,
     ) {
-        // The item-selection step does not display aggregate totals, so we build the content without
-        // computing them. Totals are resolved on "Continue": from the server (v4 preview) or, on a
-        // v4-unavailable store, calculated locally at that point (see [continueToReview]).
-        _state.value = buildContentShell(
+        _state.value = buildRefundContent(
             order = order,
             refundableItems = refundableItems,
             paymentMethod = paymentMethod,
+            preservedSelection = preservedSelection,
         )
-        viewModelScope.launch {
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
+
+        if (isFlowStart) {
+            viewModelScope.launch {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
+            }
         }
-    }
-
-    private fun buildContentShell(
-        order: Order,
-        refundableItems: List<WooPosRefundableItem>,
-        paymentMethod: String,
-        selectedItemIds: Set<String> = refundableItems.map { it.uniqueId }.toSet()
-    ): WooPosRefundState.Content {
-        val selectedItems = refundableItems.filter { it.uniqueId in selectedItemIds }
-        val allItemIds = refundableItems.map { it.uniqueId }.toSet()
-        val zero = PriceUtils.formatCurrency(BigDecimal.ZERO, order.currency, currencyFormatter)
-
-        return WooPosRefundState.Content(
-            orderId = order.id,
-            orderNumber = "#${order.number}",
-            currency = order.currency,
-            refundableItems = refundableItems,
-            selectedItemIds = selectedItemIds,
-            allItemsSelected = selectedItemIds.containsAll(allItemIds),
-            itemsCount = selectedItems.size,
-            subtotal = BigDecimal.ZERO,
-            taxes = BigDecimal.ZERO,
-            total = BigDecimal.ZERO,
-            formattedSubtotal = zero,
-            formattedTaxes = zero,
-            formattedTotal = zero,
-            paymentMethod = paymentMethod,
-            step = WooPosRefundState.Content.RefundStep.SelectItems
-        )
     }
 
     /**
      * Fetches the store settings required for local refund calculation (currency decimals and tax
-     * rounding mode) unless already cached. Only the v3 fallback path needs these.
+     * rounding mode) unless already cached. Only the local-calculation flow needs these.
      */
     private suspend fun ensureLocalCalculationSettings(): Boolean {
         if (cachedNumberOfDecimalPoints == null && fetchSiteSettings().isFailure) return false
@@ -253,6 +250,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RefundFlowOpened -> loadRefundableItems()
             WooPosRefundUIEvent.RefundFlowDismissed -> handleRefundFlowDismissed()
             WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
+            WooPosRefundUIEvent.RefreshRefundableItems -> refreshRefundableItems()
             WooPosRefundUIEvent.RetryCreateRefund -> {
                 val contentState = contentStateBeforeRefund
                 if (contentState != null) {
@@ -327,6 +325,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.RefundFlowDismissed,
             WooPosRefundUIEvent.RefundFlowOpened,
             WooPosRefundUIEvent.RetryLoadRefundableItems,
+            WooPosRefundUIEvent.RefreshRefundableItems,
             WooPosRefundUIEvent.RetryCreateRefund,
             WooPosRefundUIEvent.CancelRefund -> Unit
         }
@@ -400,37 +399,31 @@ class WooPosRefundViewModel @AssistedInject constructor(
             allItemsSelected = newSelectedIds.containsAll(allItemIds),
             itemsCount = currentState.refundableItems.count { it.uniqueId in newSelectedIds },
             isPreviewLoading = false,
-            previewFailed = false,
+            previewFailure = null,
         )
     }
 
     /**
-     * Triggered when the user commits their selection by tapping "Continue". Fetches the
-     * server-calculated totals (v4) and, on success, advances to the review step showing those
-     * authoritative totals. On a v4-unavailable store the locally-calculated totals already in
-     * [currentState] stand and we advance immediately. On a preview error the user stays on the
-     * selection step with a retry affordance.
+     * Triggered when the user commits their selection by tapping "Continue". On a server-eligible
+     * store this fetches the server-calculated totals and, on success, advances to the review step
+     * showing those authoritative totals. [WooPosRefundPreview] owns the eligibility decision and
+     * reports `FallbackToLocal` for a local-flow store (flag off, WooCommerce too old, or server
+     * refunds known unavailable), which resolves the totals on-device instead. On a preview error
+     * the user stays on the selection step with a retry affordance.
      */
     private fun continueToReview(currentState: WooPosRefundState.Content) {
         if (currentState.selectedItemIds.isEmpty()) return
         previewJob?.cancel()
 
-        val localSiteId = selectedSite.get().localId().value
         val selectedItems = currentState.refundableItems.filter { it.uniqueId in currentState.selectedItemIds }
 
-        if (v4RefundAvailabilityCache.isV4Available(localSiteId) == false) {
-            // v4 is known unavailable for this store: skip the probe and resolve totals locally.
-            _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
-            previewJob = viewModelScope.launch {
-                advanceToReviewWithLocalTotals(currentState, selectedItems)
-            }
-            return
-        }
-
-        _state.value = currentState.copy(isPreviewLoading = true, previewFailed = false)
+        _state.value = currentState.copy(
+            isPreviewLoading = true,
+            previewFailure = null,
+        )
 
         previewJob = viewModelScope.launch {
-            val lineItems = buildRefundV4LineItems(selectedItems)
+            val lineItems = buildRefundLineItems.forPreview(selectedItems)
             when (val result = refundPreview(currentState.orderId, lineItems)) {
                 is WooPosRefundPreview.Result.ServerCalculated ->
                     setContentIfMatchingSelection(currentState.selectedItemIds) {
@@ -441,17 +434,37 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundPreview.Result.FallbackToLocal ->
                     advanceToReviewWithLocalTotals(currentState, selectedItems)
 
-                WooPosRefundPreview.Result.Error ->
-                    setContentIfMatchingSelection(currentState.selectedItemIds) {
-                        it.copy(isPreviewLoading = false, previewFailed = true)
-                    }
+                is WooPosRefundPreview.Result.Error -> handlePreviewError(currentState, result.apiError)
             }
         }
     }
 
+    private fun handlePreviewError(
+        currentState: WooPosRefundState.Content,
+        apiError: WooPosRefundApiError?,
+    ) {
+        if (apiError == WooPosRefundApiError.OrderNotRefundable) {
+            if (_state.value is WooPosRefundState.Content) {
+                _state.value = WooPosRefundState.NoRefundableItems
+            }
+            return
+        }
+
+        setContentIfMatchingSelection(currentState.selectedItemIds) {
+            it.copy(
+                isPreviewLoading = false,
+                previewFailure = WooPosRefundState.Content.PreviewFailure(
+                    message = apiError?.messageRes?.let(resourceProvider::getString),
+                    recovery = apiError?.recovery ?: WooPosRefundState.Recovery.Retry,
+                ),
+            )
+        }
+    }
+
     /**
-     * Resolves refund totals locally (the v3 path), fetching the required store settings on demand,
-     * then advances to the review step. Surfaces a preview failure if the settings can't be fetched.
+     * Resolves refund totals locally (the legacy flow), fetching the required store settings on
+     * demand, then advances to the review step. Surfaces a preview failure if the settings can't
+     * be fetched.
      */
     private suspend fun advanceToReviewWithLocalTotals(
         currentState: WooPosRefundState.Content,
@@ -460,7 +473,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
         val order = currentOrder
         if (order == null || !ensureLocalCalculationSettings()) {
             setContentIfMatchingSelection(currentState.selectedItemIds) {
-                it.copy(isPreviewLoading = false, previewFailed = true)
+                it.copy(
+                    isPreviewLoading = false,
+                    previewFailure = WooPosRefundState.Content.PreviewFailure(
+                        message = null,
+                        recovery = WooPosRefundState.Recovery.Retry,
+                    ),
+                )
             }
             return
         }
@@ -471,7 +490,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 .copy(
                     step = WooPosRefundState.Content.RefundStep.ReviewRefund,
                     isPreviewLoading = false,
-                    previewFailed = false,
+                    previewFailure = null,
                 )
         }
     }
@@ -496,12 +515,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
             subtotal = preview.subtotal,
             taxes = preview.tax,
             total = preview.total,
-            maxRefundable = preview.maxRefundable,
             formattedSubtotal = PriceUtils.formatCurrency(preview.subtotal, currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(preview.tax, currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(preview.total, currency, currencyFormatter),
             isPreviewLoading = false,
-            previewFailed = false,
+            previewFailure = null,
         )
     }
 
@@ -515,26 +533,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
             contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
+            val serverComputed = isServerComputedRefundConfirmed()
+            val refundFlow = if (serverComputed) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(refundFlow))
 
             val order = currentOrder ?: run {
-                WooLog.e(
-                    WooLog.T.POS,
-                    "WooPosRefund: currentOrder is null during processRefund"
-                )
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+                WooLog.e(WooLog.T.POS, "WooPosRefund: currentOrder is null during processRefund")
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.ORDER_UNAVAILABLE)
                 return@launch
             }
 
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
-            val request = buildSubmissionRequest(order, contentState, selectedItems) ?: run {
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+            val request = buildSubmissionRequest(order, contentState, selectedItems, serverComputed) ?: run {
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE)
                 return@launch
             }
 
@@ -543,30 +554,42 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     /**
-     * Builds the submission request. When v4 is available the server computes monetary values, so we
-     * send only the simplified line items — no client-calculated amount and no local item grouping
-     * (which would require the store's currency settings). Otherwise the v3 request is built from the
-     * locally-grouped items, reusing the currency decimals already fetched for the local calculation.
+     * Builds the submission request. On the server-computed path the server computes monetary
+     * values, so we send only the line items — no client-calculated amount and no local item
+     * grouping (which would require the store's currency settings). Otherwise the classic v3
+     * request is built from the locally-grouped items, reusing the currency decimals already
+     * fetched for the local calculation.
+     *
+     * [serverComputed] comes from [isServerComputedRefundConfirmed], read once by the caller so the
+     * branch taken here and the flow reported to analytics cannot disagree. It requires the
+     * availability cache to be `true` — set only by a successful preview — on top of
+     * [resolveRefundFlow]: on stores without `compute_totals` support the unknown param is
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock, so eligibility alone is never enough to send a computed create.
+     *
+     * Returns null only when the store's currency settings cannot be read; the caller reports that
+     * as [RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE].
      */
     private fun buildSubmissionRequest(
         order: Order,
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
+        serverComputed: Boolean,
     ): WooPosRefundSubmissionRequest? {
-        if (v4RefundAvailabilityCache.isV4Available(selectedSite.get().localId().value) == true) {
+        if (serverComputed) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,
                 refundReason = contentState.refundReason,
                 refundItems = emptyList(),
-                v4LineItems = buildRefundV4LineItems(selectedItems),
+                serverLineItems = buildRefundLineItems.forComputedCreate(selectedItems),
             )
         }
 
         val numberOfDecimalPoints = cachedNumberOfDecimalPoints
             ?: wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
             ?: run {
-                WooLog.e(WooLog.T.POS, "WooPosRefund: failed to read currencyDecimalNumber for v3 refund")
+                WooLog.e(WooLog.T.POS, "WooPosRefund: failed to read currencyDecimalNumber for local refund")
                 return null
             }
         return WooPosRefundSubmissionRequest(
@@ -574,6 +597,29 @@ class WooPosRefundViewModel @AssistedInject constructor(
             refundAmount = contentState.total,
             refundReason = contentState.refundReason,
             refundItems = groupRefundItems(selectedItems, order, numberOfDecimalPoints),
+        )
+    }
+
+    private fun isServerComputedRefundConfirmed(): Boolean {
+        val flow = resolveRefundFlow()
+        return flow is WooPosRefundFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(
+                localSiteId = selectedSite.get().localId().value,
+                wooVersion = flow.wooVersion,
+            ) == true
+    }
+
+    private fun refundFlowFor(request: WooPosRefundSubmissionRequest): RefundFlow =
+        if (request.serverLineItems != null) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+
+    /** Ends a refund that stopped after `refund_processing_started` but before submission. */
+    private suspend fun failBeforeSubmission(refundFlow: RefundFlow, reason: RefundPreconditionReason) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingPreconditionFailed(refundFlow, reason)
+        )
+        _state.value = WooPosRefundState.Error(
+            message = resourceProvider.getString(R.string.error_generic),
+            errorType = WooPosRefundState.Error.ErrorType.Processing
         )
     }
 
@@ -633,7 +679,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             is WooPosRefundSubmissionState.Failure -> {
-                handleRefundSubmissionFailure(submissionState)
+                handleRefundSubmissionFailure(submissionState, refundFlowFor(request))
             }
         }
     }
@@ -654,7 +700,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         request: WooPosRefundSubmissionRequest,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(refundFlowFor(request)))
         val receiptSentMessage = request.order.billingAddress.email
             .takeIf { it.isNotBlank() }
             ?.let { email ->
@@ -671,13 +717,15 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,
+        refundFlow: RefundFlow,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
-        _state.value = WooPosRefundState.Error(
-            message = submissionState.message,
-            errorType = WooPosRefundState.Error.ErrorType.Processing,
-            canRetry = submissionState.canRetry,
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                refundFlow = refundFlow,
+                apiErrorCode = submissionState.apiErrorCode,
+            )
         )
+        _state.value = mapRefundFailure(submissionState)
     }
 
     private fun cancelRefundSubmission() {

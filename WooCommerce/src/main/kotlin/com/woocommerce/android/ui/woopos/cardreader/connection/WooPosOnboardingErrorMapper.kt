@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToMMMMdd
+import com.woocommerce.android.extensions.formatToLocalizedFullMonthDay
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
@@ -88,7 +88,7 @@ class WooPosOnboardingErrorMapper @Inject constructor(
 
             is CardReaderOnboardingState.StripeAccountPendingRequirement -> {
                 val message = if (state.dueDate != null) {
-                    val formattedDate = Date(state.dueDate * MILLIS_PER_SECOND).formatToMMMMdd()
+                    val formattedDate = Date(state.dueDate * MILLIS_PER_SECOND).formatToLocalizedFullMonthDay()
                     resourceProvider.getString(
                         R.string.card_reader_onboarding_account_pending_requirements_hint,
                         formattedDate

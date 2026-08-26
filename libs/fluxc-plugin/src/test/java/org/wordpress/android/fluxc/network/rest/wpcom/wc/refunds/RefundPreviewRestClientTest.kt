@@ -12,7 +12,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.refunds.RefundV4LineItem
+import org.wordpress.android.fluxc.model.refunds.RefundPreviewLineItem
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
@@ -29,12 +29,12 @@ class RefundPreviewRestClientTest {
 
     private val orderId = 123L
     private val lineItems = listOf(
-        RefundV4LineItem.quantityBased(lineItemId = 1L, quantity = 2),
-        RefundV4LineItem.amountBased(lineItemId = 9L, refundTotal = "5.00".toBigDecimal()),
+        RefundPreviewLineItem.quantityBased(lineItemId = 1L, quantity = 2),
+        RefundPreviewLineItem.amountBased(lineItemId = 9L, refundTotal = "5.00".toBigDecimal()),
     )
 
     @Test
-    fun `when previewRefund, then v4 preview endpoint is called with order id and line items`() = runTest {
+    fun `when previewRefund, then nested v3 preview endpoint is called with line items only`() = runTest {
         // GIVEN
         val response = RefundPreviewResponse(
             breakdown = null,
@@ -55,16 +55,16 @@ class RefundPreviewRestClientTest {
         // WHEN
         val result = sut.previewRefund(site, orderId, lineItems)
 
-        // THEN
+        // THEN — the order id lives in the URL, not the body.
         val bodyCaptor = argumentCaptor<Map<String, Any>>()
         verify(wooNetwork).executePostGsonRequest(
             site = eq(site),
-            path = eq(WOOCOMMERCE.refunds.preview.pathV4),
+            path = eq(WOOCOMMERCE.orders.id(orderId).refunds.preview.pathV3),
             clazz = eq(RefundPreviewResponse::class.java),
             body = bodyCaptor.capture(),
         )
-        assertThat(bodyCaptor.firstValue["order_id"]).isEqualTo(orderId)
         assertThat(bodyCaptor.firstValue["line_items"]).isEqualTo(lineItems)
+        assertThat(bodyCaptor.firstValue).doesNotContainKey("order_id")
         assertThat(result.result).isEqualTo(response)
         assertThat(result.isError).isFalse()
     }

@@ -1123,7 +1123,7 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() = CustomerListSelectionViewModel(
-        savedState = CustomerListDialogFragmentArgs(
+        savedState = OrderCustomerListFragmentArgs(
             allowCustomerCreation = true,
             allowGuests = true
         ).toSavedStateHandle(),

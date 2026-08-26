@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader.connection
 
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveredReader
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosDiscoveryTransport
 
 sealed interface WooPosCardReaderConnectionState {
@@ -51,6 +52,14 @@ sealed interface WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = false
     }
 
+    data class MissingLocalNetworkPermission(
+        val phone: WooPosDiscoveredReader.Phone,
+        val onRequestPermissionClicked: () -> Unit,
+        val onCancelClicked: () -> Unit,
+    ) : WooPosCardReaderConnectionState {
+        override val showCloseButton: Boolean = false
+    }
+
     data class MissingBluetoothPermission(
         val onRequestPermissionClicked: () -> Unit,
         val onCancelClicked: () -> Unit,
@@ -61,6 +70,7 @@ sealed interface WooPosCardReaderConnectionState {
     data class ReaderFound(
         val reader: FoundReader,
         val onKeepSearchingClicked: () -> Unit,
+        val bluetoothUnavailable: BluetoothUnavailable?,
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = true
     }
@@ -68,8 +78,25 @@ sealed interface WooPosCardReaderConnectionState {
     data class MultipleReadersFound(
         val readers: List<FoundReader>,
         val onCancelClicked: () -> Unit,
+        val bluetoothUnavailable: BluetoothUnavailable?,
     ) : WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = true
+    }
+
+    data class BluetoothUnavailable(
+        val requirement: BluetoothRequirement.Unmet,
+        val onFixClicked: () -> Unit,
+    )
+
+    sealed interface BluetoothRequirement {
+        data object Satisfied : BluetoothRequirement
+
+        sealed interface Unmet : BluetoothRequirement {
+            data object MissingBluetoothPermission : Unmet
+            data object BluetoothOff : Unmet
+            data object MissingLocationPermission : Unmet
+            data object LocationOff : Unmet
+        }
     }
 
     data object Connecting : WooPosCardReaderConnectionState

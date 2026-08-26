@@ -17,7 +17,9 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.GetProductsByIds
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
@@ -36,6 +38,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -57,6 +60,8 @@ class ProductListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val getProductsByIds: GetProductsByIds,
+    private val refreshProductsSignal: RefreshProductsSignal,
 ) : ScopedViewModel(savedState) {
     var productHasChanges: Boolean = false
     private val _productList = MutableLiveData<List<Product>>()
@@ -114,6 +119,30 @@ class ProductListViewModel @Inject constructor(
         mediaFileUploadHandler.observeProductImageChanges()
             .onEach { loadProducts() }
             .launchIn(this)
+
+        refreshProductsSignal.pendingProductIds
+            .filter { it.isNotEmpty() }
+            .onEach { onProductStockChanged(it) }
+            .launchIn(this)
+    }
+
+    /**
+     * Fetches only the products whose stock changed (targeted upsert, no cache wipe) and re-reads the cache, so the
+     * changed rows update in place on any page without resetting pagination or scroll. The ids stay pending until
+     * they are refreshed and cleared, so nothing is lost while the list isn't collecting or is busy.
+     */
+    private fun onProductStockChanged(productIds: Set<Long>) {
+        // Keep the ids pending while offline so they're retried once the set changes or the list is reopened.
+        if (!networkStatus.isConnected()) return
+        launch {
+            val refreshed = getProductsByIds(productIds.toList())
+            if (refreshed.isNotEmpty()) {
+                // Don't clobber active search results; the browse list re-reads the fresh cache when search closes.
+                if (!isSearching()) reloadProductsFromDb()
+                // Only clear the ids we actually refreshed; a failed fetch (empty result) stays pending for retry.
+                refreshProductsSignal.clearProcessed(refreshed.map { it.remoteId }.toSet())
+            }
+        }
     }
 
     override fun onCleared() {

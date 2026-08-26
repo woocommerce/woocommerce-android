@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-27 20:56:44+0000
+Translation-Revision-Date: 2026-08-11 13:58:19+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Skicka kod igen via textmeddelande</string>
+    <string name="login_text_otp">Skicka kod igen via textmeddelande</string>
+    <string name="enter_verification_code_sms_generic">Vi skickade ett textmeddelande. Ange verifieringskoden från meddelandet.</string>
+    <string name="enter_verification_code">Ange en verifieringskod för att fortsätta.</string>
+    <string name="logviewer_share_all_logs_error">Det gick inte att förbereda loggarna för delning</string>
+    <string name="logviewer_preparing_logs">Förbereder loggar…</string>
+    <string name="logviewer_share_all_logs">Dela alla loggar</string>
+    <string name="support_mobile_status_report_share_error">Det gick inte att dela mobilstatusrapporten</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Det gick inte att kopiera mobilstatusrapporten till urklipp</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobilstatusrapport kopierad till urklipp</string>
+    <string name="support_mobile_status_report_share_label">Dela mobilstatusrapport</string>
+    <string name="support_mobile_status_report_copy_label">Kopiera systemstatusrapport till urklipp</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce-mobilstatusrapport</string>
+    <string name="support_mobile_status_report_detail">App-, enhets- och butiksinformation från denna app</string>
+    <string name="support_mobile_status_report">Mobilstatusrapprt</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Rabatt inte tillämpad</string>
     <string name="product_duplicate_discard_changes_action">Släng och duplicera</string>
     <string name="product_duplicate_discard_changes_message">Dina osparade ändringar kommer att gå förlorade. Dubbletten kommer att använda den senast sparade versionen.</string>
@@ -1074,7 +1089,6 @@ Language: sv_SE
     <string name="woo_shipping_fetching_countries_and_states_failed">Vi kunde inte hämta information om land och delstat. Försök igen.</string>
     <string name="woo_shipping_field_required_error">Detta fält är obligatoriskt.</string>
     <string name="product_upload_error_title">Fel vid bilduppladdning</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla, variabla och virtuella produkter – \nskapa en för att komma igång.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-post</string>
@@ -4002,10 +4016,7 @@ Language: sv_SE
     <string name="login_magic_link_email_requesting">Begär e-postadress för inloggning</string>
     <string name="password_incorrect">Det verkar som om ditt lösenord inte stämmer. Dubbelkolla dina uppgifer och försök igen.</string>
     <string name="requesting_otp">Begär en verifieringskod via SMS.</string>
-    <string name="login_text_otp_another">Skicka ett nytt SMS med en kod till mig istället.</string>
-    <string name="login_text_otp">Skicka mig en kod via SMS istället.</string>
     <string name="enter_verification_code_sms">Vi har skickat ett SMS till telefonnumret som slutar på %s. Skriv in bekräftelsekoden from SMS;et.</string>
-    <string name="enter_verification_code">Nästan där! Ange verifieringskoden för WordPress.com från din autentiseringsapp.</string>
     <string name="open_mail">Öppna e-posten</string>
     <string name="next">Nästa</string>
     <string name="log_in">Logga in</string>
