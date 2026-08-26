@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.isNotSet
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.TaxClass
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -29,7 +28,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -38,13 +36,10 @@ import javax.inject.Inject
 class ProductPricingViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val productRepository: ProductDetailRepository,
-    wooCommerceStore: WooCommerceStore,
-    selectedSite: SelectedSite,
     parameterRepository: ParameterRepository,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DEFAULT_DECIMAL_PRECISION = 2
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
     }
 
@@ -72,13 +67,9 @@ class ProductPricingViewModel @Inject constructor(
         get() = pricingData != originalPricingData
 
     init {
-        val decimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-            ?: DEFAULT_DECIMAL_PRECISION
-
         viewState = viewState.copy(
             currency = parameters.currencySymbol,
             currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
-            decimals = decimals,
             isTaxSectionVisible = isProductPricing
         )
 
@@ -207,7 +198,6 @@ class ProductPricingViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val currency: String? = null,
-        val decimals: Int = DEFAULT_DECIMAL_PRECISION,
         val taxClassList: List<TaxClass>? = null,
         val salePriceErrorMessage: Int? = null,
         val pricingData: PricingData = PricingData(),

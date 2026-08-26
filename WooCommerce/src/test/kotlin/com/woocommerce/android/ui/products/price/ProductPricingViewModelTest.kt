@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.TaxClass
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -28,20 +27,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
-import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProductPricingViewModelTest : BaseUnitTest() {
-    private val wooCommerceStore: WooCommerceStore = mock()
-    private val selectedSite: SelectedSite = mock()
     private val productRepository: ProductDetailRepository = mock()
 
     private val siteParams = SiteParameters(
@@ -85,7 +77,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
     private val viewState = ViewState(
         currency = siteParams.currencySymbol,
         currencyPosition = siteParams.currencyFormattingParameters?.currencyPosition,
-        decimals = 2,
         taxClassList = taxClasses,
         salePriceErrorMessage = null,
         pricingData = pricingData,
@@ -94,11 +85,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        val siteSettings = WCSettingsTestUtils.generateSettings(LocalId(1)).copy(
-            currencyDecimalNumber = viewState.decimals
-        )
-        doReturn(SiteModel()).whenever(selectedSite).get()
-        doReturn(siteSettings).whenever(wooCommerceStore).getSiteSettings(any())
         productRepository.stub {
             on { getTaxClassesForSite() } doReturn taxClasses
         }
@@ -106,17 +92,11 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         viewModel = ProductPricingViewModel(
             savedState,
             productRepository,
-            wooCommerceStore,
-            selectedSite,
             parameterRepository,
             analyticsTracker,
         )
 
-        clearInvocations(
-            productRepository,
-            wooCommerceStore,
-            selectedSite
-        )
+        clearInvocations(productRepository)
     }
 
     @Test
@@ -182,8 +162,6 @@ class ProductPricingViewModelTest : BaseUnitTest() {
             ProductPricingViewModel(
                 savedState,
                 productRepository,
-                wooCommerceStore,
-                selectedSite,
                 parameterRepository,
                 analyticsTracker
             )
