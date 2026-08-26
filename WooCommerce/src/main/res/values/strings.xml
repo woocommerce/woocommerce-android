@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Woo</string>
+    <string name="app_name" translatable="false">Woo</string>
 
     <!-- Android O notification channels, these show in the Android app settings -->
     <string name="notification_channel_general_title">General</string>
@@ -859,6 +859,15 @@
     <string name="orderfilters_sales_channel_filter">Sales Channel</string>
     <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
+    <!-- Filter history -->
+    <string name="filter_history_title">Filter History</string>
+    <string name="filter_history_recent_header">Recent</string>
+    <string name="filter_history_apply">Apply</string>
+    <string name="filter_history_cancel">Cancel</string>
+    <string name="filter_history_empty">No past filters found</string>
+    <string name="filter_history_clear">Clear History</string>
+    <string name="filter_history_clear_confirmation">Are you sure you want to clear all the filter history?</string>
+    <string name="filter_history_delete">Delete</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
     <string name="orderfilters_filter_card_title_all_orders">All orders</string>
@@ -3833,7 +3842,6 @@
     <string name="blaze_campaign_creation_no_product_modal_cta">Create Product</string>
 
     <string name="order_configuration_product_selection">Select product %s</string>
-    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See report</string>
 
@@ -3891,10 +3899,6 @@
     <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
-
-    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce soon</string>
-    <string name="woopos_wc_version_sunset_banner_message">Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later. Update WooCommerce on your store or ask your store administrator.</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Dismiss WooCommerce update warning</string>
 
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
@@ -4244,12 +4248,14 @@
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_refund_preview_error">Couldn\'t calculate the refund total. Please try again.</string>
-    <string name="woopos_refund_error_quantity_exceeds_refundable">The selected quantity is more than what\'s left to refund</string>
-    <string name="woopos_refund_error_item_already_refunded">This item has already been fully refunded</string>
-    <string name="woopos_refund_error_order_not_refundable">This order can\'t be refunded</string>
-    <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order</string>
-    <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item</string>
-    <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">The selected quantity is more than what\'s left to refund.</string>
+    <string name="woopos_refund_error_item_already_refunded">One of the selected items has already been fully refunded.</string>
+    <string name="woopos_refund_error_order_not_refundable">This order can\'t be refunded.</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">The refund amount is more than what\'s left to refund on this order.</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">The refund amount is more than what\'s left to refund for this item.</string>
+    <string name="woopos_refund_error_invalid_amount">The refund amount isn\'t valid.</string>
+    <string name="woopos_refund_error_store_not_updated">The card was refunded, but your store wasn\'t updated. Record this refund in your store admin.</string>
+    <string name="woopos_refund_review_remaining_items_button">Review remaining items</string>
     <string name="woopos_orders_details_net_payment_label">Total Net</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>

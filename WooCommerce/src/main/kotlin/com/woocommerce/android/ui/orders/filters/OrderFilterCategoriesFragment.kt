@@ -17,6 +17,9 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.filters.FilterHistoryType
+import com.woocommerce.android.ui.filters.FilterHistoryViewModel
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment.Companion.KEY_CUSTOMER_RESULT
@@ -25,6 +28,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CU
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OpenFilterHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
@@ -78,6 +82,7 @@ class OrderFilterCategoriesFragment :
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_clear, menu)
+        inflater.inflate(R.menu.menu_filter_history, menu)
     }
 
     private fun handleResults() {
@@ -96,10 +101,15 @@ class OrderFilterCategoriesFragment :
         handleResult<Order.Customer>(KEY_CUSTOMER_RESULT) {
             viewModel.onCustomerSelected(it)
         }
+
+        handleResult<SavedFilter>(FilterHistoryViewModel.FILTER_HISTORY_RESULT_KEY) {
+            viewModel.onPastFilterSelected(it)
+        }
     }
 
     override fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
+        menu.findItem(R.id.menu_filter_history).isVisible = viewModel.isFilterHistoryEnabled
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -107,6 +117,11 @@ class OrderFilterCategoriesFragment :
             R.id.menu_clear -> {
                 viewModel.onClearFilters()
                 updateClearButtonVisibility(item)
+                true
+            }
+
+            R.id.menu_filter_history -> {
+                viewModel.onFilterHistoryButtonClicked()
                 true
             }
 
@@ -160,6 +175,13 @@ class OrderFilterCategoriesFragment :
         findNavController().navigateSafely(action)
     }
 
+    private fun navigateToFilterHistory() {
+        findNavController().navigateSafely(
+            OrderFilterCategoriesFragmentDirections
+                .actionOrderFilterCategoriesFragmentToFilterHistoryFragment(FilterHistoryType.ORDERS)
+        )
+    }
+
     private fun setUpObservers(viewModel: OrderFilterCategoriesViewModel) {
         viewModel.categories.observe(viewLifecycleOwner) { _, newValue ->
             showOrderFilters(newValue.list)
@@ -175,6 +197,7 @@ class OrderFilterCategoriesFragment :
                     OrderListFragment.FILTER_CHANGE_NOTICE_KEY
                 )
 
+                is OpenFilterHistory -> navigateToFilterHistory()
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }
