@@ -14,6 +14,8 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -70,5 +72,6 @@ class UnseenReviewsCountHandlerTests : BaseUnitTest() {
 
         // THEN
         assertThat(unseenReviewsCount).isEqualTo(0)
+        verify(wpComPushNotificationStore, never()).observeNotificationsForSite(any(), anyOrNull(), anyOrNull())
     }
 }
