@@ -5,8 +5,6 @@
 25.6
 -----
 - [*] Login loading dialogs now use the correct background in dark mode
-- [*] Remote Tap to Pay keeps working on Android 17: the phone now asks for local network permission before it advertises itself, and the tablet asks before it connects to a phone reader
-- [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
 - [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
