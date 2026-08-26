@@ -8,14 +8,17 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,7 +30,8 @@ class AgeEligibilityChecker @Inject constructor(
     private val accountRepository: AccountRepository,
     private val featureFlagRepository: FeatureFlagRepository,
     private val trackerWrapper: AnalyticsTrackerWrapper,
-    private val evaluator: AgeEligibilityEvaluator
+    private val evaluator: AgeEligibilityEvaluator,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val isCheckInProgress = AtomicBoolean(false)
     private val isStartupCheckPending = AtomicBoolean(true)
@@ -97,7 +101,9 @@ class AgeEligibilityChecker @Inject constructor(
         trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
 
         if (isAccessRestricted) {
-            accountRepository.logout()
+            appCoroutineScope.launch {
+                accountRepository.logout()
+            }
         }
     }
 

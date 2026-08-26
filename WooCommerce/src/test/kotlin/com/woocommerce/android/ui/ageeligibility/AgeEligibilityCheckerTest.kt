@@ -10,13 +10,18 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -195,13 +200,47 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(client.callCount).isEqualTo(2)
         }
 
+    @Test
+    fun `given restricted result, when activity check is cancelled, then logout completes in app scope`() =
+        testBlocking {
+            // GIVEN
+            val logoutGate = CompletableDeferred<Unit>()
+            val logoutCompleted = CompletableDeferred<Unit>()
+            whenever(accountRepository.logout()).doSuspendableAnswer {
+                logoutGate.await()
+                logoutCompleted.complete(Unit)
+                true
+            }
+            val checker = createChecker()
+            client.result = AgeCheckResult(LegacyAgeVerificationStatus.SUPERVISED, 12)
+            val activityCheck = launch(start = CoroutineStart.LAZY) { checker.checkAge(activity) }
+            val restrictionObserver = launch(start = CoroutineStart.UNDISPATCHED) {
+                checker.ageEligibilityState.drop(1).first {
+                    it.decision is AgeEligibilityDecision.Restricted
+                }
+                activityCheck.cancel()
+            }
+
+            // WHEN
+            activityCheck.start()
+            activityCheck.join()
+            restrictionObserver.join()
+            logoutGate.complete(Unit)
+            yield()
+
+            // THEN
+            assertThat(logoutCompleted.isCompleted).isTrue()
+            verify(accountRepository).logout()
+        }
+
     private fun createChecker() = AgeEligibilityChecker(
         client = client,
         prefsWrapper = prefsWrapper,
         accountRepository = accountRepository,
         featureFlagRepository = featureFlagRepository,
         trackerWrapper = trackerWrapper,
-        evaluator = evaluator
+        evaluator = evaluator,
+        appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     )
 
     private fun stubPriorRestriction(reason: AgeRestrictionReason) {
