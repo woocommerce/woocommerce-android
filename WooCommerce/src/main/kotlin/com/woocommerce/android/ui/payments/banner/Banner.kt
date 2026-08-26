@@ -41,6 +41,7 @@ import com.woocommerce.android.util.UiHelpers
 fun Banner(bannerState: JitmState.Banner) {
     val majorMargin = dimensionResource(id = R.dimen.major_100)
     val minorMargin = dimensionResource(id = R.dimen.minor_100)
+    val ctaContentHorizontalPadding = dimensionResource(id = R.dimen.major_75)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -111,7 +112,7 @@ fun Banner(bannerState: JitmState.Banner) {
                 contentPadding = ButtonDefaults.TextButtonContentPadding,
                 modifier = Modifier.constrainAs(ctaButton) {
                     top.linkTo(description.bottom)
-                    start.linkTo(parent.start, margin = majorMargin)
+                    start.linkTo(parent.start, margin = majorMargin - ctaContentHorizontalPadding)
                 }
             ) {
                 Text(
