@@ -1,24 +1,16 @@
 -dontobfuscate
--dontoptimize
 
-###### OkHttp - begin
+###### OkHttp (the library ships its own consumer rules) - begin
 -dontwarn okio.**
 -dontwarn okhttp3.**
--keep class okhttp3.** { *; }
--keep interface okhttp3.** { *; }
 -dontwarn com.squareup.okhttp.**
--keep class com.squareup.okhttp.** { *; }
--keep interface com.squareup.okhttp.** { *; }
 
 -keepattributes Signature
 -keepattributes *Annotation*
 ###### OkHttp - end
 
-###### Event Bus 3
+###### Event Bus 3 (the @Subscribe rule comes from the library's consumer rules)
 -keepattributes *Annotation*
--keepclassmembers class ** {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
 # Only required if you use AsyncExecutor
@@ -38,12 +30,16 @@
 }
 ###### Event Bus 2 - end
 
-##### WooCommerce (this is needed for Json deserializers, but generally, we should keep our own classes) - begin
--keep class com.woocommerce.** { *; }
+##### WooCommerce - begin
+# Gson populates fields reflectively, so keep fields and enum constants of our classes
+# (we don't obfuscate, so names are stable). Methods stay eligible for R8 optimization.
+-keepclassmembers class com.woocommerce.** { <fields>; }
+-keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
 
-###### FluxC (was needed for Json deserializers) - begin
--keep class org.wordpress.android.fluxc** { *; }
+###### FluxC (Gson deserialization; model/network field keeps come from fluxc's consumer-rules.pro) - begin
+-keepclassmembers class org.wordpress.android.fluxc.** { <fields>; }
+-keepclassmembers enum org.wordpress.android.fluxc.** { *; }
 ###### FluxC - end
 
 ###### FluxC - WellSql (needed for Addon support) - begin
@@ -54,20 +50,9 @@
 -dontwarn com.google.errorprone.annotations.*
 ###### Dagger - end
 
--keep class com.google.common.** { *; }
 -dontwarn com.google.common.**
 
-###### Zendesk - begin
--keep class com.zendesk.** { *; }
--keep class zendesk.** { *; }
--keep class javax.inject.Provider
--keep class com.squareup.picasso.** { *; }
--keep class com.jakewharton.disklrucache.** { *; }
--keep class com.google.gson.** { *; }
--keep class okio.** { *; }
--keep class retrofit2.** { *; }
--keep class uk.co.senab.photoview.** { *; }
-###### Zendesk - end
+###### Zendesk (the SDK ships its own consumer rules; Gson/Retrofit/OkHttp ship theirs too)
 
 ###### Glide - begin
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
