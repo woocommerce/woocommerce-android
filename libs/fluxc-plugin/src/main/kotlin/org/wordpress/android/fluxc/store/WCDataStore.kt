@@ -24,19 +24,30 @@ class WCDataStore @Inject internal constructor(
     /**
      * Returns a list of countries
      */
-    fun getCountries(): List<WCLocationModel> =
-            runBlocking { locationsDao.getCountries() }
+    suspend fun getCountries(): List<WCLocationModel> = locationsDao.getCountries()
 
     suspend fun getCountry(countryCode: String): WCLocationModel? = locationsDao.getCountry(countryCode)
 
     /**
      * Returns a list of states
      */
-    fun getStates(country: String): List<WCLocationModel> = if (country.isEmpty()) {
+    suspend fun getStates(country: String): List<WCLocationModel> = if (country.isEmpty()) {
         emptyList()
     } else {
-        runBlocking { locationsDao.getStates(country) }
+        locationsDao.getStates(country)
     }
+
+    /**
+     * Only for the legacy shipping labels flow, which reads locations outside of a coroutine.
+     * Delete along with that flow.
+     */
+    fun getCountriesBlocking(): List<WCLocationModel> = runBlocking { getCountries() }
+
+    /**
+     * Only for the legacy shipping labels flow, which reads locations outside of a coroutine.
+     * Delete along with that flow.
+     */
+    fun getStatesBlocking(country: String): List<WCLocationModel> = runBlocking { getStates(country) }
 
     suspend fun fetchCountriesAndStates(site: SiteModel): WooResult<List<WCLocationModel>> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchCountries") {
