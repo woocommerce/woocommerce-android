@@ -16,7 +16,6 @@ import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -47,10 +46,6 @@ class ProductPricingViewModel @Inject constructor(
     private val navArgs: ProductPricingFragmentArgs by savedState.navArgs()
     private val isProductPricing = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_PRICING
 
-    val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
-    }
-
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
@@ -67,11 +62,15 @@ class ProductPricingViewModel @Inject constructor(
         get() = pricingData != originalPricingData
 
     init {
-        viewState = viewState.copy(
-            currency = parameters.currencySymbol,
-            currencyPosition = parameters.currencyFormattingParameters?.currencyPosition,
-            isTaxSectionVisible = isProductPricing
-        )
+        viewState = viewState.copy(isTaxSectionVisible = isProductPricing)
+
+        launch {
+            val parameters = parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            viewState = viewState.copy(
+                currency = parameters.currencySymbol,
+                currencyPosition = parameters.currencyFormattingParameters?.currencyPosition
+            )
+        }
 
         if (isProductPricing) {
             launch {
