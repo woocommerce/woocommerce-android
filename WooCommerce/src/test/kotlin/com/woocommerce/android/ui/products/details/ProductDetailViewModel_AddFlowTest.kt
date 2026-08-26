@@ -66,7 +66,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     private val wooCommerceStore: WooCommerceStore = mock()
     private val networkStatus: NetworkStatus = mock()
-    private val productRepository: ProductDetailRepository = mock()
+    private val productRepository: ProductDetailRepository = mock {
+        on { getCachedVariationCount(any()) } doReturn 0
+    }
     private val productCategoriesRepository: ProductCategoriesRepository = mock()
     private val productTagsRepository: ProductTagsRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()
@@ -462,6 +464,50 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given an added product has a remote id, when reviews return, then refresh the persisted product`() = testBlocking {
+        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+        doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+        doReturn(ProductAggregate(product)).whenever(productRepository).fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+
+        viewModel.onSaveAsDraftButtonClicked()
+        clearInvocations(productRepository)
+        viewModel.refreshProduct()
+
+        verify(productRepository).fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)
+    }
+
+    @Test
+    fun `given edited persisted Add state is process-restored, when backed out, then discard is protected`() =
+        testBlocking {
+            val storedAggregate = ProductAggregate(product)
+            val restoredDraft = storedAggregate.copy(product = product.copy(name = "Restored edit"))
+            savedState = ProductDetailFragmentArgs(
+                mode = ProductDetailFragment.Mode.AddNewProduct
+            ).toSavedStateHandle().apply {
+                set(
+                    ProductDetailViewModel.ProductDetailViewState::class.java.name,
+                    ProductDetailViewModel.ProductDetailViewState(
+                        productAggregateDraft = restoredDraft,
+                        auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
+                        areImagesAvailable = true,
+                    )
+                )
+            }
+            doReturn(storedAggregate).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+            setup()
+
+            var hasChanges: Boolean? = null
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            viewModel.hasChanges.observeForever { hasChanges = it }
+
+            viewModel.onBackButtonClickedProductDetail()
+
+            Assertions.assertThat(hasChanges).isTrue()
+            Assertions.assertThat(viewModel.event.value).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+        }
+
+    @Test
     fun `given a product is under creation, when displaying discard changes dialog, then stop observing uploads`() =
         testBlocking {
             var isObservingEvents: Boolean? = null
@@ -539,6 +585,21 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.updateProductDraft(title = "name")
 
         Assertions.assertThat(menuButtonsState?.saveOption).isFalse()
+    }
+
+    @Test
+    fun `given product under creation, when menu state loads, then share option is hidden`() {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+        viewModel.menuButtonsState.observeForever { menuButtonsState = it }
+
+        // WHEN
+        viewModel.start()
+
+        // THEN
+        Assertions.assertThat(menuButtonsState?.shareOption).isFalse()
+        Assertions.assertThat(menuButtonsState?.showShareOptionAsAction).isFalse()
     }
 
     @Test

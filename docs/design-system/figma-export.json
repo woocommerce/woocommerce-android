@@ -319,8 +319,8 @@
       },
       "Opacity-50": {
         "$value": {
-          "Light": "rgba(0, 0, 0, 0.5)",
-          "Dark": "rgba(0, 0, 0, 0.75)"
+          "Light": "rgba(44, 51, 56, 0.5)",
+          "Dark": "rgba(44, 51, 56, 0.5)"
         },
         "$type": "color"
       }

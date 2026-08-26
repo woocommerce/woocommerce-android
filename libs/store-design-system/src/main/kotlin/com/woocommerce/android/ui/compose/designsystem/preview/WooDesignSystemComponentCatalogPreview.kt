@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainerDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
@@ -57,6 +58,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderIn
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControlDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
@@ -64,7 +67,9 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchSettin
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
@@ -282,7 +287,7 @@ private val CatalogRoot = CatalogNode.Group(
                 CatalogNode.Leaf(
                     path = "production/badges",
                     title = "Badges",
-                    description = "Status tones and icon-leading variants.",
+                    description = "Semantic tones, custom colors, and icon-leading variants.",
                     content = { ProductionBadgesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
@@ -310,6 +315,12 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionNoticesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
+                    path = "production/tooltips",
+                    title = "Tooltips",
+                    description = "Contextual labels with directional arrow placements.",
+                    content = { ProductionTooltipsCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
                     path = "production/search-tabs",
                     title = "Search and tabs",
                     description = "Search field states and top-level tabs.",
@@ -333,6 +344,18 @@ private val CatalogRoot = CatalogNode.Group(
                     description = "View toolbar bridge for XML-hosted screens.",
                     content = { ProductionXmlToolbarCatalogLeaf() },
                 ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_SEGMENT_CONTROL_PATH,
+                    title = "Segment control",
+                    description = "Controlled label-only selection for two to five options.",
+                    content = { ProductionSegmentControlCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = "production/modal-bottom-sheet",
+                    title = "Modal bottom sheet",
+                    description = "Woo styling over Material-owned modal behavior.",
+                    content = { ProductionModalBottomSheetCatalogLeaf() },
+                ),
             ),
         ),
         CatalogNode.Group(
@@ -340,18 +363,6 @@ private val CatalogRoot = CatalogNode.Group(
             title = "Preview-only components",
             description = "Exploratory components that are not runtime-ready primitives.",
             children = listOf(
-                CatalogNode.Leaf(
-                    path = PREVIEW_SEGMENT_CONTROL_PATH,
-                    title = "Segment control",
-                    description = "Source in progress.",
-                    content = { PreviewOnlySegmentControlCatalogLeaf() },
-                ),
-                CatalogNode.Leaf(
-                    path = "preview/sheets",
-                    title = "Sheets",
-                    description = "Modal and navigation ownership.",
-                    content = { PreviewOnlySheetsCatalogLeaf() },
-                ),
                 CatalogNode.Leaf(
                     path = "preview/bottom-tab-bar",
                     title = "Bottom tab bar",
@@ -463,6 +474,15 @@ private fun ProductionNoticesCatalogLeaf() {
 }
 
 @Composable
+private fun ProductionTooltipsCatalogLeaf() {
+    CatalogSection("Tooltips") {
+        WooTooltipDemo(
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5)
+        )
+    }
+}
+
+@Composable
 private fun ProductionSearchTabsCatalogLeaf() {
     CatalogSection("Search and tabs") {
         WooSearchFieldDemo()
@@ -496,16 +516,52 @@ private fun ProductionXmlToolbarCatalogLeaf() {
 }
 
 @Composable
-private fun PreviewOnlySegmentControlCatalogLeaf() {
+private fun ProductionSegmentControlCatalogLeaf() {
     CatalogSection("Segment control") {
-        PreviewOnlySegmentControlSample(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+        WooSegmentControlDemo(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+        WooSegmentControl(
+            options = listOf("Net sales", "Orders", "Visitors"),
+            selectedIndex = 1,
+            onSelectedIndexChange = {},
+            enabled = false,
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
     }
 }
 
 @Composable
-private fun PreviewOnlySheetsCatalogLeaf() {
-    CatalogSection("Sheets") {
-        PreviewOnlySheetSample(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+private fun ProductionModalBottomSheetCatalogLeaf() {
+    var showSheet by rememberSaveable { mutableStateOf(false) }
+    val sheetState = rememberWooModalBottomSheetState()
+
+    CatalogSection("Modal bottom sheet") {
+        WooFilledButton(
+            text = "Show sheet",
+            onClick = { showSheet = true },
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+    }
+    if (showSheet) {
+        WooModalBottomSheet(
+            state = sheetState,
+            onDismissRequest = { showSheet = false },
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding5),
+                verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            ) {
+                Text(
+                    text = "Production sheet",
+                    style = WooTheme.text.titleLarge.strong,
+                )
+                Text(
+                    text = "The caller owns visibility, state, dismissal, and content.",
+                    style = WooTheme.text.bodyLarge.regular,
+                )
+            }
+        }
     }
 }
 
@@ -739,7 +795,7 @@ private fun CatalogLinkText(text: String) {
 private const val ROOT_PATH = ""
 private const val PRODUCTION_BUTTONS_PATH = "production/buttons"
 private const val PRODUCTION_PAGE_HEADER_PATH = "production/page-header"
-private const val PREVIEW_SEGMENT_CONTROL_PATH = "preview/segment-control"
+private const val PRODUCTION_SEGMENT_CONTROL_PATH = "production/segment-control"
 private const val STRESS_LARGE_FONT_PATH = "stress/large-font"
 private const val STRESS_LONG_TEXT_PATH = "stress/long-text"
 private const val STRESS_RTL_PATH = "stress/rtl"

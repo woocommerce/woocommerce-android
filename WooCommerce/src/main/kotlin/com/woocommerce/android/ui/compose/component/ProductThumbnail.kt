@@ -22,7 +22,8 @@ fun ProductThumbnail(
     @DrawableRes placeHolderDrawableId: Int = R.drawable.ic_product,
     @DrawableRes fallbackDrawableId: Int = R.drawable.ic_product,
     @DrawableRes errorDrawableId: Int = R.drawable.ic_product,
-    contentDescription: String = ""
+    contentDescription: String = "",
+    cornerRadius: Dp = 4.dp,
 ) {
     val imageSizePx = with(LocalDensity.current) { imageSize.roundToPx() }
     val imageRequest = rememberPhotonImageRequest(
@@ -41,6 +42,6 @@ fun ProductThumbnail(
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(imageSize)
-            .clip(shape = RoundedCornerShape(4.dp))
+            .clip(shape = RoundedCornerShape(cornerRadius))
     )
 }

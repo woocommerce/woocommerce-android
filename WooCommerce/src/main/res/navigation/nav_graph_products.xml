@@ -515,7 +515,7 @@
     <fragment
         android:id="@+id/groupedProductListFragment"
         android:name="com.woocommerce.android.ui.products.grouped.GroupedProductListFragment"
-        tools:layout="@layout/fragment_product_list">
+        tools:layout="@layout/fragment_grouped_product_list">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
@@ -530,7 +530,7 @@
     <fragment
         android:id="@+id/productSelectionListFragment"
         android:name="com.woocommerce.android.ui.products.ProductSelectionListFragment"
-        tools:layout="@layout/fragment_product_list">
+        tools:layout="@layout/fragment_product_selection_list">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"

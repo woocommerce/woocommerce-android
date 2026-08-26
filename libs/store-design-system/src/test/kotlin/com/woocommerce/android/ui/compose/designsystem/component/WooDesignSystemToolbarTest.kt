@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
+import android.content.pm.ApplicationInfo
 import android.graphics.Rect
 import android.graphics.drawable.RippleDrawable
 import android.view.ContextThemeWrapper
@@ -16,12 +17,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
+import androidx.core.widget.ImageViewCompat
 import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.ui.compose.designsystem.R
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import kotlin.math.roundToInt
 
@@ -49,9 +52,13 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    @Config(qualifiers = "420dpi")
     fun `given navigation and actions, when laid out, then controls honor edge insets`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
-        val edgeInset = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
+        val controlEdgeInset = (
+            toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
+                toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
+            ).roundToInt()
         toolbar.navigationIcon = AppCompatResources.getDrawable(
             toolbar.context,
             R.drawable.woo_ds_ic_regular_angle_left_24dp,
@@ -62,9 +69,16 @@ class WooDesignSystemToolbarTest {
         toolbar.layoutToolbar()
         val navigationButton = toolbar.navigationButton("Back")
         val actionMenuView = toolbar.actionMenuView()
+        val action = toolbar.actionChild(ACTION_ID)
 
-        assertThat(navigationButton.left).isEqualTo(edgeInset)
-        assertThat(actionMenuView.right).isEqualTo(toolbar.width - edgeInset)
+        assertThat(navigationButton.left).isEqualTo(controlEdgeInset)
+        assertThat(actionMenuView.right).isEqualTo(toolbar.width - controlEdgeInset)
+        assertThat(navigationButton.top)
+            .isEqualTo(((toolbar.height - navigationButton.height) / 2f).roundToInt())
+        assertThat(actionMenuView.top)
+            .isEqualTo(((toolbar.height - actionMenuView.height) / 2f).roundToInt())
+        assertThat(actionMenuView.top + action.top)
+            .isEqualTo(((toolbar.height - action.height) / 2f).roundToInt())
     }
 
     @Test
@@ -77,6 +91,54 @@ class WooDesignSystemToolbarTest {
         val titleView = toolbar.titleTextView("Products")
         assertThat(titleView.width).isGreaterThan(0)
         assertThat(titleView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(titleView.includeFontPadding).isFalse()
+    }
+
+    @Test
+    fun `given long title and text action, when laid out, then title keeps spacing from action`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            title = "Trailblazer Trek Pants with really long name"
+            menu.add(0, TEXT_ACTION_ID, 0, "Save").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+        val controlSpacing = toolbar.resources.getDimensionPixelSize(
+            R.dimen.woo_ds_toolbar_title_control_spacing,
+        )
+
+        toolbar.layoutToolbar()
+        val titleView = toolbar.titleTextView(toolbar.title.toString())
+        val action = toolbar.actionChild(TEXT_ACTION_ID)
+        val actionLeft = toolbar.actionMenuView().left + action.left
+
+        assertThat(titleView.paddingStart).isEqualTo(controlSpacing)
+        assertThat(titleView.paddingEnd).isEqualTo(controlSpacing)
+        assertThat(actionLeft - (titleView.right - titleView.paddingEnd)).isGreaterThanOrEqualTo(controlSpacing)
+    }
+
+    @Test
+    fun `given long title with icon and overflow actions, when laid out, then title keeps spacing from actions`() {
+        // GIVEN
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            title = "Beanie with Logo - Enormous Leather Company Limited ".repeat(10).trim()
+            navigationIcon = AppCompatResources.getDrawable(
+                context,
+                R.drawable.woo_ds_ic_regular_angle_left_24dp,
+            )
+            navigationContentDescription = "Back"
+            addIconAction(title = "Share")
+            addOverflowAction()
+        }
+        val controlSpacing = toolbar.resources.getDimensionPixelSize(
+            R.dimen.woo_ds_toolbar_title_control_spacing,
+        )
+
+        // WHEN
+        toolbar.layoutToolbar(widthDp = 480)
+
+        // THEN
+        val titleView = toolbar.titleTextView(toolbar.title.toString())
+        val action = toolbar.actionChild(ACTION_ID)
+        val actionLeft = toolbar.actionMenuView().left + action.left
+        assertThat(actionLeft - (titleView.right - titleView.paddingEnd)).isGreaterThanOrEqualTo(controlSpacing)
     }
 
     @Test
@@ -122,6 +184,95 @@ class WooDesignSystemToolbarTest {
     }
 
     @Test
+    fun `given overflow item, when menu is rendered, then overflow matches outlined icon contract`() {
+        val toolbar = LayoutInflater.from(toolbarContext())
+            .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
+
+        toolbar.layoutToolbar()
+        val overflowButton = toolbar.overflowButton()
+        val touchTarget = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+        val iconPadding = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_padding)
+        val overflowLayoutParams = overflowButton.layoutParams as ActionMenuView.LayoutParams
+        val expectedTint = checkNotNull(
+            AppCompatResources.getColorStateList(toolbar.context, R.color.woo_ds_toolbar_icon_button_tint),
+        )
+
+        assertThat(overflowLayoutParams.isOverflowButton).isTrue()
+        assertThat(overflowLayoutParams.width).isEqualTo(touchTarget)
+        assertThat(overflowLayoutParams.height).isEqualTo(touchTarget)
+        assertThat(overflowButton.measuredWidth).isEqualTo(touchTarget)
+        assertThat(overflowButton.measuredHeight).isEqualTo(touchTarget)
+        assertThat(overflowButton.minimumWidth).isEqualTo(touchTarget)
+        assertThat(overflowButton.minimumHeight).isEqualTo(touchTarget)
+        assertThat(overflowButton.paddingLeft).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingTop).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingRight).isEqualTo(iconPadding)
+        assertThat(overflowButton.paddingBottom).isEqualTo(iconPadding)
+        assertThat(overflowButton.scaleType).isEqualTo(ImageView.ScaleType.FIT_CENTER)
+        assertThat(overflowButton.background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
+        assertThat(shadowOf(overflowButton.drawable).createdFromResId)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+        val actualTint = checkNotNull(ImageViewCompat.getImageTintList(overflowButton))
+        val disabledState = intArrayOf(-android.R.attr.state_enabled)
+        assertThat(actualTint.defaultColor).isEqualTo(expectedTint.defaultColor)
+        assertThat(actualTint.getColorForState(disabledState, actualTint.defaultColor))
+            .isEqualTo(expectedTint.getColorForState(disabledState, expectedTint.defaultColor))
+        assertThat(overflowButton.contentDescription)
+            .isEqualTo(toolbar.context.getString(androidx.appcompat.R.string.abc_action_menu_overflow_description))
+        assertThat(overflowButton.isClickable).isTrue()
+        assertThat(overflowButton.isFocusable).isTrue()
+    }
+
+    @Test
+    fun `given decorated overflow, when laid out again, then background and overflow layout params are reused`() {
+        val toolbar = LayoutInflater.from(toolbarContext())
+            .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
+
+        toolbar.layoutToolbar()
+        val firstOverflowButton = toolbar.overflowButton()
+        val firstBackground = firstOverflowButton.background
+        val firstLayoutParams = firstOverflowButton.layoutParams
+
+        toolbar.layoutToolbar()
+        val secondOverflowButton = toolbar.overflowButton()
+
+        assertThat(secondOverflowButton).isSameAs(firstOverflowButton)
+        assertThat(secondOverflowButton.background).isSameAs(firstBackground)
+        assertThat(secondOverflowButton.layoutParams).isSameAs(firstLayoutParams)
+        assertThat((secondOverflowButton.layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
+    }
+
+    @Test
+    fun `given decorated overflow, when menu is cleared and reinflated, then overflow remains styled`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext())
+        toolbar.inflateMenu(R.menu.woo_design_system_toolbar_test_menu)
+        toolbar.layoutToolbar()
+        val overflowButton = toolbar.overflowButton()
+        val overflowBackground = overflowButton.background
+        val touchTarget = toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_icon_touch_target)
+
+        toolbar.menu.clear()
+        toolbar.inflateMenu(R.menu.woo_design_system_toolbar_test_menu)
+        val overflowLayoutParams = overflowButton.layoutParams as ActionMenuView.LayoutParams
+        overflowLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+        overflowLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+        toolbar.layoutToolbar()
+        val redecoratedOverflowButton = toolbar.overflowButton()
+
+        assertThat(redecoratedOverflowButton).isSameAs(overflowButton)
+        assertThat(redecoratedOverflowButton.layoutParams).isSameAs(overflowLayoutParams)
+        assertThat(overflowLayoutParams.width).isEqualTo(touchTarget)
+        assertThat(overflowLayoutParams.height).isEqualTo(touchTarget)
+        assertThat(overflowButton.background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(overflowButton.background).isSameAs(overflowBackground)
+        assertThat(overflowButton.getTag(R.id.woo_ds_toolbar_action_view)).isEqualTo(true)
+        assertThat(shadowOf(overflowButton.drawable).createdFromResId)
+            .isEqualTo(R.drawable.woo_ds_ic_regular_ellipsis_24dp)
+        assertThat(overflowLayoutParams.isOverflowButton).isTrue()
+    }
+
+    @Test
     @Config(qualifiers = "notnight")
     fun `given light theme, when icon controls are rendered, then ripple matches compose pressed state`() {
         assertToolbarIconRippleColor()
@@ -131,6 +282,36 @@ class WooDesignSystemToolbarTest {
     @Config(qualifiers = "night")
     fun `given dark theme, when icon controls are rendered, then ripple matches compose pressed state`() {
         assertToolbarIconRippleColor()
+    }
+
+    @Test
+    @Config(qualifiers = "ldrtl")
+    fun `given rtl layout with overflow, when laid out, then actions honor the logical end inset`() {
+        val toolbar = WooDesignSystemToolbar(toolbarContext()).apply {
+            addOverflowAction()
+        }
+        val controlEdgeInset = (
+            toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
+                toolbar.resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
+            ).roundToInt()
+        val applicationInfo = toolbar.context.applicationInfo
+        val originalApplicationFlags = applicationInfo.flags
+
+        try {
+            applicationInfo.flags = applicationInfo.flags or ApplicationInfo.FLAG_SUPPORTS_RTL
+            toolbar.measure(
+                exactMeasureSpec(toolbar.dp(360)),
+                exactMeasureSpec(toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_height)),
+            )
+            toolbar.layoutDirection = View.LAYOUT_DIRECTION_RTL
+            toolbar.layout(0, 0, toolbar.measuredWidth, toolbar.measuredHeight)
+
+            assertThat(toolbar.layoutDirection).isEqualTo(View.LAYOUT_DIRECTION_RTL)
+            assertThat(toolbar.actionMenuView().left).isEqualTo(controlEdgeInset)
+            assertThat((toolbar.overflowButton().layoutParams as ActionMenuView.LayoutParams).isOverflowButton).isTrue()
+        } finally {
+            applicationInfo.flags = originalApplicationFlags
+        }
     }
 
     @Test
@@ -202,6 +383,11 @@ class WooDesignSystemToolbarTest {
         val action = toolbar.actionChild(TEXT_ACTION_ID) as TextView
 
         assertThat(action.text).isEqualTo("Done")
+        assertThat(action.background).isInstanceOf(RippleDrawable::class.java)
+        val ripple = action.background as RippleDrawable
+        ripple.setBounds(0, 0, action.width, action.height)
+        val rippleMask = ripple.findDrawableByLayerId(android.R.id.mask)
+        assertThat(rippleMask.bounds).isEqualTo(Rect(0, 0, action.width, action.height))
         assertThat(action.getTag(R.id.woo_ds_toolbar_action_view)).isNull()
         assertThat(action.compoundDrawablesRelative.filterNotNull()).isEmpty()
     }
@@ -315,6 +501,11 @@ class WooDesignSystemToolbarTest {
         setShowAsAction(showAsAction)
     }
 
+    private fun WooDesignSystemToolbar.addOverflowAction(): MenuItem =
+        menu.add(0, OVERFLOW_ACTION_ID, 0, "Settings").apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        }
+
     private fun WooDesignSystemToolbar.layoutToolbar(widthDp: Int = 360) {
         measure(
             exactMeasureSpec(dp(widthDp)),
@@ -336,6 +527,13 @@ class WooDesignSystemToolbarTest {
     private fun WooDesignSystemToolbar.actionMenuView(): ActionMenuView =
         children.filterIsInstance<ActionMenuView>().first()
 
+    private fun WooDesignSystemToolbar.overflowButton(): ImageView =
+        actionMenuView()
+            .children
+            .first { child ->
+                (child.layoutParams as? ActionMenuView.LayoutParams)?.isOverflowButton == true
+            } as ImageView
+
     private fun WooDesignSystemToolbar.navigationButton(contentDescription: String): AppCompatImageButton =
         children
             .filterIsInstance<AppCompatImageButton>()
@@ -352,6 +550,7 @@ class WooDesignSystemToolbarTest {
         )
         toolbar.navigationContentDescription = "Back"
         toolbar.addIconAction()
+        toolbar.addOverflowAction()
 
         toolbar.layoutToolbar()
         val expectedColor = ColorUtils.setAlphaComponent(
@@ -369,6 +568,9 @@ class WooDesignSystemToolbarTest {
         assertThat(rippleColor.defaultColor).isEqualTo(expectedColor)
         assertThat(toolbar.navigationButton("Back").background).isInstanceOf(RippleDrawable::class.java)
         assertThat(toolbar.actionChild(ACTION_ID).background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(toolbar.overflowButton().background).isInstanceOf(RippleDrawable::class.java)
+        assertThat(ImageViewCompat.getImageTintList(toolbar.overflowButton())?.defaultColor)
+            .isEqualTo(ContextCompat.getColor(toolbar.context, R.color.woo_ds_color_surface_on_default))
         assertThat(resourceBackground).isInstanceOf(RippleDrawable::class.java)
     }
 
@@ -382,6 +584,7 @@ class WooDesignSystemToolbarTest {
         const val ACTION_ID = 1
         const val TEXT_ACTION_ID = 2
         const val SEARCH_ACTION_ID = 3
+        const val OVERFLOW_ACTION_ID = 4
         const val FULL_COLOR_ALPHA = 255
         const val PRESSED_STATE_ALPHA = 0.1f
     }

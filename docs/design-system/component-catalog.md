@@ -30,8 +30,11 @@ The current module exposes Figma-backed production Compose APIs for:
 - Horizontal and vertical dividers.
 - Icon containers.
 - Static notice banners.
+- Anchored tooltips with automatic or preferred logical-side placement.
 - Page headers.
 - Controlled search fields.
+- Label-only segment controls with two to five options.
+- Modal bottom sheets with Woo-owned styling and caller-owned state/content.
 - Top text tabs.
 - Design-system top app bars with descriptor actions.
 
@@ -111,7 +114,7 @@ component split does not add module screenshot infrastructure.
 
 | Component | Android API | Status | Notes |
 | --- | --- | --- | --- |
-| Badges | `WooBadge`, `WooBadgeTone` | production | Compact label badge with optional decorative leading icon and status tones including `NeutralOutlined`. |
+| Badges | `WooBadge`, `WooBadgeTone`, `WooBadgeColors`, `WooBadgeDefaults` | production | Compact label badge with optional decorative leading icon and status tones including `NeutralOutlined`. Prefer semantic tones; use `WooBadgeDefaults.colors(...)` only when a feature must preserve an established custom palette. |
 | Buttons | `WooFilledButton`, `WooFilledTonalButton`, `WooOutlinedButton`, `WooButtonSize` | production | Figma-backed Fill/Tonal/Outline treatments exposed with Material 3-aligned Filled, Filled Tonal, and Outlined API names. Supports optional leading icon, enabled/disabled state, medium/small sizes, and 48dp touch target preservation. Use one Filled button per screen, Filled Tonal for alternatives, and Outlined for low-emphasis actions. |
 | Cell | `WooCell`, `WooSettingsRow` | production | Surface Bright row shell with On Surface titles, On Surface Variant descriptions/slots, and a settings convenience. Keep one row-level action; avoid duplicate child semantics. Figma `Cell Content` maps to internal row content styling, not a standalone public API. |
 | Checkbox | `WooCheckbox` | production | Controlled Material 3 checkbox wrapper. Caller owns label and group semantics. |
@@ -128,9 +131,10 @@ component split does not add module screenshot infrastructure.
 | Switch | `WooSwitch` | material_adapter | Controlled Material 3 / token adapter with minimum touch target. Figma does not currently expose a canonical `Switch` component in the Mobile Design System library. |
 | Switch Settings Row | `WooSwitchSettingsRow` | material_adapter | Composes the Figma-backed cell layout with the `WooSwitch` Material 3 / token adapter. Keep one row-level toggle action and avoid duplicate child semantics. |
 | Tabs | `WooTabRow`, `WooTab` | production | Surface Bright top text tabs with Tint On Surface 16 dividers; bottom tab bar parity remains preview-only and app-shell-owned. |
+| Tooltip | `WooTooltipBox`, `WooTooltipAction`, `WooTooltipPlacement`, `WooTooltipState`, `rememberWooTooltipState` | production | Anchored inverse-surface tooltip with optional supporting text and one optional nonblank text action, automatic or preferred logical-side placement, viewport clamping, and a 200dp width cap. The action uses a transparent, leading-aligned button with On Inverted content and may wrap; activating it dismisses first and then invokes its callback. Other dismissal paths never invoke the action callback. An unusable preferred side always flips to its opposite before clamping. Material owns standard long-press, hover, keyboard-focus, popup, accessibility, outside-dismiss requests, and global one-tooltip coordination; callers may also drive persistent presentation through state. When positioning observes the anchor leave the viewport, the current presentation is dismissed, and returning the anchor alone does not show it again. The modifier applies to the anchor interaction wrapper. |
 | Top App Bar | `WooTopAppBar`, `WooTopAppBarAction`, `WooDesignSystemToolbar` | production | Surface Bright Android API for Figma's `Top Navigation Bar`. `WooDesignSystemToolbar` applies matching XML chrome without replacing `MenuItem.actionView`, preserving `SearchView`, custom action views, ActionMode, collapsing behavior, overflow, and menu ownership. |
-| Segment Control | Private catalog sample | preview_only | Surface Bright selected segment on a Primary Container Tint 16 track; no public API yet. |
-| Sheets | Private catalog sample | preview_only | Surface Bright body with On Surface Variant Lowest thin boundary/handle. Requires real screen decisions for state, dismissal, navigation, and semantics. |
+| Segment Control | `WooSegmentControl` | production | Controlled, label-only radio group for two to five nonblank options. The caller owns selection. Figma has no disabled variant, so Android uses established disabled state-layer/content tokens for the whole-control fallback. |
+| Modal Bottom Sheet | `WooModalBottomSheet`, `WooModalBottomSheetState`, `rememberWooModalBottomSheetState`, `WooModalBottomSheetDismisser`, `rememberWooModalBottomSheetDismisser` | production | Narrow Store adapter with a Surface Bright container, On Surface content, 16dp top corners, no visible boundary, and a 32x4dp lowest-variant handle. The caller owns composition, state, dismissal, and content; the dismisser coordinates programmatic animated dismissal, while Material owns modal/platform behavior. |
 | Bottom Tab Bar | Private catalog sample | preview_only | App-shell navigation ownership remains out of component split scope. |
 | Table | Private catalog sample | preview_only | Explicit Surface Bright shell with a thin outer boundary and tint-layer row dividers. Requires data model, scrolling, sorting/selection, and accessibility semantics before a public API. |
 
@@ -158,3 +162,6 @@ Preview-only components may exist only as private/internal catalog or preview im
 Do not expose preview-only components as reusable public APIs. This keeps product-screen migrations
 and AI agents from importing components whose API would encode unstable design, navigation, or data
 semantics.
+
+Bottom Tab Bar and Table remain preview-only. Segment Control and Modal Bottom Sheet are production
+APIs and their interactive catalog examples must use the public components.

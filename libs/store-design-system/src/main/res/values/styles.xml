@@ -20,6 +20,7 @@
         <item name="toolbarStyle">@style/Widget.Woo.DesignSystem.Toolbar</item>
         <item name="toolbarNavigationButtonStyle">@style/Widget.Woo.DesignSystem.Toolbar.NavigationButton</item>
         <item name="actionButtonStyle">@style/Widget.Woo.DesignSystem.Toolbar.ActionButton</item>
+        <item name="actionOverflowButtonStyle">@style/Widget.Woo.DesignSystem.Toolbar.OverflowButton</item>
         <item name="actionMenuTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarTextAction</item>
         <item name="actionMenuTextColor">@color/woo_ds_toolbar_text_action_tint</item>
         <item name="colorControlNormal">@color/woo_ds_color_surface_on_default</item>
@@ -33,7 +34,14 @@
         <item name="android:scaleType">fitCenter</item>
     </style>
 
+    <style name="Widget.Woo.DesignSystem.Toolbar.OverflowButton" parent="Widget.AppCompat.ActionButton.Overflow">
+        <!-- android:src must take precedence over AppCompat's inherited srcCompat overflow glyph. -->
+        <item name="android:src">@drawable/woo_ds_ic_regular_ellipsis_24dp</item>
+        <item name="tint">@color/woo_ds_toolbar_icon_button_tint</item>
+    </style>
+
     <style name="Widget.Woo.DesignSystem.Toolbar.ActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:background">@drawable/woo_ds_toolbar_text_action_background</item>
         <item name="android:minHeight">@dimen/woo_ds_toolbar_icon_touch_target</item>
         <item name="android:maxWidth">@dimen/woo_ds_toolbar_text_action_max_width</item>
         <item name="android:textAllCaps">false</item>

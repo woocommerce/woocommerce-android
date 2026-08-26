@@ -1337,6 +1337,7 @@ class MainActivity :
 
     override fun showOrderDetail(
         orderId: Long,
+        allOrderIds: List<Long>,
         navHostFragment: NavHostFragment?,
         launchedFromNotification: Boolean,
         startPaymentsFlow: Boolean,
@@ -1349,12 +1350,12 @@ class MainActivity :
 
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderDetailFragment(
             orderId,
-            longArrayOf(orderId)
+            allOrderIds.toLongArray()
         )
         navHostFragment?.navController?.let { navController ->
             val bundle = OrderDetailFragmentArgs(
                 orderId = orderId,
-                allOrderIds = longArrayOf(orderId),
+                allOrderIds = allOrderIds.toLongArray(),
                 startPaymentFlow = startPaymentsFlow
             ).toBundle()
             navController.navigate(

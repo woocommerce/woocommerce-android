@@ -7,13 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,13 +19,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @Composable
 fun <T> DashboardFilterableCardHeader(
@@ -40,69 +38,75 @@ fun <T> DashboardFilterableCardHeader(
     mapper: @Composable (T) -> String = { it.toString() }
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(
-            start = dimensionResource(id = R.dimen.major_100)
+            start = WooTheme.padding.padding5,
         )
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
         )
 
         Text(
             text = mapper(currentFilter),
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         Box {
             var isMenuExpanded by remember { mutableStateOf(false) }
-            IconButton(
-                onClick = { isMenuExpanded = true }
+            WooIconButton(
+                onClick = { isMenuExpanded = true },
+                contentDescription = stringResource(id = R.string.dashboard_filter_menu_content_description),
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_filter),
-                    contentDescription = stringResource(
-                        id = R.string.dashboard_filter_menu_content_description
-                    ),
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                    contentDescription = null,
                 )
             }
 
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
+                containerColor = WooTheme.colors.surface.default,
                 modifier = Modifier
                     .defaultMinSize(minWidth = 250.dp)
             ) {
                 filterList.forEach {
                     DropdownMenuItem(
+                        text = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+                            ) {
+                                Text(
+                                    text = mapper(it),
+                                    style = WooTheme.text.bodyLarge.regular,
+                                    color = WooTheme.colors.surface.onDefault,
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (currentFilter == it) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
+                                        contentDescription = stringResource(
+                                            id = androidx.compose.ui.R.string.selected
+                                        ),
+                                        tint = WooTheme.colors.primary,
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.size(WooTheme.iconSize.size24))
+                                }
+                            }
+                        },
                         onClick = {
                             onFilterSelected(it)
                             isMenuExpanded = false
-                        }
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
-                        ) {
-                            Text(text = mapper(it))
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (currentFilter == it) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
-                                    contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
-                                    tint = MaterialTheme.colors.primary
-                                )
-                            } else {
-                                Spacer(modifier = Modifier.size(dimensionResource(R.dimen.image_minor_50)))
-                            }
-                        }
-                    }
+                        },
+                    )
                 }
             }
         }
@@ -110,13 +114,13 @@ fun <T> DashboardFilterableCardHeader(
 }
 
 @Composable
-@Preview
+@PreviewLightDark
 private fun DashboardFilterableCardHeaderPreview() {
     val filters = remember {
         listOf("Filter 1", "Filter 2", "Filter 3")
     }
     var currentFilter by remember { mutableStateOf("Filter 1") }
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         DashboardFilterableCardHeader(
             title = "Title",
             currentFilter = currentFilter,

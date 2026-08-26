@@ -1,0 +1,691 @@
+@file:Suppress("MagicNumber")
+
+package com.woocommerce.android.ui.orders.list
+
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooCircularProgressIndicator
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+
+@Suppress("LongParameterList")
+@Composable
+internal fun OrderListContent(
+    state: OrderListContentState,
+    rowState: OrderListRowState,
+    itemCount: Int,
+    itemKey: (index: Int) -> Any,
+    itemAt: (index: Int) -> OrderListItemUiModel?,
+    itemContentType: (index: Int) -> Any? = { null },
+    onOrderActivated: (orderId: Long) -> Unit,
+    onOrderLongPressed: (orderId: Long) -> Unit,
+    onOrderSelectionToggled: (orderId: Long) -> Boolean,
+    onMarkOrderCompleted: (orderId: Long) -> Unit,
+    onLearnMoreClicked: () -> Unit,
+    onShowGuestOrdersClicked: () -> Unit,
+    onRetryClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState(),
+) {
+    when (state) {
+        OrderListContentState.InitialLoading -> OrderListInitialLoading(modifier)
+        is OrderListContentState.Empty -> OrderListEmptyState(
+            state = state.state,
+            onLearnMoreClicked = onLearnMoreClicked,
+            onShowGuestOrdersClicked = onShowGuestOrdersClicked,
+            onRetryClicked = onRetryClicked,
+            modifier = modifier,
+        )
+        is OrderListContentState.Content -> OrderLazyList(
+            itemCount = itemCount,
+            itemKey = itemKey,
+            itemAt = itemAt,
+            itemContentType = itemContentType,
+            rowState = rowState,
+            isAppending = state.isAppending,
+            contentRevision = state.contentRevision,
+            onOrderActivated = onOrderActivated,
+            onOrderLongPressed = onOrderLongPressed,
+            onOrderSelectionToggled = onOrderSelectionToggled,
+            onMarkOrderCompleted = onMarkOrderCompleted,
+            modifier = modifier,
+            listState = listState,
+        )
+    }
+}
+
+@Suppress("LongParameterList")
+@Composable
+private fun OrderLazyList(
+    itemCount: Int,
+    itemKey: (index: Int) -> Any,
+    itemAt: (index: Int) -> OrderListItemUiModel?,
+    itemContentType: (index: Int) -> Any?,
+    rowState: OrderListRowState,
+    isAppending: Boolean,
+    contentRevision: Long,
+    onOrderActivated: (orderId: Long) -> Unit,
+    onOrderLongPressed: (orderId: Long) -> Unit,
+    onOrderSelectionToggled: (orderId: Long) -> Boolean,
+    onMarkOrderCompleted: (orderId: Long) -> Unit,
+    modifier: Modifier,
+    listState: LazyListState,
+) {
+    val gestureAuthority = remember { OrderListGestureAuthority() }
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .fillMaxSize()
+            .acceptFirstPointerOnly(gestureAuthority)
+            .testTag(OrderListTestTags.LIST),
+        contentPadding = PaddingValues(bottom = WooTheme.padding.padding5),
+    ) {
+        items(
+            count = itemCount,
+            key = itemKey,
+            contentType = itemContentType,
+        ) { index ->
+            // itemAt is memoized per index. Advance contentRevision when mapped content changes
+            // without replacing the accessor.
+            val item = remember(index, contentRevision, itemAt) { itemAt(index) }
+            when (item) {
+                is OrderListItemUiModel.DateSection -> OrderListDateSection(item)
+                is OrderListItemUiModel.Order -> {
+                    val orderId = item.orderId
+                    OrderListOrderRow(
+                        order = item,
+                        isBulkSelected = orderId in rowState.bulkSelectedOrderIds,
+                        isDetailHighlighted = orderId == rowState.detailHighlightedOrderId,
+                        isBulkSelectionActive = rowState.isBulkSelectionActive,
+                        onActivate = { onOrderActivated(orderId) },
+                        onLongPress = { onOrderLongPressed(orderId) },
+                        onSelectionToggle = { onOrderSelectionToggled(orderId) },
+                        onMarkCompleted = { onMarkOrderCompleted(orderId) },
+                        canHandleSwipeDelta = { gestureAuthority.canHandleSwipeDelta(orderId) },
+                        canCommitSwipe = { gestureAuthority.canCommitSwipe(orderId) },
+                        modifier = Modifier.claimSwipeAuthority(
+                            orderId = orderId,
+                            gestureAuthority = gestureAuthority,
+                        ),
+                    )
+                    if (item.showDivider) {
+                        WooDivider(
+                            modifier = Modifier
+                                .background(WooTheme.colors.surface.default)
+                                .padding(start = WooTheme.padding.padding5)
+                                .testTag(OrderListTestTags.orderDivider(orderId))
+                        )
+                    }
+                }
+                is OrderListItemUiModel.Loading -> OrderListItemSkeleton(
+                    testTag = OrderListTestTags.loadingItem(item.orderId),
+                )
+                null -> OrderListItemSkeleton(testTag = OrderListTestTags.NULL_PLACEHOLDER)
+            }
+        }
+        if (isAppending) {
+            item(key = APPEND_PROGRESS_KEY) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(OrderListTestTags.APPEND_PROGRESS)
+                        .padding(WooTheme.padding.padding5),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WooCircularProgressIndicator(modifier = Modifier.size(PROGRESS_SIZE))
+                }
+            }
+        }
+    }
+}
+
+private fun Modifier.acceptFirstPointerOnly(
+    gestureAuthority: OrderListGestureAuthority,
+) = pointerInput(gestureAuthority) {
+    awaitEachGesture {
+        val owner = awaitFirstDown(
+            requireUnconsumed = false,
+            pass = PointerEventPass.Initial,
+        ).id
+        gestureAuthority.start(owner)
+        do {
+            val event = awaitPointerEvent(PointerEventPass.Initial)
+            val ownerChange = event.changes.firstOrNull { it.id == owner }
+            val ownerIsPressed = ownerChange?.pressed == true
+            val secondaryIsPressed = event.changes.any { it.id != owner && it.pressed }
+            // Pointer cancellation is consumed, so only a clean owner up can arm the destructive action.
+            if (ownerChange?.changedToUp() == true && !secondaryIsPressed) {
+                gestureAuthority.armSwipeCommit()
+            } else if (!ownerIsPressed) {
+                gestureAuthority.revokeSwipe()
+            }
+            event.changes.forEach { change ->
+                if (change.id != owner && (ownerIsPressed || change.changedToDown())) {
+                    change.consume()
+                }
+            }
+        } while (event.changes.any { it.pressed })
+    }
+}
+
+private fun Modifier.claimSwipeAuthority(
+    orderId: Long,
+    gestureAuthority: OrderListGestureAuthority,
+) = pointerInput(orderId, gestureAuthority) {
+    awaitEachGesture {
+        val down = awaitFirstDown(
+            requireUnconsumed = false,
+            pass = PointerEventPass.Initial,
+        )
+        gestureAuthority.claim(down.id, orderId)
+        do {
+            val event = awaitPointerEvent(PointerEventPass.Initial)
+        } while (event.changes.any { it.pressed })
+    }
+}
+
+private class OrderListGestureAuthority {
+    private var ownerPointerId: PointerId? = null
+    private var ownerOrderId: Long? = null
+    private var isSwipeRevoked = false
+    private var isSwipeCommitArmed = false
+
+    fun start(pointerId: PointerId) {
+        ownerPointerId = pointerId
+        ownerOrderId = null
+        isSwipeRevoked = false
+        isSwipeCommitArmed = false
+    }
+
+    fun claim(pointerId: PointerId, orderId: Long) {
+        if (pointerId == ownerPointerId) {
+            ownerOrderId = orderId
+        }
+    }
+
+    fun revokeSwipe() {
+        isSwipeRevoked = true
+        isSwipeCommitArmed = false
+    }
+
+    fun armSwipeCommit() {
+        if (!isSwipeRevoked) {
+            isSwipeCommitArmed = true
+        }
+    }
+
+    fun canHandleSwipeDelta(orderId: Long): Boolean {
+        return !isSwipeRevoked && ownerOrderId == orderId
+    }
+
+    fun canCommitSwipe(orderId: Long): Boolean {
+        return isSwipeCommitArmed && canHandleSwipeDelta(orderId)
+    }
+}
+
+@Composable
+private fun OrderListDateSection(section: OrderListItemUiModel.DateSection) {
+    Text(
+        text = section.title,
+        color = WooTheme.colors.background.onSectionVariant,
+        style = WooTheme.text.titleSmall.emphasized,
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(OrderListTestTags.DATE_SECTION)
+            .semantics { heading() }
+            .padding(horizontal = WooTheme.padding.padding5, vertical = WooTheme.padding.padding4),
+    )
+}
+
+@Composable
+private fun OrderListItemSkeleton(testTag: String) {
+    Column(modifier = Modifier.background(WooTheme.colors.surface.default)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(testTag)
+                .padding(horizontal = WooTheme.padding.padding5, vertical = WooTheme.padding.padding4),
+            verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+        ) {
+            SkeletonView(
+                width = SKELETON_DATE_WIDTH,
+                height = SKELETON_DATE_HEIGHT,
+                modifier = Modifier.testTag(OrderListTestTags.SKELETON_DATE),
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .weight(4f)
+                        .height(SKELETON_TEXT_HEIGHT)
+                        .testTag(OrderListTestTags.SKELETON_TITLE),
+                )
+                SkeletonView(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(SKELETON_TEXT_HEIGHT)
+                        .testTag(OrderListTestTags.SKELETON_TOTAL),
+                )
+            }
+            SkeletonView(
+                width = SKELETON_BADGE_WIDTH,
+                height = SKELETON_BADGE_HEIGHT,
+                modifier = Modifier.testTag(OrderListTestTags.SKELETON_BADGE),
+            )
+        }
+        WooDivider(
+            modifier = Modifier
+                .padding(start = WooTheme.padding.padding5)
+                .testTag(OrderListTestTags.SKELETON_DIVIDER)
+        )
+    }
+}
+
+@Composable
+private fun OrderListInitialLoading(modifier: Modifier) {
+    OrderListMessage(
+        title = AnnotatedString(stringResource(R.string.orderlist_loading)),
+        isTitleBold = true,
+        message = null,
+        image = R.drawable.img_empty_orders_loading,
+        actionText = null,
+        onActionClicked = null,
+        modifier = modifier.testTag(OrderListTestTags.INITIAL_LOADING),
+    )
+}
+
+@Composable
+private fun OrderListEmptyState(
+    state: OrderListEmptyState,
+    onLearnMoreClicked: () -> Unit,
+    onShowGuestOrdersClicked: () -> Unit,
+    onRetryClicked: () -> Unit,
+    modifier: Modifier,
+) {
+    val presentation = when (state) {
+        OrderListEmptyState.NoOrders -> OrderListMessagePresentation(
+            title = AnnotatedString(stringResource(R.string.empty_order_list_title)),
+            isTitleBold = true,
+            message = stringResource(R.string.empty_order_list_message),
+            image = R.drawable.img_empty_orders_no_orders,
+            actionText = stringResource(R.string.learn_more),
+            action = OrderListEmptyAction.LearnMore,
+        )
+        OrderListEmptyState.Filtered -> OrderListMessagePresentation(
+            title = AnnotatedString(stringResource(R.string.orders_empty_message_for_filtered_orders)),
+            message = null,
+            image = R.drawable.img_empty_search,
+        )
+        is OrderListEmptyState.Search -> OrderListMessagePresentation(
+            title = searchEmptyTitle(state.query),
+            message = null,
+            image = R.drawable.img_empty_search,
+        )
+        is OrderListEmptyState.GuestSearch -> OrderListMessagePresentation(
+            title = searchEmptyTitle(state.query),
+            message = stringResource(R.string.empty_message_with_search_guest),
+            image = R.drawable.img_empty_search,
+            actionText = stringResource(R.string.empty_search_guest_orders_button),
+            action = OrderListEmptyAction.ShowGuestOrders,
+        )
+        OrderListEmptyState.Offline -> OrderListMessagePresentation(
+            title = AnnotatedString(stringResource(R.string.offline_error)),
+            message = null,
+            image = R.drawable.ic_woo_error_state,
+            actionText = stringResource(R.string.retry),
+            action = OrderListEmptyAction.Retry,
+        )
+        OrderListEmptyState.NetworkError -> OrderListMessagePresentation(
+            title = AnnotatedString(stringResource(R.string.error_generic_network)),
+            message = null,
+            image = R.drawable.ic_woo_error_state,
+            actionText = stringResource(R.string.retry),
+            action = OrderListEmptyAction.Retry,
+        )
+    }
+    val onActionClicked = when (presentation.action) {
+        OrderListEmptyAction.LearnMore -> onLearnMoreClicked
+        OrderListEmptyAction.ShowGuestOrders -> onShowGuestOrdersClicked
+        OrderListEmptyAction.Retry -> onRetryClicked
+        null -> null
+    }
+
+    OrderListMessage(
+        title = presentation.title,
+        isTitleBold = presentation.isTitleBold,
+        message = presentation.message,
+        image = presentation.image,
+        actionText = presentation.actionText,
+        onActionClicked = onActionClicked,
+        modifier = modifier.testTag(OrderListTestTags.EMPTY),
+    )
+}
+
+@Composable
+private fun searchEmptyTitle(query: String): AnnotatedString {
+    val title = stringResource(R.string.empty_message_with_search, query)
+    return remember(title, query) {
+        buildAnnotatedString {
+            append(title)
+            val queryStart = title.lastIndexOf(query)
+            if (query.isNotEmpty() && queryStart >= 0) {
+                addStyle(
+                    style = SpanStyle(fontWeight = FontWeight.Bold),
+                    start = queryStart,
+                    end = queryStart + query.length,
+                )
+            }
+        }
+    }
+}
+
+@Suppress("LongParameterList")
+@Composable
+private fun OrderListMessage(
+    title: AnnotatedString,
+    isTitleBold: Boolean,
+    message: String?,
+    @DrawableRes image: Int,
+    actionText: String?,
+    onActionClicked: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        val showImage = maxHeight >= MIN_MESSAGE_IMAGE_HEIGHT
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding8),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = title,
+                color = WooTheme.colors.background.onSection,
+                style = if (isTitleBold) WooTheme.text.titleLarge.strong else WooTheme.text.titleLarge.emphasized,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.widthIn(max = MESSAGE_TEXT_MAX_WIDTH),
+            )
+            if (showImage) {
+                Image(
+                    painter = painterResource(image),
+                    contentDescription = null,
+                    modifier = Modifier.padding(top = WooTheme.padding.padding8),
+                )
+            }
+            message?.let {
+                Text(
+                    text = it,
+                    color = WooTheme.colors.background.onSectionVariant,
+                    style = WooTheme.text.bodyLarge.regular,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = WooTheme.padding.padding8)
+                        .widthIn(max = MESSAGE_TEXT_MAX_WIDTH),
+                )
+            }
+            if (actionText != null && onActionClicked != null) {
+                WooFilledButton(
+                    text = actionText,
+                    onClick = onActionClicked,
+                    modifier = Modifier
+                        .padding(top = WooTheme.padding.padding8)
+                        .padding(horizontal = WooTheme.padding.padding7)
+                        .fillMaxWidth()
+                        .testTag(OrderListTestTags.EMPTY_ACTION),
+                )
+            }
+        }
+    }
+}
+
+private data class OrderListMessagePresentation(
+    val title: AnnotatedString,
+    val message: String?,
+    @DrawableRes val image: Int,
+    val isTitleBold: Boolean = false,
+    val actionText: String? = null,
+    val action: OrderListEmptyAction? = null,
+)
+
+private enum class OrderListEmptyAction {
+    LearnMore,
+    ShowGuestOrders,
+    Retry,
+}
+
+private const val APPEND_PROGRESS_KEY = "order-list-append-progress"
+private val PROGRESS_SIZE = 24.dp
+private val SKELETON_DATE_WIDTH = 80.dp
+private val SKELETON_DATE_HEIGHT = 16.dp
+private val SKELETON_TEXT_HEIGHT = 20.dp
+private val SKELETON_BADGE_WIDTH = 100.dp
+private val SKELETON_BADGE_HEIGHT = 24.dp
+private val MESSAGE_TEXT_MAX_WIDTH = 260.dp
+private val MIN_MESSAGE_IMAGE_HEIGHT = 400.dp
+
+@PreviewLightDark
+@Composable
+private fun OrderListPopulatedPreview() {
+    OrderListContentPreview(
+        items = previewItems,
+    )
+}
+
+@Preview(name = "Bulk selection and detail highlight", heightDp = 500)
+@Composable
+private fun OrderListSelectionPreview() {
+    OrderListContentPreview(
+        items = previewItems,
+        rowState = OrderListRowState(
+            bulkSelectedOrderIds = setOf(1L),
+            detailHighlightedOrderId = 2L,
+        ),
+    )
+}
+
+@Preview(name = "Initial loading")
+@Composable
+private fun OrderListLoadingPreview() {
+    OrderListContentPreview(
+        state = OrderListContentState.InitialLoading,
+    )
+}
+
+@Preview(name = "Append progress", heightDp = 500)
+@Composable
+private fun OrderListAppendPreview() {
+    OrderListContentPreview(
+        state = OrderListContentState.Content(isAppending = true),
+        items = previewItems,
+    )
+}
+
+@Preview(name = "Indexed skeletons", heightDp = 400)
+@Composable
+private fun OrderListSkeletonPreview() {
+    OrderListContentPreview(
+        items = listOf(
+            OrderListItemUiModel.DateSection("Today"),
+            OrderListItemUiModel.Loading(orderId = 3L),
+            null,
+        ),
+    )
+}
+
+@Preview(name = "Empty")
+@Composable
+private fun OrderListEmptyPreview() {
+    OrderListContentPreview(
+        state = OrderListContentState.Empty(OrderListEmptyState.NoOrders),
+    )
+}
+
+@Preview(name = "Network error")
+@Composable
+private fun OrderListErrorPreview() {
+    OrderListContentPreview(
+        state = OrderListContentState.Empty(OrderListEmptyState.NetworkError),
+    )
+}
+
+@Preview(name = "Narrow large font", widthDp = 280, heightDp = 600, fontScale = 2f)
+@Composable
+private fun OrderListNarrowLargeFontPreview() {
+    OrderListContentPreview(
+        items = listOf(
+            previewItems.first(),
+            previewOrder(
+                orderId = 3L,
+                number = "#1003",
+                customerName = "A customer name that wraps safely on a narrow display",
+                total = "\$1,234.56",
+            ),
+        ),
+    )
+}
+
+@Preview(name = "RTL", locale = "ar", heightDp = 500)
+@Composable
+private fun OrderListRtlPreview() {
+    OrderListContentPreview(
+        items = listOf(
+            OrderListItemUiModel.DateSection("اليوم"),
+            previewOrder(
+                orderId = 4L,
+                number = "#1004",
+                customerName = "متجر ووكومرس",
+                total = "\$42.00",
+            ),
+        ),
+    )
+}
+
+@Composable
+private fun OrderListContentPreview(
+    state: OrderListContentState = OrderListContentState.Content(),
+    items: List<OrderListItemUiModel?> = emptyList(),
+    rowState: OrderListRowState = OrderListRowState(),
+) {
+    WooDesignSystemThemeWithBackground {
+        OrderListContent(
+            state = state,
+            rowState = rowState,
+            itemCount = items.size,
+            itemKey = { index -> previewItemKey(index, items[index]) },
+            itemAt = items::get,
+            onOrderActivated = {},
+            onOrderLongPressed = {},
+            onOrderSelectionToggled = { true },
+            onMarkOrderCompleted = {},
+            onLearnMoreClicked = {},
+            onShowGuestOrdersClicked = {},
+            onRetryClicked = {},
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+private fun previewItemKey(
+    index: Int,
+    item: OrderListItemUiModel?,
+): Any = when (item) {
+    is OrderListItemUiModel.DateSection -> "section-${item.title}"
+    is OrderListItemUiModel.Order -> "order-${item.orderId}"
+    is OrderListItemUiModel.Loading -> "loading-${item.orderId}"
+    null -> "placeholder-$index"
+}
+
+private val previewItems = listOf(
+    OrderListItemUiModel.DateSection("Today"),
+    previewOrder(
+        orderId = 1L,
+        number = "#1001",
+        customerName = "Ada Lovelace",
+        total = "\$48.00",
+    ),
+    previewOrder(
+        orderId = 2L,
+        number = "#1002",
+        customerName = "Grace Hopper",
+        total = "\$86.50",
+        showDivider = false,
+    ),
+)
+
+private fun previewOrder(
+    orderId: Long,
+    number: String,
+    customerName: String,
+    total: String,
+    showDivider: Boolean = true,
+) = OrderListItemUiModel.Order(
+    orderId = orderId,
+    number = number,
+    customerName = customerName,
+    dateCreated = "Jul 24, 2026 10:30",
+    total = total,
+    badges = listOf(
+        OrderListBadgeUiModel(
+            text = "Processing",
+            containerColorRes = R.color.tag_bg_processing,
+            contentColorRes = R.color.tagView_text,
+        ),
+        OrderListBadgeUiModel(
+            text = "POS",
+            containerColorRes = R.color.tag_bg_pos,
+            contentColorRes = R.color.tag_text_pos,
+        ),
+    ),
+    showDivider = showDivider,
+)

@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.dashboard.onboarding
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,11 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -25,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
@@ -35,10 +37,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooBadge
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.component.WooLinearProgressIndicator
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -46,6 +52,7 @@ import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
+import com.woocommerce.android.ui.onboarding.LaunchStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
 import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
 import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
@@ -54,7 +61,6 @@ import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
-import com.woocommerce.android.ui.onboarding.TaskItem
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
@@ -167,37 +173,32 @@ fun StoreOnboardingCardContent(
     onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(WooTheme.colors.surface.default)
+    ) {
+        @Suppress("MagicNumber")
+        OnboardingCardProgressHeader(
+            tasks = onboardingState.tasks,
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .padding(horizontal = 16.dp)
+        )
         Column(
             modifier = Modifier
+                .padding(top = dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
-                .background(MaterialTheme.colors.surface)
         ) {
-            @Suppress("MagicNumber")
-            OnboardingCardProgressHeader(
-                tasks = onboardingState.tasks,
-                modifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .padding(horizontal = 16.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth()
-            ) {
-                onboardingState.tasks
-                    .filter { it.isCompleted.not() }
-                    .take(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD)
-                    .forEachIndexed { index, task ->
-                        TaskItem(task, onTaskClicked)
-                        if (index < onboardingState.tasks.size - 1) {
-                            Divider(
-                                color = colorResource(id = R.color.divider_color),
-                                thickness = dimensionResource(id = R.dimen.minor_10)
-                            )
-                        }
+            onboardingState.tasks
+                .filter { it.isCompleted.not() }
+                .take(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD)
+                .forEachIndexed { index, task ->
+                    DashboardOnboardingTaskItem(task, onTaskClicked)
+                    if (index < onboardingState.tasks.size - 1) {
+                        WooDivider()
                     }
-            }
+                }
         }
     }
 }
@@ -212,21 +213,25 @@ fun OnboardingCardProgressHeader(
     val progress by remember { mutableFloatStateOf(if (totalTasks == 0) 0f else completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessVeryLow,
+            visibilityThreshold = 1 / 1000f,
+        ),
         label = "OnboardingProgressAnimation"
     ).value
     Column(modifier) {
-        LinearProgressIndicator(
+        WooLinearProgressIndicator(
             progress = animatedProgress,
             modifier = Modifier
                 .height(dimensionResource(id = R.dimen.minor_100))
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            backgroundColor = colorResource(id = R.color.divider_color),
         )
         Text(
             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_100)),
             text = stringResource(R.string.store_onboarding_completed_tasks_status, completedTasks, totalTasks),
-            style = MaterialTheme.typography.body2,
+            style = WooTheme.text.bodyMedium.regular,
+            color = WooTheme.colors.surface.onDefault,
         )
     }
 }
@@ -238,20 +243,20 @@ private fun StoreOnboardingLoading(modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(10.dp)
                 .width(200.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(10.dp)
                 .width(80.dp)
         )
         repeat(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD) {
             OnboardingSkeletonItem()
-            Divider()
+            WooDivider()
         }
     }
 }
@@ -264,7 +269,7 @@ private fun OnboardingSkeletonItem() {
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SkeletonView(
+        DashboardSkeleton(
             modifier = Modifier
                 .height(42.dp)
                 .width(42.dp)
@@ -275,13 +280,13 @@ private fun OnboardingSkeletonItem() {
                 .padding(start = 16.dp)
                 .weight(1f)
         ) {
-            SkeletonView(
+            DashboardSkeleton(
                 modifier = Modifier
                     .height(12.dp)
                     .width(150.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
-            SkeletonView(
+            DashboardSkeleton(
                 modifier = Modifier
                     .height(10.dp)
                     .width(250.dp)
@@ -290,9 +295,12 @@ private fun OnboardingSkeletonItem() {
     }
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
-private fun OnboardingPreview() {
+private fun OnboardingPreview() = WooDesignSystemThemeWithBackground { OnboardingPreviewContent() }
+
+@Composable
+private fun OnboardingPreviewContent() {
     StoreOnboardingCardContent(
         OnboardingDashBoardState(
             title = R.string.store_onboarding_title,
@@ -313,6 +321,57 @@ private fun OnboardingPreview() {
             ),
             onViewAllTapped = {}
         ),
-        onTaskClicked = {}
+        onTaskClicked = {},
     )
+}
+
+@Composable
+private fun DashboardOnboardingTaskItem(
+    task: OnboardingTaskUi,
+    onTaskClicked: (OnboardingTaskUi) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .clickable { onTaskClicked(task) }
+            .padding(WooTheme.padding.padding5),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space5),
+    ) {
+        Image(
+            painter = painterResource(id = task.taskUiResources.icon),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(WooTheme.colors.surface.onVariant),
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(
+                WooTheme.spacing.space2 + WooTheme.spacing.space1
+            ),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(id = task.taskUiResources.title),
+                    style = WooTheme.text.titleMedium.strong,
+                    color = WooTheme.colors.surface.onDefault,
+                )
+                if (task.taskUiResources is LaunchStoreTaskRes) {
+                    WooBadge(
+                        text = stringResource(
+                            id = R.string.store_onboarding_launch_store_task_private_tag
+                        ).uppercase(),
+                        modifier = Modifier.padding(start = WooTheme.padding.padding5),
+                    )
+                }
+            }
+            Text(
+                text = stringResource(id = task.taskUiResources.description),
+                style = WooTheme.text.bodyLarge.regular,
+                color = WooTheme.colors.surface.onDefault,
+            )
+        }
+        Image(
+            painter = painterResource(R.drawable.ic_arrow_right),
+            contentDescription = null,
+        )
+    }
 }

@@ -121,7 +121,7 @@ private fun CampaignList(
         val listState = rememberLazyListState()
         LazyColumn(state = listState) {
             items(state.campaigns) { campaign ->
-                BlazeCampaignItem(
+                LegacyBlazeCampaignItem(
                     campaign = campaign.campaignUi,
                     onCampaignClicked = campaign.onCampaignClicked,
                 )

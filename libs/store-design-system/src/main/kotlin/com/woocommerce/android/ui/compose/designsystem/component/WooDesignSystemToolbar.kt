@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.ui.compose.designsystem.R
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 class WooDesignSystemToolbar @JvmOverloads constructor(
     context: Context,
@@ -49,17 +51,19 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         // ActionMenuItemView centers icon-only items from the current icon bounds during measure.
         decorateNavigationButton()
         decorateRenderedMenuActions()
+        applyToolbarControlEdgeMargins()
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        if (decorateNavigationButton() || decorateRenderedMenuActions()) {
+        if (decorateTitle() || decorateNavigationButton() || decorateRenderedMenuActions()) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        applyToolbarControlEdgeMargins()
         super.onLayout(changed, left, top, right, bottom)
         decorateNavigationButton()
         decorateRenderedMenuActions()
-        applyToolbarControlEdgeInsets()
+        centerToolbarControlsVertically()
     }
 
     private fun applyStaticChrome() {
@@ -77,16 +81,28 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     private fun decorateNavigationButton(): Boolean {
         val navigationButton = children.filterIsInstance<AppCompatImageButton>().firstOrNull() ?: return false
-        var changed = navigationButton.applyToolbarIconTouchTarget()
-        if (navigationButton.scaleType != ImageView.ScaleType.FIT_CENTER) {
-            navigationButton.scaleType = ImageView.ScaleType.FIT_CENTER
+        return navigationButton.applyOutlinedToolbarImageButtonStyle()
+    }
+
+    private fun decorateTitle(): Boolean {
+        val titleView = children.filterIsInstance<TextView>().firstOrNull { it.text == title } ?: return false
+        var changed = false
+        if (titleView.includeFontPadding) {
+            titleView.includeFontPadding = false
             changed = true
         }
-        if (navigationButton.getTag(R.id.woo_ds_toolbar_action_view) != true) {
-            navigationButton.background = context.toolbarIconButtonBackground(icon = null)
-            navigationButton.setTag(R.id.woo_ds_toolbar_action_view, true)
+
+        val controlSpacing = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_title_control_spacing)
+        if (titleView.paddingStart != controlSpacing || titleView.paddingEnd != controlSpacing) {
+            titleView.setPaddingRelative(
+                controlSpacing,
+                titleView.paddingTop,
+                controlSpacing,
+                titleView.paddingBottom,
+            )
             changed = true
         }
+
         return changed
     }
 
@@ -97,6 +113,12 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
             .filterIsInstance<ActionMenuView>()
             .flatMap { actionMenuView -> actionMenuView.children.asIterable() }
             .forEach { child ->
+                val layoutParams = child.layoutParams as? ActionMenuView.LayoutParams
+                if (layoutParams?.isOverflowButton == true) {
+                    changed = child.applyOutlinedToolbarImageButtonStyle() || changed
+                    return@forEach
+                }
+
                 val item = menu.findItem(child.id) ?: return@forEach
                 if (item.actionView === child) {
                     return@forEach
@@ -108,6 +130,20 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
                     child.clearOutlinedToolbarActionStyle(icon, iconSize) || changed
                 }
             }
+        return changed
+    }
+
+    private fun View.applyOutlinedToolbarImageButtonStyle(): Boolean {
+        var changed = applyToolbarIconTouchTarget()
+        if (this is ImageView && scaleType != ImageView.ScaleType.FIT_CENTER) {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            changed = true
+        }
+        if (getTag(R.id.woo_ds_toolbar_action_view) != true) {
+            background = context.toolbarIconButtonBackground(icon = null)
+            setTag(R.id.woo_ds_toolbar_action_view, true)
+            changed = true
+        }
         return changed
     }
 
@@ -155,51 +191,42 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     private fun View.isIconOnlyAction(): Boolean =
         this !is TextView || text.isNullOrEmpty()
 
-    private fun applyToolbarControlEdgeInsets() {
-        val edgeInset = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
-        val isRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL
-        val toolbarWidth = width
+    private fun applyToolbarControlEdgeMargins() {
+        val controlEdgeInset = (
+            resources.getDimension(R.dimen.woo_ds_toolbar_edge_padding) -
+                resources.getDimension(R.dimen.woo_ds_toolbar_icon_border_inset)
+            ).roundToInt()
+        val navigationLayoutParams = children.filterIsInstance<AppCompatImageButton>()
+            .firstOrNull()?.layoutParams as? ViewGroup.MarginLayoutParams
+        val actionMenuLayoutParams = children.filterIsInstance<ActionMenuView>()
+            .firstOrNull()?.layoutParams as? ViewGroup.MarginLayoutParams
 
-        children.filterIsInstance<AppCompatImageButton>().firstOrNull()?.layoutWithStartInset(
-            edgeInset = edgeInset,
-            toolbarWidth = toolbarWidth,
-            isRtl = isRtl,
-        )
+        navigationLayoutParams?.marginStart = controlEdgeInset
+        actionMenuLayoutParams?.marginEnd = controlEdgeInset
+    }
 
-        children.filterIsInstance<ActionMenuView>().firstOrNull()?.layoutWithEndInset(
-            edgeInset = edgeInset,
-            toolbarWidth = toolbarWidth,
-            isRtl = isRtl,
-        )
+    private fun centerToolbarControlsVertically() {
+        val toolbarHeight = height
+        children.filterIsInstance<AppCompatImageButton>().firstOrNull()?.centerVertically(toolbarHeight)
+        children.filterIsInstance<ActionMenuView>().firstOrNull()?.let { actionMenuView ->
+            actionMenuView.centerVertically(toolbarHeight)
+            actionMenuView.centerOutlinedActionsVertically(toolbarHeight)
+        }
     }
 }
 
-private fun View.layoutWithStartInset(
-    edgeInset: Int,
-    toolbarWidth: Int,
-    isRtl: Boolean,
-) {
-    val childWidth = measuredWidth
-    val childLeft = if (isRtl) {
-        toolbarWidth - edgeInset - childWidth
-    } else {
-        edgeInset
-    }
-    layout(childLeft, top, childLeft + childWidth, bottom)
+private fun View.centerVertically(toolbarHeight: Int) {
+    val childTop = ((toolbarHeight - measuredHeight) / 2f).roundToInt()
+    layout(left, childTop, right, childTop + measuredHeight)
 }
 
-private fun View.layoutWithEndInset(
-    edgeInset: Int,
-    toolbarWidth: Int,
-    isRtl: Boolean,
-) {
-    val childWidth = measuredWidth
-    val childLeft = if (isRtl) {
-        edgeInset
-    } else {
-        toolbarWidth - edgeInset - childWidth
-    }
-    layout(childLeft, top, childLeft + childWidth, bottom)
+private fun ActionMenuView.centerOutlinedActionsVertically(toolbarHeight: Int) {
+    children
+        .filter { child -> child.getTag(R.id.woo_ds_toolbar_action_view) == true }
+        .forEach { child ->
+            val childTop = ((toolbarHeight - child.measuredHeight) / 2f).roundToInt() - top
+            child.layout(child.left, childTop, child.left + child.measuredWidth, childTop + child.measuredHeight)
+        }
 }
 
 private fun View.applyToolbarIconTouchTarget(): Boolean {
@@ -215,11 +242,14 @@ private fun View.applyToolbarIconTouchTarget(): Boolean {
         minimumHeight = touchTarget
         changed = true
     }
-    if (layoutParams?.width != touchTarget || layoutParams?.height != touchTarget) {
-        layoutParams = (layoutParams ?: ViewGroup.LayoutParams(touchTarget, touchTarget)).apply {
-            width = touchTarget
-            height = touchTarget
-        }
+    val currentLayoutParams = layoutParams
+    if (currentLayoutParams == null) {
+        layoutParams = ViewGroup.LayoutParams(touchTarget, touchTarget)
+        changed = true
+    } else if (currentLayoutParams.width != touchTarget || currentLayoutParams.height != touchTarget) {
+        currentLayoutParams.width = touchTarget
+        currentLayoutParams.height = touchTarget
+        requestLayout()
         changed = true
     }
     if (!hasUniformPadding(iconPadding)) {
@@ -289,20 +319,22 @@ private class CenteredToolbarIconButtonDrawable(
     icon: Drawable?,
     private val spec: CenteredToolbarIconButtonSpec,
 ) : Drawable() {
+    private val borderStrokeWidth = ceil(spec.strokeWidth)
     private val icon = icon?.newMutableDrawable()?.apply {
         setTintList(spec.iconTint)
     }
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = spec.strokeWidth
+        strokeWidth = borderStrokeWidth
         color = spec.color
     }
     private val rect = RectF()
 
     override fun draw(canvas: Canvas) {
         centeredSquareIn(bounds, spec.boxSize, rect)
-        rect.inset(spec.strokeWidth / 2, spec.strokeWidth / 2)
-        canvas.drawRoundRect(rect, spec.cornerRadius, spec.cornerRadius, paint)
+        rect.inset(borderStrokeWidth / 2, borderStrokeWidth / 2)
+        val strokeCornerRadius = spec.cornerRadius - borderStrokeWidth / 2
+        canvas.drawRoundRect(rect, strokeCornerRadius, strokeCornerRadius, paint)
 
         icon?.let { drawable ->
             val iconLeft = bounds.left + (bounds.width() - spec.iconSize) / 2
@@ -377,8 +409,8 @@ private class CenteredToolbarIconButtonMaskDrawable(
 
 private fun centeredSquareIn(bounds: Rect, boxSize: Float, out: RectF) {
     val size = boxSize.coerceAtMost(bounds.width().toFloat()).coerceAtMost(bounds.height().toFloat())
-    val left = bounds.left + (bounds.width() - size) / 2
-    val top = bounds.top + (bounds.height() - size) / 2
+    val left = (bounds.left + (bounds.width() - size) / 2).roundToInt().toFloat()
+    val top = (bounds.top + (bounds.height() - size) / 2).roundToInt().toFloat()
     out.set(left, top, left + size, top + size)
 }
 

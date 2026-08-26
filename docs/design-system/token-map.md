@@ -200,7 +200,7 @@ runtime mapping.
 | `WooTheme.colors.status.neutralContainer` | `Woo Theme/Alerts/Neutral-Container` | `figma-export.json` | `#F4F4F4` / 100% | `#F4F4F4` / 100% | No direct M3 role | production | Neutral container. |
 | `WooTheme.colors.status.onNeutralContainer` | `Woo Theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
 | `WooTheme.colors.overlay.overlay20` | `Woo Theme/Overlay/Opacity-20` | `figma-export.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Overlay color. |
-| `WooTheme.colors.overlay.overlay50` | `Woo Theme/Overlay/Opacity-50` | `figma-export.json` | `#000000` / 50% | `#000000` / 75% | `scrim` | production | Overlay color. |
+| `WooTheme.colors.overlay.overlay50` | `Woo Theme/Overlay/Opacity-50` | `figma-export.json` | `#2C3338` / 50% | `#2C3338` / 50% | `scrim` | production | Overlay color; Android `#802C3338`. |
 | `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo Theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#10151714` | `#FFFFFF14` | No M3 projection | production | Disabled filled/tonal button container. |
 | `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo Theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1015171A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
 | `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo Theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#10151729` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio containers. |
@@ -292,7 +292,7 @@ project into `ColorScheme`; components consume those mode-aware colors directly.
 | `onErrorContainer` | `WooTheme.colors.status.onErrorContainer` | production | Direct source-backed projection. |
 | `outline` | `WooTheme.colors.outline` | production | Direct source-backed projection. |
 | `outlineVariant` | `WooTheme.colors.outlineVariant` | production | Direct source-backed projection. |
-| `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed projection; dark alpha is 75%. |
+| `scrim` | `WooTheme.colors.overlay.overlay50` | production | Source-backed 50% projection in both modes. |
 | `surfaceBright` | `WooTheme.colors.surface.bright` | production | Direct source-backed projection, distinct from generic Surface. |
 | `surfaceDim` | `WooTheme.colors.surface.surfaceDim` | production | Promoted source-backed Store surface role. |
 | `surfaceContainer` | `WooTheme.colors.surface.default` | production | Internal alias to the nearest generic source surface. |
@@ -316,8 +316,8 @@ overrides stale resolved values in the published library.
 | Top Navigation Bar and XML toolbar | `surface.bright` shell; global divider tint; navigation-button borders use `outlineVariant` at regular stroke | XML ownership and behavior remain unchanged. |
 | Page Header | `surface.bright` shell and global divider tint | No geometry change. |
 | Search | `surface.bright` shell; `stateLayers.onSurface.opacity24` placeholder | Active search and clear icons use `surface.onDefault`; the inner field remains `surface.surfaceDim`. |
-| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Preview-only API boundary is unchanged. |
-| Sheet | `surface.bright` body; `surface.onVariantLowest` thin boundary and handle | Preview-only geometry/API remains unchanged. |
+| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Production label-only control. Selected text uses `surface.onDefault`; unselected text uses `container.onPrimaryContainer`. Because Figma has no disabled variant, the Android whole-control fallback uses `stateLayers.onSurface.opacity08` / `opacity16` containers and `opacity24` content. |
+| Modal Bottom Sheet | `surface.bright` container; `surface.onVariantLowest` handle; `overlay.overlay50` scrim; no visible boundary | Production narrow wrapper. Woo supplies the semantic scrim color; Material owns scrim rendering, width, insets, gestures, focus, semantics, and platform behavior. |
 | Tab Bar and Tabs | `surface.bright` shell and global divider tint | Tab Bar remains preview-only. |
 | Table | Explicit `surface.bright` shell with thin outer stroke and global divider tint | Preview-only data/API boundary is unchanged. |
 | Divider | `tintLayers.onSurface.opacity16` | Applies to standalone, vertical, navigation, page-header, tab, and table dividers. |

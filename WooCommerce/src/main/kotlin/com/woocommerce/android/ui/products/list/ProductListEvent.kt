@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.list
 
-import android.view.View
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class ProductListEvent : MultiLiveEvent.Event() {
@@ -15,12 +14,12 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
         val selectedCategoryName: String?
     ) : ProductListEvent()
 
-    data class ShowProductUpdateStockStatusScreen(val productsIds: List<Long>) : ProductListEvent()
+    data class ShowProductUpdateStockStatusScreen(val productIds: List<Long>) : ProductListEvent()
     sealed class ShowUpdateDialog : ProductListEvent() {
-        abstract val productsIds: List<Long>
+        abstract val productIds: List<Long>
 
-        data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
-        data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
+        data class Price(override val productIds: List<Long>) : ShowUpdateDialog()
+        data class Status(override val productIds: List<Long>) : ShowUpdateDialog()
     }
 
     data class ShowDiscardProductChangesConfirmationDialog(
@@ -28,14 +27,9 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
         val productName: String,
     ) : ProductListEvent()
 
-    data class OpenProduct(
-        val productId: Long,
-        val oldPosition: Int,
-        val newPosition: Int,
-        val sharedView: View?
-    ) : ProductListEvent()
+    data class OpenProduct(val productId: Long) : ProductListEvent()
 
     data object OpenEmptyProduct : ProductListEvent()
 
-    data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+    data object ShowBarcodeScanner : ProductListEvent()
 }

@@ -489,6 +489,7 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
     <string name="my_store_edit_screen_widgets">Customize</string>
+    <string name="dashboard_customize_new_sections_state_description">New dashboard sections available</string>
     <string name="dashboard_ai_assistant_entry_point_label">Ask about your store…</string>
     <string name="dashboard_ai_assistant_entry_point_content_description">Open AI Assistant</string>
 
@@ -512,6 +513,10 @@
     <string name="dynamic_dashboard_widget_menu_item_hide">Hide %s</string>
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
+    <plurals name="dashboard_review_rating_content_description">
+        <item quantity="one">%1$d-star rating</item>
+        <item quantity="other">%1$d-star rating</item>
+    </plurals>
 
     <string name="dashboard_reviews_card_header_title">Status</string>
     <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
@@ -624,6 +629,8 @@
     <string name="orderlist_search_hint_active_filters">Search filtered orders</string>
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
+    <string name="orderlist_select_order">Select order %1$s</string>
+    <string name="orderlist_deselect_order">Deselect order %1$s</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
     <string name="orderlist_mark_completed">Mark\ncompleted</string>
@@ -1994,6 +2001,7 @@
     <string name="product_ratings_count_one">\u2022  one approved review</string>
     <string name="product_ratings_count_zero">\u2022  no approved reviews</string>
     <string name="product_reviews">Reviews</string>
+    <string name="product_rating_content_description">%1$.1f out of 5</string>
     <string name="product_downloadable_files">Downloadable files</string>
     <string name="product_custom_fields">Custom Fields</string>
     <string name="product_custom_fields_desc">View and edit custom fields</string>
@@ -2139,6 +2147,8 @@
     <string name="product_selection_menu_update_price">Update price</string>
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
+    <string name="product_list_select_product">Select %s</string>
+    <string name="product_list_deselect_product">Deselect %s</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>

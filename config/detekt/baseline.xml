@@ -149,7 +149,6 @@
     <ID>ReturnCount:DrawableMatcher.kt$DrawableMatcher$override fun matchesSafely(item: View?): Boolean</ID>
     <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided&gt;$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$fun hasAttributeChanges(updatedProduct: Product?): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$private fun isSameCategories(updatedCategories: List&lt;ProductCategory&gt;): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$private fun isSameTags(updatedTags: List&lt;ProductTag&gt;): Boolean</ID>
@@ -2443,7 +2442,6 @@
     <ID>UseCheckOrError:CheckDigitRemoverFactory.kt$CheckDigitRemoverFactory$throw IllegalStateException( "Cannot remove check digit for this barcode format: ${barcodeFormat.formatName}" )</ID>
     <ID>UseCheckOrError:MoveShippingItemViewModel.kt$MoveShippingItemViewModel$throw IllegalStateException("move button listener invoked while no package is selected")</ID>
     <ID>UseCheckOrError:MultipleCardReadersFoundAdapter.kt$MultipleCardReadersFoundAdapter$throw IllegalStateException("The view type '$viewType' needs to be handled")</ID>
-    <ID>UseCheckOrError:OrderListAdapter.kt$OrderListAdapter$throw IllegalStateException("The view type '$viewType' needs to be handled")</ID>
     <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'empty mState' resource id")</ID>
     <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'failed mState' resource id")</ID>
     <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'loading mState' resource id")</ID>

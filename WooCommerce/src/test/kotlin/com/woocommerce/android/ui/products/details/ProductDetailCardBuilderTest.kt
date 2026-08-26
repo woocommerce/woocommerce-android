@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class ProductDetailCardBuilderTest : BaseUnitTest() {
     private lateinit var sut: ProductDetailCardBuilder
+    private lateinit var viewModel: ProductDetailViewModel
     private lateinit var productStub: Product
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         on { invoke() } doReturn false
@@ -45,7 +46,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        val viewModel: ProductDetailViewModel = mock {
+        viewModel = mock {
             on { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
         }
 
@@ -311,5 +312,46 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         Assertions.assertThat(propertyKeys).doesNotContain(
             resourceProvider.getString(R.string.subscription_one_time_shipping)
         )
+    }
+
+    @Test
+    fun `given every product detail type, when mapping builder output, then card and row order is preserved`() = testBlocking {
+        doReturn(0).whenever(viewModel).getBundledProductsSize(any())
+        doReturn(emptyList<com.woocommerce.android.model.Component>()).whenever(viewModel).getComponents(any())
+        val productTypes = listOf(
+            ProductType.SIMPLE,
+            ProductType.VARIABLE,
+            ProductType.GROUPED,
+            ProductType.EXTERNAL,
+            ProductType.SUBSCRIPTION,
+            ProductType.VARIABLE_SUBSCRIPTION,
+            ProductType.BUNDLE,
+            ProductType.COMPOSITE,
+            ProductType.OTHER,
+        )
+        val mapper = ProductDetailUiMapper()
+
+        productTypes.forEach { productType ->
+            val type = productType.value.ifEmpty { "unsupported" }
+            val aggregate = ProductAggregate(
+                product = ProductTestUtils.generateProduct().copy(type = type),
+                subscription = ProductHelper.getDefaultSubscriptionDetails(),
+            )
+
+            val cards = sut.buildPropertyCards(aggregate, "")
+            val mappedCards = mapper.map(cards)
+
+            Assertions.assertThat(mappedCards.map { it.style }).containsExactlyElementsOf(
+                cards.map {
+                    when (it.type) {
+                        ProductPropertyCard.Type.PRIMARY -> ProductDetailCardStyle.PRIMARY
+                        ProductPropertyCard.Type.SECONDARY -> ProductDetailCardStyle.SECONDARY
+                    }
+                }
+            )
+            Assertions.assertThat(mappedCards.map { it.rows.size }).containsExactlyElementsOf(
+                cards.map { it.properties.size }
+            )
+        }
     }
 }

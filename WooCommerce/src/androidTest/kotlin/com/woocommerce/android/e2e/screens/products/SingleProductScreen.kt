@@ -1,18 +1,23 @@
 package com.woocommerce.android.e2e.screens.products
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.util.CustomMatchers
+import com.woocommerce.android.e2e.helpers.util.ComposeUiAutomator
 import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.e2e.helpers.util.allText
+import com.woocommerce.android.ui.products.details.ProductDetailTestTags
 import org.hamcrest.Matchers
 
 class SingleProductScreen : Screen {
     constructor() : super(R.id.productDetail_root)
+
+    private val composeUi = ComposeUiAutomator()
 
     fun goBackToProductsScreen(): ProductListScreen {
         // pressBack() only needed if device is not a tablet,
@@ -23,7 +28,6 @@ class SingleProductScreen : Screen {
             .screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
         if (!isTablet) {
             pressBack()
-            waitForElementToBeDisplayed(R.id.productsRecycler)
         }
         return ProductListScreen()
     }
@@ -39,79 +43,64 @@ class SingleProductScreen : Screen {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         // Product name:
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withId(R.id.editText),
-                ViewMatchers.withText(product.name)
-            )
-        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        val title = composeUi.waitForTag(ProductDetailTestTags.TITLE)
+        check(product.name in title.allText()) {
+            "Expected product title '${product.name}', found ${title.allText()}"
+        }
 
         // Name-Value pairs:
-        assertTextNameValuePair("Price", product.price)
-        assertTextNameValuePair("Inventory", "Stock status: ${product.stockStatus}")
-        assertTextNameValuePair("Product type", product.type)
+        assertTextNameValuePair(
+            rowKey = "group_${R.string.product_price}",
+            name = R.string.product_price,
+            valueText = product.price,
+        )
+        assertTextNameValuePair(
+            rowKey = "group_${R.string.product_inventory}",
+            name = R.string.product_inventory,
+            valueText = "Stock status: ${product.stockStatus}",
+        )
+        assertTextNameValuePair(
+            rowKey = "complex_${R.string.product_type}_${R.drawable.ic_gridicons_product}",
+            name = R.string.product_type,
+            valueText = product.type,
+        )
 
         // Rating is shown only if the rating is larger than zero (more than zero reviews):
         if (product.rating > 0) {
-            // Check that "Review" label, actual rating (stars) and reviews count are
-            // all direct children of the same container:
-
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withChild(
-                        Matchers.allOf(
-                            ViewMatchers.withId(R.id.textPropertyName),
-                            ViewMatchers.withText(R.string.product_reviews)
-                        )
-                    ),
-                    ViewMatchers.withChild(
-                        Matchers.allOf(
-                            ViewMatchers.withId(R.id.ratingBar),
-                            CustomMatchers().withStarsNumber(product.rating)
-                        )
-                    ),
-                    ViewMatchers.withChild(
-                        Matchers.allOf(
-                            ViewMatchers.withId(R.id.textPropertyValue),
-                            ViewMatchers.withText(product.getReviewsDescription())
-                        )
-                    )
-                )
-            ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            val reviews = getTranslatedString(R.string.product_reviews)
+            composeUi.scrollTextIntoView(ProductDetailTestTags.LIST, reviews)
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val ratingDescription = context.getString(
+                R.string.product_rating_content_description,
+                product.rating.toFloat(),
+            )
+            assertRowContains(
+                rowKey = "rating_${R.string.product_reviews}",
+                expectedValues = listOf(reviews, product.getReviewsDescription(), ratingDescription),
+            )
         }
 
         return this
     }
 
-    // Checks that label and actual value are siblings in view hierarchy:
-    private fun assertTextNameValuePair(nameText: String, valueText: String?) {
-        // Scroll the object into visible area
-        scrollToListItem(
-            nameText,
-            Espresso.onView(
-                Matchers.allOf(
-                    ViewMatchers.withId(R.id.propertiesRecyclerView),
-                    ViewMatchers.hasDescendant(ViewMatchers.withText(nameText))
-                )
-            )
-        )
+    private fun assertTextNameValuePair(
+        rowKey: String,
+        @StringRes name: Int,
+        valueText: String?,
+    ) {
+        val nameText = getTranslatedString(name)
+        composeUi.scrollTextIntoView(ProductDetailTestTags.LIST, nameText)
+        assertRowContains(rowKey, listOfNotNull(nameText, valueText))
+    }
 
-        Espresso.onView(
-            Matchers.allOf(
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.textPropertyName),
-                        ViewMatchers.withText(nameText)
-                    )
-                ),
-                ViewMatchers.withChild(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.textPropertyValue),
-                        ViewMatchers.withText(valueText)
-                    )
-                )
-            )
-        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    private fun assertRowContains(rowKey: String, expectedValues: List<String>) {
+        val row = composeUi.waitForTag(ProductDetailTestTags.row(rowKey), "Product property row '$rowKey'")
+        val rowValues = row.allText()
+        expectedValues.forEach { expected ->
+            check(rowValues.any { expected in it }) {
+                "Expected '$expected' in Product Detail row '$rowKey', found $rowValues"
+            }
+        }
     }
 
     private fun ProductData.getReviewsDescription(): String {

@@ -432,6 +432,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given offline cache miss, when product loads, then None is emitted without a product`() = testBlocking {
+        doReturn(null).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+        doReturn(false).whenever(networkStatus).isConnected()
+
+        viewModel.start()
+
+        verify(productRepository, times(1)).getProductAggregate(PRODUCT_REMOTE_ID)
+        verify(productRepository, never()).fetchAndGetProductAggregate(any())
+        Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
+        Assertions.assertThat(viewModel.getProduct().auxiliaryState)
+            .isEqualTo(ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None)
+    }
+
+    @Test
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
         doReturn(null).whenever(productRepository).getProductAggregate(any())
         doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
@@ -1021,6 +1035,59 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.updateProductDraft(title = productAggregate.product.name + "2")
 
             Assertions.assertThat(menuButtonsState?.saveOption).isTrue()
+        }
+
+    @Test
+    fun `given unchanged persisted public product, when sharing, then share is promoted and product form is tracked`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            }.last()
+
+            Assertions.assertThat(menuButtonsState.shareOption).isTrue()
+            Assertions.assertThat(menuButtonsState.showShareOptionAsAction).isTrue()
+
+            // WHEN
+            viewModel.onShareButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_PRODUCT_FORM
+                )
+            )
+        }
+
+    @Test
+    fun `given edited persisted public product, when sharing, then share is in overflow and more menu is tracked`() =
+        testBlocking {
+            // GIVEN
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+            val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+                viewModel.onProductTitleChanged("Edited product")
+            }
+            val menuButtonsState = menuButtonsStates.last()
+
+            Assertions.assertThat(menuButtonsState.saveOption).isTrue()
+            Assertions.assertThat(menuButtonsState.shareOption).isTrue()
+            Assertions.assertThat(menuButtonsState.showShareOptionAsAction).isFalse()
+
+            // WHEN
+            viewModel.onShareButtonClicked()
+
+            // THEN
+            verify(tracker).track(
+                AnalyticsEvent.PRODUCT_DETAIL_SHARE_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_SHARE_BUTTON_SOURCE_MORE_MENU
+                )
+            )
         }
 
     @Test
