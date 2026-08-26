@@ -628,6 +628,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
             smarter_notifications: true (remote)
             wc_shipping_banner: true (remote)
             woo_app_passwords_for_jetpack_sites: true (remote)
+            woo_filter_history: true (remote)
             woo_mobile_ai_assistant: true (remote)
             woo_notification_1d_after_free_trial_expires: true (remote)
             woo_notification_1d_before_free_trial_expires: true (remote)
