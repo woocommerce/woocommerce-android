@@ -147,7 +147,10 @@ class ProductListViewModel @Inject constructor(
                 searchJob?.cancelAndJoin()
 
                 updateProductList(emptyList())
-                viewState = viewState.copy(isEmptyViewVisible = false)
+                viewState = viewState.copy(
+                    isEmptyViewVisible = false,
+                    isAddProductButtonVisible = false
+                )
             }
         }
     }
@@ -425,7 +428,7 @@ class ProductListViewModel @Inject constructor(
 
     private fun shouldShowAddProductButton(): Boolean =
         if (_productList.value.isNullOrEmpty()) {
-            viewState.query != null || productFilterOptions.isNotEmpty()
+            !viewState.query.isNullOrEmpty() || productFilterOptions.isNotEmpty()
         } else {
             !isSearching()
         }
