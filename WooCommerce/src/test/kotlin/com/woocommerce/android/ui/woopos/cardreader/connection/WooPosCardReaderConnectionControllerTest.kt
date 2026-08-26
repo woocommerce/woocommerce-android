@@ -26,6 +26,7 @@ import org.junit.Test
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.net.InetAddress
 
 @ExperimentalCoroutinesApi
@@ -80,6 +81,22 @@ class WooPosCardReaderConnectionControllerTest {
 
         // THEN
         verify(wooPosAnalyticsTracker).track(eq(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown))
+    }
+
+    @Test
+    fun `given a connected reader, when disconnecting, then transport, model and battery are cleared`() = runTest {
+        // GIVEN
+        whenever(cardReaderManager.disconnectReader()).thenReturn(true)
+        val controller = createController(this)
+
+        // WHEN
+        controller.disconnect()
+        advanceUntilIdle()
+
+        // THEN
+        verify(cardReaderTrackingInfoKeeper).setTransport(null)
+        verify(cardReaderTrackingInfoKeeper).setCardReaderModel(null)
+        verify(cardReaderTrackingInfoKeeper).setCardReaderBatteryLevel(null)
     }
 
     @Test

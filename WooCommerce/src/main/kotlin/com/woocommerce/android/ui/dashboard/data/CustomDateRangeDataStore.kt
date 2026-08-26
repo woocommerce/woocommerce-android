@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.dashboard.data
 
 import androidx.datastore.core.DataStore
+import com.woocommerce.android.extensions.toDateAtStartOfDay
+import com.woocommerce.android.extensions.toEpochDay
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.commons.stats.StatsTimeRange
@@ -8,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
-import java.util.Date
 
 abstract class CustomDateRangeDataStore(
     private val dataStore: DataStore<CustomDateRange>
@@ -24,18 +25,19 @@ abstract class CustomDateRangeDataStore(
             }
         }
         .map {
-            if (it == CustomDateRange.getDefaultInstance()) {
+            // Day 0 means no saved range
+            if (it.startDateEpochDay == 0L) {
                 null
             } else {
-                StatsTimeRange(Date(it.startDateMillis), Date(it.endDateMillis))
+                StatsTimeRange(it.startDateEpochDay.toDateAtStartOfDay(), it.endDateEpochDay.toDateAtStartOfDay())
             }
         }
 
     suspend fun updateDateRange(range: StatsTimeRange) {
         dataStore.updateData { preferences ->
             preferences.toBuilder()
-                .setStartDateMillis(range.start.time)
-                .setEndDateMillis(range.end.time)
+                .setStartDateEpochDay(range.start.toEpochDay())
+                .setEndDateEpochDay(range.end.toEpochDay())
                 .build()
         }
     }

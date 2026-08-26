@@ -55,13 +55,13 @@ interface CardReaderRemoteTabletClient {
 
 sealed class ConnectOutcome {
     data class Success(val readerSerial: String?) : ConnectOutcome()
-    data class Rejected(val code: String, val description: String) : ConnectOutcome()
+    data class Rejected(val error: CardReaderRemoteError, val description: String) : ConnectOutcome()
     data class Failed(val cause: Throwable) : ConnectOutcome()
 }
 
 sealed class CollectPaymentOutcome {
     data class Success(val paymentIntentId: String, val status: String) : CollectPaymentOutcome()
-    data class Rejected(val code: String, val description: String) : CollectPaymentOutcome()
+    data class Rejected(val error: CardReaderRemoteError, val description: String) : CollectPaymentOutcome()
     data object TimedOut : CollectPaymentOutcome()
     data class Failed(val cause: Throwable) : CollectPaymentOutcome()
 }
@@ -104,7 +104,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     }
                     is ErrorMessage -> {
                         disconnect()
-                        ConnectOutcome.Rejected(reply.code, reply.description)
+                        ConnectOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                     }
                     is ConnectRequest,
                     is CollectPaymentRequest,
@@ -112,7 +112,7 @@ internal class DefaultCardReaderRemoteTabletClient(
                     is PaymentIntentResult -> {
                         disconnect()
                         ConnectOutcome.Rejected(
-                            CODE_UNEXPECTED_REPLY,
+                            CardReaderRemoteError.UnexpectedReply,
                             "Unexpected reply type: ${reply::class.simpleName}",
                         )
                     }
@@ -167,16 +167,17 @@ internal class DefaultCardReaderRemoteTabletClient(
             active.send(paymentInfo.toCollectPaymentRequest(requestId))
             val reply = withTimeout(timeoutMillis) {
                 active.receive().firstOrNull { it.requestId == requestId }
-                    ?: throw IllegalStateException(CONNECTION_LOST_MESSAGE)
+                    ?: throw CardReaderRemoteConnectionLostException(null)
             }
             when (reply) {
                 is PaymentIntentResult -> CollectPaymentOutcome.Success(reply.paymentIntentId, reply.status)
-                is ErrorMessage -> CollectPaymentOutcome.Rejected(reply.code, reply.description)
+                is ErrorMessage ->
+                    CollectPaymentOutcome.Rejected(CardReaderRemoteError.fromCode(reply.code), reply.description)
                 is ConnectAck,
                 is ConnectRequest,
                 is Ping,
                 is CollectPaymentRequest -> CollectPaymentOutcome.Rejected(
-                    CODE_UNEXPECTED_REPLY,
+                    CardReaderRemoteError.UnexpectedReply,
                     "Unexpected reply type: ${reply::class.simpleName}",
                 )
             }
@@ -201,10 +202,10 @@ internal class DefaultCardReaderRemoteTabletClient(
     }
 
     private companion object {
-        const val CODE_UNEXPECTED_REPLY = "unexpected_reply"
         const val TAG = "CardReaderRemoteTabletClient"
+
+        // Reported while establishing a session - the reader was never connected.
         const val CONNECT_FAILED_MESSAGE = "Could not connect to phone reader"
-        const val CONNECTION_LOST_MESSAGE = "Connection to phone reader was lost"
     }
 }
 

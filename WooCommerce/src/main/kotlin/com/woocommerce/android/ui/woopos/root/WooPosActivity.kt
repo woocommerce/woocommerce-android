@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.gesturesOrButtonsNavigationPadding
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEntryPointKeeper
 import com.woocommerce.android.ui.woopos.util.ext.lockWooPosOrientation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,6 +24,9 @@ class WooPosActivity : AppCompatActivity() {
 
     @Inject
     lateinit var wooPosPeriodicSyncFacade: WooPosPeriodicSyncFacade
+
+    @Inject
+    lateinit var analyticsEntryPointKeeper: WooPosAnalyticsEntryPointKeeper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // POS is session-based: cart, product cache, order cache, and data source selection
@@ -48,6 +52,20 @@ class WooPosActivity : AppCompatActivity() {
                 WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        endPosSessionIfFinishing()
+    }
+
+    override fun onDestroy() {
+        endPosSessionIfFinishing()
+        super.onDestroy()
+    }
+
+    private fun endPosSessionIfFinishing() {
+        if (isFinishing) analyticsEntryPointKeeper.onPosSessionEnded()
     }
 
     companion object {

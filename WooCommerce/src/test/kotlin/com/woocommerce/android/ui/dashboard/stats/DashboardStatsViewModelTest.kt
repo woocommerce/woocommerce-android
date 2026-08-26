@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
@@ -50,9 +52,13 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardStatsViewModelTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     companion object {
         val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
@@ -677,4 +683,18 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         Assertions.assertThat(visitorStatsState)
             .isEqualTo(DashboardStatsViewModel.VisitorStatsViewState.Unavailable(showJetpackIcon = false))
     }
+
+    @Test
+    fun `given no custom range, when the range picker is opened, then it opens at the site's current day`() =
+        testBlocking {
+            val siteToday = Date(1754900000000)
+            whenever(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(siteToday)
+            setup()
+
+            viewModel.onEditCustomRangeTapped()
+
+            val event = viewModel.event.getOrAwaitValue() as DashboardStatsViewModel.OpenDatePicker
+            Assertions.assertThat(event.fromDate).isEqualTo(siteToday)
+            Assertions.assertThat(event.toDate).isEqualTo(siteToday)
+        }
 }

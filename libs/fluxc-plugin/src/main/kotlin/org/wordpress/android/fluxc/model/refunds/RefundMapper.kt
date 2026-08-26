@@ -6,7 +6,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundPreviewRestClient.RefundPreviewResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.RefundResponse
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.refunds.RefundRestClient.SimplifiedRefundResponse
 import org.wordpress.android.fluxc.persistence.entity.RefundEntity
 import org.wordpress.android.fluxc.utils.DateUtils
 import java.math.BigDecimal
@@ -64,38 +63,6 @@ class RefundMapper @Inject constructor(private val gson: Gson) {
                 } ?: emptyList(),
                 shippingLineItems = response.shippingLineItems ?: emptyList(),
                 feeLineItems = response.feeLineItems ?: emptyList()
-        )
-    }
-
-    fun toModel(response: SimplifiedRefundResponse): WCRefundModel {
-        return WCRefundModel(
-            id = response.refundId,
-            dateCreated = response.dateCreated?.let { fromFormattedDate(it) } ?: Date(),
-            amount = response.amount?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            reason = response.reason,
-            automaticGatewayRefund = response.refundedPayment ?: false,
-            items = response.lineItems?.map { it.toRefundItem() } ?: emptyList(),
-            // v4 returns products, fees and shipping combined in line_items with no type marker, so
-            // they cannot be split into the dedicated shipping/fee lists; all are mapped into items.
-            shippingLineItems = emptyList(),
-            feeLineItems = emptyList()
-        )
-    }
-
-    private fun SimplifiedRefundResponse.SimplifiedLineItem.toRefundItem(): WCRefundItem {
-        val subtotal = refundTotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO
-        val totalTax = refundTax
-            ?.sumOf { it.refundTotal?.toBigDecimalOrNull() ?: BigDecimal.ZERO }
-            ?: BigDecimal.ZERO
-        // v4 returns positive magnitudes, but WCRefundItem values are stored negative by contract
-        // (the v3 API returns them negative) and negated back to positive in Refund.toAppModel().
-        // Negate here so v4-created refunds honour the same contract as v3.
-        return WCRefundItem(
-            itemId = lineItemId ?: -1,
-            quantity = -(quantity ?: 0),
-            subtotal = -subtotal,
-            totalTax = -totalTax,
-            total = -(subtotal + totalTax)
         )
     }
 

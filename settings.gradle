@@ -57,6 +57,9 @@ static def readPropertiesFromFile(File file) {
     return properties
 }
 
+def remoteCacheRequested = gradle.ext.developerProperties.get(USE_REMOTE_BUILD_CACHE_LOCALLY).toBoolean()
+def remoteCacheIsOwnChoice = file("${rootDir}/developer.properties").exists()
+
 buildCache {
     if (!gradle.ext.isCi && !gradle.ext.developerProperties.getProperty("store_local_build_cache", "false").toBoolean()) {
         /*
@@ -80,8 +83,7 @@ buildCache {
                 password = System.getenv('GRADLE_CACHE_NODE_PASSWORD')
             }
         }
-    } else if (gradle.ext.developerProperties.get(USE_REMOTE_BUILD_CACHE_LOCALLY).toBoolean() == true) {
-
+    } else if (remoteCacheRequested && secretsApplied()) {
         checkForRemoteBuildCacheOptimizedExperience()
 
         remote(HttpBuildCache) {
@@ -92,6 +94,14 @@ buildCache {
                 password = gradle.ext.secretProperties.get('gradleCacheNodePassword')
             }
         }
+    } else if (remoteCacheRequested && remoteCacheIsOwnChoice) {
+        // The developer explicitly opted in to the remote build cache via their own
+        // developer.properties file, so they are expected to have secrets applied.
+        throwSecretsNotApplied()
+    } else if (remoteCacheRequested) {
+        // The flag is only true via the developer.properties-example fallback (a fresh
+        // clone) — skip the remote build cache instead of failing.
+        logger.warn("\n⚠️ The build requested remote build cache, but secrets are not applied on this machine, so it stays disabled. The build continues without it; this only affects build speed. Run `bundle exec fastlane run configure_apply` to apply secrets and enable it.")
     } else {
         logger.warn("\nℹ️ Remote build cache is disabled. If you have stable internet connection, consider enabling it via `developer.properties`.")
     }
@@ -104,9 +114,15 @@ def checkForRemoteBuildCacheOptimizedExperience() {
 }
 
 def assertSecretsApplied() {
-    if (!file(gradle.ext.secretsPath).exists()) {
-        throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
-    }
+    if (!secretsApplied()) throwSecretsNotApplied()
+}
+
+static def throwSecretsNotApplied() {
+    throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
+}
+
+def secretsApplied() {
+    return file(gradle.ext.secretsPath).exists()
 }
 
 static boolean propertiesEqualIgnoringKey(Properties p1, Properties p2, String ignoredKey) {
@@ -195,7 +211,7 @@ gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source
 
 gradle.ext {
     compileSdkVersion = 37
-    targetSdkVersion = 36
+    targetSdkVersion = 37
     minSdkVersion = 26
 }
 

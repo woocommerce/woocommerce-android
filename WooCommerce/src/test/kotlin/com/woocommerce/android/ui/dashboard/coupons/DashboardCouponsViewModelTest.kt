@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CalendarHelper
 import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.LocalizedDatePatternsTestRule
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.kotlin.any
@@ -44,6 +46,9 @@ import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DashboardCouponsViewModelTest : BaseUnitTest() {
+    @get:Rule
+    val localizedDatePatterns = LocalizedDatePatternsTestRule()
+
     private val sampleCouponReports = (1L..3L).map {
         CouponPerformanceReport(it, 10, BigDecimal.TEN)
     }
@@ -122,7 +127,8 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             dateRangeFormatter = dateRangeFormatter,
             customDateRangeDataStore = customDateRangeDataStore,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            dateUtils = dateUtils
         )
     }
 

@@ -672,14 +672,12 @@ platform :android do
       build_and_upload_beta(
         app: app,
         skip_confirm: is_ci,
-        skip_prechecks: true,
         create_release: true
       )
     else
       build_and_upload_release(
         app: app,
         skip_confirm: is_ci,
-        skip_prechecks: true,
         create_release: true
       )
     end
@@ -692,7 +690,6 @@ platform :android do
   #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   # @param [Boolean] skip_confirm If set to true, will not prompt for confirmation before moving forward with the build
-  # @param [Boolean] skip_prechecks If set to true, will skip the `android_build_preflight` action
   # @param [Boolean] create_release If set to true, will create a GitHub Release once the release has been uploaded to Play Store
   #
   desc 'Builds and uploads release for distribution'
@@ -709,8 +706,6 @@ platform :android do
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
-
-    android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
     version = version_name_current
@@ -745,7 +740,6 @@ platform :android do
   #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   # @param [Boolean] skip_confirm If set to true, will not prompt for confirmation before moving forward with the build
-  # @param [Boolean] skip_prechecks If set to true, will skip the `android_build_preflight` action
   # @param [Boolean] create_release If set to true, will create a GitHub Release once the release has been uploaded to Play Store
   #
   desc 'Builds and uploads a new beta build to Google Play (without releasing it)'
@@ -760,8 +754,6 @@ platform :android do
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
-
-    android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
     version = version_name_current

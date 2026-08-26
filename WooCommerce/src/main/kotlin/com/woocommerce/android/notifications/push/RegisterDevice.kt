@@ -21,7 +21,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountStore: AccountStore,
@@ -106,7 +108,7 @@ class RegisterDevice @Inject constructor(
                             pushNotificationRepository.registerPushTokenInWooCoreSystem(
                                 token = token,
                                 selectedSite = site,
-                                allowWpComFallback = trigger != Trigger.SITE_SWITCH
+                                allowWpComFallback = false
                             )
                         }
                     }

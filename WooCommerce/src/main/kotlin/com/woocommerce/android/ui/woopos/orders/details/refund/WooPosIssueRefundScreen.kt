@@ -722,25 +722,7 @@ private fun RefundContentStepButtons(
     onConnectReaderClicked: () -> Unit,
 ) {
     when (state.step) {
-        WooPosRefundState.Content.RefundStep.SelectItems -> {
-            if (state.previewFailed) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_refund_preview_error),
-                    style = WooPosTypography.BodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                WooPosOutlinedButton(
-                    text = stringResource(R.string.retry),
-                    onClick = { onEvent(WooPosRefundUIEvent.RetryPreview) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            ContinueToReviewButton(
-                state = continueToReviewButtonState(state),
-                onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
-            )
-        }
+        WooPosRefundState.Content.RefundStep.SelectItems -> SelectItemsStepButtons(state = state, onEvent = onEvent)
         WooPosRefundState.Content.RefundStep.ReviewRefund -> {
             // Back navigation is provided by the toolbar up button (see modalNavigationIcon).
             WooPosButton(
@@ -817,38 +799,91 @@ private fun RefundContentStepButtons(
 }
 
 @Composable
+private fun SelectItemsStepButtons(
+    state: WooPosRefundState.Content,
+    onEvent: (WooPosRefundUIEvent) -> Unit,
+) {
+    val previewFailure = state.previewFailure
+    if (previewFailure != null) {
+        WooPosText(
+            text = previewFailure.message ?: stringResource(R.string.woopos_refund_preview_error),
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.fillMaxWidth()
+        )
+        when (previewFailure.recovery) {
+            WooPosRefundState.Recovery.Retry -> WooPosOutlinedButton(
+                text = stringResource(R.string.retry),
+                onClick = { onEvent(WooPosRefundUIEvent.RetryPreview) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            WooPosRefundState.Recovery.RefreshItems -> WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_refund_review_remaining_items_button),
+                onClick = { onEvent(WooPosRefundUIEvent.RefreshRefundableItems) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            WooPosRefundState.Recovery.None -> Unit
+        }
+    }
+
+    ContinueToReviewButton(
+        state = continueToReviewButtonState(state),
+        onClick = { onEvent(WooPosRefundUIEvent.ContinueToReviewClicked) },
+    )
+}
+
+@Composable
 private fun RefundErrorButtons(
     state: WooPosRefundState.Error,
     onDismiss: () -> Unit,
     onCancelRefundFlow: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
 ) {
-    if (state.canRetry) {
-        WooPosButton(
-            text = stringResource(R.string.retry),
-            onClick = {
-                onEvent(
-                    when (state.errorType) {
-                        WooPosRefundState.Error.ErrorType.Loading ->
-                            WooPosRefundUIEvent.RetryLoadRefundableItems
-                        WooPosRefundState.Error.ErrorType.Processing ->
-                            WooPosRefundUIEvent.RetryCreateRefund
-                    }
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        WooPosOutlinedButton(
-            text = stringResource(R.string.cancel),
-            onClick = onCancelRefundFlow,
-            modifier = Modifier.fillMaxWidth()
-        )
-    } else {
-        WooPosButton(
-            text = stringResource(R.string.woopos_refund_back_to_order_button),
-            onClick = { onDismiss() },
-            modifier = Modifier.fillMaxWidth()
-        )
+    when (state.recovery) {
+        WooPosRefundState.Recovery.Retry -> {
+            WooPosButton(
+                text = stringResource(R.string.retry),
+                onClick = {
+                    onEvent(
+                        when (state.errorType) {
+                            WooPosRefundState.Error.ErrorType.Loading ->
+                                WooPosRefundUIEvent.RetryLoadRefundableItems
+                            WooPosRefundState.Error.ErrorType.Processing ->
+                                WooPosRefundUIEvent.RetryCreateRefund
+                        }
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+            WooPosOutlinedButton(
+                text = stringResource(R.string.cancel),
+                onClick = onCancelRefundFlow,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        WooPosRefundState.Recovery.RefreshItems -> {
+            WooPosButton(
+                text = stringResource(R.string.woopos_refund_review_remaining_items_button),
+                onClick = { onEvent(WooPosRefundUIEvent.RefreshRefundableItems) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_refund_back_to_order_button),
+                onClick = { onDismiss() },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        WooPosRefundState.Recovery.None -> {
+            WooPosButton(
+                text = stringResource(R.string.woopos_refund_back_to_order_button),
+                onClick = { onDismiss() },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -892,7 +927,7 @@ private fun ContinueToReviewButton(
 
 private fun continueToReviewButtonState(state: WooPosRefundState.Content): WooPosButtonState = when {
     state.isPreviewLoading -> WooPosButtonState.LOADING
-    state.selectedItemIds.isEmpty() || state.previewFailed -> WooPosButtonState.DISABLED
+    state.selectedItemIds.isEmpty() || state.previewFailure != null -> WooPosButtonState.DISABLED
     else -> WooPosButtonState.ENABLED
 }
 

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 09:58:52+0000
+Translation-Revision-Date: 2026-08-11 13:58:28+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="login_text_otp_another">Code per SMS erneut senden</string>
+    <string name="login_text_otp">Code per SMS erneut senden</string>
+    <string name="enter_verification_code_sms_generic">Wir haben eine SMS gesendet. Gib den Verifizierungscode aus der Nachricht ein.</string>
+    <string name="enter_verification_code">Gib zum Fortfahren einen Verifizierungscode ein.</string>
+    <string name="logviewer_share_all_logs_error">Die Protokolle konnten nicht zum Teilen vorbereitet werden</string>
+    <string name="logviewer_preparing_logs">Protokolle werden vorbereitet …</string>
+    <string name="logviewer_share_all_logs">Alle Protokolle teilen</string>
+    <string name="support_mobile_status_report_share_error">Mobiler Statusbericht kann nicht geteilt werden</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Fehler beim Kopieren des mobilen Statusberichts in die Zwischenablage</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobiler Statusbericht in die Zwischenablage kopiert</string>
+    <string name="support_mobile_status_report_share_label">Mobilen Statusbericht teilen</string>
+    <string name="support_mobile_status_report_copy_label">Mobilen Statusbericht in die Zwischenablage kopieren</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce – mobiler Statusbericht</string>
+    <string name="support_mobile_status_report_detail">App-, Geräte- und Shop-Informationen aus dieser App</string>
+    <string name="support_mobile_status_report">Mobiler Statusbericht</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Rabatt nicht angewendet</string>
     <string name="product_duplicate_discard_changes_action">Verwerfen und duplizieren</string>
     <string name="product_duplicate_discard_changes_message">Deine nicht gespeicherten Änderungen gehen verloren. Das Duplikat verwendet die zuletzt gespeicherte Version.</string>
@@ -1074,7 +1089,6 @@ Language: de
     <string name="woo_shipping_fetching_countries_and_states_failed">Es konnten keine Informationen zu Ländern und Bundesstaaten (Bundesländern) abgerufen werden. Bitte versuche es erneut.</string>
     <string name="woo_shipping_field_required_error">Dieses Feld ist erforderlich.</string>
     <string name="product_upload_error_title">Fehler beim Upload des Bildes</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache, variable und virtuelle Produkte.\nErstelle ein Produkt, um anzufangen.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-Mail</string>
@@ -3990,7 +4004,6 @@ Language: de
     <string name="today">Heute</string>
     <string name="settings">Einstellungen</string>
     <string name="notification_channel_general_title">Allgemein</string>
-    <string name="login_text_otp_another">Sende mir stattdessen einen anderen Code per SMS.</string>
     <string name="enter_verification_code_sms">Wir haben eine Textnachricht an die Telefonnummer mit den Endziffern %s gesendet. Gib bitte den Verifizierungscode aus der SMS ein.</string>
     <string name="enter_wpcom_password_google">Bitte melde dich mit dem WordPress.com-Passwort an, um mit diesem Google-Konto fortzufahren. Es wird nur einmal benötigt.</string>
     <string name="login_log_in_for_share_intent">Zum Teilen des Inhalts melde dich bei WordPress.com an.</string>
@@ -4009,7 +4022,6 @@ Language: de
     <string name="login_magic_link_email_requesting">Anmelde-E-Mail wird angefordert</string>
     <string name="password_incorrect">Dieses Passwort ist anscheinend falsch. Prüfe bitte deine Angaben und versuche es erneut.</string>
     <string name="requesting_otp">Verifizierungscode wird per SMS angefordert.</string>
-    <string name="login_text_otp">Stattdessen Code per SMS senden.</string>
     <string name="open_mail">E-Mail öffnen</string>
     <string name="next">Weiter</string>
     <string name="already_logged_in_wpcom">Du bist bereits in einem WordPress.com-Konto angemeldet, du kannst keine WordPress.com-Website hinzufügen, die an ein anderes Konto gebunden ist.</string>
@@ -4092,7 +4104,6 @@ Language: de
     <string name="orderdetail_note_private">Privat</string>
     <string name="dashboard_top_performers_empty">Keine Aktivitäten in diesem Zeitraum</string>
     <string name="order_error_fetch_notes_generic">Fehler beim Abrufen von Notizen</string>
-    <string name="enter_verification_code">Fast geschafft! Bitte gib den Verifizierungscode für WordPress.com aus deiner Authenticator-App ein.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

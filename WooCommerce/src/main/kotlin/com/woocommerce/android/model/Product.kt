@@ -104,6 +104,8 @@ data class Product(
     data class Image(
         val id: Long,
         val name: String?,
+        // Null means the alt text is unknown, which keeps it untouched on the server.
+        val alt: String?,
         val source: String,
         val dateCreated: Date?,
         val isCoverImage: Boolean
@@ -354,7 +356,8 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
                 JsonObject().also { json ->
                     json.addProperty("id", image.id)
                     json.addProperty("name", image.name)
-                    json.addProperty("source", image.source)
+                    json.addProperty("src", image.source)
+                    image.alt?.let { alt -> json.addProperty("alt", alt) }
                 }
             )
         }
@@ -544,6 +547,7 @@ fun WCProductModel.toAppModel(): Product {
             Product.Image(
                 id = it.id,
                 name = it.name,
+                alt = it.alt,
                 source = it.src,
                 dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
                 isCoverImage = it.src == this.getFirstImageUrl()
@@ -600,6 +604,7 @@ fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
         id = this.mediaId,
         name = this.fileName.orEmpty(),
+        alt = null,
         source = this.url,
         dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate),
         isCoverImage = false
