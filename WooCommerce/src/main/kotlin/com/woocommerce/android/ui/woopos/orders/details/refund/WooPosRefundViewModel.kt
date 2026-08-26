@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -531,26 +533,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
             contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
+            val serverComputed = isServerComputedRefundConfirmed()
+            val refundFlow = if (serverComputed) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(refundFlow))
 
             val order = currentOrder ?: run {
-                WooLog.e(
-                    WooLog.T.POS,
-                    "WooPosRefund: currentOrder is null during processRefund"
-                )
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+                WooLog.e(WooLog.T.POS, "WooPosRefund: currentOrder is null during processRefund")
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.ORDER_UNAVAILABLE)
                 return@launch
             }
 
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
-            val request = buildSubmissionRequest(order, contentState, selectedItems) ?: run {
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Processing
-                )
+            val request = buildSubmissionRequest(order, contentState, selectedItems, serverComputed) ?: run {
+                failBeforeSubmission(refundFlow, RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE)
                 return@launch
             }
 
@@ -565,23 +560,23 @@ class WooPosRefundViewModel @AssistedInject constructor(
      * request is built from the locally-grouped items, reusing the currency decimals already
      * fetched for the local calculation.
      *
-     * The server branch requires the availability cache to be `true` — set only by a successful
-     * preview — on top of [resolveRefundFlow]: on stores without `compute_totals` support the
-     * unknown param is silently dropped and a quantity-only body would create a ghost zero-amount
-     * refund with restock, so eligibility alone is never enough to send a computed create.
+     * [serverComputed] comes from [isServerComputedRefundConfirmed], read once by the caller so the
+     * branch taken here and the flow reported to analytics cannot disagree. It requires the
+     * availability cache to be `true` — set only by a successful preview — on top of
+     * [resolveRefundFlow]: on stores without `compute_totals` support the unknown param is
+     * silently dropped and a quantity-only body would create a ghost zero-amount refund with
+     * restock, so eligibility alone is never enough to send a computed create.
+     *
+     * Returns null only when the store's currency settings cannot be read; the caller reports that
+     * as [RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE].
      */
     private fun buildSubmissionRequest(
         order: Order,
         contentState: WooPosRefundState.Content,
         selectedItems: List<WooPosRefundableItem>,
+        serverComputed: Boolean,
     ): WooPosRefundSubmissionRequest? {
-        val flow = resolveRefundFlow()
-        val serverRefundsConfirmedAvailable = flow is WooPosRefundFlow.ServerComputed &&
-            serverRefundAvailabilityCache.isAvailable(
-                localSiteId = selectedSite.get().localId().value,
-                wooVersion = flow.wooVersion,
-            ) == true
-        if (serverRefundsConfirmedAvailable) {
+        if (serverComputed) {
             return WooPosRefundSubmissionRequest(
                 order = order,
                 refundAmount = contentState.total,
@@ -602,6 +597,29 @@ class WooPosRefundViewModel @AssistedInject constructor(
             refundAmount = contentState.total,
             refundReason = contentState.refundReason,
             refundItems = groupRefundItems(selectedItems, order, numberOfDecimalPoints),
+        )
+    }
+
+    private fun isServerComputedRefundConfirmed(): Boolean {
+        val flow = resolveRefundFlow()
+        return flow is WooPosRefundFlow.ServerComputed &&
+            serverRefundAvailabilityCache.isAvailable(
+                localSiteId = selectedSite.get().localId().value,
+                wooVersion = flow.wooVersion,
+            ) == true
+    }
+
+    private fun refundFlowFor(request: WooPosRefundSubmissionRequest): RefundFlow =
+        if (request.serverLineItems != null) RefundFlow.SERVER_COMPUTED else RefundFlow.LOCAL
+
+    /** Ends a refund that stopped after `refund_processing_started` but before submission. */
+    private suspend fun failBeforeSubmission(refundFlow: RefundFlow, reason: RefundPreconditionReason) {
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.RefundProcessingPreconditionFailed(refundFlow, reason)
+        )
+        _state.value = WooPosRefundState.Error(
+            message = resourceProvider.getString(R.string.error_generic),
+            errorType = WooPosRefundState.Error.ErrorType.Processing
         )
     }
 
@@ -661,7 +679,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             is WooPosRefundSubmissionState.Failure -> {
-                handleRefundSubmissionFailure(submissionState)
+                handleRefundSubmissionFailure(submissionState, refundFlowFor(request))
             }
         }
     }
@@ -682,7 +700,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         contentState: WooPosRefundState.Content,
         request: WooPosRefundSubmissionRequest,
     ) {
-        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+        analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(refundFlowFor(request)))
         val receiptSentMessage = request.order.billingAddress.email
             .takeIf { it.isNotBlank() }
             ?.let { email ->
@@ -699,9 +717,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private suspend fun handleRefundSubmissionFailure(
         submissionState: WooPosRefundSubmissionState.Failure,
+        refundFlow: RefundFlow,
     ) {
         analyticsTracker.track(
-            WooPosAnalyticsEvent.Event.RefundProcessingFailed(apiErrorCode = submissionState.apiErrorCode)
+            WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                refundFlow = refundFlow,
+                apiErrorCode = submissionState.apiErrorCode,
+            )
         )
         _state.value = mapRefundFailure(submissionState)
     }
