@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.compose.designsystem.component
 
 import android.content.pm.ApplicationInfo
 import android.graphics.Rect
+import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -30,6 +31,15 @@ import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class WooDesignSystemToolbarTest {
+    @Test
+    fun `when toolbar XML is inflated, then built in bottom divider is applied without elevation`() {
+        val toolbar = inflateToolbar()
+
+        assertThat(toolbar.background).isInstanceOf(LayerDrawable::class.java)
+        assertThat((toolbar.background as LayerDrawable).numberOfLayers).isEqualTo(2)
+        assertThat(toolbar.elevation).isZero()
+    }
+
     @Test
     fun `when creating design system toolbar, then chrome is applied automatically`() {
         val toolbar = WooDesignSystemToolbar(toolbarContext())
@@ -494,6 +504,9 @@ class WooDesignSystemToolbarTest {
 
         override fun getApplicationInfo() = rtlApplicationInfo
     }
+
+    private fun inflateToolbar() = LayoutInflater.from(toolbarContext())
+        .inflate(R.layout.woo_design_system_toolbar_test, null) as WooDesignSystemToolbar
 
     private fun WooDesignSystemToolbar.addIconAction(
         showAsAction: Int = MenuItem.SHOW_AS_ACTION_ALWAYS,

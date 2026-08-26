@@ -62,6 +62,8 @@ components, but should not be cited as Figma-backed component implementations:
 - `WooDesignSystemToolbar`, `Widget.Woo.DesignSystem.Toolbar`, and
   `ThemeOverlay.Woo.DesignSystem.Toolbar` are XML-facing toolbar bridge APIs for legacy-heavy
   screens that opt into design-system chrome.
+- `Theme.Woo` maps both Android window and content background roles to the source-backed Section
+  Background token. Child themes retain explicit overrides such as transparent windows.
 
 ## Module-Safe Port Decisions
 

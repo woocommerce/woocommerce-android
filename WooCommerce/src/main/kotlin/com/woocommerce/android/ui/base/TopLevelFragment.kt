@@ -16,7 +16,6 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
             navigationIcon = null,
-            hasShadow = false,
         )
 
     open val shouldShowBottomNavigation: Boolean

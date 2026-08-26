@@ -8,7 +8,5 @@ sealed class AppBarStatus {
     data class Visible(
         @DrawableRes
         val navigationIcon: Int? = R.drawable.ic_back_24dp,
-        val hasShadow: Boolean = true,
-        val hasDivider: Boolean = false,
     ) : AppBarStatus()
 }

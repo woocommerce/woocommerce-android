@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Woo.MainActivity.AppBarLayout" parent="Woo.AppBarLayout">
+        <item name="android:background">@color/woo_ds_color_surface_bright</item>
+        <item name="android:elevation">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="liftOnScroll">false</item>
+    </style>
+
+    <style name="Woo.MainActivity.CollapsingToolbarLayout" parent="Woo.CollapsedToolbarLayout">
+        <item name="android:background">@color/woo_ds_color_surface_bright</item>
+        <item name="collapsedTitleGravity">center</item>
+        <item name="collapsedTitleTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarTitle</item>
+        <item name="expandedTitleTextAppearance">
+            @style/TextAppearance.Woo.MainActivity.CollapsingToolbar.Expanded
+        </item>
+    </style>
+
+    <style
+        name="TextAppearance.Woo.MainActivity.CollapsingToolbar.Expanded"
+        parent="TextAppearance.Woo.CollapsingToolbar.Expanded">
+        <item name="android:textColor">@color/woo_ds_color_surface_on_default</item>
+    </style>
+
+    <style
+        name="Woo.MainActivity.ToolbarSubtitle"
+        parent="Woo.TextView.Subtitle1.ToolbarSubtitle">
+        <item name="android:textColor">@color/woo_ds_color_surface_on_default</item>
+    </style>
+</resources>

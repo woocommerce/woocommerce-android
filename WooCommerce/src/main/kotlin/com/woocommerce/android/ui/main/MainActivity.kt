@@ -52,7 +52,6 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -227,10 +226,6 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
 
-    // Drives the collapsing toolbar's elevation shadow from its own offset (see setupAppBarElevation).
-    private var appBarVerticalOffset = 0
-    private var appBarHasShadow = true
-
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
             applySubtitleFade(verticalOffset)
@@ -323,16 +318,9 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    appBarHasShadow = appBarStatus.hasShadow
-                    updateAppBarElevation()
-                    binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> {
-                    hideToolbar()
-                    appBarHasShadow = false
-                    updateAppBarElevation()
-                }
+                AppBarStatus.Hidden -> hideToolbar()
             }
         }
     }
@@ -367,6 +355,8 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // AppBarLayout installs a default elevation animator from its Material style.
+        binding.appBarLayout.stateListAnimator = null
 
         setupStoreConnectionErrorDialog()
 
@@ -376,8 +366,6 @@ class MainActivity :
 
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
-
-        setupAppBarElevation()
 
         animatorHelper.toolbarHeight = binding.collapsingToolbar.layoutParams.height
 
@@ -623,30 +611,6 @@ class MainActivity :
         binding.appBarLayout.setExpanded(expand, animate)
     }
 
-    // The collapsing toolbar draws its elevation shadow only in the "lifted" state, which AppBarLayout derives
-    // from the scrolling child's canScrollVertically(). The dashboard's ComposeView doesn't report its internal
-    // scroll, so the shadow flickered off on layout changes. Instead we disable the automatic elevation animation
-    // and drive the shadow directly from the app bar's own vertical offset: a shadow is shown whenever the toolbar
-    // is collapsed (offset != 0) on any screen that opts into a shadow.
-    private fun setupAppBarElevation() {
-        binding.appBarLayout.isLiftOnScroll = false
-        binding.appBarLayout.stateListAnimator = null
-        binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                appBarVerticalOffset = verticalOffset
-                updateAppBarElevation()
-            }
-        )
-    }
-
-    private fun updateAppBarElevation() {
-        binding.appBarLayout.elevation = if (appBarHasShadow && appBarVerticalOffset != 0) {
-            resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-        } else {
-            0f
-        }
-    }
-
     fun setSubtitle(subtitle: CharSequence) {
         if (subtitle.isBlank()) {
             removeSubtitle()
@@ -682,7 +646,7 @@ class MainActivity :
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         // The offset listener only fires on an offset *change*, so refresh the fade for the current state to
         // avoid a stale alpha (applySubtitleFade also guards a zero scroll range that would produce NaN).
-        applySubtitleFade(appBarVerticalOffset)
+        applySubtitleFade(binding.appBarLayout.top)
         // Check to ensure expand anim is not triggered twice for same subtitle value
         if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
             // The subtitle is already shown (e.g. a stalled collapse was just cancelled on return), so the expand
