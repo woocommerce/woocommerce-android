@@ -9,7 +9,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
@@ -261,26 +260,6 @@ class AddressViewModel @Inject constructor(
                     entry.value
                 }
             }
-        )
-    }
-
-    fun onAddressesChanged(customer: Order.Customer) {
-        hasStarted = true
-        viewState = viewState.copy(
-            customerId = customer.customerId,
-            firstName = customer.firstName,
-            lastName = customer.lastName,
-            email = customer.email,
-            addressSelectionStates = mapOf(
-                AddressType.BILLING to AddressSelectionState(
-                    customer.billingAddress,
-                    getStateSpinnerStatus(customer.billingAddress.country.code)
-                ),
-                AddressType.SHIPPING to AddressSelectionState(
-                    customer.shippingAddress,
-                    getStateSpinnerStatus(customer.shippingAddress.country.code)
-                )
-            )
         )
     }
 
