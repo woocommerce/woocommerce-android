@@ -13,10 +13,6 @@
 
 ###### Zendesk (the SDK ships its own consumer rules; Gson/Retrofit/OkHttp ship theirs too)
 
-###### Glide - begin
--keep class com.bumptech.glide.GeneratedAppGlideModuleImpl { *; }
-###### Glide - end
-
 ###### SavedStateHandleExt - begin
 ###### We use reflection so we have to keep this method
 -keepclassmembers class * extends androidx.navigation.NavArgs {
