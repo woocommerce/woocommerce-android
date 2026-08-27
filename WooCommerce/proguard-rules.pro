@@ -25,10 +25,6 @@
 -keep class com.wellsql** { *; }
 ###### FluxC - end
 
-###### Dagger - begin
--dontwarn com.google.errorprone.annotations.*
-###### Dagger - end
-
 -dontwarn com.google.common.**
 
 ###### Zendesk (the SDK ships its own consumer rules; Gson/Retrofit/OkHttp ship theirs too)
