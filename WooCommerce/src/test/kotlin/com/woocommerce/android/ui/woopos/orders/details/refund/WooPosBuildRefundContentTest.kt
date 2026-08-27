@@ -40,7 +40,7 @@ class WooPosBuildRefundContentTest {
         // GIVEN — the cashier kept only the last unit of a three-unit line, and the store refunded
         // one unit elsewhere, so the reload renumbers the two survivors from zero.
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = mapOf(1L to 1),
+            unitCountsByOrderItemId = mapOf(1L to 1),
             selectedLumpSumIds = emptySet(),
         )
         val items = listOf(
@@ -61,7 +61,7 @@ class WooPosBuildRefundContentTest {
     fun `given more units were selected than are left, when content is built, then the count is clamped`() {
         // GIVEN
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = mapOf(1L to 3),
+            unitCountsByOrderItemId = mapOf(1L to 3),
             selectedLumpSumIds = emptySet(),
         )
         val items = listOf(
@@ -82,7 +82,7 @@ class WooPosBuildRefundContentTest {
     fun `given a selection across two lines and one shrank, when content is built, then the other line is intact`() {
         // GIVEN — two of line 1 and one of line 2 were selected; line 1 lost a unit elsewhere
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = mapOf(1L to 2, 2L to 1),
+            unitCountsByOrderItemId = mapOf(1L to 2, 2L to 1),
             selectedLumpSumIds = emptySet(),
         )
         val items = listOf(
@@ -103,7 +103,7 @@ class WooPosBuildRefundContentTest {
     fun `given a selected lump sum, when content is built, then only that fee row is selected`() {
         // GIVEN
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = emptyMap(),
+            unitCountsByOrderItemId = emptyMap(),
             selectedLumpSumIds = setOf(99L),
         )
         val items = listOf(
@@ -124,7 +124,7 @@ class WooPosBuildRefundContentTest {
     fun `given a fee id equal to a line item id, when content is built, then only the fee row is selected`() {
         // GIVEN — the two id spaces are kept apart, so a selected fee never selects a line item
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = emptyMap(),
+            unitCountsByOrderItemId = emptyMap(),
             selectedLumpSumIds = setOf(42L),
         )
         val items = listOf(
@@ -143,7 +143,7 @@ class WooPosBuildRefundContentTest {
     fun `given a line item id equal to a fee id, when content is built, then only the line item is selected`() {
         // GIVEN
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = mapOf(42L to 1),
+            unitCountsByOrderItemId = mapOf(42L to 1),
             selectedLumpSumIds = emptySet(),
         )
         val items = listOf(
@@ -159,11 +159,37 @@ class WooPosBuildRefundContentTest {
     }
 
     @Test
+    fun `given a snapshot with unit counts and lump sums, when content is built, then both are restored`() {
+        // GIVEN — every other case has one half of the snapshot empty, so the two restore rules
+        // never run in the same call. A real reload always carries both.
+        val snapshot = WooPosRefundSelectionSnapshot(
+            unitCountsByOrderItemId = mapOf(1L to 1, 2L to 2),
+            selectedLumpSumIds = setOf(98L, 99L),
+        )
+        val items = listOf(
+            productRow(orderItemId = 1L, rowIndex = 0),
+            productRow(orderItemId = 1L, rowIndex = 1),
+            productRow(orderItemId = 2L, rowIndex = 0),
+            productRow(orderItemId = 3L, rowIndex = 0),
+            feeRow(orderItemId = 98L),
+        )
+
+        // WHEN — line 1 shrank to two rows, line 2 to one, line 3 was never selected, and fee 99
+        // was refunded elsewhere so its row is gone
+        val content = build(items, preservedSelection = snapshot)
+
+        // THEN
+        assertThat(content.selectedItemIds).containsExactlyInAnyOrder("1_0", "2_0", "fee_98")
+        assertThat(content.itemsCount).isEqualTo(3)
+        assertThat(content.allItemsSelected).isFalse()
+    }
+
+    @Test
     fun `given nothing of the selection is left, when content is built, then the selection is empty`() {
         // GIVEN — the selected line was fully refunded elsewhere. The cashier picks again rather
         // than being handed items they never chose.
         val snapshot = WooPosRefundSelectionSnapshot(
-            unitCountsByItemId = mapOf(1L to 2),
+            unitCountsByOrderItemId = mapOf(1L to 2),
             selectedLumpSumIds = emptySet(),
         )
         val items = listOf(productRow(orderItemId = 2L, rowIndex = 0))
@@ -175,24 +201,6 @@ class WooPosBuildRefundContentTest {
         assertThat(content.selectedItemIds).isEmpty()
         assertThat(content.itemsCount).isEqualTo(0)
         assertThat(content.allItemsSelected).isFalse()
-    }
-
-    @Test
-    fun `given a snapshot of a state, when it is taken, then it holds unit counts and lump sum ids`() {
-        // GIVEN
-        val items = listOf(
-            productRow(orderItemId = 1L, rowIndex = 0),
-            productRow(orderItemId = 1L, rowIndex = 1),
-            productRow(orderItemId = 2L, rowIndex = 0),
-            feeRow(orderItemId = 99L),
-        )
-
-        // WHEN — the cashier kept the second unit of line 1 and the fee
-        val snapshot = WooPosRefundSelectionSnapshot.of(items, setOf("1_1", "fee_99"))
-
-        // THEN
-        assertThat(snapshot.unitCountsByItemId).isEqualTo(mapOf(1L to 1))
-        assertThat(snapshot.selectedLumpSumIds).containsExactly(99L)
     }
 
     private fun build(

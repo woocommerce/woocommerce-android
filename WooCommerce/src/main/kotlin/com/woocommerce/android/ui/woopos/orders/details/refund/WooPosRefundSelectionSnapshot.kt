@@ -9,10 +9,11 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
  * submitted as a quantity per line item anyway (see [WooPosBuildRefundLineItems]), so the selection
  * is preserved as counts instead.
  *
- * Line items and lump sums are kept apart so a fee line id cannot be read as a line item id.
+ * Line items and lump sums are held separately because they restore by different rules: a count
+ * for units, whole-line presence for a lump sum.
  */
 data class WooPosRefundSelectionSnapshot(
-    val unitCountsByItemId: Map<Long, Int>,
+    val unitCountsByOrderItemId: Map<Long, Int>,
     val selectedLumpSumIds: Set<Long>,
 ) {
     companion object {
@@ -25,7 +26,7 @@ data class WooPosRefundSelectionSnapshot(
                 .partition { it.isLumpSum }
 
             return WooPosRefundSelectionSnapshot(
-                unitCountsByItemId = units.groupingBy { it.orderItemId }.eachCount(),
+                unitCountsByOrderItemId = units.groupingBy { it.orderItemId }.eachCount(),
                 selectedLumpSumIds = lumpSums.mapTo(mutableSetOf()) { it.orderItemId },
             )
         }

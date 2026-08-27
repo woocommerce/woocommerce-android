@@ -2778,7 +2778,8 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given a selection over two lines and one shrank, when items are refreshed, then the other line is kept`() =
         runTest {
-            // GIVEN — one unit selected on each of two lines
+            // GIVEN — the trailing unit of each of two lines is kept. Trailing matters: a leading
+            // selection survives the old id intersection unchanged, so it would not catch the bug.
             val firstLine = List(2) { testRefundableItem.copy(orderItemId = 1L, rowIndex = it) }
             val secondLine = List(2) { testRefundableItem.copy(orderItemId = 2L, name = "Other", rowIndex = it) }
             val remaining = listOf(firstLine[0]) + secondLine
@@ -2793,8 +2794,8 @@ class WooPosRefundViewModelTest {
             viewModel = createViewModel()
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
-            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(firstLine[1].uniqueId))
-            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(secondLine[1].uniqueId))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(firstLine[0].uniqueId))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(secondLine[0].uniqueId))
             advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
@@ -2813,7 +2814,8 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given a selected fee, when items are refreshed, then the fee stays selected`() =
         runTest {
-            // GIVEN — one unit of a two-unit line plus a fee are selected
+            // GIVEN — the trailing unit of a two-unit line plus a fee are selected. Trailing for the
+            // same reason as above; the fee guards that lump sums survive the move to counts.
             val units = List(2) { testRefundableItem.copy(rowIndex = it) }
             val fee = testRefundableItem.copy(orderItemId = 99L, name = "Fee", rowIndex = 0, isLumpSum = true)
             val remaining = listOf(units[0], fee)
@@ -2828,7 +2830,7 @@ class WooPosRefundViewModelTest {
             viewModel = createViewModel()
             viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
             advanceUntilIdle()
-            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[1].uniqueId))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[0].uniqueId))
             advanceUntilIdle()
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             advanceUntilIdle()
@@ -2841,6 +2843,50 @@ class WooPosRefundViewModelTest {
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.selectedItemIds).containsExactlyInAnyOrder(units[0].uniqueId, fee.uniqueId)
             assertThat(content.itemsCount).isEqualTo(2)
+        }
+
+    @Test
+    fun `given only the last unit was selected, when items are refreshed after a rejected refund, then one unit stays selected`() =
+        runTest {
+            // GIVEN — the reason this differs from the tests above: the refund is submitted and
+            // rejected, so the state is Error and the snapshot has to come from
+            // contentStateBeforeRefund rather than from the current Content. refundPreview is
+            // deliberately left unstubbed so the flow cannot reach the other branch.
+            val units = List(3) { testRefundableItem.copy(rowIndex = it) }
+            val remainingUnits = units.take(1)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(units, remainingUnits)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Processing,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Rejected",
+                        apiErrorCode = "woocommerce_rest_quantity_exceeds_refundable",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(units[0].uniqueId))
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.RefreshItems)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.selectedItemIds).containsExactly(remainingUnits[0].uniqueId)
+            assertThat(content.itemsCount).isEqualTo(1)
         }
 
     @Test

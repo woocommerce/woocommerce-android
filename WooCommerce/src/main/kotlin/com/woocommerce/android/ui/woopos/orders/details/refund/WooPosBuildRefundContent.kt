@@ -16,6 +16,7 @@ class WooPosBuildRefundContent @Inject constructor(
         preservedSelection: WooPosRefundSelectionSnapshot? = null,
     ): WooPosRefundState.Content {
         val allItemIds = refundableItems.map { it.uniqueId }.toSet()
+        // An empty restore stays empty; only the absence of a snapshot selects everything.
         val selectedItemIds = preservedSelection
             ?.let { restoreSelection(refundableItems, it) }
             ?: allItemIds
@@ -41,19 +42,16 @@ class WooPosBuildRefundContent @Inject constructor(
     }
 
     /**
-     * Re-applies [snapshot] to the reloaded rows: the first *n* units of each line item, capped at
-     * what is left of it, plus the lump sums that were selected. Units of the same line item are
-     * interchangeable — only how many are selected reaches the server.
-     *
-     * A selection that no longer matches anything leaves the selection empty rather than falling
-     * back to every remaining item: the cashier picks again instead of confirming items they never
-     * chose.
+     * Re-applies [snapshot] to the reloaded rows: the first *n* rows of each line item in list
+     * order, capped at what is left of it, plus the lump sums that were selected. List order is
+     * [WooPosRefundableItem.rowIndex] order because [WooPosGetRefundableItems] emits the units of a
+     * line as `(0 until maxQuantity)`.
      */
     private fun restoreSelection(
         refundableItems: List<WooPosRefundableItem>,
         snapshot: WooPosRefundSelectionSnapshot,
     ): Set<String> {
-        val remainingUnits = snapshot.unitCountsByItemId.toMutableMap()
+        val remainingUnits = snapshot.unitCountsByOrderItemId.toMutableMap()
 
         return refundableItems.mapNotNullTo(mutableSetOf()) { item ->
             if (item.isLumpSum) {

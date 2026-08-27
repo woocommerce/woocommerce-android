@@ -128,14 +128,16 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun refreshRefundableItems() {
-        val stateToPreserve = (_state.value as? WooPosRefundState.Content) ?: contentStateBeforeRefund
-        val preservedSelection = stateToPreserve?.let {
-            WooPosRefundSelectionSnapshot.of(it.refundableItems, it.selectedItemIds)
-        }
+        val preservedSelection = ((_state.value as? WooPosRefundState.Content) ?: contentStateBeforeRefund)
+            ?.selectionSnapshot()
         cancelPreview()
         cancelRefundSubmission()
         loadContent(preservedSelection = preservedSelection, isFlowStart = false)
     }
+
+    /** Pairs the rows with the selection made against them, so the two cannot be mismatched. */
+    private fun WooPosRefundState.Content.selectionSnapshot() =
+        WooPosRefundSelectionSnapshot.of(refundableItems, selectedItemIds)
 
     private fun loadContent(preservedSelection: WooPosRefundSelectionSnapshot?, isFlowStart: Boolean) {
         loadingJob?.cancel()
