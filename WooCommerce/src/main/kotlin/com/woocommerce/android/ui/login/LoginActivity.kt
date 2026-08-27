@@ -1213,7 +1213,10 @@ class LoginActivity :
     }
 
     private fun showAgeRestrictionDialog(state: AgeEligibilityChecker.AgeEligibilityState) {
-        if (ageRestrictionDialog?.isShowing == true) return
+        ageRestrictionDialog?.takeIf { it.isShowing }?.let { dialog ->
+            dialog.setMessage(getString(state.ageRestrictedMessage))
+            return
+        }
 
         ageRestrictionDialog = AlertDialog.Builder(this)
             .setTitle(state.ageRestrictedTitle)
