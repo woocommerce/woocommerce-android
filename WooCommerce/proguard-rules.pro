@@ -14,17 +14,6 @@
 }
 ###### Event Bus 3 - end
 
-###### Event Bus 2 - begin
--keepclassmembers class ** {
-    public void onEvent*(**);
-}
-
-# Only required if you use AsyncExecutor
--keepclassmembers class * extends de.greenrobot.event.util.ThrowableFailureEvent {
-    ** *(java.lang.Throwable);
-}
-###### Event Bus 2 - end
-
 ##### WooCommerce - begin
 # Gson populates fields reflectively, so keep fields and enum constants of our classes
 # (we don't obfuscate, so names are stable). Methods stay eligible for R8 optimization.
