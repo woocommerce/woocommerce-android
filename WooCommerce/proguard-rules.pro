@@ -40,7 +40,8 @@
 }
 ###### SavedStateHandleExt - end
 
-###### Google Crypto Tink dependencies - begin
+###### Google Crypto Tink (still transitively present; KeysDownloader references
+###### google-http-client + joda-time which aren't on the classpath) - begin
 -dontwarn com.google.api.client.http.GenericUrl
 -dontwarn com.google.api.client.http.HttpHeaders
 -dontwarn com.google.api.client.http.HttpRequest
@@ -50,4 +51,4 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
-###### Google Crypto Tink dependencies - end
+###### Google Crypto Tink - end
