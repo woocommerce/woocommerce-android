@@ -204,7 +204,6 @@ automattic-tracks-android = { group = "com.automattic", name = "Automattic-Track
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }
 bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", version.ref = "bumptech-glide" }
-bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "bumptech-glide" }
 bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "bumptech-glide" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "cashapp-turbine" }
