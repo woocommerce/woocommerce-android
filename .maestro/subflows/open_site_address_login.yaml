@@ -1,0 +1,37 @@
+# Opens the site-address login form from either supported welcome path.
+#
+# QR login is the default entry point when it is available. Older builds and
+# devices without a camera can still navigate directly to the site-address
+# form, so each transition is conditional and this subflow is safe to call
+# when the form is already open.
+appId: com.woocommerce.android.dev
+---
+- extendedWaitUntil:
+    visible: "^Log In$|.*Log in with site address.*|Site address"
+    timeout: 15000
+
+- runFlow:
+    when:
+      visible:
+        id: "button_login_store"
+    commands:
+      - tapOn:
+          id: "button_login_store"
+          retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible: ".*Log in with site address.*|Site address"
+    timeout: 15000
+
+- runFlow:
+    when:
+      visible: ".*Log in with site address.*"
+    commands:
+      - tapOn:
+          text: ".*Log in with site address.*"
+          retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 15000

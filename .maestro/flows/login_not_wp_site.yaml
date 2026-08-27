@@ -26,20 +26,10 @@ tags:
     commands:
       - tapOn: "Skip"
 
-# Tap "Enter your store address"
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
+# Continue through the QR prologue when present, then enter a non-WordPress URL.
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
-# Enter a non-WordPress site URL
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
 - tapOn:
     id: "input"
 - inputText: "google.com"

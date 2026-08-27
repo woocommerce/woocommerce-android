@@ -7,9 +7,9 @@
 # path reaches the dashboard.
 #
 # Required env vars:
-#   WOO_NO_JETPACK_SITE_URL                  (any non-Jetpack WP site with WC)
-#   WOO_NO_JETPACK_SITE_ADMIN_USERNAME       (site admin credentials — not WP.com)
-#   WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
+#   MAESTRO_WOO_NO_JETPACK_SITE_URL             (any non-Jetpack WP site with WC)
+#   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME  (site admin credentials — not WP.com)
+#   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
 appId: com.woocommerce.android.dev
 name: "Login - No Jetpack via site credentials"
 tags:
@@ -31,21 +31,12 @@ tags:
       - tapOn: "Skip"
 
 # Enter no-Jetpack store URL
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_NO_JETPACK_SITE_URL}
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -75,7 +66,7 @@ tags:
     visible: "Username"
     timeout: 15000
 - tapOn: "Username"
-- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME}
 
 # Tap the password label directly — its Material TextInputLayout focuses
 # the associated EditText. Avoid hideKeyboard here: the site-creds screen
@@ -83,7 +74,7 @@ tags:
 # (Maestro errors with "Couldn't hide the keyboard"), and Continue is
 # visible above the IME anyway.
 - tapOn: "Password"
-- inputText: ${WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
+- inputText: ${MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD}
 
 - tapOn: "Continue"
 

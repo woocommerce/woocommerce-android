@@ -29,21 +29,10 @@ tags:
     commands:
       - tapOn: "Skip"
 
-# Enter the login flow to reach a screen with the toolbar (the prologue
-# has no toolbar, so the help icon is only reachable from here on).
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
-
-# Wait for the site-address screen's toolbar to settle
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
+# Continue through the QR prologue when present and wait for the
+# site-address screen's toolbar to settle.
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
 # Tap the help menu item. The Android menu sets id="@+id/help" and
 # title="Help", so Maestro can locate it by either — prefer the id

@@ -7,12 +7,12 @@
 # the site routes through WordPress.com authentication instead.
 #
 # Required env vars:
-#   WOO_NOT_A_WOO_STORE_URL
-#   WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
-#   WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
+#   MAESTRO_WOO_NOT_A_WOO_STORE_URL
+#   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
+#   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
 # Optional WP.com fallback env vars (set both or neither):
-#   WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
-#   WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
+#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
+#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android.dev
 name: "Login - Not a WooCommerce store error"
 tags:
@@ -34,21 +34,12 @@ tags:
       - tapOn: "Skip"
 
 # Enter store address
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_NOT_A_WOO_STORE_URL}
+- inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -79,9 +70,9 @@ tags:
       visible: "Username"
     commands:
       - tapOn: "Username"
-      - inputText: ${WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
       - tapOn: "Password"
-      - inputText: ${WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
       - tapOn: "Continue"
 
 # Fall back to WP.com credentials when no site-admin route is available.
@@ -92,7 +83,7 @@ tags:
     commands:
       - tapOn:
           id: "input"
-      - inputText: ${WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
       - hideKeyboard
       - tapOn:
           id: "login_continue_button"
@@ -120,7 +111,7 @@ tags:
           timeout: 10000
       - tapOn:
           id: "input"
-      - inputText: ${WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
       - hideKeyboard
       - tapOn:
           id: "bottom_button"

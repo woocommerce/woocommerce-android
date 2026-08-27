@@ -9,7 +9,7 @@ appId: com.woocommerce.android.dev
 
 - runFlow:
     when:
-      true: ${String(output.configuredCurrentStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+      true: ${String(output.configuredCurrentStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] != String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
     commands:
       - tapOn:
           id: "more_menu_store_switcher"
@@ -20,12 +20,12 @@ appId: com.woocommerce.android.dev
           timeout: 20000
       - scrollUntilVisible:
           element:
-            text: ".*${String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+            text: ".*${String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
           direction: DOWN
           timeout: 20000
           label: "Find configured Woo fixture store"
       - tapOn:
-          text: ".*${String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
+          text: ".*${String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}.*"
           label: "Select configured Woo fixture store"
       - tapOn:
           id: "button_primary"
@@ -42,5 +42,5 @@ appId: com.woocommerce.android.dev
     id: "more_menu_store_url"
 - evalScript: ${output.configuredSelectedStoreUrl = maestro.copiedText.trim()}
 - assertTrue:
-    condition: ${String(output.configuredSelectedStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
+    condition: ${String(output.configuredSelectedStoreUrl).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0] == String(MAESTRO_WOO_JETPACK_STORE_URL).toLowerCase().split('://').pop().split('/')[0].split('?')[0].split('#')[0].split(':')[0]}
     label: "Configured Woo fixture store is selected"

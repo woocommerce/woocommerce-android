@@ -13,7 +13,7 @@
 #     OAuth client lets the picker open but Google returns RESULT_CANCELED
 #     after account selection. The smoke runner validates this before launch.
 #   - That Google identity is LINKED on WP.com to an account with access
-#     to ${WOO_JETPACK_STORE_URL}. This is a stronger requirement than "a WP.com
+#     to ${MAESTRO_WOO_JETPACK_STORE_URL}. This is a stronger requirement than "a WP.com
 #     account with the same email exists": WP.com sign-in via Google
 #     uses the Google identity, not the email, so an account created
 #     via email+password will silently fail Google login unless the
@@ -22,7 +22,7 @@
 #     returns to the empty email screen with no visible error.
 #
 # Required env vars:
-#   WOO_JETPACK_STORE_URL            (any Jetpack-connected store the linked account accesses)
+#   MAESTRO_WOO_JETPACK_STORE_URL   (any Jetpack-connected store the linked account accesses)
 appId: com.woocommerce.android.dev
 name: "Login - Social login (Google)"
 tags:
@@ -43,22 +43,14 @@ tags:
     commands:
       - tapOn: "Skip"
 
-# Enter store URL to reach the email screen (Google button lives there)
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
+# Continue through the QR prologue when present, then enter the store URL to
+# reach the email screen (the Google button lives there).
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_JETPACK_STORE_URL}
+- inputText: ${MAESTRO_WOO_JETPACK_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"

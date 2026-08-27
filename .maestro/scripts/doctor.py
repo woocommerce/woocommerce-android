@@ -24,7 +24,7 @@ CHECK_TOOLCHAIN = SCRIPT_DIR / "check-toolchain.py"
 SHARED_STORE_HOST = "inpersonpayments.wpcomstaging.com"
 
 ASSIGNMENT_RE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
-REF_RE = re.compile(r"\$\{(WOO_[A-Z0-9_]+)\}")
+REF_RE = re.compile(r"\$\{MAESTRO_(WOO_[A-Z0-9_]+)\}")
 SUBFLOW_LOGIN_RE = re.compile(r"subflows/(ensure_logged_in|login)\.yaml")
 
 @dataclass

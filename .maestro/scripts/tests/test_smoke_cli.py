@@ -52,6 +52,7 @@ class SmokeCliContractTest(unittest.TestCase):
         env = {
             **os.environ,
             "PATH": "/usr/bin:/bin",
+            "WOO_MAESTRO_ENV_FILE": str(Path(temporary_directory.name) / "missing.env"),
             "WOO_MAESTRO_OUTPUT_DIR": str(output_root),
         }
         result = subprocess.run(
@@ -102,6 +103,7 @@ class SmokeCliContractTest(unittest.TestCase):
                 "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
+                "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
             }
         )
@@ -166,6 +168,7 @@ class SmokeCliContractTest(unittest.TestCase):
                 "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
+                "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
                 "WOO_MAESTRO_SEED_SCRIPT": str(seed_script),
                 **env_overrides,
@@ -218,6 +221,7 @@ class SmokeCliContractTest(unittest.TestCase):
                 "CI": "1",
                 "HOME": str(temporary_path),
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
+                "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
                 "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
                 "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
@@ -496,8 +500,8 @@ class SmokeCliContractTest(unittest.TestCase):
         result, args = self.run_core_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("WOO_WPCOM_PASSWORD=selected-password", args)
-        self.assertNotIn("MAESTRO_WOO_WPCOM_PASSWORD", args)
+        self.assertIn("MAESTRO_WOO_WPCOM_PASSWORD=selected-password", args)
+        self.assertNotIn("\nWOO_WPCOM_PASSWORD=selected-password\n", args)
         for line in args.splitlines():
             if line.startswith("ARGS:"):
                 self.assertNotIn("selected-password", line)

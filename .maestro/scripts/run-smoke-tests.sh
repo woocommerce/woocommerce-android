@@ -14,7 +14,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 FLOWS_DIR="$REPO_ROOT/.maestro/flows"
-ENV_FILE="$REPO_ROOT/.maestro/.env.local"
+ENV_FILE="${WOO_MAESTRO_ENV_FILE:-$REPO_ROOT/.maestro/.env.local}"
 STRINGS_ENV_FILE="$REPO_ROOT/.maestro/strings.env"
 MEDIA_FIXTURE="$REPO_ROOT/.maestro/assets/smoke-test-image.jpg"
 MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image.jpg"
@@ -424,7 +424,7 @@ url_host() {
 flow_uses_wpcom_credentials() {
   local flow name
   local wpcom_ref_pattern
-  wpcom_ref_pattern='\$\{WOO_(JETPACK_STORE_URL|WPCOM_EMAIL|WPCOM_PASSWORD)\}'
+  wpcom_ref_pattern='\$\{MAESTRO_WOO_(JETPACK_STORE_URL|WPCOM_EMAIL|WPCOM_PASSWORD)\}'
   for flow in "${ORDERED_FLOWS[@]}"; do
     name="$(basename "$flow")"
     case "$name" in
@@ -599,8 +599,8 @@ is_optional_flow_env_ref() {
   local flow="$1"
   local ref="$2"
   [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]] &&
-    [[ "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
-      "$ref" == "WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
+    [[ "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
+      "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
 }
 
 validate_referenced_env() {
@@ -610,11 +610,11 @@ validate_referenced_env() {
     while IFS= read -r ref; do
       [[ -z "$ref" ]] && continue
       is_optional_flow_env_ref "$flow" "$ref" && continue
-      var="MAESTRO_${ref}"
+      var="$ref"
       if [[ -z "${!var:-}" ]]; then
         missing+=("$var")
       fi
-    done < <(grep -Eoh '\$\{WOO_[A-Z0-9_]+\}' "$flow" | sed 's/[${}]//g' | sort -u)
+    done < <(grep -Eoh '\$\{MAESTRO_WOO_[A-Z0-9_]+\}' "$flow" | sed 's/[${}]//g' | sort -u)
   done
   if flow_uses_wpcom_credentials; then
     for var in MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD; do
@@ -920,16 +920,19 @@ done < <(env | grep '^MAESTRO_WOO_' || true)
 FLOW_ENV_REFS=()
 while IFS= read -r ref; do
   [[ -n "$ref" ]] && FLOW_ENV_REFS+=("$ref")
-done < <(grep -Eoh '\$\{WOO_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" | sed 's/[${}]//g' | sort -u || true)
+done < <(grep -Eoh '\$\{MAESTRO_WOO_[A-Z0-9_]+\}' "${ORDERED_FLOWS[@]}" | sed 's/[${}]//g' | sort -u || true)
 if flow_uses_wpcom_credentials; then
-  FLOW_ENV_REFS+=(WOO_JETPACK_STORE_URL WOO_WPCOM_EMAIL WOO_WPCOM_PASSWORD)
+  FLOW_ENV_REFS+=(MAESTRO_WOO_JETPACK_STORE_URL MAESTRO_WOO_WPCOM_EMAIL MAESTRO_WOO_WPCOM_PASSWORD)
 fi
-while IFS= read -r ref; do
-  [[ -z "$ref" ]] && continue
-  source_name="MAESTRO_$ref"
-  value="${!source_name:-}"
-  [[ -n "$value" ]] && MAESTRO_PROCESS_ENV_ARGS+=("$ref=$value")
-done < <(printf '%s\n' "${FLOW_ENV_REFS[@]}" | sort -u)
+if [[ ${#FLOW_ENV_REFS[@]} -gt 0 ]]; then
+  while IFS= read -r ref; do
+    [[ -z "$ref" ]] && continue
+    value="${!ref:-}"
+    # Maestro imports MAESTRO_* shell variables without renaming them. Keep
+    # credentials in the process environment so they do not appear in CLI arguments.
+    [[ -n "$value" ]] && MAESTRO_PROCESS_ENV_ARGS+=("$ref=$value")
+  done < <(printf '%s\n' "${FLOW_ENV_REFS[@]}" | sort -u)
+fi
 
 # Forward only the STRING_* variables the selected flows reference; forwarding
 # all generated strings would risk exceeding ARG_MAX.

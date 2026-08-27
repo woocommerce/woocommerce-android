@@ -6,9 +6,9 @@
 # access to it, and verifies the "account not connected to Jetpack" error.
 #
 # Required env vars:
-#   WOO_WPCOM_EMAIL, WOO_WPCOM_PASSWORD
+#   MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD
 #                                      (selected WP.com account)
-#   WOO_WRONG_ACCOUNT_STORE_URL      (site the primary account can't access)
+#   MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL  (site the primary account can't access)
 appId: com.woocommerce.android.dev
 name: "Login - Wrong account for the store"
 tags:
@@ -29,21 +29,12 @@ tags:
     commands:
       - tapOn: "Skip"
 
-- extendedWaitUntil:
-    visible:
-      id: "button_login_store"
-    timeout: 15000
-- tapOn:
-    id: "button_login_store"
-    retryTapIfNoChange: true
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
 
-- extendedWaitUntil:
-    visible:
-      id: "input"
-    timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WRONG_ACCOUNT_STORE_URL}
+- inputText: ${MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
@@ -55,7 +46,7 @@ tags:
     timeout: 15000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_EMAIL}
+- inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
 - hideKeyboard
 - tapOn:
     id: "login_continue_button"
@@ -87,7 +78,7 @@ tags:
     timeout: 10000
 - tapOn:
     id: "input"
-- inputText: ${WOO_WPCOM_PASSWORD}
+- inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: "bottom_button"
