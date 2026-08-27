@@ -51,9 +51,3 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
 ###### Google Crypto Tink dependencies - end
-
-# This is generated automatically by the Android Gradle plugin.
--dontwarn java.beans.ConstructorProperties
--dontwarn java.beans.Transient
--dontwarn org.slf4j.impl.StaticLoggerBinder
--dontwarn org.slf4j.impl.StaticMDCBinder
