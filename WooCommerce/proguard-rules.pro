@@ -1,10 +1,5 @@
 -dontobfuscate
 
-###### Gson (keep generic signatures + annotations for reflective (de)serialization) - begin
--keepattributes Signature
--keepattributes *Annotation*
-###### Gson - end
-
 ###### Event Bus 3 (the @Subscribe rule comes from the library's consumer rules)
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
