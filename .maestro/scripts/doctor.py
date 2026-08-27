@@ -214,7 +214,17 @@ def main() -> int:
             has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", store)),
             has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD", store)),
         ]
-        if any(wpcom_fallback) and not all(wpcom_fallback):
+        not_woo_url = env.get("MAESTRO_WOO_NOT_A_WOO_STORE_URL", "")
+        not_woo_host = url_host(not_woo_url)
+        if not_woo_host == "wordpress.com" or not_woo_host.endswith(".wordpress.com"):
+            if not all(wpcom_fallback):
+                checks.append(
+                    Check(
+                        "fail",
+                        "WordPress.com-hosted not-Woo-store fixture requires WP.com email and password",
+                    )
+                )
+        elif any(wpcom_fallback) and not all(wpcom_fallback):
             checks.append(Check("fail", "not-Woo-store WP.com fallback requires both email and password"))
 
     jetpack_candidates = candidates_for("WOO_JETPACK_STORE_URL", store)

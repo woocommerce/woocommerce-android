@@ -185,7 +185,11 @@ class SmokeCliContractTest(unittest.TestCase):
         recorded_events = events.read_text().splitlines() if events.exists() else []
         return result, recorded_events
 
-    def run_core_with_recorded_maestro_args(self) -> tuple[subprocess.CompletedProcess[str], str]:
+    def run_with_recorded_maestro_args(
+        self,
+        *args: str,
+        env_overrides: dict[str, str],
+    ) -> tuple[subprocess.CompletedProcess[str], str]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
         temporary_path = Path(temporary_directory.name)
@@ -223,15 +227,11 @@ class SmokeCliContractTest(unittest.TestCase):
                 "PATH": f"{fake_bin}:/usr/bin:/bin",
                 "WOO_MAESTRO_ENV_FILE": str(temporary_path / "missing.env"),
                 "WOO_MAESTRO_OUTPUT_DIR": str(temporary_path / "output"),
-                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
-                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
-                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "selected-password",
-                "MAESTRO_WOO_LAB_CONSUMER_SECRET": "selected-rest-secret",
-                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "other-store-secret",
+                **env_overrides,
             }
         )
         result = subprocess.run(
-            [str(RUNNER), "--profile", "core", "--device", "emulator-5554"],
+            [str(RUNNER), *args],
             cwd=REPO_ROOT,
             env=env,
             capture_output=True,
@@ -239,6 +239,21 @@ class SmokeCliContractTest(unittest.TestCase):
             check=False,
         )
         return result, maestro_args.read_text(encoding="utf-8") if maestro_args.exists() else ""
+
+    def run_core_with_recorded_maestro_args(self) -> tuple[subprocess.CompletedProcess[str], str]:
+        return self.run_with_recorded_maestro_args(
+            "--profile",
+            "core",
+            "--device",
+            "emulator-5554",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "selected-password",
+                "MAESTRO_WOO_LAB_CONSUMER_SECRET": "selected-rest-secret",
+                "MAESTRO_WOO_SHARED_WPCOM_PASSWORD": "other-store-secret",
+            },
+        )
 
     def assert_golden(self, result: subprocess.CompletedProcess[str], name: str) -> None:
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -507,6 +522,57 @@ class SmokeCliContractTest(unittest.TestCase):
                 self.assertNotIn("selected-password", line)
         self.assertNotIn("selected-rest-secret", args)
         self.assertNotIn("other-store-secret", args)
+
+    def test_wordpress_dot_com_not_woo_store_requires_explicit_wpcom_credentials(self) -> None:
+        result, args = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_not_woo_store.yaml",
+            env_overrides={
+                "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("WordPress.com-hosted not-Woo-store fixtures require both", result.stderr)
+        self.assertEqual("", args)
+
+    def test_not_woo_store_forwards_explicit_wpcom_credentials(self) -> None:
+        result, args = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_not_woo_store.yaml",
+            env_overrides={
+                "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL": "wpcom-user",
+                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD": "wpcom-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL=wpcom-user", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD=wpcom-password", args)
+
+    def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
+        result, args = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_no_jetpack.yaml",
+            env_overrides={
+                "MAESTRO_WOO_NO_JETPACK_SITE_URL": "https://shop.example.com/subdir/wp-admin/?source=jn",
+                "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME": "site-admin",
+                "MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD": "site-password",
+            },
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("MAESTRO_WOO_NO_JETPACK_SITE_URL=https://shop.example.com/subdir/", args)
+        self.assertNotIn("/wp-admin/", args)
+        self.assertNotIn("source=jn", args)
 
 
 if __name__ == "__main__":

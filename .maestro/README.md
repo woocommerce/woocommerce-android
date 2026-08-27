@@ -13,7 +13,9 @@ The suite has two store targets:
   non-destructive developer runs.
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
-site credentials as the `lab` store block when running the broader suite.
+site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
+`/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
+`MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
 
 Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
 `MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The

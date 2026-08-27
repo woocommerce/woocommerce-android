@@ -643,12 +643,50 @@ validate_optional_not_woo_wpcom_env() {
 
   local email="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL:-}"
   local password="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD:-}"
+  local host
+  host="$(url_host "${MAESTRO_WOO_NOT_A_WOO_STORE_URL:-}")"
+  if [[ "$host" == "wordpress.com" || "$host" == *.wordpress.com ]]; then
+    if [[ -z "$email" || -z "$password" ]]; then
+      echo "WordPress.com-hosted not-Woo-store fixtures require both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD." >&2
+      exit 1
+    fi
+    return 0
+  fi
   if [[ -n "$email" && -z "$password" ]] || [[ -z "$email" && -n "$password" ]]; then
     echo "Missing optional WP.com fallback pair: set both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD, or leave both blank." >&2
     exit 1
   fi
 }
 validate_optional_not_woo_wpcom_env
+
+flow_is_selected() {
+  local expected="$1"
+  local flow
+  for flow in "${ORDERED_FLOWS[@]}"; do
+    [[ "$(basename "$flow")" == "$expected" ]] && return 0
+  done
+  return 1
+}
+
+site_url_without_wp_admin() {
+  local value="$1"
+  local candidate="${value%%\#*}"
+  candidate="${candidate%%\?*}"
+  case "$candidate" in
+    */wp-admin/) printf '%s/' "${candidate%/wp-admin/}" ;;
+    */wp-admin) printf '%s/' "${candidate%/wp-admin}" ;;
+    *) printf '%s' "$value" ;;
+  esac
+}
+
+prepare_login_flow_env() {
+  if flow_is_selected "login_no_jetpack.yaml"; then
+    export MAESTRO_WOO_NO_JETPACK_SITE_URL="$(
+      site_url_without_wp_admin "$MAESTRO_WOO_NO_JETPACK_SITE_URL"
+    )"
+  fi
+}
+prepare_login_flow_env
 
 LOCK_ACQUIRED="no"
 SETTINGS_CAPTURED="no"

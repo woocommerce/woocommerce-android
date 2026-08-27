@@ -10,7 +10,8 @@
 #   MAESTRO_WOO_NOT_A_WOO_STORE_URL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
-# Optional WP.com fallback env vars (set both or neither):
+# WP.com env vars (set both or neither). Required when the fixture is hosted
+# on wordpress.com; optional for self-hosted sites that expose site credentials:
 #   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android.dev
@@ -75,7 +76,7 @@ tags:
       - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
       - tapOn: "Continue"
 
-# Fall back to WP.com credentials when no site-admin route is available.
+# Use the resolved WP.com credentials when no site-admin route is available.
 - runFlow:
     when:
       visible:
