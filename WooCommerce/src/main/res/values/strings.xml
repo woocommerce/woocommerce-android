@@ -91,6 +91,7 @@
     <string name="product_attribute_error_renaming">Error while renaming your attribute</string>
     <string name="product_attributes_error_saving">Error while saving your attributes</string>
     <string name="product_attribute_remove">Remove this attribute?</string>
+    <string name="product_attribute_no_options_warning">This attribute has no options and will be removed. Do you want to continue?</string>
     <string name="product_bulk_update_regular_price">Update regular price</string>
     <string name="product_bulk_update_price_updated">Price updated!</string>
     <string name="product_bulk_update_status">Update status</string>
@@ -150,6 +151,7 @@
     <string name="store_name_default">Store name</string>
     <string name="sorted_by">Sorted by 1%s</string>
     <string name="add">Add %s</string>
+    <string name="add_action">Add</string>
     <string name="barcode_ean13_content_description">Barcode EAN13</string>
     <!--
         Date/Time Labels
