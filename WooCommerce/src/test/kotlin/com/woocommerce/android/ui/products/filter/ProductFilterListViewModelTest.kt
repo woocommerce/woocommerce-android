@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.PluginUrls
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -116,7 +117,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a past filter is selected, then all filter options are repopulated`() {
+    fun `when a past filter is selected, then all filter options are repopulated`() = testBlocking {
         val applied = ProductFilterResult(
             stockStatus = "outofstock",
             productType = "simple",
@@ -125,6 +126,8 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             productCategoryName = "Boots"
         )
         whenever(productFilterHistoryMapper.fromPayload("payload")).thenReturn(applied)
+        whenever(productCategoriesRepository.getProductCategoriesList())
+            .thenReturn(listOf(ProductCategory(remoteCategoryId = 7, name = "Boots")))
 
         productFilterListViewModel.onPastFilterSelected(SavedFilter(readableString = "r", payload = "payload"))
         productFilterListViewModel.onShowProductsClicked()
@@ -135,6 +138,30 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         verify(saveProductFilterToHistory).invoke(captor.capture())
         Assertions.assertThat(captor.firstValue).isEqualTo(applied)
     }
+
+    @Test
+    fun `given a saved category no longer exists, when a past filter is selected, then it is dropped`() =
+        testBlocking {
+            val applied = ProductFilterResult(
+                stockStatus = "outofstock",
+                productType = null,
+                productStatus = null,
+                productCategory = "99",
+                productCategoryName = "Deleted"
+            )
+            whenever(productFilterHistoryMapper.fromPayload("payload")).thenReturn(applied)
+            whenever(productCategoriesRepository.getProductCategoriesList())
+                .thenReturn(listOf(ProductCategory(remoteCategoryId = 7, name = "Boots")))
+
+            productFilterListViewModel.onPastFilterSelected(SavedFilter(readableString = "r", payload = "payload"))
+            productFilterListViewModel.onShowProductsClicked()
+
+            val captor = argumentCaptor<ProductFilterResult>()
+            verify(saveProductFilterToHistory).invoke(captor.capture())
+            Assertions.assertThat(captor.firstValue.productCategory).isNull()
+            Assertions.assertThat(captor.firstValue.productCategoryName).isNull()
+            Assertions.assertThat(captor.firstValue.stockStatus).isEqualTo("outofstock")
+        }
 
     @Test
     fun `given an undecodable past filter, when selected, then the current selection is unchanged`() {

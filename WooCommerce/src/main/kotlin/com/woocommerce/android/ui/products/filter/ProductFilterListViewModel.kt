@@ -336,15 +336,37 @@ class ProductFilterListViewModel @Inject constructor(
 
     fun onPastFilterSelected(savedFilter: SavedFilter) {
         val result = productFilterHistoryMapper.fromPayload(savedFilter.payload) ?: return
-        productFilterOptions.clear()
-        result.stockStatus?.let { productFilterOptions[STOCK_STATUS] = it }
-        result.productStatus?.let { productFilterOptions[STATUS] = it }
-        result.productType?.let { productFilterOptions[TYPE] = it }
-        result.productCategory?.let { productFilterOptions[CATEGORY] = it }
-        selectedCategoryName = result.productCategoryName
-        savedState[KEY_PRODUCT_FILTER_OPTIONS] = productFilterOptions
-        savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
-        loadFilters()
+        launch {
+            productFilterOptions.clear()
+            result.stockStatus?.let { productFilterOptions[STOCK_STATUS] = it }
+            result.productStatus?.let { productFilterOptions[STATUS] = it }
+            result.productType?.let { productFilterOptions[TYPE] = it }
+            applyRestoredCategory(result.productCategory)
+            savedState[KEY_PRODUCT_FILTER_OPTIONS] = productFilterOptions
+            savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = selectedCategoryName
+            loadFilters()
+        }
+    }
+
+    // Keeps a restored category only if it's in the cached category list, resolving its name for the
+    // Category row. Relies on the cache (no network) so applying a past filter never lags: a category
+    // missing from the cache is dropped up front rather than shown then cleared, while a stale entry is
+    // reconciled later when the category list is refreshed (e.g. opening the Category screen).
+    private suspend fun applyRestoredCategory(categoryId: String?) {
+        if (categoryId == null) {
+            selectedCategoryName = null
+            return
+        }
+        if (productCategories.isEmpty()) {
+            productCategories = productCategoriesRepository.getProductCategoriesList()
+        }
+        val category = productCategories.firstOrNull { it.remoteCategoryId.toString() == categoryId }
+        if (category != null) {
+            productFilterOptions[CATEGORY] = categoryId
+            selectedCategoryName = category.name
+        } else {
+            selectedCategoryName = null
+        }
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
