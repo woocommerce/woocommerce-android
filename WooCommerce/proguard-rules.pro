@@ -1,16 +1,11 @@
 -dontobfuscate
 
-###### OkHttp (the library ships its own consumer rules) - begin
--dontwarn okio.**
--dontwarn okhttp3.**
--dontwarn com.squareup.okhttp.**
-
+###### Gson (keep generic signatures + annotations for reflective (de)serialization) - begin
 -keepattributes Signature
 -keepattributes *Annotation*
-###### OkHttp - end
+###### Gson - end
 
 ###### Event Bus 3 (the @Subscribe rule comes from the library's consumer rules)
--keepattributes *Annotation*
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
 # Only required if you use AsyncExecutor
