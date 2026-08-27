@@ -1,14 +1,5 @@
 -dontobfuscate
 
-###### Event Bus 3 (the @Subscribe rule comes from the library's consumer rules)
--keep enum org.greenrobot.eventbus.ThreadMode { *; }
-
-# Only required if you use AsyncExecutor
--keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
-    <init>(java.lang.Throwable);
-}
-###### Event Bus 3 - end
-
 ##### WooCommerce - begin
 # Gson populates fields reflectively, so keep fields and enum constants of our classes
 # (we don't obfuscate, so names are stable). Methods stay eligible for R8 optimization.
