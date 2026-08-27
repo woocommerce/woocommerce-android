@@ -11,8 +11,6 @@
 -keep class com.wellsql** { *; }
 ###### FluxC - end
 
--dontwarn com.google.common.**
-
 ###### Zendesk (the SDK ships its own consumer rules; Gson/Retrofit/OkHttp ship theirs too)
 
 ###### Glide - begin
