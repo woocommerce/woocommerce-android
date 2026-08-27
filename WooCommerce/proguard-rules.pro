@@ -11,8 +11,6 @@
 -keep class com.wellsql** { *; }
 ###### FluxC - end
 
-###### Zendesk (the SDK ships its own consumer rules; Gson/Retrofit/OkHttp ship theirs too)
-
 ###### SavedStateHandleExt - begin
 ###### We use reflection so we have to keep this method
 -keepclassmembers class * extends androidx.navigation.NavArgs {
@@ -20,8 +18,8 @@
 }
 ###### SavedStateHandleExt - end
 
-###### Google Crypto Tink (still transitively present; KeysDownloader references
-###### google-http-client + joda-time which aren't on the classpath) - begin
+# Crypto Tink is still transitively present; its KeysDownloader references google-http-client
+# and joda-time, which aren't on the classpath. R8 fails to build without these.
 -dontwarn com.google.api.client.http.GenericUrl
 -dontwarn com.google.api.client.http.HttpHeaders
 -dontwarn com.google.api.client.http.HttpRequest
@@ -31,4 +29,3 @@
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport$Builder
 -dontwarn com.google.api.client.http.javanet.NetHttpTransport
 -dontwarn org.joda.time.Instant
-###### Google Crypto Tink - end
