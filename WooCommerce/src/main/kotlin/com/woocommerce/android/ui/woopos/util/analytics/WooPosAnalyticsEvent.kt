@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
@@ -1023,24 +1025,79 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object RefundProcessingStarted : Event() {
+        data class RefundProcessingStarted(
+            val refundFlow: RefundFlow
+        ) : Event() {
             override val name: String = "refund_processing_started"
-        }
-
-        data object RefundProcessingSuccess : Event() {
-            override val name: String = "refund_processing_success"
-        }
-
-        data class RefundProcessingFailed(val apiErrorCode: String?) : Event() {
-            override val name: String = "refund_processing_failed"
 
             init {
                 addProperties(
                     mapOf(
-                        "api_error_code" to (apiErrorCode ?: "unknown")
+                        RefundFlow.REFUND_FLOW to refundFlow.value
                     )
                 )
             }
+        }
+
+        data class RefundProcessingSuccess(
+            val refundFlow: RefundFlow
+        ) : Event() {
+            override val name: String = "refund_processing_success"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value
+                    )
+                )
+            }
+        }
+
+        /**
+         * [apiErrorCode] is omitted rather than sent as a placeholder when the failure carries no
+         * code, matching iOS (woocommerce-ios#17716) so both platforms answer "failures with no
+         * code" the same way.
+         */
+        data class RefundProcessingFailed(
+            val refundFlow: RefundFlow,
+            val apiErrorCode: String?,
+        ) : Event() {
+            override val name: String = "refund_processing_failed"
+
+            init {
+                addProperties(
+                    buildMap {
+                        put(RefundFlow.REFUND_FLOW, refundFlow.value)
+                        apiErrorCode?.let { put("api_error_code", it) }
+                    }
+                )
+            }
+        }
+
+        /**
+         * The refund was abandoned between `refund_processing_started` and submission, so neither
+         * `refund_processing_success` nor `refund_processing_failed` will follow. Carries
+         * [refundFlow] so the funnel reconciles per flow:
+         * `started(f) == success(f) + failed(f) + precondition_failed(f)`.
+         */
+        data class RefundProcessingPreconditionFailed(
+            val refundFlow: RefundFlow,
+            val reason: RefundPreconditionReason,
+        ) : Event() {
+            override val name: String = "refund_processing_precondition_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        RefundFlow.REFUND_FLOW to refundFlow.value,
+                        RefundPreconditionReason.REASON to reason.value,
+                    )
+                )
+            }
+        }
+
+        data object RefundServerFlowUnavailable : Event() {
+            override val name: String = "refund_server_flow_unavailable"
         }
 
         data class RefundFlowAborted(val refundStep: String) : Event() {

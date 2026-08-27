@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
@@ -21,9 +22,11 @@ import com.woocommerce.android.ui.orders.filters.domain.GetDateRangeFilterOption
 import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
 import com.woocommerce.android.ui.orders.filters.domain.IsSalesChannelFilterSupported
+import com.woocommerce.android.ui.orders.filters.domain.SaveOrderFilterToHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryListViewState
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
+import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OpenFilterHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
 import com.woocommerce.android.ui.orders.filters.model.addFilterOptionAll
@@ -34,6 +37,8 @@ import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSel
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -58,14 +63,25 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private val productRepository: ProductListRepository,
     private val customerStore: WCCustomerStore,
     private val selectedSite: SelectedSite,
-    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported
+    private val isSalesChannelFilterSupported: IsSalesChannelFilterSupported,
+    private val saveOrderFilterToHistory: SaveOrderFilterToHistory,
+    private val orderFilterHistoryMapper: OrderFilterHistoryMapper,
+    featureFlagRepository: FeatureFlagRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         const val OLD_FILTER_SELECTION_KEY = "old_filter_selection_key"
+        const val OLD_CUSTOM_DATE_RANGE_KEY = "old_custom_date_range_key"
     }
+
+    val isFilterHistoryEnabled: Boolean = featureFlagRepository.isEnabled(FeatureFlag.FILTER_HISTORY)
 
     private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
         savedState[OLD_FILTER_SELECTION_KEY] ?: emptyList()
+
+    // The custom date range days aren't captured in [oldFilterSelection] (which only holds option keys),
+    // so snapshot them separately to restore the range when the user discards their changes.
+    private var oldCustomDateRange: Pair<Long, Long> =
+        savedState.get<LongArray>(OLD_CUSTOM_DATE_RANGE_KEY)?.let { it[0] to it[1] } ?: (0L to 0L)
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -89,6 +105,9 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 _categories = OrderFilterCategories(buildFilterListUiModel())
                 oldFilterSelection = _categories.list
                 savedState[OLD_FILTER_SELECTION_KEY] = oldFilterSelection
+                oldCustomDateRange = orderFilterRepository.getCustomDateRangeDays()
+                savedState[OLD_CUSTOM_DATE_RANGE_KEY] =
+                    longArrayOf(oldCustomDateRange.first, oldCustomDateRange.second)
             }
         }
     }
@@ -100,7 +119,44 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     fun onShowOrdersClicked() {
         saveFiltersSelection(_categories.list)
         trackFilterSelection()
+        saveOrderFilterToHistory()
         triggerEvent(OnShowOrders)
+    }
+
+    fun onFilterHistoryButtonClicked() {
+        analyticsTraWrapper.track(
+            AnalyticsEvent.FILTER_HISTORY_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_FILTER_HISTORY_SOURCE_ORDERS)
+        )
+        triggerEvent(OpenFilterHistory)
+    }
+
+    fun onPastFilterSelected(savedFilter: SavedFilter) {
+        val historyData = orderFilterHistoryMapper.fromPayload(savedFilter.payload) ?: return
+        launch {
+            // Reconcile the stored selection against what this store can currently show, so values that
+            // are no longer available (e.g. the whole Sales Channel category on WooCommerce < 9.9, or a
+            // deleted order status) aren't applied and left stuck active with no visible way to remove them.
+            val availableCategories = buildFilterListUiModel()
+            OrderListFilterCategory.entries.forEach { category ->
+                val availableOptionKeys = availableCategories
+                    .firstOrNull { it.categoryKey == category }
+                    ?.orderFilterOptions
+                    ?.map { it.key }
+                    ?.toSet()
+                val storedValues = historyData.selections[category.name] ?: emptyList()
+                val reconciledValues = when {
+                    // Category isn't available on this store, drop it entirely.
+                    availableOptionKeys == null -> emptyList()
+                    // Product/Customer options are derived from the value itself, so apply the stored value as-is.
+                    category == PRODUCT || category == CUSTOMER -> storedValues
+                    else -> storedValues.filter { it in availableOptionKeys }
+                }
+                orderFilterRepository.setSelectedFilters(category, reconciledValues)
+            }
+            orderFilterRepository.setCustomDateRange(historyData.customDateRangeStart, historyData.customDateRangeEnd)
+            _categories = OrderFilterCategories(buildFilterListUiModel())
+        }
     }
 
     fun onClearFilters() {
@@ -155,6 +211,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
                         saveFiltersSelection(oldFilterSelection)
+                        orderFilterRepository.setCustomDateRange(oldCustomDateRange.first, oldCustomDateRange.second)
                         triggerEvent(Exit)
                     },
                     negativeButtonId = R.string.keep_changes

@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.OR
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.SALES_CHANNEL
 import com.woocommerce.android.ui.orders.filters.domain.GetTrackingForFilterSelection
+import com.woocommerce.android.ui.orders.filters.domain.SaveOrderFilterToHistory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnFilterOptionsSelectionUpdated
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowCustomDateRangePicker
@@ -40,6 +41,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val orderFilterRepository: OrderFiltersRepository,
     private val getTrackingForFilterSelection: GetTrackingForFilterSelection,
+    private val saveOrderFilterToHistory: SaveOrderFilterToHistory,
     private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState) {
     private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
@@ -73,6 +75,7 @@ class OrderFilterOptionsViewModel @Inject constructor(
     fun onShowOrdersClicked() {
         saveFiltersSelection()
         trackFilterSelection()
+        saveOrderFilterToHistory()
         triggerEvent(OnShowOrders)
     }
 
