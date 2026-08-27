@@ -21,11 +21,6 @@
 -keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
 
-###### FluxC (Gson deserialization; model/network field keeps come from fluxc's consumer-rules.pro) - begin
--keepclassmembers class org.wordpress.android.fluxc.** { <fields>; }
--keepclassmembers enum org.wordpress.android.fluxc.** { *; }
-###### FluxC - end
-
 ###### FluxC - WellSql (needed for Addon support) - begin
 -keep class com.wellsql** { *; }
 ###### FluxC - end
