@@ -1,7 +1,7 @@
 # Maestro Smoke Tests
 
 Automated UI smoke tests for the WooCommerce Android P2 checklist:
-https://woomobilep2.wordpress.com/flows-for-app-features-smoke-testing/
+WooMobile P2: Smoke testing page
 
 ## Operating Model
 

@@ -25,7 +25,7 @@
 # invocations ordered consistently.
 #
 # P2 reference:
-#   https://woomobilep2.wordpress.com/flows-for-app-features-smoke-testing/
+#   WooMobile P2: Smoke testing page
 
 appId: com.woocommerce.android.dev
 
