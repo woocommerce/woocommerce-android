@@ -9,7 +9,7 @@
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
 - [*] Woo POS: when the store rejects a refund because the order changed - another register refunded part of it - the refund screen now offers to reload the remaining items instead of a retry that cannot succeed [https://github.com/woocommerce/woocommerce-android/pull/16440]
-- [*] Woo POS: on stores running WooCommerce 11.1.0 or newer, refund totals are now calculated by the store instead of on the device [https://github.com/woocommerce/woocommerce-android/pull/16450]
+- [***] Woo POS: on stores running WooCommerce 11.1.0 or newer, refund totals are now calculated by the store instead of on the device [https://github.com/woocommerce/woocommerce-android/pull/16450]
 - [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
 - [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
 - [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
