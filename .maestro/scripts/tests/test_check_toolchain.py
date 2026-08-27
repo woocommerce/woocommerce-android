@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -47,6 +48,23 @@ class CheckToolchainTests(unittest.TestCase):
         self.assertIn("Could not parse Maestro version output", result.stderr)
 
     def test_ci_configuration_accepts_an_already_matching_toolchain_without_installing(self) -> None:
+        result = self.run_configuration_with_matching_toolchain("/bin/bash")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertNotIn("Installing pinned Maestro", result.stdout)
+
+    @unittest.skipUnless(shutil.which("zsh"), "Zsh is not installed")
+    def test_local_configuration_can_be_sourced_from_zsh(self) -> None:
+        result = self.run_configuration_with_matching_toolchain(shutil.which("zsh"))
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("Maestro toolchain OK", result.stdout)
+
+    def run_configuration_with_matching_toolchain(
+        self,
+        shell: str | None,
+    ) -> subprocess.CompletedProcess[str]:
+        assert shell is not None
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             bin_dir = root / "bin"
@@ -65,7 +83,7 @@ class CheckToolchainTests(unittest.TestCase):
             )
 
             result = subprocess.run(
-                ["/bin/bash", "-c", 'source "$1"', "bash", str(CONFIGURE)],
+                [shell, "-c", 'source "$1"', shell, str(CONFIGURE)],
                 cwd=REPO_ROOT,
                 env=environment,
                 capture_output=True,
@@ -73,8 +91,7 @@ class CheckToolchainTests(unittest.TestCase):
                 check=False,
             )
 
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertNotIn("Installing pinned Maestro", result.stdout)
+        return result
 
     def test_ci_configuration_installs_a_verified_release_into_the_job_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
