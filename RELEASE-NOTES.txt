@@ -4,6 +4,7 @@
 
 25.6
 -----
+- [*] Login loading dialogs now use the correct background in dark mode
 - [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
@@ -44,6 +45,7 @@
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 - [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
 - [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
+- [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size by ~12 MB [https://github.com/woocommerce/woocommerce-android/pull/16308]
 
 25.4
 -----
