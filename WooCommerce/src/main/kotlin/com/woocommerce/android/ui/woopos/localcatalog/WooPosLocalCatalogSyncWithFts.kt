@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -256,6 +257,9 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private fun WooPosVariationEntity.isEligibleForFts(): Boolean =
         status == allowedStatus && downloadable == allowedDownloadable
 
+    // @Keep: only instantiated reflectively by Gson via TypeToken, so R8 would otherwise
+    // strip the class and Gson would fall back to LinkedTreeMap, causing a ClassCastException.
+    @Keep
     private data class AttributeJson(
         val id: Long? = null,
         val name: String? = null,

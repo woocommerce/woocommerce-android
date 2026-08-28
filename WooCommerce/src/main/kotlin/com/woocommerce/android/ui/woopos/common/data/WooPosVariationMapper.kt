@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.data
 
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -152,6 +153,9 @@ class WooPosVariationMapper @Inject constructor(
         }
     }
 
+    // @Keep: only instantiated reflectively by Gson via TypeToken, so R8 would otherwise
+    // strip the class and Gson would fall back to LinkedTreeMap, causing a ClassCastException.
+    @Keep
     private data class AttributeJsonItem(
         val id: Long?,
         val name: String?,
