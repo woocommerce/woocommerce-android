@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -35,7 +36,8 @@ class OrderEditingViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val orderEditingRepository: OrderEditingRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val crashLogging: CrashLogging
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
 
@@ -63,7 +65,12 @@ class OrderEditingViewModel @Inject constructor(
             }
             val loadedOrder = orderDetailRepository.getOrderById(orderId)
             if (loadedOrder == null) {
-                WooLog.w(WooLog.T.ORDERS, "Order $orderId not found in the database.")
+                val message = "Order $orderId not found in the database."
+                WooLog.w(WooLog.T.ORDERS, message)
+                crashLogging.sendReport(
+                    exception = IllegalStateException("Order not found in the database"),
+                    message = message
+                )
                 triggerEvent(OrderLoadFailed)
                 return@launch
             }
