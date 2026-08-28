@@ -23,7 +23,7 @@ Fragment: `ProductListFragment` -- Tap `products` bottom tab.
 | Page | `productDetailPage` | Complete Compose hierarchy |
 | Top app bar | `productDetailToolbar` | Compose semantics tag; shows product name |
 | Top app bar overflow | `productDetailToolbarOverflow` | Compose semantics tag |
-| Image gallery | `product_detail_image_gallery` | Compose semantics tag |
+| Image gallery | `productDetailImageGallery` | Compose semantics tag |
 | Product cards | `productDetailList` | Compose LazyColumn semantics tag |
 | Add more footer | `productDetailFooter` | Fixed Compose footer semantics tag |
 
