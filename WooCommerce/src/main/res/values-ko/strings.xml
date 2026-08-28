@@ -1089,7 +1089,6 @@ Language: ko_KR
     <string name="woo_shipping_fetching_countries_and_states">국가 및 주를 가져오는 중입니다.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">국가 및 주 정보를 조회할 수 없습니다. 다시 시도해 주세요.</string>
     <string name="product_upload_error_title">이미지 업로드 오류</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
     <string name="woo_shipping_label_phone">전화</string>
     <string name="woo_shipping_label_email">이메일</string>

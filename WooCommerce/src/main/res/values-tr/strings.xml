@@ -1088,7 +1088,6 @@ Language: tr
     <string name="woo_shipping_fetching_countries_and_states">Ülkeler ve eyaletler alınıyor.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">Ülke ve eyalet bilgileri alınamadı. Lütfen tekrar deneyin.</string>
     <string name="product_upload_error_title">Görsel yükleme hatası</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS şu anda yalnızca basit ve varyasyonlu ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-posta</string>

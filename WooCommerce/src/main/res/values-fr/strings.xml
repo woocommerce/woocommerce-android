@@ -1089,7 +1089,6 @@ Language: fr
     <string name="woo_shipping_fetching_countries_and_states_failed">Nous n’avons pas pu récupérer les informations de pays et d’État. Veuillez réessayer.</string>
     <string name="woo_shipping_field_required_error">Champ obligatoire.</string>
     <string name="product_upload_error_title">Erreurs de chargement d’image</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">Le PDV ne prend actuellement en charge que des produits simples, variables et virtuels – \ncréez-en un pour commencer.</string>
     <string name="woo_shipping_label_phone">Téléphone</string>
     <string name="woo_shipping_label_email">E-mail</string>

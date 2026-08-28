@@ -1087,7 +1087,6 @@ Language: he_IL
     <string name="woo_shipping_fetching_countries_and_states_failed">לא הצלחנו לאחזר את המידע לגבי הארץ והמדינה. יש לנסות שוב.</string>
     <string name="woo_shipping_field_required_error">חובה להזין שדה זה.</string>
     <string name="product_upload_error_title">שגיאות בהעלאת התמונה</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים, במוצרים עם סוגים ובמוצרים וירטואליים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
     <string name="woo_shipping_label_phone">טלפון</string>
     <string name="woo_shipping_label_email">אימייל</string>

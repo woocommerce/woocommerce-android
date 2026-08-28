@@ -1089,7 +1089,6 @@ Language: ja_JP
     <string name="woo_shipping_fetching_countries_and_states_failed">国と州の情報を取得できませんでした。 もう一度お試しください。</string>
     <string name="woo_shipping_field_required_error">この欄は入力必須です。</string>
     <string name="product_upload_error_title">画像アップロードのエラー</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
     <string name="woo_shipping_label_phone">電話</string>
     <string name="woo_shipping_label_email">メールアドレス</string>

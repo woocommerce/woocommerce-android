@@ -1089,7 +1089,6 @@ Language: ru
     <string name="woo_shipping_field_required_error">Обязательное поле.</string>
     <string name="woo_shipping_fetching_countries_and_states">Получение стран и регионов.</string>
     <string name="product_upload_error_title">Ошибки при загрузке изображения</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары, товары с вариантами и виртуальные товары — \nсначала создайте такой товар.</string>
     <string name="woo_shipping_label_phone">Телефон</string>
     <string name="woo_shipping_label_email">Электронная почта</string>

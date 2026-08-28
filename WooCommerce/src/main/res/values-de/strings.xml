@@ -1089,7 +1089,6 @@ Language: de
     <string name="woo_shipping_fetching_countries_and_states_failed">Es konnten keine Informationen zu Ländern und Bundesstaaten (Bundesländern) abgerufen werden. Bitte versuche es erneut.</string>
     <string name="woo_shipping_field_required_error">Dieses Feld ist erforderlich.</string>
     <string name="product_upload_error_title">Fehler beim Upload des Bildes</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache, variable und virtuelle Produkte.\nErstelle ein Produkt, um anzufangen.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-Mail</string>
