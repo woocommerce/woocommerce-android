@@ -198,10 +198,10 @@ class GoogleAgeSignalsClientTest {
         verify(manager, times(3)).checkAgeSignals(any())
     }
 
-    private suspend fun requestFailure(client: GoogleAgeSignalsClient): AgeSignalsRequestFailure {
+    private suspend fun requestFailure(client: GoogleAgeSignalsClient): AgeSignalsRequestException {
         val exception = runCatching { client.requestAgeSignals(activity) }.exceptionOrNull()
-        assertThat(exception).isInstanceOf(AgeSignalsRequestFailure::class.java)
-        return exception as AgeSignalsRequestFailure
+        assertThat(exception).isInstanceOf(AgeSignalsRequestException::class.java)
+        return exception as AgeSignalsRequestException
     }
 
     private fun accessResult(status: Int) = AgeSignalsAccessResult.builder()

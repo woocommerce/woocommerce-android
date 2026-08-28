@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 interface AgeSignalsClient {
     suspend fun requestAgeSignals(activity: Activity): AgeSignalsRequestResult
@@ -79,7 +80,7 @@ class GoogleAgeSignalsClient @Inject constructor(
                     delay(RETRY_BACKOFF_MILLIS[retryCount].milliseconds)
                     retryCount++
                 } else {
-                    throw AgeSignalsRequestFailure(
+                    throw AgeSignalsRequestException(
                         stage = exception.stage,
                         errorCode = errorCode,
                         retryCount = retryCount,
@@ -227,7 +228,7 @@ enum class AppAgeSignalsErrorCode(val isRetryable: Boolean) {
     UNEXPECTED(false)
 }
 
-class AgeSignalsRequestException
+class AgeSignalsRequestException(
     val stage: AgeSignalsRequestStage,
     val errorCode: AppAgeSignalsErrorCode,
     val retryCount: Int,

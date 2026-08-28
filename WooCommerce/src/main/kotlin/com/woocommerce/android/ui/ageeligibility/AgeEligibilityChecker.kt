@@ -109,7 +109,7 @@ class AgeEligibilityChecker @Inject constructor(
         val evaluation = try {
             val result = client.requestAgeSignals(activity)
             evaluator.evaluate(result, persistedRestriction)
-        } catch (exception: AgeSignalsRequestFailure) {
+        } catch (exception: AgeSignalsRequestException) {
             preservePriorRestriction(exception)
         }
 
@@ -145,7 +145,7 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     private fun preservePriorRestriction(exception: Exception): AgeEligibilityEvaluation {
-        val failureSummary = if (exception is AgeSignalsRequestFailure) {
+        val failureSummary = if (exception is AgeSignalsRequestException) {
             "${exception.stage.name}/${exception.errorCode.name} after ${exception.retryCount} retries"
         } else {
             exception.javaClass.simpleName

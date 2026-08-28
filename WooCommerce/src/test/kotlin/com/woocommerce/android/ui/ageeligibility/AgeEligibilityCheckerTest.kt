@@ -375,7 +375,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             )
         )
 
-        private fun requestFailure() = AgeSignalsRequestFailure(
+        private fun requestFailure() = AgeSignalsRequestException(
             stage = AgeSignalsRequestStage.ACCESS,
             errorCode = AppAgeSignalsErrorCode.NETWORK_ERROR,
             retryCount = 0,
