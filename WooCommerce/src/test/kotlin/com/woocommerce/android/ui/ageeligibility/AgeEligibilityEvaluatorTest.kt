@@ -116,6 +116,26 @@ class AgeEligibilityEvaluatorTest {
     }
 
     @Test
+    fun `given an ambiguous shared age range straddling 13 without a prior restriction, when evaluated, then access is allowed non-authoritatively`() {
+        // GIVEN
+        val results = listOf(
+            sharedResult(ageLower = 12, ageUpper = 15),
+            sharedResult(ageLower = 0, ageUpper = 13),
+            sharedResult(ageLower = 10, ageUpper = null)
+        )
+
+        results.forEach { result ->
+            // WHEN
+            val evaluation = evaluate(result)
+
+            // THEN
+            assertThat(evaluation).isEqualTo(
+                AgeEligibilityEvaluation(AgeEligibilityDecision.Allowed, isAuthoritative = false)
+            )
+        }
+    }
+
+    @Test
     fun `given any significant change status with an eligible age, when evaluated, then app access is allowed`() {
         AppSignificantChangeStatus.entries.forEach { status ->
             val evaluation = evaluate(
