@@ -4,7 +4,7 @@
 
 25.6
 -----
-- [*] Woo POS no longer crashes on release builds when opening while indexing products that have attributes
+- [*] Woo POS no longer crashes on release builds when opening while indexing products that have attributes [https://github.com/woocommerce/woocommerce-android/pull/16485]
 - [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Login loading dialogs now use the correct background in dark mode
