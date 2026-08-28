@@ -20,8 +20,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -54,11 +52,10 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooCell
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellTrailingAffordance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
+import com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenuItem
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
-import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
-import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.Plus
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -337,55 +334,24 @@ private fun ProductDetailTopAppBar(
                 )
             }
             if (state.overflowActions.isNotEmpty()) {
-                ProductDetailTopAppBarOverflow(
-                    actions = state.overflowActions,
-                    onActionClicked = callbacks.onActionClicked,
-                )
+                overflowAction(
+                    contentDescription = stringResource(R.string.more_options),
+                    modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR_OVERFLOW),
+                ) { dismiss ->
+                    state.overflowActions.forEach { action ->
+                        WooOverflowMenuItem(
+                            text = stringResource(action.label),
+                            onClick = {
+                                dismiss()
+                                callbacks.onActionClicked(action)
+                            },
+                            isDestructive = action.isDestructive,
+                        )
+                    }
+                }
             }
         },
     )
-}
-
-@Composable
-private fun WooTopAppBarActionsScope.ProductDetailTopAppBarOverflow(
-    actions: List<ProductDetailTopAppBarAction>,
-    onActionClicked: (ProductDetailTopAppBarAction) -> Unit,
-) {
-    val actionsScope = this
-    var isExpanded by remember { mutableStateOf(false) }
-    Box {
-        actionsScope.iconAction(
-            imageVector = WooIcons.Regular.Ellipsis,
-            contentDescription = stringResource(R.string.more_options),
-            onClick = { isExpanded = true },
-            modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR_OVERFLOW),
-        )
-        DropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = { isExpanded = false },
-            containerColor = WooTheme.colors.surface.default,
-        ) {
-            actions.forEach { action ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(action.label),
-                            color = if (action.isDestructive) {
-                                WooTheme.colors.error
-                            } else {
-                                WooTheme.colors.surface.onDefault
-                            },
-                            style = WooTheme.text.bodyLarge.regular,
-                        )
-                    },
-                    onClick = {
-                        isExpanded = false
-                        onActionClicked(action)
-                    },
-                )
-            }
-        }
-    }
 }
 
 @Composable

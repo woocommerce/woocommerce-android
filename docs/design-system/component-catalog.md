@@ -37,6 +37,7 @@ The current module exposes Figma-backed production Compose APIs for:
 - Modal bottom sheets with Woo-owned styling and caller-owned state/content.
 - Top text tabs.
 - Design-system top app bars with descriptor or scoped actions.
+- Anchored overflow menus with design-system container and item styling.
 
 Figma-backed production components must render correctly under the design-system root and must not
 rely on static light fallback defaults. Non-migrated screens stay on the legacy root and should not
@@ -76,8 +77,13 @@ split module keeps the component API clean:
   `List<WooTopAppBarAction>` actions remain the default for screens that only need standard icon and text
   actions. A scoped `actions` builder is the escape hatch for screens that also need custom content such as
   counters, progress indicators, or anchored menus: `WooTopAppBarActionsScope` extends `RowScope` and adds
-  `iconAction` and `textAction`, so standard and custom content stay inline in source order. The scoped
-  builder has no default value, so calls that omit `actions` still resolve to the descriptor overload.
+  `iconAction`, `textAction`, and `overflowAction`, so standard and custom content stay inline in source
+  order. The scoped builder has no default value, so calls that omit `actions` still resolve to the
+  descriptor overload.
+- `overflowAction` renders the standard outlined ellipsis trigger anchoring a `WooOverflowMenu`. The design
+  system owns the anchor, so screens no longer wrap the trigger in their own `Box` to position the menu. Its
+  `content` receives a dismiss callback; call it before running a selected action so the menu does not stay
+  open behind a navigation.
 - Material retains its internal action-slot layout; inside that unavoidable slot, `WooTopAppBar` owns one
   spacing container per action API. It applies `space1` between direct child layout bounds, so outlined icon
   actions retain their 48dp interactive bounds around the visible 40dp outline. The visible border gap
@@ -142,7 +148,8 @@ component split does not add module screenshot infrastructure.
 | Switch Settings Row | `WooSwitchSettingsRow` | material_adapter | Composes the Figma-backed cell layout with the `WooSwitch` Material 3 / token adapter. Keep one row-level toggle action and avoid duplicate child semantics. |
 | Tabs | `WooTabRow`, `WooTab` | production | Surface Bright top text tabs with Tint On Surface 16 dividers; bottom tab bar parity remains preview-only and app-shell-owned. |
 | Tooltip | `WooTooltipBox`, `WooTooltipAction`, `WooTooltipPlacement`, `WooTooltipState`, `rememberWooTooltipState` | production | Anchored inverse-surface tooltip with optional supporting text and one optional nonblank text action, automatic or preferred logical-side placement, viewport clamping, and a 200dp width cap. The action uses a transparent, leading-aligned button with On Inverted content and may wrap; activating it dismisses first and then invokes its callback. Other dismissal paths never invoke the action callback. An unusable preferred side always flips to its opposite before clamping. Material owns standard long-press, hover, keyboard-focus, popup, accessibility, outside-dismiss requests, and global one-tooltip coordination; callers may also drive persistent presentation through state. When positioning observes the anchor leave the viewport, the current presentation is dismissed, and returning the anchor alone does not show it again. The modifier applies to the anchor interaction wrapper. |
-| Top App Bar | `WooTopAppBar`, `WooTopAppBarAction`, `WooTopAppBarActionsScope`, `WooDesignSystemToolbar` | production | Surface Bright Android API for Figma's `Top Navigation Bar`. Descriptor `WooTopAppBarAction` actions cover standard icon and text actions; the scoped `WooTopAppBarActionsScope` builder adds `iconAction` and `textAction` while accepting inline custom counters, progress, and anchored menus in source order. The component owns action spacing for both. `WooDesignSystemToolbar` applies matching XML chrome without replacing `MenuItem.actionView`, preserving `SearchView`, custom action views, ActionMode, collapsing behavior, overflow, and menu ownership. |
+| Top App Bar | `WooTopAppBar`, `WooTopAppBarAction`, `WooTopAppBarActionsScope`, `WooDesignSystemToolbar` | production | Surface Bright Android API for Figma's `Top Navigation Bar`. Descriptor `WooTopAppBarAction` actions cover standard icon and text actions; the scoped `WooTopAppBarActionsScope` builder adds `iconAction`, `textAction`, and `overflowAction` while accepting inline custom counters and progress in source order. The component owns action spacing for both. `WooDesignSystemToolbar` applies matching XML chrome without replacing `MenuItem.actionView`, preserving `SearchView`, custom action views, ActionMode, collapsing behavior, overflow, and menu ownership. |
+| Overflow Menu | `WooOverflowMenu`, `WooOverflowMenuItem` | production | Anchored dropdown that owns its expanded state, Surface Default container, and item typography, with an error-colored destructive item variant. The caller supplies the trigger through a callback and receives a dismiss callback for the content, so the component owns the anchor and dismissal while the caller owns the action. Top app bars should use `WooTopAppBarActionsScope.overflowAction`, which supplies the standard outlined ellipsis trigger. |
 | Segment Control | `WooSegmentControl` | production | Controlled, label-only radio group for two to five nonblank options. The caller owns selection. Figma has no disabled variant, so Android uses established disabled state-layer/content tokens for the whole-control fallback. |
 | Modal Bottom Sheet | `WooModalBottomSheet`, `WooModalBottomSheetState`, `rememberWooModalBottomSheetState`, `WooModalBottomSheetDismisser`, `rememberWooModalBottomSheetDismisser` | production | Narrow Store adapter with a Surface Bright container, On Surface content, 16dp top corners, no visible boundary, and a 32x4dp lowest-variant handle. The caller owns composition, state, dismissal, and content; the dismisser coordinates programmatic animated dismissal, while Material owns modal/platform behavior. |
 | Bottom Tab Bar | Private catalog sample | preview_only | App-shell navigation ownership remains out of component split scope. |

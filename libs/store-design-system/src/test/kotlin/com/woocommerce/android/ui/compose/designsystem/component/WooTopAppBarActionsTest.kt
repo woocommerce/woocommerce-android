@@ -354,6 +354,43 @@ class WooTopAppBarActionsTest {
         }
     }
 
+    @Test
+    fun `given overflow action, when trigger is clicked, then outlined trigger opens a dismissible menu`() {
+        // GIVEN
+        var selected: String? = null
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooTopAppBar(
+                    title = STRING_TITLE,
+                    windowInsets = WindowInsets(0),
+                    actions = {
+                        overflowAction(contentDescription = OVERFLOW_DESCRIPTION) { dismiss ->
+                            WooOverflowMenuItem(
+                                text = OVERFLOW_ITEM,
+                                onClick = {
+                                    dismiss()
+                                    selected = OVERFLOW_ITEM
+                                },
+                            )
+                        }
+                    },
+                )
+            }
+        }
+        composeTestRule.onNodeWithContentDescription(OVERFLOW_DESCRIPTION)
+            .assertWidthIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
+            .assertHeightIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
+        composeTestRule.onNodeWithText(OVERFLOW_ITEM).assertDoesNotExist()
+
+        // WHEN
+        composeTestRule.onNodeWithContentDescription(OVERFLOW_DESCRIPTION).performClick()
+        composeTestRule.onNodeWithText(OVERFLOW_ITEM).performClick()
+
+        // THEN
+        composeTestRule.runOnIdle { assertThat(selected).isEqualTo(OVERFLOW_ITEM) }
+        composeTestRule.onNodeWithText(OVERFLOW_ITEM).assertDoesNotExist()
+    }
+
     private fun assertInteractiveLayoutSize(
         bounds: Rect,
         expectedSizePx: Int,
@@ -374,6 +411,8 @@ class WooTopAppBarActionsTest {
         const val SECOND_ICON_DESCRIPTION = "Second"
         const val ENABLED_TEXT_ACTION = "Save"
         const val DISABLED_TEXT_ACTION = "Done"
+        const val OVERFLOW_DESCRIPTION = "More options"
+        const val OVERFLOW_ITEM = "Duplicate"
         const val LAYOUT_BOUND_TOLERANCE_PX = 0.01f
         val VISIBLE_OUTLINED_ACTION_SIZE = 40.dp
         val INTERACTIVE_ACTION_SIZE = 48.dp

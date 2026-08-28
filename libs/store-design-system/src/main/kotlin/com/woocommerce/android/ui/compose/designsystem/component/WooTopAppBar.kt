@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
+import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -251,6 +253,18 @@ interface WooTopAppBarActionsScope : RowScope {
         modifier: Modifier = Modifier,
         enabled: Boolean = true,
     )
+
+    /**
+     * Standard outlined ellipsis trigger anchoring a [WooOverflowMenu]. [content] receives the callback that closes
+     * the menu; invoke it before running a selected action. [modifier] applies to the trigger.
+     */
+    @Composable
+    fun overflowAction(
+        contentDescription: String,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
+    )
 }
 
 private class WooTopAppBarActionsScopeImpl(
@@ -291,6 +305,27 @@ private class WooTopAppBarActionsScopeImpl(
             onClick = onClick,
             modifier = modifier,
             enabled = enabled,
+        )
+    }
+
+    @Composable
+    override fun overflowAction(
+        contentDescription: String,
+        modifier: Modifier,
+        enabled: Boolean,
+        content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
+    ) {
+        WooOverflowMenu(
+            trigger = { onClick ->
+                iconAction(
+                    imageVector = WooIcons.Regular.Ellipsis,
+                    contentDescription = contentDescription,
+                    onClick = onClick,
+                    modifier = modifier,
+                    enabled = enabled,
+                )
+            },
+            content = content,
         )
     }
 }
@@ -512,6 +547,9 @@ private fun WooTopAppBarScopedActionsPreview() {
                     contentDescription = "Open",
                     onClick = {},
                 )
+                overflowAction(contentDescription = "More options") { dismiss ->
+                    WooOverflowMenuItem(text = "Duplicate", onClick = dismiss)
+                }
             },
         )
     }
