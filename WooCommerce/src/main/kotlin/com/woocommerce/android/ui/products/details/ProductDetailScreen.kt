@@ -14,21 +14,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,7 +42,6 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -58,8 +54,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooCell
 import com.woocommerce.android.ui.compose.designsystem.component.WooCellTrailingAffordance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
@@ -327,61 +323,38 @@ private fun ProductDetailTopAppBar(
         windowInsets = WindowInsets(0),
         modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR),
         actions = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                state.primaryAction?.let { action ->
-                    ProductDetailTopAppBarTextAction(
-                        action = action,
-                        onClick = { callbacks.onActionClicked(action) },
-                    )
-                }
-                state.shareAction?.let { action ->
-                    WooOutlinedIconButton(
-                        imageVector = WooIcons.Regular.Share,
-                        contentDescription = stringResource(action.label),
-                        onClick = { callbacks.onActionClicked(action) },
-                    )
-                }
-                if (state.overflowActions.isNotEmpty()) {
-                    ProductDetailTopAppBarOverflow(
-                        actions = state.overflowActions,
-                        onActionClicked = callbacks.onActionClicked,
-                    )
-                }
+            state.primaryAction?.let { action ->
+                textAction(
+                    text = stringResource(action.label),
+                    onClick = { callbacks.onActionClicked(action) },
+                )
+            }
+            state.shareAction?.let { action ->
+                iconAction(
+                    imageVector = WooIcons.Regular.Share,
+                    contentDescription = stringResource(action.label),
+                    onClick = { callbacks.onActionClicked(action) },
+                )
+            }
+            if (state.overflowActions.isNotEmpty()) {
+                ProductDetailTopAppBarOverflow(
+                    actions = state.overflowActions,
+                    onActionClicked = callbacks.onActionClicked,
+                )
             }
         },
     )
 }
 
 @Composable
-private fun ProductDetailTopAppBarTextAction(
-    action: ProductDetailTopAppBarAction,
-    onClick: () -> Unit,
-) {
-    TextButton(
-        onClick = onClick,
-        colors = ButtonDefaults.textButtonColors(contentColor = WooTheme.colors.primary),
-        modifier = Modifier.widthIn(max = TOP_APP_BAR_ACTION_TEXT_MAX_WIDTH),
-    ) {
-        Text(
-            text = stringResource(action.label),
-            style = WooTheme.text.labelLarge.emphasized,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-private fun ProductDetailTopAppBarOverflow(
+private fun WooTopAppBarActionsScope.ProductDetailTopAppBarOverflow(
     actions: List<ProductDetailTopAppBarAction>,
     onActionClicked: (ProductDetailTopAppBarAction) -> Unit,
 ) {
+    val actionsScope = this
     var isExpanded by remember { mutableStateOf(false) }
     Box {
-        WooOutlinedIconButton(
+        actionsScope.iconAction(
             imageVector = WooIcons.Regular.Ellipsis,
             contentDescription = stringResource(R.string.more_options),
             onClick = { isExpanded = true },
@@ -713,7 +686,6 @@ private val ADD_MORE_ELEVATION = 4.dp
 private val ERROR_IMAGE_SIZE = 160.dp
 private val SKELETON_TITLE_HEIGHT = 32.dp
 private val SKELETON_ROW_HEIGHT = 72.dp
-private val TOP_APP_BAR_ACTION_TEXT_MAX_WIDTH = 136.dp
 
 private val FULL_PREVIEW_OVERFLOW = listOf(
     ProductDetailTopAppBarAction.PUBLISH,
