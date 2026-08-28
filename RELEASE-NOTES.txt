@@ -2,8 +2,22 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.6
+-----
+- [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
+- [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
+- [*] Login loading dialogs now use the correct background in dark mode
+- [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
+- [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
+- [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
+- [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
+
 25.5
 -----
+- [*] Remote Tap to Pay keeps working on Android 17: the phone now asks for local network permission before it advertises itself, and the tablet asks before it connects to a phone reader
+- [*****] [Internal] Updated the app's target SDK to Android 17 (API 37) [https://github.com/woocommerce/woocommerce-android/pull/16413]
+- [*] Woo POS on phones: the "Install WooCommerce Payments" prompt no longer rotates the screen to landscape [https://github.com/woocommerce/woocommerce-android/pull/16447]
 - [*] You can now apply a gift card when editing an order [https://github.com/woocommerce/woocommerce-android/pull/16445]
 - [Internal] Woo POS analytics: replaced the catch-all "other" reason on the POS ineligible screen with specific reasons, and added the missing orders_list_loaded event [https://github.com/woocommerce/woocommerce-android/pull/16439]
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
@@ -34,6 +48,7 @@
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 - [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
 - [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
+- [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size by ~12 MB [https://github.com/woocommerce/woocommerce-android/pull/16308]
 
 25.4
 -----

@@ -27,10 +27,6 @@ class WooPosPreferencesRepository @Inject constructor(
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
     private val lastUsedTimestampKey = longPreferencesKey(POS_LAST_USED_TIMESTAMP_KEY)
     private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)
-    private val wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey: Preferences.Key<Long>
-        get() = longPreferencesKey(
-            "${selectedSite.getOrNull()?.id}_$WOO_VERSION_SUNSET_BANNER_DISMISSAL_TIMESTAMP_KEY"
-        )
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
@@ -106,18 +102,6 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun getWooVersionSunsetBannerDismissalTimestamp(): Long? {
-        return dataStore.data.map { preferences ->
-            preferences[wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey]
-        }.first()
-    }
-
-    suspend fun setWooVersionSunsetBannerDismissalTimestamp(timestamp: Long) {
-        dataStore.edit { preferences ->
-            preferences[wooCommerceVersionSunsetBannerDismissalTimestampSiteSpecificKey] = timestamp
-        }
-    }
-
     suspend fun getFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
         val key = buildFileBasedSyncPollAttemptsKey(siteId)
         return dataStore.data.map { it[key] ?: 0 }.first()
@@ -152,7 +136,6 @@ class WooPosPreferencesRepository @Inject constructor(
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
         const val POS_LAST_USED_TIMESTAMP_KEY = "pos_last_used_timestamp_key"
         const val ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY = "allow_full_sync_on_cellular_data_key"
-        const val WOO_VERSION_SUNSET_BANNER_DISMISSAL_TIMESTAMP_KEY = "woo_ver_sunset_banner_dismissal_timestamp_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }

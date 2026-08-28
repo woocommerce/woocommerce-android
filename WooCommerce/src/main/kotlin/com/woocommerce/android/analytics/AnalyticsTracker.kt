@@ -236,6 +236,8 @@ class AnalyticsTracker private constructor(
         const val KEY_DATE = "date"
         const val KEY_GRANULARITY = "granularity"
         const val KEY_SOURCE = "source"
+        const val VALUE_FILTER_HISTORY_SOURCE_ORDERS = "orders"
+        const val VALUE_FILTER_HISTORY_SOURCE_PRODUCTS = "products"
         const val KEY_WAITING_TIME = "waiting_time"
         const val KEY_IS_NON_ATOMIC = "is_non_atomic"
         const val KEY_CAUSE = "cause"

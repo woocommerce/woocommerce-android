@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundFlow
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
@@ -147,6 +149,8 @@ class WooPosRefundViewModelTest {
         )
 
         whenever(resourceProvider.getString(R.string.error_generic)).thenReturn("An error occurred")
+        whenever(resourceProvider.getString(R.string.woopos_refund_error_store_not_updated))
+            .thenReturn("The card was refunded, but your store wasn't updated.")
         whenever(selectedSite.get()).thenReturn(testSite)
         whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(testSettings)
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
@@ -198,6 +202,7 @@ class WooPosRefundViewModelTest {
             wooCommerceStore = wooCommerceStore,
             getPaymentMethod = loadPaymentMethod,
             buildRefundContent = WooPosBuildRefundContent(currencyFormatter),
+            mapRefundFailure = WooPosMapRefundFailure(resourceProvider),
             refundSubmissionProcessor = refundSubmissionProcessor,
             analyticsTracker = analyticsTracker,
             cardReaderFacade = cardReaderFacade
@@ -2138,7 +2143,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.LOCAL))
         }
 
     @Test
@@ -2165,7 +2170,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
             advanceUntilIdle()
 
-            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess(RefundFlow.LOCAL))
         }
 
     @Test
@@ -2202,9 +2207,163 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                    refundFlow = RefundFlow.LOCAL,
+                    apiErrorCode = null,
+                )
+            )
             val errorState = viewModel.state.value as WooPosRefundState.Error
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.Retry)
+        }
+
+    @Test
+    fun `given server-computed refund succeeds, when API call completes, then events report the server flow`() =
+        runTest {
+            // GIVEN
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.SERVER_COMPUTED)
+            )
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingSuccess(RefundFlow.SERVER_COMPUTED)
+            )
+        }
+
+    @Test
+    fun `given server-computed refund is rejected, when API call completes, then the failure reports the server flow`() =
+        runTest {
+            // GIVEN
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Something went wrong",
+                        apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                    )
+                )
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN rejection rates stay comparable between the two flows
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                    refundFlow = RefundFlow.SERVER_COMPUTED,
+                    apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                )
+            )
+        }
+
+    @Test
+    fun `given a server-computed refund awaits the reader, when availability flips, then success reports the sent flow`() =
+        runTest {
+            // GIVEN
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(WooPosRefundSubmissionState.ReaderConnectionRequired),
+                flowOf(WooPosRefundSubmissionState.Success)
+            )
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            val waitingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(waitingState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReaderDisconnected)
+
+            // WHEN the verdict flips while the cashier connects the reader
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
+            readerStatus.value = CardReaderStatus.Connected(mock())
+            advanceUntilIdle()
+
+            // THEN the flow reported is the one the stored request was built on, not the current verdict
+            verify(refundSubmissionProcessor, times(2)).submit(any())
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingSuccess(RefundFlow.SERVER_COMPUTED)
+            )
+        }
+
+    @Test
+    fun `given server totals but no currency settings, when refund is confirmed, then a precondition failure is tracked`() =
+        runTest {
+            // GIVEN a server-computed preview, so the local currency settings were never fetched
+            serverRefundAvailabilityCache.markAvailable(testSite.localId().value, MIN_VERSION)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(testRefundableItem))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.ServerCalculated(
+                    refundPreview(subtotal = "20.00", tax = "2.00", total = "22.00", maxRefundable = "22.00")
+                )
+            )
+            whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(null)
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+
+            // WHEN the verdict flips, so submission falls back to a local request it cannot build
+            serverRefundAvailabilityCache.markUnavailable(testSite.localId().value, MIN_VERSION)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN the started event has a terminal event to pair with
+            verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.RefundProcessingStarted(RefundFlow.LOCAL))
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingPreconditionFailed(
+                    refundFlow = RefundFlow.LOCAL,
+                    reason = RefundPreconditionReason.CURRENCY_SETTINGS_UNAVAILABLE,
+                )
+            )
+            verify(refundSubmissionProcessor, never()).submit(any())
         }
 
     @Test
@@ -2246,8 +2405,182 @@ class WooPosRefundViewModelTest {
 
             // THEN
             val errorState = viewModel.state.value as WooPosRefundState.Error
-            assertThat(errorState.message).isEqualTo("Backend failed")
+            assertThat(errorState.message).isEqualTo("The card was refunded, but your store wasn't updated.")
             assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the card was refunded, when the store rejects with a mapped code, then no reload back into the flow is offered`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.ProcessingReaderRefund,
+                    WooPosRefundSubmissionState.NotifyingStore,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "One of the selected items has already been fully refunded.",
+                        retryBackendNotificationOnly = true,
+                        apiErrorCode = "woocommerce_rest_line_item_already_refunded",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the card was refunded, when the store reports the order is not refundable, then the cashier is told to record it`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.ProcessingReaderRefund,
+                    WooPosRefundSubmissionState.NotifyingStore,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "This order can no longer be refunded.",
+                        retryBackendNotificationOnly = true,
+                        apiErrorCode = "woocommerce_rest_order_not_refundable",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.message).isEqualTo("The card was refunded, but your store wasn't updated.")
+            assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the card was refunded, when the failure claims to be retryable, then no recovery is offered`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.ProcessingReaderRefund,
+                    WooPosRefundSubmissionState.NotifyingStore,
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Backend failed",
+                        retryBackendNotificationOnly = true,
+                        canRetry = true,
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val errorState = viewModel.state.value as WooPosRefundState.Error
+            assertThat(errorState.recovery).isEqualTo(WooPosRefundState.Recovery.None)
+        }
+
+    @Test
+    fun `given the store returns an error code, when the refund fails, then the code is tracked`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "Something went wrong",
+                        apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event.RefundProcessingFailed(
+                    refundFlow = RefundFlow.LOCAL,
+                    apiErrorCode = "woocommerce_rest_gateway_refund_rejected",
+                )
+            )
         }
 
     @Test
@@ -2443,7 +2776,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given the whole selection was refunded elsewhere, when items are refreshed, then what is left is selected`() =
+    fun `given the whole selection was refunded elsewhere, when items are refreshed, then nothing is selected`() =
         runTest {
             // GIVEN
             val selectedUnit = testRefundableItem.copy(rowIndex = 0)
@@ -2484,7 +2817,9 @@ class WooPosRefundViewModelTest {
             // THEN
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.refundableItems).isEqualTo(listOf(otherItem))
-            assertThat(content.selectedItemIds).isEqualTo(setOf(otherItem.uniqueId))
+            assertThat(content.selectedItemIds).isEmpty()
+            assertThat(content.itemsCount).isEqualTo(0)
+            assertThat(content.allItemsSelected).isFalse()
         }
 
     @Test
