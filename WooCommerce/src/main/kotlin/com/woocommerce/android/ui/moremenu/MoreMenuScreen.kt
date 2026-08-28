@@ -193,8 +193,7 @@ private fun MoreMenuHeader(
                     contentDescription = null,
                     modifier = Modifier
                         .size(WooTheme.iconSize.size24)
-                        .clearAndSetSemantics {}
-                        .testTag(MoreMenuTestTags.HEADER_SWITCH_AFFORDANCE),
+                        .clearAndSetSemantics {},
                 )
             }
         }
@@ -571,7 +570,6 @@ private fun createBadgeEnterAnimation(): EnterTransition {
 object MoreMenuTestTags {
     const val CONTENT = "more_menu_content"
     const val STORE_HEADER = "more_menu_store_header"
-    const val HEADER_SWITCH_AFFORDANCE = "more_menu_header_switch_affordance"
     const val SETTINGS_SECTION = "more_menu_section_settings"
     const val GENERAL_SECTION = "more_menu_section_general"
     const val SETTINGS_COLLECTION = "more_menu_collection_settings"
