@@ -10,6 +10,7 @@
 - [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Order editing: opening the customer note or address editor no longer crashes the app when the order is missing from the local database [https://github.com/woocommerce/woocommerce-android/pull/16467]
 - [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
 
