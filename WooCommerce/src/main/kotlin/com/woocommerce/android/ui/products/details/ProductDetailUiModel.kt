@@ -81,6 +81,7 @@ data class ProductDetailContentCallbacks(
     val onAddMoreClicked: () -> Unit,
 )
 
+@Immutable
 sealed interface ProductDetailImageUiState {
     data object Loading : ProductDetailImageUiState
 
