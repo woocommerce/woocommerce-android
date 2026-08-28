@@ -627,7 +627,6 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * Called when an existing image is selected in Product detail screen
-     * Analytics stays ViewModel-owned and uses the injected tracker so this route is directly testable.
      */
     fun onImageClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
