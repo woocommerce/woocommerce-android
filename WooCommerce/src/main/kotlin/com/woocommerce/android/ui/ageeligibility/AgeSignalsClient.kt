@@ -76,7 +76,7 @@ class GoogleAgeSignalsClient @Inject constructor(
             } catch (exception: StageException) {
                 val errorCode = exception.originalException.toAgeSignalsErrorCode()
                 if (errorCode.isRetryable && retryCount < MAX_RETRY_COUNT) {
-                    delay(RETRY_BACKOFF_MILLIS[retryCount])
+                    delay(RETRY_BACKOFF_MILLIS[retryCount].milliseconds)
                     retryCount++
                 } else {
                     throw AgeSignalsRequestFailure(
@@ -227,7 +227,7 @@ enum class AppAgeSignalsErrorCode(val isRetryable: Boolean) {
     UNEXPECTED(false)
 }
 
-class AgeSignalsRequestFailure(
+class AgeSignalsRequestException
     val stage: AgeSignalsRequestStage,
     val errorCode: AppAgeSignalsErrorCode,
     val retryCount: Int,
