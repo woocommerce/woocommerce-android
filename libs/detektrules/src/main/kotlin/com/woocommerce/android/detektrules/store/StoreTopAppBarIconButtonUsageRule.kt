@@ -36,7 +36,7 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
             CodeSmell(
                 issue,
                 Entity.from(expression),
-                "Use IconAction inside WooTopAppBar actions instead of Material IconButton."
+                "Use IconAction inside WooTopAppBar or Toolbar actions instead of Material IconButton."
             )
         )
     }
@@ -213,6 +213,7 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
             "androidx.compose.material3",
         )
         val TARGET_CALLABLES = setOf(
+            "com.woocommerce.android.ui.compose.component.Toolbar",
             "com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar",
         )
         val MENU_OWNER_CALLABLES = MATERIAL_PACKAGES.mapTo(mutableSetOf()) {

@@ -404,4 +404,112 @@ class StoreTopAppBarIconButtonUsageRuleTest {
 
         assertThat(findings).isEmpty()
     }
+
+    @Test
+    fun `given Material3 IconButton in legacy Toolbar actions, when linting, then violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+            import com.woocommerce.android.ui.compose.component.Toolbar
+
+            fun usage() {
+                Toolbar(actions = {
+                    IconButton(onClick = {}) {}
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `given an aliased legacy Toolbar import, when linting, then violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+            import com.woocommerce.android.ui.compose.component.Toolbar as StoreToolbar
+
+            fun usage() {
+                StoreToolbar(actions = {
+                    IconButton(onClick = {}) {}
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `given both top app bar owners fully qualified, when linting, then both violations are reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+
+            fun usage() {
+                com.woocommerce.android.ui.compose.component.Toolbar(actions = {
+                    IconButton(onClick = {}) {}
+                })
+                com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar(
+                    title = "Title",
+                    actions = {
+                        IconButton(onClick = {}) {}
+                    },
+                )
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(2)
+    }
+
+    @Test
+    fun `given IconButton in DropdownMenu in legacy Toolbar actions, when linting, then no violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.DropdownMenu
+            import androidx.compose.material3.IconButton
+            import com.woocommerce.android.ui.compose.component.Toolbar
+
+            fun usage() {
+                Toolbar(actions = {
+                    DropdownMenu(expanded = false, onDismissRequest = {}) {
+                        IconButton(onClick = {}) {}
+                    }
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
+    fun `given an unrelated Toolbar of the same name, when linting, then no violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+            import com.example.Toolbar
+
+            fun usage() {
+                Toolbar(actions = {
+                    IconButton(onClick = {}) {}
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).isEmpty()
+    }
 }

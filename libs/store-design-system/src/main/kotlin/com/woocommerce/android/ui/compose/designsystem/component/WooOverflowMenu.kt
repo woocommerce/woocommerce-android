@@ -48,7 +48,8 @@ fun WooOverflowMenu(
 }
 
 /**
- * Text item for [WooOverflowMenu]. [isDestructive] switches the label to the error color.
+ * Text item for [WooOverflowMenu]. [isDestructive] switches the label to the error color. [trailingIcon] renders
+ * after the label, for menus that mark the selected entry.
  */
 @Composable
 fun WooOverflowMenuItem(
@@ -57,6 +58,7 @@ fun WooOverflowMenuItem(
     modifier: Modifier = Modifier,
     isDestructive: Boolean = false,
     enabled: Boolean = true,
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     require(text.isNotBlank()) {
         "WooOverflowMenuItem text must not be blank"
@@ -77,6 +79,7 @@ fun WooOverflowMenuItem(
         },
         onClick = onClick,
         modifier = modifier,
+        trailingIcon = trailingIcon,
         enabled = enabled,
     )
 }

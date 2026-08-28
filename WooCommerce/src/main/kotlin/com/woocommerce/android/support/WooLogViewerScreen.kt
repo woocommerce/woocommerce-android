@@ -23,8 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +53,7 @@ import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.getText
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.logs.LogEntry
@@ -93,13 +91,11 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
                 title = stringResource(id = R.string.logviewer_activity_title),
                 onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() },
                 actions = {
-                    IconButton(onClick = state.onShareAllClicked) {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_share_24dp),
-                            contentDescription = stringResource(id = R.string.logviewer_share_all_logs),
-                            tint = colorResource(id = R.color.color_icon_menu)
-                        )
-                    }
+                    IconAction(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_share_24dp),
+                        contentDescription = stringResource(id = R.string.logviewer_share_all_logs),
+                        onClick = state.onShareAllClicked,
+                    )
                 }
             )
         },
@@ -234,20 +230,16 @@ private fun LogFileContent(
                         onNextClick = goToNextMatch
                     )
                     if (searchQuery.isBlank()) {
-                        IconButton(onClick = state.onCopyClicked) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_copy_white_24dp),
-                                contentDescription = stringResource(id = R.string.copy),
-                                tint = colorResource(id = R.color.color_icon_menu)
-                            )
-                        }
-                        IconButton(onClick = state.onShareClicked) {
-                            Icon(
-                                ImageVector.vectorResource(R.drawable.ic_share_24dp),
-                                contentDescription = stringResource(id = R.string.share),
-                                tint = colorResource(id = R.color.color_icon_menu)
-                            )
-                        }
+                        IconAction(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
+                            contentDescription = stringResource(id = R.string.copy),
+                            onClick = state.onCopyClicked,
+                        )
+                        IconAction(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_share_24dp),
+                            contentDescription = stringResource(id = R.string.share),
+                            onClick = state.onShareClicked,
+                        )
                     }
                 }
             )
@@ -282,7 +274,7 @@ private fun LogFileContent(
 }
 
 @Composable
-private fun SearchNavigationActions(
+private fun WooTopAppBarActionsScope.SearchNavigationActions(
     hasMatches: Boolean,
     currentMatchIndex: Int,
     totalMatches: Int,
@@ -296,34 +288,18 @@ private fun SearchNavigationActions(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.minor_100))
         )
-        IconButton(
+        IconAction(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_up),
+            contentDescription = stringResource(R.string.logviewer_previous_match),
             onClick = onPreviousClick,
-            enabled = currentMatchIndex > 0
-        ) {
-            Icon(
-                ImageVector.vectorResource(R.drawable.ic_arrow_up),
-                contentDescription = "",
-                tint = if (currentMatchIndex > 0) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
-                }
-            )
-        }
-        IconButton(
+            enabled = currentMatchIndex > 0,
+        )
+        IconAction(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+            contentDescription = stringResource(R.string.logviewer_next_match),
             onClick = onNextClick,
-            enabled = currentMatchIndex < totalMatches - 1
-        ) {
-            Icon(
-                ImageVector.vectorResource(R.drawable.ic_arrow_down),
-                contentDescription = "",
-                tint = if (currentMatchIndex < totalMatches - 1) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
-                }
-            )
-        }
+            enabled = currentMatchIndex < totalMatches - 1,
+        )
     }
 }
 
