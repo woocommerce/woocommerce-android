@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,7 +16,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designSystemComposeView
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -73,15 +71,10 @@ class MoreMenuFragment : TopLevelFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return ComposeView(requireContext()).apply {
+        return designSystemComposeView {
+            MoreMenuScreen(viewModel, scrollToTopTrigger)
+        }.apply {
             id = R.id.more_menu_compose_view
-            // Dispose of the Composition when the view's LifecycleOwner is destroyed
-            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    MoreMenuScreen(viewModel, scrollToTopTrigger)
-                }
-            }
         }
     }
 

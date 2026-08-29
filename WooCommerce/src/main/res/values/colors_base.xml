@@ -204,14 +204,6 @@
     -->
     <color name="woo_push_notifications_connection_steps_progressbar">#70B954</color>
 
-    <!--
-    More menu button
-    -->
-    <color name="more_menu_button_background">@color/color_surface</color>
-    <color name="more_menu_button_icon_background">@color/woo_gray_0</color>
-
-
-
     <!-- Text colors -->
     <color name="link_text">@color/woo_blue_40</color>
 

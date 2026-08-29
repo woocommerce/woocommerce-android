@@ -3426,6 +3426,12 @@
     -->
     <string name="more_menu">Menu</string>
     <string name="more_menu_avatar">User profile picture</string>
+    <string name="more_menu_switch_store">Switch store</string>
+    <string name="more_menu_payments_new_feature_state_description">New payment feature available</string>
+    <plurals name="more_menu_unseen_reviews_state_description">
+        <item quantity="one">%d unseen review</item>
+        <item quantity="other">%d unseen reviews</item>
+    </plurals>
 
     <string name="more_menu_settings_section_title">Settings</string>
     <string name="more_menu_general_section_title">General</string>

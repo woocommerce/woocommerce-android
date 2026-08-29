@@ -12,19 +12,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 
-private const val SKELETON_ANIMATION_ALPHA = 0.2F
+private const val SKELETON_BASE_ALPHA = 0.12f
+private const val SKELETON_HIGHLIGHT_ALPHA = 0.20f
 
 @Composable
 fun SkeletonView(
@@ -62,10 +62,11 @@ private fun skeletonAnimationBrush(): Brush {
         label = "shimmer_animation"
     )
 
+    val skeletonColor = MaterialTheme.colorScheme.onSurface
     val shimmerColorShades = listOf(
-        colorResource(id = R.color.skeleton_color),
-        colorResource(id = R.color.skeleton_color).copy(SKELETON_ANIMATION_ALPHA),
-        colorResource(id = R.color.skeleton_color)
+        skeletonColor.copy(alpha = SKELETON_BASE_ALPHA),
+        skeletonColor.copy(alpha = SKELETON_HIGHLIGHT_ALPHA),
+        skeletonColor.copy(alpha = SKELETON_BASE_ALPHA)
     )
 
     return Brush.linearGradient(

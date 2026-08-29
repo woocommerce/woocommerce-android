@@ -357,7 +357,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNull()
+        assertThat(
+            states.last().menuSections.flatMap { it.items }.first {
+                it.title == R.string.more_menu_button_payments
+            }.badgeState
+        ).isNull()
     }
 
     @Test
@@ -440,12 +444,95 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         val items = states.first().menuSections.flatMap { it.items }
-        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+        assertThat(items.first { it.title == R.string.more_menu_button_subscriptions }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_google }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+    }
+
+    @Test
+    fun `when building state, then sections and items use the original hierarchy and order`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        assertThat(state.menuSections.map { it.title }).containsExactly(
+            R.string.more_menu_settings_section_title,
+            R.string.more_menu_general_section_title,
+        )
+        assertThat(state.menuSections[0].items.map { it.title }).containsExactly(
+            R.string.more_menu_button_settings,
+            R.string.more_menu_button_subscriptions,
+        )
+        assertThat(state.menuSections[1].items.map { it.title }).containsExactly(
+            R.string.more_menu_button_payments,
+            R.string.more_menu_button_google,
+            R.string.more_menu_button_blaze,
+            R.string.more_menu_button_wс_admin,
+            R.string.more_menu_button_store,
+            R.string.more_menu_button_coupons,
+            R.string.more_menu_button_reviews,
+            R.string.more_menu_button_customers,
+            R.string.more_menu_button_inbox,
+        )
+    }
+
+    @Test
+    fun `given optional actions are unavailable, when state resolves, then hidden rows are removed in place`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isBlazeEnabled.invoke()).thenReturn(false)
+                whenever(isGoogleForWooEnabled.invoke()).thenReturn(false)
+                whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(false)
+                whenever(moreMenuRepository.isInboxEnabled()).thenReturn(false)
+            }
+
+            // WHEN
+            val state = viewModel.moreMenuViewState.captureValues().last()
+
+            // THEN
+            assertThat(state.menuSections.map { it.title }).containsExactly(
+                R.string.more_menu_settings_section_title,
+                R.string.more_menu_general_section_title,
+            )
+            assertThat(state.menuSections[0].items.map { it.title }).containsExactly(
+                R.string.more_menu_button_settings,
+            )
+            assertThat(state.menuSections[1].items.map { it.title }).containsExactly(
+                R.string.more_menu_button_payments,
+                R.string.more_menu_button_wс_admin,
+                R.string.more_menu_button_store,
+                R.string.more_menu_button_coupons,
+                R.string.more_menu_button_reviews,
+                R.string.more_menu_button_customers,
+            )
+        }
+
+    @Test
+    fun `given a large unseen review count, when building state, then semantic count is not capped`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(unseenReviewsCountHandler.observeUnseenCount()).thenReturn(flowOf(1234))
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+
+        // THEN
+        val reviewBadge = state.menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_reviews }
+            .badgeState
+        assertThat(reviewBadge?.textState?.text).isEqualTo("1234")
     }
 
     @Test
