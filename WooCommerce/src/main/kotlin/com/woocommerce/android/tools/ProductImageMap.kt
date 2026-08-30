@@ -50,7 +50,7 @@ class ProductImageMap @Inject constructor(
 
         // product isn't in our map so get it from the database
         selectedSite.getIfExists()?.let { site ->
-            productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImageUrl()?.let { imageUrl ->
+            productStore.getProductByRemoteIdBlocking(site, remoteProductId)?.getFirstImageUrl()?.let { imageUrl ->
                 map[remoteProductId] = imageUrl
                 pendingRequestIds.remove(remoteProductId)
                 return imageUrl
