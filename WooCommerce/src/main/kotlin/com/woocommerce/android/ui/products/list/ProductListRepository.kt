@@ -251,7 +251,8 @@ class ProductListRepository @Inject constructor(
     /**
      * Returns a single product
      */
-    fun getProduct(remoteProductId: Long) = productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
+    suspend fun getProduct(remoteProductId: Long) =
+        productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
