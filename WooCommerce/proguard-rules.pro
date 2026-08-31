@@ -31,9 +31,14 @@
 ###### Event Bus 2 - end
 
 ##### WooCommerce - begin
-# Gson populates fields reflectively, so keep fields and enum constants of our classes
-# (we don't obfuscate, so names are stable). Methods stay eligible for R8 optimization.
--keepclassmembers class com.woocommerce.** { <fields>; }
+# Gson instantiates DTOs reflectively and populates their fields, so R8 full mode must not
+# remove, abstract, or merge any of our classes it can't trace (TypeToken / ::class.java
+# targets and their transitively-reached field types), or deserialization breaks in release
+# builds only (LinkedTreeMap ClassCastException, "Abstract classes can't be instantiated").
+# Keep all our classes with their fields - we don't obfuscate, so names are stable, and
+# methods stay eligible for R8 optimization. Costs ~0.8 MB APK vs per-package keeps, but
+# no developer ever has to think about proguard when adding a Gson-deserialized class.
+-keep class com.woocommerce.** { <fields>; }
 -keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
 
@@ -45,17 +50,6 @@
 ###### FluxC - WellSql (needed for Addon support) - begin
 -keep class com.wellsql** { *; }
 ###### FluxC - end
-
-###### Gson-deserialized network DTOs - begin
-# DTOs deserialized reflectively by Gson (TypeToken / ::class.java) must be kept as classes,
-# not just their fields. Our app rule keeps only <fields> (-keepclassmembers), so R8 full mode
-# is free to remove or abstract these classes, which breaks deserialization at runtime
-# (LinkedTreeMap ClassCastException, or "JsonIOException: Abstract classes can't be instantiated").
-# By convention such DTOs live in network/networking packages; keep those as classes (fields only,
-# so methods stay optimizable) - the same shape as fluxc's own consumer rule.
--keep class com.woocommerce.android.network.** { <fields>; }
--keep class com.woocommerce.android.**.networking.** { <fields>; }
-###### Gson-deserialized network DTOs - end
 
 ###### Dagger - begin
 -dontwarn com.google.errorprone.annotations.*

@@ -32,6 +32,12 @@
 -keep class org.wordpress.android.fluxc.model.** { <fields>; }
 -keep class org.wordpress.android.fluxc.network.** { <fields>; }
 
+# JsonObjectOrFalseDeserializer instantiates subclasses via getDeclaredConstructor(), which the
+# <fields>-only keeps above don't preserve, so R8 full mode may strip the no-arg constructor
+-keepclassmembers class * extends org.wordpress.android.fluxc.network.rest.JsonObjectOrFalse {
+  <init>();
+}
+
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
 -keep class * extends com.google.gson.TypeAdapter
