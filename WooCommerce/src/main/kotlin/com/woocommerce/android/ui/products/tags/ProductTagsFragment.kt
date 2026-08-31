@@ -57,7 +57,9 @@ class ProductTagsFragment :
             onMenuItemSelected = { _ -> false },
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    viewModel.onProductTagsBackButtonClicked()
+                    confirmDiscardPendingInputThenExit(binding.addProductTagView.getEnteredTag().isNotBlank()) {
+                        viewModel.onProductTagsBackButtonClicked()
+                    }
                 }
             }
         )
@@ -102,6 +104,7 @@ class ProductTagsFragment :
             }
         }
 
+        binding.addProductTagView.setImeActionLabel(getString(R.string.add_action))
         binding.addProductTagView.setOnEditorActionListener { tag ->
             viewModel.onProductTagAdded(tag)
             binding.addProductTagView.clearEnteredTag()
@@ -223,7 +226,9 @@ class ProductTagsFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onProductTagsBackButtonClicked()
+        confirmDiscardPendingInputThenExit(binding.addProductTagView.getEnteredTag().isNotBlank()) {
+            viewModel.onProductTagsBackButtonClicked()
+        }
         return false
     }
 

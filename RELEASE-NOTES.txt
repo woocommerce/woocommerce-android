@@ -4,11 +4,18 @@
 
 25.6
 -----
+- [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
+- [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
+- [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
+- [*] Login loading dialogs now use the correct background in dark mode
 - [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
+- [*] Order editing: opening the customer note or address editor no longer crashes the app when the order is missing from the local database [https://github.com/woocommerce/woocommerce-android/pull/16467]
 - [*] Woo POS: removed the banner warning that Point of Sale would require WooCommerce 10.5.0, as that requirement is not enforced [https://github.com/woocommerce/woocommerce-android/pull/16466]
 - [*] The unread reviews count on the Menu tab and the Reviews row no longer gets stuck on stores where the app cannot track which reviews were read [https://github.com/woocommerce/woocommerce-android/pull/16473]
+- [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
+- [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
 
 25.5
 -----
@@ -20,6 +27,7 @@
 - [WEAR][*] Order and stats dates on the watch now follow the language's date order [https://github.com/woocommerce/woocommerce-android/pull/16429]
 - [Internal] Fixed duplicated device registration API calls fired concurrently during login [https://github.com/woocommerce/woocommerce-android/pull/16354]
 - [*] Woo POS: when the store rejects a refund because the order changed - another register refunded part of it - the refund screen now offers to reload the remaining items instead of a retry that cannot succeed [https://github.com/woocommerce/woocommerce-android/pull/16440]
+- [***] Woo POS: on stores running WooCommerce 11.1.0 or newer, refund totals are now calculated by the store instead of on the device [https://github.com/woocommerce/woocommerce-android/pull/16450]
 - [*] The Pay In Person toggle on the Payments screen no longer looks turned off when its status could not be loaded
 - [Internal] Woo POS: every POS analytics event now carries device_type (phone/tablet) and entry_point, so POS usage can be split by form factor and attributed to where POS was opened from [https://github.com/woocommerce/woocommerce-android/pull/16414]
 - [*] Woo POS: Remote Tap to Pay failures now explain what went wrong - phone not eligible for Tap to Pay, NFC turned off, or a payment service error - instead of a generic message or raw error text [https://github.com/woocommerce/woocommerce-android/pull/16384]
