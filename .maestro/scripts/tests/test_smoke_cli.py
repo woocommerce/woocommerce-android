@@ -69,7 +69,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self,
         *args: str,
         env_overrides: dict[str, str] | None = None,
-        maestro_version: str = "2.8.0",
+        maestro_version: str = "2.9.0",
     ) -> tuple[subprocess.CompletedProcess[str], Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -133,7 +133,7 @@ class SmokeCliContractTest(unittest.TestCase):
         maestro = fake_bin / "maestro"
         maestro.write_text(
             "#!/bin/sh\n"
-            "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.8.0'; fi\n"
+            "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.9.0'; fi\n"
         )
         maestro.chmod(0o755)
         java = fake_bin / "java"
@@ -200,7 +200,7 @@ class SmokeCliContractTest(unittest.TestCase):
         maestro = fake_bin / "maestro"
         maestro.write_text(
             "#!/bin/sh\n"
-            "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.8.0'; exit 0; fi\n"
+            "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.9.0'; exit 0; fi\n"
             f"printf 'ARGS:%s\\n' \"$*\" >> '{maestro_args}'\n"
             f"env | grep -E '^(MAESTRO_)?WOO_' | sort >> '{maestro_args}'\n"
         )
@@ -299,7 +299,7 @@ class SmokeCliContractTest(unittest.TestCase):
             fake_bin = temporary_path / "bin"
             fake_bin.mkdir()
             for name, body in {
-                "maestro": "#!/bin/sh\nprintf '%s\\n' '2.8.0'\n",
+                "maestro": "#!/bin/sh\nprintf '%s\\n' '2.9.0'\n",
                 "java": "#!/bin/sh\nprintf '%s\\n' 'openjdk version \"21.0.8\"' >&2\n",
                 "adb": "#!/bin/sh\nprintf 'List of devices attached\\n'\n",
             }.items():
@@ -362,7 +362,7 @@ class SmokeCliContractTest(unittest.TestCase):
             )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("[FAIL] Maestro version mismatch: expected 2.8.0, actual 2.7.0", result.stdout)
+        self.assertIn("[FAIL] Maestro version mismatch: expected 2.9.0, actual 2.7.0", result.stdout)
 
     def test_plan_treats_zero_selected_flows_as_fatal(self) -> None:
         result, output_root = self.run_runner(
@@ -410,7 +410,7 @@ class SmokeCliContractTest(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("Maestro version mismatch: expected 2.8.0, actual 2.7.0", result.stderr)
+        self.assertIn("Maestro version mismatch: expected 2.9.0, actual 2.7.0", result.stderr)
         self.assertFalse(adb_marker.exists())
 
     def test_lab_and_generic_credentials_cannot_satisfy_shared_destructive_preflight(self) -> None:

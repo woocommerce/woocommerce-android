@@ -306,7 +306,7 @@ mkdir -p "$LOGS_DIR" "$TMP_DIR" "$SCREENSHOTS_DIR"
 
 echo "--- Pre-flight checks"
 if ! command -v maestro >/dev/null 2>&1; then
-  echo "maestro CLI not found. Install the repository pin: MAESTRO_VERSION=2.8.0 (see .maestro/README.md)." >&2
+  echo "maestro CLI not found. Install the repository pin: MAESTRO_VERSION=2.9.0 (see .maestro/README.md)." >&2
   exit 1
 fi
 if ! command -v adb >/dev/null 2>&1; then
