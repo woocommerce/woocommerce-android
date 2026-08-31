@@ -98,6 +98,21 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given unrecognized persisted restriction, when checker is created, then access stays restricted`() {
+        // GIVEN
+        whenever(prefsWrapper.userAgeRestrictionReason).thenReturn("A_REMOVED_RESTRICTION_REASON")
+
+        // WHEN
+        val checker = createChecker()
+
+        // THEN
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
+        )
+        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON.name
+    }
+
+    @Test
     fun `given prior restriction and non-authoritative result, when checked, then restriction is retained`() =
         testBlocking {
             stubPriorRestriction(AgeRestrictionReason.BELOW_MINIMUM_AGE)

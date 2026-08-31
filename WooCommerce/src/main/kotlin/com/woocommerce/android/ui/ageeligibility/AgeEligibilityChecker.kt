@@ -171,10 +171,14 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     private fun readPersistedRestriction(): AgeRestrictionReason? {
-        val typedRestriction = AgeRestrictionReason.entries.firstOrNull {
-            it.name == prefsWrapper.userAgeRestrictionReason
+        val persistedReason = prefsWrapper.userAgeRestrictionReason
+        if (persistedReason.isNotEmpty()) {
+            return AgeRestrictionReason.entries.firstOrNull {
+                it.name == persistedReason
+            } ?: AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
         }
-        return typedRestriction ?: if (prefsWrapper.isUserAgeEligibleForAppUse) {
+
+        return if (prefsWrapper.isUserAgeEligibleForAppUse) {
             null
         } else {
             AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
