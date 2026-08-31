@@ -70,7 +70,9 @@ class MediaFilesRepository @Inject constructor(
             try {
                 val options = Options().apply { inJustDecodeBounds = true }
                 if (Patterns.WEB_URL.matcher(uri).matches()) {
-                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream(), null, options)
+                    URL(uri).openConnection().getInputStream().use {
+                        BitmapFactory.decodeStream(it, null, options)
+                    }
                 } else {
                     val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
                     if (parcelFileDescriptor == null) {
