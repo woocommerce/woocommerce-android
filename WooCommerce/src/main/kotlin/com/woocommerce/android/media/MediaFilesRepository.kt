@@ -35,7 +35,6 @@ import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.MediaUtils
 import java.io.File
-import java.io.FileDescriptor
 import java.io.IOException
 import java.net.URL
 import javax.inject.Inject
@@ -71,17 +70,26 @@ class MediaFilesRepository @Inject constructor(
             try {
                 val options = Options().apply { inJustDecodeBounds = true }
                 if (Patterns.WEB_URL.matcher(uri).matches()) {
-                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream(), null, options)
+                    URL(uri).openConnection().getInputStream().use {
+                        BitmapFactory.decodeStream(it, null, options)
+                    }
                 } else {
                     val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
-                    val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-                    BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options)
-                    parcelFileDescriptor.close()
+                    if (parcelFileDescriptor == null) {
+                        WooLog.w(T.MEDIA, "MediaFilesRepository > Couldn't open a descriptor for uri: $uri")
+                        return@withContext UNDECODABLE_IMAGE_DETAILS
+                    }
+                    parcelFileDescriptor.use {
+                        BitmapFactory.decodeFileDescriptor(it.fileDescriptor, null, options)
+                    }
                 }
                 return@withContext ImageDetails(options.outWidth, options.outHeight, options.outMimeType)
             } catch (e: IOException) {
                 WooLog.e(T.MEDIA, "MediaFilesRepository > Error getting image details from uri: $uri", e)
-                return@withContext ImageDetails(width = 0, height = 0, mimeType = "")
+                return@withContext UNDECODABLE_IMAGE_DETAILS
+            } catch (e: SecurityException) {
+                WooLog.e(T.MEDIA, "MediaFilesRepository > No access to uri: $uri", e)
+                return@withContext UNDECODABLE_IMAGE_DETAILS
             }
         }
     }
@@ -231,6 +239,10 @@ class MediaFilesRepository @Inject constructor(
     data class ImageDetails(
         val width: Int,
         val height: Int,
-        val mimeType: String
+        val mimeType: String?
     )
+
+    companion object {
+        private val UNDECODABLE_IMAGE_DETAILS = ImageDetails(width = 0, height = 0, mimeType = null)
+    }
 }
