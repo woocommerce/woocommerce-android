@@ -102,7 +102,7 @@ internal fun ProductListScreen(
             )
         }
     }
-    val sortingTitle = viewState.sortingTitleResource?.let { context.getString(it) }.orEmpty()
+    val sortingTitle = viewState.sortingTitleResource?.let { stringResource(it) }.orEmpty()
 
     ProductListScreen(
         state = ProductListScreenState(

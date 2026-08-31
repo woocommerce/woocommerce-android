@@ -92,7 +92,7 @@ fun WooTopAppBar(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun WooTopAppBar(
+fun WooTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
     navigationIcon: ImageVector? = null,

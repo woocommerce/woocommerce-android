@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.details
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -15,10 +16,13 @@ import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
+import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -40,11 +44,15 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -53,17 +61,15 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
-    companion object {
-        private const val PRODUCT_REMOTE_ID = 1L
-    }
-
     private val wooCommerceStore: WooCommerceStore = mock()
     private val networkStatus: NetworkStatus = mock()
     private val productRepository: ProductDetailRepository = mock {
@@ -563,6 +569,33 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given an id zero upload, when variable draft is silently persisted, then observers switch without interruption`() =
+        testBlocking {
+            val flows = givenUploadObserverFlows()
+            givenUploadObservers(flows)
+            givenRestoredIdZeroVariableDraft()
+            givenProductPersistenceSucceeds()
+
+            mockStatic(Uri::class.java).use { uriMock ->
+                val activeUri: Uri = mock()
+                val lateUri: Uri = mock()
+                uriMock.`when`<Uri> { Uri.parse(ACTIVE_UPLOAD_URI) }.thenReturn(activeUri)
+                uriMock.`when`<Uri> { Uri.parse(LATE_ZERO_UPLOAD_URI) }.thenReturn(lateUri)
+                setup()
+                val states = captureProductDetailStates()
+
+                viewModel.saveAsDraftIfNewVariableProduct().join()
+                advanceUntilIdle()
+                thenObserversHaveSwitchedToPersistedId(flows)
+                emitPersistedResultsAndConflictingLateIdZeroEvents(flows)
+
+                thenUploadStateContinuesAcrossTheHandoff(states, activeUri, lateUri)
+                thenPersistedResultsWinOverLateIdZeroEvents(states.last())
+                thenUploadObserversWereRequestedForBothIds()
+            }
+        }
+
+    @Test
     fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -640,5 +673,131 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onSaveButtonClicked()
 
         Assertions.assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
+    }
+
+    private fun givenUploadObserverFlows() = UploadObserverFlows(
+        zeroUploads = replayingFlow(listOf(ACTIVE_UPLOAD_URI)),
+        zeroSuccesses = MutableSharedFlow(),
+        zeroErrors = replayingFlow(emptyList()),
+        persistedUploads = replayingFlow(listOf(ACTIVE_UPLOAD_URI)),
+        persistedSuccesses = MutableSharedFlow(),
+        persistedErrors = replayingFlow(emptyList()),
+    )
+
+    private fun givenUploadObservers(flows: UploadObserverFlows) {
+        doReturn(flows.zeroUploads).whenever(mediaFileUploadHandler)
+            .observeCurrentUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        doReturn(flows.zeroSuccesses).whenever(mediaFileUploadHandler)
+            .observeSuccessfulUploads(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        doReturn(flows.zeroErrors).whenever(mediaFileUploadHandler)
+            .observeCurrentUploadErrors(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        doReturn(flows.persistedUploads).whenever(mediaFileUploadHandler).observeCurrentUploads(PRODUCT_REMOTE_ID)
+        doReturn(flows.persistedSuccesses).whenever(mediaFileUploadHandler).observeSuccessfulUploads(PRODUCT_REMOTE_ID)
+        doReturn(flows.persistedErrors).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
+    }
+
+    private fun givenRestoredIdZeroVariableDraft() {
+        val draft = ProductTestUtils.generateProduct(
+            productId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,
+            customStatus = ProductStatus.DRAFT.name,
+            productType = ProductType.VARIABLE.value,
+        )
+        savedState.set(
+            ProductDetailViewModel.ProductDetailViewState::class.java.name,
+            ProductDetailViewModel.ProductDetailViewState(
+                productAggregateDraft = ProductAggregate(draft),
+                auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
+                areImagesAvailable = true,
+            )
+        )
+    }
+
+    private suspend fun givenProductPersistenceSucceeds() {
+        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+        doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(PRODUCT_REMOTE_ID)
+    }
+
+    private fun captureProductDetailStates() =
+        mutableListOf<ProductDetailViewModel.ProductDetailViewState>().also { states ->
+            viewModel.productDetailViewStateData.observeForever { _, new -> states.add(new) }
+        }
+
+    private suspend fun emitPersistedResultsAndConflictingLateIdZeroEvents(flows: UploadObserverFlows) {
+        flows.persistedSuccesses.emit(remoteMedia(PERSISTED_IMAGE_URL))
+        flows.persistedErrors.emit(listOf(failedUpload(PRODUCT_REMOTE_ID, ACTIVE_UPLOAD_URI)))
+        flows.zeroUploads.emit(listOf(LATE_ZERO_UPLOAD_URI))
+        flows.zeroSuccesses.emit(remoteMedia(LATE_ZERO_IMAGE_URL))
+        flows.zeroErrors.emit(emptyList())
+    }
+
+    private fun thenObserversHaveSwitchedToPersistedId(flows: UploadObserverFlows) {
+        assertThat(flows.zeroUploads.subscriptionCount.value).isZero()
+        assertThat(flows.zeroSuccesses.subscriptionCount.value).isZero()
+        assertThat(flows.zeroErrors.subscriptionCount.value).isZero()
+        assertThat(flows.persistedUploads.subscriptionCount.value).isEqualTo(1)
+        assertThat(flows.persistedSuccesses.subscriptionCount.value).isEqualTo(1)
+        assertThat(flows.persistedErrors.subscriptionCount.value).isEqualTo(1)
+    }
+
+    private fun thenUploadStateContinuesAcrossTheHandoff(
+        states: List<ProductDetailViewModel.ProductDetailViewState>,
+        activeUri: Uri,
+        lateUri: Uri,
+    ) {
+        val firstUploadingState = states.indexOfFirst { it.uploadingImageUris == listOf(activeUri) }
+        assertThat(firstUploadingState).isNotNegative()
+        assertThat(states.drop(firstUploadingState).map { it.uploadingImageUris }).allSatisfy { uris ->
+            assertThat(uris).contains(activeUri).doesNotContain(lateUri)
+        }
+    }
+
+    private fun thenPersistedResultsWinOverLateIdZeroEvents(
+        state: ProductDetailViewModel.ProductDetailViewState,
+    ) {
+        assertThat(state.productDraft?.images?.map { it.source })
+            .contains(PERSISTED_IMAGE_URL)
+            .doesNotContain(LATE_ZERO_IMAGE_URL)
+        assertThat(state.hasUploadErrors).isTrue()
+    }
+
+    private fun thenUploadObserversWereRequestedForBothIds() {
+        listOf(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID, PRODUCT_REMOTE_ID).forEach { productId ->
+            verify(mediaFileUploadHandler, atLeastOnce()).observeCurrentUploads(productId)
+            verify(mediaFileUploadHandler, atLeastOnce()).observeSuccessfulUploads(productId)
+            verify(mediaFileUploadHandler, atLeastOnce()).observeCurrentUploadErrors(productId)
+        }
+    }
+
+    private fun remoteMedia(url: String) = MediaTestUtils.createRemoteTestMedia()
+        .mediaId(44L)
+        .url(url)
+        .build()
+
+    private fun failedUpload(remoteProductId: Long, localUri: String) = ProductImageUploadData(
+        remoteProductId = remoteProductId,
+        localUri = localUri,
+        uploadStatus = UploadStatus.Failed(
+            mediaErrorType = MediaStore.MediaErrorType.GENERIC_ERROR,
+            mediaErrorMessage = "error",
+        ),
+    )
+
+    private fun <T> replayingFlow(value: T) = MutableSharedFlow<T>(replay = 1).apply { tryEmit(value) }
+
+    private data class UploadObserverFlows(
+        val zeroUploads: MutableSharedFlow<List<String>>,
+        val zeroSuccesses: MutableSharedFlow<MediaModel>,
+        val zeroErrors: MutableSharedFlow<List<ProductImageUploadData>>,
+        val persistedUploads: MutableSharedFlow<List<String>>,
+        val persistedSuccesses: MutableSharedFlow<MediaModel>,
+        val persistedErrors: MutableSharedFlow<List<ProductImageUploadData>>,
+    )
+
+    private companion object {
+        const val PRODUCT_REMOTE_ID = 1L
+        const val ACTIVE_UPLOAD_URI = "file:///product-image.jpg"
+        const val LATE_ZERO_UPLOAD_URI = "file:///late-zero-image.jpg"
+        const val PERSISTED_IMAGE_URL = "https://example.com/persisted.jpg"
+        const val LATE_ZERO_IMAGE_URL = "https://example.com/late-zero.jpg"
     }
 }

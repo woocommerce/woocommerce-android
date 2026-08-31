@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -9,6 +10,216 @@ import org.junit.Test
 
 class ProductDetailUiMapperTest {
     private val mapper = ProductDetailUiMapper()
+
+    @Test
+    fun `given an auxiliary error, when image state is mapped, then it is hidden with highest priority`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.Error(R.string.error_generic),
+            hasProduct = true,
+            areImagesAvailable = false,
+            persistedImages = listOf(image(id = 1L, source = "persisted")),
+            uploadingImageUris = listOf("uploading"),
+        )
+
+        assertThat(result).isEqualTo(ProductDetailImageUiState.Hidden)
+    }
+
+    @Test
+    fun `given loading without a product, when image state is mapped, then loading outranks absence`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.Loading,
+            hasProduct = false,
+            areImagesAvailable = false,
+            persistedImages = emptyList(),
+            uploadingImageUris = emptyList(),
+        )
+
+        assertThat(result).isEqualTo(ProductDetailImageUiState.Loading)
+    }
+
+    @Test
+    fun `given no product, when image state is mapped, then it is hidden`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = false,
+            areImagesAvailable = false,
+            persistedImages = emptyList(),
+            uploadingImageUris = emptyList(),
+        )
+
+        assertThat(result).isEqualTo(ProductDetailImageUiState.Hidden)
+    }
+
+    @Test
+    fun `given images are unavailable, when image state is mapped, then unavailable outranks gallery content`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = false,
+            persistedImages = listOf(image(id = 1L, source = "persisted")),
+            uploadingImageUris = listOf("uploading"),
+        )
+
+        assertThat(result).isEqualTo(ProductDetailImageUiState.Unavailable)
+    }
+
+    @Test
+    fun `given no persisted images or uploads, when mapped, then add image is shown`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = emptyList(),
+            uploadingImageUris = emptyList(),
+        )
+
+        assertThat(result).isEqualTo(ProductDetailImageUiState.AddImage)
+    }
+
+    @Test
+    fun `given uploads without persisted images, when mapped, then reversed placeholders have no add item`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = emptyList(),
+            uploadingImageUris = listOf("first", "second"),
+        ) as ProductDetailImageUiState.Gallery
+
+        assertThat(result.items).allMatch { it is ProductDetailImageUiItem.Uploading }
+        assertThat(result.items.filterIsInstance<ProductDetailImageUiItem.Uploading>().map { it.source })
+            .containsExactly("second", "first")
+        assertThat(result.items.map { it.key }).doesNotHaveDuplicates()
+    }
+
+    @Test
+    fun `given persisted images including id zero, when mapped, then order cover and final add item are preserved`() {
+        val result = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = listOf(
+                image(id = 0L, source = "zero", isCover = true),
+                image(id = 2L, source = "second"),
+            ),
+            uploadingImageUris = emptyList(),
+        ) as ProductDetailImageUiState.Gallery
+
+        val persistedItems = result.items.filterIsInstance<ProductDetailImageUiItem.Persisted>()
+        assertThat(persistedItems.map { it.source to it.isCover }).containsExactly(
+            "zero" to true,
+            "second" to false,
+        )
+        assertThat(result.items.last()).isEqualTo(ProductDetailImageUiItem.Add)
+        assertThat(result.items.map { it.key }).doesNotHaveDuplicates()
+    }
+
+    @Test
+    fun `given duplicate image identities and upload uris, when mapped, then keys are unique and deterministic`() {
+        val persistedImages = listOf(
+            image(id = 7L, source = "same"),
+            image(id = 7L, source = "same"),
+            image(id = 7L, source = "different"),
+            image(id = 8L, source = "same"),
+        )
+        val uploadingUris = listOf("duplicate", "duplicate")
+
+        val first = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = persistedImages,
+            uploadingImageUris = uploadingUris,
+        ) as ProductDetailImageUiState.Gallery
+        val second = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = persistedImages,
+            uploadingImageUris = uploadingUris,
+        ) as ProductDetailImageUiState.Gallery
+
+        assertThat(first.items.map(::imagePayload)).containsExactly(
+            "uploading:duplicate",
+            "uploading:duplicate",
+            "persisted:same:false",
+            "persisted:same:false",
+            "persisted:different:false",
+            "persisted:same:false",
+            "add",
+        )
+        assertThat(first.items.map { it.key }).doesNotHaveDuplicates()
+        assertThat(second.items.map { it.key }).isEqualTo(first.items.map { it.key })
+    }
+
+    @Test
+    fun `given delimiter and occurrence shaped sources, when mapped, then all image keys remain unique and stable`() {
+        val sources = listOf(
+            "",
+            ":",
+            ":0",
+            "same",
+            "same:0",
+            "4:same:0",
+            "uploading:4:same:0",
+            "persisted:7:4:same:0",
+            "7:4:same",
+            "7:4:same:0",
+            "same",
+        )
+        val persistedImages = sources.mapIndexed { index, source -> image(index.toLong(), source) } +
+            listOf(image(7L, "same"), image(7L, "same"))
+        val uploadingUris = sources
+
+        val first = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = persistedImages,
+            uploadingImageUris = uploadingUris,
+        ) as ProductDetailImageUiState.Gallery
+        val second = mapper.mapImageState(
+            auxiliaryState = AuxiliaryState.None,
+            hasProduct = true,
+            areImagesAvailable = true,
+            persistedImages = persistedImages,
+            uploadingImageUris = uploadingUris,
+        ) as ProductDetailImageUiState.Gallery
+
+        assertThat(first.items.map { it.key }).doesNotHaveDuplicates()
+        assertThat(second.items.map { it.key }).isEqualTo(first.items.map { it.key })
+        assertThat(first.items.filterIsInstance<ProductDetailImageUiItem.Uploading>().map { it.source })
+            .containsExactlyElementsOf(sources.asReversed())
+        assertThat(first.items.filterIsInstance<ProductDetailImageUiItem.Persisted>().map { it.source })
+            .containsExactlyElementsOf(persistedImages.map { it.source })
+        assertThat(first.items.last()).isEqualTo(ProductDetailImageUiItem.Add)
+    }
+
+    @Test
+    fun `given stale upload error with Error screen, when page is mapped, then upload error is suppressed`() {
+        val result = mapper.mapPageState(
+            title = "Product",
+            topAppBar = topAppBarState(),
+            screen = ProductDetailScreenState.Error(R.string.error_generic),
+            image = ProductDetailImageUiState.Gallery(listOf(ProductDetailImageUiItem.Add)),
+            hasUploadErrors = true,
+        )
+
+        assertThat(result.showUploadError).isFalse()
+    }
+
+    @Test
+    fun `given stale upload error with Hidden image, when page is mapped, then upload error is suppressed`() {
+        val result = mapper.mapPageState(
+            title = "Product",
+            topAppBar = topAppBarState(),
+            screen = ProductDetailScreenState.Content(emptyList(), false, false),
+            image = ProductDetailImageUiState.Hidden,
+            hasUploadErrors = true,
+        )
+
+        assertThat(result.showUploadError).isFalse()
+    }
 
     @Test
     fun `given offline cache miss, when None is mapped without a product, then terminal empty state is returned`() {
@@ -198,6 +409,12 @@ class ProductDetailUiMapperTest {
     private inline fun <reified T : ProductProperty> List<ProductDetailRow>.singleProperty() =
         map { it.property }.filterIsInstance<T>().single()
 
+    private fun imagePayload(item: ProductDetailImageUiItem) = when (item) {
+        is ProductDetailImageUiItem.Uploading -> "uploading:${item.source}"
+        is ProductDetailImageUiItem.Persisted -> "persisted:${item.source}:${item.isCover}"
+        ProductDetailImageUiItem.Add -> "add"
+    }
+
     private fun allPropertyVariants(
         onCallback: (String) -> Unit = {},
     ) = listOf(
@@ -255,5 +472,25 @@ class ProductDetailUiMapperTest {
             onStateChanged = { onCallback("switch") },
         ),
         ProductProperty.Warning("Warning"),
+    )
+
+    private fun image(
+        id: Long,
+        source: String,
+        isCover: Boolean = false,
+    ) = Product.Image(
+        id = id,
+        name = null,
+        alt = null,
+        source = source,
+        dateCreated = null,
+        isCoverImage = isCover,
+    )
+
+    private fun topAppBarState() = ProductDetailTopAppBarUiState(
+        navigation = ProductDetailTopAppBarNavigation.BACK,
+        primaryAction = null,
+        shareAction = null,
+        overflowActions = listOf(ProductDetailTopAppBarAction.SETTINGS),
     )
 }

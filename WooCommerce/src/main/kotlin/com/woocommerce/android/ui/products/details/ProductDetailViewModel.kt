@@ -106,6 +106,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -627,7 +629,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when an existing image is selected in Product detail screen
      */
     fun onImageClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images))
         }
@@ -637,7 +639,7 @@ class ProductDetailViewModel @Inject constructor(
      * Called when the add image icon is clicked in Product detail screen
      */
     fun onAddImageButtonClicked() {
-        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
+        tracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
         viewState.productDraft?.let {
             triggerEvent(ProductNavigationTarget.ViewProductImageGallery(it.remoteId, it.images, true))
         }
@@ -2073,7 +2075,6 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             loadRemoteProduct(newProductRemoteId)
-            triggerEvent(RefreshMenu)
         }
 
         return result
@@ -2170,32 +2171,36 @@ class ProductDetailViewModel @Inject constructor(
                 .map { getRemoteProductId() }
                 .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
                 .collectLatest { productId ->
-                    mediaFileUploadHandler.observeCurrentUploads(productId)
-                        .map { list -> list.map { it.toUri() } }
-                        .onEach { viewState = viewState.copy(uploadingImageUris = it) }
-                        .launchIn(this)
+                    coroutineScope {
+                        mediaFileUploadHandler.observeCurrentUploads(productId)
+                            .map { list -> list.map { it.toUri() } }
+                            .onEach { viewState = viewState.copy(uploadingImageUris = it) }
+                            .launchIn(this)
 
-                    mediaFileUploadHandler.observeSuccessfulUploads(productId)
-                        .onEach { addProductImageToDraft(it.toAppModel()) }
-                        .launchIn(this)
+                        mediaFileUploadHandler.observeSuccessfulUploads(productId)
+                            .onEach { addProductImageToDraft(it.toAppModel()) }
+                            .launchIn(this)
 
-                    mediaFileUploadHandler.observeCurrentUploadErrors(productId)
-                        .onEach { errorList ->
-                            if (errorList.isEmpty()) {
-                                viewState = viewState.copy(hasUploadErrors = false)
-                                triggerEvent(HideImageUploadErrorSnackbar)
-                            } else {
-                                viewState = viewState.copy(hasUploadErrors = true)
-                                triggerEvent(
-                                    ShowUiStringSnackbar(
-                                        message = UiStringText(
-                                            resources.getMediaUploadErrorMessage(errorList.size)
-                                        ),
+                        mediaFileUploadHandler.observeCurrentUploadErrors(productId)
+                            .onEach { errorList ->
+                                if (errorList.isEmpty()) {
+                                    viewState = viewState.copy(hasUploadErrors = false)
+                                    triggerEvent(HideImageUploadErrorSnackbar)
+                                } else {
+                                    viewState = viewState.copy(hasUploadErrors = true)
+                                    triggerEvent(
+                                        ShowUiStringSnackbar(
+                                            message = UiStringText(
+                                                resources.getMediaUploadErrorMessage(errorList.size)
+                                            ),
+                                        )
                                     )
-                                )
+                                }
                             }
-                        }
-                        .launchIn(this)
+                            .launchIn(this)
+
+                        awaitCancellation()
+                    }
                 }
         }
     }
@@ -2753,8 +2758,6 @@ class ProductDetailViewModel @Inject constructor(
         object ExitProductQuantityRules : ProductExitEvent()
         object ExitProductSubscriptionExpiration : ProductExitEvent()
     }
-
-    object RefreshMenu : Event()
 
     object HideImageUploadErrorSnackbar : Event()
 

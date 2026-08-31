@@ -4,14 +4,15 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,9 +24,7 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -41,7 +40,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.setDesignSystemContent
+import com.woocommerce.android.ui.compose.designSystemComposeView
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BottomNavigationPosition
@@ -54,10 +53,8 @@ import com.woocommerce.android.ui.products.ProductsCommunicationViewModel
 import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.OpenProductDetails
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductUpdated
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowBlazeCreationScreen
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductError
@@ -65,6 +62,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.grouped.GroupedProductListType
+import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
@@ -77,31 +75,24 @@ import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSh
 import com.woocommerce.android.ui.products.variations.VariationListFragment
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.VariationListData
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductDetailFragment :
-    BaseProductFragment(R.layout.fragment_product_detail),
-    OnGalleryImageInteractionListener {
+    BaseProductFragment() {
     private var productName = ""
-        set(value) {
-            field = value
-            toolbarHelper.updateTitle(value)
-        }
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
-
-    @Inject
-    lateinit var toolbarHelper: ProductDetailsToolbarHelper
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
@@ -110,19 +101,39 @@ class ProductDetailFragment :
     private var imageUploadErrorsSnackbar: Snackbar? = null
 
     private val productDetailUiMapper = ProductDetailUiMapper()
-    private var productDetailScreenState by mutableStateOf<ProductDetailScreenState>(ProductDetailScreenState.Loading)
-    private var productDetailImageState by mutableStateOf<ProductDetailImageUiState>(ProductDetailImageUiState.Loading)
-    private var isUploadErrorVisible by mutableStateOf(false)
+    private val topAppBarPolicy = ProductDetailTopAppBarPolicy()
+    private var productDetailPageState by mutableStateOf(INITIAL_PAGE_STATE)
+    private var isUploadErrorVisible = false
     private var currentProduct: Product? = null
     private var currentCards = emptyList<ProductDetailCardUiModel>()
     private var currentAuxiliaryState: ProductDetailViewModel.ProductDetailViewState.AuxiliaryState = Loading
     private var areImagesAvailable = true
-    private var uploadingImageUris: List<Uri>? = null
+    private var uploadingImageUris = emptyList<Uri>()
     private var isAddMoreVisible = false
     private var isLinkedProductPromoVisible = false
+    private var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
+    private var isWindowLargerThanCompact = false
+    private var isPartOfProductListFlow = false
 
-    private var _binding: FragmentProductDetailBinding? = null
-    private val binding get() = _binding!!
+    private val pageCallbacks by lazy {
+        ProductDetailPageCallbacks(
+            topAppBar = ProductDetailTopAppBarCallbacks(
+                onNavigationClicked = ::onTopAppBarNavigationClicked,
+                onActionClicked = ::onTopAppBarActionClicked,
+            ),
+            image = ProductDetailImageCallbacks(
+                onImageClicked = viewModel::onImageClicked,
+                onAddImageClicked = viewModel::onAddImageButtonClicked,
+                onImagesUnavailableClicked = ::onImagesUnavailableClicked,
+            ),
+            content = ProductDetailContentCallbacks(
+                onLinkedProductPromoClicked = ::onLinkedProductPromoClicked,
+                onLinkedProductPromoDismissed = ::onLinkedProductPromoDismissed,
+                onAddMoreClicked = ::onAddMoreClicked,
+            ),
+            onUploadErrorClicked = viewModel::openUploadScreen,
+        )
+    }
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -150,6 +161,21 @@ class ProductDetailFragment :
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View = designSystemComposeView {
+        ProductDetailScreen(
+            state = productDetailPageState,
+            callbacks = pageCallbacks,
+        )
+    }.apply {
+        id = R.id.productDetail_root
+        isFocusableInTouchMode = true
+        ViewCompat.setTransitionName(this, getString(R.string.product_card_detail_transition_name))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -159,16 +185,9 @@ class ProductDetailFragment :
         viewModel.setTrashActionPossible(isTrashEnabled)
 
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON)
-
-        _binding = FragmentProductDetailBinding.bind(view)
-
-        toolbarHelper.onViewCreated(this, viewModel, binding)
-
-        ViewCompat.setTransitionName(
-            binding.root,
-            getString(R.string.product_card_detail_transition_name)
-        )
-        initializeViews()
+        isWindowLargerThanCompact = IsWindowClassLargeThanCompact(requireActivity()).invoke()
+        isPartOfProductListFlow = isPartOfProductListFlow()
+        updateProductDetailPresentation()
         initializeViewModel()
         handleOnePaneToTwoPaneConversion()
     }
@@ -205,7 +224,6 @@ class ProductDetailFragment :
     override fun onDestroyView() {
         imageUploadErrorsSnackbar?.dismiss()
         super.onDestroyView()
-        _binding = null
     }
 
     override fun onResume() {
@@ -221,43 +239,6 @@ class ProductDetailFragment :
     override fun onStop() {
         super.onStop()
         WooDialog.onCleared()
-    }
-
-    private fun initializeViews() {
-        binding.productDetailCompose.setDesignSystemContent {
-            ProductDetailScreen(
-                state = productDetailScreenState,
-                onLinkedProductPromoClicked = {
-                    hideLinkedProductPromo()
-                    viewModel.onLinkedProductPromoClicked()
-                },
-                onLinkedProductPromoDismissed = {
-                    hideLinkedProductPromo()
-                    viewModel.onLinkedProductPromoDismissed()
-                },
-            )
-        }
-        binding.productDetailFooterCompose.setDesignSystemContent {
-            ProductDetailFooter(
-                state = productDetailScreenState,
-                onAddMoreClicked = ::onAddMoreClicked,
-            )
-        }
-        binding.productDetailImageStateCompose.setDesignSystemContent {
-            ProductDetailImageHeader(
-                state = productDetailImageState,
-                onAddImageClicked = ::onAddImageClicked,
-                onImagesUnavailableClicked = {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WORDPRESS_PRIVACY_SETTINGS)
-                },
-            )
-        }
-        binding.productDetailUploadErrorCompose.setDesignSystemContent {
-            ProductDetailUploadError(
-                isVisible = isUploadErrorVisible,
-                onClick = viewModel::openUploadScreen,
-            )
-        }
     }
 
     private fun initializeViewModel() {
@@ -375,7 +356,7 @@ class ProductDetailFragment :
             new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { showAuxiliaryState(it) }
             new.areImagesAvailable.takeIfNotEqualTo(old?.areImagesAvailable) {
                 areImagesAvailable = it
-                updateImagePresentation()
+                updateProductDetailPresentation()
             }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -384,14 +365,14 @@ class ProductDetailFragment :
                     hideProgressDialog()
                 }
             }
-            new.uploadingImageUris?.takeIfNotEqualTo(old?.uploadingImageUris) {
-                uploadingImageUris = it
-                binding.imageGallery.setPlaceholderImageUris(it)
-                updateImagePresentation()
-            }
+            new.uploadingImageUris.orEmpty()
+                .takeIfNotEqualTo(uploadingImageUris) {
+                    uploadingImageUris = it
+                    updateProductDetailPresentation()
+                }
             new.showBottomSheetButton?.takeIfNotEqualTo(old?.showBottomSheetButton) { isVisible ->
                 isAddMoreVisible = isVisible
-                updateProductDetailScreen()
+                updateProductDetailPresentation()
             }
             new.isUploadingDownloadableFile?.takeIfNotEqualTo(old?.isUploadingDownloadableFile) {
                 if (it) {
@@ -405,12 +386,18 @@ class ProductDetailFragment :
             }
             new.hasUploadErrors?.takeIfNotEqualTo(old?.hasUploadErrors) { hasErrors ->
                 isUploadErrorVisible = hasErrors
+                updateProductDetailPresentation()
             }
         }
 
         viewModel.productDetailCards.observe(viewLifecycleOwner) {
             currentCards = productDetailUiMapper.map(it)
-            updateProductDetailScreen()
+            updateProductDetailPresentation()
+        }
+
+        viewModel.menuButtonsState.observe(viewLifecycleOwner) {
+            menuButtonsState = it
+            updateProductDetailPresentation()
         }
 
         viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
@@ -432,7 +419,6 @@ class ProductDetailFragment :
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
-                is RefreshMenu -> toolbarHelper.setupToolbar()
 
                 is TrashProduct -> {
                     if (findNavController().previousBackStackEntry != null) {
@@ -521,9 +507,7 @@ class ProductDetailFragment :
         areImagesAvailable = isImageUploadAvailable
         isAddMoreVisible = true
         productName = updateProductNameFromDetails(product)
-        updateImagePresentation()
-        updateProductDetailScreen()
-        toolbarHelper.setupToolbar()
+        updateProductDetailPresentation()
     }
 
     private fun updateProductNameFromDetails(product: Product): String {
@@ -543,9 +527,53 @@ class ProductDetailFragment :
         imageUploadErrorsSnackbar?.show()
     }
 
-    private fun onAddImageClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_ADD_IMAGE_TAPPED)
-        viewModel.onAddImageButtonClicked()
+    private val showBackOnLargeScreen: Boolean
+        get() = viewModel.startMode == Mode.AddNewProduct ||
+            (viewModel.startMode as? Mode.ShowProduct)?.afterGeneratedWithAi == true
+
+    private fun isPartOfProductListFlow(): Boolean = runCatching {
+        findNavController().getBackStackEntry(R.id.products)
+    }.isSuccess || parentFragment?.parentFragment is ProductListFragment
+
+    private fun onTopAppBarNavigationClicked() {
+        if (!viewModel.onBackButtonClickedProductDetail()) return
+
+        if (!findNavController().popBackStack(R.id.products, false)) {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun onTopAppBarActionClicked(action: ProductDetailTopAppBarAction) {
+        when (action) {
+            ProductDetailTopAppBarAction.SAVE -> {
+                ActivityUtils.hideKeyboard(requireActivity())
+                viewModel.onSaveButtonClicked()
+            }
+            ProductDetailTopAppBarAction.PUBLISH -> {
+                ActivityUtils.hideKeyboard(requireActivity())
+                viewModel.onPublishButtonClicked()
+            }
+            ProductDetailTopAppBarAction.SAVE_AS_DRAFT -> viewModel.onSaveAsDraftButtonClicked()
+            ProductDetailTopAppBarAction.SHARE -> viewModel.onShareButtonClicked()
+            ProductDetailTopAppBarAction.VIEW_PRODUCT -> viewModel.onViewProductOnStoreLinkClicked()
+            ProductDetailTopAppBarAction.SETTINGS -> viewModel.onSettingsButtonClicked()
+            ProductDetailTopAppBarAction.DUPLICATE -> viewModel.onDuplicateProduct()
+            ProductDetailTopAppBarAction.TRASH -> viewModel.onTrashButtonClicked()
+        }
+    }
+
+    private fun onImagesUnavailableClicked() {
+        ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WORDPRESS_PRIVACY_SETTINGS)
+    }
+
+    private fun onLinkedProductPromoClicked() {
+        hideLinkedProductPromo()
+        viewModel.onLinkedProductPromoClicked()
+    }
+
+    private fun onLinkedProductPromoDismissed() {
+        hideLinkedProductPromo()
+        viewModel.onLinkedProductPromoDismissed()
     }
 
     private fun onAddMoreClicked() {
@@ -556,42 +584,37 @@ class ProductDetailFragment :
 
     private fun showAuxiliaryState(auxiliaryState: ProductDetailViewModel.ProductDetailViewState.AuxiliaryState) {
         currentAuxiliaryState = auxiliaryState
-        updateImagePresentation()
-        updateProductDetailScreen()
+        updateProductDetailPresentation()
     }
 
-    private fun updateProductDetailScreen() {
-        productDetailScreenState = productDetailUiMapper.mapScreenState(
+    private fun updateProductDetailPresentation() {
+        val screen = productDetailUiMapper.mapScreenState(
             auxiliaryState = currentAuxiliaryState,
             hasProduct = currentProduct != null,
             cards = currentCards,
             showAddMore = isAddMoreVisible,
             showLinkedProductPromo = isLinkedProductPromoVisible,
         )
-        binding.appBarLayout.isVisible = currentAuxiliaryState !is Error
-    }
-
-    private fun updateImagePresentation() {
-        productDetailImageState = when {
-            currentAuxiliaryState is Error -> ProductDetailImageUiState.Hidden
-            currentAuxiliaryState == Loading -> ProductDetailImageUiState.Loading
-            currentProduct == null -> ProductDetailImageUiState.Hidden
-            !areImagesAvailable -> ProductDetailImageUiState.Unavailable
-            currentProduct?.images.isNullOrEmpty() && !viewModel.isUploadingImages() -> {
-                ProductDetailImageUiState.AddImage
-            }
-            else -> ProductDetailImageUiState.Gallery
-        }
-
-        val showGallery = productDetailImageState == ProductDetailImageUiState.Gallery
-        binding.imageGallery.isVisible = showGallery
-        binding.productDetailImageStateCompose.isVisible =
-            productDetailImageState != ProductDetailImageUiState.Gallery &&
-            productDetailImageState != ProductDetailImageUiState.Hidden
-        if (showGallery) {
-            binding.imageGallery.showProductImages(currentProduct?.images.orEmpty(), this)
-            binding.imageGallery.setPlaceholderImageUris(uploadingImageUris)
-        }
+        val image = productDetailUiMapper.mapImageState(
+            auxiliaryState = currentAuxiliaryState,
+            hasProduct = currentProduct != null,
+            areImagesAvailable = areImagesAvailable,
+            persistedImages = currentProduct?.images.orEmpty(),
+            uploadingImageUris = uploadingImageUris.map(Uri::toString),
+        )
+        val topAppBar = topAppBarPolicy.map(
+            menu = menuButtonsState,
+            isWindowLargerThanCompact = isWindowLargerThanCompact,
+            isPartOfProductListFlow = isPartOfProductListFlow,
+            showBackOnLargeScreen = showBackOnLargeScreen,
+        )
+        productDetailPageState = productDetailUiMapper.mapPageState(
+            title = productName,
+            topAppBar = topAppBar,
+            screen = screen,
+            image = image,
+            hasUploadErrors = isUploadErrorVisible,
+        )
     }
 
     private fun showProgressDialog(@StringRes title: Int, @StringRes message: Int) {
@@ -610,24 +633,16 @@ class ProductDetailFragment :
 
     private fun showLinkedProductPromoBanner() {
         isLinkedProductPromoVisible = true
-        updateProductDetailScreen()
+        updateProductDetailPresentation()
     }
 
     private fun hideLinkedProductPromo() {
         isLinkedProductPromoVisible = false
-        updateProductDetailScreen()
+        updateProductDetailPresentation()
     }
 
     override fun onRequestAllowBackPress(): Boolean {
         return viewModel.onBackButtonClickedProductDetail()
-    }
-
-    override fun onGalleryImageClicked(image: Image) {
-        viewModel.onImageClicked()
-    }
-
-    override fun onGalleryAddImageClicked() {
-        onAddImageClicked()
     }
 
     override fun getFragmentTitle(): String = productName
@@ -648,5 +663,20 @@ class ProductDetailFragment :
 
         @Parcelize
         data object AddNewProduct : Mode()
+    }
+
+    private companion object {
+        val INITIAL_PAGE_STATE = ProductDetailPageUiState(
+            title = "",
+            topAppBar = ProductDetailTopAppBarUiState(
+                navigation = null,
+                primaryAction = null,
+                shareAction = null,
+                overflowActions = emptyList(),
+            ),
+            screen = ProductDetailScreenState.Loading,
+            image = ProductDetailImageUiState.Loading,
+            showUploadError = false,
+        )
     }
 }

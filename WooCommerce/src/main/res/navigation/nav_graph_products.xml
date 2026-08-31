@@ -13,8 +13,7 @@
 
     <fragment
         android:id="@+id/productDetailFragment"
-        android:name="com.woocommerce.android.ui.products.details.ProductDetailFragment"
-        tools:layout="@layout/fragment_product_detail">
+        android:name="com.woocommerce.android.ui.products.details.ProductDetailFragment">
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
