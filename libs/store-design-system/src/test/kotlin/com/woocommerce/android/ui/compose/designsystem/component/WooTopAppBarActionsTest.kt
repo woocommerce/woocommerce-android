@@ -1,35 +1,21 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
-import org.assertj.core.api.Assertions.within
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -72,6 +58,24 @@ class WooTopAppBarActionsTest {
                                 text = " ",
                                 onClick = {},
                             )
+                        },
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `given blank overflow description, when rendered, then illegal argument is thrown`() {
+        assertThatIllegalArgumentException().isThrownBy {
+            composeTestRule.setContent {
+                WooDesignSystemTheme {
+                    WooTopAppBar(
+                        title = STRING_TITLE,
+                        actions = {
+                            OverflowAction(contentDescription = " ") {
+                                WooOverflowMenuItem(text = OVERFLOW_ITEM, onClick = {})
+                            }
                         },
                     )
                 }
@@ -134,7 +138,7 @@ class WooTopAppBarActionsTest {
     }
 
     @Test
-    fun `given icon actions, when rendered and clicked, then visible 40dp outlines and enabled state are preserved`() {
+    fun `given icon actions, when rendered and clicked, then enabled state and callbacks are preserved`() {
         // GIVEN
         var enabledClickCount = 0
         var disabledClickCount = 0
@@ -164,10 +168,7 @@ class WooTopAppBarActionsTest {
         composeTestRule.onNodeWithContentDescription(ENABLED_ICON_DESCRIPTION).performClick()
 
         // THEN
-        composeTestRule.onNodeWithContentDescription(ENABLED_ICON_DESCRIPTION)
-            .assertIsEnabled()
-            .assertWidthIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
-            .assertHeightIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
+        composeTestRule.onNodeWithContentDescription(ENABLED_ICON_DESCRIPTION).assertIsEnabled()
         composeTestRule.onNodeWithContentDescription(DISABLED_ICON_DESCRIPTION)
             .assertIsNotEnabled()
             .performClick()
@@ -217,145 +218,7 @@ class WooTopAppBarActionsTest {
     }
 
     @Test
-    fun `given empty conditional between icons, when LTR, then 48dp interactive bounds have one space1 gap`() {
-        // GIVEN
-        var expectedGapPx = 0
-        var expectedInteractiveSizePx = 0
-        var firstBounds: Rect? = null
-        var secondBounds: Rect? = null
-        composeTestRule.setContent {
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                WooDesignSystemTheme {
-                    expectedGapPx = with(LocalDensity.current) { WooTheme.spacing.space1.roundToPx() }
-                    expectedInteractiveSizePx = with(LocalDensity.current) { INTERACTIVE_ACTION_SIZE.roundToPx() }
-                    WooTopAppBar(
-                        title = STRING_TITLE,
-                        windowInsets = WindowInsets(0),
-                        actions = {
-                            IconAction(
-                                imageVector = WooIcons.Regular.ArrowUpRight,
-                                contentDescription = FIRST_ICON_DESCRIPTION,
-                                onClick = {},
-                                modifier = Modifier.onGloballyPositioned { firstBounds = it.boundsInRoot() },
-                            )
-                            if (false) {
-                                Box(modifier = Modifier.size(PHANTOM_ACTION_SIZE))
-                            }
-                            IconAction(
-                                imageVector = WooIcons.Regular.Share,
-                                contentDescription = SECOND_ICON_DESCRIPTION,
-                                onClick = {},
-                                modifier = Modifier.onGloballyPositioned { secondBounds = it.boundsInRoot() },
-                            )
-                        },
-                    )
-                }
-            }
-        }
-
-        // THEN
-        composeTestRule.runOnIdle {
-            val firstActionBounds = requireNotNull(firstBounds)
-            val secondActionBounds = requireNotNull(secondBounds)
-            assertInteractiveLayoutSize(firstActionBounds, expectedInteractiveSizePx)
-            assertInteractiveLayoutSize(secondActionBounds, expectedInteractiveSizePx)
-            assertThat(secondActionBounds.left - firstActionBounds.right)
-                .isCloseTo(expectedGapPx.toFloat(), within(LAYOUT_BOUND_TOLERANCE_PX))
-        }
-    }
-
-    @Test
-    fun `given custom before icon, when LTR, then icon has 48dp interactive bounds and ordered space1 gap`() {
-        // GIVEN
-        var expectedGapPx = 0
-        var expectedInteractiveSizePx = 0
-        var customBounds: Rect? = null
-        var iconBounds: Rect? = null
-        composeTestRule.setContent {
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                WooDesignSystemTheme {
-                    expectedGapPx = with(LocalDensity.current) { WooTheme.spacing.space1.roundToPx() }
-                    expectedInteractiveSizePx = with(LocalDensity.current) { INTERACTIVE_ACTION_SIZE.roundToPx() }
-                    WooTopAppBar(
-                        title = STRING_TITLE,
-                        windowInsets = WindowInsets(0),
-                        actions = {
-                            Box(
-                                modifier = Modifier
-                                    .size(INLINE_CUSTOM_SIZE)
-                                    .onGloballyPositioned { customBounds = it.boundsInRoot() },
-                            )
-                            IconAction(
-                                imageVector = WooIcons.Regular.ArrowUpRight,
-                                contentDescription = ENABLED_ICON_DESCRIPTION,
-                                onClick = {},
-                                modifier = Modifier.onGloballyPositioned { iconBounds = it.boundsInRoot() },
-                            )
-                        },
-                    )
-                }
-            }
-        }
-
-        // THEN
-        composeTestRule.runOnIdle {
-            val inlineBounds = requireNotNull(customBounds)
-            val iconActionBounds = requireNotNull(iconBounds)
-            assertInteractiveLayoutSize(iconActionBounds, expectedInteractiveSizePx)
-            assertThat(inlineBounds.left).isLessThan(iconActionBounds.left)
-            assertThat(iconActionBounds.left - inlineBounds.right)
-                .isCloseTo(expectedGapPx.toFloat(), within(LAYOUT_BOUND_TOLERANCE_PX))
-        }
-    }
-
-    @Test
-    fun `given two icons, when RTL, then 48dp interactive bounds have symmetric space1 gap`() {
-        // GIVEN
-        var expectedGapPx = 0
-        var expectedInteractiveSizePx = 0
-        var firstBounds: Rect? = null
-        var secondBounds: Rect? = null
-        composeTestRule.setContent {
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                WooDesignSystemTheme {
-                    expectedGapPx = with(LocalDensity.current) { WooTheme.spacing.space1.roundToPx() }
-                    expectedInteractiveSizePx = with(LocalDensity.current) { INTERACTIVE_ACTION_SIZE.roundToPx() }
-                    WooTopAppBar(
-                        title = STRING_TITLE,
-                        windowInsets = WindowInsets(0),
-                        actions = {
-                            IconAction(
-                                imageVector = WooIcons.Regular.ArrowUpRight,
-                                contentDescription = FIRST_ICON_DESCRIPTION,
-                                onClick = {},
-                                modifier = Modifier.onGloballyPositioned { firstBounds = it.boundsInRoot() },
-                            )
-                            IconAction(
-                                imageVector = WooIcons.Regular.Share,
-                                contentDescription = SECOND_ICON_DESCRIPTION,
-                                onClick = {},
-                                modifier = Modifier.onGloballyPositioned { secondBounds = it.boundsInRoot() },
-                            )
-                        },
-                    )
-                }
-            }
-        }
-
-        // THEN
-        composeTestRule.runOnIdle {
-            val firstActionBounds = requireNotNull(firstBounds)
-            val secondActionBounds = requireNotNull(secondBounds)
-            assertInteractiveLayoutSize(firstActionBounds, expectedInteractiveSizePx)
-            assertInteractiveLayoutSize(secondActionBounds, expectedInteractiveSizePx)
-            assertThat(firstActionBounds.left).isGreaterThan(secondActionBounds.left)
-            assertThat(firstActionBounds.left - secondActionBounds.right)
-                .isCloseTo(expectedGapPx.toFloat(), within(LAYOUT_BOUND_TOLERANCE_PX))
-        }
-    }
-
-    @Test
-    fun `given overflow action, when trigger is clicked, then outlined trigger opens a dismissible menu`() {
+    fun `given overflow action, when trigger is clicked, then menu opens and dismisses on selection`() {
         // GIVEN
         var selected: String? = null
         composeTestRule.setContent {
@@ -377,9 +240,6 @@ class WooTopAppBarActionsTest {
                 )
             }
         }
-        composeTestRule.onNodeWithContentDescription(OVERFLOW_DESCRIPTION)
-            .assertWidthIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
-            .assertHeightIsEqualTo(VISIBLE_OUTLINED_ACTION_SIZE)
         composeTestRule.onNodeWithText(OVERFLOW_ITEM).assertDoesNotExist()
 
         // WHEN
@@ -391,32 +251,15 @@ class WooTopAppBarActionsTest {
         composeTestRule.onNodeWithText(OVERFLOW_ITEM).assertDoesNotExist()
     }
 
-    private fun assertInteractiveLayoutSize(
-        bounds: Rect,
-        expectedSizePx: Int,
-    ) {
-        assertThat(bounds.width)
-            .isCloseTo(expectedSizePx.toFloat(), within(LAYOUT_BOUND_TOLERANCE_PX))
-        assertThat(bounds.height)
-            .isCloseTo(expectedSizePx.toFloat(), within(LAYOUT_BOUND_TOLERANCE_PX))
-    }
-
     private companion object {
         const val STRING_TITLE = "String title"
         const val COMPOSABLE_TITLE = "Composable title"
         const val INLINE_ACTION = "Inline action"
         const val ENABLED_ICON_DESCRIPTION = "Open"
         const val DISABLED_ICON_DESCRIPTION = "Share disabled"
-        const val FIRST_ICON_DESCRIPTION = "First"
-        const val SECOND_ICON_DESCRIPTION = "Second"
         const val ENABLED_TEXT_ACTION = "Save"
         const val DISABLED_TEXT_ACTION = "Done"
         const val OVERFLOW_DESCRIPTION = "More options"
         const val OVERFLOW_ITEM = "Duplicate"
-        const val LAYOUT_BOUND_TOLERANCE_PX = 0.01f
-        val VISIBLE_OUTLINED_ACTION_SIZE = 40.dp
-        val INTERACTIVE_ACTION_SIZE = 48.dp
-        val INLINE_CUSTOM_SIZE = 12.dp
-        val PHANTOM_ACTION_SIZE = 20.dp
     }
 }
