@@ -55,7 +55,8 @@ tags:
 # "Write with AI" button render on every product type, so they're a
 # safer readiness signal than price-related text.
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
+    visible:
+      id: "cardsRecyclerView"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -69,7 +70,7 @@ tags:
 # Wait for the product-name field (universal).
 - extendedWaitUntil:
     visible:
-      id: "editText"
+      id: "cardsRecyclerView"
     timeout: 10000
 
 - takeScreenshot: product_detail_top

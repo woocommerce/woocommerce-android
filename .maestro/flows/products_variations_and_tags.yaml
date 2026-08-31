@@ -175,7 +175,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "editText"
+      id: "cardsRecyclerView"
     timeout: 10000
 
 - takeScreenshot: products_variable_detail
@@ -245,7 +245,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "editText"
+      id: "cardsRecyclerView"
     timeout: 10000
 
 - scrollUntilVisible:
@@ -302,7 +302,7 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "editText"
+      id: "cardsRecyclerView"
     timeout: 10000
 
 # ─────────────────────────────────────────────────────────────────────
