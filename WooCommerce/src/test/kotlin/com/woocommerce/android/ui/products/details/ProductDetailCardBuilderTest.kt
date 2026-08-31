@@ -320,7 +320,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given Wagner icon branches, when building cards, then regular design system icons are used`() =
+    fun `when building cards, then regular design system icons are used`() =
         testBlocking {
             val simpleCards = sut.buildPropertyCards(
                 ProductAggregate(ProductTestUtils.generateProductWithTagsAndCategories()),
