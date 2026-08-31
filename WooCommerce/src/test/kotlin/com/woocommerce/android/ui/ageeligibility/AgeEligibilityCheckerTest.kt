@@ -198,6 +198,21 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given feature is disabled, when manual retry is requested, then verification action is not tracked`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(false)
+            val checker = createChecker()
+
+            // WHEN
+            checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+
+            // THEN
+            assertThat(client.callCount).isZero()
+            verify(analyticsTracker, never()).trackVerificationAction(AgeCheckTrigger.MANUAL_RETRY)
+        }
+
+    @Test
     fun `given a check is running, when checks overlap, then concurrent request is skipped until first finishes`() =
         testBlocking {
             // GIVEN

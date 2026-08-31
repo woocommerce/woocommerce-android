@@ -89,7 +89,6 @@ class AgeEligibilityChecker @Inject constructor(
 
         try {
             onStarted()
-            analyticsTracker.trackVerificationAction(trigger)
             checkAgeSingleFlight(activity, trigger)
             return true
         } catch (exception: CancellationException) {
@@ -105,6 +104,8 @@ class AgeEligibilityChecker @Inject constructor(
             _ageEligibilityState.update { it.copy(decision = AgeEligibilityDecision.Allowed) }
             return
         }
+
+        analyticsTracker.trackVerificationAction(trigger)
 
         val outcome = try {
             val result = client.requestAgeSignals(activity)
