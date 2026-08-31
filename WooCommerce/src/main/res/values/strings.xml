@@ -903,7 +903,8 @@
     <string name="orderdetail_message_customer">Message</string>
     <string name="orderdetail_message_customer_using_whatsapp">Contact using WhatsApp</string>
     <string name="orderdetail_message_customer_using_telegram">Contact using Telegram</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
     <string name="orderdetail_product_lineitem_view_addons_action">View Add-ons</string>
     <string name="orderdetail_product_image_contentdesc">Product Image</string>

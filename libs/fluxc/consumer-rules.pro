@@ -31,6 +31,8 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class org.wordpress.android.fluxc.model.** { <fields>; }
 -keep class org.wordpress.android.fluxc.network.** { <fields>; }
+-keepclassmembers class org.wordpress.android.fluxc.** { <fields>; }
+-keepclassmembers enum org.wordpress.android.fluxc.** { *; }
 
 # JsonObjectOrFalseDeserializer instantiates subclasses via getDeclaredConstructor(), which the
 # <fields>-only keeps above don't preserve, so R8 full mode may strip the no-arg constructor

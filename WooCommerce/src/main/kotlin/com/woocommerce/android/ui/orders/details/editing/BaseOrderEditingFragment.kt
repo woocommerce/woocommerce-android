@@ -98,6 +98,10 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
                 is OrderEditingViewModel.OrderLoaded -> {
                     onOrderLoaded()
                 }
+                is OrderEditingViewModel.OrderLoadFailed -> {
+                    uiMessageResolver.showSnack(R.string.order_error_fetch_generic)
+                    findNavController().navigateUp()
+                }
             }
         }
 
