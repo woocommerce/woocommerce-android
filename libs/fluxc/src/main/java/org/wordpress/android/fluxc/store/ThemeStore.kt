@@ -150,9 +150,8 @@ class ThemeStore @Inject constructor(
         AppLog.d(T.API, "ThemeStore onRegister")
     }
 
-    fun getWpComThemes(themeIds: List<String>): List<ThemeModel> = runBlocking {
+    suspend fun getWpComThemes(themeIds: List<String>): List<ThemeModel> =
         database.themeDao().getWpComThemes(themeIds)
-    }
 
     fun getInstalledThemeByThemeId(siteModel: SiteModel, themeId: String): ThemeModel? {
         if (themeId.isEmpty()) {
@@ -163,13 +162,11 @@ class ThemeStore @Inject constructor(
         }
     }
 
-    fun getWpComThemeByThemeId(themeId: String): ThemeModel? {
+    suspend fun getWpComThemeByThemeId(themeId: String): ThemeModel? {
         if (themeId.isEmpty()) {
             return null
         }
-        return runBlocking {
-            database.themeDao().getWpComThemeByThemeId(themeId)
-        }
+        return database.themeDao().getWpComThemeByThemeId(themeId)
     }
 
     fun setActiveThemeForSite(site: SiteModel, theme: ThemeModel) = runBlocking {
@@ -270,7 +267,7 @@ class ThemeStore @Inject constructor(
             val activatedTheme = if (payload.site.isJetpackConnected) {
                 getInstalledThemeByThemeId(payload.site, payload.theme.themeId)
             } else {
-                getWpComThemeByThemeId(payload.theme.themeId)
+                runBlocking { getWpComThemeByThemeId(payload.theme.themeId) }
             }
             activatedTheme?.let {
                 setActiveThemeForSite(payload.site, it)
