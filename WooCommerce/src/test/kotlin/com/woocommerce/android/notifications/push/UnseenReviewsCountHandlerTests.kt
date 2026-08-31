@@ -14,8 +14,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
@@ -65,6 +63,9 @@ class UnseenReviewsCountHandlerTests : BaseUnitTest() {
         setup {
             // GIVEN
             whenever(supportsReviewsReadStatus()).thenReturn(false)
+            val notifications = List(5) { NotificationModel(read = false) }
+            whenever(wpComPushNotificationStore.observeNotificationsForSite(any(), anyOrNull(), anyOrNull()))
+                .thenReturn(flowOf(notifications))
         }
 
         // WHEN
@@ -72,6 +73,24 @@ class UnseenReviewsCountHandlerTests : BaseUnitTest() {
 
         // THEN
         assertThat(unseenReviewsCount).isEqualTo(0)
-        verify(wpComPushNotificationStore, never()).observeNotificationsForSite(any(), anyOrNull(), anyOrNull())
+    }
+
+    @Test
+    fun `given read status is unsupported, when observing changes, then still emit unread count`() = testBlocking {
+        setup {
+            // GIVEN
+            whenever(supportsReviewsReadStatus()).thenReturn(false)
+            val notifications = List(5) { NotificationModel(read = false) }
+            whenever(wpComPushNotificationStore.observeNotificationsForSite(any(), anyOrNull(), anyOrNull()))
+                .thenReturn(flowOf(notifications))
+        }
+
+        // WHEN
+        val unseenReviewsCount = handler.observeUnseenCount().first()
+        val changes = handler.observeReviewNotificationChanges().first()
+
+        // THEN
+        assertThat(unseenReviewsCount).isEqualTo(0)
+        assertThat(changes).isEqualTo(5)
     }
 }

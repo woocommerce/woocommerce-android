@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
@@ -27,19 +26,16 @@ class UnseenReviewsCountHandler @Inject constructor(
     selectedSite: SelectedSite
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val unseenReviewsCount: SharedFlow<Int> =
+    private val unreadReviewNotificationsCount: SharedFlow<Int> =
         selectedSite.observe()
             .filterNotNull()
             .flatMapLatest { site ->
-                if (supportsReviewsReadStatus()) {
-                    wpComPushNotificationStore.observeNotificationsForSite(
-                        site = site,
-                        filterBySubtype = listOf(STORE_REVIEW.toString())
-                    ).map { notifications -> notifications.count { !it.read } }
-                } else {
-                    flowOf(0)
-                }
+                wpComPushNotificationStore.observeNotificationsForSite(
+                    site = site,
+                    filterBySubtype = listOf(STORE_REVIEW.toString())
+                )
             }
+            .map { notifications -> notifications.count { !it.read } }
             .distinctUntilChanged()
             .shareIn(
                 scope = appCoroutineScope,
@@ -47,5 +43,10 @@ class UnseenReviewsCountHandler @Inject constructor(
                 replay = 1
             )
 
-    fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
+    fun observeUnseenCount(): Flow<Int> =
+        unreadReviewNotificationsCount
+            .map { count -> if (supportsReviewsReadStatus()) count else 0 }
+            .distinctUntilChanged()
+
+    fun observeReviewNotificationChanges(): Flow<Int> = unreadReviewNotificationsCount
 }
