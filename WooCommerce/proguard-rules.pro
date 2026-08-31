@@ -46,6 +46,17 @@
 -keep class com.wellsql** { *; }
 ###### FluxC - end
 
+###### Gson-deserialized network DTOs - begin
+# DTOs deserialized reflectively by Gson (TypeToken / ::class.java) must be kept as classes,
+# not just their fields. Our app rule keeps only <fields> (-keepclassmembers), so R8 full mode
+# is free to remove or abstract these classes, which breaks deserialization at runtime
+# (LinkedTreeMap ClassCastException, or "JsonIOException: Abstract classes can't be instantiated").
+# By convention such DTOs live in network/networking packages; keep those as classes (fields only,
+# so methods stay optimizable) - the same shape as fluxc's own consumer rule.
+-keep class com.woocommerce.android.network.** { <fields>; }
+-keep class com.woocommerce.android.**.networking.** { <fields>; }
+###### Gson-deserialized network DTOs - end
+
 ###### Dagger - begin
 -dontwarn com.google.errorprone.annotations.*
 ###### Dagger - end
