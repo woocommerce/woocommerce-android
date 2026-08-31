@@ -4,6 +4,7 @@
 
 25.6
 -----
+- [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
 - [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Login loading dialogs now use the correct background in dark mode
