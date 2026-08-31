@@ -324,8 +324,8 @@ GEM
     rexml (3.4.4)
     rmagick (4.3.0)
     rouge (3.28.0)
-    rubocop (1.89.0)
-      json (~> 2.3)
+    rubocop (1.90.0)
+      json (>= 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
       parallel (>= 1.10)
@@ -392,7 +392,7 @@ DEPENDENCIES
   fastlane-plugin-wpmreleasetoolkit (~> 14.11)
   openssl (~> 4.0)
   rmagick (>= 4.1, < 7)
-  rubocop (~> 1.89)
+  rubocop (~> 1.90)
 
 BUNDLED WITH
   4.0.17
