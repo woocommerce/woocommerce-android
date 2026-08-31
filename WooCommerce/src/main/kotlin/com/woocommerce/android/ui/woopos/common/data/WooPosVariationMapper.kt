@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.common.data
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.woocommerce.android.R
@@ -132,20 +134,25 @@ class WooPosVariationMapper @Inject constructor() {
      * @param attributesJson The JSON string to parse
      * @return List of parsed attributes, or empty list if parsing fails
      */
-    @Suppress("TooGenericExceptionCaught")
     private fun parseAttributesJson(attributesJson: String): List<WooPosVariation.WooPosVariationAttribute> {
         if (attributesJson.isEmpty()) return emptyList()
 
         return try {
-            JsonParser.parseString(attributesJson).asJsonArray.map { element ->
-                val attribute = element.asJsonObject
-                WooPosVariation.WooPosVariationAttribute(
-                    id = attribute.longOrNull("id"),
-                    name = attribute.stringOrNull("name"),
-                    option = attribute.stringOrNull("option"),
-                )
+            val root = JsonParser.parseString(attributesJson)
+            if (root.isJsonArray) {
+                root.asJsonArray.mapNotNull { element ->
+                    (element as? JsonObject)?.let { attribute ->
+                        WooPosVariation.WooPosVariationAttribute(
+                            id = attribute.longOrNull("id"),
+                            name = attribute.stringOrNull("name"),
+                            option = attribute.stringOrNull("option"),
+                        )
+                    }
+                }
+            } else {
+                emptyList()
             }
-        } catch (e: Exception) {
+        } catch (e: JsonParseException) {
             WooLog.w(WooLog.T.POS, "Failed to parse attributes JSON: ${e.message}")
             emptyList()
         }

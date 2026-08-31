@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.woocommerce.android.extensions.stringOrNull
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
@@ -226,17 +228,23 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         attributeValues = extractAttributeValues(attributesJson)
     )
 
-    @Suppress("TooGenericExceptionCaught")
     private fun extractAttributeValues(attributesJson: String): String {
         if (attributesJson.isBlank() || attributesJson == "[]") {
             return ""
         }
 
         return try {
-            JsonParser.parseString(attributesJson).asJsonArray
-                .mapNotNull { it.asJsonObject.stringOrNull("option")?.takeIf { option -> option.isNotBlank() } }
-                .joinToString(" ")
-        } catch (e: Exception) {
+            val root = JsonParser.parseString(attributesJson)
+            if (root.isJsonArray) {
+                root.asJsonArray
+                    .mapNotNull { element ->
+                        (element as? JsonObject)?.stringOrNull("option")?.takeIf { option -> option.isNotBlank() }
+                    }
+                    .joinToString(" ")
+            } else {
+                ""
+            }
+        } catch (e: JsonParseException) {
             WooLog.e(WooLog.T.POS, "Failed to parse attributes JSON for FTS: $attributesJson", e)
             ""
         }
