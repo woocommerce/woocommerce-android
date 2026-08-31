@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
  * opens the menu, so callers decide what the anchor looks like. [content] receives the callback that closes the
  * menu; invoke it before running a selected action so the menu never stays open behind a navigation.
  *
- * For top app bar actions prefer [WooTopAppBarActionsScope.overflowAction], which supplies the standard outlined
+ * For top app bar actions prefer [WooTopAppBarActionsScope.OverflowAction], which supplies the standard outlined
  * ellipsis trigger.
  */
 @Composable

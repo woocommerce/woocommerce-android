@@ -321,20 +321,20 @@ private fun ProductDetailTopAppBar(
         modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR),
         actions = {
             state.primaryAction?.let { action ->
-                textAction(
+                TextAction(
                     text = stringResource(action.label),
                     onClick = { callbacks.onActionClicked(action) },
                 )
             }
             state.shareAction?.let { action ->
-                iconAction(
+                IconAction(
                     imageVector = WooIcons.Regular.Share,
                     contentDescription = stringResource(action.label),
                     onClick = { callbacks.onActionClicked(action) },
                 )
             }
             if (state.overflowActions.isNotEmpty()) {
-                overflowAction(
+                OverflowAction(
                     contentDescription = stringResource(R.string.more_options),
                     modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR_OVERFLOW),
                 ) { dismiss ->

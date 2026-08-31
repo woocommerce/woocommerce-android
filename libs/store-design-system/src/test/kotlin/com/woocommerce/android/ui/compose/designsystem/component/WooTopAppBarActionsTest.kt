@@ -48,7 +48,7 @@ class WooTopAppBarActionsTest {
                     WooTopAppBar(
                         title = STRING_TITLE,
                         actions = {
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.ArrowUpRight,
                                 contentDescription = " ",
                                 onClick = {},
@@ -68,7 +68,7 @@ class WooTopAppBarActionsTest {
                     WooTopAppBar(
                         title = STRING_TITLE,
                         actions = {
-                            textAction(
+                            TextAction(
                                 text = " ",
                                 onClick = {},
                             )
@@ -144,12 +144,12 @@ class WooTopAppBarActionsTest {
                     title = STRING_TITLE,
                     windowInsets = WindowInsets(0),
                     actions = {
-                        iconAction(
+                        IconAction(
                             imageVector = WooIcons.Regular.ArrowUpRight,
                             contentDescription = ENABLED_ICON_DESCRIPTION,
                             onClick = { enabledClickCount++ },
                         )
-                        iconAction(
+                        IconAction(
                             imageVector = WooIcons.Regular.Share,
                             contentDescription = DISABLED_ICON_DESCRIPTION,
                             onClick = { disabledClickCount++ },
@@ -188,11 +188,11 @@ class WooTopAppBarActionsTest {
                     title = STRING_TITLE,
                     windowInsets = WindowInsets(0),
                     actions = {
-                        textAction(
+                        TextAction(
                             text = ENABLED_TEXT_ACTION,
                             onClick = { enabledClickCount++ },
                         )
-                        textAction(
+                        TextAction(
                             text = DISABLED_TEXT_ACTION,
                             onClick = { disabledClickCount++ },
                             enabled = false,
@@ -232,7 +232,7 @@ class WooTopAppBarActionsTest {
                         title = STRING_TITLE,
                         windowInsets = WindowInsets(0),
                         actions = {
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.ArrowUpRight,
                                 contentDescription = FIRST_ICON_DESCRIPTION,
                                 onClick = {},
@@ -241,7 +241,7 @@ class WooTopAppBarActionsTest {
                             if (false) {
                                 Box(modifier = Modifier.size(PHANTOM_ACTION_SIZE))
                             }
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.Share,
                                 contentDescription = SECOND_ICON_DESCRIPTION,
                                 onClick = {},
@@ -285,7 +285,7 @@ class WooTopAppBarActionsTest {
                                     .size(INLINE_CUSTOM_SIZE)
                                     .onGloballyPositioned { customBounds = it.boundsInRoot() },
                             )
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.ArrowUpRight,
                                 contentDescription = ENABLED_ICON_DESCRIPTION,
                                 onClick = {},
@@ -324,13 +324,13 @@ class WooTopAppBarActionsTest {
                         title = STRING_TITLE,
                         windowInsets = WindowInsets(0),
                         actions = {
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.ArrowUpRight,
                                 contentDescription = FIRST_ICON_DESCRIPTION,
                                 onClick = {},
                                 modifier = Modifier.onGloballyPositioned { firstBounds = it.boundsInRoot() },
                             )
-                            iconAction(
+                            IconAction(
                                 imageVector = WooIcons.Regular.Share,
                                 contentDescription = SECOND_ICON_DESCRIPTION,
                                 onClick = {},
@@ -364,7 +364,7 @@ class WooTopAppBarActionsTest {
                     title = STRING_TITLE,
                     windowInsets = WindowInsets(0),
                     actions = {
-                        overflowAction(contentDescription = OVERFLOW_DESCRIPTION) { dismiss ->
+                        OverflowAction(contentDescription = OVERFLOW_DESCRIPTION) { dismiss ->
                             WooOverflowMenuItem(
                                 text = OVERFLOW_ITEM,
                                 onClick = {

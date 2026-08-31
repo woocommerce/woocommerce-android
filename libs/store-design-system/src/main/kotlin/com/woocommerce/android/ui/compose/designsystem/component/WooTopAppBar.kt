@@ -91,8 +91,8 @@ fun WooTopAppBar(
 /**
  * Prefer descriptor [WooTopAppBarAction] actions for screens that only need standard actions. Scoped [actions] are
  * an escape hatch for screens that additionally need inline custom content — a counter, a progress indicator, or a
- * menu anchored to its trigger — kept in source order alongside [WooTopAppBarActionsScope.iconAction] and
- * [WooTopAppBarActionsScope.textAction]. The design system owns the spacing between emitted actions, so callers
+ * menu anchored to its trigger — kept in source order alongside [WooTopAppBarActionsScope.IconAction] and
+ * [WooTopAppBarActionsScope.TextAction]. The design system owns the spacing between emitted actions, so callers
  * must not wrap them in their own spacing row.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -232,13 +232,13 @@ private fun topAppBarNavigationIcon(
  * Scope for content emitted into the [WooTopAppBar] action slot.
  *
  * The design system places emitted content in one spacing container that applies [WooTheme.spacing].space1 between
- * direct child layout bounds. For [iconAction], those are the 48dp interactive bounds around the visible 40dp
+ * direct child layout bounds. For [IconAction], those are the 48dp interactive bounds around the visible 40dp
  * outline, so the visible outline gap also includes both 4dp visual insets. Conditional content that emits no child
  * adds no gap. Because the scope extends [RowScope], callers can emit arbitrary composables in source order.
  */
 interface WooTopAppBarActionsScope : RowScope {
     @Composable
-    fun iconAction(
+    fun IconAction(
         imageVector: ImageVector,
         contentDescription: String,
         onClick: () -> Unit,
@@ -247,7 +247,7 @@ interface WooTopAppBarActionsScope : RowScope {
     )
 
     @Composable
-    fun textAction(
+    fun TextAction(
         text: String,
         onClick: () -> Unit,
         modifier: Modifier = Modifier,
@@ -259,7 +259,7 @@ interface WooTopAppBarActionsScope : RowScope {
      * the menu; invoke it before running a selected action. [modifier] applies to the trigger.
      */
     @Composable
-    fun overflowAction(
+    fun OverflowAction(
         contentDescription: String,
         modifier: Modifier = Modifier,
         enabled: Boolean = true,
@@ -271,7 +271,7 @@ private class WooTopAppBarActionsScopeImpl(
     rowScope: RowScope,
 ) : WooTopAppBarActionsScope, RowScope by rowScope {
     @Composable
-    override fun iconAction(
+    override fun IconAction(
         imageVector: ImageVector,
         contentDescription: String,
         onClick: () -> Unit,
@@ -291,7 +291,7 @@ private class WooTopAppBarActionsScopeImpl(
     }
 
     @Composable
-    override fun textAction(
+    override fun TextAction(
         text: String,
         onClick: () -> Unit,
         modifier: Modifier,
@@ -309,7 +309,7 @@ private class WooTopAppBarActionsScopeImpl(
     }
 
     @Composable
-    override fun overflowAction(
+    override fun OverflowAction(
         contentDescription: String,
         modifier: Modifier,
         enabled: Boolean,
@@ -317,7 +317,7 @@ private class WooTopAppBarActionsScopeImpl(
     ) {
         WooOverflowMenu(
             trigger = { onClick ->
-                iconAction(
+                IconAction(
                     imageVector = WooIcons.Regular.Ellipsis,
                     contentDescription = contentDescription,
                     onClick = onClick,
@@ -538,16 +538,16 @@ private fun WooTopAppBarScopedActionsPreview() {
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
             actions = {
-                textAction(
+                TextAction(
                     text = "Save",
                     onClick = {},
                 )
-                iconAction(
+                IconAction(
                     imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 )
-                overflowAction(contentDescription = "More options") { dismiss ->
+                OverflowAction(contentDescription = "More options") { dismiss ->
                     WooOverflowMenuItem(text = "Duplicate", onClick = dismiss)
                 }
             },
