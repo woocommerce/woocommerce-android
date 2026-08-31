@@ -6,8 +6,17 @@
 # targets and their transitively-reached field types), or deserialization breaks in release
 # builds only (LinkedTreeMap ClassCastException, "Abstract classes can't be instantiated").
 # Keep all our classes with their fields - we don't obfuscate, so names are stable, and
-# methods stay eligible for R8 optimization. Costs ~0.8 MB APK vs per-package keeps, but
-# no developer ever has to think about proguard when adding a Gson-deserialized class.
+# methods stay eligible for R8 optimization.
+#
+# We considered scoping this to the packages Gson DTOs conventionally live in:
+#   -keep class com.woocommerce.android.network.** { <fields>; }
+#   -keep class com.woocommerce.android.**.networking.** { <fields>; }
+# but several Gson round-trip models live elsewhere (SharedPreferences/DataStore-persisted
+# models, the cardreader remote wire protocol) and only survived because their write paths
+# happen to construct them directly, and nothing would catch a covered DTO with a field
+# typed to a class outside these packages. The broad rule costs ~0.8 MB APK over the
+# per-package keeps, but can't be silently broken by a refactor and spares developers from
+# thinking about proguard when adding a Gson-deserialized class.
 -keep class com.woocommerce.** { <fields>; }
 -keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
