@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details.editing
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -12,6 +13,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -34,7 +36,8 @@ class OrderEditingViewModel @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val orderDetailRepository: OrderDetailRepository,
     private val orderEditingRepository: OrderEditingRepository,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val crashLogging: CrashLogging
 ) : ScopedViewModel(savedState) {
     private val navArgs by savedState.navArgs<OrderDetailFragmentArgs>()
 
@@ -60,9 +63,18 @@ class OrderEditingViewModel @Inject constructor(
             } else {
                 orderId
             }
-            order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
-                "Order $orderId not found in the database."
+            val loadedOrder = orderDetailRepository.getOrderById(orderId)
+            if (loadedOrder == null) {
+                val message = "Order $orderId not found in the database."
+                WooLog.w(WooLog.T.ORDERS, message)
+                crashLogging.sendReport(
+                    exception = IllegalStateException("Order not found in the database"),
+                    message = message
+                )
+                triggerEvent(OrderLoadFailed)
+                return@launch
             }
+            order = loadedOrder
             triggerEvent(OrderLoaded)
         }
     }
@@ -170,6 +182,7 @@ class OrderEditingViewModel @Inject constructor(
     ) : Parcelable
 
     object OrderLoaded : MultiLiveEvent.Event()
+    object OrderLoadFailed : MultiLiveEvent.Event()
     object OrderEdited : MultiLiveEvent.Event()
     data class OrderEditFailed(@StringRes val message: Int) : MultiLiveEvent.Event()
 }

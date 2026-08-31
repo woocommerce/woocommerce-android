@@ -23,7 +23,7 @@ enum class FeatureFlag(
     WOO_POS_TAP_TO_PAY("woo_pos_tap_to_pay", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_SCAN_TO_PAY("woo_pos_scan_to_pay", localValue = PackageUtils.isDebugBuild()),
     WOO_POS_MARK_ORDER_AS_PAID("woo_pos_mark_order_as_complete", localValue = PackageUtils.isDebugBuild()),
-    WOO_POS_SERVER_REFUNDS("woo_pos_server_refunds", localValue = PackageUtils.isDebugBuild()),
+    WOO_POS_SERVER_REFUNDS("woo_pos_server_refunds"),
     APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites"),
     WOO_POS_LOCAL_CATALOG_M1("woo_pos_local_catalog_m1"),
     WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
