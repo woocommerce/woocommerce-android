@@ -9,6 +9,7 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.allText
 import com.woocommerce.android.ui.products.details.ProductDetailTestTags
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 class SingleProductScreen : Screen {
     constructor() : super(R.id.productDetail_root)
@@ -52,7 +53,7 @@ class SingleProductScreen : Screen {
             valueText = "Stock status: ${product.stockStatus}",
         )
         assertTextNameValuePair(
-            rowKey = "complex_${R.string.product_type}_${R.drawable.ic_gridicons_product}",
+            rowKey = "complex_${R.string.product_type}_${DesignSystemR.drawable.woo_ds_ic_regular_box_24dp}",
             name = R.string.product_type,
             valueText = product.type,
         )

@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 class ProductDetailUiMapperTest {
     private val mapper = ProductDetailUiMapper()
@@ -335,7 +336,7 @@ class ProductDetailUiMapperTest {
             title = R.string.product_reviews,
             value = "4 reviews",
             rating = 4.5f,
-            icon = R.drawable.ic_reviews,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
         )
         val followedRating = mapper.map(
             listOf(
@@ -423,14 +424,14 @@ class ProductDetailUiMapperTest {
         ProductProperty.ComplexProperty(
             title = R.string.product_description,
             value = "Description",
-            icon = R.drawable.ic_gridicons_product,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
             onClick = { onCallback("complex") },
         ),
         ProductProperty.RatingBar(
             title = R.string.product_reviews,
             value = "4 reviews",
             rating = 4.5f,
-            icon = R.drawable.ic_reviews,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
             onClick = { onCallback("rating") },
         ),
         ProductProperty.Editable(
@@ -444,7 +445,7 @@ class ProductDetailUiMapperTest {
         ProductProperty.PropertyGroup(
             title = R.string.product_inventory,
             properties = linkedMapOf("First" to "1", "Second" to "2"),
-            icon = R.drawable.ic_gridicons_list_checkmark,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
             isHighlighted = true,
             onClick = { onCallback("group") },
         ),
@@ -468,7 +469,7 @@ class ProductDetailUiMapperTest {
         ProductProperty.Switch(
             title = R.string.product_reviews,
             isOn = true,
-            icon = R.drawable.ic_reviews,
+            icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
             onStateChanged = { onCallback("switch") },
         ),
         ProductProperty.Warning("Warning"),

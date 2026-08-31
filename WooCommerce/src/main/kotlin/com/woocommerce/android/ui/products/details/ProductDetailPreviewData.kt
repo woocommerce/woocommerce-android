@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.models.ProductProperty
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 internal object ProductDetailPreviewData {
     private val addRows = listOf(
@@ -26,7 +27,7 @@ internal object ProductDetailPreviewData {
             key = "write_with_ai",
             property = ProductProperty.Button(
                 text = R.string.product_sharing_write_with_ai,
-                icon = R.drawable.ic_ai,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_sparkles_24dp,
                 tooltip = ProductProperty.Button.Tooltip(
                     title = R.string.ai_product_description_tooltip_title,
                     text = R.string.ai_product_description_tooltip_message,
@@ -48,7 +49,7 @@ internal object ProductDetailPreviewData {
             property = ProductProperty.PropertyGroup(
                 title = R.string.product_price,
                 properties = mapOf("" to "Add price"),
-                icon = R.drawable.ic_gridicons_money,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp,
                 showTitle = false,
                 onClick = {},
             ),
@@ -58,7 +59,7 @@ internal object ProductDetailPreviewData {
             property = ProductProperty.PropertyGroup(
                 title = R.string.product_inventory,
                 properties = mapOf("Stock status" to "In stock"),
-                icon = R.drawable.ic_gridicons_list_checkmark,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
                 onClick = {},
             ),
         ),
@@ -67,7 +68,7 @@ internal object ProductDetailPreviewData {
             property = ProductProperty.ComplexProperty(
                 title = R.string.product_type,
                 value = "Physical product",
-                icon = R.drawable.ic_gridicons_product,
+                icon = DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
                 isDividerVisible = false,
             ),
         ),
@@ -115,7 +116,7 @@ internal object ProductDetailPreviewData {
                         title = R.string.product_reviews,
                         value = "6 approved reviews",
                         rating = 4.5f,
-                        icon = R.drawable.ic_reviews,
+                        icon = DesignSystemR.drawable.woo_ds_ic_regular_star_24dp,
                         onClick = {},
                     ),
                     showDivider = true,
@@ -142,7 +143,7 @@ internal object ProductDetailPreviewData {
                         property = ProductProperty.ComplexProperty(
                             title = R.string.product_variations,
                             value = "3 variations",
-                            icon = R.drawable.ic_gridicons_types,
+                            icon = DesignSystemR.drawable.woo_ds_ic_regular_shapes_24dp,
                             isDividerVisible = false,
                             onClick = {},
                         ),

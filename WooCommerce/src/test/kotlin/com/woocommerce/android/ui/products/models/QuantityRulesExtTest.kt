@@ -36,6 +36,7 @@ class QuantityRulesExtTest : BaseUnitTest() {
 
         assertEquals(result.value, value)
         assertEquals(result.title, R.string.product_quantity_rules_title)
+        assertEquals(result.icon, R.drawable.ic_gridicons_product)
     }
 
     @Test
@@ -58,6 +59,7 @@ class QuantityRulesExtTest : BaseUnitTest() {
 
             assertTrue(result.showTitle)
             assertEquals(result.title, R.string.product_quantity_rules_title)
+            assertEquals(result.icon, R.drawable.ic_gridicons_product)
 
             val expectedProperties = buildMap<String, String> {
                 put(minQuantityPropertyValue, rules.min.toString())

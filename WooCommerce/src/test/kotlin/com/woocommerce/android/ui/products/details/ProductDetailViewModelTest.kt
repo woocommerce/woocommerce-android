@@ -76,6 +76,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
 import kotlin.test.assertNull
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @ExperimentalCoroutinesApi
 class ProductDetailViewModelTest : BaseUnitTest() {
@@ -195,13 +196,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                             )
                         )
                     ),
-                    R.drawable.ic_gridicons_money
+                    DesignSystemR.drawable.woo_ds_ic_regular_square_dollar_24dp
                 ),
                 ProductProperty.RatingBar(
                     R.string.product_reviews,
                     resources.getString(R.string.product_ratings_count, productAggregate.product.ratingCount),
                     productAggregate.product.averageRating,
-                    R.drawable.ic_reviews
+                    DesignSystemR.drawable.woo_ds_ic_regular_star_24dp
                 ),
                 ProductProperty.PropertyGroup(
                     R.string.product_inventory,
@@ -211,7 +212,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                             resources.getString(R.string.product_stock_status_instock)
                         )
                     ),
-                    R.drawable.ic_gridicons_list_checkmark,
+                    DesignSystemR.drawable.woo_ds_ic_regular_list_check_24dp,
                     true
                 ),
                 ProductProperty.PropertyGroup(
@@ -227,35 +228,35 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                         ),
                         Pair(resources.getString(R.string.product_shipping_class), "")
                     ),
-                    R.drawable.ic_gridicons_shipping,
+                    DesignSystemR.drawable.woo_ds_ic_regular_truck_24dp,
                     true
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_categories,
                     productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
-                    R.drawable.ic_gridicons_folder,
+                    DesignSystemR.drawable.woo_ds_ic_regular_folder_24dp,
                     maxLines = 5
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_tags,
                     productWithTagsAndCategories.tags.joinToString(transform = { it.name }),
-                    R.drawable.ic_gridicons_tag,
+                    DesignSystemR.drawable.woo_ds_ic_regular_tag_24dp,
                     maxLines = 5
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_short_description,
                     productAggregate.product.shortDescription,
-                    R.drawable.ic_gridicons_align_left
+                    DesignSystemR.drawable.woo_ds_ic_regular_align_left_24dp
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_downloadable_files,
                     resources.getString(R.string.product_downloadable_files_value_single),
-                    R.drawable.ic_gridicons_cloud
+                    DesignSystemR.drawable.woo_ds_ic_regular_cloud_24dp
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
-                    R.drawable.ic_gridicons_product,
+                    DesignSystemR.drawable.woo_ds_ic_regular_box_24dp,
                     true
                 )
             )
