@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.Endpoint as ValidationEndpoint
@@ -393,6 +394,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when {
+            authenticationError?.networkErrorType == INVALID_SSL_CERTIFICATE -> {
+                showNativeAuthenticationError(authenticationError.errorMessage)
+            }
+
             hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
                 errorMessage = requireNotNull(authenticationError).errorMessage,
                 showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE

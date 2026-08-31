@@ -114,6 +114,7 @@ class WPApiSiteRepositoryTest : BaseUnitTest() {
                 as WPApiSiteRepository.CookieNonceAuthenticationException
 
             assertThat(exception.errorMessage).isEqualTo(UiStringRes(R.string.error_site_url_remote_certificate))
+            assertThat(exception.networkErrorType).isEqualTo(INVALID_SSL_CERTIFICATE)
             assertThat(exception.message).isNull()
         }
 

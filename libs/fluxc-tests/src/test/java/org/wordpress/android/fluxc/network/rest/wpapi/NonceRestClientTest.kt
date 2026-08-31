@@ -15,11 +15,13 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Date
+import javax.net.ssl.SSLHandshakeException
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -632,6 +634,21 @@ class NonceRestClientTest {
         val serverFailure = subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD)
         assertFailed(Nonce.CookieNonceErrorType.GENERIC_ERROR, serverFailure, "server error")
         assertEquals(false, (serverFailure as Nonce.FailedRequest).loginEntryVerified)
+    }
+
+    @Test
+    fun `given TLS failure wrapped as no connection, when preflighting, then preserve certificate error`() = test {
+        val volleyError = NoConnectionError(SSLHandshakeException("certificate rejected"))
+        val networkError = WPAPINetworkError(
+            BaseNetworkError(GenericErrorType.INVALID_SSL_CERTIFICATE, volleyError)
+        )
+        givenGet(DEFAULT_LOGIN_URL, WPAPIResponse.Error(networkError))
+
+        val actual = subject.requestNonce(SITE_ORIGIN, USERNAME, PASSWORD)
+
+        val failure = assertIs<Nonce.FailedRequest>(actual)
+        assertEquals(Nonce.CookieNonceErrorType.GENERIC_ERROR, failure.type)
+        assertEquals(GenericErrorType.INVALID_SSL_CERTIFICATE, failure.networkError?.type)
     }
 
     private suspend fun givenLoginForm(url: String, html: String = LOGIN_FORM) {

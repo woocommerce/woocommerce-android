@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
@@ -38,13 +39,14 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
-import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.store.SiteStore.SiteErrorType
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
 
 private typealias ShowApplicationPasswordTutorialScreen =
@@ -251,6 +253,35 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             verify(repository).checkIfUserIsEligible(site)
             assertThat(viewModel.viewState.value?.endpointRecovery).isNull()
             assertThat(viewModel.event.value).isEqualTo(LoggedIn(0))
+        }
+
+    @Test
+    fun `given HTTP input and certificate failure, when logging in, then show guidance without fallback`() =
+        testBlocking {
+            val originalSiteUrl = "http://site.example"
+            val certificateError = cookieNonceError(
+                type = Nonce.CookieNonceErrorType.GENERIC_ERROR,
+                errorMessage = UiStringRes(R.string.error_site_url_remote_certificate),
+                networkErrorType = GenericErrorType.INVALID_SSL_CERTIFICATE
+            )
+            whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
+                .thenReturn(Result.failure(certificateError))
+            setup(siteAddress = originalSiteUrl)
+
+            viewModel.viewState.observeForTesting {
+                enterCredentialsAndContinue()
+                advanceUntilIdle()
+            }
+
+            val state = viewModel.viewState.value
+            assertThat(state?.authenticationError?.errorMessage).isEqualTo(certificateError.errorMessage)
+            assertThat(state?.authenticationError?.showWpAdminFallbackOption).isFalse()
+            verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
+            verify(repository, never()).login(eq(originalSiteUrl), any(), any(), any())
+            verify(repository, never()).fetchSite(SITE_URL)
+            verify(repository, never()).fetchSite(SITE_URL, USERNAME, PASSWORD)
+            verify(selectedSite, never()).set(any())
+            assertThat(viewModel.event.value).isNull()
         }
 
     @Test
@@ -889,12 +920,15 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
     private fun cookieNonceError(
         type: Nonce.CookieNonceErrorType,
-        loginEntryVerified: Boolean = false
+        loginEntryVerified: Boolean = false,
+        errorMessage: UiString = UiStringText(type.name),
+        networkErrorType: GenericErrorType? = null
     ) = CookieNonceAuthenticationException(
-        errorMessage = UiStringText(type.name),
+        errorMessage = errorMessage,
         errorType = type,
         networkStatusCode = null,
-        loginEntryVerified = loginEntryVerified
+        loginEntryVerified = loginEntryVerified,
+        networkErrorType = networkErrorType
     )
 
     private companion object {
