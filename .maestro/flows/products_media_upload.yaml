@@ -116,7 +116,8 @@ tags:
     label: "Open this run's product"
 
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    visible:
+      id: "cardsRecyclerView"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -369,14 +370,10 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Save/Publish to persist the image"
 
-# A few outcomes are possible depending on app version + network:
-#   1. The button label flips back to the non-dirty state and we
-#      stay on the detail screen.
-#   2. A success snackbar appears.
-#   3. The detail screen closes automatically.
-# We accept any of those signals as "save worked".
+# Require the success snackbar. The earlier alternatives included text that
+# is already on screen before saving, so they could not prove the save.
 - extendedWaitUntil:
-    visible: ".*updated.*|.*saved.*|.*productsRecycler.*|.*Describe your product.*"
+    visible: "Product saved|Product published"
     timeout: 30000
     label: "Wait for save confirmation"
 

@@ -41,8 +41,6 @@ tags:
     if (!name || name.trim() === '') {
         throw new Error('Product name is empty — list may not have loaded properly');
     }
-- evalScript: ${output.productSearchText = maestro.copiedText.trim()}
-
 - takeScreenshot: products_list
 
 # Test sorting with two explicit, opposing choices. Requiring different first
@@ -96,10 +94,12 @@ tags:
     if (!descending || descending === output.firstProductAscending) {
         throw new Error('Opposing product sorts returned the same first product');
     }
+    output.firstProductDescending = descending;
 
 - takeScreenshot: products_sorted
 
-# Test search against the first visible product from the loaded list.
+# Test search against the A-to-Z first product, and require the Z-to-A
+# first product to be filtered out.
 - tapOn:
     id: "menu_search"
     label: "Open product search"
@@ -111,7 +111,7 @@ tags:
 
 - tapOn:
     id: "search_src_text"
-- inputText: ${output.productSearchText}
+- inputText: ${output.firstProductAscending}
 - pressKey: Enter
 
 # Wait for search results
@@ -121,8 +121,13 @@ tags:
     timeout: 15000
 
 - assertVisible:
-    text: "${output.productSearchText}"
-    label: "Captured product appears in search results"
+    id: "productName"
+    text: "${output.firstProductAscending}"
+    label: "Searched product appears as a result row, not only in the search field"
+
+- assertNotVisible:
+    text: "${output.firstProductDescending}"
+    label: "A product that does not match the query was filtered out"
 
 - takeScreenshot: products_search_results
 

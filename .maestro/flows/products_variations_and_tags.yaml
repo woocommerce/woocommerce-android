@@ -40,7 +40,8 @@
 #   - empty_view                      — shown on products list when no
 #                                       results match the active filter
 #   - variationList                   — RecyclerView on VariationListFragment
-#   - cardsRecyclerView               — RecyclerView on variation detail
+#   - cardsRecyclerView               — RecyclerView on product and
+#                                       variation detail
 appId: com.woocommerce.android.dev
 name: "Products - Variations via Variable filter"
 tags:
@@ -163,7 +164,8 @@ tags:
     label: "Open discovered Variable product"
 
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    visible:
+      id: "cardsRecyclerView"
     timeout: 25000
     label: "Wait for product detail"
 
@@ -280,7 +282,7 @@ tags:
     label: "Wait for variations list"
 
 - tapOn:
-    id: "variationList"
+    id: "variationOptionName"
     index: 0
     retryTapIfNoChange: true
     label: "Open first available variation"
