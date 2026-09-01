@@ -157,12 +157,22 @@ tags:
     retryTapIfNoChange: true
     label: "Open receipt preview"
 
+# Assert the actual receipt preview toolbar title (receipt_preview_toolbar_title)
+# before backing out. The previous ".*Print.*" alternative false-matched the
+# order-detail text "Learn more about printing receipts", so the flow reported
+# a receipt even when tapping "See receipt" only showed an error toast (the
+# receipt requires a server-side POST /orders/{id}/receipt that can 403 for a
+# REST user without create permission). Asserting the real title fails loudly
+# in that case instead of silently pressing back to the orders list.
 - extendedWaitUntil:
-    visible: ".*Receipt Preview.*|.*Print.*|.*Send.*"
+    visible: "Receipt Preview"
     timeout: 30000
-    label: "Wait for receipt preview"
+    label: "Wait for receipt preview screen"
 
 - takeScreenshot: order_receipt_preview
+
+# Only the receipt preview is on the back stack here, so one back returns to
+# the order detail (reached only because the assertion above confirmed it).
 - back
 
 - extendedWaitUntil:
