@@ -597,7 +597,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual(rerun.returncode, 0, rerun.stderr)
         self.assertIn("login_successful.yaml", rerun_args)
 
-    def test_wordpress_dot_com_not_woo_store_requires_explicit_wpcom_credentials(self) -> None:
+    def test_not_woo_store_forwards_site_admin_credentials(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
@@ -606,30 +606,12 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
-            },
-        )
-
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("WordPress.com-hosted not-Woo-store fixtures require both", result.stderr)
-        self.assertEqual("", args)
-
-    def test_not_woo_store_forwards_explicit_wpcom_credentials(self) -> None:
-        result, args, _ = self.run_with_recorded_maestro_args(
-            "--device",
-            "emulator-5554",
-            ".maestro/flows/login_not_woo_store.yaml",
-            env_overrides={
-                "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL": "wpcom-user",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD": "wpcom-password",
             },
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL=wpcom-user", args)
-        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD=wpcom-password", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME=site-admin", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD=site-password", args)
 
     def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
         result, args, _ = self.run_with_recorded_maestro_args(

@@ -2,18 +2,13 @@
 # p2: login.not-woo-store
 # P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
 #
-# Logs into a WordPress site that does NOT have WooCommerce installed.
-# Site-admin credentials are preferred, with WP.com credentials used when
-# the site routes through WordPress.com authentication instead.
+# Logs into a WordPress site that does NOT have WooCommerce installed using
+# the configured site-admin credentials through either authentication route.
 #
 # Required env vars:
 #   MAESTRO_WOO_NOT_A_WOO_STORE_URL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
 #   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
-# WP.com env vars (set both or neither). Required when the fixture is hosted
-# on wordpress.com; optional for self-hosted sites that expose site credentials:
-#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
-#   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
 appId: com.woocommerce.android
 name: "Login - Not a WooCommerce store error"
 tags:
@@ -68,7 +63,8 @@ tags:
       - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
       - tapOn: "Continue"
 
-# Use the resolved WP.com credentials when no site-admin route is available.
+# Use the same site-admin credentials when the fixture presents the
+# WP.com-style email and password screens.
 - runFlow:
     when:
       visible:
@@ -76,7 +72,7 @@ tags:
     commands:
       - tapOn:
           id: "input"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
       - hideKeyboard
       - tapOn:
           id: "login_continue_button"
@@ -104,7 +100,7 @@ tags:
           timeout: 10000
       - tapOn:
           id: "input"
-      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD}
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
       - hideKeyboard
       - tapOn:
           id: "bottom_button"
