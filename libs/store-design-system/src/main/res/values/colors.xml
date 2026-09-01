@@ -7,11 +7,9 @@
     <color name="woo_ds_color_error">#FC4A5B</color>
     <color name="woo_ds_color_on_error">@color/woo_ds_color_palette_white</color>
 
-    <color name="woo_ds_color_container_primary_container">@color/woo_ds_color_palette_woo_purple_shade20</color>
+    <color name="woo_ds_color_container_primary_container">@color/woo_ds_color_palette_woo_purple_shade5</color>
     <color name="woo_ds_color_container_on_primary_container">@color/woo_ds_color_palette_woo_purple_shade90</color>
-    <color name="woo_ds_color_container_secondary_container">
-        @color/woo_ds_color_tint_layer_primary_container_opacity16
-    </color>
+    <color name="woo_ds_color_container_secondary_container">@color/woo_ds_color_palette_woo_purple_shade0</color>
     <color name="woo_ds_color_container_on_secondary_container">@color/woo_ds_color_palette_woo_purple_shade40</color>
 
     <color name="woo_ds_color_background_section">#F0EDF4</color>
@@ -47,7 +45,7 @@
     <color name="woo_ds_color_status_neutral_container">#F4F4F4</color>
     <color name="woo_ds_color_status_on_neutral_container">#1E1E1E</color>
 
-    <color name="woo_ds_color_overlay_overlay20">#33000000</color>
+    <color name="woo_ds_color_overlay_overlay20">#33101517</color>
     <color name="woo_ds_color_overlay_overlay50">#802C3338</color>
 
     <color name="woo_ds_color_state_layer_on_surface_opacity08">#14101517</color>
@@ -55,14 +53,14 @@
     <color name="woo_ds_color_state_layer_on_surface_opacity16">#29101517</color>
     <color name="woo_ds_color_state_layer_on_surface_opacity24">#3D101517</color>
 
-    <color name="woo_ds_color_tint_layer_primary_container_opacity08">#14B999FF</color>
-    <color name="woo_ds_color_tint_layer_primary_container_opacity10">#1AB999FF</color>
-    <color name="woo_ds_color_tint_layer_primary_container_opacity16">#29B999FF</color>
-    <color name="woo_ds_color_tint_layer_primary_container_opacity24">#3DB999FF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity08">#14E1D7FF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity10">#1AE1D7FF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity16">#29E1D7FF</color>
+    <color name="woo_ds_color_tint_layer_primary_container_opacity24">#3DE1D7FF</color>
     <color name="woo_ds_color_tint_layer_on_surface_opacity08">#14101517</color>
     <color name="woo_ds_color_tint_layer_on_surface_opacity10">#1A101517</color>
     <color name="woo_ds_color_tint_layer_on_surface_opacity16">#29101517</color>
-    <color name="woo_ds_color_tint_layer_on_surface_opacity24">#3D1E1E1E</color>
+    <color name="woo_ds_color_tint_layer_on_surface_opacity24">#3D101517</color>
     <color name="woo_ds_color_tint_layer_primary_opacity08">#14873EFF</color>
     <color name="woo_ds_color_tint_layer_primary_opacity10">#1A873EFF</color>
     <color name="woo_ds_color_tint_layer_primary_opacity16">#29873EFF</color>
