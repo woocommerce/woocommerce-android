@@ -32,6 +32,17 @@ appId: com.woocommerce.android.dev
     id: "bottom_button"
     retryTapIfNoChange: true
 
+# The Google Password Manager autofill sheet can appear on the WP.com email
+# screen as a top-most window, hiding login_continue_button from the hierarchy.
+# Dismiss it when present; skip silently on builds/AVDs without autofill.
+- runFlow:
+    when:
+      visible: "No thanks"
+    commands:
+      - tapOn:
+          text: "No thanks"
+          label: "dismiss_autofill_email_screen"
+
 # Enter email address
 - extendedWaitUntil:
     visible:
