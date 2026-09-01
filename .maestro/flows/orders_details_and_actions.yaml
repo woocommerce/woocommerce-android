@@ -30,34 +30,86 @@ tags:
 - runFlow:
     file: ../subflows/navigate_to_orders.yaml
 
-# Open one of this run's seeded orders — never an arbitrary first row.
-# This flow persists a note on the order it opens, and on the shared
-# store index-0 can be a manual tester's real order. Searching the
-# suite run id scopes the list to automation-owned fixtures only.
+# Open one of this run's seeded COMPLETED orders — never an arbitrary
+# first row. The "See receipt" action is only exposed on paid orders in
+# Completed status (a paid Processing order does not show it), so filter
+# the list to Completed before selecting. On the shared store an
+# arbitrary first row could be a manual tester's real order, so target
+# this run's fixture by its run id. Clear any previously-applied filters
+# first to avoid cross-test contamination.
 - tapOn:
-    id: "menu_search"
-    label: "Open order search"
+    id: "btn_order_filter"
+    label: "Open filters"
+
+- runFlow:
+    when:
+      visible: ".*Clear.*"
+    commands:
+      - tapOn:
+          text: ".*Clear.*"
+          label: "Clear existing filters"
 
 - extendedWaitUntil:
-    visible:
-      id: "search_src_text"
+    visible: "Order Status"
     timeout: 10000
 
 - tapOn:
-    id: "search_src_text"
-- inputText: ${SUITE_RUN_ID}
-- pressKey: Enter
+    text: "Order Status"
+    label: "Open status filter"
+
+- extendedWaitUntil:
+    visible: ".*Completed.*"
+    timeout: 10000
+
+- tapOn:
+    text: ".*Completed.*"
+    label: "Select Completed status"
+
+- tapOn:
+    id: "showOrdersButton"
+    label: "Apply filter"
 
 - extendedWaitUntil:
     visible:
-      id: "orderNum"
-    timeout: 20000
-    label: "Wait for seeded orders in results"
+      id: "ordersList"
+    timeout: 15000
 
-- tapOn:
-    id: "orderNum"
-    index: 0
-    label: "Open first seeded order"
+# Pull-to-refresh so the Completed filter reflects the latest server
+# state rather than a stale cached list.
+- swipe:
+    from:
+      id: "ordersList"
+    direction: DOWN
+    duration: 800
+
+# Open this run's completed order. Prefer the suite-tagged order created
+# by orders_create.yaml (customer last name "SmokeTest-<run id>") in a
+# full-suite run; fall back to this run's seeded completed fixture (its
+# billing name is the run id) when this flow runs standalone. Never fall
+# back to an arbitrary first row.
+- runFlow:
+    when:
+      visible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    commands:
+      - tapOn:
+          text: ".*SmokeTest-${SUITE_RUN_ID}.*"
+          retryTapIfNoChange: true
+          label: "Open this run's SmokeTest order"
+      - extendedWaitUntil:
+          visible:
+            id: "orderDetail_container"
+          timeout: 15000
+          label: "Wait for SmokeTest order detail"
+
+- runFlow:
+    when:
+      notVisible:
+        id: "orderDetail_container"
+    commands:
+      - tapOn:
+          text: ".*${SUITE_RUN_ID}.*"
+          retryTapIfNoChange: true
+          label: "Open this run's seeded completed order (fallback)"
 
 # Wait for order detail
 - extendedWaitUntil:
