@@ -80,6 +80,18 @@ appId: com.woocommerce.android.dev
           text: ".*Not now.*|.*Maybe later.*"
           label: "recovery_dismiss_optional_prompt"
 
+# The privacy sheet can surface a beat late — after the dismissal guards
+# above but while the dashboard is loading — and it hides "My store" as a
+# top-most window. Re-dismiss it here so the fallback below does not
+# misread a covered dashboard as "logged out" and needlessly re-login.
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn:
+          text: "Save"
+          label: "recovery_dismiss_privacy_dialog_late"
+
 # Fallback: if we're not on the dashboard, run the full login
 # subflow. login.yaml clearStates + authenticates with the primary
 # Woo account and lands on the dashboard. Running it when we're
