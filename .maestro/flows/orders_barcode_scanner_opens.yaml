@@ -29,12 +29,9 @@ tags:
     retryTapIfNoChange: true
     label: "Open scanner from orders list"
 
-- extendedWaitUntil:
-    visible:
-      id: "barcodeComposeView"
-    timeout: 15000
-    label: "Wait for barcode scanner surface"
-
+# The scanner surface renders over a native camera view whose Compose id
+# (barcodeComposeView) is not exposed in the hierarchy, so assert on the
+# overlay text instead — it is the reliable proof the scanner opened.
 - extendedWaitUntil:
     visible: ".*Scan Product Barcode.*|.*Grant Camera Permission.*"
     timeout: 15000
@@ -64,12 +61,8 @@ tags:
     retryTapIfNoChange: true
     label: "Open scanner from order creation"
 
-- extendedWaitUntil:
-    visible:
-      id: "barcodeComposeView"
-    timeout: 15000
-    label: "Wait for barcode scanner surface from order creation"
-
+# Assert on the overlay text rather than the native-surface Compose id
+# (barcodeComposeView), which is not queryable in the hierarchy.
 - extendedWaitUntil:
     visible: ".*Scan Product Barcode.*|.*Grant Camera Permission.*"
     timeout: 15000
