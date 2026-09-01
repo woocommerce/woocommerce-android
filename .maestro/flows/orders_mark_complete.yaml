@@ -197,7 +197,24 @@ tags:
 
 - takeScreenshot: order_marked_complete_list
 
+# Verify the completion actually persisted, regardless of whether the confirm
+# routed through the shipping-label screen — on that path the earlier in-branch
+# status check is skipped, so returning to the list would otherwise pass
+# without ever confirming the status changed. Reopen the order and assert it is
+# Completed.
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Reopen the completed order"
+
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
-    timeout: 10000
+      id: "orderDetail_container"
+    timeout: 15000
+
+- assertVisible:
+    text: "Completed"
+    label: "Order status persisted as Completed"
+
+- takeScreenshot: order_mark_complete_persisted
