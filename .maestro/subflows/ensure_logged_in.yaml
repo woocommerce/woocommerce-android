@@ -42,11 +42,16 @@ appId: com.woocommerce.android.dev
 #   "Skip"                       — intro carousel skip button (the
 #                                  first screen after clearState on
 #                                  some app versions)
+#   "Manage privacy"             — post-launch privacy sheet shown on
+#                                  top of the dashboard for an already
+#                                  logged-in session; it hides
+#                                  "My store" from the hierarchy until
+#                                  dismissed by the Save guard below
 #
 # Matching any of these tells us the app has finished booting. We
 # branch on which one fired.
 - extendedWaitUntil:
-    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Skip.*"
+    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Skip.*|.*Manage privacy.*"
     timeout: 45000
     label: "Wait for dashboard or login welcome screen"
 
