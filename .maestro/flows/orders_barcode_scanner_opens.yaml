@@ -9,7 +9,7 @@
 #
 # This flow does not claim barcode product injection or order creation. Those
 # still require a camera feed or a guided physical barcode scan.
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Orders - Barcode scanner opens"
 tags:
   - smoke_extended

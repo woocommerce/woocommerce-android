@@ -3,7 +3,7 @@
 #
 # Required env vars: MAESTRO_WOO_JETPACK_STORE_URL, MAESTRO_WOO_WPCOM_EMAIL,
 # MAESTRO_WOO_WPCOM_PASSWORD
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true

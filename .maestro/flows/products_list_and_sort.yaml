@@ -8,7 +8,7 @@
 #   - Sorting produces different first products for A-to-Z and Z-to-A
 #   - Search for products
 #   - Product filters
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Products - List, sort, and search"
 tags:
   - smoke_core

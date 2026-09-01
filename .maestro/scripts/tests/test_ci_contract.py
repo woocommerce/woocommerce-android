@@ -70,15 +70,36 @@ class MaestroCiContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("file: open_site_address_login.yaml", reusable_login)
 
-    def test_toolchain_is_configured_before_building_the_app(self) -> None:
+    def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
             REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
         ).read_text(encoding="utf-8")
 
         self.assertLess(
             wrapper.index("source .maestro/scripts/configure-toolchain.sh"),
-            wrapper.index("./gradlew :WooCommerce:installWasabiDebug"),
+            wrapper.index(".maestro/scripts/run-smoke-tests.sh"),
         )
+        self.assertNotIn("installWasabiDebug", wrapper)
+
+    def test_all_flows_use_the_production_app_id_parameter(self) -> None:
+        yaml_files = [
+            REPO_ROOT / ".maestro" / "config.yaml",
+            *sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")),
+            *sorted((REPO_ROOT / ".maestro" / "subflows").glob("*.yaml")),
+        ]
+
+        for path in yaml_files:
+            with self.subTest(path=path):
+                self.assertIn("appId: ${APP_ID}", path.read_text(encoding="utf-8"))
+
+        config = (REPO_ROOT / ".maestro" / "config.yaml").read_text(encoding="utf-8")
+        self.assertIn("APP_ID: com.woocommerce.android", config)
+
+        quick_actions = (
+            REPO_ROOT / ".maestro" / "flows" / "android_quick_actions.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('visible: "^Woo$"', quick_actions)
+        self.assertNotIn("Woo \\(Dev\\)", quick_actions)
 
     def test_changed_file_skip_only_applies_to_pull_requests(self) -> None:
         wrapper = (

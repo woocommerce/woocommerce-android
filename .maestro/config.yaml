@@ -27,7 +27,9 @@
 # P2 reference:
 #   WooMobile P2: Smoke testing page
 
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
+env:
+  APP_ID: com.woocommerce.android
 
 flows:
   - "flows/*"

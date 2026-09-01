@@ -9,7 +9,7 @@
 #   - Selection and a first-pair reorder persist across an app relaunch.
 #   - The exact original selection and order are restored and verified after
 #     a second relaunch, so this flow does not leave shared dashboard state.
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Dashboard - Customize all cards"
 tags:
   - smoke_extended

@@ -1,4 +1,4 @@
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 ---
 - extendedWaitUntil:
     visible:

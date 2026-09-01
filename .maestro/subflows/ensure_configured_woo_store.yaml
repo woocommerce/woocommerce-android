@@ -1,4 +1,4 @@
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 ---
 - runFlow:
     file: navigate_to_more_menu.yaml

@@ -39,7 +39,7 @@
 #   - product_category_selector_title    → "Select categories"
 #   - product_category_selector_select_button_title_one → "Select 1 category"
 #   - product_add_tool_bar_menu_button_done → "Publish"
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Products - Create and publish a full product"
 tags:
   - smoke_extended

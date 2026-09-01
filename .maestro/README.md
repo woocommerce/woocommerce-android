@@ -57,6 +57,11 @@ Run the pre-flight doctor when setting up a machine, changing credentials, or pr
 .maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
 ```
 
+The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
+selected device, the doctor downloads the universal APK from the latest stable GitHub release, verifies its published
+SHA-256 digest, and installs it. The runner enforces the same check before starting any flow. When multiple devices are
+connected, pass `--device` so installation cannot target the wrong device.
+
 ### Store data prerequisites
 
 `orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
@@ -86,7 +91,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
+.maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
@@ -102,7 +107,7 @@ Profiles are copy/paste-safe presets:
 - `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
 - `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
-  Wasabi app discoverable as `Woo (Dev)` in the app drawer.
+  production app discoverable as `Woo` in the app drawer.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
@@ -114,6 +119,8 @@ store, device, APK, repeat, and profile options.
 
 The runner:
 
+- targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
+- downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
 - selects one connected device automatically, or prompts when several are attached;
 - captures and restores animation settings;
 - can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;

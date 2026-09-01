@@ -226,6 +226,10 @@ class SmokeCliContractTest(unittest.TestCase):
             "#!/bin/sh\n"
             "if [ \"${1:-}\" = devices ]; then\n"
             "  printf 'List of devices attached\\nemulator-5554\\tdevice\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell pm path com.woocommerce.android'; then\n"
+            "  printf 'package:/data/app/com.woocommerce.android/base.apk\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell dumpsys package com.woocommerce.android'; then\n"
+            "  printf '  versionName=25.4\\n  flags=[ HAS_CODE ]\\n'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'settings get global'; then\n"
             "  printf '1\\n'\n"
             "fi\n"
@@ -528,6 +532,7 @@ class SmokeCliContractTest(unittest.TestCase):
         result, args = self.run_core_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("-e APP_ID=com.woocommerce.android", args)
         self.assertIn("MAESTRO_WOO_WPCOM_PASSWORD=selected-password", args)
         self.assertNotIn("\nWOO_WPCOM_PASSWORD=selected-password\n", args)
         for line in args.splitlines():

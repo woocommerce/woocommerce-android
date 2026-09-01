@@ -21,7 +21,9 @@ MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image
 SEED_SCRIPT="${WOO_MAESTRO_SEED_SCRIPT:-$REPO_ROOT/.maestro/scripts/seed-fixtures.py}"
 PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
+ENSURE_RELEASE_APP_SCRIPT="$REPO_ROOT/.maestro/scripts/ensure_release_app.py"
 SHARED_STORE_HOST="inpersonpayments.wpcomstaging.com"
+APP_ID="com.woocommerce.android"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
 RUN_HASH="$(printf '%s-%s-%s' "$RUN_STAMP" "$$" "${RANDOM:-0}" | cksum | awk '{print $1}')"
@@ -76,7 +78,7 @@ Options:
   --profile name              Preset: core, phone-full, release, burst, pos-tablet, android-system.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
-  --apk path                  Install APK before running.
+  --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
@@ -845,14 +847,12 @@ trap cleanup_on_exit EXIT INT TERM
 
 capture_animation_settings
 
+echo "--- Ensuring production release app"
+release_app_args=(--device "$DEVICE_SERIAL")
 if [[ -n "$APK_PATH" ]]; then
-  if [[ ! -f "$APK_PATH" ]]; then
-    echo "APK not found at: $APK_PATH" >&2
-    exit 1
-  fi
-  echo "--- Installing APK"
-  adb -s "$DEVICE_SERIAL" install -r -g "$APK_PATH"
+  release_app_args+=(--apk "$APK_PATH")
 fi
+python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
 
 prepare_device_media_fixture
 
@@ -866,26 +866,21 @@ validate_google_login_apk() {
   done
   [[ "$google_flow_selected" == "yes" ]] || return 0
 
-  local apk_to_check="$APK_PATH"
-  local pulled_apk="no"
-  if [[ -z "$apk_to_check" ]]; then
-    local installed_apk_path
-    installed_apk_path="$(
-      adb -s "$DEVICE_SERIAL" shell pm path com.woocommerce.android.dev 2>/dev/null |
-        tr -d '\r' |
-        sed -n '1s/^package://p'
-    )"
-    if [[ -z "$installed_apk_path" ]]; then
-      echo "Setup error: com.woocommerce.android.dev is not installed for login_google." >&2
-      exit 1
-    fi
-    apk_to_check="$TMP_DIR/login-google-installed.apk"
-    adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
-    pulled_apk="yes"
+  local installed_apk_path
+  installed_apk_path="$(
+    adb -s "$DEVICE_SERIAL" shell pm path "$APP_ID" 2>/dev/null |
+      tr -d '\r' |
+      sed -n '1s/^package://p'
+  )"
+  if [[ -z "$installed_apk_path" ]]; then
+    echo "Setup error: $APP_ID is not installed for login_google." >&2
+    exit 1
   fi
+  local apk_to_check="$TMP_DIR/login-google-installed.apk"
+  adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
 
   local validation_status=0
-  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" <<'PY' || validation_status=$?
+  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" "$APP_ID" <<'PY' || validation_status=$?
 import json
 import pathlib
 import sys
@@ -895,7 +890,7 @@ config = json.loads(pathlib.Path(sys.argv[1]).read_text())
 example_client_id = ""
 for client in config.get("client", []):
     package_name = client.get("client_info", {}).get("android_client_info", {}).get("package_name")
-    if package_name != "com.woocommerce.android.dev":
+    if package_name != sys.argv[3]:
         continue
     for oauth_client in client.get("oauth_client", []):
         if oauth_client.get("client_type") == 3:
@@ -914,17 +909,14 @@ except (KeyError, OSError, zipfile.BadZipFile):
 raise SystemExit(2 if example_client_id.encode() in resources else 0)
 PY
 
-  if [[ "$pulled_apk" == "yes" ]]; then
-    rm -f "$apk_to_check"
-  fi
+  rm -f "$apk_to_check"
 
   if [[ "$validation_status" -eq 2 ]]; then
     cat >&2 <<'EOF'
 Setup error: login_google cannot run with the example Google OAuth client.
 
-Build or obtain the APK with the private WooCommerce google-services.json,
-then install it or pass it with --apk. For a configured local checkout:
-  ./gradlew :WooCommerce:installWasabiDebug
+Install the official production release APK or pass a configured production
+release APK with --apk.
 EOF
     exit 1
   fi
@@ -949,7 +941,7 @@ if [[ "$SEED" == "yes" ]]; then
   source "$RUN_ENV_FILE"
 fi
 
-MAESTRO_ENV_ARGS=(-e "SUITE_RUN_ID=$SUITE_RUN_ID")
+MAESTRO_ENV_ARGS=(-e "APP_ID=$APP_ID" -e "SUITE_RUN_ID=$SUITE_RUN_ID")
 MAESTRO_PROCESS_ENV_ARGS=(env)
 while IFS='=' read -r name _value; do
   [[ -n "$name" ]] && MAESTRO_PROCESS_ENV_ARGS+=(-u "$name")

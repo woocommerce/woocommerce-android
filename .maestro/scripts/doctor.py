@@ -12,6 +12,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from ensure_release_app import ReleaseAppError, ensure_release_app
 from smoke_plan import PROFILES, flow_tags, selected_flows
 
 
@@ -254,10 +255,29 @@ def main() -> int:
             checks.append(Check("fail", "shared destructive runs are refused outside CI"))
 
     devices = adb_devices()
+    selected_device: str | None = None
     if args.device:
-        checks.append(Check("ok" if args.device in devices else "fail", f"requested adb device {args.device} {'is connected' if args.device in devices else 'is not connected'}"))
+        if args.device in devices:
+            selected_device = args.device
+            checks.append(Check("ok", f"requested adb device {args.device} is connected"))
+        else:
+            checks.append(Check("fail", f"requested adb device {args.device} is not connected"))
+    elif len(devices) == 1:
+        selected_device = devices[0]
+        checks.append(Check("ok", f"adb device {selected_device} is connected"))
+    elif len(devices) > 1:
+        checks.append(Check("fail", "multiple adb devices are connected; pass --device to select one"))
     else:
-        checks.append(Check("ok" if devices else "fail", f"{len(devices)} adb device(s) connected"))
+        checks.append(Check("fail", "no adb devices are connected"))
+
+    if selected_device and not any(check.status == "fail" for check in checks):
+        try:
+            release = ensure_release_app(selected_device)
+            checks.append(Check("ok", release.message))
+        except ReleaseAppError as error:
+            checks.append(Check("fail", str(error)))
+    else:
+        checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
 
     print("Maestro smoke doctor")
     print(f"  profile: {args.profile}")

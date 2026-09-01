@@ -1,5 +1,5 @@
 # Navigate to the More Menu (Hub) tab
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 ---
 - tapOn:
     id: "moreMenu"

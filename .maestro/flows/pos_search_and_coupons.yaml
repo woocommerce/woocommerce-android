@@ -18,7 +18,7 @@
 #   - Search resolves a variable product discovered from the live catalog
 #   - A real coupon is added to the cart
 #   - Switching back to Products reloads the product grid
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "POS - Search and Coupons tab"
 tags:
   - pos_tablet

@@ -19,7 +19,7 @@
 # above. Some lab stores do not expose Blaze in the More Menu at all;
 # in that case the flow records the unavailable state instead of
 # failing on a feature-gated menu item.
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Blaze - Campaign creation"
 tags:
   - smoke_extended

@@ -12,7 +12,7 @@
 # (noteList_addNoteContainer, notesList_notes) and menu_add.xml
 # (menu_add) to avoid ambiguous text matches that can collide with the
 # "Add note" button in the order creation flow.
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Orders - Detail view and actions"
 tags:
   - smoke_extended

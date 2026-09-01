@@ -3,12 +3,12 @@
 # P2 ref: Other > Quick Actions (long press on app icon)
 #
 # Verifies on the real launcher surface:
-#   - Long-pressing Woo (Dev) exposes Create order and Payments
+#   - Long-pressing the production Woo app exposes Create order and Payments
 #   - Create order opens a fresh order draft
 #   - Payments opens the Payments hub
 #
 # Run only through the android-system profile on an English Pixel Launcher AVD.
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Android system - App shortcuts"
 tags:
   - android_system
@@ -38,12 +38,12 @@ tags:
 - hideKeyboard
 
 - extendedWaitUntil:
-    visible: "Woo \\(Dev\\)"
+    visible: "^Woo$"
     timeout: 10000
-    label: "Find the Wasabi app icon"
+    label: "Find the production Woo app icon"
 
 - longPressOn:
-    text: "Woo \\(Dev\\)"
+    text: "^Woo$"
     label: "Open Woo app shortcuts"
 
 - assertVisible:
@@ -89,9 +89,9 @@ tags:
 - inputText: "Woo"
 - hideKeyboard
 - extendedWaitUntil:
-    visible: "Woo \\(Dev\\)"
+    visible: "^Woo$"
     timeout: 10000
-- longPressOn: "Woo \\(Dev\\)"
+- longPressOn: "^Woo$"
 - tapOn:
     text: "Payments"
     label: "Launch Payments shortcut"

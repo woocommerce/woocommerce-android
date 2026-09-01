@@ -8,7 +8,7 @@
 #
 # Run:
 #   .maestro/scripts/run-smoke-tests.sh .maestro/flows/login_successful.yaml
-appId: com.woocommerce.android.dev
+appId: ${APP_ID}
 name: "Login - Successful store login"
 tags:
   - smoke_core
