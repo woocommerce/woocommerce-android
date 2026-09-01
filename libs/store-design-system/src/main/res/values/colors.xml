@@ -11,6 +11,7 @@
     <color name="woo_ds_color_container_on_primary_container">@color/woo_ds_color_palette_woo_purple_shade90</color>
     <color name="woo_ds_color_container_secondary_container">@color/woo_ds_color_palette_woo_purple_shade0</color>
     <color name="woo_ds_color_container_on_secondary_container">@color/woo_ds_color_palette_woo_purple_shade40</color>
+    <color name="woo_ds_color_accent_red">#FF383C</color>
 
     <color name="woo_ds_color_background_section">#F0EDF4</color>
     <color name="woo_ds_color_background_on_section">@color/woo_ds_color_palette_gray_shade100</color>

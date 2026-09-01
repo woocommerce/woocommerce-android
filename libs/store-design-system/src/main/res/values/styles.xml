@@ -47,4 +47,41 @@
         <item name="android:textAllCaps">false</item>
         <item name="textAllCaps">false</item>
     </style>
+
+    <style name="ShapeAppearance.Woo.DesignSystem.BottomNavigationView.ActiveIndicator" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.Woo.DesignSystem.BottomNavigationView.ActiveIndicator" parent="">
+        <item name="android:width">@dimen/woo_ds_bottom_nav_indicator_width</item>
+        <item name="android:height">@dimen/woo_ds_bottom_nav_indicator_height</item>
+        <item name="android:color">@color/woo_ds_color_tint_layer_primary_opacity16</item>
+        <item name="shapeAppearance">
+            @style/ShapeAppearance.Woo.DesignSystem.BottomNavigationView.ActiveIndicator
+        </item>
+    </style>
+
+    <style name="Widget.Woo.DesignSystem.BottomNavigationView"
+        parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/woo_ds_color_container_secondary_container</item>
+        <item name="elevation">0dp</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:minHeight">@dimen/woo_ds_bottom_nav_height</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconTint">@color/woo_ds_color_surface_on_default</item>
+        <item name="itemTextColor">@color/woo_ds_color_surface_on_default</item>
+        <item name="itemTextAppearanceActive">
+            @style/TextAppearance.Woo.DesignSystem.BottomNavigationLabel
+        </item>
+        <item name="itemTextAppearanceInactive">
+            @style/TextAppearance.Woo.DesignSystem.BottomNavigationLabel
+        </item>
+        <item name="itemActiveIndicatorStyle">
+            @style/Widget.Woo.DesignSystem.BottomNavigationView.ActiveIndicator
+        </item>
+        <item name="activeIndicatorLabelPadding">@dimen/woo_ds_bottom_nav_indicator_label_padding</item>
+        <item name="itemPaddingTop">@dimen/woo_ds_bottom_nav_item_padding_vertical</item>
+        <item name="itemPaddingBottom">@dimen/woo_ds_bottom_nav_item_padding_vertical</item>
+    </style>
 </resources>
