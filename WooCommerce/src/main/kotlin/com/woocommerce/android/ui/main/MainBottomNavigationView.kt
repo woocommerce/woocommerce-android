@@ -17,6 +17,7 @@ import com.google.android.material.navigation.NavigationBarView.OnItemReselected
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
 import java.lang.ref.WeakReference
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 class MainBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -73,7 +74,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     private fun createBadges() {
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
-        ordersBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        ordersBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
         ordersBadge.maxCharacterCount = MAX_CHARACTERS_IN_BADGE // this includes the plus sign
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
@@ -91,13 +92,13 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showMoreMenuUnseenReviewsBadge(count: Int) {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_primary)
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
         moreMenuBadge.number = count
         moreMenuBadge.isVisible = true
     }
 
     fun showMoreMenuNewFeatureBadge() {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, R.color.color_secondary)
+        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
         moreMenuBadge.isVisible = true
     }
 
