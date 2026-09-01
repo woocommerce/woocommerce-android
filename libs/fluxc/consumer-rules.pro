@@ -31,6 +31,8 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class org.wordpress.android.fluxc.model.** { <fields>; }
 -keep class org.wordpress.android.fluxc.network.** { <fields>; }
+-keepclassmembers class org.wordpress.android.fluxc.** { <fields>; }
+-keepclassmembers enum org.wordpress.android.fluxc.** { *; }
 
 # Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
