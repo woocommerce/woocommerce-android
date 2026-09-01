@@ -21,6 +21,7 @@ MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image
 SEED_SCRIPT="${WOO_MAESTRO_SEED_SCRIPT:-$REPO_ROOT/.maestro/scripts/seed-fixtures.py}"
 PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
+CHECK_DEVICE_LOCALE_SCRIPT="$REPO_ROOT/.maestro/scripts/device_locale.py"
 ENSURE_RELEASE_APP_SCRIPT="$REPO_ROOT/.maestro/scripts/ensure_release_app.py"
 SHARED_STORE_HOST="inpersonpayments.wpcomstaging.com"
 APP_ID="com.woocommerce.android"
@@ -735,6 +736,8 @@ resolve_device() {
 DEVICE_SERIAL="$(resolve_device "$DEVICE_SELECTOR")"
 MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
 echo "Device: $DEVICE_SERIAL"
+echo "--- Checking device language"
+python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"
 
 ANIMATION_KEYS=(window_animation_scale transition_animation_scale animator_duration_scale)
 ORIGINAL_ANIMATION_VALUES=()

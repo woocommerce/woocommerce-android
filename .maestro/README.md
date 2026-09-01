@@ -62,6 +62,9 @@ selected device, the doctor downloads the universal APK from the latest stable G
 SHA-256 digest, and installs it. The runner enforces the same check before starting any flow. When multiple devices are
 connected, pass `--device` so installation cannot target the wrong device.
 
+The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
+APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
+
 ### Store data prerequisites
 
 `orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.

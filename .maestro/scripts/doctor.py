@@ -12,6 +12,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from device_locale import DeviceLocaleError, ensure_english_device_locale
 from ensure_release_app import ReleaseAppError, ensure_release_app
 from smoke_plan import PROFILES, flow_tags, selected_flows
 
@@ -247,6 +248,13 @@ def main() -> int:
         checks.append(Check("fail", "multiple adb devices are connected; pass --device to select one"))
     else:
         checks.append(Check("fail", "no adb devices are connected"))
+
+    if selected_device:
+        try:
+            locale = ensure_english_device_locale(selected_device)
+            checks.append(Check("ok", locale.message))
+        except DeviceLocaleError as error:
+            checks.append(Check("fail", str(error)))
 
     if selected_device and not any(check.status == "fail" for check in checks):
         try:

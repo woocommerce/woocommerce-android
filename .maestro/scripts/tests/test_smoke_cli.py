@@ -42,6 +42,16 @@ class SmokeCliContractTest(unittest.TestCase):
             source.index("validate_google_login_apk()"),
         )
 
+    def test_device_locale_is_checked_before_release_app_setup(self) -> None:
+        runner_source = RUNNER.read_text(encoding="utf-8")
+        doctor_source = DOCTOR.read_text(encoding="utf-8")
+
+        self.assertLess(
+            runner_source.index('python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"'),
+            runner_source.index('echo "--- Ensuring production release app"'),
+        )
+        self.assertIn("ensure_english_device_locale(selected_device)", doctor_source)
+
     def test_cleanup_finishes_before_reports_and_participates_in_exit_status(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
 
@@ -203,6 +213,7 @@ class SmokeCliContractTest(unittest.TestCase):
         *args: str,
         env_overrides: dict[str, str],
         fail_first_attempt: bool = False,
+        device_locale: str = "en-US",
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -236,6 +247,8 @@ class SmokeCliContractTest(unittest.TestCase):
             "#!/bin/sh\n"
             "if [ \"${1:-}\" = devices ]; then\n"
             "  printf 'List of devices attached\\nemulator-5554\\tdevice\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell cmd locale get-device-locale'; then\n"
+            f"  printf '%s\\n' '{device_locale}'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'shell pm path com.woocommerce.android'; then\n"
             "  printf 'package:/data/app/com.woocommerce.android/base.apk\\n'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'shell dumpsys package com.woocommerce.android'; then\n"
@@ -556,6 +569,23 @@ class SmokeCliContractTest(unittest.TestCase):
                 self.assertNotIn("selected-password", line)
         self.assertNotIn("selected-rest-secret", args)
         self.assertNotIn("other-store-secret", args)
+
+    def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
+        result, args, _ = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_successful.yaml",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+            },
+            device_locale="es-ES",
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("primary locale is es-ES; Maestro flows require English", result.stderr)
+        self.assertEqual(args, "")
 
     def test_pass_on_retry_is_reported_as_flaky_without_failing_the_run(self) -> None:
         env = {
