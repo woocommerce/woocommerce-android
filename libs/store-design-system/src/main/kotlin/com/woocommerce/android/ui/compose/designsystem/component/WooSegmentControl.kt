@@ -56,7 +56,7 @@ fun WooSegmentControl(
 
     val colors = WooTheme.colors
     val trackColor = if (enabled) {
-        colors.tintLayers.primaryContainer.opacity16
+        colors.container.secondaryContainer
     } else {
         colors.stateLayers.onSurface.opacity08
     }
