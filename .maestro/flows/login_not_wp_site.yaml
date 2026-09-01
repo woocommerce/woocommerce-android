@@ -14,17 +14,8 @@ tags:
 - launchApp:
     clearState: true
 
-# Wait for app to finish loading after clearState
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
-# Skip carousel if shown
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter a non-WordPress URL.
 - runFlow:

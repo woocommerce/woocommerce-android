@@ -19,15 +19,8 @@ tags:
 - launchApp:
     clearState: true
 
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present and wait for the
 # site-address screen's toolbar to settle.

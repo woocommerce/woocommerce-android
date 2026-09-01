@@ -8,17 +8,8 @@ appId: com.woocommerce.android
 - launchApp:
     clearState: true
 
-# Wait for app to finish loading after clearState (splash screen can take a while)
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
-# Skip the carousel if it appears
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter the store URL.
 - runFlow:

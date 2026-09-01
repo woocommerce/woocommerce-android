@@ -70,6 +70,39 @@ class MaestroCiContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("file: open_site_address_login.yaml", reusable_login)
 
+    def test_fresh_login_flows_share_the_carousel_dismissal(self) -> None:
+        helper = (
+            REPO_ROOT / ".maestro" / "subflows" / "dismiss_login_carousel.yaml"
+        ).read_text(encoding="utf-8")
+        readiness_selector = 'visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"'
+
+        self.assertIn("appId: com.woocommerce.android", helper)
+        self.assertIn(readiness_selector, helper)
+        self.assertIn('- tapOn: "Skip"', helper)
+
+        direct_login_flows = [
+            "login_google.yaml",
+            "login_help.yaml",
+            "login_no_jetpack.yaml",
+            "login_not_woo_store.yaml",
+            "login_not_wp_site.yaml",
+            "login_wrong_account.yaml",
+            "login_wrong_credentials.yaml",
+        ]
+        for flow_name in direct_login_flows:
+            with self.subTest(flow=flow_name):
+                flow = (REPO_ROOT / ".maestro" / "flows" / flow_name).read_text(encoding="utf-8")
+                self.assertIn("../subflows/dismiss_login_carousel.yaml", flow)
+                self.assertNotIn(readiness_selector, flow)
+                self.assertNotIn('- tapOn: "Skip"', flow)
+
+        reusable_login = (
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("file: dismiss_login_carousel.yaml", reusable_login)
+        self.assertNotIn(readiness_selector, reusable_login)
+        self.assertNotIn('- tapOn: "Skip"', reusable_login)
+
     def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
             REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
