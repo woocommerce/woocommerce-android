@@ -45,10 +45,7 @@ tags:
     retryTapIfNoChange: true
 
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: ../subflows/dismiss_google_password_manager.yaml
 
 - runFlow:
     when:
@@ -59,10 +56,7 @@ tags:
           id: "login_enter_password"
 
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: ../subflows/dismiss_google_password_manager.yaml
 
 - extendedWaitUntil:
     visible:

@@ -16,9 +16,30 @@ RUNNER = REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh"
 DOCTOR = REPO_ROOT / ".maestro" / "scripts" / "doctor.py"
 GOLDEN_DIR = SCRIPT_DIR / "golden"
 LOGIN_NOT_WP_SITE_FLOW = REPO_ROOT / ".maestro" / "flows" / "login_not_wp_site.yaml"
+GOOGLE_PASSWORD_MANAGER_SUBFLOW = (
+    REPO_ROOT / ".maestro" / "subflows" / "dismiss_google_password_manager.yaml"
+)
 
 
 class SmokeCliContractTest(unittest.TestCase):
+    def test_google_password_manager_is_dismissed_by_stable_android_resource_id(self) -> None:
+        dismissal = GOOGLE_PASSWORD_MANAGER_SUBFLOW.read_text(encoding="utf-8")
+        affected_files = (
+            REPO_ROOT / ".maestro" / "flows" / "login_wrong_credentials.yaml",
+            REPO_ROOT / ".maestro" / "flows" / "login_wrong_account.yaml",
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml",
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml",
+        )
+
+        self.assertIn('id: "android:id/autofill_dialog_no"', dismissal)
+        self.assertNotIn("point:", dismissal)
+        references = 0
+        for path in affected_files:
+            source = path.read_text(encoding="utf-8")
+            self.assertNotIn('"No thanks"', source)
+            references += source.count("dismiss_google_password_manager.yaml")
+        self.assertEqual(references, 8)
+
     def test_not_wp_site_flow_verifies_recovery_preserves_the_entered_address(self) -> None:
         source = LOGIN_NOT_WP_SITE_FLOW.read_text(encoding="utf-8")
 
