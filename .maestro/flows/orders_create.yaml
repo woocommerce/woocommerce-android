@@ -19,7 +19,7 @@
 # The order IS committed to the staging store and completed via COD.
 # Staging orders use test data (SmokeTest customer, $10 gift wrap) so
 # accumulation across runs is acceptable.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Orders - Create a new order"
 tags:
   - smoke_extended

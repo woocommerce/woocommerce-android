@@ -1,5 +1,5 @@
 # Navigate to the Orders tab
-appId: ${APP_ID}
+appId: com.woocommerce.android
 ---
 - tapOn:
     id: "orders"

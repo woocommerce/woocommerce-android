@@ -40,7 +40,7 @@
 #   - image_thumbnail          — per-tile ImageView
 #   - mnu_confirm_selection    — "Add N" action-mode menu item
 #   - soft_ask_view            — storage-permission prompt (guarded)
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Products - Media upload via WP media library and device media"
 tags:
   - smoke_extended

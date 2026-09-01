@@ -943,7 +943,7 @@ if [[ "$SEED" == "yes" ]]; then
   source "$RUN_ENV_FILE"
 fi
 
-MAESTRO_ENV_ARGS=(-e "APP_ID=$APP_ID" -e "SUITE_RUN_ID=$SUITE_RUN_ID")
+MAESTRO_ENV_ARGS=(-e "SUITE_RUN_ID=$SUITE_RUN_ID")
 MAESTRO_PROCESS_ENV_ARGS=(env)
 while IFS='=' read -r name _value; do
   [[ -n "$name" ]] && MAESTRO_PROCESS_ENV_ARGS+=(-u "$name")

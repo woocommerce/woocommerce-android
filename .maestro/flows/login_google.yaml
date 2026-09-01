@@ -23,7 +23,7 @@
 #
 # Required env vars:
 #   MAESTRO_WOO_JETPACK_STORE_URL   (any Jetpack-connected store the linked account accesses)
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - Social login (Google)"
 tags:
   - smoke_extended

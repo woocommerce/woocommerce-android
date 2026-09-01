@@ -14,7 +14,7 @@
 # with a "Cash on Delivery" gateway recorded. It therefore creates its
 # own pending-payment order first instead of consuming an arbitrary row
 # from the shared store.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Orders - Collect cash payment"
 tags:
   - smoke_extended

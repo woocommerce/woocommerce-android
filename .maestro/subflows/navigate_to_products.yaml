@@ -1,5 +1,5 @@
 # Navigate to the Products tab
-appId: ${APP_ID}
+appId: com.woocommerce.android
 ---
 - tapOn:
     id: "products"

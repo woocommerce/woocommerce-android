@@ -8,7 +8,7 @@
 #   - Payments opens the Payments hub
 #
 # Run only through the android-system profile on an English Pixel Launcher AVD.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Android system - App shortcuts"
 tags:
   - android_system

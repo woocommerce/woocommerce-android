@@ -10,7 +10,7 @@
 #   MAESTRO_WOO_NO_JETPACK_SITE_URL             (any non-Jetpack WP site with WC)
 #   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME  (site admin credentials — not WP.com)
 #   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - No Jetpack via site credentials"
 tags:
   - smoke_extended

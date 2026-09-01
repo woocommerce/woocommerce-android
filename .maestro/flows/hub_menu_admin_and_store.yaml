@@ -16,7 +16,7 @@
 # page depends on the staging site's current state. Asserting "we
 # left the More Menu" + toolbar title is the highest-signal smoke
 # check available.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Hub Menu - WC Admin, View Store, Change store"
 tags:
   - smoke_extended

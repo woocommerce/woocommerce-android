@@ -7,7 +7,7 @@
 #     opens the Analytics Hub screen
 #   - The hub renders its date selector and at least one analytics card
 #     (Revenue, Orders, etc.)
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Dashboard - View All store analytics"
 tags:
   - smoke_extended

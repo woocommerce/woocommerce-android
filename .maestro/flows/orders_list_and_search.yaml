@@ -5,7 +5,7 @@
 # Verifies:
 #   - Orders list loads with order data
 #   - Search for an order by number or keyword
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Orders - List and search"
 tags:
   - smoke_core

@@ -15,7 +15,7 @@
 #   - Cash payment can be completed
 #   - Payment success screen displays
 #   - A new order can be started after successful payment
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "POS - Cash payment flow"
 tags:
   - pos_tablet

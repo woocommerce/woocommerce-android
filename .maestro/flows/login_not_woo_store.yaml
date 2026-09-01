@@ -14,7 +14,7 @@
 # on wordpress.com; optional for self-hosted sites that expose site credentials:
 #   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL
 #   MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - Not a WooCommerce store error"
 tags:
   - smoke_extended

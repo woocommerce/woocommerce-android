@@ -4,7 +4,7 @@
 #
 # Manages its own login flow (does not call the login subflow) because
 # we're validating the pre-login error path. Starts from a fresh state.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - Not a WordPress site error"
 tags:
   - smoke_extended

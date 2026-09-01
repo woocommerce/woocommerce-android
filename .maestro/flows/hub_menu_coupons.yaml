@@ -11,7 +11,7 @@
 #   - Pick Percentage Discount and confirm the edit-coupon screen
 #     opens
 #   - Create a run-scoped coupon and verify it appears in the list
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Hub Menu - Coupons"
 tags:
   - smoke_extended

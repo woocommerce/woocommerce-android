@@ -1,4 +1,4 @@
-appId: ${APP_ID}
+appId: com.woocommerce.android
 ---
 - runFlow:
     when:

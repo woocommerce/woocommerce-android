@@ -81,7 +81,7 @@ class MaestroCiContractTests(unittest.TestCase):
         )
         self.assertNotIn("installWasabiDebug", wrapper)
 
-    def test_all_flows_use_the_production_app_id_parameter(self) -> None:
+    def test_all_flows_use_the_production_app_id(self) -> None:
         yaml_files = [
             REPO_ROOT / ".maestro" / "config.yaml",
             *sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")),
@@ -90,10 +90,9 @@ class MaestroCiContractTests(unittest.TestCase):
 
         for path in yaml_files:
             with self.subTest(path=path):
-                self.assertIn("appId: ${APP_ID}", path.read_text(encoding="utf-8"))
-
-        config = (REPO_ROOT / ".maestro" / "config.yaml").read_text(encoding="utf-8")
-        self.assertIn("APP_ID: com.woocommerce.android", config)
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("appId: com.woocommerce.android", source)
+                self.assertNotIn("com.woocommerce.android.dev", source)
 
         quick_actions = (
             REPO_ROOT / ".maestro" / "flows" / "android_quick_actions.yaml"

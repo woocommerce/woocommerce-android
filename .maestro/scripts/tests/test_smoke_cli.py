@@ -548,7 +548,7 @@ class SmokeCliContractTest(unittest.TestCase):
         result, args, _ = self.run_core_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("-e APP_ID=com.woocommerce.android", args)
+        self.assertNotIn("-e APP_ID=", args)
         self.assertIn("MAESTRO_WOO_WPCOM_PASSWORD=selected-password", args)
         self.assertNotIn("\nWOO_WPCOM_PASSWORD=selected-password\n", args)
         for line in args.splitlines():

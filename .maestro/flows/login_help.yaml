@@ -9,7 +9,7 @@
 # the site-address screen — the prologue itself has no toolbar.
 #
 # No credentials required.
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - Help section"
 tags:
   - smoke_extended

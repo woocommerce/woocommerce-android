@@ -9,7 +9,7 @@
 #   MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD
 #                                      (selected WP.com account)
 #   MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL  (site the primary account can't access)
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Login - Wrong account for the store"
 tags:
   - smoke_extended

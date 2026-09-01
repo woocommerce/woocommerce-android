@@ -7,7 +7,7 @@
 #     screen renders with the "Search for customers" search hint
 #   - Inbox section opens from the More Menu, the Inbox screen
 #     renders (empty-state message OR an inbox note timestamp)
-appId: ${APP_ID}
+appId: com.woocommerce.android
 name: "Hub Menu - Customers and Inbox"
 tags:
   - smoke_extended
