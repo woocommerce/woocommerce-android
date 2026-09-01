@@ -144,7 +144,7 @@ tags:
     retryTapIfNoChange: true
     label: "Mark order as complete with cash"
 
-# ── Verify order is marked completed and we returned to the list ─────
+# ── Verify the payment persisted, not just that we returned to the list ──
 - extendedWaitUntil:
     visible:
       id: "ordersList"
@@ -152,7 +152,28 @@ tags:
 
 - takeScreenshot: orders_after_cash_payment
 
+# Returning to the list only proves navigation. Reopen the order this flow just
+# paid (newest, top of the list) and confirm the cash payment actually
+# persisted: the order is Completed and shows a recorded Paid line.
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Reopen the just-paid order"
+
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
-    timeout: 10000
+      id: "orderDetail_container"
+    timeout: 15000
+
+- assertVisible:
+    text: "Completed"
+    label: "Order status persisted as Completed"
+
+- scrollUntilVisible:
+    element: ".*Paid.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Cash payment recorded as Paid"
+
+- takeScreenshot: order_cash_payment_persisted
