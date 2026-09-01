@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.GetAppVersionName
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
@@ -40,6 +41,7 @@ class SiteObserver @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val dispatcher: Dispatcher,
     private val appVersionName: GetAppVersionName,
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
@@ -47,7 +49,10 @@ class SiteObserver @Inject constructor(
             .distinctUntilChanged { old, new -> new.id == old.id }
             .collectLatest { site ->
                 coroutineScope {
-                    launch { fetchPlugins(site) }
+                    launch {
+                        fetchPlugins(site)
+                        fetchSubscriptionProductCreationSettings(site)
+                    }
 
                     launch { fetchStoreId(site) }
 
@@ -67,6 +72,14 @@ class SiteObserver @Inject constructor(
     private suspend fun fetchPlugins(site: SiteModel) {
         WooLog.d(WooLog.T.UTILS, "Fetch plugins for site ${site.name}")
         wooCommerceStore.fetchSitePlugins(site)
+    }
+
+    // The settings group only exists while the Woo Subscriptions plugin is active, so this runs after fetchPlugins
+    private suspend fun fetchSubscriptionProductCreationSettings(site: SiteModel) {
+        if (!isEligibleForSubscriptions()) return
+
+        WooLog.d(WooLog.T.UTILS, "Fetch subscription product creation settings for site ${site.name}")
+        wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
     }
 
     private suspend fun fetchStoreId(site: SiteModel) {
