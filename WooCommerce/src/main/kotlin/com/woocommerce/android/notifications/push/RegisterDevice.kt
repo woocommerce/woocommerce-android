@@ -76,6 +76,7 @@ class RegisterDevice @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun register(trigger: Trigger) {
         val token = appPrefsWrapper.getFCMToken()
         if (token.isEmpty()) {
@@ -91,7 +92,13 @@ class RegisterDevice @Inject constructor(
 
         if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
-            pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            try {
+                pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            } catch (cancellationException: CancellationException) {
+                throw cancellationException
+            } catch (throwable: Throwable) {
+                WooLog.e(WooLog.T.NOTIFICATIONS, "WP.com push registration failed for $trigger", throwable)
+            }
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
