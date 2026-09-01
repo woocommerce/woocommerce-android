@@ -38,7 +38,7 @@ class SmokeCliContractTest(unittest.TestCase):
             source = path.read_text(encoding="utf-8")
             self.assertNotIn('"No thanks"', source)
             references += source.count("dismiss_google_password_manager.yaml")
-        self.assertEqual(references, 8)
+        self.assertEqual(references, 9)
 
     def test_not_wp_site_flow_verifies_recovery_preserves_the_entered_address(self) -> None:
         source = LOGIN_NOT_WP_SITE_FLOW.read_text(encoding="utf-8")

@@ -42,11 +42,16 @@ appId: com.woocommerce.android
 #   "Skip"                       — intro carousel skip button (the
 #                                  first screen after clearState on
 #                                  some app versions)
+#   "Manage privacy"             — post-launch privacy sheet shown on
+#                                  top of the dashboard for an already
+#                                  logged-in session; it hides
+#                                  "My store" from the hierarchy until
+#                                  dismissed by the Save guard below
 #
 # Matching any of these tells us the app has finished booting. We
 # branch on which one fired.
 - extendedWaitUntil:
-    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Skip.*"
+    visible: ".*My store.*|.*Enter your store address.*|.*Log in.*|.*Skip.*|.*Manage privacy.*"
     timeout: 45000
     label: "Wait for dashboard or login welcome screen"
 
@@ -74,6 +79,18 @@ appId: com.woocommerce.android
       - tapOn:
           text: ".*Not now.*|.*Maybe later.*"
           label: "recovery_dismiss_optional_prompt"
+
+# The privacy sheet can surface a beat late — after the dismissal guards
+# above but while the dashboard is loading — and it hides "My store" as a
+# top-most window. Re-dismiss it here so the fallback below does not
+# misread a covered dashboard as "logged out" and needlessly re-login.
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn:
+          text: "Save"
+          label: "recovery_dismiss_privacy_dialog_late"
 
 # Fallback: if we're not on the dashboard, run the full login
 # subflow. login.yaml clearStates + authenticates with the primary

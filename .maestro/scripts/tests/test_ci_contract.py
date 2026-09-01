@@ -175,7 +175,7 @@ class MaestroCiContractTests(unittest.TestCase):
         quick_actions = (
             REPO_ROOT / ".maestro" / "flows" / "android_quick_actions.yaml"
         ).read_text(encoding="utf-8")
-        self.assertIn('visible: "^Woo$"', quick_actions)
+        self.assertIn('text: "^Woo$"', quick_actions)
         self.assertNotIn("Woo \\(Dev\\)", quick_actions)
 
     def test_changed_file_skip_only_applies_to_pull_requests(self) -> None:
