@@ -113,4 +113,8 @@ tags:
     visible: ".*not a WooCommerce site.*"
     timeout: 30000
 
+- assertVisible:
+    text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}
+    label: "Open installation page CTA is visible"
+
 - takeScreenshot: login_not_woo_store

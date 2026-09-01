@@ -137,6 +137,17 @@ class MaestroCiContractTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertNotIn(obsolete_namespace, path.read_text(encoding="utf-8"))
 
+    def test_not_woo_store_requires_the_installation_page_cta(self) -> None:
+        flow = (
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
+        ).read_text(encoding="utf-8")
+        strings = (REPO_ROOT / ".maestro" / "strings.env").read_text(encoding="utf-8")
+
+        error_message = flow.index('visible: ".*not a WooCommerce site.*"')
+        cta = flow.index("text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}")
+        self.assertLess(error_message, cta)
+        self.assertIn("STRING_LOGIN_OPEN_INSTALLATION_PAGE='Open installation page'", strings)
+
     def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
             REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
