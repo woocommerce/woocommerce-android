@@ -164,6 +164,26 @@ tags:
     retryTapIfNoChange: true
     label: "Open receipt preview"
 
+- takeScreenshot: after_see_receipt_tap
+
+# The order detail auto-refreshes and can reset scroll, dropping the tap. If
+# "See receipt" is still visible we are still on the order detail (the receipt
+# did not open), so re-scroll and tap again — this keeps the assertion below a
+# real test of the receipt rather than of a missed tap.
+- runFlow:
+    when:
+      visible: "See receipt"
+    commands:
+      - scrollUntilVisible:
+          element: "See receipt"
+          direction: DOWN
+          timeout: 10000
+          label: "Re-scroll to See receipt"
+      - tapOn:
+          text: "See receipt"
+          retryTapIfNoChange: true
+          label: "Retry open receipt preview"
+
 # Assert the receipt actually RENDERED, not merely that the preview screen
 # opened. A successful receipt echoes this order as "Summary: Order #<n>" in
 # its webview content. The receipt requires a server-side POST
