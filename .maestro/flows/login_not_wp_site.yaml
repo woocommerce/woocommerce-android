@@ -45,4 +45,20 @@ tags:
 # Verify the recovery buttons are present
 - assertVisible: "Try another store"
 
+- tapOn:
+    text: "Try another store"
+    retryTapIfNoChange: true
+
+# Verify recovery returns to the site-address step without discarding the
+# address that produced the error.
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 15000
+
+- assertVisible:
+    id: "input"
+    text: "google.com"
+    label: "Verify the last entered site address is preserved"
+
 - takeScreenshot: login_not_wp_site

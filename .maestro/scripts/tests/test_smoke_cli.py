@@ -15,9 +15,22 @@ REPO_ROOT = SCRIPT_DIR.parent.parent.parent
 RUNNER = REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh"
 DOCTOR = REPO_ROOT / ".maestro" / "scripts" / "doctor.py"
 GOLDEN_DIR = SCRIPT_DIR / "golden"
+LOGIN_NOT_WP_SITE_FLOW = REPO_ROOT / ".maestro" / "flows" / "login_not_wp_site.yaml"
 
 
 class SmokeCliContractTest(unittest.TestCase):
+    def test_not_wp_site_flow_verifies_recovery_preserves_the_entered_address(self) -> None:
+        source = LOGIN_NOT_WP_SITE_FLOW.read_text(encoding="utf-8")
+
+        recovery = source.index('- tapOn:\n    text: "Try another store"')
+        preserved_address = source.index(
+            '- assertVisible:\n'
+            '    id: "input"\n'
+            '    text: "google.com"\n'
+            '    label: "Verify the last entered site address is preserved"'
+        )
+        self.assertLess(recovery, preserved_address)
+
     def test_device_media_fixture_is_prepared_only_for_the_media_flow(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
 
