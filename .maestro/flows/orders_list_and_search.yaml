@@ -25,8 +25,19 @@ tags:
     id: "ordersList"
     label: "Orders list is visible"
 
-- assertVisible:
-    id: "orderNum"
+# Pull-to-refresh so the list reflects current server state. Otherwise a stale
+# cached row for an order deleted by a prior run's cleanup could be captured
+# below and then fail to search (it no longer exists server-side).
+- swipe:
+    from:
+      id: "ordersList"
+    direction: DOWN
+    duration: 800
+
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
+    timeout: 15000
     label: "At least one order number is visible"
 
 # Validate first order has a non-empty number via JavaScript
@@ -39,6 +50,17 @@ tags:
         throw new Error('Order number text is empty');
     }
 - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
+# Search matches the numeric order id, so strip the leading "#" for the query
+# while keeping the full "#<n>" text for the row assertions below.
+- evalScript: ${output.orderSearchTerm = output.orderSearchText.replace(/[^0-9]/g, '')}
+
+# Capture a second, different order number that must NOT match the search term.
+# Asserting it disappears from the results proves the search actually filtered
+# the list rather than just leaving the already-visible first order on screen.
+- copyTextFrom:
+    id: "orderNum"
+    index: 1
+- evalScript: ${output.otherOrderText = maestro.copiedText.trim()}
 
 - takeScreenshot: orders_list
 
@@ -54,7 +76,7 @@ tags:
 
 - tapOn:
     id: "search_src_text"
-- inputText: ${output.orderSearchText}
+- inputText: ${output.orderSearchTerm}
 - pressKey: Enter
 
 # Wait for search results
@@ -66,6 +88,10 @@ tags:
 - assertVisible:
     text: "${output.orderSearchText}"
     label: "Captured order appears in search results"
+
+- assertNotVisible:
+    text: "${output.otherOrderText}"
+    label: "Non-matching order is filtered out (search actually ran)"
 
 - takeScreenshot: orders_search_results
 

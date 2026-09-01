@@ -72,7 +72,7 @@ tags:
     label: "Submit order and start payment flow"
 
 - extendedWaitUntil:
-    visible: ".*Take payment.*|.*Cash.*"
+    visible: ".*Take payment.*"
     timeout: 30000
 
 - tapOn:
@@ -130,10 +130,23 @@ tags:
     retryTapIfNoChange: true
     label: "Apply Processing status"
 
+# Wait for the status editor to close first, then assert the status tag, so the
+# check reflects the persisted order status rather than the "Processing" option
+# still visible in the closing dialog.
 - extendedWaitUntil:
-    visible: ".*Processing.*"
+    notVisible: "Change order status"
+    timeout: 15000
+    label: "Status editor dismissed"
+
+- extendedWaitUntil:
+    visible:
+      id: "orderStatus_orderTags"
     timeout: 30000
-    label: "Wait for Processing status"
+    label: "Order status tags visible"
+
+- assertVisible:
+    text: "Processing"
+    label: "Order status is Processing"
 
 - takeScreenshot: order_detail_processing
 
@@ -197,7 +210,24 @@ tags:
 
 - takeScreenshot: order_marked_complete_list
 
+# Verify the completion actually persisted, regardless of whether the confirm
+# routed through the shipping-label screen — on that path the earlier in-branch
+# status check is skipped, so returning to the list would otherwise pass
+# without ever confirming the status changed. Reopen the order and assert it is
+# Completed.
+- tapOn:
+    id: "orderNum"
+    index: 0
+    retryTapIfNoChange: true
+    label: "Reopen the completed order"
+
 - extendedWaitUntil:
     visible:
-      id: "ordersList"
-    timeout: 10000
+      id: "orderDetail_container"
+    timeout: 15000
+
+- assertVisible:
+    text: "Completed"
+    label: "Order status persisted as Completed"
+
+- takeScreenshot: order_mark_complete_persisted

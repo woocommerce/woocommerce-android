@@ -179,8 +179,12 @@ tags:
 
 - back
 
+# Dismissing the Android share sheet lands on the order detail on some
+# devices and pops through to the orders list on others (the share intent
+# closes the in-app payment sheet, so the back depth varies). Either is a
+# valid "backed out without collecting payment" outcome.
 - extendedWaitUntil:
     visible:
-      id: "orderDetail_container"
+      id: "orderDetail_container|ordersList"
     timeout: 30000
-    label: "Wait for order detail after dismissing share sheet"
+    label: "Wait for order detail or orders list after dismissing share sheet"
