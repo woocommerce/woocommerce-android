@@ -27,7 +27,16 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_JETPACK_STORE_URL}
-- hideKeyboard
+# hideKeyboard issues a BACK press. On AVDs that emulate a hardware keyboard the
+# soft keyboard never shows (only a floating IME toolbar), so an unconditional
+# hideKeyboard navigates back off the login step. Only hide the keyboard when
+# the continue button is actually covered by it.
+- runFlow:
+    when:
+      notVisible:
+        id: "bottom_button"
+    commands:
+      - hideKeyboard
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
@@ -51,7 +60,12 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
-- hideKeyboard
+- runFlow:
+    when:
+      notVisible:
+        id: "login_continue_button"
+    commands:
+      - hideKeyboard
 - tapOn:
     id: "login_continue_button"
     retryTapIfNoChange: true
@@ -87,7 +101,12 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
-- hideKeyboard
+- runFlow:
+    when:
+      notVisible:
+        id: "bottom_button"
+    commands:
+      - hideKeyboard
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
