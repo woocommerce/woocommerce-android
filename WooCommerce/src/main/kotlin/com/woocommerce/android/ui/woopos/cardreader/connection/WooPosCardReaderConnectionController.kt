@@ -648,8 +648,11 @@ class WooPosCardReaderConnectionController(
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
-                logger.e("Remote reader connection failed: ${result.message}")
-                tracker.trackConnectionFailed()
+                logger.e("Remote reader connection failed: ${result.errorDescription}")
+                tracker.trackConnectionFailed(
+                    errorType = result.reason.analyticsValue,
+                    errorDescription = result.errorDescription,
+                )
                 appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
@@ -744,7 +747,7 @@ class WooPosCardReaderConnectionController(
         errorMessage: String?
     ) {
         logger.e("Connection failed - $errorCode: $errorMessage")
-        tracker.trackConnectionFailed()
+        tracker.trackConnectionFailed(errorCode, errorMessage)
         when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailedBatteryLow(

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cardreader.remote
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.StatementDescriptor
+import com.woocommerce.android.cardreader.remote.CardReaderRemoteError
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
 import com.woocommerce.android.cardreader.remote.ConnectOutcome
@@ -102,6 +103,47 @@ class WooPosRemoteReaderSessionTest {
         // THEN
         assertThat(state).isInstanceOf(WooPosRemoteReaderSession.State.Connected::class.java)
     }
+
+    @Test
+    fun `given fetchConnectionToken returns blank, when connect, then reason is token fetch failed`() = runTest {
+        // GIVEN
+        whenever(cardReaderStore.fetchConnectionToken()).thenReturn("")
+        val session = createSession()
+
+        // WHEN
+        val state = session.connect(phone(isSimulated = false)) as WooPosRemoteReaderSession.State.Failed
+
+        // THEN
+        assertThat(state.reason).isEqualTo(WooPosRemoteReaderSession.State.Failed.Reason.TOKEN_FETCH_FAILED)
+    }
+
+    @Test
+    fun `given client rejects connect, when connect, then reason and error description carry the remote code`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderStore.fetchConnectionToken()).thenReturn("tok")
+            whenever(cardReaderOnboardingChecker.getOnboardingState()).thenReturn(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                    version = null,
+                    countryCode = "US",
+                )
+            )
+            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
+                LocationIdFetchingResult.Success("loc_123")
+            )
+            whenever(client.connect(any(), any(), any(), any())).thenReturn(
+                ConnectOutcome.Rejected(CardReaderRemoteError.NfcDisabled, "nfc is off")
+            )
+            val session = createSession()
+
+            // WHEN
+            val state = session.connect(phone(isSimulated = false)) as WooPosRemoteReaderSession.State.Failed
+
+            // THEN
+            assertThat(state.reason).isEqualTo(WooPosRemoteReaderSession.State.Failed.Reason.CONNECT_REJECTED)
+            assertThat(state.errorDescription).isEqualTo("nfc_disabled - nfc is off")
+        }
 
     @Test
     fun `given fetchConnectionToken throws CancellationException, when connect, then exception is rethrown`() =

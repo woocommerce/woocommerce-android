@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
@@ -73,12 +74,20 @@ class WooPosRemoteReaderSession @Inject constructor(
             throw cancel
         } catch (cause: Throwable) {
             logger.e("Failed to fetch connection token", cause)
-            failWith(R.string.woopos_remote_reader_failed_token_invalid)
+            failWith(
+                message = R.string.woopos_remote_reader_failed_token_invalid,
+                reason = State.Failed.Reason.TOKEN_FETCH_FAILED,
+                errorDescription = cause.describeWithCauses(),
+            )
             return null
         }
         if (token.isBlank()) {
             logger.e("Connection token was empty")
-            failWith(R.string.woopos_remote_reader_failed_token_invalid)
+            failWith(
+                message = R.string.woopos_remote_reader_failed_token_invalid,
+                reason = State.Failed.Reason.TOKEN_FETCH_FAILED,
+                errorDescription = "connection token was empty",
+            )
             return null
         }
         return token
@@ -88,12 +97,24 @@ class WooPosRemoteReaderSession @Inject constructor(
         return when (val result = fetchLocationId()) {
             is LocationIdFetchingResult.Success -> result.locationId
             is LocationIdFetchingResult.Error.MissingAddress ->
-                failWith(R.string.card_reader_connect_missing_address).let { null }
+                failWith(
+                    message = R.string.card_reader_connect_missing_address,
+                    reason = State.Failed.Reason.LOCATION_MISSING_ADDRESS,
+                    errorDescription = "merchant address is missing",
+                ).let { null }
             is LocationIdFetchingResult.Error.InvalidPostalCode ->
-                failWith(R.string.card_reader_connect_invalid_postal_code_hint).let { null }
+                failWith(
+                    message = R.string.card_reader_connect_invalid_postal_code_hint,
+                    reason = State.Failed.Reason.LOCATION_INVALID_POSTAL_CODE,
+                    errorDescription = "merchant postal code is invalid",
+                ).let { null }
             is LocationIdFetchingResult.Error.Other -> {
                 logger.e("Could not fetch merchant location: ${result.error}")
-                failWith(R.string.woopos_remote_reader_connect_failed_generic).let { null }
+                failWith(
+                    message = R.string.woopos_remote_reader_connect_failed_generic,
+                    reason = State.Failed.Reason.LOCATION_FETCH_FAILED,
+                    errorDescription = result.error ?: "unknown location error",
+                ).let { null }
             }
         }
     }
@@ -122,10 +143,12 @@ class WooPosRemoteReaderSession @Inject constructor(
             is ConnectOutcome.Rejected -> {
                 logger.e("Remote reader connect rejected: ${outcome.error.code} - ${outcome.description}")
                 fail(
-                    errorMapper.toUserMessage(
+                    message = errorMapper.toUserMessage(
                         error = outcome.error,
                         fallback = R.string.woopos_remote_reader_connect_failed_generic,
-                    )
+                    ),
+                    reason = State.Failed.Reason.CONNECT_REJECTED,
+                    errorDescription = "${outcome.error.code} - ${outcome.description}",
                 )
             }
             is ConnectOutcome.Failed -> {
@@ -133,7 +156,11 @@ class WooPosRemoteReaderSession @Inject constructor(
                     "Remote reader connect failed: ${outcome.cause::class.java.simpleName}",
                     outcome.cause
                 )
-                fail(resourceProvider.getString(R.string.woopos_remote_reader_connect_failed_generic))
+                fail(
+                    message = resourceProvider.getString(R.string.woopos_remote_reader_connect_failed_generic),
+                    reason = State.Failed.Reason.CONNECT_EXCEPTION,
+                    errorDescription = outcome.cause.describeWithCauses(),
+                )
             }
         }
     }
@@ -185,12 +212,20 @@ class WooPosRemoteReaderSession @Inject constructor(
         return locationRepository.getDefaultLocationId(pluginType)
     }
 
-    private fun failWith(@StringRes message: Int): State.Failed = fail(resourceProvider.getString(message))
+    private fun failWith(
+        @StringRes message: Int,
+        reason: State.Failed.Reason,
+        errorDescription: String,
+    ): State.Failed = fail(resourceProvider.getString(message), reason, errorDescription)
 
-    private fun fail(message: String): State.Failed {
-        logger.e("Remote reader session failed: $message")
+    private fun fail(
+        message: String,
+        reason: State.Failed.Reason,
+        errorDescription: String,
+    ): State.Failed {
+        logger.e("Remote reader session failed: ${reason.analyticsValue} - $errorDescription")
         disconnectInternal()
-        val failed = State.Failed(message)
+        val failed = State.Failed(message, reason, errorDescription)
         _state.value = failed
         return failed
     }
@@ -202,7 +237,20 @@ class WooPosRemoteReaderSession @Inject constructor(
             val reader: WooPosDiscoveredReader.Phone,
             val readerSerial: String?,
         ) : State()
-        data class Failed(val message: String) : State()
+        data class Failed(
+            val message: String,
+            val reason: Reason,
+            val errorDescription: String,
+        ) : State() {
+            enum class Reason(val analyticsValue: String) {
+                TOKEN_FETCH_FAILED("token_fetch_failed"),
+                LOCATION_MISSING_ADDRESS("location_missing_address"),
+                LOCATION_INVALID_POSTAL_CODE("location_invalid_postal_code"),
+                LOCATION_FETCH_FAILED("location_fetch_failed"),
+                CONNECT_REJECTED("connect_rejected"),
+                CONNECT_EXCEPTION("connect_exception"),
+            }
+        }
     }
 
     private companion object {

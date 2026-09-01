@@ -505,7 +505,7 @@ class CardReaderConnectViewModel @Inject constructor(
         errorCode: CardReaderStatus.NotConnected.ErrorCode? = null,
         errorMessage: String? = null
     ) {
-        tracker.trackConnectionFailed()
+        tracker.trackConnectionFailed(errorCode, errorMessage)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         val hintLabel = when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW ->

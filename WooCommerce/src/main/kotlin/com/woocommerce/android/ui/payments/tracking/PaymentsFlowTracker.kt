@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_POS_ONBO
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_REASON
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.Failed
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
@@ -350,8 +351,25 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
     }
 
-    fun trackConnectionFailed() {
-        track(eventProvider.CARD_READER_CONNECTION_FAILED)
+    fun trackConnectionFailed(errorCode: CardReaderStatus.NotConnected.ErrorCode?, errorDescription: String?) {
+        trackConnectionFailed(
+            errorType = when (errorCode) {
+                CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> "battery_critically_low"
+                CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING ->
+                    "bluetooth_peer_removed_pairing"
+                CardReaderStatus.NotConnected.ErrorCode.OTHER -> "other"
+                null -> "unknown"
+            },
+            errorDescription = errorDescription,
+        )
+    }
+
+    fun trackConnectionFailed(errorType: String, errorDescription: String?) {
+        track(
+            eventProvider.CARD_READER_CONNECTION_FAILED,
+            errorType = errorType,
+            errorDescription = errorDescription,
+        )
     }
 
     fun trackConnectionSucceeded() {
