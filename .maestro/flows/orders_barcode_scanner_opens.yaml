@@ -56,8 +56,12 @@ tags:
     visible: "Add products"
     timeout: 15000
 
+# The order-creation scanner entry is an unlabeled barcode ImageView to the
+# right of the "Add products" row (no id/text/accessibility label), so select
+# it by position relative to that row rather than by text.
 - tapOn:
-    text: ".*Add products via scanner.*|.*Scan products.*"
+    rightOf:
+      text: "Add products"
     retryTapIfNoChange: true
     label: "Open scanner from order creation"
 
