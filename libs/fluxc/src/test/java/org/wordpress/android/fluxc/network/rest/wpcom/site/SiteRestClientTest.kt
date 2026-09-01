@@ -339,6 +339,23 @@ class SiteRestClientTest {
     }
 
     @Test
+    fun `given scheme-less login address with port, when fetching site info, then send and return HTTPS`() = test {
+        initGetResponse(
+            ConnectSiteInfoResponse::class.java,
+            ConnectSiteInfoResponse().apply {
+                exists = true
+                isWordPress = true
+            }
+        )
+
+        val result = restClient.fetchConnectSiteInfoSync("staging.mystore.com:8443")
+
+        assertThat(paramsCaptor.lastValue["url"]).isEqualTo("https://staging.mystore.com:8443")
+        assertThat(result.url).isEqualTo("https://staging.mystore.com:8443")
+        assertThat(result.wasUrlNormalizedToHttps).isFalse()
+    }
+
+    @Test
     fun `given ordinary site info error, when fetching site info, then WP API discovery state is attached`() = test {
         val urlUtilsMock = mockStatic(UrlUtils::class.java)
         try {

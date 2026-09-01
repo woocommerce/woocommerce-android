@@ -47,6 +47,16 @@ class HttpsUrlNormalizerTest {
     }
 
     @Test
+    fun `given scheme-less host and port, when adding a scheme, then default to HTTPS`() {
+        listOf("example.com:8080/path", "localhost:8080").forEach { url ->
+            val result = normalizer.normalize(url, addHttpsSchemeIfMissing = true)
+
+            assertThat(result.normalizedUrl).isEqualTo("https://$url")
+            assertThat(result.wasUpgraded).isFalse()
+        }
+    }
+
+    @Test
     fun `given HTTP default port, when normalizing, then use HTTPS default port`() {
         val result = normalizer.normalize("http://example.com:80/path")
 
@@ -64,6 +74,13 @@ class HttpsUrlNormalizerTest {
     fun `given unsupported or malformed URL, when normalizing, then reject it`() {
         listOf("ftp://example.com", "not a url", "https://").forEach { url ->
             assertThatIllegalArgumentException().isThrownBy { normalizer.normalize(url) }
+        }
+    }
+
+    @Test
+    fun `given unsupported scheme without authority, when adding a scheme, then reject it`() {
+        assertThatIllegalArgumentException().isThrownBy {
+            normalizer.normalize("mailto:user@example.com", addHttpsSchemeIfMissing = true)
         }
     }
 }

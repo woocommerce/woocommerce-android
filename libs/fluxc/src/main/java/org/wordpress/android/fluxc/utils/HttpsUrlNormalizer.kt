@@ -14,8 +14,11 @@ class HttpsUrlNormalizer @Inject constructor() {
     fun normalize(rawUrl: String, addHttpsSchemeIfMissing: Boolean = false): Result {
         val trimmedUrl = rawUrl.trim()
         val scheme = SCHEME_REGEX.find(trimmedUrl)?.groupValues?.get(1)?.lowercase(Locale.ROOT)
+        val hasSchemeLessHostAndPort = scheme != HTTP_SCHEME &&
+            scheme != HTTPS_SCHEME &&
+            SCHEME_LESS_HOST_AND_PORT_REGEX.containsMatchIn(trimmedUrl)
         val urlWithScheme = when {
-            scheme == null && addHttpsSchemeIfMissing -> "https://$trimmedUrl"
+            addHttpsSchemeIfMissing && (scheme == null || hasSchemeLessHostAndPort) -> "https://$trimmedUrl"
             scheme == null -> throw IllegalArgumentException("URL has no scheme")
             scheme == HTTP_SCHEME || scheme == HTTPS_SCHEME -> trimmedUrl
             else -> throw IllegalArgumentException("Unsupported URL scheme")
@@ -56,6 +59,7 @@ class HttpsUrlNormalizer @Inject constructor() {
 
     companion object {
         private val SCHEME_REGEX = Regex("^([A-Za-z][A-Za-z0-9+.-]*):")
+        private val SCHEME_LESS_HOST_AND_PORT_REGEX = Regex("""^[^:/?#\s]+:\d{1,5}(?:[/#?]|$)""")
         private const val SCHEME_SEPARATOR_LENGTH = 3
         private const val HTTP_SCHEME = "http"
         private const val HTTPS_SCHEME = "https"
