@@ -40,6 +40,14 @@ tags:
     }
 - evalScript: ${output.orderSearchText = maestro.copiedText.trim()}
 
+# Capture a second, different order number that must NOT match the search term.
+# Asserting it disappears from the results proves the search actually filtered
+# the list rather than just leaving the already-visible first order on screen.
+- copyTextFrom:
+    id: "orderNum"
+    index: 1
+- evalScript: ${output.otherOrderText = maestro.copiedText.trim()}
+
 - takeScreenshot: orders_list
 
 # Test search against the first visible order from the loaded list.
@@ -66,6 +74,10 @@ tags:
 - assertVisible:
     text: "${output.orderSearchText}"
     label: "Captured order appears in search results"
+
+- assertNotVisible:
+    text: "${output.otherOrderText}"
+    label: "Non-matching order is filtered out (search actually ran)"
 
 - takeScreenshot: orders_search_results
 
