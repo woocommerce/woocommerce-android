@@ -214,11 +214,15 @@ tags:
     id: "menu_add"
     label: "Save order note"
 
-# Back on order detail — verify note appears in the notes list
-- extendedWaitUntil:
-    visible:
+# Back on order detail — the notes list is below the "Add a note" row, so
+# scroll it into view before asserting rather than checking visibility while
+# it is still off-screen.
+- scrollUntilVisible:
+    element:
       id: "notesList_notes"
+    direction: DOWN
     timeout: 15000
+    label: "Scroll to notes list"
 
 - scrollUntilVisible:
     element: ".*Maestro smoke test note.*"
