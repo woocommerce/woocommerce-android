@@ -106,15 +106,15 @@ tags:
 # longer part of the current screen.
 - runFlow:
     when:
-      notVisible: ".*Take payment.*|.*Cash.*"
+      notVisible: ".*Take payment.*"
     commands:
       - extendedWaitUntil:
-          visible: ".*Take payment.*|.*Cash.*"
+          visible: ".*Take payment.*"
           timeout: 10000
 
 - runFlow:
     when:
-      notVisible: ".*Take payment.*|.*Cash.*"
+      notVisible: ".*Take payment.*"
     commands:
       - tapOn:
           id: "paymentInfo_collectCardPresentPaymentButton"
@@ -122,7 +122,7 @@ tags:
           label: "Retry Collect Payment tap (first was lost)"
 
 - extendedWaitUntil:
-    visible: ".*Take payment.*|.*Cash.*"
+    visible: ".*Take payment.*"
     timeout: 30000
 
 - takeScreenshot: select_payment_method
