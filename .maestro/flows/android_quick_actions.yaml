@@ -22,9 +22,23 @@ tags:
 # equivalent intent directly.
 - stopApp
 - pressKey: HOME
+
+# Open the app drawer with a deliberate bottom-to-top swipe. A short generic
+# UP swipe does not always trigger the Pixel Launcher drawer gesture, so use
+# an explicit long swipe from near the bottom and retry once if it did not open.
 - swipe:
-    direction: UP
-    duration: 500
+    start: 50%, 92%
+    end: 50%, 12%
+    duration: 600
+
+- runFlow:
+    when:
+      notVisible: "Search apps"
+    commands:
+      - swipe:
+          start: 50%, 95%
+          end: 50%, 8%
+          duration: 800
 
 - extendedWaitUntil:
     visible: "Search apps"
