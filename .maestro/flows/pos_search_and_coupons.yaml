@@ -64,6 +64,21 @@ tags:
 - runFlow:
     file: ../subflows/pos_add_discovered_variable_product.yaml
 
+# Adding a variation leaves POS on the product search + variation list, which
+# hides the Products/Coupons tab bar. Returning to the grid can be one or two
+# back presses deep (search results, then the search field). Press back until
+# the tab bar reappears; each press is guarded on "Coupons" still being hidden,
+# so this stops as soon as the grid is reached and never backs off it.
+- runFlow:
+    when:
+      notVisible: "Coupons"
+    commands:
+      - back
+- runFlow:
+    when:
+      notVisible: "Coupons"
+    commands:
+      - back
 - runFlow:
     when:
       notVisible: "Coupons"
