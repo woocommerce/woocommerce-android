@@ -484,7 +484,9 @@ except ET.ParseError as error:
 
 seen = set()
 for testcase in root.iter("testcase"):
-    if testcase.find("failure") is None and testcase.find("error") is None:
+    status = testcase.find("./properties/property[@name='maestro.status']")
+    is_flaky = status is not None and status.attrib.get("value") in {"FLAKY", "FLAKY_RECOVERY"}
+    if testcase.find("failure") is None and testcase.find("error") is None and not is_flaky:
         continue
     name = testcase.attrib.get("name", "").strip()
     if not name or name in seen:
@@ -1230,6 +1232,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
         duration=$((first_duration + retry_duration))
         if [[ "$retry_exit" -eq 0 ]]; then
           status="FLAKY"
+          PASSED=$((PASSED + 1))
           FLAKY=$((FLAKY + 1))
         else
           status="FAIL"
@@ -1242,6 +1245,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
       fi
     elif [[ "${first_recovery:-0}" -gt 0 ]]; then
       status="FLAKY_RECOVERY"
+      PASSED=$((PASSED + 1))
       FLAKY=$((FLAKY + 1))
     else
       PASSED=$((PASSED + 1))
@@ -1273,7 +1277,7 @@ elif [[ "$SEED" == "yes" ]]; then
   CLEANUP_STATUS="SKIPPED"
 fi
 REPORT_TOTAL_RUNS=$((TOTAL_RUNS + CLEANUP_FAILED))
-REPORT_FAILURES=$((FAILED + FLAKY + CLEANUP_FAILED))
+REPORT_FAILURES=$((FAILED + CLEANUP_FAILED))
 
 echo "--- Generating reports"
 {
@@ -1283,9 +1287,11 @@ echo "--- Generating reports"
   for result in "${RESULTS[@]}"; do
     IFS='|' read -r status repeat_index name duration media log_rel error recovery <<< "$result"
     printf '  <testcase classname="maestro.%s" name="%s" time="%s">' "$repeat_index" "$name" "$duration"
-    if [[ "$status" == "FAIL" || "$status" == "FLAKY" || "$status" == "FLAKY_RECOVERY" ]]; then
+    if [[ "$status" == "FAIL" ]]; then
       msg="$(printf '%s' "${error:-$status}" | xml_escape)"
       printf '<failure message="%s">%s</failure>' "$status" "$msg"
+    elif [[ "$status" == "FLAKY" || "$status" == "FLAKY_RECOVERY" ]]; then
+      printf '<properties><property name="maestro.status" value="%s"/></properties>' "$status"
     fi
     printf '</testcase>\n'
   done
@@ -1314,7 +1320,8 @@ table { width: 100%; border-collapse: collapse; }
 th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
 th { background: #f6f8fa; }
 .PASS { color: #136f2d; font-weight: 700; }
-.FAIL, .FLAKY, .FLAKY_RECOVERY { color: #9a1111; font-weight: 700; }
+.FLAKY, .FLAKY_RECOVERY { color: #9a6700; font-weight: 700; }
+.FAIL { color: #9a1111; font-weight: 700; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; padding: 10px 12px; overflow-x: auto; }
 .commands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0 20px; }
@@ -1326,7 +1333,7 @@ pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; paddin
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
 <p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $STORE | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
-<p><strong>Result:</strong> $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
+<p><strong>Result:</strong> $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
 <section class="commands">
   <div class="command-card">
     <h2>Run the same selection</h2>
@@ -1377,13 +1384,13 @@ HTML_FOOT
 
 echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
-echo "Result: $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
+echo "Result: $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
 
 if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
   open "$REPORT_FILE" || true
 fi
 
-if [[ "$FAILED" -gt 0 || "$FLAKY" -gt 0 || "$CLEANUP_FAILED" -gt 0 ]]; then
+if [[ "$FAILED" -gt 0 || "$CLEANUP_FAILED" -gt 0 ]]; then
   exit 1
 fi
 exit 0

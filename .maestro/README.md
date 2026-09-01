@@ -127,7 +127,8 @@ The runner:
 - writes created entity IDs to `run-manifest.json` when seeding;
 - deletes exactly those manifest IDs during cleanup when seeding;
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
-- retries each failed non-destructive flow once and records pass-on-retry as flaky;
+- retries each failed non-destructive flow once and records pass-on-retry as a passing flaky result;
+- preserves flaky status in HTML/JUnit reports and `--rerun-failed` selection without failing the runner;
 - never blindly retries a failed destructive mutation; cleanup runs first and the failure remains visible;
 - redacts `MAESTRO_WOO_*` values from logs;
 - stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`;

@@ -202,13 +202,15 @@ class SmokeCliContractTest(unittest.TestCase):
         self,
         *args: str,
         env_overrides: dict[str, str],
-    ) -> tuple[subprocess.CompletedProcess[str], str]:
+        fail_first_attempt: bool = False,
+    ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
         temporary_path = Path(temporary_directory.name)
         fake_bin = temporary_path / "bin"
         fake_bin.mkdir()
         maestro_args = temporary_path / "maestro-args"
+        first_attempt_marker = temporary_path / "first-attempt-failed"
 
         maestro = fake_bin / "maestro"
         maestro.write_text(
@@ -216,6 +218,14 @@ class SmokeCliContractTest(unittest.TestCase):
             "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.9.0'; exit 0; fi\n"
             f"printf 'ARGS:%s\\n' \"$*\" >> '{maestro_args}'\n"
             f"env | grep -E '^(MAESTRO_)?WOO_' | sort >> '{maestro_args}'\n"
+            + (
+                f"if [ ! -f '{first_attempt_marker}' ]; then\n"
+                f"  : > '{first_attempt_marker}'\n"
+                "  exit 1\n"
+                "fi\n"
+                if fail_first_attempt
+                else ""
+            )
         )
         maestro.chmod(0o755)
         java = fake_bin / "java"
@@ -255,9 +265,15 @@ class SmokeCliContractTest(unittest.TestCase):
             text=True,
             check=False,
         )
-        return result, maestro_args.read_text(encoding="utf-8") if maestro_args.exists() else ""
+        return (
+            result,
+            maestro_args.read_text(encoding="utf-8") if maestro_args.exists() else "",
+            temporary_path / "output",
+        )
 
-    def run_core_with_recorded_maestro_args(self) -> tuple[subprocess.CompletedProcess[str], str]:
+    def run_core_with_recorded_maestro_args(
+        self,
+    ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         return self.run_with_recorded_maestro_args(
             "--profile",
             "core",
@@ -529,7 +545,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertFalse(adb_marker.exists())
 
     def test_maestro_cli_receives_only_selected_flow_values_and_no_rest_or_other_store_secrets(self) -> None:
-        result, args = self.run_core_with_recorded_maestro_args()
+        result, args, _ = self.run_core_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("-e APP_ID=com.woocommerce.android", args)
@@ -541,8 +557,48 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertNotIn("selected-rest-secret", args)
         self.assertNotIn("other-store-secret", args)
 
+    def test_pass_on_retry_is_reported_as_flaky_without_failing_the_run(self) -> None:
+        env = {
+            "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+            "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+            "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+        }
+        result, _, output_root = self.run_with_recorded_maestro_args(
+            "--store",
+            "lab",
+            "--device",
+            "emulator-5554",
+            "--no-record",
+            ".maestro/flows/login_successful.yaml",
+            env_overrides=env,
+            fail_first_attempt=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("FLAKY", result.stdout)
+        self.assertIn("1 passed (1 flaky), 0 failed", result.stdout)
+        reports = list(output_root.glob("*/report.xml"))
+        self.assertEqual(len(reports), 1)
+        report = reports[0].read_text(encoding="utf-8")
+        self.assertIn('tests="1" failures="0"', report)
+        self.assertIn('<property name="maestro.status" value="FLAKY"/>', report)
+        self.assertNotIn("<failure", report)
+
+        rerun, rerun_args, _ = self.run_with_recorded_maestro_args(
+            "--store",
+            "lab",
+            "--device",
+            "emulator-5554",
+            "--no-record",
+            "--rerun-failed",
+            str(reports[0]),
+            env_overrides=env,
+        )
+        self.assertEqual(rerun.returncode, 0, rerun.stderr)
+        self.assertIn("login_successful.yaml", rerun_args)
+
     def test_wordpress_dot_com_not_woo_store_requires_explicit_wpcom_credentials(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
             ".maestro/flows/login_not_woo_store.yaml",
@@ -558,7 +614,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertEqual("", args)
 
     def test_not_woo_store_forwards_explicit_wpcom_credentials(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
             ".maestro/flows/login_not_woo_store.yaml",
@@ -576,7 +632,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD=wpcom-password", args)
 
     def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
             ".maestro/flows/login_no_jetpack.yaml",
