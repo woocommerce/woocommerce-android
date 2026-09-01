@@ -40,18 +40,18 @@ fun WooNoticeBanner(
         modifier = modifier.fillMaxWidth(),
         color = colors.containerColor,
         contentColor = colors.contentColor,
-        shape = RoundedCornerShape(WooTheme.radius.medium),
+        shape = RoundedCornerShape(WooTheme.radius.large),
         border = colors.border,
     ) {
         Row(
-            modifier = Modifier.padding(WooTheme.padding.padding4),
-            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            modifier = Modifier.padding(WooTheme.padding.padding6),
+            horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space4),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (leadingIcon != null) {
                 CompositionLocalProvider(LocalContentColor provides colors.contentColor) {
                     Box(
-                        modifier = Modifier.size(WooTheme.iconSize.size24),
+                        modifier = Modifier.size(WooTheme.iconSize.size20),
                         contentAlignment = Alignment.Center,
                     ) {
                         leadingIcon()
@@ -61,7 +61,7 @@ fun WooNoticeBanner(
             Column(verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1)) {
                 Text(
                     text = title,
-                    style = WooTheme.text.titleMedium.emphasized,
+                    style = WooTheme.text.bodyMedium.emphasized,
                 )
                 if (description != null) {
                     Text(
@@ -101,7 +101,7 @@ internal fun WooNoticeBannerDemo(
                 Icon(
                     imageVector = WooIcons.Solid.CirclePlus,
                     contentDescription = null,
-                    modifier = Modifier.size(WooTheme.iconSize.size24),
+                    modifier = Modifier.size(WooTheme.iconSize.size20),
                 )
             },
         )
@@ -113,7 +113,7 @@ internal fun WooNoticeBannerDemo(
                 Icon(
                     imageVector = WooIcons.Regular.CircleInfo,
                     contentDescription = null,
-                    modifier = Modifier.size(WooTheme.iconSize.size24),
+                    modifier = Modifier.size(WooTheme.iconSize.size20),
                 )
             },
         )
@@ -125,7 +125,7 @@ internal fun WooNoticeBannerDemo(
                 Icon(
                     imageVector = WooIcons.Regular.Bolt,
                     contentDescription = null,
-                    modifier = Modifier.size(WooTheme.iconSize.size24),
+                    modifier = Modifier.size(WooTheme.iconSize.size20),
                 )
             },
         )
@@ -143,7 +143,7 @@ private fun WooNoticeBannerTone.toNoticeBannerColors(): WooNoticeBannerColors {
         WooNoticeBannerTone.NeutralOutlined -> WooNoticeBannerColors(
             containerColor = colors.surface.default,
             contentColor = colors.surface.onDefault,
-            border = BorderStroke(WooTheme.stroke.extraThin, colors.outlineVariant),
+            border = BorderStroke(WooTheme.stroke.regular, colors.outlineVariant),
         )
         WooNoticeBannerTone.Info -> WooNoticeBannerColors(colors.status.infoContainer, colors.status.onInfoContainer)
         WooNoticeBannerTone.Success -> {
