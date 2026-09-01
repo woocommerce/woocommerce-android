@@ -92,10 +92,24 @@ appId: com.woocommerce.android.dev
     id: "bottom_button"
     retryTapIfNoChange: true
 
-# Wait for dashboard to load (or privacy dialog)
+# Wait for dashboard to load. Google Password Manager may offer to SAVE the
+# password as a top-most sheet ("Never"/"Save") that hides the dashboard, and
+# the privacy dialog may also appear — accept any of them as "booted".
 - extendedWaitUntil:
-    visible: ".*My store.*|.*Manage privacy.*"
+    visible: ".*My store.*|.*Manage privacy.*|.*Save password.*"
     timeout: 30000
+
+# Dismiss the Google "Save password" sheet if present. Tap "Never" so it does
+# not persist credentials or re-prompt on later runs. Must run BEFORE the
+# privacy-dialog guard below, whose "Save" match would otherwise collide with
+# this sheet's own "Save" button. Skips silently when there is no autofill.
+- runFlow:
+    when:
+      visible: ".*Save password.*"
+    commands:
+      - tapOn:
+          text: "Never"
+          label: "dismiss_autofill_save_password"
 
 # Dismiss privacy dialog if it appears
 - runFlow:
@@ -110,6 +124,16 @@ appId: com.woocommerce.android.dev
       visible: ".*Got it.*"
     commands:
       - tapOn: ".*Got it.*"
+
+# The Google "Save password" sheet can surface a beat after the dashboard
+# renders, hiding it again. Dismiss once more if present before verifying.
+- runFlow:
+    when:
+      visible: ".*Save password.*"
+    commands:
+      - tapOn:
+          text: "Never"
+          label: "dismiss_autofill_save_password_late"
 
 # Verify dashboard is loaded
 - extendedWaitUntil:
