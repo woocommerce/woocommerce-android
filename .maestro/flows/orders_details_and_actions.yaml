@@ -117,6 +117,13 @@ tags:
       id: "orderDetail_container"
     timeout: 15000
 
+# Capture this order's number from the toolbar. The rendered receipt echoes it
+# as "Summary: Order #<n>", which is asserted later to prove the receipt
+# actually rendered (and belongs to this order).
+- copyTextFrom:
+    text: "Order #.*"
+- evalScript: ${output.orderNumber = maestro.copiedText.trim()}
+
 # Verify order detail elements
 - assertVisible:
     id: "orderStatus_orderTags"
@@ -157,17 +164,19 @@ tags:
     retryTapIfNoChange: true
     label: "Open receipt preview"
 
-# Assert the actual receipt preview toolbar title (receipt_preview_toolbar_title)
-# before backing out. The previous ".*Print.*" alternative false-matched the
-# order-detail text "Learn more about printing receipts", so the flow reported
-# a receipt even when tapping "See receipt" only showed an error toast (the
-# receipt requires a server-side POST /orders/{id}/receipt that can 403 for a
-# REST user without create permission). Asserting the real title fails loudly
-# in that case instead of silently pressing back to the orders list.
+# Assert the receipt actually RENDERED, not merely that the preview screen
+# opened. A successful receipt echoes this order as "Summary: Order #<n>" in
+# its webview content. The receipt requires a server-side POST
+# /orders/{id}/receipt; when that fails (e.g. 403 for a user without create
+# permission) the screen shows only a transient "Receipt Preview" toolbar and
+# an error toast, with no rendered receipt — so asserting the toolbar title
+# (or ".*Print.*", which also false-matched the order-detail "printing
+# receipts" text) would pass without a receipt. Matching the rendered summary
+# line fails loudly in that case, which is the correct outcome.
 - extendedWaitUntil:
-    visible: "Receipt Preview"
+    visible: "Summary: ${output.orderNumber}"
     timeout: 30000
-    label: "Wait for receipt preview screen"
+    label: "Wait for rendered receipt (Summary: ${output.orderNumber})"
 
 - takeScreenshot: order_receipt_preview
 
