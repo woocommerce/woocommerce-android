@@ -199,6 +199,15 @@ tags:
 
 - takeScreenshot: refund_summary_with_reason
 
+# Entering the reason can scroll the Refund CTA below the fold, so ensure it
+# is on-screen before tapping.
+- scrollUntilVisible:
+    element:
+      id: "refundSummary_btnRefund"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Refund CTA"
+
 - tapOn:
     id: "refundSummary_btnRefund"
     retryTapIfNoChange: true
