@@ -185,6 +185,9 @@ interface WCDatabaseModule {
 
         @Provides fun provideAnalyticsScheduledImportDao(database: WCAndroidDatabase) =
             database.analyticsScheduledImportDao
+
+        @Provides fun provideSubscriptionProductCreationSettingsDao(database: WCAndroidDatabase) =
+            database.subscriptionProductCreationSettingsDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

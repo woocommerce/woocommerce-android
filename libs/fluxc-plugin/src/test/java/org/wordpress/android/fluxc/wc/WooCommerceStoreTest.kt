@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.model.WCProductSettingsModel
 import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.SubscriptionProductCreationSettingsEntity
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -95,7 +96,8 @@ class WooCommerceStoreTest {
             sitePluginDao = wpDatabaseRule.db.sitePluginDao(),
             productSettingsDao = wcDatabaseRule.db.productSettingsDao,
             settingsDao = wcDatabaseRule.db.settingsDao,
-            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao
+            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao,
+            subscriptionProductCreationSettingsDao = wcDatabaseRule.db.subscriptionProductCreationSettingsDao
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -127,6 +129,7 @@ class WooCommerceStoreTest {
     private val siteSettingsResponse = WCSettingsTestUtils.getSiteSettingsResponse()
     private val siteProductSettingsResponse = WCSettingsTestUtils.getSiteProductSettingsResponse()
     private val taxBasedOnSettingsResponse = WCSettingsTestUtils.getTaxBasedOnSettingsResponse()
+    private val subscriptionsSettingsResponse = WCSettingsTestUtils.getSubscriptionsSettingsResponse()
 
     @Before
     fun setUp() {
@@ -261,6 +264,57 @@ class WooCommerceStoreTest {
     fun `when fetch site product settings fails, then error returned`() {
         runBlocking {
             val result: WooResult<WCProductSettingsModel> = fetchSiteProductSettings(isError = true)
+            assertThat(result.error).isEqualTo(error)
+            assertThat(result.model).isNull()
+        }
+    }
+
+    @Test
+    fun `when fetch subscription product creation settings succeeds, then per type values returned and cached`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site))
+                .thenReturn(WooPayload(subscriptionsSettingsResponse))
+            assertThat(wooCommerceStore.getSubscriptionProductCreationSettings(site)).isNull()
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
+            val expected = SubscriptionProductCreationSettingsEntity(
+                localSiteId = site.localId(),
+                isSimpleSubscriptionCreationEnabled = true,
+                isVariableSubscriptionCreationEnabled = false
+            )
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(expected)
+            assertThat(wooCommerceStore.getSubscriptionProductCreationSettings(site)).isEqualTo(expected)
+        }
+    }
+
+    @Test
+    fun `when subscription product creation settings are not reported, then null values returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site))
+                .thenReturn(WooPayload(siteProductSettingsResponse))
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
+            assertThat(result.isError).isFalse
+            assertThat(result.model).isEqualTo(
+                SubscriptionProductCreationSettingsEntity(
+                    localSiteId = site.localId(),
+                    isSimpleSubscriptionCreationEnabled = null,
+                    isVariableSubscriptionCreationEnabled = null
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `when fetch subscription product creation settings fails, then error returned`() {
+        runBlocking {
+            whenever(wcrestClient.fetchSiteSettingsSubscriptions(site)).thenReturn(WooPayload(error))
+
+            val result = wooCommerceStore.fetchSubscriptionProductCreationSettings(site)
+
             assertThat(result.error).isEqualTo(error)
             assertThat(result.model).isNull()
         }
