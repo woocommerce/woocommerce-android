@@ -26,8 +26,7 @@
 appId: com.woocommerce.android
 name: "Login - Social login (Google)"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:

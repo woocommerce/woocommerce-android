@@ -101,8 +101,8 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: lab store, `smoke_core`, quarantine and Android system surfaces excluded.
-- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
+- `core`: lab store, all login flows plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined non-login phone flows.
 - `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
 - `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
@@ -145,7 +145,8 @@ The runner:
 - `destructive`: mutates store data.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 
-The imported PR #15413 flows outside the four core paths are intentionally tagged `flaky_quarantine` until they graduate through the burst-based promotion policy.
+All login flows are required `smoke_core` coverage. Other provisional imported flows remain tagged `flaky_quarantine`
+until they graduate through the burst-based promotion policy.
 
 ## Coverage
 

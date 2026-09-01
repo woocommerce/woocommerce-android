@@ -103,6 +103,16 @@ class MaestroCiContractTests(unittest.TestCase):
         self.assertNotIn(readiness_selector, reusable_login)
         self.assertNotIn('- tapOn: "Skip"', reusable_login)
 
+    def test_all_login_flows_are_required_core_coverage(self) -> None:
+        login_flows = sorted((REPO_ROOT / ".maestro" / "flows").glob("login_*.yaml"))
+
+        self.assertTrue(login_flows)
+        for path in login_flows:
+            with self.subTest(path=path):
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("  - smoke_core\n", source)
+                self.assertNotIn("  - flaky_quarantine\n", source)
+
     def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
             REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"

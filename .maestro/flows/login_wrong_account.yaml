@@ -12,8 +12,7 @@
 appId: com.woocommerce.android
 name: "Login - Wrong account for the store"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:

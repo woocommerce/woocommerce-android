@@ -5,16 +5,9 @@ Maestro smoke plan
   include: smoke_extended
   exclude: <none>
   seed:    no
-  flows:   27
+  flows:   20
 
 Selected flows:
-  - .maestro/flows/login_not_wp_site.yaml
-  - .maestro/flows/login_wrong_credentials.yaml
-  - .maestro/flows/login_help.yaml
-  - .maestro/flows/login_not_woo_store.yaml
-  - .maestro/flows/login_wrong_account.yaml
-  - .maestro/flows/login_no_jetpack.yaml
-  - .maestro/flows/login_google.yaml
   - .maestro/flows/dashboard_view_all_analytics.yaml
   - .maestro/flows/dashboard_customize.yaml
   - .maestro/flows/orders_create.yaml

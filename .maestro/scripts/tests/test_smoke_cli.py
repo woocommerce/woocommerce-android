@@ -271,14 +271,13 @@ class SmokeCliContractTest(unittest.TestCase):
             temporary_path / "output",
         )
 
-    def run_core_with_recorded_maestro_args(
+    def run_login_successful_with_recorded_maestro_args(
         self,
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         return self.run_with_recorded_maestro_args(
-            "--profile",
-            "core",
             "--device",
             "emulator-5554",
+            ".maestro/flows/login_successful.yaml",
             env_overrides={
                 "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
                 "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
@@ -512,9 +511,10 @@ class SmokeCliContractTest(unittest.TestCase):
 
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
         result, events = self.run_with_order_recording_tools(
-            "--profile",
-            "release",
+            "--store",
+            "shared",
             "--seed",
+            ".maestro/flows/login_successful.yaml",
             env_overrides={
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
@@ -545,7 +545,7 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertFalse(adb_marker.exists())
 
     def test_maestro_cli_receives_only_selected_flow_values_and_no_rest_or_other_store_secrets(self) -> None:
-        result, args, _ = self.run_core_with_recorded_maestro_args()
+        result, args, _ = self.run_login_successful_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn("-e APP_ID=", args)
