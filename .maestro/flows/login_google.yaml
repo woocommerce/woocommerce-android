@@ -23,25 +23,17 @@
 #
 # Required env vars:
 #   MAESTRO_WOO_JETPACK_STORE_URL   (any Jetpack-connected store the linked account accesses)
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Login - Social login (Google)"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:
     clearState: true
 
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter the store URL to
 # reach the email screen (the Google button lives there).

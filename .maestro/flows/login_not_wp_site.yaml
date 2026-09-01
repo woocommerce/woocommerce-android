@@ -4,27 +4,17 @@
 #
 # Manages its own login flow (does not call the login subflow) because
 # we're validating the pre-login error path. Starts from a fresh state.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Login - Not a WordPress site error"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:
     clearState: true
 
-# Wait for app to finish loading after clearState
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
-# Skip carousel if shown
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter a non-WordPress URL.
 - runFlow:
@@ -44,5 +34,21 @@ tags:
 
 # Verify the recovery buttons are present
 - assertVisible: "Try another store"
+
+- tapOn:
+    text: "Try another store"
+    retryTapIfNoChange: true
+
+# Verify recovery returns to the site-address step without discarding the
+# address that produced the error.
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 15000
+
+- assertVisible:
+    id: "input"
+    text: "google.com"
+    label: "Verify the last entered site address is preserved"
 
 - takeScreenshot: login_not_wp_site

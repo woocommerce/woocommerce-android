@@ -7,7 +7,7 @@
 #   - Scan To Pay renders its QR instructions
 #   - Share Payment Link opens the Android share sheet
 #   - The flow backs out without collecting payment
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Orders - Payment QR and share link"
 tags:
   - smoke_extended

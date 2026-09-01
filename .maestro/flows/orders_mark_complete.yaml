@@ -12,7 +12,7 @@
 # The Mark Complete button is only exposed for paid orders whose status
 # is not Completed. This flow creates its own paid order, moves that
 # automation-owned order to Processing, then marks it Completed again.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Orders - Mark order complete"
 tags:
   - smoke_extended

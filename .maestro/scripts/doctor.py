@@ -12,6 +12,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from device_locale import DeviceLocaleError, ensure_english_device_locale
+from ensure_release_app import ReleaseAppError, ensure_release_app
 from smoke_plan import PROFILES, flow_tags, selected_flows
 
 
@@ -63,10 +65,6 @@ def referenced_env(flows: list[Path], seed: bool) -> set[str]:
     for flow in flows:
         text = flow.read_text(errors="replace")
         flow_refs = set(REF_RE.findall(text))
-        if flow.name == "login_not_woo_store.yaml":
-            flow_refs.difference_update(
-                {"WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", "WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD"}
-            )
         refs.update(flow_refs)
         if SUBFLOW_LOGIN_RE.search(text):
             refs.update({"WOO_JETPACK_STORE_URL", "WOO_WPCOM_EMAIL", "WOO_WPCOM_PASSWORD"})
@@ -209,24 +207,6 @@ def main() -> int:
     else:
         checks.append(Check("ok", f"all {len(refs)} referenced WOO_* env value(s) are available"))
 
-    if any(flow.name == "login_not_woo_store.yaml" for flow in flows):
-        wpcom_fallback = [
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_EMAIL", store)),
-            has_value(env, candidates_for("WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD", store)),
-        ]
-        not_woo_url = env.get("MAESTRO_WOO_NOT_A_WOO_STORE_URL", "")
-        not_woo_host = url_host(not_woo_url)
-        if not_woo_host == "wordpress.com" or not_woo_host.endswith(".wordpress.com"):
-            if not all(wpcom_fallback):
-                checks.append(
-                    Check(
-                        "fail",
-                        "WordPress.com-hosted not-Woo-store fixture requires WP.com email and password",
-                    )
-                )
-        elif any(wpcom_fallback) and not all(wpcom_fallback):
-            checks.append(Check("fail", "not-Woo-store WP.com fallback requires both email and password"))
-
     jetpack_candidates = candidates_for("WOO_JETPACK_STORE_URL", store)
     no_jetpack_candidates = candidates_for("WOO_NO_JETPACK_SITE_URL", store)
     jetpack_url = next((env[name] for name in jetpack_candidates if env.get(name)), "")
@@ -254,10 +234,36 @@ def main() -> int:
             checks.append(Check("fail", "shared destructive runs are refused outside CI"))
 
     devices = adb_devices()
+    selected_device: str | None = None
     if args.device:
-        checks.append(Check("ok" if args.device in devices else "fail", f"requested adb device {args.device} {'is connected' if args.device in devices else 'is not connected'}"))
+        if args.device in devices:
+            selected_device = args.device
+            checks.append(Check("ok", f"requested adb device {args.device} is connected"))
+        else:
+            checks.append(Check("fail", f"requested adb device {args.device} is not connected"))
+    elif len(devices) == 1:
+        selected_device = devices[0]
+        checks.append(Check("ok", f"adb device {selected_device} is connected"))
+    elif len(devices) > 1:
+        checks.append(Check("fail", "multiple adb devices are connected; pass --device to select one"))
     else:
-        checks.append(Check("ok" if devices else "fail", f"{len(devices)} adb device(s) connected"))
+        checks.append(Check("fail", "no adb devices are connected"))
+
+    if selected_device:
+        try:
+            locale = ensure_english_device_locale(selected_device)
+            checks.append(Check("ok", locale.message))
+        except DeviceLocaleError as error:
+            checks.append(Check("fail", str(error)))
+
+    if selected_device and not any(check.status == "fail" for check in checks):
+        try:
+            release = ensure_release_app(selected_device)
+            checks.append(Check("ok", release.message))
+        except ReleaseAppError as error:
+            checks.append(Check("fail", str(error)))
+    else:
+        checks.append(Check("warn", "production release app check skipped because another pre-flight check failed"))
 
     print("Maestro smoke doctor")
     print(f"  profile: {args.profile}")

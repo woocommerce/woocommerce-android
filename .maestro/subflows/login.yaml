@@ -3,22 +3,13 @@
 #
 # Required env vars: MAESTRO_WOO_JETPACK_STORE_URL, MAESTRO_WOO_WPCOM_EMAIL,
 # MAESTRO_WOO_WPCOM_PASSWORD
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - launchApp:
     clearState: true
 
-# Wait for app to finish loading after clearState (splash screen can take a while)
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
-# Skip the carousel if it appears
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter the store URL.
 - runFlow:
@@ -36,12 +27,7 @@ appId: com.woocommerce.android.dev
 # screen as a top-most window, hiding login_continue_button from the hierarchy.
 # Dismiss it when present; skip silently on builds/AVDs without autofill.
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn:
-          text: "No thanks"
-          label: "dismiss_autofill_email_screen"
+    file: dismiss_google_password_manager.yaml
 
 # Enter email address
 - extendedWaitUntil:
@@ -58,10 +44,7 @@ appId: com.woocommerce.android.dev
 
 # Dismiss Google Password Manager if it appears
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: dismiss_google_password_manager.yaml
 
 # Handle Magic Link screen - tap "Enter your password instead"
 - runFlow:
@@ -74,10 +57,7 @@ appId: com.woocommerce.android.dev
 
 # Dismiss Google Password Manager again if it appears on password screen
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: dismiss_google_password_manager.yaml
 
 # Enter password
 - extendedWaitUntil:

@@ -15,9 +15,43 @@ REPO_ROOT = SCRIPT_DIR.parent.parent.parent
 RUNNER = REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh"
 DOCTOR = REPO_ROOT / ".maestro" / "scripts" / "doctor.py"
 GOLDEN_DIR = SCRIPT_DIR / "golden"
+LOGIN_NOT_WP_SITE_FLOW = REPO_ROOT / ".maestro" / "flows" / "login_not_wp_site.yaml"
+GOOGLE_PASSWORD_MANAGER_SUBFLOW = (
+    REPO_ROOT / ".maestro" / "subflows" / "dismiss_google_password_manager.yaml"
+)
 
 
 class SmokeCliContractTest(unittest.TestCase):
+    def test_google_password_manager_is_dismissed_by_stable_android_resource_id(self) -> None:
+        dismissal = GOOGLE_PASSWORD_MANAGER_SUBFLOW.read_text(encoding="utf-8")
+        affected_files = (
+            REPO_ROOT / ".maestro" / "flows" / "login_wrong_credentials.yaml",
+            REPO_ROOT / ".maestro" / "flows" / "login_wrong_account.yaml",
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml",
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml",
+        )
+
+        self.assertIn('id: "android:id/autofill_dialog_no"', dismissal)
+        self.assertNotIn("point:", dismissal)
+        references = 0
+        for path in affected_files:
+            source = path.read_text(encoding="utf-8")
+            self.assertNotIn('"No thanks"', source)
+            references += source.count("dismiss_google_password_manager.yaml")
+        self.assertEqual(references, 9)
+
+    def test_not_wp_site_flow_verifies_recovery_preserves_the_entered_address(self) -> None:
+        source = LOGIN_NOT_WP_SITE_FLOW.read_text(encoding="utf-8")
+
+        recovery = source.index('- tapOn:\n    text: "Try another store"')
+        preserved_address = source.index(
+            '- assertVisible:\n'
+            '    id: "input"\n'
+            '    text: "google.com"\n'
+            '    label: "Verify the last entered site address is preserved"'
+        )
+        self.assertLess(recovery, preserved_address)
+
     def test_device_media_fixture_is_prepared_only_for_the_media_flow(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
 
@@ -28,6 +62,16 @@ class SmokeCliContractTest(unittest.TestCase):
             source.index("prepare_device_media_fixture\n"),
             source.index("validate_google_login_apk()"),
         )
+
+    def test_device_locale_is_checked_before_release_app_setup(self) -> None:
+        runner_source = RUNNER.read_text(encoding="utf-8")
+        doctor_source = DOCTOR.read_text(encoding="utf-8")
+
+        self.assertLess(
+            runner_source.index('python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"'),
+            runner_source.index('echo "--- Ensuring production release app"'),
+        )
+        self.assertIn("ensure_english_device_locale(selected_device)", doctor_source)
 
     def test_cleanup_finishes_before_reports_and_participates_in_exit_status(self) -> None:
         source = RUNNER.read_text(encoding="utf-8")
@@ -189,13 +233,16 @@ class SmokeCliContractTest(unittest.TestCase):
         self,
         *args: str,
         env_overrides: dict[str, str],
-    ) -> tuple[subprocess.CompletedProcess[str], str]:
+        fail_first_attempt: bool = False,
+        device_locale: str = "en-US",
+    ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
         temporary_path = Path(temporary_directory.name)
         fake_bin = temporary_path / "bin"
         fake_bin.mkdir()
         maestro_args = temporary_path / "maestro-args"
+        first_attempt_marker = temporary_path / "first-attempt-failed"
 
         maestro = fake_bin / "maestro"
         maestro.write_text(
@@ -203,6 +250,14 @@ class SmokeCliContractTest(unittest.TestCase):
             "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.9.0'; exit 0; fi\n"
             f"printf 'ARGS:%s\\n' \"$*\" >> '{maestro_args}'\n"
             f"env | grep -E '^(MAESTRO_)?WOO_' | sort >> '{maestro_args}'\n"
+            + (
+                f"if [ ! -f '{first_attempt_marker}' ]; then\n"
+                f"  : > '{first_attempt_marker}'\n"
+                "  exit 1\n"
+                "fi\n"
+                if fail_first_attempt
+                else ""
+            )
         )
         maestro.chmod(0o755)
         java = fake_bin / "java"
@@ -213,6 +268,12 @@ class SmokeCliContractTest(unittest.TestCase):
             "#!/bin/sh\n"
             "if [ \"${1:-}\" = devices ]; then\n"
             "  printf 'List of devices attached\\nemulator-5554\\tdevice\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell cmd locale get-device-locale'; then\n"
+            f"  printf '%s\\n' '{device_locale}'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell pm path com.woocommerce.android'; then\n"
+            "  printf 'package:/data/app/com.woocommerce.android/base.apk\\n'\n"
+            "elif printf '%s\\n' \"$*\" | grep -q 'shell dumpsys package com.woocommerce.android'; then\n"
+            "  printf '  versionName=25.4\\n  flags=[ HAS_CODE ]\\n'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'settings get global'; then\n"
             "  printf '1\\n'\n"
             "fi\n"
@@ -238,14 +299,19 @@ class SmokeCliContractTest(unittest.TestCase):
             text=True,
             check=False,
         )
-        return result, maestro_args.read_text(encoding="utf-8") if maestro_args.exists() else ""
+        return (
+            result,
+            maestro_args.read_text(encoding="utf-8") if maestro_args.exists() else "",
+            temporary_path / "output",
+        )
 
-    def run_core_with_recorded_maestro_args(self) -> tuple[subprocess.CompletedProcess[str], str]:
+    def run_login_successful_with_recorded_maestro_args(
+        self,
+    ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         return self.run_with_recorded_maestro_args(
-            "--profile",
-            "core",
             "--device",
             "emulator-5554",
+            ".maestro/flows/login_successful.yaml",
             env_overrides={
                 "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
                 "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
@@ -479,9 +545,10 @@ class SmokeCliContractTest(unittest.TestCase):
 
     def test_seed_request_does_not_create_unused_fixtures_without_destructive_flows(self) -> None:
         result, events = self.run_with_order_recording_tools(
-            "--profile",
-            "release",
+            "--store",
+            "shared",
             "--seed",
+            ".maestro/flows/login_successful.yaml",
             env_overrides={
                 "MAESTRO_WOO_SHARED_JETPACK_STORE_URL": "https://inpersonpayments.wpcomstaging.com/",
                 "MAESTRO_WOO_SHARED_WPCOM_EMAIL": "shared@example.com",
@@ -512,9 +579,10 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertFalse(adb_marker.exists())
 
     def test_maestro_cli_receives_only_selected_flow_values_and_no_rest_or_other_store_secrets(self) -> None:
-        result, args = self.run_core_with_recorded_maestro_args()
+        result, args, _ = self.run_login_successful_with_recorded_maestro_args()
 
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("-e APP_ID=", args)
         self.assertIn("MAESTRO_WOO_WPCOM_PASSWORD=selected-password", args)
         self.assertNotIn("\nWOO_WPCOM_PASSWORD=selected-password\n", args)
         for line in args.splitlines():
@@ -523,24 +591,65 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertNotIn("selected-rest-secret", args)
         self.assertNotIn("other-store-secret", args)
 
-    def test_wordpress_dot_com_not_woo_store_requires_explicit_wpcom_credentials(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+    def test_non_english_device_locale_fails_before_maestro_runs(self) -> None:
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
-            ".maestro/flows/login_not_woo_store.yaml",
+            ".maestro/flows/login_successful.yaml",
             env_overrides={
-                "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
             },
+            device_locale="es-ES",
         )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn("WordPress.com-hosted not-Woo-store fixtures require both", result.stderr)
-        self.assertEqual("", args)
+        self.assertIn("primary locale is es-ES; Maestro flows require English", result.stderr)
+        self.assertEqual(args, "")
 
-    def test_not_woo_store_forwards_explicit_wpcom_credentials(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+    def test_pass_on_retry_is_reported_as_flaky_without_failing_the_run(self) -> None:
+        env = {
+            "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+            "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+            "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "lab-password",
+        }
+        result, _, output_root = self.run_with_recorded_maestro_args(
+            "--store",
+            "lab",
+            "--device",
+            "emulator-5554",
+            "--no-record",
+            ".maestro/flows/login_successful.yaml",
+            env_overrides=env,
+            fail_first_attempt=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("FLAKY", result.stdout)
+        self.assertIn("1 passed (1 flaky), 0 failed", result.stdout)
+        reports = list(output_root.glob("*/report.xml"))
+        self.assertEqual(len(reports), 1)
+        report = reports[0].read_text(encoding="utf-8")
+        self.assertIn('tests="1" failures="0"', report)
+        self.assertIn('<property name="maestro.status" value="FLAKY"/>', report)
+        self.assertNotIn("<failure", report)
+
+        rerun, rerun_args, _ = self.run_with_recorded_maestro_args(
+            "--store",
+            "lab",
+            "--device",
+            "emulator-5554",
+            "--no-record",
+            "--rerun-failed",
+            str(reports[0]),
+            env_overrides=env,
+        )
+        self.assertEqual(rerun.returncode, 0, rerun.stderr)
+        self.assertIn("login_successful.yaml", rerun_args)
+
+    def test_not_woo_store_forwards_site_admin_credentials(self) -> None:
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
             ".maestro/flows/login_not_woo_store.yaml",
@@ -548,17 +657,15 @@ class SmokeCliContractTest(unittest.TestCase):
                 "MAESTRO_WOO_NOT_A_WOO_STORE_URL": "https://not-woo.wordpress.com/",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME": "site-admin",
                 "MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD": "site-password",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL": "wpcom-user",
-                "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD": "wpcom-password",
             },
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL=wpcom-user", args)
-        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD=wpcom-password", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME=site-admin", args)
+        self.assertIn("MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD=site-password", args)
 
     def test_no_jetpack_wp_admin_url_is_normalized_before_maestro(self) -> None:
-        result, args = self.run_with_recorded_maestro_args(
+        result, args, _ = self.run_with_recorded_maestro_args(
             "--device",
             "emulator-5554",
             ".maestro/flows/login_no_jetpack.yaml",

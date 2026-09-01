@@ -9,25 +9,17 @@
 #   MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD
 #                                      (selected WP.com account)
 #   MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL  (site the primary account can't access)
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Login - Wrong account for the store"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:
     clearState: true
 
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 - runFlow:
     file: ../subflows/open_site_address_login.yaml
@@ -53,10 +45,7 @@ tags:
     retryTapIfNoChange: true
 
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: ../subflows/dismiss_google_password_manager.yaml
 
 - runFlow:
     when:
@@ -67,10 +56,7 @@ tags:
           id: "login_enter_password"
 
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: ../subflows/dismiss_google_password_manager.yaml
 
 - extendedWaitUntil:
     visible:

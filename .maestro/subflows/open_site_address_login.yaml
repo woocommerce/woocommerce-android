@@ -4,7 +4,7 @@
 # devices without a camera can still navigate directly to the site-address
 # form, so each transition is conditional and this subflow is safe to call
 # when the form is already open.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - extendedWaitUntil:
     visible: "^Log In$|.*Log in with site address.*|Site address"

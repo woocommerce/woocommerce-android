@@ -27,7 +27,7 @@
 # kick off a single non-login flow from a cold emulator. Now any
 # flow can be invoked in isolation and it'll self-heal into a
 # logged-in state on first run.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - launchApp:
     clearState: false

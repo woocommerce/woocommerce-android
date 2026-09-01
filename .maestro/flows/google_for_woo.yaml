@@ -19,7 +19,7 @@
 # scroll to it first to guarantee the whole menu has been traversed —
 # after that, any conditional item above it that was going to render
 # must already be in the view hierarchy.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Google for Woo - Campaign creation webview"
 tags:
   - smoke_extended

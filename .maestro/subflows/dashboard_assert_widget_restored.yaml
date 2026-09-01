@@ -1,4 +1,4 @@
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - assertVisible:
     id: ".*__${CARD_SLUG}_${output.dashboardOriginalStates[CARD_SLUG]}__.*"

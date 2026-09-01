@@ -29,7 +29,7 @@
 #
 # Mutable description and product-type persistence is verified against the
 # run-owned product in products_create.yaml.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Products - Product detail view"
 tags:
   - smoke_extended

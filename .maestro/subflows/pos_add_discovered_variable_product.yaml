@@ -1,6 +1,6 @@
 # Discovers a variable product from the loaded POS catalog, searches for its
 # app-provided name, opens its variations, and adds the first variation.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - scrollUntilVisible:
     element: "Variable Product .*"

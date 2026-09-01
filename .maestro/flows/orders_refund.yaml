@@ -22,7 +22,7 @@
 # Unlike the mark-complete flow, the refund is fully committed — the
 # staging store will accumulate refunded orders across runs. Test
 # orders on the store are priced low enough that this is acceptable.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Orders - Issue refund"
 tags:
   - smoke_extended
