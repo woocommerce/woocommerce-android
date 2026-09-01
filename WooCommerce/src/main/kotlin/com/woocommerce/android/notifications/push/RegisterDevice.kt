@@ -85,6 +85,17 @@ class RegisterDevice @Inject constructor(
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
 
+        // For WPCom, site switching doesn't affect registration
+        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
+            (shouldForce || !pushNotificationRepository.isWpComPushRegistered())
+
+        if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
+            pushNotificationRepository.registerPushTokenInWpComSystem(token)
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
+        }
+
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             val sites = when (trigger) {
                 Trigger.LOGIN_SUCCESS,
@@ -116,17 +127,6 @@ class RegisterDevice @Inject constructor(
             }
         } else {
             migrateWooPushRegistrationsToWpCom(trigger, token)
-        }
-
-        // For WPCom, site switching doesn't affect registration
-        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
-            (shouldForce || !pushNotificationRepository.isWpComPushRegistered())
-
-        if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
-            pushNotificationRepository.registerPushTokenInWpComSystem(token)
-        } else {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
     }
 
