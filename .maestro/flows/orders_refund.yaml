@@ -145,6 +145,25 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Refund"
 
+# The order detail auto-refreshes on open; if that refresh lands between
+# the scroll and the tap it resets the list to the top and the Refund tap
+# misses. Re-scroll and re-tap if the Issue Refund screen didn't open.
+- runFlow:
+    when:
+      notVisible:
+        id: "issueRefund_btnNextFromItems"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "paymentInfo_issueRefundButton"
+          direction: DOWN
+          timeout: 10000
+          label: "Re-scroll to Refund button"
+      - tapOn:
+          id: "paymentInfo_issueRefundButton"
+          retryTapIfNoChange: true
+          label: "Retry Tap Refund"
+
 - extendedWaitUntil:
     visible:
       id: "issueRefund_btnNextFromItems"
