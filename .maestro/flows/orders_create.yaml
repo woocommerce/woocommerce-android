@@ -342,18 +342,35 @@ tags:
 - eraseText
 # Emulator locale uses comma as decimal separator — entering "1000" yields 10,00
 - inputText: "1000"
-- hideKeyboard
 
 - tapOn:
     id: "customAmountNameText"
 - inputText: "Gift wrap"
-- hideKeyboard
 
 - takeScreenshot: order_create_custom_amount_dialog
 
+# "Add Custom Amount" (buttonDone) is the confirm button at the bottom of the
+# sheet. hideKeyboard issues a BACK press, so calling it unconditionally pops
+# the whole sheet — discarding the entry — on AVDs where the keyboard is already
+# down (e.g. those showing only a floating IME toolbar, no full keyboard). Only
+# hide the keyboard when the button is actually occluded; if it is not visible,
+# a keyboard is covering it, so the BACK press is guaranteed to dismiss the
+# keyboard rather than the sheet.
+- runFlow:
+    when:
+      notVisible:
+        id: "buttonDone"
+    commands:
+      - hideKeyboard
+- extendedWaitUntil:
+    visible:
+      id: "buttonDone"
+    timeout: 8000
+    label: "Wait for Add Custom Amount button"
+
 - tapOn:
     id: "buttonDone"
-    label: "Tap Done on custom amount"
+    label: "Save custom amount"
 
 # Back on order creation — verify custom amount was added
 - extendedWaitUntil:
