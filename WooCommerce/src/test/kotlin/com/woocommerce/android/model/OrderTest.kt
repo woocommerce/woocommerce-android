@@ -147,8 +147,8 @@ class OrderTest {
     @Test
     fun `given date paid is null, when check is refund available, then returns true`() {
         // GIVEN
-        // Orders paid offline never go through `payment_complete()`, so they have no date paid. Core refunds them
-        // all the same, gating only on whether anything is left to refund.
+        // An order left pending or on hold has no date paid, even when the merchant was paid outside the app.
+        // Core refunds it all the same, gating only on whether anything is left to refund.
         val order = OrderTestUtils.generateTestOrder().copy(datePaid = null)
 
         // WHEN

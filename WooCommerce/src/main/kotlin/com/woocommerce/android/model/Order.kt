@@ -69,9 +69,9 @@ data class Order(
     @IgnoredOnParcel
     val quantityOfItemsWhichPossibleToRefund = items.sumByFloat { it.quantity }.toInt() + feesLines.count()
 
-    // Deliberately not checking whether the order was paid. Core gates its own refund button on the same question,
-    // because nothing in the API reliably reports that money arrived: `date_paid` is only set by `payment_complete()`,
-    // so an order paid offline never gets one.
+    // Deliberately not checking `isOrderPaid`: core stamps `date_paid` when an order reaches processing or
+    // completed, including through a manual status change, and never for one left pending or on hold. It tracks
+    // the status an order reached, not whether the merchant was paid, so core gates refunds on this question alone.
     @IgnoredOnParcel
     val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0
 
