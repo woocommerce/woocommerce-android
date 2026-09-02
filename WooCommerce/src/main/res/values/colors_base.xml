@@ -20,7 +20,7 @@
     <color name="color_on_surface">@color/woo_ds_color_surface_on_default</color>
     <color name="color_on_surface_high">@color/woo_ds_color_surface_on_variant</color>
     <color name="color_on_surface_medium">@color/woo_ds_color_surface_on_variant_highest</color>
-    <color name="color_on_surface_disabled">@color/woo_ds_color_state_layer_on_surface_opacity24</color>
+    <color name="color_on_surface_disabled">@color/woo_ds_color_surface_on_variant_lowest</color>
 
     <color name="color_on_primary">@color/woo_white</color>
     <color name="color_on_primary_high">@color/woo_white</color>

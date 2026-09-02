@@ -188,7 +188,7 @@ private fun TaxesToggle(
                 checkedThumbColor = colorResource(R.color.color_on_primary),
                 checkedTrackColor = colorResource(R.color.color_primary),
                 uncheckedThumbColor = colorResource(R.color.divider_color),
-                uncheckedTrackColor = colorResource(R.color.color_surface_elevated),
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceBright,
                 uncheckedBorderColor = colorResource(R.color.divider_color),
             ),
         )
