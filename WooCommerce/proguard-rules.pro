@@ -5,8 +5,12 @@
 # remove, abstract, or merge any of our classes it can't trace (TypeToken / ::class.java
 # targets and their transitively-reached field types), or deserialization breaks in release
 # builds only (LinkedTreeMap ClassCastException, "Abstract classes can't be instantiated").
-# Keep all our classes with their fields - we don't obfuscate, so names are stable, and
-# methods stay eligible for R8 optimization.
+# Keep all our classes with their fields and no-arg constructor - we don't obfuscate, so names
+# are stable, and methods stay eligible for R8 optimization. The <init>() matters: when R8 strips
+# the reflectively-used no-arg constructor, Gson falls back to Unsafe.allocateInstance, which skips
+# Kotlin field initializers, so defaulted fields (e.g. `= emptyList()`) deserialize to null in
+# release only. Gson's own consumer rules keep <init>() for @SerializedName classes; this covers
+# the rest.
 #
 # We considered scoping this to the packages Gson DTOs conventionally live in:
 #   -keep class com.woocommerce.android.network.** { <fields>; }
@@ -17,7 +21,7 @@
 # typed to a class outside these packages. The broad rule costs ~0.8 MB APK over the
 # per-package keeps, but can't be silently broken by a refactor and spares developers from
 # thinking about proguard when adding a Gson-deserialized class.
--keep class com.woocommerce.** { <fields>; }
+-keep class com.woocommerce.** { <fields>; <init>(); }
 -keepclassmembers enum com.woocommerce.** { *; }
 ##### WooCommerce - end
 
