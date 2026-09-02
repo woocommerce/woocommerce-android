@@ -263,17 +263,26 @@ tags:
     label: "Use percentage discount"
 - eraseText: 100
 - inputText: "10"
-- hideKeyboard
 
 - assertVisible:
     text: "Calculated Amount"
     label: "Percentage discount is calculated"
 - assertNotVisible: "Discount cannot be greater than the price"
 
+# Confirm. After typing, the IME holds focus and can swallow the first tap on a
+# top-toolbar button (dropping focus instead of confirming) — a swallowed tap
+# leaves the app hierarchy unchanged, so tap again if we did not return to the
+# order. This is device-agnostic: no keyboard to detect, no destructive BACK.
 - tapOn:
     text: "Done"
-    retryTapIfNoChange: true
     label: "Save product discount"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          text: "Done"
+          label: "Re-confirm discount after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -349,28 +358,26 @@ tags:
 
 - takeScreenshot: order_create_custom_amount_dialog
 
-# "Add Custom Amount" (buttonDone) is the confirm button at the bottom of the
-# sheet. hideKeyboard issues a BACK press, so calling it unconditionally pops
-# the whole sheet — discarding the entry — on AVDs where the keyboard is already
-# down (e.g. those showing only a floating IME toolbar, no full keyboard). Only
-# hide the keyboard when the button is actually occluded; if it is not visible,
-# a keyboard is covering it, so the BACK press is guaranteed to dismiss the
-# keyboard rather than the sheet.
-- runFlow:
-    when:
-      notVisible:
-        id: "buttonDone"
-    commands:
-      - hideKeyboard
+# Confirm. "Add Custom Amount" (buttonDone) submits the sheet. A blind
+# hideKeyboard here is a BACK press that pops the whole sheet — discarding the
+# entry — when there is no on-screen keyboard to dismiss. Instead just tap the
+# button; if the IME swallowed the first tap the app hierarchy is unchanged, so
+# tap again when we have not returned to the order.
 - extendedWaitUntil:
     visible:
       id: "buttonDone"
     timeout: 8000
     label: "Wait for Add Custom Amount button"
-
 - tapOn:
     id: "buttonDone"
     label: "Save custom amount"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "buttonDone"
+          label: "Re-confirm custom amount after IME swallowed the first tap"
 
 # Back on order creation — verify custom amount was added
 - extendedWaitUntil:
@@ -404,17 +411,24 @@ tags:
 - tapOn:
     id: "order_shipping_amount_input"
 - inputText: "500"
-- hideKeyboard
 
 - tapOn:
     id: "order_shipping_name_input"
+    retryTapIfNoChange: true
 - inputText: Maestro shipping ${SUITE_RUN_ID}
-- hideKeyboard
 
+# Confirm; re-tap Save if the IME swallowed the first tap (see the discount /
+# custom-amount notes above — no keyboard to detect, no destructive BACK).
 - tapOn:
     id: "order_shipping_save_button"
-    retryTapIfNoChange: true
     label: "Save shipping line"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "order_shipping_save_button"
+          label: "Re-save shipping after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -467,14 +481,21 @@ tags:
 - tapOn:
     id: "customerOrderNote_editor"
 - inputText: "Maestro smoke test note - please gift wrap."
-- hideKeyboard
 
 - takeScreenshot: order_create_customer_note_typed
 
-# Save via toolbar DONE
+# Save via toolbar DONE; re-tap if the IME swallowed the first tap (see the
+# discount / custom-amount notes above).
 - tapOn:
     id: "menu_done"
     label: "Save customer note"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "menu_done"
+          label: "Re-save note after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -585,13 +606,21 @@ tags:
             id: "last_name"
       - eraseText
       - inputText: "SmokeTest-${SUITE_RUN_ID}"
-- hideKeyboard
 
 - takeScreenshot: order_create_customer_re_edited
 
+# Save via toolbar DONE; re-tap if the IME swallowed the first tap (see the
+# discount / custom-amount notes above).
 - tapOn:
     id: "menu_done"
     label: "Save customer edit"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "menu_done"
+          label: "Re-save customer edit after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
