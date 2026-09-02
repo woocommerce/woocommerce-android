@@ -5,6 +5,7 @@
 25.6
 -----
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
+- [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]
 - [*] Remote images now load through the app's custom network stack again, fixing image loading on some stores [https://github.com/woocommerce/woocommerce-android/pull/16484]
 - [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
 - [Internal] The product shipping screen no longer reads the shipping class from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16490]
