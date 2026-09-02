@@ -4,21 +4,13 @@
         General colors
     -->
     <color name="color_primary">@color/woo_purple_30</color>
-    <color name="color_primary_surface">@color/woo_black_90</color>
+    <color name="color_primary_surface">@color/woo_ds_color_surface_bright</color>
     <color name="color_primary_variant">@color/woo_purple_50</color>
     <color name="color_secondary">@color/woo_pink_30</color>
     <color name="color_secondary_variant">@color/woo_pink_50</color>
-    <color name="color_surface">@color/woo_black_90</color>
-    <color name="color_surface_elevated">@color/woo_black_80</color>
     <color name="color_error">@color/woo_red_30</color>
     <color name="color_alert">@color/woo_yellow_30</color>
 
-    <color name="color_surface_elevated_04">#262626</color>
-
-    <color name="color_on_surface">@color/woo_white</color>
-    <color name="color_on_surface_high">@color/woo_white_alpha_087</color>
-    <color name="color_on_surface_medium">@color/woo_white_alpha_060</color>
-    <color name="color_on_surface_disabled">@color/woo_white_alpha_038</color>
     <color name="woo_item_selected">@color/woo_purple_100</color>
     <color name="woo_item_selected_disabled">@color/woo_gray_90</color>
 
@@ -30,7 +22,6 @@
     <color name="color_on_primary_surface_high">@color/woo_white_alpha_087</color>
 
     <color name="color_on_secondary">@color/woo_black</color>
-    <color name="color_on_background">@color/woo_white</color>
     <color name="color_on_error">@color/woo_black</color>
 
     <color name="color_accent_1">@color/woo_yellow_30</color>
@@ -42,9 +33,6 @@
     <!--
         App colors
     -->
-    <color name="default_window_background">@color/woo_ds_color_background_section</color>
-    <color name="divider_color">@color/woo_white_alpha_012</color>
-    <color name="image_border_color">@color/woo_white_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_white_alpha_012</color>
     <color name="color_scrim_background">@color/woo_black_90_alpha_038</color>
     <color name="color_default_image_background">@color/woo_gray_40</color>
@@ -52,11 +40,6 @@
     <color name="color_media_picker_toolbar_background">@color/color_toolbar</color>
     <color name="color_item_selected">@color/woo_black</color>
     <color name="color_woo_logo">@color/white</color>
-
-    <!--
-        Elevation colors
-    -->
-    <color name="color_elevation_overlay_01">#1d1d1d</color>
 
     <!--
         Default graph colors
@@ -120,11 +103,6 @@
         Loading Skeletons
     -->
     <color name="skeleton_color">@color/woo_white_alpha_012</color>
-
-    <!--
-    Empty state view
-    -->
-    <color name="empty_state_bg_color">@color/woo_black_90</color>
 
     <!--
         Payment reader

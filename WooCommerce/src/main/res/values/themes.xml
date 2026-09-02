@@ -12,8 +12,8 @@
     </style>
 
     <style name="Theme.Woo" parent="Theme.WooBase">
-        <item name="android:windowBackground">@color/woo_ds_color_background_section</item>
-        <item name="android:colorBackground">@color/woo_ds_color_background_section</item>
+        <item name="android:windowBackground">@color/woo_ds_color_surface_default</item>
+        <item name="android:colorBackground">@color/woo_ds_color_surface_default</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
@@ -42,8 +42,7 @@
         <item name="android:colorControlActivated">@color/color_primary</item>
         <item name="scrimBackground">@color/color_scrim_background</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="elevationOverlayEnabled">true</item>
-        <item name="elevationOverlayColor">@color/woo_white</item>
+        <item name="elevationOverlayEnabled">false</item>
         <item name="android:textColorLink">@color/color_primary</item>
 
         <item name="minTouchTargetSize">@dimen/min_tap_target</item>
