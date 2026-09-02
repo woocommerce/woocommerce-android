@@ -165,7 +165,7 @@ class StoreTopAppBarIconButtonUsageRuleTest {
                 WooTopAppBar(
                     "Title",
                     Modifier,
-                    null,
+                    Icons.Default.ArrowBack,
                     "Back",
                     {},
                     WindowInsets(0),
@@ -177,6 +177,53 @@ class StoreTopAppBarIconButtonUsageRuleTest {
         val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
 
         assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `given a trailing lambda past the positional actions index, when linting, then violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+            import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+
+            fun usage() {
+                WooTopAppBar(
+                    { Text("Title") },
+                    Modifier,
+                    {},
+                    WindowInsets(0),
+                    { IconButton(onClick = {}) {} },
+                )
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `given a trailing lambda at the positional actions index, when linting, then no violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import androidx.compose.material3.IconButton
+            import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+
+            fun usage() {
+                WooTopAppBar(
+                    { Text("Title") },
+                    Modifier,
+                    {},
+                    { IconButton(onClick = {}) {} },
+                )
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).isEmpty()
     }
 
     @Test
