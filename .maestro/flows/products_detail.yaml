@@ -14,18 +14,12 @@
 #
 # We therefore avoid asserting on type-specific labels like "Price" or
 # "Inventory" — those would fail as soon as the first product on the
-# staging store is, say, a Booking product (as happened on this run:
-# the first product was "Tourist Activity" → Booking). Instead we
-# assert on rows that render for EVERY product type:
-#
-#   - "Product type"  (always rendered; value varies)
-#   - "Reviews"       (always rendered; "no approved reviews" placeholder)
-#   - "Categories"    (always rendered; "Uncategorized" if unset)
+# staging store is, say, a Booking product.
 #
 # Verifies:
 #   - Product detail screen loads
-#   - Product name field + "Describe your product" area render
-#   - Universal ComplexProperty rows render (Product type, Reviews, Categories)
+#   - The Categories screen opens, from the detail row or from Add more details
+#   - The always-rendered "Product type" row is present
 #
 # Mutable description and product-type persistence is verified against the
 # run-owned product in products_create.yaml.
@@ -51,11 +45,10 @@ tags:
     index: 0
     label: "Tap first product"
 
-# Wait for product detail screen. The "Describe your product" hint +
-# "Write with AI" button render on every product type, so they're a
-# safer readiness signal than price-related text.
+# Wait for product detail screen.
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*"
+    visible:
+      id: "cardsRecyclerView"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -66,10 +59,9 @@ tags:
     commands:
       - tapOn: "GOT IT"
 
-# Wait for the product-name field (universal).
 - extendedWaitUntil:
     visible:
-      id: "editText"
+      id: "cardsRecyclerView"
     timeout: 10000
 
 - takeScreenshot: product_detail_top
@@ -85,8 +77,51 @@ tags:
 
 - takeScreenshot: product_detail_properties
 
-# Universal row 1: Product type (every WooCommerce product type
-# renders this — simple / variable / grouped / external / booking / …).
+- runFlow:
+    when:
+      notVisible: "Categories"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "productDetail_addMoreButton"
+          direction: DOWN
+          timeout: 15000
+          label: "Scroll to the end of the detail card list"
+
+- runFlow:
+    when:
+      notVisible: "Categories"
+    commands:
+      - tapOn:
+          id: "productDetail_addMoreButton"
+          retryTapIfNoChange: true
+          label: "Open additional product details"
+      - extendedWaitUntil:
+          visible:
+            id: "productDetailInfo_optionsList"
+          timeout: 10000
+
+- tapOn:
+    text: "Categories"
+    retryTapIfNoChange: true
+    label: "Open product categories"
+
+- extendedWaitUntil:
+    visible:
+      id: "productCategoriesRecycler"
+    timeout: 20000
+    label: "Product categories screen is shown"
+
+- takeScreenshot: product_detail_categories
+
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "cardsRecyclerView"
+    timeout: 15000
+    label: "Back on product detail"
+
 - scrollUntilVisible:
     element: "Product type"
     direction: DOWN
@@ -94,38 +129,6 @@ tags:
     label: "Scroll to Product type row"
 
 - assertVisible: "Product type"
-
-- takeScreenshot: product_detail_type
-
-# Universal row 2: Reviews (renders with "no approved reviews"
-# placeholder when the product has none).
-- scrollUntilVisible:
-    element: "Reviews"
-    direction: DOWN
-    timeout: 15000
-    label: "Scroll to Reviews row"
-
-- assertVisible:
-    text: "Reviews"
-
-# Universal row 3: Categories (falls back to "Uncategorized" when
-# unset).
-- scrollUntilVisible:
-    element: "Categories"
-    direction: DOWN
-    timeout: 15000
-    label: "Scroll to Categories row"
-
-- assertVisible:
-    text: "Categories"
-
-# Type-specific rows. This provisional flow should target seeded/queryable
-# products before promotion so these assertions are not store-order dependent.
-- scrollUntilVisible:
-    element: ".*Price.*|.*Inventory.*|.*Shipping.*|.*Short description.*"
-    direction: DOWN
-    timeout: 10000
-    label: "Scroll to Price / Inventory / Shipping / Short description"
 
 - takeScreenshot: product_detail_bottom
 

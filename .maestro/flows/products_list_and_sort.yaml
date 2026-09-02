@@ -41,8 +41,6 @@ tags:
     if (!name || name.trim() === '') {
         throw new Error('Product name is empty — list may not have loaded properly');
     }
-- evalScript: ${output.productSearchText = maestro.copiedText.trim()}
-
 - takeScreenshot: products_list
 
 # Test sorting with two explicit, opposing choices. Requiring different first
@@ -52,6 +50,7 @@ tags:
     label: "Require product sorting control"
 - tapOn:
     id: "btn_product_sorting"
+    retryTapIfNoChange: true
     label: "Open product sorting"
 - extendedWaitUntil:
     visible: "Title: A to Z"
@@ -74,6 +73,7 @@ tags:
 
 - tapOn:
     id: "btn_product_sorting"
+    retryTapIfNoChange: true
     label: "Reopen product sorting"
 - extendedWaitUntil:
     visible: "Title: Z to A"
@@ -99,9 +99,10 @@ tags:
 
 - takeScreenshot: products_sorted
 
-# Test search against the first visible product from the loaded list.
+# Test search against the A-to-Z first product.
 - tapOn:
     id: "menu_search"
+    retryTapIfNoChange: true
     label: "Open product search"
 
 - extendedWaitUntil:
@@ -111,7 +112,7 @@ tags:
 
 - tapOn:
     id: "search_src_text"
-- inputText: ${output.productSearchText}
+- inputText: ${output.firstProductAscending}
 - pressKey: Enter
 
 # Wait for search results
@@ -121,8 +122,9 @@ tags:
     timeout: 15000
 
 - assertVisible:
-    text: "${output.productSearchText}"
-    label: "Captured product appears in search results"
+    id: "productName"
+    text: "${output.firstProductAscending}"
+    label: "Searched product appears as a result row, not only in the search field"
 
 - takeScreenshot: products_search_results
 

@@ -16,9 +16,13 @@
 #        └─ tap "Choose from device"
 #           (mediaPickerHelper.showMediaPicker(DEVICE))
 #              ▼
-#   MediaPickerActivity (external org.wordpress:mediapicker lib)
+#   WP media library → MediaPickerActivity (org.wordpress:mediapicker)
 #     └─ tap first image_thumbnail in the recycler
 #     └─ tap mnu_confirm_selection ("Add N") in the toolbar
+#   Device media → system photo picker (AndroidX
+#   PickMultipleVisualMedia, backed by the MediaProvider module)
+#     └─ tap first icon_thumbnail in picker_tab_recyclerview
+#     └─ tap button_add ("Add N")
 #        └─ result returned to ProductImagesFragment
 #           ▼
 #   ProductImagesFragment — gallery now shows the image
@@ -34,12 +38,19 @@
 #   - image_source_wp_media_library → "WordPress media library"
 #   - product_add_tool_bar_menu_button_done → "Publish"
 #
-# External lib resource IDs (from
+# WP media library resource IDs (from
 # org.wordpress:mediapicker:0.3.5 AAR):
 #   - recycler                 — media thumbnail list
 #   - image_thumbnail          — per-tile ImageView
 #   - mnu_confirm_selection    — "Add N" action-mode menu item
 #   - soft_ask_view            — storage-permission prompt (guarded)
+#
+# System photo picker resource IDs. The MediaProvider package name
+# varies by OEM and Android version, so these are matched as regex
+# suffixes rather than fully qualified IDs:
+#   - picker_tab_recyclerview  — media thumbnail grid
+#   - icon_thumbnail           — per-tile ImageView
+#   - button_add               — "Add N" confirm button
 appId: com.woocommerce.android
 name: "Products - Media upload via WP media library and device media"
 tags:
@@ -116,7 +127,8 @@ tags:
     label: "Open this run's product"
 
 - extendedWaitUntil:
-    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*PUBLISH.*|.*SAVE.*"
+    visible:
+      id: "cardsRecyclerView"
     timeout: 25000
     label: "Wait for product detail to load"
 
@@ -313,18 +325,18 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "recycler"
+      id: ".*picker_tab_recyclerview"
     timeout: 30000
     label: "Wait for device media grid"
 
 - tapOn:
-    id: "image_thumbnail"
+    id: ".*icon_thumbnail"
     index: 0
     retryTapIfNoChange: true
     label: "Select the deterministic device media item"
 
 - tapOn:
-    id: "mnu_confirm_selection"
+    id: ".*button_add"
     retryTapIfNoChange: true
     label: "Add the selected device media"
 
@@ -369,14 +381,9 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Save/Publish to persist the image"
 
-# A few outcomes are possible depending on app version + network:
-#   1. The button label flips back to the non-dirty state and we
-#      stay on the detail screen.
-#   2. A success snackbar appears.
-#   3. The detail screen closes automatically.
-# We accept any of those signals as "save worked".
+# Require the success snackbar.
 - extendedWaitUntil:
-    visible: ".*updated.*|.*saved.*|.*productsRecycler.*|.*Describe your product.*"
+    visible: "Product saved|Product published"
     timeout: 30000
     label: "Wait for save confirmation"
 
