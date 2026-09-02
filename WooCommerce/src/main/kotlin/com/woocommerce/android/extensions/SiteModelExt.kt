@@ -52,7 +52,9 @@ val SiteModel.loginUrlOrDefault
 
 private val httpsUrlNormalizer = HttpsUrlNormalizer()
 
-private fun String.normalizedToHttps() = httpsUrlNormalizer.normalize(this).normalizedUrl
+private fun String.normalizedToHttps() = runCatching {
+    httpsUrlNormalizer.normalize(this).normalizedUrl
+}.getOrDefault(this)
 
 val SiteModel.clock: Clock
     @Suppress("TooGenericExceptionCaught")
