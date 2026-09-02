@@ -145,15 +145,17 @@ class OrderTest {
     }
 
     @Test
-    fun `given date paid is null, when check is refund available, then returns false`() {
+    fun `given date paid is null, when check is refund available, then returns true`() {
         // GIVEN
+        // Orders paid offline never go through `payment_complete()`, so they have no date paid. Core refunds them
+        // all the same, gating only on whether anything is left to refund.
         val order = OrderTestUtils.generateTestOrder().copy(datePaid = null)
 
         // WHEN
         val result = order.isRefundAvailable
 
         // THEN
-        assertFalse(result)
+        assertTrue(result)
     }
 
     @Test
@@ -161,8 +163,7 @@ class OrderTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder().copy(
             total = BigDecimal(100),
-            refundTotal = BigDecimal(50),
-            datePaid = mock()
+            refundTotal = BigDecimal(50)
         )
 
         // WHEN
@@ -176,8 +177,7 @@ class OrderTest {
     fun `given items quantity is 1, when check is refund available, then returns true`() {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder().copy(
-            items = listOf(mock { on { quantity }.thenReturn(1F) }),
-            datePaid = mock()
+            items = listOf(mock { on { quantity }.thenReturn(1F) })
         )
 
         // WHEN
@@ -188,7 +188,7 @@ class OrderTest {
     }
 
     @Test
-    fun `given date paid is null, when check is refund available, then returns true`() {
+    fun `given date paid is set, when check is refund available, then returns true`() {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder().copy(datePaid = mock())
 
