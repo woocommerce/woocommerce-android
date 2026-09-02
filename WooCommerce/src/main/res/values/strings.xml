@@ -4738,6 +4738,9 @@
     <string name="age_restriction_dialog_title">Account Access Restricted</string>
     <string name="age_restriction_supervised_user_account_dialog_message">Your Google Account settings indicate that you need a parent or guardian\'s permission to continue. They can grant access using their Google account to get you back online.</string>
     <string name="age_restriction_user_below_tos_minimum_age_dialog_message">Your Google Account indicates that you are under 13 years old, which is below the minimum age allowed to use the WooCommerce platform under its terms of service.</string>
+    <string name="age_verification_required_title">Verify your age to continue</string>
+    <string name="age_verification_required_message">Google Play needs you to verify your age before WooCommerce can check whether you can use the app. Complete verification in Google Play, then return here and try again.</string>
+    <string name="age_verification_open_google_play">Open Google Play</string>
 
     <!-- Woo POS Promo Carousel -->
     <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>
