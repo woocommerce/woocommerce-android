@@ -4,7 +4,7 @@
 
 25.6
 -----
-- [*] Order details: orders paid offline can now be refunded from the app, matching the behavior on the web
+- [*] Order details: orders paid offline can now be refunded from the app, matching the behavior on the web [https://github.com/woocommerce/woocommerce-android/pull/16510]
 - [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]
 - [*] Remote images now load through the app's custom network stack again, fixing image loading on some stores [https://github.com/woocommerce/woocommerce-android/pull/16484]
 - [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
