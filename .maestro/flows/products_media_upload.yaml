@@ -51,7 +51,7 @@
 #   - picker_tab_recyclerview  — media thumbnail grid
 #   - icon_thumbnail           — per-tile ImageView
 #   - button_add               — "Add N" confirm button
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Products - Media upload via WP media library and device media"
 tags:
   - smoke_extended

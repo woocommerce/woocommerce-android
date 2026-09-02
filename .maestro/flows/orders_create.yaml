@@ -19,7 +19,7 @@
 # The order IS committed to the staging store and completed via COD.
 # Staging orders use test data (SmokeTest customer, $10 gift wrap) so
 # accumulation across runs is acceptable.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Orders - Create a new order"
 tags:
   - smoke_extended
@@ -263,17 +263,26 @@ tags:
     label: "Use percentage discount"
 - eraseText: 100
 - inputText: "10"
-- hideKeyboard
 
 - assertVisible:
     text: "Calculated Amount"
     label: "Percentage discount is calculated"
 - assertNotVisible: "Discount cannot be greater than the price"
 
+# Confirm. After typing, the IME holds focus and can swallow the first tap on a
+# top-toolbar button (dropping focus instead of confirming) — a swallowed tap
+# leaves the app hierarchy unchanged, so tap again if we did not return to the
+# order. This is device-agnostic: no keyboard to detect, no destructive BACK.
 - tapOn:
     text: "Done"
-    retryTapIfNoChange: true
     label: "Save product discount"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          text: "Done"
+          label: "Re-confirm discount after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -342,18 +351,33 @@ tags:
 - eraseText
 # Emulator locale uses comma as decimal separator — entering "1000" yields 10,00
 - inputText: "1000"
-- hideKeyboard
 
 - tapOn:
     id: "customAmountNameText"
 - inputText: "Gift wrap"
-- hideKeyboard
 
 - takeScreenshot: order_create_custom_amount_dialog
 
+# Confirm. "Add Custom Amount" (buttonDone) submits the sheet. A blind
+# hideKeyboard here is a BACK press that pops the whole sheet — discarding the
+# entry — when there is no on-screen keyboard to dismiss. Instead just tap the
+# button; if the IME swallowed the first tap the app hierarchy is unchanged, so
+# tap again when we have not returned to the order.
+- extendedWaitUntil:
+    visible:
+      id: "buttonDone"
+    timeout: 8000
+    label: "Wait for Add Custom Amount button"
 - tapOn:
     id: "buttonDone"
-    label: "Tap Done on custom amount"
+    label: "Save custom amount"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "buttonDone"
+          label: "Re-confirm custom amount after IME swallowed the first tap"
 
 # Back on order creation — verify custom amount was added
 - extendedWaitUntil:
@@ -387,17 +411,24 @@ tags:
 - tapOn:
     id: "order_shipping_amount_input"
 - inputText: "500"
-- hideKeyboard
 
 - tapOn:
     id: "order_shipping_name_input"
+    retryTapIfNoChange: true
 - inputText: Maestro shipping ${SUITE_RUN_ID}
-- hideKeyboard
 
+# Confirm; re-tap Save if the IME swallowed the first tap (see the discount /
+# custom-amount notes above — no keyboard to detect, no destructive BACK).
 - tapOn:
     id: "order_shipping_save_button"
-    retryTapIfNoChange: true
     label: "Save shipping line"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "order_shipping_save_button"
+          label: "Re-save shipping after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -450,14 +481,21 @@ tags:
 - tapOn:
     id: "customerOrderNote_editor"
 - inputText: "Maestro smoke test note - please gift wrap."
-- hideKeyboard
 
 - takeScreenshot: order_create_customer_note_typed
 
-# Save via toolbar DONE
+# Save via toolbar DONE; re-tap if the IME swallowed the first tap (see the
+# discount / custom-amount notes above).
 - tapOn:
     id: "menu_done"
     label: "Save customer note"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "menu_done"
+          label: "Re-save note after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -468,8 +506,14 @@ tags:
     label: "Customer note visible in creation screen"
 
 # ── Add a customer ────────────────────────────────────────────────────
-# Select an existing customer from the live store. Manual customer entry does
-# not satisfy the P2 existing-customer check.
+# Select the deterministic seeded customer (created by --seed) by its unique
+# email. An arbitrary live customer is unreliable here: the lab store has many
+# customers sharing a single email, and submitting the order surfaces an
+# order-derived entry for that email — so a post-order "was the account renamed?"
+# check races backend indexing. The seeded email (MAESTRO_FIXTURE_CUSTOMER_EMAIL)
+# is unique, so the search resolves the one seeded account whose original name
+# (MAESTRO_FIXTURE_CUSTOMER_NAME) the integrity check later asserts is intact.
+# Selecting a real store customer still satisfies the P2 existing-customer check.
 - scrollUntilVisible:
     element: "Add customer details"
     direction: DOWN
@@ -485,29 +529,24 @@ tags:
     visible: "Search for customers"
     timeout: 15000
 
+- tapOn: "Search for customers"
+- inputText: ${MAESTRO_FIXTURE_CUSTOMER_EMAIL}
+
 - extendedWaitUntil:
     visible:
       id: "customer_list_item"
     timeout: 20000
-    label: "Require at least one existing customer"
+    label: "Require the seeded customer to be searchable"
 
-# Capture and tap the second visible email. Some stores expose an address-only
-# first customer whose list summary has an email but whose full customer fetch
-# does not; requiring another live row keeps the draft identity assertion real.
-- copyTextFrom:
-    text: ".*@.*"
-    index: 1
-- evalScript: ${output.selectedCustomerEmail = maestro.copiedText.trim()}
-- evalScript: |
-    if (!output.selectedCustomerEmail || output.selectedCustomerEmail.indexOf('@') < 1) {
-        throw new Error('Existing customer prerequisite requires at least two customers with email addresses');
-    }
+- extendedWaitUntil:
+    visible: ".*${MAESTRO_FIXTURE_CUSTOMER_NAME}.*"
+    timeout: 20000
+    label: "Resolve the seeded customer by its unique identity"
 
 - tapOn:
-    text: ".*@.*"
-    index: 1
+    text: ".*${MAESTRO_FIXTURE_CUSTOMER_NAME}.*"
     retryTapIfNoChange: true
-    label: "Select existing customer"
+    label: "Select the seeded customer"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -539,8 +578,8 @@ tags:
     timeout: 15000
 
 - assertVisible:
-    text: "${output.selectedCustomerEmail}"
-    label: "Customer editor shows the selected live identity"
+    text: "${MAESTRO_FIXTURE_CUSTOMER_EMAIL}"
+    label: "Customer editor shows the seeded customer identity"
 
 # Rewrite the last name with a per-suite-run-unique marker so
 # orders_refund.yaml can find THIS exact order and won't pick up an
@@ -554,13 +593,34 @@ tags:
       id: "last_name"
 - eraseText
 - inputText: "SmokeTest-${SUITE_RUN_ID}"
-- hideKeyboard
+# Maestro inputText intermittently drops a character (observed "SokeTest-…"),
+# which would break the persisted-order search and orders_refund that locate
+# THIS order by the marker. Re-type once if the field did not capture it whole.
+- runFlow:
+    when:
+      notVisible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    commands:
+      - tapOn:
+          id: "edit_text"
+          childOf:
+            id: "last_name"
+      - eraseText
+      - inputText: "SmokeTest-${SUITE_RUN_ID}"
 
 - takeScreenshot: order_create_customer_re_edited
 
+# Save via toolbar DONE; re-tap if the IME swallowed the first tap (see the
+# discount / custom-amount notes above).
 - tapOn:
     id: "menu_done"
     label: "Save customer edit"
+- runFlow:
+    when:
+      notVisible: "New order"
+    commands:
+      - tapOn:
+          id: "menu_done"
+          label: "Re-save customer edit after IME swallowed the first tap"
 
 - extendedWaitUntil:
     visible: "New order"
@@ -583,7 +643,7 @@ tags:
     timeout: 15000
     label: "Edited customer marker is retained by the draft"
 - assertVisible:
-    text: "${output.selectedCustomerEmail}"
+    text: "${MAESTRO_FIXTURE_CUSTOMER_EMAIL}"
     label: "Selected customer identity is retained by the draft"
 - back
 - extendedWaitUntil:
@@ -718,23 +778,41 @@ tags:
     visible: "Search for customers"
     timeout: 15000
 - tapOn: "Search for customers"
-- inputText: ${output.selectedCustomerEmail}
-- hideKeyboard
+- inputText: ${MAESTRO_FIXTURE_CUSTOMER_EMAIL}
 - extendedWaitUntil:
-    visible: "${output.selectedCustomerEmail}"
+    visible:
+      id: "customer_list_item"
     timeout: 20000
-    label: "Find the original customer after order creation"
-- copyTextFrom:
-    text: "${output.selectedCustomerEmail}"
-- evalScript: |
-    if (maestro.copiedText.trim() !== output.selectedCustomerEmail) {
-        throw new Error('Store customer email changed after editing the order-local copy');
-    }
-- assertNotVisible:
-    text: ".*SmokeTest-${SUITE_RUN_ID}.*"
-    label: "Order-local marker was not persisted to the store customer"
-- back
-- back
+    label: "Find the seeded customer after order creation"
+# The seeded account must still carry its ORIGINAL name. Editing the order-local
+# customer copy (last name → SmokeTest-<run>) must not rename the underlying
+# store account. Submitting the order can surface a separate order-derived entry
+# with the edited name for the same email, so asserting the original name is
+# still present — rather than the marker's absence — is what proves the source
+# account was untouched.
+- assertVisible:
+    text: ".*${MAESTRO_FIXTURE_CUSTOMER_NAME}.*"
+    label: "Seeded customer account retains its original name (not renamed)"
+# Return to the orders list. The customer search keyboard may absorb the first
+# back press, so press back until the list is reached rather than a fixed count.
+- runFlow:
+    when:
+      notVisible:
+        id: "ordersList"
+    commands:
+      - back
+- runFlow:
+    when:
+      notVisible:
+        id: "ordersList"
+    commands:
+      - back
+- runFlow:
+    when:
+      notVisible:
+        id: "ordersList"
+    commands:
+      - back
 - extendedWaitUntil:
     visible:
       id: "ordersList"

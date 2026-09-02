@@ -16,7 +16,7 @@
 # setting change (noise on staging), and Order-a-card-reader exits to
 # Stripe's webview which isn't a Maestro-friendly check. Presence of
 # the items is the smoke-level guarantee P2 cares about.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Hub Menu - Payments"
 tags:
   - smoke_extended

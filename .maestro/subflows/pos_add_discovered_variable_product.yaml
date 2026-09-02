@@ -1,6 +1,6 @@
 # Discovers a variable product from the loaded POS catalog, searches for its
 # app-provided name, opens its variations, and adds the first variation.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - scrollUntilVisible:
     element: "Variable Product .*"
@@ -28,12 +28,19 @@ appId: com.woocommerce.android.dev
     id: "woo_pos_search_input"
     label: "Focus product search"
 - inputText: ${output.posVariableProductName}
-- hideKeyboard
 
 - extendedWaitUntil:
     visible: "Variable Product .*"
     timeout: 20000
     label: "Search resolves a Variable product"
+
+# Dismiss the keyboard only if it is covering the first result (see
+# hide_keyboard.yaml). On this Compose search screen a blind hideKeyboard throws
+# "Couldn't hide the keyboard" when there is no soft keyboard to dismiss.
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "woo_pos_product_item"
 
 - tapOn:
     id: "woo_pos_product_item"

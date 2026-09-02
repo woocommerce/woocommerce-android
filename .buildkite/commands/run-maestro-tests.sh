@@ -39,13 +39,9 @@ if [[ -n "${MAESTRO_EXCLUDE_TAGS:-}" ]]; then
   EXCLUDE_TAGS_ARGS+=(--exclude-tags "$MAESTRO_EXCLUDE_TAGS")
 fi
 
-if [[ -n "${MAESTRO_APK_PATH:-}" ]]; then
-  APK_PATH="$MAESTRO_APK_PATH"
-else
-  echo "--- Building and installing wasabi debug APK"
-  "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
-  ./gradlew :WooCommerce:installWasabiDebug
-  APK_PATH=""
+APK_PATH="${MAESTRO_APK_PATH:-}"
+if [[ -z "$APK_PATH" ]]; then
+  echo "--- No candidate APK supplied; the runner will ensure the latest production release is installed"
 fi
 
 echo "--- Running Maestro smoke tests"

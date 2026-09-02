@@ -22,7 +22,7 @@
 # Unlike the mark-complete flow, the refund is fully committed — the
 # staging store will accumulate refunded orders across runs. Test
 # orders on the store are priced low enough that this is acceptable.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Orders - Issue refund"
 tags:
   - smoke_extended
@@ -145,6 +145,25 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Refund"
 
+# The order detail auto-refreshes on open; if that refresh lands between
+# the scroll and the tap it resets the list to the top and the Refund tap
+# misses. Re-scroll and re-tap if the Issue Refund screen didn't open.
+- runFlow:
+    when:
+      notVisible:
+        id: "issueRefund_btnNextFromItems"
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "paymentInfo_issueRefundButton"
+          direction: DOWN
+          timeout: 10000
+          label: "Re-scroll to Refund button"
+      - tapOn:
+          id: "paymentInfo_issueRefundButton"
+          retryTapIfNoChange: true
+          label: "Retry Tap Refund"
+
 - extendedWaitUntil:
     visible:
       id: "issueRefund_btnNextFromItems"
@@ -179,6 +198,15 @@ tags:
 - hideKeyboard
 
 - takeScreenshot: refund_summary_with_reason
+
+# Entering the reason can scroll the Refund CTA below the fold, so ensure it
+# is on-screen before tapping.
+- scrollUntilVisible:
+    element:
+      id: "refundSummary_btnRefund"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Refund CTA"
 
 - tapOn:
     id: "refundSummary_btnRefund"
@@ -229,7 +257,18 @@ tags:
 - takeScreenshot: order_detail_after_refund
 
 # ── Back out to orders list ──────────────────────────────────────────
+# The order detail refreshes after the refund; the back press can be dropped
+# while that refresh is in flight, leaving us on the detail screen. If we're
+# still on order detail, press back again (guarded so a successful first back
+# does not overshoot past the orders list).
 - back
+
+- runFlow:
+    when:
+      visible:
+        id: "orderDetail_container"
+    commands:
+      - back
 
 - extendedWaitUntil:
     visible:

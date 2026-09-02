@@ -70,15 +70,113 @@ class MaestroCiContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("file: open_site_address_login.yaml", reusable_login)
 
-    def test_toolchain_is_configured_before_building_the_app(self) -> None:
+    def test_fresh_login_flows_share_the_carousel_dismissal(self) -> None:
+        helper = (
+            REPO_ROOT / ".maestro" / "subflows" / "dismiss_login_carousel.yaml"
+        ).read_text(encoding="utf-8")
+        readiness_selector = 'visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"'
+
+        self.assertIn("appId: com.woocommerce.android", helper)
+        self.assertIn(readiness_selector, helper)
+        self.assertIn('- tapOn: "Skip"', helper)
+
+        direct_login_flows = [
+            "login_google.yaml",
+            "login_help.yaml",
+            "login_no_jetpack.yaml",
+            "login_not_woo_store.yaml",
+            "login_not_wp_site.yaml",
+            "login_wrong_account.yaml",
+            "login_wrong_credentials.yaml",
+        ]
+        for flow_name in direct_login_flows:
+            with self.subTest(flow=flow_name):
+                flow = (REPO_ROOT / ".maestro" / "flows" / flow_name).read_text(encoding="utf-8")
+                self.assertIn("../subflows/dismiss_login_carousel.yaml", flow)
+                self.assertNotIn(readiness_selector, flow)
+                self.assertNotIn('- tapOn: "Skip"', flow)
+
+        reusable_login = (
+            REPO_ROOT / ".maestro" / "subflows" / "login.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("file: dismiss_login_carousel.yaml", reusable_login)
+        self.assertNotIn(readiness_selector, reusable_login)
+        self.assertNotIn('- tapOn: "Skip"', reusable_login)
+
+    def test_all_login_flows_are_required_core_coverage(self) -> None:
+        login_flows = sorted((REPO_ROOT / ".maestro" / "flows").glob("login_*.yaml"))
+
+        self.assertTrue(login_flows)
+        for path in login_flows:
+            with self.subTest(path=path):
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("  - smoke_core\n", source)
+                self.assertNotIn("  - flaky_quarantine\n", source)
+
+    def test_not_woo_store_uses_site_admin_credentials_for_both_auth_routes(self) -> None:
+        flow = (
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
+        ).read_text(encoding="utf-8")
+
+        self.assertEqual(
+            flow.count("${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}"), 2
+        )
+        self.assertEqual(
+            flow.count("${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}"), 2
+        )
+
+        obsolete_namespace = "NOT_A_WOO_STORE_" + "WPCOM"
+        credential_sources = [
+            REPO_ROOT / ".maestro" / "env.example",
+            REPO_ROOT / ".maestro" / "README.md",
+            REPO_ROOT / ".maestro" / "scripts" / "doctor.py",
+            REPO_ROOT / ".maestro" / "scripts" / "run-smoke-tests.sh",
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml",
+        ]
+        for path in credential_sources:
+            with self.subTest(path=path):
+                self.assertNotIn(obsolete_namespace, path.read_text(encoding="utf-8"))
+
+    def test_not_woo_store_requires_the_installation_page_cta(self) -> None:
+        flow = (
+            REPO_ROOT / ".maestro" / "flows" / "login_not_woo_store.yaml"
+        ).read_text(encoding="utf-8")
+        strings = (REPO_ROOT / ".maestro" / "strings.env").read_text(encoding="utf-8")
+
+        error_message = flow.index('visible: ".*not a WooCommerce site.*"')
+        cta = flow.index("text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}")
+        self.assertLess(error_message, cta)
+        self.assertIn("STRING_LOGIN_OPEN_INSTALLATION_PAGE='Open installation page'", strings)
+
+    def test_ci_defers_production_app_setup_to_the_runner(self) -> None:
         wrapper = (
             REPO_ROOT / ".buildkite" / "commands" / "run-maestro-tests.sh"
         ).read_text(encoding="utf-8")
 
         self.assertLess(
             wrapper.index("source .maestro/scripts/configure-toolchain.sh"),
-            wrapper.index("./gradlew :WooCommerce:installWasabiDebug"),
+            wrapper.index(".maestro/scripts/run-smoke-tests.sh"),
         )
+        self.assertNotIn("installWasabiDebug", wrapper)
+
+    def test_all_flows_use_the_production_app_id(self) -> None:
+        yaml_files = [
+            REPO_ROOT / ".maestro" / "config.yaml",
+            *sorted((REPO_ROOT / ".maestro" / "flows").glob("*.yaml")),
+            *sorted((REPO_ROOT / ".maestro" / "subflows").glob("*.yaml")),
+        ]
+
+        for path in yaml_files:
+            with self.subTest(path=path):
+                source = path.read_text(encoding="utf-8")
+                self.assertIn("appId: com.woocommerce.android", source)
+                self.assertNotIn("com.woocommerce.android.dev", source)
+
+        quick_actions = (
+            REPO_ROOT / ".maestro" / "flows" / "android_quick_actions.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('text: "^Woo$"', quick_actions)
+        self.assertNotIn("Woo \\(Dev\\)", quick_actions)
 
     def test_changed_file_skip_only_applies_to_pull_requests(self) -> None:
         wrapper = (

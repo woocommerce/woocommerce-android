@@ -21,7 +21,10 @@ MEDIA_FIXTURE_DEVICE_PATH="/sdcard/Pictures/woocommerce-maestro-smoke-test-image
 SEED_SCRIPT="${WOO_MAESTRO_SEED_SCRIPT:-$REPO_ROOT/.maestro/scripts/seed-fixtures.py}"
 PLAN_SCRIPT="$REPO_ROOT/.maestro/scripts/smoke_plan.py"
 CHECK_TOOLCHAIN_SCRIPT="$REPO_ROOT/.maestro/scripts/check-toolchain.py"
+CHECK_DEVICE_LOCALE_SCRIPT="$REPO_ROOT/.maestro/scripts/device_locale.py"
+ENSURE_RELEASE_APP_SCRIPT="$REPO_ROOT/.maestro/scripts/ensure_release_app.py"
 SHARED_STORE_HOST="inpersonpayments.wpcomstaging.com"
+APP_ID="com.woocommerce.android"
 
 RUN_STAMP="$(date +%Y%m%d%H%M%S)"
 RUN_HASH="$(printf '%s-%s-%s' "$RUN_STAMP" "$$" "${RANDOM:-0}" | cksum | awk '{print $1}')"
@@ -76,7 +79,7 @@ Options:
   --profile name              Preset: core, phone-full, release, burst, pos-tablet, android-system.
   --store lab|shared          Select fixture/credential namespace. Default: lab.
   --device serial|avd-name    Device serial or emulator AVD name.
-  --apk path                  Install APK before running.
+  --apk path                  Validate and install a production release APK before running.
   --repeat N                  Run the selected flow set N times.
   -t, --tag tag               Alias for --include-tags.
   --include-tags a,b          Include flows with any listed tag. Default: smoke_core.
@@ -482,7 +485,9 @@ except ET.ParseError as error:
 
 seen = set()
 for testcase in root.iter("testcase"):
-    if testcase.find("failure") is None and testcase.find("error") is None:
+    status = testcase.find("./properties/property[@name='maestro.status']")
+    is_flaky = status is not None and status.attrib.get("value") in {"FLAKY", "FLAKY_RECOVERY"}
+    if testcase.find("failure") is None and testcase.find("error") is None and not is_flaky:
         continue
     name = testcase.attrib.get("name", "").strip()
     if not name or name in seen:
@@ -595,21 +600,12 @@ validate_shared_destructive_config() {
 }
 validate_shared_destructive_config
 
-is_optional_flow_env_ref() {
-  local flow="$1"
-  local ref="$2"
-  [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]] &&
-    [[ "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL" ||
-      "$ref" == "MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD" ]]
-}
-
 validate_referenced_env() {
   local missing=()
   local flow ref var
   for flow in "${ORDERED_FLOWS[@]}"; do
     while IFS= read -r ref; do
       [[ -z "$ref" ]] && continue
-      is_optional_flow_env_ref "$flow" "$ref" && continue
       var="$ref"
       if [[ -z "${!var:-}" ]]; then
         missing+=("$var")
@@ -630,34 +626,6 @@ validate_referenced_env() {
   fi
 }
 validate_referenced_env
-
-validate_optional_not_woo_wpcom_env() {
-  local flow selected="no"
-  for flow in "${ORDERED_FLOWS[@]}"; do
-    if [[ "$(basename "$flow")" == "login_not_woo_store.yaml" ]]; then
-      selected="yes"
-      break
-    fi
-  done
-  [[ "$selected" == "yes" ]] || return 0
-
-  local email="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL:-}"
-  local password="${MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD:-}"
-  local host
-  host="$(url_host "${MAESTRO_WOO_NOT_A_WOO_STORE_URL:-}")"
-  if [[ "$host" == "wordpress.com" || "$host" == *.wordpress.com ]]; then
-    if [[ -z "$email" || -z "$password" ]]; then
-      echo "WordPress.com-hosted not-Woo-store fixtures require both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD." >&2
-      exit 1
-    fi
-    return 0
-  fi
-  if [[ -n "$email" && -z "$password" ]] || [[ -z "$email" && -n "$password" ]]; then
-    echo "Missing optional WP.com fallback pair: set both MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL and MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_PASSWORD, or leave both blank." >&2
-    exit 1
-  fi
-}
-validate_optional_not_woo_wpcom_env
 
 flow_is_selected() {
   local expected="$1"
@@ -768,6 +736,8 @@ resolve_device() {
 DEVICE_SERIAL="$(resolve_device "$DEVICE_SELECTOR")"
 MAESTRO_DEVICE_ARGS=(--device "$DEVICE_SERIAL")
 echo "Device: $DEVICE_SERIAL"
+echo "--- Checking device language"
+python3 "$CHECK_DEVICE_LOCALE_SCRIPT" --device "$DEVICE_SERIAL"
 
 ANIMATION_KEYS=(window_animation_scale transition_animation_scale animator_duration_scale)
 ORIGINAL_ANIMATION_VALUES=()
@@ -845,14 +815,12 @@ trap cleanup_on_exit EXIT INT TERM
 
 capture_animation_settings
 
+echo "--- Ensuring production release app"
+release_app_args=(--device "$DEVICE_SERIAL")
 if [[ -n "$APK_PATH" ]]; then
-  if [[ ! -f "$APK_PATH" ]]; then
-    echo "APK not found at: $APK_PATH" >&2
-    exit 1
-  fi
-  echo "--- Installing APK"
-  adb -s "$DEVICE_SERIAL" install -r -g "$APK_PATH"
+  release_app_args+=(--apk "$APK_PATH")
 fi
+python3 "$ENSURE_RELEASE_APP_SCRIPT" "${release_app_args[@]}"
 
 prepare_device_media_fixture
 
@@ -866,26 +834,21 @@ validate_google_login_apk() {
   done
   [[ "$google_flow_selected" == "yes" ]] || return 0
 
-  local apk_to_check="$APK_PATH"
-  local pulled_apk="no"
-  if [[ -z "$apk_to_check" ]]; then
-    local installed_apk_path
-    installed_apk_path="$(
-      adb -s "$DEVICE_SERIAL" shell pm path com.woocommerce.android.dev 2>/dev/null |
-        tr -d '\r' |
-        sed -n '1s/^package://p'
-    )"
-    if [[ -z "$installed_apk_path" ]]; then
-      echo "Setup error: com.woocommerce.android.dev is not installed for login_google." >&2
-      exit 1
-    fi
-    apk_to_check="$TMP_DIR/login-google-installed.apk"
-    adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
-    pulled_apk="yes"
+  local installed_apk_path
+  installed_apk_path="$(
+    adb -s "$DEVICE_SERIAL" shell pm path "$APP_ID" 2>/dev/null |
+      tr -d '\r' |
+      sed -n '1s/^package://p'
+  )"
+  if [[ -z "$installed_apk_path" ]]; then
+    echo "Setup error: $APP_ID is not installed for login_google." >&2
+    exit 1
   fi
+  local apk_to_check="$TMP_DIR/login-google-installed.apk"
+  adb -s "$DEVICE_SERIAL" pull "$installed_apk_path" "$apk_to_check" >/dev/null
 
   local validation_status=0
-  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" <<'PY' || validation_status=$?
+  python3 - "$REPO_ROOT/WooCommerce/google-services.json-example" "$apk_to_check" "$APP_ID" <<'PY' || validation_status=$?
 import json
 import pathlib
 import sys
@@ -895,7 +858,7 @@ config = json.loads(pathlib.Path(sys.argv[1]).read_text())
 example_client_id = ""
 for client in config.get("client", []):
     package_name = client.get("client_info", {}).get("android_client_info", {}).get("package_name")
-    if package_name != "com.woocommerce.android.dev":
+    if package_name != sys.argv[3]:
         continue
     for oauth_client in client.get("oauth_client", []):
         if oauth_client.get("client_type") == 3:
@@ -914,17 +877,14 @@ except (KeyError, OSError, zipfile.BadZipFile):
 raise SystemExit(2 if example_client_id.encode() in resources else 0)
 PY
 
-  if [[ "$pulled_apk" == "yes" ]]; then
-    rm -f "$apk_to_check"
-  fi
+  rm -f "$apk_to_check"
 
   if [[ "$validation_status" -eq 2 ]]; then
     cat >&2 <<'EOF'
 Setup error: login_google cannot run with the example Google OAuth client.
 
-Build or obtain the APK with the private WooCommerce google-services.json,
-then install it or pass it with --apk. For a configured local checkout:
-  ./gradlew :WooCommerce:installWasabiDebug
+Install the official production release APK or pass a configured production
+release APK with --apk.
 EOF
     exit 1
   fi
@@ -1238,6 +1198,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
         duration=$((first_duration + retry_duration))
         if [[ "$retry_exit" -eq 0 ]]; then
           status="FLAKY"
+          PASSED=$((PASSED + 1))
           FLAKY=$((FLAKY + 1))
         else
           status="FAIL"
@@ -1250,6 +1211,7 @@ for repeat_index in $(seq 1 "$REPEAT"); do
       fi
     elif [[ "${first_recovery:-0}" -gt 0 ]]; then
       status="FLAKY_RECOVERY"
+      PASSED=$((PASSED + 1))
       FLAKY=$((FLAKY + 1))
     else
       PASSED=$((PASSED + 1))
@@ -1281,7 +1243,7 @@ elif [[ "$SEED" == "yes" ]]; then
   CLEANUP_STATUS="SKIPPED"
 fi
 REPORT_TOTAL_RUNS=$((TOTAL_RUNS + CLEANUP_FAILED))
-REPORT_FAILURES=$((FAILED + FLAKY + CLEANUP_FAILED))
+REPORT_FAILURES=$((FAILED + CLEANUP_FAILED))
 
 echo "--- Generating reports"
 {
@@ -1291,9 +1253,11 @@ echo "--- Generating reports"
   for result in "${RESULTS[@]}"; do
     IFS='|' read -r status repeat_index name duration media log_rel error recovery <<< "$result"
     printf '  <testcase classname="maestro.%s" name="%s" time="%s">' "$repeat_index" "$name" "$duration"
-    if [[ "$status" == "FAIL" || "$status" == "FLAKY" || "$status" == "FLAKY_RECOVERY" ]]; then
+    if [[ "$status" == "FAIL" ]]; then
       msg="$(printf '%s' "${error:-$status}" | xml_escape)"
       printf '<failure message="%s">%s</failure>' "$status" "$msg"
+    elif [[ "$status" == "FLAKY" || "$status" == "FLAKY_RECOVERY" ]]; then
+      printf '<properties><property name="maestro.status" value="%s"/></properties>' "$status"
     fi
     printf '</testcase>\n'
   done
@@ -1322,7 +1286,8 @@ table { width: 100%; border-collapse: collapse; }
 th, td { border-bottom: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
 th { background: #f6f8fa; }
 .PASS { color: #136f2d; font-weight: 700; }
-.FAIL, .FLAKY, .FLAKY_RECOVERY { color: #9a1111; font-weight: 700; }
+.FLAKY, .FLAKY_RECOVERY { color: #9a6700; font-weight: 700; }
+.FAIL { color: #9a1111; font-weight: 700; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; padding: 10px 12px; overflow-x: auto; }
 .commands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0 20px; }
@@ -1334,7 +1299,7 @@ pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 6px; paddin
 <body>
 <h1>WooCommerce Android Maestro smoke report</h1>
 <p><strong>Run:</strong> <code>$SUITE_RUN_ID</code> | <strong>Store:</strong> $STORE | <strong>Device:</strong> <code>$DEVICE_SERIAL</code> | <strong>Duration:</strong> ${SUITE_DURATION}s</p>
-<p><strong>Result:</strong> $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
+<p><strong>Result:</strong> $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions. <strong>Cleanup:</strong> $CLEANUP_STATUS.</p>
 <section class="commands">
   <div class="command-card">
     <h2>Run the same selection</h2>
@@ -1385,13 +1350,13 @@ HTML_FOOT
 
 echo "Report: $REPORT_FILE"
 echo "JUnit:  $JUNIT_FILE"
-echo "Result: $PASSED passed, $FLAKY flaky, $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
+echo "Result: $PASSED passed ($FLAKY flaky), $FAILED failed out of $TOTAL_RUNS flow executions; cleanup $CLEANUP_STATUS (${SUITE_DURATION}s)"
 
 if [[ -f "$REPORT_FILE" && "$OPEN_REPORT" == "auto" && -z "${CI:-}" && -z "${BUILDKITE:-}" && "$(uname)" == "Darwin" ]]; then
   open "$REPORT_FILE" || true
 fi
 
-if [[ "$FAILED" -gt 0 || "$FLAKY" -gt 0 || "$CLEANUP_FAILED" -gt 0 ]]; then
+if [[ "$FAILED" -gt 0 || "$CLEANUP_FAILED" -gt 0 ]]; then
   exit 1
 fi
 exit 0

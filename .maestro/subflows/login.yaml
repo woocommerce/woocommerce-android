@@ -3,22 +3,13 @@
 #
 # Required env vars: MAESTRO_WOO_JETPACK_STORE_URL, MAESTRO_WOO_WPCOM_EMAIL,
 # MAESTRO_WOO_WPCOM_PASSWORD
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - launchApp:
     clearState: true
 
-# Wait for app to finish loading after clearState (splash screen can take a while)
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
-# Skip the carousel if it appears
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: dismiss_login_carousel.yaml
 
 # Continue through the QR prologue when present, then enter the store URL.
 - runFlow:
@@ -27,10 +18,22 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_JETPACK_STORE_URL}
-- hideKeyboard
+# Dismiss the keyboard only if it is covering the continue button — see
+# hide_keyboard.yaml. A blind hideKeyboard is a BACK press that navigates off
+# the login step on devices with no on-screen keyboard.
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
+
+# The Google Password Manager autofill sheet can appear on the WP.com email
+# screen as a top-most window, hiding login_continue_button from the hierarchy.
+# Dismiss it when present; skip silently on builds/AVDs without autofill.
+- runFlow:
+    file: dismiss_google_password_manager.yaml
 
 # Enter email address
 - extendedWaitUntil:
@@ -40,17 +43,17 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
-- hideKeyboard
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "login_continue_button"
 - tapOn:
     id: "login_continue_button"
     retryTapIfNoChange: true
 
 # Dismiss Google Password Manager if it appears
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: dismiss_google_password_manager.yaml
 
 # Handle Magic Link screen - tap "Enter your password instead"
 - runFlow:
@@ -63,10 +66,7 @@ appId: com.woocommerce.android.dev
 
 # Dismiss Google Password Manager again if it appears on password screen
 - runFlow:
-    when:
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
+    file: dismiss_google_password_manager.yaml
 
 # Enter password
 - extendedWaitUntil:
@@ -76,15 +76,32 @@ appId: com.woocommerce.android.dev
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
-- hideKeyboard
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
 
-# Wait for dashboard to load (or privacy dialog)
+# Wait for dashboard to load. Google Password Manager may offer to SAVE the
+# password as a top-most sheet ("Never"/"Save") that hides the dashboard, and
+# the privacy dialog may also appear — accept any of them as "booted".
 - extendedWaitUntil:
-    visible: ".*My store.*|.*Manage privacy.*"
+    visible: ".*My store.*|.*Manage privacy.*|.*Save password.*"
     timeout: 30000
+
+# Dismiss the Google "Save password" sheet if present. Tap "Never" so it does
+# not persist credentials or re-prompt on later runs. Must run BEFORE the
+# privacy-dialog guard below, whose "Save" match would otherwise collide with
+# this sheet's own "Save" button. Skips silently when there is no autofill.
+- runFlow:
+    when:
+      visible: ".*Save password.*"
+    commands:
+      - tapOn:
+          text: "Never"
+          label: "dismiss_autofill_save_password"
 
 # Dismiss privacy dialog if it appears
 - runFlow:
@@ -99,6 +116,16 @@ appId: com.woocommerce.android.dev
       visible: ".*Got it.*"
     commands:
       - tapOn: ".*Got it.*"
+
+# The Google "Save password" sheet can surface a beat after the dashboard
+# renders, hiding it again. Dismiss once more if present before verifying.
+- runFlow:
+    when:
+      visible: ".*Save password.*"
+    commands:
+      - tapOn:
+          text: "Never"
+          label: "dismiss_autofill_save_password_late"
 
 # Verify dashboard is loaded
 - extendedWaitUntil:

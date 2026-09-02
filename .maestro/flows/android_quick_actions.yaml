@@ -3,12 +3,12 @@
 # P2 ref: Other > Quick Actions (long press on app icon)
 #
 # Verifies on the real launcher surface:
-#   - Long-pressing Woo (Dev) exposes Create order and Payments
+#   - Long-pressing the production Woo app exposes Create order and Payments
 #   - Create order opens a fresh order draft
 #   - Payments opens the Payments hub
 #
 # Run only through the android-system profile on an English Pixel Launcher AVD.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Android system - App shortcuts"
 tags:
   - android_system
@@ -22,28 +22,41 @@ tags:
 # equivalent intent directly.
 - stopApp
 - pressKey: HOME
-- swipe:
-    direction: UP
-    duration: 500
 
+# Open the app drawer with a deliberate bottom-to-top swipe. A short generic
+# UP swipe does not always trigger the Pixel Launcher drawer gesture, so use
+# an explicit long swipe from near the bottom and retry once if it did not open.
+- swipe:
+    start: 50%, 92%
+    end: 50%, 12%
+    duration: 600
+
+- runFlow:
+    when:
+      notVisible: "All apps"
+    commands:
+      - swipe:
+          start: 50%, 95%
+          end: 50%, 8%
+          duration: 800
+
+# This Pixel Launcher build shows a Google search bar with no "Search apps"
+# placeholder, so confirm the drawer opened via the "All apps" header and
+# locate the app by scrolling the grid instead of typing to filter.
 - extendedWaitUntil:
-    visible: "Search apps"
+    visible: "All apps"
     timeout: 10000
     label: "Open Pixel Launcher app drawer"
 
-- tapOn:
-    text: "Search apps"
-    label: "Focus app search"
-- inputText: "Woo"
-- hideKeyboard
-
-- extendedWaitUntil:
-    visible: "Woo \\(Dev\\)"
-    timeout: 10000
-    label: "Find the Wasabi app icon"
+- scrollUntilVisible:
+    element:
+      text: "^Woo$"
+    direction: DOWN
+    timeout: 15000
+    label: "Find the production Woo app icon"
 
 - longPressOn:
-    text: "Woo \\(Dev\\)"
+    text: "^Woo$"
     label: "Open Woo app shortcuts"
 
 - assertVisible:
@@ -79,19 +92,27 @@ tags:
 - stopApp
 - pressKey: HOME
 - swipe:
-    direction: UP
-    duration: 500
+    start: 50%, 92%
+    end: 50%, 12%
+    duration: 600
+- runFlow:
+    when:
+      notVisible: "All apps"
+    commands:
+      - swipe:
+          start: 50%, 95%
+          end: 50%, 8%
+          duration: 800
 
 - extendedWaitUntil:
-    visible: "Search apps"
+    visible: "All apps"
     timeout: 10000
-- tapOn: "Search apps"
-- inputText: "Woo"
-- hideKeyboard
-- extendedWaitUntil:
-    visible: "Woo \\(Dev\\)"
-    timeout: 10000
-- longPressOn: "Woo \\(Dev\\)"
+- scrollUntilVisible:
+    element:
+      text: "^Woo$"
+    direction: DOWN
+    timeout: 15000
+- longPressOn: "^Woo$"
 - tapOn:
     text: "Payments"
     label: "Launch Payments shortcut"

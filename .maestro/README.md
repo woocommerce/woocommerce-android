@@ -14,8 +14,8 @@ The suite has two store targets:
 
 The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
 site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
-`/wp-admin` or `/wp-admin/` from this flow's site URL. WordPress.com-hosted not-Woo fixtures require the dedicated
-`MAESTRO_WOO_NOT_A_WOO_STORE_WPCOM_EMAIL/PASSWORD` pair.
+`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo fixture always uses its dedicated
+`MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME/PASSWORD` pair, including through WP.com-style screens.
 
 Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
 `MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
@@ -57,6 +57,14 @@ Run the pre-flight doctor when setting up a machine, changing credentials, or pr
 .maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
 ```
 
+The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
+selected device, the doctor downloads the universal APK from the latest stable GitHub release, verifies its published
+SHA-256 digest, and installs it. The runner enforces the same check before starting any flow. When multiple devices are
+connected, pass `--device` so installation cannot target the wrong device.
+
+The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
+APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
+
 ### Store data prerequisites
 
 `orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
@@ -86,7 +94,7 @@ Common variants:
 .maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
 .maestro/scripts/doctor.sh --profile phone-full --store lab
 .maestro/scripts/run-smoke-tests.sh --device emulator-5554
-.maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/wasabi/debug/WooCommerce-wasabi-debug.apk
+.maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
 .maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
 .maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
 .maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
@@ -96,13 +104,13 @@ Common variants:
 
 Profiles are copy/paste-safe presets:
 
-- `core`: lab store, `smoke_core`, quarantine and Android system surfaces excluded.
-- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined phone flows.
+- `core`: lab store, all login flows plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined non-login phone flows.
 - `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
 - `burst`: same as `release`, repeated 3 times.
 - `pos-tablet`: lab store, `pos_tablet`, quarantine included.
 - `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
-  Wasabi app discoverable as `Woo (Dev)` in the app drawer.
+  production app discoverable as `Woo` in the app drawer.
 
 Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
 Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
@@ -114,13 +122,16 @@ store, device, APK, repeat, and profile options.
 
 The runner:
 
+- targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
+- downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
 - selects one connected device automatically, or prompts when several are attached;
 - captures and restores animation settings;
 - can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;
 - writes created entity IDs to `run-manifest.json` when seeding;
 - deletes exactly those manifest IDs during cleanup when seeding;
 - performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
-- retries each failed non-destructive flow once and records pass-on-retry as flaky;
+- retries each failed non-destructive flow once and records pass-on-retry as a passing flaky result;
+- preserves flaky status in HTML/JUnit reports and `--rerun-failed` selection without failing the runner;
 - never blindly retries a failed destructive mutation; cleanup runs first and the failure remains visible;
 - redacts `MAESTRO_WOO_*` values from logs;
 - stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`;
@@ -137,7 +148,8 @@ The runner:
 - `destructive`: mutates store data.
 - `flaky_quarantine`: provisional or unstable flows excluded from real runs.
 
-The imported PR #15413 flows outside the four core paths are intentionally tagged `flaky_quarantine` until they graduate through the burst-based promotion policy.
+All login flows are required `smoke_core` coverage. Other provisional imported flows remain tagged `flaky_quarantine`
+until they graduate through the burst-based promotion policy.
 
 ## Coverage
 

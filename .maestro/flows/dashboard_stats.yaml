@@ -8,7 +8,7 @@
 #   - Date range switching works (Today, This Week, This Month, This Year)
 #   - Top performers card is visible
 #   - "View All" store analytics navigation
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Dashboard - Stats and analytics"
 tags:
   - smoke_core

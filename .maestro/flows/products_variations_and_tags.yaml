@@ -42,7 +42,7 @@
 #   - variationList                   — RecyclerView on VariationListFragment
 #   - cardsRecyclerView               — RecyclerView on product and
 #                                       variation detail
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Products - Variations via Variable filter"
 tags:
   - smoke_extended

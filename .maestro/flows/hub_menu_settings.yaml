@@ -7,7 +7,7 @@
 #   - Settings screen opens from the More Menu
 #   - Every first-level Settings item is rendered (P2: smoke-test all items)
 #   - Log Out button is visible at the bottom of the screen
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Hub Menu - Settings"
 tags:
   - smoke_extended

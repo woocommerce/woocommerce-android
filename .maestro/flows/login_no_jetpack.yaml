@@ -10,25 +10,17 @@
 #   MAESTRO_WOO_NO_JETPACK_SITE_URL             (any non-Jetpack WP site with WC)
 #   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_USERNAME  (site admin credentials — not WP.com)
 #   MAESTRO_WOO_NO_JETPACK_SITE_ADMIN_PASSWORD
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 name: "Login - No Jetpack via site credentials"
 tags:
-  - smoke_extended
-  - flaky_quarantine
+  - smoke_core
   - login
 ---
 - launchApp:
     clearState: true
 
-- extendedWaitUntil:
-    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
-    timeout: 30000
-
 - runFlow:
-    when:
-      visible: "Skip"
-    commands:
-      - tapOn: "Skip"
+    file: ../subflows/dismiss_login_carousel.yaml
 
 # Enter no-Jetpack store URL
 - runFlow:
