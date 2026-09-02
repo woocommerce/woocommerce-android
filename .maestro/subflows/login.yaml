@@ -18,7 +18,13 @@ appId: com.woocommerce.android
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_JETPACK_STORE_URL}
-- hideKeyboard
+# Dismiss the keyboard only if it is covering the continue button — see
+# hide_keyboard.yaml. A blind hideKeyboard is a BACK press that navigates off
+# the login step on devices with no on-screen keyboard.
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
@@ -37,7 +43,10 @@ appId: com.woocommerce.android
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
-- hideKeyboard
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "login_continue_button"
 - tapOn:
     id: "login_continue_button"
     retryTapIfNoChange: true
@@ -67,7 +76,10 @@ appId: com.woocommerce.android
 - tapOn:
     id: "input"
 - inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
-- hideKeyboard
+- runFlow:
+    file: hide_keyboard.yaml
+    env:
+      KEYBOARD_TARGET_ID: "bottom_button"
 - tapOn:
     id: "bottom_button"
     retryTapIfNoChange: true
