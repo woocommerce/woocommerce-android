@@ -1,13 +1,9 @@
 package com.woocommerce.android.ui.ageeligibility
 
 import android.app.Activity
-import android.os.RemoteException
 import androidx.annotation.StringRes
-import com.google.android.gms.common.api.ApiException
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
@@ -30,7 +26,7 @@ class AgeEligibilityChecker @Inject constructor(
     private val prefsWrapper: AppPrefsWrapper,
     private val accountRepository: AccountRepository,
     private val featureFlagRepository: FeatureFlagRepository,
-    private val trackerWrapper: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AgeSignalsAnalyticsTracker,
     private val evaluator: AgeEligibilityEvaluator,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -66,6 +62,7 @@ class AgeEligibilityChecker @Inject constructor(
 
     fun onPlayStoreOpenedForVerification() {
         retryAfterPlayStore.set(true)
+        analyticsTracker.trackPlayStoreOpened()
     }
 
     suspend fun retryAfterReturningFromPlayStore(activity: Activity) {
@@ -92,7 +89,7 @@ class AgeEligibilityChecker @Inject constructor(
 
         try {
             onStarted()
-            checkAgeSingleFlight(activity)
+            checkAgeSingleFlight(activity, trigger)
             return true
         } catch (exception: CancellationException) {
             onCancelled()
@@ -102,31 +99,36 @@ class AgeEligibilityChecker @Inject constructor(
         }
     }
 
-    private suspend fun checkAgeSingleFlight(activity: Activity) {
+    private suspend fun checkAgeSingleFlight(activity: Activity, trigger: AgeCheckTrigger) {
         if (!featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)) {
             _ageEligibilityState.update { it.copy(decision = AgeEligibilityDecision.Allowed) }
             return
         }
 
-        val trackingProperties = mutableMapOf<String, Any>()
-        val evaluation = try {
-            val result = client.checkAge(activity)
-            trackingProperties["retrieved_age"] = result.ageUpper ?: -1
-            trackingProperties["user_status"] = result.verificationStatus.name
-            evaluator.evaluateLegacyResult(result, persistedRestriction)
-        } catch (exception: ApiException) {
-            preservePriorRestriction(exception)
-        } catch (exception: RemoteException) {
-            preservePriorRestriction(exception)
+        analyticsTracker.trackVerificationAction(trigger)
+
+        val outcome = try {
+            val result = client.requestAgeSignals(activity)
+            AgeCheckOutcome(
+                evaluation = evaluator.evaluate(result, persistedRestriction),
+                result = result
+            )
+        } catch (exception: AgeSignalsRequestException) {
+            AgeCheckOutcome(
+                evaluation = preservePriorRestriction(exception),
+                failure = exception
+            )
         }
 
-        applyEvaluation(evaluation)
+        applyEvaluation(outcome.evaluation)
+        analyticsTracker.trackCheck(
+            result = outcome.result,
+            failure = outcome.failure,
+            evaluation = outcome.evaluation,
+            trigger = trigger
+        )
 
-        val isAccessRestricted = evaluation.decision is AgeEligibilityDecision.Restricted
-        trackingProperties["access_restricted"] = isAccessRestricted
-        trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
-
-        if (isAccessRestricted) {
+        if (outcome.evaluation.decision is AgeEligibilityDecision.Restricted) {
             appCoroutineScope.launch {
                 accountRepository.logout()
             }
@@ -145,15 +147,19 @@ class AgeEligibilityChecker @Inject constructor(
         if (evaluation.isAuthoritative) {
             persistedRestriction = restriction
             prefsWrapper.userAgeRestrictionReason = restriction?.name.orEmpty()
-            prefsWrapper.isUserAgeEligibleForAppUse = restriction == null
+            if (restriction == null) {
+                prefsWrapper.clearLegacyAgeRestriction()
+            }
         }
     }
 
     private fun preservePriorRestriction(exception: Exception): AgeEligibilityEvaluation {
-        WooLog.i(
-            WooLog.T.UTILS,
-            "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user age; preserving prior decision"
-        )
+        val failureSummary = if (exception is AgeSignalsRequestException) {
+            "${exception.stage.name}/${exception.errorCode.name} after ${exception.retryCount} retries"
+        } else {
+            exception.javaClass.simpleName
+        }
+        WooLog.i(WooLog.T.UTILS, "Age eligibility check failed with $failureSummary; preserving prior decision")
         return if (_ageEligibilityState.value.decision is AgeEligibilityDecision.VerificationRequired) {
             AgeEligibilityEvaluation(
                 decision = AgeEligibilityDecision.VerificationRequired,
@@ -165,10 +171,14 @@ class AgeEligibilityChecker @Inject constructor(
     }
 
     private fun readPersistedRestriction(): AgeRestrictionReason? {
-        val typedRestriction = AgeRestrictionReason.entries.firstOrNull {
-            it.name == prefsWrapper.userAgeRestrictionReason
+        val persistedReason = prefsWrapper.userAgeRestrictionReason
+        if (persistedReason.isNotEmpty()) {
+            return AgeRestrictionReason.entries.firstOrNull {
+                it.name == persistedReason
+            } ?: AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
         }
-        return typedRestriction ?: if (prefsWrapper.isUserAgeEligibleForAppUse) {
+
+        return if (prefsWrapper.isUserAgeEligibleForAppUse) {
             null
         } else {
             AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
@@ -193,4 +203,10 @@ class AgeEligibilityChecker @Inject constructor(
         val isUserAgeRangeEligible: Boolean
             get() = decision is AgeEligibilityDecision.Allowed
     }
+
+    private data class AgeCheckOutcome(
+        val evaluation: AgeEligibilityEvaluation,
+        val result: AgeSignalsRequestResult? = null,
+        val failure: AgeSignalsRequestException? = null
+    )
 }
