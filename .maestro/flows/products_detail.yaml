@@ -82,22 +82,16 @@ tags:
       notVisible: "Categories"
     commands:
       - scrollUntilVisible:
-          element: "Categories"
+          element:
+            id: "productDetail_addMoreButton"
           direction: DOWN
           timeout: 15000
-          optional: true
-          label: "Look for the Categories row on the detail screen"
+          label: "Scroll to the end of the detail card list"
 
 - runFlow:
     when:
       notVisible: "Categories"
     commands:
-      - scrollUntilVisible:
-          element:
-            id: "productDetail_addMoreButton"
-          direction: DOWN
-          timeout: 15000
-          label: "Scroll to Add more details"
       - tapOn:
           id: "productDetail_addMoreButton"
           retryTapIfNoChange: true
