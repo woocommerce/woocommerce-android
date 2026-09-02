@@ -5,6 +5,7 @@
 25.6
 -----
 - [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
+- [*] Remote images now load through the app's custom network stack again, fixing image loading on some stores [https://github.com/woocommerce/woocommerce-android/pull/16484]
 - [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
 - [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
@@ -17,6 +18,7 @@
 - [*] The unread reviews count on the Menu tab and the Reviews row no longer gets stuck on stores where the app cannot track which reviews were read [https://github.com/woocommerce/woocommerce-android/pull/16473]
 - [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
+- [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size and improving runtime performance [https://github.com/woocommerce/woocommerce-android/pull/16308]
 
 25.5
 -----
@@ -53,7 +55,6 @@
 - [*] Dates across the app now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16346]
 - [*] Product image alt text and title can now be edited from the image viewer [https://github.com/woocommerce/woocommerce-android/pull/16344]
 - [*] Analytics date ranges now follow the date order of the language the app is displayed in [https://github.com/woocommerce/woocommerce-android/pull/16416]
-- [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size by ~12 MB [https://github.com/woocommerce/woocommerce-android/pull/16308]
 
 25.4
 -----
