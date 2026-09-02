@@ -50,6 +50,7 @@ tags:
     label: "Require product sorting control"
 - tapOn:
     id: "btn_product_sorting"
+    retryTapIfNoChange: true
     label: "Open product sorting"
 - extendedWaitUntil:
     visible: "Title: A to Z"
@@ -72,6 +73,7 @@ tags:
 
 - tapOn:
     id: "btn_product_sorting"
+    retryTapIfNoChange: true
     label: "Reopen product sorting"
 - extendedWaitUntil:
     visible: "Title: Z to A"
@@ -100,6 +102,7 @@ tags:
 # Test search against the A-to-Z first product.
 - tapOn:
     id: "menu_search"
+    retryTapIfNoChange: true
     label: "Open product search"
 
 - extendedWaitUntil:
