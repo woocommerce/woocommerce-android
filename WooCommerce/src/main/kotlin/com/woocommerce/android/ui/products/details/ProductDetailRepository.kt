@@ -345,6 +345,11 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun isSkuAvailableLocally(sku: String) = !productStore.isProductExists(selectedSite.get(), sku)
 
+    suspend fun fetchPublishedProductsCount(): Long? {
+        val result = productStore.fetchProductsCount(selectedSite.get())
+        return if (result.isError) null else result.model
+    }
+
     suspend fun getCachedVariationCount(remoteProductId: Long) =
         productStore.getVariationsForProduct(selectedSite.get(), remoteProductId).size
 
