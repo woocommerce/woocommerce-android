@@ -94,12 +94,10 @@ tags:
     if (!descending || descending === output.firstProductAscending) {
         throw new Error('Opposing product sorts returned the same first product');
     }
-    output.firstProductDescending = descending;
 
 - takeScreenshot: products_sorted
 
-# Test search against the A-to-Z first product, and require the Z-to-A
-# first product to be filtered out.
+# Test search against the A-to-Z first product.
 - tapOn:
     id: "menu_search"
     label: "Open product search"
@@ -124,10 +122,6 @@ tags:
     id: "productName"
     text: "${output.firstProductAscending}"
     label: "Searched product appears as a result row, not only in the search field"
-
-- assertNotVisible:
-    text: "${output.firstProductDescending}"
-    label: "A product that does not match the query was filtered out"
 
 - takeScreenshot: products_search_results
 

@@ -370,8 +370,7 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Save/Publish to persist the image"
 
-# Require the success snackbar. The earlier alternatives included text that
-# is already on screen before saving, so they could not prove the save.
+# Require the success snackbar.
 - extendedWaitUntil:
     visible: "Product saved|Product published"
     timeout: 30000
