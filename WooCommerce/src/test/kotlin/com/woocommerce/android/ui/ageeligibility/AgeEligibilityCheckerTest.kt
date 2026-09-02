@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.ageeligibility
 
 import android.app.Activity
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
@@ -20,6 +18,8 @@ import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -33,7 +33,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val accountRepository: AccountRepository = mock()
     private val featureFlagRepository: FeatureFlagRepository = mock()
-    private val trackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val analyticsTracker: AgeSignalsAnalyticsTracker = mock()
     private val evaluator = AgeEligibilityEvaluator()
 
     @Before
@@ -53,12 +53,8 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
         assertThat(client.receivedActivity).isSameAs(activity)
         verify(prefsWrapper).userAgeRestrictionReason = ""
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+        verify(prefsWrapper).clearLegacyAgeRestriction()
         verify(accountRepository, never()).logout()
-        verify(trackerWrapper).track(
-            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
-            mapOf("access_restricted" to false)
-        )
     }
 
     @Test
@@ -72,7 +68,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         )
         verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.BELOW_MINIMUM_AGE.name
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+        verify(prefsWrapper, never()).clearLegacyAgeRestriction()
         verify(accountRepository).logout()
     }
 
@@ -87,7 +83,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             .isEqualTo(AgeEligibilityDecision.VerificationRequired)
         verify(accountRepository, never()).logout()
         verify(prefsWrapper, never()).userAgeRestrictionReason = ""
-        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = false
     }
 
     @Test
@@ -96,6 +91,21 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         val checker = createChecker()
 
+        assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
+            AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
+        )
+        verify(prefsWrapper).userAgeRestrictionReason = AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON.name
+    }
+
+    @Test
+    fun `given unrecognized persisted restriction, when checker is created, then access stays restricted`() {
+        // GIVEN
+        whenever(prefsWrapper.userAgeRestrictionReason).thenReturn("A_REMOVED_RESTRICTION_REASON")
+
+        // WHEN
+        val checker = createChecker()
+
+        // THEN
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON)
         )
@@ -114,7 +124,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
                 AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
             )
-            verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
             verify(accountRepository).logout()
         }
 
@@ -129,7 +138,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertThat(checker.ageEligibilityState.value.decision).isEqualTo(
             AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE)
         )
-        verify(prefsWrapper, never()).isUserAgeEligibleForAppUse = true
         verify(accountRepository).logout()
     }
 
@@ -158,8 +166,35 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             assertThat(checker.ageEligibilityState.value.decision).isEqualTo(AgeEligibilityDecision.Allowed)
             verify(prefsWrapper).userAgeRestrictionReason = ""
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = true
             verify(accountRepository, never()).logout()
+        }
+
+    @Test
+    fun `given migrated restriction is cleared, when checker is recreated, then access remains allowed`() =
+        testBlocking {
+            // GIVEN
+            var persistedReason = ""
+            var isPersistedEligible = false
+            whenever(prefsWrapper.userAgeRestrictionReason).thenAnswer { persistedReason }
+            whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenAnswer { isPersistedEligible }
+            doAnswer {
+                persistedReason = it.getArgument(0)
+                null
+            }.whenever(prefsWrapper).userAgeRestrictionReason = any()
+            doAnswer {
+                isPersistedEligible = true
+                null
+            }.whenever(prefsWrapper).clearLegacyAgeRestriction()
+            val checker = createChecker()
+            client.result = sharedResult(ageLower = 18, ageUpper = null)
+
+            // WHEN
+            checker.checkAge(activity)
+            val recreatedChecker = createChecker()
+
+            // THEN
+            assertThat(recreatedChecker.ageEligibilityState.value.decision)
+                .isEqualTo(AgeEligibilityDecision.Allowed)
         }
 
     @Test
@@ -175,6 +210,21 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertThat(client.callCount).isZero()
             verify(prefsWrapper, never()).userAgeRestrictionReason = ""
             verify(accountRepository, never()).logout()
+        }
+
+    @Test
+    fun `given feature is disabled, when manual retry is requested, then verification action is not tracked`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.AGE_ELIGIBILITY_CHECKS)).thenReturn(false)
+            val checker = createChecker()
+
+            // WHEN
+            checker.checkAge(activity, AgeCheckTrigger.MANUAL_RETRY)
+
+            // THEN
+            assertThat(client.callCount).isZero()
+            verify(analyticsTracker, never()).trackVerificationAction(AgeCheckTrigger.MANUAL_RETRY)
         }
 
     @Test
@@ -275,6 +325,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(client.callCount).isEqualTo(1)
+            verify(analyticsTracker, never()).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
 
             // WHEN
             client.gate?.complete(Unit)
@@ -283,6 +334,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             // THEN
             assertThat(client.callCount).isEqualTo(2)
+            verify(analyticsTracker).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
 
             // WHEN
             checker.retryAfterReturningFromPlayStore(activity)
@@ -332,6 +384,8 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         checker.retryAfterReturningFromPlayStore(activity)
 
         assertThat(client.callCount).isEqualTo(1)
+        verify(analyticsTracker).trackPlayStoreOpened()
+        verify(analyticsTracker).trackVerificationAction(AgeCheckTrigger.RETURN_FROM_PLAY_STORE)
     }
 
     private fun createChecker() = AgeEligibilityChecker(
@@ -339,7 +393,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         prefsWrapper = prefsWrapper,
         accountRepository = accountRepository,
         featureFlagRepository = featureFlagRepository,
-        trackerWrapper = trackerWrapper,
+        analyticsTracker = analyticsTracker,
         evaluator = evaluator,
         appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher)
     )

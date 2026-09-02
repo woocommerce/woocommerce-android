@@ -57,7 +57,8 @@ class AgeEligibilityEvaluatorTest {
         assertThat(evaluation).isEqualTo(
             AgeEligibilityEvaluation(
                 AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE),
-                isAuthoritative = true
+                isAuthoritative = true,
+                ageRangeOutcome = AgeRangeOutcome.BELOW_13
             )
         )
     }
@@ -74,25 +75,31 @@ class AgeEligibilityEvaluatorTest {
         assertThat(evaluation).isEqualTo(
             AgeEligibilityEvaluation(
                 AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE),
-                isAuthoritative = true
+                isAuthoritative = true,
+                ageRangeOutcome = AgeRangeOutcome.BELOW_13
             )
         )
     }
 
     @Test
     fun `given a conclusive eligible shared age, when evaluated, then result is authoritatively allowed`() {
-        listOf(
-            sharedResult(ageLower = 13, ageUpper = 15),
-            sharedResult(ageLower = 16, ageUpper = 17),
-            sharedResult(ageLower = 18, ageUpper = null)
-        ).forEach { result ->
+        mapOf(
+            sharedResult(ageLower = 13, ageUpper = 15) to AgeRangeOutcome.AGE_13_15,
+            sharedResult(ageLower = 16, ageUpper = 17) to AgeRangeOutcome.AGE_16_17,
+            sharedResult(ageLower = 18, ageUpper = null) to AgeRangeOutcome.AGE_18_PLUS,
+            sharedResult(ageLower = 13, ageUpper = null) to AgeRangeOutcome.ELIGIBLE
+        ).forEach { (result, ageRangeOutcome) ->
             val evaluation = evaluate(
                 result = result,
                 priorRestriction = AgeRestrictionReason.LEGACY_RESTRICTION_UNKNOWN_REASON
             )
 
             assertThat(evaluation).isEqualTo(
-                AgeEligibilityEvaluation(AgeEligibilityDecision.Allowed, isAuthoritative = true)
+                AgeEligibilityEvaluation(
+                    AgeEligibilityDecision.Allowed,
+                    isAuthoritative = true,
+                    ageRangeOutcome = ageRangeOutcome
+                )
             )
         }
     }
@@ -109,7 +116,8 @@ class AgeEligibilityEvaluatorTest {
             assertThat(evaluation).isEqualTo(
                 AgeEligibilityEvaluation(
                     AgeEligibilityDecision.Restricted(AgeRestrictionReason.BELOW_MINIMUM_AGE),
-                    isAuthoritative = false
+                    isAuthoritative = false,
+                    ageRangeOutcome = AgeRangeOutcome.AMBIGUOUS
                 )
             )
         }
@@ -130,7 +138,11 @@ class AgeEligibilityEvaluatorTest {
 
             // THEN
             assertThat(evaluation).isEqualTo(
-                AgeEligibilityEvaluation(AgeEligibilityDecision.Allowed, isAuthoritative = false)
+                AgeEligibilityEvaluation(
+                    decision = AgeEligibilityDecision.Allowed,
+                    isAuthoritative = false,
+                    ageRangeOutcome = AgeRangeOutcome.AMBIGUOUS
+                )
             )
         }
     }
@@ -147,7 +159,11 @@ class AgeEligibilityEvaluatorTest {
             )
 
             assertThat(evaluation).isEqualTo(
-                AgeEligibilityEvaluation(AgeEligibilityDecision.Allowed, isAuthoritative = true)
+                AgeEligibilityEvaluation(
+                    AgeEligibilityDecision.Allowed,
+                    isAuthoritative = true,
+                    ageRangeOutcome = AgeRangeOutcome.AGE_18_PLUS
+                )
             )
         }
     }
