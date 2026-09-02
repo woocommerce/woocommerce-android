@@ -572,6 +572,19 @@ tags:
       id: "last_name"
 - eraseText
 - inputText: "SmokeTest-${SUITE_RUN_ID}"
+# Maestro inputText intermittently drops a character (observed "SokeTest-…"),
+# which would break the persisted-order search and orders_refund that locate
+# THIS order by the marker. Re-type once if the field did not capture it whole.
+- runFlow:
+    when:
+      notVisible: ".*SmokeTest-${SUITE_RUN_ID}.*"
+    commands:
+      - tapOn:
+          id: "edit_text"
+          childOf:
+            id: "last_name"
+      - eraseText
+      - inputText: "SmokeTest-${SUITE_RUN_ID}"
 - hideKeyboard
 
 - takeScreenshot: order_create_customer_re_edited
