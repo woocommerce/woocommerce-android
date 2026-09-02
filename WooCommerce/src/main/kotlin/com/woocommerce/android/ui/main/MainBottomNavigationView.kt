@@ -72,13 +72,19 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     private fun createBadges() {
+        val badgeBackgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
+        val badgeTextColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_palette_white)
+
         ordersBadge = getOrCreateBadge(R.id.orders)
         ordersBadge.isVisible = false
-        ordersBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
+        ordersBadge.backgroundColor = badgeBackgroundColor
+        ordersBadge.badgeTextColor = badgeTextColor
         ordersBadge.maxCharacterCount = MAX_CHARACTERS_IN_BADGE // this includes the plus sign
 
         moreMenuBadge = getOrCreateBadge(R.id.moreMenu)
         moreMenuBadge.isVisible = false
+        moreMenuBadge.backgroundColor = badgeBackgroundColor
+        moreMenuBadge.badgeTextColor = badgeTextColor
     }
 
     /**
@@ -92,13 +98,11 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     fun showMoreMenuUnseenReviewsBadge(count: Int) {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
         moreMenuBadge.number = count
         moreMenuBadge.isVisible = true
     }
 
     fun showMoreMenuNewFeatureBadge() {
-        moreMenuBadge.backgroundColor = ContextCompat.getColor(context, DesignSystemR.color.woo_ds_color_accent_red)
         moreMenuBadge.isVisible = true
     }
 
