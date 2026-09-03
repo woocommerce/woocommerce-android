@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
@@ -71,8 +70,6 @@ fun WooOverflowMenuItem(
                     WooTheme.colors.surface.onDefault
                 },
                 style = WooTheme.text.bodyLarge.regular,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
         },
         onClick = onClick,
