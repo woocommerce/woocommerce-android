@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -240,6 +241,8 @@ android {
 }
 
 dependencies {
+    detektPlugins project(':libs:detektrules')
+
     if (isComposeScreenshotTestsEnabled) {
         screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
         screenshotTestImplementation(libs.google.screenshot.validation.api)
@@ -591,3 +594,59 @@ dependencyAnalysis {
 }
 
 apply from: '../config/gradle/build_optimization.gradle'
+
+// Detekt with type resolution over the WooCommerce main source set. Type resolution (the compile
+// classpath) is required by rules that inspect resolved types, e.g. StringifyLambdaBearingObjectRule.
+// Scoped to this module (where the payments/POS code lives) to bound the CI cost.
+//
+// The same rules run against two variants:
+//  - detektWithTypeResolution   -> vanillaRelease: the variant shipped to Google Play (release + beta).
+//    Runs in the release pipeline, where that variant is compiled anyway.
+//  - detektWithTypeResolutionPR -> jalapenoDebug: the variant every PR already compiles (unit tests +
+//    prototype build), so the compile is a build-cache hit and only detekt's analysis pass is extra.
+//    Runs on every PR for early feedback. Detection is identical — the rule is static type analysis, so
+//    R8 being off in debug is irrelevant; it flags the pattern that would crash under R8.
+def registerDetektWithTypeResolution = { String taskName, String variantCapitalized, String variantLower ->
+    tasks.register(taskName, Detekt) {
+        description = "Runs detekt with type resolution over WooCommerce main sources ($variantLower)."
+        // Only the custom type-resolution rules run here; the built-in rulesets already run in detektAll.
+        disableDefaultRuleSets = true
+        buildUponDefaultConfig = false
+        ignoreFailures = false
+        config.setFrom(files("$rootDir/config/detekt/type-resolution.yml"))
+        setSource(files("src/main/kotlin"))
+        include("**/*.kt")
+        jvmTarget = libs.versions.java.get()
+        // Wiring through the compile task's provider gives the exact classpath the compiler used — all
+        // external deps, sibling modules such as :libs:cardreader, generated R/Hilt/KSP — and adds the
+        // task dependency automatically, so this only runs once the variant is compiled.
+        classpath.from(
+            tasks.named("compile${variantCapitalized}Kotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile)
+                .map { it.libraries }
+        )
+        // Also add the runtime classpath. :libs:cardreader exposes Stripe Terminal types in its API but
+        // pulls Stripe in as `implementation`, so Stripe is absent from the compile classpath above.
+        // detekt's frontend needs it to fully resolve cardreader's classes; without it, files that use
+        // cardreader (e.g. WooPosCardReaderConnectionController) get a poisoned binding context and their
+        // sites resolve to error types and are silently skipped. The runtime classpath carries those
+        // transitive `implementation` deps.
+        classpath.from(
+            configurations.getByName("${variantLower}RuntimeClasspath").incoming.artifactView { view ->
+                view.lenient(true)
+                view.attributes { attrs ->
+                    attrs.attribute(org.gradle.api.attributes.Attribute.of("artifactType", String), "android-classes-jar")
+                }
+            }.files
+        )
+        reports {
+            xml.required.set(true)
+            html.required.set(false)
+            txt.required.set(false)
+        }
+    }
+}
+
+// Shipped variant (release + beta) — runs in the release pipeline.
+registerDetektWithTypeResolution("detektWithTypeResolution", "VanillaRelease", "vanillaRelease")
+// Variant every PR already compiles — runs on each PR for early feedback (compile is a cache hit).
+registerDetektWithTypeResolution("detektWithTypeResolutionPR", "JalapenoDebug", "jalapenoDebug")
