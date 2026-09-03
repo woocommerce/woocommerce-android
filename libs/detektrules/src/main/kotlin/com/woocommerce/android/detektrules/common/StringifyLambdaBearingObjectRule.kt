@@ -164,13 +164,14 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
 
     /**
      * Subclasses of a sealed type. Prefer the descriptor's [ClassDescriptor.sealedSubclasses], but detekt's
-     * binding context does not always populate it (notably for sealed interfaces), so fall back to
-     * discovering same-file subclasses via PSI and resolving each back to a type — keeping the check
-     * deterministic instead of silently treating the sealed root as safe.
+     * binding context does not always populate it, so fall back to discovering same-file subclasses via PSI.
+     * Only sealed types reach that fallback: for any non-sealed class [ClassDescriptor.sealedSubclasses] is
+     * empty and there is nothing to discover, so we return early and skip the PSI traversal entirely.
      */
     private fun subclassTypes(descriptor: ClassDescriptor): List<KotlinType> {
         val fromDescriptor = descriptor.sealedSubclasses
         if (fromDescriptor.isNotEmpty()) return fromDescriptor.map { it.defaultType }
+        if (descriptor.modality != Modality.SEALED) return emptyList()
 
         val declaration = DescriptorToSourceUtils.descriptorToDeclaration(descriptor) as? KtClassOrObject
             ?: return emptyList()
