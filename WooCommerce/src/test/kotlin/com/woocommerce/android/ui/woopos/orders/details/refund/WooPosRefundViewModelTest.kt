@@ -2995,6 +2995,133 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given the reload after a create rejection failed, when load is retried, then the refund reason is kept`() =
+        runTest {
+            // GIVEN
+            val testReason = "Damaged box"
+            val firstUnit = testRefundableItem.copy(rowIndex = 0)
+            val secondUnit = testRefundableItem.copy(rowIndex = 1)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 2,
+                    refundTotal = BigDecimal("40.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            // The reload fails, the retry that follows it succeeds.
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
+                Result.success(testOrder),
+                Result.failure(Exception("Failed to refresh order")),
+                Result.success(testOrder),
+            )
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any()))
+                .thenReturn(listOf(firstUnit, secondUnit), listOf(firstUnit))
+            whenever(groupRefundItems.invoke(any(), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "The selected quantity is more than what's left to refund.",
+                        apiErrorCode = "woocommerce_rest_quantity_exceeds_refundable",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Error::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RetryLoadRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.refundReason).isEqualTo(testReason)
+            assertThat(content.selectedItemIds).isEmpty()
+        }
+
+    @Test
+    fun `given the reload after a preview rejection failed, when load is retried, then the refund reason is kept`() =
+        runTest {
+            // GIVEN — the rejection comes from the preview, so no refund was submitted yet.
+            val testReason = "Damaged box"
+            val firstUnit = testRefundableItem.copy(rowIndex = 0)
+            val secondUnit = testRefundableItem.copy(rowIndex = 1)
+
+            // The reload fails, the retry that follows it succeeds.
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
+                Result.success(testOrder),
+                Result.failure(Exception("Failed to refresh order")),
+                Result.success(testOrder),
+            )
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any()))
+                .thenReturn(listOf(firstUnit, secondUnit), listOf(firstUnit))
+            whenever(refundPreview.invoke(any(), any())).thenReturn(
+                WooPosRefundPreview.Result.Error(WooPosRefundApiError.QuantityExceedsRefundable)
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Error::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RetryLoadRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.refundReason).isEqualTo(testReason)
+            assertThat(content.selectedItemIds).isEmpty()
+        }
+
+    @Test
+    fun `given the flow was dismissed, when it is opened again, then all items are selected and a flow start tracked`() =
+        runTest {
+            // GIVEN
+            val firstUnit = testRefundableItem.copy(rowIndex = 0)
+            val secondUnit = testRefundableItem.copy(rowIndex = 1)
+            val allItemIds = setOf(firstUnit.uniqueId, secondUnit.uniqueId)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(firstUnit, secondUnit))
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Damaged box"))
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowDismissed)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.selectedItemIds).isEqualTo(allItemIds)
+            assertThat(content.allItemsSelected).isTrue()
+            assertThat(content.refundReason).isEmpty()
+            verify(analyticsTracker, times(2)).track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
+        }
+
+    @Test
     fun `given a create rejection offering a reload, when items are refreshed, then the refund reason is kept`() =
         runTest {
             // GIVEN

@@ -13,15 +13,12 @@ class WooPosBuildRefundContent @Inject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
         paymentMethod: String,
-        preservedSelection: Set<String>? = null,
+        selectAllItems: Boolean = true,
     ): WooPosRefundState.Content {
         val allItemIds = refundableItems.map { it.uniqueId }.toSet()
-        // A preserved selection that no longer matches anything leaves the selection empty rather
-        // than falling back to every remaining item: the cashier picks again instead of confirming
-        // items they never chose.
-        val selectedItemIds = preservedSelection
-            ?.filterTo(mutableSetOf()) { it in allItemIds }
-            ?: allItemIds
+        // A reload leaves the selection empty rather than falling back to every remaining item:
+        // the cashier picks again instead of confirming items they never chose.
+        val selectedItemIds = if (selectAllItems) allItemIds else emptySet()
         val zero = PriceUtils.formatCurrency(BigDecimal.ZERO, order.currency, currencyFormatter)
 
         return WooPosRefundState.Content(
