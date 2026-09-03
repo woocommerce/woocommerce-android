@@ -17,9 +17,7 @@ steps:
     plugins: [$CI_TOOLKIT]
 
   # Type-resolution detekt: guards against reflective toString() crashes under R8 full mode (a
-  # data class / sealed subtype holding a lambda that gets stringified whole). It requires the
-  # variant to be compiled, so it is too expensive to run on every PR — it runs here, in the
-  # release phase, as a gate before the release build starts.
+  # data class / sealed subtype holding a lambda that gets stringified whole). 
   - label: "🔍 detekt (type resolution)"
     command: |
       checkout_release_branch "$RELEASE_VERSION"
