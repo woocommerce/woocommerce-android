@@ -767,8 +767,7 @@ private fun WooPosRefundState.Content.RefundStep.analyticsName(): String = when 
     WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
     WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
     is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
-    WooPosRefundState.Content.RefundStep.Processing,
-    WooPosRefundState.Content.RefundStep.ProcessingRefund,
-    WooPosRefundState.Content.RefundStep.NotifyingStore ->
-        error("Non-cancelable step should be unreachable when the refund flow is dismissed")
+    WooPosRefundState.Content.RefundStep.Processing -> "processing"
+    WooPosRefundState.Content.RefundStep.ProcessingRefund -> "processing_refund"
+    WooPosRefundState.Content.RefundStep.NotifyingStore -> "notifying_store"
 }
