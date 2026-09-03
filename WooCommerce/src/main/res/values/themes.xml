@@ -29,6 +29,7 @@
         <item name="android:colorBackground">@color/default_window_background</item>
         <item name="colorSurface">@color/color_surface</item>
         <item name="colorError">@color/color_error</item>
+        <item name="appBarBackgroundColor">@color/woo_ds_color_surface_bright</item>
 
         <item name="colorOnPrimary">@color/color_on_primary</item>
         <item name="colorOnPrimarySurface">@color/color_on_primary_surface</item>

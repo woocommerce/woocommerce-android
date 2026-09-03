@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Widget.Woo.MainActivity.AppBarLayout" parent="Woo.AppBarLayout">
-        <item name="android:background">@color/woo_ds_color_surface_bright</item>
+        <item name="android:background">?attr/appBarBackgroundColor</item>
         <item name="android:elevation">0dp</item>
         <item name="elevation">0dp</item>
         <item name="liftOnScroll">false</item>

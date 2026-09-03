@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -48,6 +49,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.color.MaterialColors
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.NavGraphMainDirections
@@ -609,6 +611,21 @@ class MainActivity :
 
     fun expandToolbar(expand: Boolean, animate: Boolean) {
         binding.appBarLayout.setExpanded(expand, animate)
+    }
+
+    /**
+     * The app bar keeps the status bar inset even when the toolbar is hidden, so screens that paint
+     * their own background to the top edge need it to match theirs. Callers must pair this with
+     * [resetAppBarBackgroundColor] since the app bar is shared with every other destination.
+     */
+    fun setAppBarBackgroundColor(@ColorRes colorRes: Int) {
+        binding.appBarLayout.setBackgroundColor(ContextCompat.getColor(this, colorRes))
+    }
+
+    fun resetAppBarBackgroundColor() {
+        binding.appBarLayout.setBackgroundColor(
+            MaterialColors.getColor(binding.appBarLayout, R.attr.appBarBackgroundColor)
+        )
     }
 
     fun setSubtitle(subtitle: CharSequence) {

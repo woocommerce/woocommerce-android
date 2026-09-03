@@ -39,6 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class MoreMenuFragment : TopLevelFragment() {
@@ -71,11 +72,20 @@ class MoreMenuFragment : TopLevelFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // This screen paints its background to the top edge, so the app bar behind the status bar must match it
+        (requireActivity() as MainActivity).setAppBarBackgroundColor(
+            DesignSystemR.color.woo_ds_color_surface_default
+        )
         return designSystemComposeView {
             MoreMenuScreen(viewModel, scrollToTopTrigger)
         }.apply {
             id = R.id.more_menu_compose_view
         }
+    }
+
+    override fun onDestroyView() {
+        (activity as? MainActivity)?.resetAppBarBackgroundColor()
+        super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
