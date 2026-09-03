@@ -137,10 +137,7 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
      * root can still have data-class subclasses that do render a lambda.
      */
     private fun rendersLambdaReflectively(type: KotlinType, visited: MutableSet<ClassDescriptor>): Boolean {
-        if (type.isFunctionType || type.isSuspendFunctionType) return true
-        if (type.rendersContentsInToString() &&
-            type.arguments.any { !it.isStarProjection && rendersLambdaReflectively(it.type, visited) }
-        ) {
+        if (type.isFunctionType || type.isSuspendFunctionType || type.rendersLambdaInTypeArguments(visited)) {
             return true
         }
         val descriptor = type.constructor.declarationDescriptor as? ClassDescriptor ?: return false
@@ -156,6 +153,10 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
     // Arrays and any Collection/Iterable/Map render their elements in toString() (`[Function0]`,
     // `{k=Function0}`), so a lambda nested in one still crashes; unrelated generic wrappers such as
     // Comparator inherit an identity toString() and do not, so their type arguments are ignored.
+    private fun KotlinType.rendersLambdaInTypeArguments(visited: MutableSet<ClassDescriptor>): Boolean =
+        rendersContentsInToString() &&
+            arguments.any { !it.isStarProjection && rendersLambdaReflectively(it.type, visited) }
+
     private fun KotlinType.rendersContentsInToString(): Boolean {
         if (KotlinBuiltIns.isArray(this)) return true
         val descriptor = constructor.declarationDescriptor as? ClassDescriptor ?: return false
