@@ -595,17 +595,11 @@ dependencyAnalysis {
 
 apply from: '../config/gradle/build_optimization.gradle'
 
-// Detekt with type resolution over the WooCommerce main source set. Type resolution (the compile
-// classpath) is required by rules that inspect resolved types, e.g. StringifyLambdaBearingObjectRule.
-// Scoped to this module (where the payments/POS code lives) to bound the CI cost.
-//
-// The same rules run against two variants:
-//  - detektWithTypeResolution   -> vanillaRelease: the variant shipped to Google Play (release + beta).
-//    Runs in the release pipeline, where that variant is compiled anyway.
-//  - detektWithTypeResolutionPR -> jalapenoDebug: the variant every PR already compiles (unit tests +
-//    prototype build), so the compile is a build-cache hit and only detekt's analysis pass is extra.
-//    Runs on every PR for early feedback. Detection is identical — the rule is static type analysis, so
-//    R8 being off in debug is irrelevant; it flags the pattern that would crash under R8.
+// Detekt with type resolution over WooCommerce main sources — the compile classpath is required by rules
+// that inspect resolved types (e.g. StringifyLambdaBearingObjectRule). Scoped to this module to bound CI
+// cost. Two variants run the same rules: detektWithTypeResolution -> vanillaRelease (shipped, gated in the
+// release pipeline) and detektWithTypeResolutionPR -> jalapenoDebug (already compiled on every PR, so only
+// the analysis pass is extra). Detection is static type analysis, so R8 being off in debug is irrelevant.
 def registerDetektWithTypeResolution = { String taskName, String variantCapitalized, String variantLower ->
     tasks.register(taskName, Detekt) {
         description = "Runs detekt with type resolution over WooCommerce main sources ($variantLower)."
@@ -624,12 +618,9 @@ def registerDetektWithTypeResolution = { String taskName, String variantCapitali
             tasks.named("compile${variantCapitalized}Kotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile)
                 .map { it.libraries }
         )
-        // Also add the runtime classpath. :libs:cardreader exposes Stripe Terminal types in its API but
-        // pulls Stripe in as `implementation`, so Stripe is absent from the compile classpath above.
-        // detekt's frontend needs it to fully resolve cardreader's classes; without it, files that use
-        // cardreader (e.g. WooPosCardReaderConnectionController) get a poisoned binding context and their
-        // sites resolve to error types and are silently skipped. The runtime classpath carries those
-        // transitive `implementation` deps.
+        // Add the runtime classpath too: :libs:cardreader exposes Stripe Terminal types in its API but
+        // pulls Stripe in as `implementation`, so without this, cardreader-using files get a poisoned
+        // binding context and their sites resolve to error types and are silently skipped.
         classpath.from(
             configurations.getByName("${variantLower}RuntimeClasspath").incoming.artifactView { view ->
                 view.lenient(true)
@@ -646,7 +637,5 @@ def registerDetektWithTypeResolution = { String taskName, String variantCapitali
     }
 }
 
-// Shipped variant (release + beta) — runs in the release pipeline.
 registerDetektWithTypeResolution("detektWithTypeResolution", "VanillaRelease", "vanillaRelease")
-// Variant every PR already compiles — runs on each PR for early feedback (compile is a cache hit).
 registerDetektWithTypeResolution("detektWithTypeResolutionPR", "JalapenoDebug", "jalapenoDebug")

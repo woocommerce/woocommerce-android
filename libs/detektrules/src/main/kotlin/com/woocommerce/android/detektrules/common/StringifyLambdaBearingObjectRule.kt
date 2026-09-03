@@ -78,12 +78,9 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
             }
     }
 
-    // The expression's own type is preferred (it reflects smart-casts). When it is unavailable or unresolved
-    // fall back to the referenced variable's declared type, and finally — for a `when`-subject whose declared
-    // type does not resolve because the file's binding context is incomplete (e.g. a module that exposes
-    // another module's types through a not-fully-resolvable dependency) — to the type implied by the enclosing
-    // `when`'s `is`-branches, whose classifier references still resolve. This keeps the check deterministic
-    // instead of silently skipping the site.
+    // Prefer the expression's own type (it reflects smart-casts), else the referenced variable's declared
+    // type, else — for a `when`-subject whose declared type can't resolve (an incomplete binding context) —
+    // the type implied by the enclosing `when`'s `is`-branches, whose classifiers still resolve.
     private fun resolvedType(expression: KtExpression): KotlinType? {
         bindingContext.getType(expression)?.takeUnless { it.isResolutionFailure() }?.let { return it }
 
@@ -95,11 +92,9 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
     }
 
     /**
-     * When [expression] is the subject variable of an enclosing `when` but its declared type could not be
-     * resolved, recover the type from the branch conditions, whose `is`-pattern classifier references resolve
-     * even when the subject's declared type does not. Inside an `is`-branch the subject is exactly that guard
-     * type; inside the `else`-branch it can be any unhandled subclass, so use the sealed root — the same
-     * over-approximation the normal path uses when the static type is the sealed root.
+     * Recover an unresolved `when`-subject's type from the branch conditions, whose `is`-pattern classifiers
+     * resolve even when the subject's declared type does not. In an `is`-branch the subject is that guard
+     * type; in `else` it can be any unhandled subclass, so use the sealed root.
      */
     private fun whenSubjectFallbackType(expression: KtExpression): KotlinType? {
         val reference = expression as? KtNameReferenceExpression ?: return null
