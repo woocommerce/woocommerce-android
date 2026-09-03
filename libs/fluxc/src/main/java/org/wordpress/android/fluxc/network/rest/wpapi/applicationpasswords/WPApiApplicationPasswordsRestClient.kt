@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.network.rest.wpapi.BaseWPAPIRestClient
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
-import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.AppLog
@@ -84,12 +83,17 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
 
         return when (response) {
             is WPAPIResponse.Success -> {
-                response.data?.firstOrNull { it.name == applicationName }?.let {
-                    ApplicationPasswordUUIDFetchPayload(it.uuid)
+                val listedPassword = response.data?.firstOrNull { it.name == applicationName }
+                listedPassword?.uuid?.let {
+                    ApplicationPasswordUUIDFetchPayload(it)
                 } ?: ApplicationPasswordUUIDFetchPayload(
                     BaseNetworkError(
                         GenericErrorType.UNKNOWN,
-                        "UUID for application password $applicationName was not found"
+                        if (listedPassword == null) {
+                            "UUID for application password $applicationName was not found"
+                        } else {
+                            "UUID missing from response"
+                        }
                     )
                 )
             }
@@ -124,11 +128,8 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         AppLog.d(T.MAIN, "Delete application password using Basic Authentication")
 
         val uuid = credentials.uuid ?: fetchApplicationPasswordUsingBasicAuth(site, credentials).let {
-            if (it is WPAPIResponse.Success && it.data != null) {
-                it.data
-            } else {
-                return ApplicationPasswordDeletionPayload((it as WPAPIResponse.Error).error)
-            }
+            if (it.isError) return ApplicationPasswordDeletionPayload(it.error)
+            it.uuid
         }
 
         return deleteApplicationPasswordUsingBasicAuth(site, credentials, uuid).toPayload()
@@ -137,7 +138,7 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
     private suspend fun fetchApplicationPasswordUsingBasicAuth(
         site: SiteModel,
         applicationPasswordCredentials: ApplicationPasswordCredentials
-    ): WPAPIResponse<ApplicationPasswordUUID> {
+    ): ApplicationPasswordUUIDFetchPayload {
         AppLog.d(T.MAIN, "Fetching application password UUID using the /introspect endpoint")
 
         val path = WPAPI.users.me.application_passwords.introspect.urlV2
@@ -149,20 +150,17 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
             method = Request.Method.GET,
         )
 
-        @Suppress("UNCHECKED_CAST")
         return when (response) {
-            is WPAPIResponse.Success -> response.data?.let {
-                WPAPIResponse.Success(it.uuid, response.headers)
-            } ?: WPAPIResponse.Error(
-                WPAPINetworkError(
-                    BaseNetworkError(
-                        GenericErrorType.UNKNOWN,
-                        "Response is empty"
-                    )
+            is WPAPIResponse.Success -> response.data?.uuid?.let {
+                ApplicationPasswordUUIDFetchPayload(it)
+            } ?: ApplicationPasswordUUIDFetchPayload(
+                BaseNetworkError(
+                    GenericErrorType.UNKNOWN,
+                    if (response.data == null) "Response is empty" else "UUID missing from response"
                 )
             )
 
-            is WPAPIResponse.Error -> response as WPAPIResponse.Error<ApplicationPasswordUUID>
+            is WPAPIResponse.Error -> ApplicationPasswordUUIDFetchPayload(response.error)
         }
     }
 
