@@ -164,6 +164,34 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given only the active category is loaded, when a past filter's category is applied, then it is kept`() =
+        testBlocking {
+            // Reopening the filter screen with an existing category filter partially fills productCategories
+            // with just that one category (here "1"), so the restored one must still be looked up in the cache.
+            productFilterListViewModel.loadFilters()
+            val applied = ProductFilterResult(
+                stockStatus = null,
+                productType = null,
+                productStatus = null,
+                productCategory = "7",
+                productCategoryName = "Decor"
+            )
+            whenever(productFilterHistoryMapper.fromPayload("payload")).thenReturn(applied)
+            whenever(productCategoriesRepository.getProductCategoriesList())
+                .thenReturn(
+                    listOf(ProductCategory(remoteCategoryId = 1, name = "Clothing"), ProductCategory(7, "Decor"))
+                )
+
+            productFilterListViewModel.onPastFilterSelected(SavedFilter(readableString = "r", payload = "payload"))
+            productFilterListViewModel.onShowProductsClicked()
+
+            val captor = argumentCaptor<ProductFilterResult>()
+            verify(saveProductFilterToHistory).invoke(captor.capture())
+            Assertions.assertThat(captor.firstValue.productCategory).isEqualTo("7")
+            Assertions.assertThat(captor.firstValue.productCategoryName).isEqualTo("Decor")
+        }
+
+    @Test
     fun `given an undecodable past filter, when selected, then the current selection is unchanged`() {
         whenever(productFilterHistoryMapper.fromPayload("bad")).thenReturn(null)
 

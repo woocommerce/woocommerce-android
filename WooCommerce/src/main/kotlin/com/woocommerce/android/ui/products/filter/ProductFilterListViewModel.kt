@@ -357,7 +357,9 @@ class ProductFilterListViewModel @Inject constructor(
             selectedCategoryName = null
             return
         }
-        if (productCategories.isEmpty()) {
+        // Also reload when only the previously-selected category is loaded (partially filled), otherwise a
+        // different restored category would be missing from the in-memory list and wrongly dropped.
+        if (productCategories.isEmpty() || isProductCategoriesPartiallyFilled()) {
             productCategories = productCategoriesRepository.getProductCategoriesList()
         }
         val category = productCategories.firstOrNull { it.remoteCategoryId.toString() == categoryId }
