@@ -2,9 +2,12 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
-25.6
+25.7
 -----
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
+
+25.6
+-----
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
 - [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]
