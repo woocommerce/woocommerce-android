@@ -1,0 +1,161 @@
+package com.woocommerce.android.detektrules.common
+
+import io.gitlab.arturbosch.detekt.api.CodeSmell
+import io.gitlab.arturbosch.detekt.api.Config
+import io.gitlab.arturbosch.detekt.api.Debt
+import io.gitlab.arturbosch.detekt.api.Entity
+import io.gitlab.arturbosch.detekt.api.Issue
+import io.gitlab.arturbosch.detekt.api.Rule
+import io.gitlab.arturbosch.detekt.api.Severity
+import io.gitlab.arturbosch.detekt.api.internal.RequiresTypeResolution
+import org.jetbrains.kotlin.builtins.isFunctionType
+import org.jetbrains.kotlin.builtins.isSuspendFunctionType
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.Modality
+import org.jetbrains.kotlin.descriptors.VariableDescriptor
+import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtReferenceExpression
+import org.jetbrains.kotlin.psi.KtStringTemplateEntryWithExpression
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
+import org.jetbrains.kotlin.psi.KtWhenConditionIsPattern
+import org.jetbrains.kotlin.psi.KtWhenEntry
+import org.jetbrains.kotlin.psi.KtWhenExpression
+import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
+import org.jetbrains.kotlin.psi.psiUtil.parents
+import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.error.ErrorUtils
+
+/**
+ * Flags string-interpolating a whole object whose type (or, for a sealed type, any of its subclasses)
+ * carries a function-type (lambda / function-reference) property.
+ *
+ * Why: stringifying such an object invokes its generated `toString()`, which renders the lambda through
+ * `FunctionReference.toString()` -> kotlin-reflect. Under R8 full mode kotlin-reflect fails to resolve the
+ * members ("no members found") and the app crashes at runtime — release builds only. Interpolate a field
+ * or `x::class.simpleName` instead of the whole object.
+ *
+ * This rule is DETERMINISTIC: it resolves the actual type of every interpolated expression (requires type
+ * resolution), so it catches the dangerous sites regardless of variable name and does not flag whole-object
+ * interpolations of types that have no function-type property.
+ */
+@RequiresTypeResolution
+class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
+    override val issue = Issue(
+        javaClass.simpleName,
+        Severity.Defect,
+        "Stringifying an object whose type has a function-type (lambda) property triggers a reflective " +
+            "toString() that crashes under R8 full mode. Interpolate a field or ::class.simpleName instead.",
+        Debt.FIVE_MINS
+    )
+
+    override fun visitStringTemplateExpression(expression: KtStringTemplateExpression) {
+        super.visitStringTemplateExpression(expression)
+        if (bindingContext == BindingContext.EMPTY) return
+
+        expression.entries
+            .filterIsInstance<KtStringTemplateEntryWithExpression>()
+            .forEach { entry ->
+                val interpolated = entry.expression ?: return@forEach
+                val type = resolvedType(interpolated) ?: return@forEach
+                if (rendersLambdaReflectively(type, mutableSetOf())) {
+                    report(
+                        CodeSmell(
+                            issue,
+                            Entity.from(interpolated),
+                            "'${interpolated.text}' is stringified whole; its type carries a function-type " +
+                                "property, so its toString() reflects on the lambda and can crash under R8. " +
+                                "Interpolate a field or '${interpolated.text}::class.simpleName' instead."
+                        )
+                    )
+                }
+            }
+    }
+
+    // The expression's own type is preferred (it reflects smart-casts). When it is unavailable or unresolved
+    // fall back to the referenced variable's declared type, and finally — for a `when`-subject whose declared
+    // type does not resolve because the file's binding context is incomplete (e.g. a module that exposes
+    // another module's types through a not-fully-resolvable dependency) — to the type implied by the enclosing
+    // `when`'s `is`-branches, whose classifier references still resolve. This keeps the check deterministic
+    // instead of silently skipping the site.
+    private fun resolvedType(expression: KtExpression): KotlinType? {
+        bindingContext.getType(expression)?.takeUnless { it.isResolutionFailure() }?.let { return it }
+
+        (expression as? KtReferenceExpression)
+            ?.let { bindingContext[BindingContext.REFERENCE_TARGET, it] as? VariableDescriptor }
+            ?.type?.takeUnless { it.isResolutionFailure() }?.let { return it }
+
+        return whenSubjectFallbackType(expression)
+    }
+
+    /**
+     * When [expression] is the subject variable of an enclosing `when` but its declared type could not be
+     * resolved, recover the type from the branch conditions, whose `is`-pattern classifier references resolve
+     * even when the subject's declared type does not. Inside an `is`-branch the subject is exactly that guard
+     * type; inside the `else`-branch it can be any unhandled subclass, so use the sealed root — the same
+     * over-approximation the normal path uses when the static type is the sealed root.
+     */
+    private fun whenSubjectFallbackType(expression: KtExpression): KotlinType? {
+        val reference = expression as? KtNameReferenceExpression ?: return null
+        val whenExpression = expression.parents.filterIsInstance<KtWhenExpression>().firstOrNull() ?: return null
+        if (reference.getReferencedName() != whenExpression.subjectVariable?.name) return null
+
+        val containingEntry = expression.parents.filterIsInstance<KtWhenEntry>().firstOrNull()
+        return containingEntry?.isPatternTypes().orEmpty().firstOrNull()
+            ?: whenExpression.entries
+                .flatMap { it.isPatternTypes() }
+                .firstNotNullOfOrNull { it.sealedSupertype() }
+    }
+
+    private fun KtWhenEntry.isPatternTypes(): List<KotlinType> =
+        conditions.filterIsInstance<KtWhenConditionIsPattern>()
+            .mapNotNull { it.typeReference?.let { ref -> bindingContext[BindingContext.TYPE, ref] } }
+            .filterNot { it.isResolutionFailure() }
+
+    private fun KotlinType.sealedSupertype(): KotlinType? =
+        constructor.supertypes.firstOrNull {
+            (it.constructor.declarationDescriptor as? ClassDescriptor)?.modality == Modality.SEALED
+        }
+
+    private fun KotlinType.isResolutionFailure(): Boolean = ErrorUtils.containsErrorType(this)
+
+    /**
+     * A type renders a lambda through its generated toString() when it is itself a function type, has a
+     * function-type primary-constructor property, or (for a sealed type) any subclass does — since the
+     * static type at an interpolation site is often the sealed root while the runtime value is a leaf.
+     */
+    private fun rendersLambdaReflectively(type: KotlinType, visited: MutableSet<ClassDescriptor>): Boolean {
+        if (type.isFunctionType || type.isSuspendFunctionType) return true
+        val descriptor = type.constructor.declarationDescriptor as? ClassDescriptor ?: return false
+        if (!visited.add(descriptor)) return false
+
+        val primaryCtorPropertyTypes = descriptor.unsubstitutedPrimaryConstructor?.valueParameters.orEmpty()
+        return primaryCtorPropertyTypes.any { rendersLambdaReflectively(it.type, visited) } ||
+            subclassTypes(descriptor).any { rendersLambdaReflectively(it, visited) }
+    }
+
+    /**
+     * Subclasses of a sealed type. Prefer the descriptor's [ClassDescriptor.sealedSubclasses], but detekt's
+     * binding context does not always populate it (notably for sealed interfaces), so fall back to
+     * discovering same-file subclasses via PSI and resolving each back to a type — keeping the check
+     * deterministic instead of silently treating the sealed root as safe.
+     */
+    private fun subclassTypes(descriptor: ClassDescriptor): List<KotlinType> {
+        val fromDescriptor = descriptor.sealedSubclasses
+        if (fromDescriptor.isNotEmpty()) return fromDescriptor.map { it.defaultType }
+
+        val declaration = DescriptorToSourceUtils.descriptorToDeclaration(descriptor) as? KtClassOrObject
+            ?: return emptyList()
+        val name = descriptor.name.asString()
+        return declaration.containingKtFile
+            .collectDescendantsOfType<KtClassOrObject> { candidate ->
+                candidate != declaration && candidate.superTypeListEntries.any { entry ->
+                    entry.typeReference?.text?.substringBefore('<')?.trim()?.substringAfterLast('.') == name
+                }
+            }
+            .mapNotNull { bindingContext[BindingContext.CLASS, it]?.defaultType }
+    }
+}

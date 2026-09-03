@@ -21,3 +21,7 @@ TestRules:
 StoreRules:
   MixedStoreThemeImportsRule:
     active: true
+
+CommonRules:
+  StringifyLambdaBearingObjectRule:
+    active: true
