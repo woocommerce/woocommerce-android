@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -240,6 +241,8 @@ android {
 }
 
 dependencies {
+    detektPlugins project(':libs:detektrules')
+
     if (isComposeScreenshotTestsEnabled) {
         screenshotTestImplementation(libs.androidx.compose.ui.tooling.main)
         screenshotTestImplementation(libs.google.screenshot.validation.api)
@@ -591,3 +594,45 @@ dependencyAnalysis {
 }
 
 apply from: '../config/gradle/build_optimization.gradle'
+
+// The debug variant (jalapenoDebug, analyzed on PRs) is valid to check even though the crash is R8/release-
+// only: this is static type analysis, so R8 being off doesn't change what it flags.
+def registerDetektWithTypeResolution = { String taskName, String variantCapitalized, String variantLower ->
+    tasks.register(taskName, Detekt) {
+        description = "Runs detekt with type resolution over WooCommerce main sources ($variantLower)."
+        // Only the custom type-resolution rules run here; the built-in rulesets already run in detektAll.
+        disableDefaultRuleSets = true
+        buildUponDefaultConfig = false
+        ignoreFailures = false
+        config.setFrom(files("$rootDir/config/detekt/type-resolution.yml"))
+        setSource(files("src/main/kotlin"))
+        include("**/*.kt")
+        jvmTarget = libs.versions.java.get()
+        // Wiring through the compile task's provider gives the exact classpath the compiler used — all
+        // external deps, sibling modules such as :libs:cardreader, generated R/Hilt/KSP — and adds the
+        // task dependency automatically, so this only runs once the variant is compiled.
+        classpath.from(
+            tasks.named("compile${variantCapitalized}Kotlin", org.jetbrains.kotlin.gradle.tasks.KotlinCompile)
+                .map { it.libraries }
+        )
+        // Add the runtime classpath too: :libs:cardreader exposes Stripe Terminal types in its API but
+        // pulls Stripe in as `implementation`, so without this, cardreader-using files get a poisoned
+        // binding context and their sites resolve to error types and are silently skipped.
+        classpath.from(
+            configurations.getByName("${variantLower}RuntimeClasspath").incoming.artifactView { view ->
+                view.lenient(true)
+                view.attributes { attrs ->
+                    attrs.attribute(org.gradle.api.attributes.Attribute.of("artifactType", String), "android-classes-jar")
+                }
+            }.files
+        )
+        reports {
+            xml.required.set(true)
+            html.required.set(false)
+            txt.required.set(false)
+        }
+    }
+}
+
+registerDetektWithTypeResolution("detektWithTypeResolution", "VanillaRelease", "vanillaRelease")
+registerDetektWithTypeResolution("detektWithTypeResolutionPR", "JalapenoDebug", "jalapenoDebug")
