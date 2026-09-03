@@ -40,10 +40,6 @@ import org.jetbrains.kotlin.types.error.ErrorUtils
  * `FunctionReference.toString()` -> kotlin-reflect. Under R8 full mode kotlin-reflect fails to resolve the
  * members ("no members found") and the app crashes at runtime — release builds only. Interpolate a field
  * or `x::class.simpleName` instead of the whole object.
- *
- * This rule is DETERMINISTIC: it resolves the actual type of every interpolated expression (requires type
- * resolution), so it catches the dangerous sites regardless of variable name and does not flag whole-object
- * interpolations of types that have no function-type property.
  */
 @RequiresTypeResolution
 class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
@@ -78,9 +74,8 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
             }
     }
 
-    // Prefer the expression's own type (it reflects smart-casts), else the referenced variable's declared
-    // type, else — for a `when`-subject whose declared type can't resolve (an incomplete binding context) —
-    // the type implied by the enclosing `when`'s `is`-branches, whose classifiers still resolve.
+    // Prefer the expression's own type (it reflects smart-casts); fall back to the variable's declared type,
+    // then to the `when`-subject fallback below.
     private fun resolvedType(expression: KtExpression): KotlinType? {
         bindingContext.getType(expression)?.takeUnless { it.isResolutionFailure() }?.let { return it }
 

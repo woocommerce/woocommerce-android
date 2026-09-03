@@ -595,11 +595,8 @@ dependencyAnalysis {
 
 apply from: '../config/gradle/build_optimization.gradle'
 
-// Detekt with type resolution over WooCommerce main sources — the compile classpath is required by rules
-// that inspect resolved types (e.g. StringifyLambdaBearingObjectRule). Scoped to this module to bound CI
-// cost. Two variants run the same rules: detektWithTypeResolution -> vanillaRelease (shipped, gated in the
-// release pipeline) and detektWithTypeResolutionPR -> jalapenoDebug (already compiled on every PR, so only
-// the analysis pass is extra). Detection is static type analysis, so R8 being off in debug is irrelevant.
+// The debug variant (jalapenoDebug, analyzed on PRs) is valid to check even though the crash is R8/release-
+// only: this is static type analysis, so R8 being off doesn't change what it flags.
 def registerDetektWithTypeResolution = { String taskName, String variantCapitalized, String variantLower ->
     tasks.register(taskName, Detekt) {
         description = "Runs detekt with type resolution over WooCommerce main sources ($variantLower)."
