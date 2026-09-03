@@ -74,6 +74,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var refundJob: Job? = null
     private var previewJob: Job? = null
     private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
+    private var isFlowInProgress = false
 
     init {
         observeReaderConnectionForPendingRefund()
@@ -126,14 +127,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun loadRefundableItems() {
         if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
-        loadContent(preservedSelection = null, isFlowStart = true)
+        loadContent(
+            preservedSelection = if (isFlowInProgress) emptySet() else null,
+            isFlowStart = !isFlowInProgress,
+        )
     }
 
     private fun refreshRefundableItems() {
         val draft = (_state.value as? WooPosRefundState.Content) ?: contentStateBeforeRefund
         cancelPreview()
         cancelRefundSubmission()
-        loadContent(draft?.selectedItemIds, isFlowStart = false, preservedReason = draft?.refundReason.orEmpty())
+        loadContent(emptySet(), isFlowStart = false, preservedReason = draft?.refundReason.orEmpty())
     }
 
     private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean, preservedReason: String = "") {
@@ -202,6 +206,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             preservedSelection = preservedSelection,
         ).copy(refundReason = preservedReason)
 
+        isFlowInProgress = true
         if (isFlowStart) {
             viewModelScope.launch {
                 analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
@@ -276,18 +281,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         if (currentState is WooPosRefundState.Content &&
             !currentState.step.isNonCancelable()
         ) {
-            val refundStep = when (currentState.step) {
-                WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
-                WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
-                WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
-                WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
-                WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
-                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
-                WooPosRefundState.Content.RefundStep.Processing,
-                WooPosRefundState.Content.RefundStep.ProcessingRefund,
-                WooPosRefundState.Content.RefundStep.NotifyingStore ->
-                    error("Non-cancelable step should be unreachable in handleRefundFlowDismissed")
-            }
+            val refundStep = currentState.step.analyticsName()
 
             viewModelScope.launch {
                 analyticsTracker.track(
@@ -298,6 +292,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
         cancelRefundSubmission()
         cancelPreview()
+        isFlowInProgress = false
         _state.value = WooPosRefundState.Loading
         loadingJob?.cancel()
     }
@@ -759,4 +754,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
         val contentState: WooPosRefundState.Content,
         val request: WooPosRefundSubmissionRequest,
     )
+}
+
+private fun WooPosRefundState.Content.RefundStep.analyticsName(): String = when (this) {
+    WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
+    WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
+    WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
+    WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
+    WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
+    is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
+    WooPosRefundState.Content.RefundStep.Processing,
+    WooPosRefundState.Content.RefundStep.ProcessingRefund,
+    WooPosRefundState.Content.RefundStep.NotifyingStore ->
+        error("Non-cancelable step should be unreachable when the refund flow is dismissed")
 }

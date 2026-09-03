@@ -2726,7 +2726,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given a rejection offering a reload, when items are refreshed, then the selection is kept to what is left`() =
+    fun `given a rejection offering a reload, when items are refreshed, then the selection is cleared`() =
         runTest {
             // GIVEN
             val firstUnit = testRefundableItem.copy(rowIndex = 0)
@@ -2769,8 +2769,8 @@ class WooPosRefundViewModelTest {
             val content = viewModel.state.value as WooPosRefundState.Content
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.refundableItems).isEqualTo(listOf(firstUnit))
-            assertThat(content.selectedItemIds).isEqualTo(setOf(firstUnit.uniqueId))
-            assertThat(content.itemsCount).isEqualTo(1)
+            assertThat(content.selectedItemIds).isEmpty()
+            assertThat(content.itemsCount).isEqualTo(0)
             assertThat(content.previewFailure).isNull()
             verify(analyticsTracker, times(1)).track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
         }
@@ -2893,6 +2893,105 @@ class WooPosRefundViewModelTest {
             assertThat(content.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
             assertThat(content.refundableItems).isEqualTo(listOf(firstUnit))
             assertThat(content.previewFailure).isNull()
+        }
+
+    @Test
+    fun `given the reloaded list is unchanged, when items are refreshed, then the selection is cleared`() =
+        runTest {
+            // GIVEN — an order-level rejection, so the reloaded list is the same as before.
+            val firstUnit = testRefundableItem.copy(rowIndex = 0)
+            val secondUnit = testRefundableItem.copy(rowIndex = 1)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 2,
+                    refundTotal = BigDecimal("40.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(firstUnit, secondUnit))
+            whenever(groupRefundItems.invoke(any(), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "The refund amount is more than what's left to refund.",
+                        apiErrorCode = "woocommerce_rest_refund_exceeds_remaining",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.refundableItems).isEqualTo(listOf(firstUnit, secondUnit))
+            assertThat(content.selectedItemIds).isEmpty()
+            assertThat(content.allItemsSelected).isFalse()
+        }
+
+    @Test
+    fun `given the reload failed, when load is retried, then the selection is cleared and one flow start is tracked`() =
+        runTest {
+            // GIVEN
+            val firstUnit = testRefundableItem.copy(rowIndex = 0)
+            val secondUnit = testRefundableItem.copy(rowIndex = 1)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 2,
+                    refundTotal = BigDecimal("40.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            // The reload fails, the retry that follows it succeeds.
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
+                Result.success(testOrder),
+                Result.failure(Exception("Failed to refresh order")),
+                Result.success(testOrder),
+            )
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any()))
+                .thenReturn(listOf(firstUnit, secondUnit), listOf(firstUnit))
+            whenever(groupRefundItems.invoke(any(), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(refundSubmissionProcessor.submit(any())).thenReturn(
+                flowOf(
+                    WooPosRefundSubmissionState.Failure(
+                        message = "The selected quantity is more than what's left to refund.",
+                        apiErrorCode = "woocommerce_rest_quantity_exceeds_refundable",
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefundFlowOpened)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+            viewModel.onUIEvent(WooPosRefundUIEvent.RefreshRefundableItems)
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Error::class.java)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.RetryLoadRefundableItems)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosRefundState.Content
+            assertThat(content.refundableItems).isEqualTo(listOf(firstUnit))
+            assertThat(content.selectedItemIds).isEmpty()
+            verify(analyticsTracker, times(1)).track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
         }
 
     @Test
