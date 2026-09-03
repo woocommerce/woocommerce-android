@@ -142,6 +142,52 @@ class StringifyLambdaBearingObjectRuleTest {
     }
 
     @Test
+    fun `when a data class with a list-of-lambda property is interpolated, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Foo(val actions: List<() -> Unit>)
+            fun log(s: Foo): String = "state: ${'$'}s"
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `when a data class with a map-of-lambda property is interpolated, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Foo(val actions: Map<String, () -> Unit>)
+            fun log(s: Foo): String = "state: ${'$'}s"
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `when a bare list of lambdas is interpolated, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            fun log(actions: List<() -> Unit>): String = "actions: ${'$'}actions"
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `when a non-collection wrapper of a lambda is interpolated, then it is not flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            fun log(c: Comparator<() -> Unit>): String = "cmp: ${'$'}c"
+            """.trimIndent()
+        )
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
     fun `when a data class without a lambda property is interpolated, then it is not flagged`() {
         val findings = rule.compileAndLintWithContext(
             env,

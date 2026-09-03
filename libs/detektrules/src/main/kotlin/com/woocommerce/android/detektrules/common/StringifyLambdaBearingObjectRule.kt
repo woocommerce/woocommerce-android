@@ -8,6 +8,7 @@ import io.gitlab.arturbosch.detekt.api.Issue
 import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import io.gitlab.arturbosch.detekt.api.internal.RequiresTypeResolution
+import org.jetbrains.kotlin.builtins.KotlinBuiltIns
 import org.jetbrains.kotlin.builtins.isFunctionType
 import org.jetbrains.kotlin.builtins.isSuspendFunctionType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
@@ -26,6 +27,8 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.DescriptorToSourceUtils
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
+import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperClassifiers
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.error.ErrorUtils
 
@@ -123,18 +126,33 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
     private fun KotlinType.isResolutionFailure(): Boolean = ErrorUtils.containsErrorType(this)
 
     /**
-     * A type renders a lambda through its generated toString() when it is itself a function type, has a
-     * function-type primary-constructor property, or (for a sealed type) any subclass does — since the
-     * static type at an interpolation site is often the sealed root while the runtime value is a leaf.
+     * A type renders a lambda through its generated toString() when it is itself a function type, is a
+     * collection/map/array whose elements are lambdas, has a function-type primary-constructor property, or
+     * (for a sealed type) any subclass does — since the static type at an interpolation site is often the
+     * sealed root while the runtime value is a leaf.
      */
     private fun rendersLambdaReflectively(type: KotlinType, visited: MutableSet<ClassDescriptor>): Boolean {
         if (type.isFunctionType || type.isSuspendFunctionType) return true
+        if (type.rendersContentsInToString() &&
+            type.arguments.any { !it.isStarProjection && rendersLambdaReflectively(it.type, visited) }
+        ) {
+            return true
+        }
         val descriptor = type.constructor.declarationDescriptor as? ClassDescriptor ?: return false
         if (!visited.add(descriptor)) return false
 
         val primaryCtorPropertyTypes = descriptor.unsubstitutedPrimaryConstructor?.valueParameters.orEmpty()
         return primaryCtorPropertyTypes.any { rendersLambdaReflectively(it.type, visited) } ||
             subclassTypes(descriptor).any { rendersLambdaReflectively(it, visited) }
+    }
+
+    // Arrays and any Collection/Iterable/Map render their elements in toString() (`[Function0]`,
+    // `{k=Function0}`), so a lambda nested in one still crashes; unrelated generic wrappers such as
+    // Comparator inherit an identity toString() and do not, so their type arguments are ignored.
+    private fun KotlinType.rendersContentsInToString(): Boolean {
+        if (KotlinBuiltIns.isArray(this)) return true
+        val descriptor = constructor.declarationDescriptor as? ClassDescriptor ?: return false
+        return descriptor.getAllSuperClassifiers().any { it.fqNameSafe.asString() in COLLECTION_LIKE_FQ_NAMES }
     }
 
     /**
@@ -157,5 +175,12 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
                 }
             }
             .mapNotNull { bindingContext[BindingContext.CLASS, it]?.defaultType }
+    }
+
+    companion object {
+        private val COLLECTION_LIKE_FQ_NAMES = setOf(
+            "kotlin.collections.Iterable",
+            "kotlin.collections.Map",
+        )
     }
 }
