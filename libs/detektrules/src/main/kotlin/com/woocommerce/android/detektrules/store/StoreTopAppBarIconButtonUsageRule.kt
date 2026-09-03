@@ -26,11 +26,25 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         Debt.FIVE_MINS
     )
 
+    private var iconButtonNames: Set<String> = emptySet()
+    private var topAppBarNames: Set<String> = emptySet()
+    private var menuOwnerNames: Set<String> = emptySet()
+    private var actionsScopeNames: Set<String> = emptySet()
+
+    override fun visitKtFile(file: KtFile) {
+        iconButtonNames = file.importedMaterialNames(ICON_BUTTON_NAME)
+        topAppBarNames = file.importedCallableNames(TARGET_CALLABLES)
+        menuOwnerNames = file.importedMaterialNames(DROP_DOWN_MENU_NAME) +
+            file.importedCallableNames(setOf(WOO_OVERFLOW_MENU_CALLABLE))
+        actionsScopeNames = file.importedCallableNames(setOf(TOP_APP_BAR_ACTIONS_SCOPE))
+
+        super.visitKtFile(file)
+    }
+
     override fun visitCallExpression(expression: KtCallExpression) {
         super.visitCallExpression(expression)
 
-        val file = expression.containingKtFile
-        if (!expression.isMaterialIconButton(file) || !expression.isInsideTopAppBarActions(file)) return
+        if (!expression.isMaterialIconButton() || !expression.isInsideTopAppBarActions()) return
 
         report(
             CodeSmell(
@@ -41,8 +55,8 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         )
     }
 
-    private fun KtCallExpression.isMaterialIconButton(file: KtFile): Boolean =
-        matchesCallable(MATERIAL_ICON_BUTTON_CALLABLES, file.importedMaterialIconButtonNames())
+    private fun KtCallExpression.isMaterialIconButton(): Boolean =
+        matchesCallable(MATERIAL_ICON_BUTTON_CALLABLES, iconButtonNames)
 
     /**
      * A qualified call only matches when its receiver spells out a target package, so an unrelated
@@ -55,22 +69,22 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         return calleeName in importedNames
     }
 
-    private fun KtCallExpression.isInsideTopAppBarActions(file: KtFile): Boolean {
+    private fun KtCallExpression.isInsideTopAppBarActions(): Boolean {
         var ancestor = parent
         var isInsideMenuContent = false
         while (ancestor != null) {
             when (ancestor) {
                 is KtLambdaExpression -> {
-                    if (ancestor.isTopAppBarActions(file)) return !isInsideMenuContent
-                    if (ancestor.isMenuContent(file)) isInsideMenuContent = true
+                    if (ancestor.isTopAppBarActions()) return !isInsideMenuContent
+                    if (ancestor.isMenuContent()) isInsideMenuContent = true
                 }
 
                 is KtProperty -> {
-                    if (ancestor.hasTopAppBarActionsScopeType(file)) return !isInsideMenuContent
+                    if (ancestor.hasTopAppBarActionsScopeType()) return !isInsideMenuContent
                 }
 
                 is KtNamedFunction -> {
-                    if (ancestor.hasTopAppBarActionsScopeReceiver(file)) return !isInsideMenuContent
+                    if (ancestor.hasTopAppBarActionsScopeReceiver()) return !isInsideMenuContent
                 }
             }
             ancestor = ancestor.parent
@@ -78,9 +92,9 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         return false
     }
 
-    private fun KtLambdaExpression.isTopAppBarActions(file: KtFile): Boolean {
+    private fun KtLambdaExpression.isTopAppBarActions(): Boolean {
         val ownerCall = ownerCall() ?: return false
-        if (!ownerCall.isTargetTopAppBarCall(file)) return false
+        if (!ownerCall.isTargetTopAppBarCall()) return false
         return isNamed(ACTIONS_ARGUMENT_NAME) || isPositionalActionsArgument()
     }
 
@@ -95,11 +109,11 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         return (argumentList?.arguments?.size ?: 0) > MIN_POSITIONAL_ACTIONS_INDEX
     }
 
-    private fun KtLambdaExpression.isMenuContent(file: KtFile): Boolean {
+    private fun KtLambdaExpression.isMenuContent(): Boolean {
         val ownerCall = ownerCall() ?: return false
         if (!isNamed(CONTENT_ARGUMENT_NAME) && !isUnnamedTrailingArgument()) return false
         if (ownerCall.isOverflowActionCall()) return true
-        return ownerCall.matchesCallable(MENU_OWNER_CALLABLES, file.importedMenuOwnerNames())
+        return ownerCall.matchesCallable(MENU_OWNER_CALLABLES, menuOwnerNames)
     }
 
     private fun KtCallExpression.isOverflowActionCall(): Boolean {
@@ -138,8 +152,8 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
             argumentList.arguments.lastOrNull() == valueArgument
     }
 
-    private fun KtCallExpression.isTargetTopAppBarCall(file: KtFile): Boolean =
-        matchesCallable(TARGET_CALLABLES, file.importedTopAppBarNames())
+    private fun KtCallExpression.isTargetTopAppBarCall(): Boolean =
+        matchesCallable(TARGET_CALLABLES, topAppBarNames)
 
     private fun KtCallExpression.fullyQualifiedCallableName(): String? {
         val calleeName = (calleeExpression as? KtNameReferenceExpression)?.getReferencedName() ?: return null
@@ -148,19 +162,16 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         return "${qualifiedCall.receiverExpression.text}.$calleeName"
     }
 
-    private fun KtNamedFunction.hasTopAppBarActionsScopeReceiver(file: KtFile): Boolean {
+    private fun KtNamedFunction.hasTopAppBarActionsScopeReceiver(): Boolean {
         val receiverType = receiverTypeReference?.text ?: return false
-        return receiverType == TOP_APP_BAR_ACTIONS_SCOPE || receiverType in file.importedActionsScopeNames()
+        return receiverType == TOP_APP_BAR_ACTIONS_SCOPE || receiverType in actionsScopeNames
     }
 
-    private fun KtProperty.hasTopAppBarActionsScopeType(file: KtFile): Boolean {
+    private fun KtProperty.hasTopAppBarActionsScopeType(): Boolean {
         val declaredType = typeReference?.text ?: return false
-        val scopeNames = file.importedActionsScopeNames() + TOP_APP_BAR_ACTIONS_SCOPE
+        val scopeNames = actionsScopeNames + TOP_APP_BAR_ACTIONS_SCOPE
         return scopeNames.any { declaredType.contains("$it.(") }
     }
-
-    private fun KtFile.importedMaterialIconButtonNames(): Set<String> =
-        importedMaterialNames(ICON_BUTTON_NAME)
 
     private fun KtFile.importedMaterialNames(simpleName: String): Set<String> = buildSet {
         importDirectives.forEach { directive ->
@@ -173,11 +184,6 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
             }
         }
     }
-
-    private fun KtFile.importedMenuOwnerNames(): Set<String> =
-        importedMaterialNames(DROP_DOWN_MENU_NAME) + importedCallableNames(setOf(WOO_OVERFLOW_MENU_CALLABLE))
-
-    private fun KtFile.importedTopAppBarNames(): Set<String> = importedCallableNames(TARGET_CALLABLES)
 
     private fun KtFile.importedCallableNames(callables: Set<String>): Set<String> = buildSet {
         callables.forEach { callable ->
@@ -192,9 +198,6 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
             }
         }
     }
-
-    private fun KtFile.importedActionsScopeNames(): Set<String> =
-        importedCallableNames(setOf(TOP_APP_BAR_ACTIONS_SCOPE))
 
     private companion object {
         const val ACTIONS_ARGUMENT_NAME = "actions"
