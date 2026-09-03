@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
+import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,8 +89,11 @@ fun WooTopAppBar(
 }
 
 /**
- * Prefer descriptor [actions] for migrated screens. Raw actions are an advanced escape hatch; supplied
- * composables render as provided inside the design-system top app bar layout.
+ * Prefer descriptor [WooTopAppBarAction] actions for screens that only need standard actions. Scoped [actions] are
+ * an escape hatch for screens that additionally need inline custom content — a counter, a progress indicator, or a
+ * menu anchored to its trigger — kept in source order alongside [WooTopAppBarActionsScope.IconAction] and
+ * [WooTopAppBarActionsScope.TextAction]. The design system owns the spacing between emitted actions, so callers
+ * must not wrap them in their own spacing row.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +104,7 @@ fun WooTopAppBar(
     navigationIconContentDescription: String? = null,
     onNavigationClick: (() -> Unit)? = null,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: @Composable RowScope.() -> Unit,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit,
 ) {
     WooTopAppBarLayout(
         title = { TopAppBarTitle(title) },
@@ -110,13 +115,14 @@ fun WooTopAppBar(
             onNavigationClick = onNavigationClick,
         ),
         windowInsets = windowInsets,
-        actions = actions,
+        actions = { WooTopAppBarScopedActions(actions) },
     )
 }
 
 /**
- * Prefer descriptor actions for migrated screens. Raw actions are an advanced escape hatch; supplied
- * composables render as provided inside the design-system top app bar layout.
+ * Prefer descriptor actions for screens that only need standard actions. Scoped actions are an escape hatch for
+ * screens that additionally need inline custom content kept in source order; the design system owns the spacing
+ * between emitted actions.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,14 +131,14 @@ internal fun WooTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: @Composable RowScope.() -> Unit,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit,
 ) {
     WooTopAppBarLayout(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
         windowInsets = windowInsets,
-        actions = actions,
+        actions = { WooTopAppBarScopedActions(actions) },
     )
 }
 
@@ -222,6 +228,118 @@ private fun topAppBarNavigationIcon(
     }
 }
 
+/**
+ * Scope for content emitted into the [WooTopAppBar] action slot.
+ *
+ * The design system places emitted content in one spacing container that applies [WooTheme.spacing].space1 between
+ * direct child layout bounds. For [IconAction], those are the 48dp interactive bounds around the visible 40dp
+ * outline, so the visible outline gap also includes both 4dp visual insets. Conditional content that emits no child
+ * adds no gap. Because the scope extends [RowScope], callers can emit arbitrary composables in source order.
+ */
+interface WooTopAppBarActionsScope : RowScope {
+    @Composable
+    fun IconAction(
+        imageVector: ImageVector,
+        contentDescription: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    )
+
+    @Composable
+    fun TextAction(
+        text: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    )
+
+    /**
+     * Standard outlined ellipsis trigger anchoring a [WooOverflowMenu]. [content] receives the callback that closes
+     * the menu; invoke it before running a selected action. [modifier] applies to the trigger.
+     */
+    @Composable
+    fun OverflowAction(
+        contentDescription: String,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
+    )
+}
+
+private class WooTopAppBarActionsScopeImpl(
+    rowScope: RowScope,
+) : WooTopAppBarActionsScope, RowScope by rowScope {
+    @Composable
+    override fun IconAction(
+        imageVector: ImageVector,
+        contentDescription: String,
+        onClick: () -> Unit,
+        modifier: Modifier,
+        enabled: Boolean,
+    ) {
+        require(contentDescription.isNotBlank()) {
+            "WooTopAppBar icon action contentDescription must not be blank"
+        }
+        WooOutlinedIconButton(
+            imageVector = imageVector,
+            contentDescription = contentDescription,
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        )
+    }
+
+    @Composable
+    override fun TextAction(
+        text: String,
+        onClick: () -> Unit,
+        modifier: Modifier,
+        enabled: Boolean,
+    ) {
+        require(text.isNotBlank()) {
+            "WooTopAppBar text action text must not be blank"
+        }
+        WooTopAppBarTextAction(
+            text = text,
+            onClick = onClick,
+            modifier = modifier,
+            enabled = enabled,
+        )
+    }
+
+    @Composable
+    override fun OverflowAction(
+        contentDescription: String,
+        modifier: Modifier,
+        enabled: Boolean,
+        content: @Composable ColumnScope.(dismiss: () -> Unit) -> Unit,
+    ) {
+        WooOverflowMenu(
+            trigger = { onClick ->
+                IconAction(
+                    imageVector = WooIcons.Regular.Ellipsis,
+                    contentDescription = contentDescription,
+                    onClick = onClick,
+                    modifier = modifier,
+                    enabled = enabled,
+                )
+            },
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun WooTopAppBarScopedActions(actions: @Composable WooTopAppBarActionsScope.() -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        WooTopAppBarActionsScopeImpl(this).actions()
+    }
+}
+
 @Composable
 private fun WooTopAppBarActions(actions: List<WooTopAppBarAction>) {
     Row(
@@ -261,10 +379,11 @@ private fun WooTopAppBarTextAction(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = onClick,
-        modifier = Modifier.widthIn(max = ACTION_TEXT_MAX_WIDTH),
+        modifier = modifier.widthIn(max = ACTION_TEXT_MAX_WIDTH),
         enabled = enabled,
         colors = ButtonDefaults.textButtonColors(
             contentColor = WooTheme.colors.primary,
@@ -404,6 +523,35 @@ private fun WooTopAppBarLongTextActionPreview() {
                 ),
             )
         }
+    }
+}
+
+@Suppress("UnusedPrivateMember")
+@PreviewLightDark
+@Composable
+private fun WooTopAppBarScopedActionsPreview() {
+    WooDesignSystemTheme {
+        WooTopAppBar(
+            title = "Product",
+            navigationIcon = WooIcons.Regular.AngleLeft,
+            navigationIconContentDescription = "Back",
+            onNavigationClick = {},
+            windowInsets = WindowInsets(0),
+            actions = {
+                TextAction(
+                    text = "Save",
+                    onClick = {},
+                )
+                IconAction(
+                    imageVector = WooIcons.Regular.ArrowUpRight,
+                    contentDescription = "Open",
+                    onClick = {},
+                )
+                OverflowAction(contentDescription = "More options") { dismiss ->
+                    WooOverflowMenuItem(text = "Duplicate", onClick = dismiss)
+                }
+            },
+        )
     }
 }
 

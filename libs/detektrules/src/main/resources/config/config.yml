@@ -21,3 +21,5 @@ TestRules:
 StoreRules:
   MixedStoreThemeImportsRule:
     active: true
+  StoreTopAppBarIconButtonUsageRule:
+    active: true
