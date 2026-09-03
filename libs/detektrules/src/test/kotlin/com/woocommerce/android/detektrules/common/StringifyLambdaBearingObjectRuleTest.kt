@@ -177,6 +177,18 @@ class StringifyLambdaBearingObjectRuleTest {
     }
 
     @Test
+    fun `when a non-data class with a lambda property is interpolated, then it is not flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            class Loading(val onCancel: () -> Unit)
+            fun log(s: Loading): String = "state: ${'$'}s"
+            """.trimIndent()
+        )
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
     fun `when a non-collection wrapper of a lambda is interpolated, then it is not flagged`() {
         val findings = rule.compileAndLintWithContext(
             env,

@@ -127,9 +127,14 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
 
     /**
      * A type renders a lambda through its generated toString() when it is itself a function type, is a
-     * collection/map/array whose elements are lambdas, has a function-type primary-constructor property, or
+     * collection/map/array whose elements are lambdas, is a data class with a function-type property, or
      * (for a sealed type) any subclass does — since the static type at an interpolation site is often the
      * sealed root while the runtime value is a leaf.
+     *
+     * The property check is gated on [ClassDescriptor.isData]: only data classes generate a toString() that
+     * renders their properties. A non-data class inherits Object's identity toString() and never touches its
+     * lambda, so flagging it would be a false positive. Subclass recursion stays ungated — a non-data sealed
+     * root can still have data-class subclasses that do render a lambda.
      */
     private fun rendersLambdaReflectively(type: KotlinType, visited: MutableSet<ClassDescriptor>): Boolean {
         if (type.isFunctionType || type.isSuspendFunctionType) return true
@@ -141,8 +146,10 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
         val descriptor = type.constructor.declarationDescriptor as? ClassDescriptor ?: return false
         if (!visited.add(descriptor)) return false
 
-        val primaryCtorPropertyTypes = descriptor.unsubstitutedPrimaryConstructor?.valueParameters.orEmpty()
-        return primaryCtorPropertyTypes.any { rendersLambdaReflectively(it.type, visited) } ||
+        val ownPropertyRendersLambda = descriptor.isData &&
+            descriptor.unsubstitutedPrimaryConstructor?.valueParameters.orEmpty()
+                .any { rendersLambdaReflectively(it.type, visited) }
+        return ownPropertyRendersLambda ||
             subclassTypes(descriptor).any { rendersLambdaReflectively(it, visited) }
     }
 
