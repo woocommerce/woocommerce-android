@@ -238,6 +238,8 @@ object AppPrefs {
 
         IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
 
+        USER_AGE_RESTRICTION_REASON,
+
         QR_LOGIN_ROLLOUT_BUCKET,
 
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
@@ -377,6 +379,10 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var userAgeRestrictionReason: String
+        get() = getString(key = UndeletablePrefKey.USER_AGE_RESTRICTION_REASON, defaultValue = "")
+        set(value) = setString(key = UndeletablePrefKey.USER_AGE_RESTRICTION_REASON, value = value)
 
     var isAiAssistantEarlyAccessNoticeDismissed: Boolean
         get() = getBoolean(
