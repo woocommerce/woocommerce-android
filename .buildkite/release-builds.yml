@@ -16,7 +16,21 @@ steps:
     priority: 1
     plugins: [$CI_TOOLKIT]
 
-  # Wait for Gradle Wrapper to be validated before running any other jobs
+  # Type-resolution detekt: guards against reflective toString() crashes under R8 full mode (a
+  # data class / sealed subtype holding a lambda that gets stringified whole). It requires the
+  # variant to be compiled, so it is too expensive to run on every PR — it runs here, in the
+  # release phase, as a gate before the release build starts.
+  - label: "🔍 detekt (type resolution)"
+    command: |
+      checkout_release_branch "$RELEASE_VERSION"
+
+      ./gradlew :WooCommerce:detektWithTypeResolution
+    priority: 1
+    plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "WooCommerce/build/reports/detekt/detekt.xml"
+
+  # Wait for Gradle Wrapper validation and the type-resolution detekt gate before any other jobs
   - wait
 
   - label: "🛠 Release Build (Mobile App)"
