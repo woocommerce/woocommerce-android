@@ -6,6 +6,7 @@
 -----
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
+- [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
 
 25.6
 -----
@@ -19,7 +20,6 @@
 - [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Login loading dialogs now use the correct background in dark mode
-- [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
 - [Internal] Woo POS refunds: refund events now report whether totals were calculated locally or by the server, a new event records when a store falls back for lack of the server route, and refunds abandoned before submission are now reported instead of leaving the funnel open [https://github.com/woocommerce/woocommerce-android/pull/16419]
 - [*] The app name on the launcher is no longer translated - Brazilian Portuguese showed "Eba!" instead of "Woo"[https://github.com/woocommerce/woocommerce-android/pull/16452]
 - [*] Order creation: the discount screen now formats the product line and totals like the rest of the app, and "Price after discount" shows the full price until a discount is entered [https://github.com/woocommerce/woocommerce-android/pull/16453]
