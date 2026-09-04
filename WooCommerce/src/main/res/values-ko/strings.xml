@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 09:58:05+0000
+Translation-Revision-Date: 2026-08-27 09:55:29+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">위치를 켜서 카드 리더 표시</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">위치에 카드 리더 표시 허용</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">블루투스를 켜서 카드 리더 표시</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">블루투스에 카드 리더 표시 허용</string>
+    <string name="woopos_card_reader_local_network_permission_message">카드 리더로 사용되는 스마트폰에 연결하려면 로컬 네트워크 권한이 필요합니다.</string>
+    <string name="woopos_card_reader_local_network_permission_title">로컬 네트워크 권한 필요</string>
+    <string name="woopos_refund_error_invalid_amount">환불 금액이 유효하지 않음</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">환불 금액이 이 아이템에 남은 환불 금액보다 많음</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">환불 금액이 이 주문에 남은 환불 금액보다 많음</string>
+    <string name="woopos_refund_error_order_not_refundable">이 주문은 환불할 수 없음</string>
+    <string name="woopos_refund_error_item_already_refunded">이 아이템은 이미 전액 환불되었음</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">선택한 수량이 남은 환불 수량보다 많음</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">코드 다시 표시</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">등록기에서 수령</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">온라인 결제가 진행되지 않았습니다. 등록기에서 수령하거나 코드를 다시 표시하세요.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">고객이 대면 결제 선택</string>
+    <string name="woopos_remote_reader_failed_token_invalid">결제 서비스 오류입니다. 다시 연결해 보세요.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">스마트폰에서 NFC를 켜고 다시 시도하세요.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">이 스마트폰에서는 Tap to Pay를 사용할 수 없습니다. 다른 기기를 사용해 보세요.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">주문 생성이 지원되지 않는 구독 상품이 이 번들에 있습니다.</string>
+    <string name="product_image_details_name_removal_blocked">앱에서 제목 제거를 지원하지 않습니다. wp-admin을 사용하여 제거하세요.</string>
+    <string name="product_image_details_alt_text_removal_blocked">앱에서 대체 텍스트 제거를 지원하지 않습니다. wp-admin을 사용하여 제거하세요.</string>
+    <string name="product_image_details_name_label">제목</string>
+    <string name="product_image_details_alt_text_label">대체 텍스트</string>
+    <string name="product_image_details_title">이미지 상세 정보</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">설정 열기</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">로컬 네트워크 권한이 차단되었습니다. 이 스마트폰에서 tap-to-pay를 사용하려면 설정을 열어 로컬 네트워크 접근 권한을 부여하세요.</string>
+    <string name="card_reader_mode_local_network_permission_continue">계속</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android에서는 로컬 네트워크 접근 권한이 있어야 태블릿에서 이 스마트폰을 찾을 수 있습니다. 회원님의 네트워크 외부로 발송된 내용이 없습니다.</string>
+    <string name="card_reader_mode_local_network_permission_header">로컬 네트워크 권한 필요</string>
+    <string name="card_reader_mode_error_phone_not_eligible">이 스마트폰에서는 Tap to Pay를 사용할 수 없습니다. 다른 기기를 사용해 보세요.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">대면 결제가 활성화되었는지 확인할 수 없습니다. 나중에 다시 시도해 보세요.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">비활성화</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">그러면 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 비활성화되어 고객이 선택할 수 없게 됩니다.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">대면 결제를 비활성화할까요?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">활성화</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">그러면 회원님의 웹사이트에서 계산할 때를 포함하여 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 활성화되고 고객에게 표시되는 이름이 “%1$s”에서 \"대면 결제\"로 변경됩니다.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">그러면 회원님의 스토어에서 계산할 때 배송 시 현금 결제 수단이 활성화됩니다.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">대면 결제를 활성화할까요?</string>
+    <string name="order_creation_gift_card_not_applied">이 상품권을 적용할 수 없음</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">변형이 없는 변형 상품은 추가할 수 없음</string>
+    <string name="login_site_credentials_use_web_authorization">그 대신에 회원님 브라우저로 로그인 시도</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">회원님 스토어의 로그인 설정을 저장할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">해당 주소에서 워드프레스 알림판에 연결할 수 없습니다. 확인하고 다시 시도하세요.</string>
+    <string name="login_site_credentials_login_url_not_found_error">해당 주소에서 워드프레스 로그인 페이지를 찾을 수 없습니다. 확인하고 다시 시도하세요.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">보안 연결 또는 포트를 변경하지 말고 동일한 사이트의 주소를 입력하세요.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">http:// 또는 https://를 포함한 전체 웹 주소를 입력하세요.</string>
+    <string name="login_site_credentials_admin_url_label">워드프레스 알림판 주소</string>
+    <string name="login_site_credentials_admin_url_description">보안 플러그인 때문에 워드프레스 알림판이 이동할 수 있습니다. 여는 데 사용할 주소를 입력하세요.</string>
+    <string name="login_site_credentials_admin_url_title">회원님 스토어의 알림판은 어디에 있나요?</string>
+    <string name="login_site_credentials_login_url_label">워드프레스 로그인 주소</string>
+    <string name="login_site_credentials_login_url_description">보안 플러그인에서 사용자 정의 워드프레스 로그인 주소를 사용할 수 있습니다. 로그인하는 데 사용할 주소를 입력하세요.</string>
+    <string name="login_site_credentials_login_url_title">어디에서 스토어에 로그인하시나요?</string>
     <string name="login_text_otp_another">문자 메시지를 통한 코드 다시 보내기</string>
     <string name="login_text_otp">문자 메시지를 통한 코드 다시 보내기</string>
     <string name="enter_verification_code_sms_generic">문자 메시지를 보냈습니다. 메시지에 있는 확인 코드를 입력하세요.</string>
@@ -2264,7 +2317,6 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_description">스마트폰을 사용하여 카드 결제 수락\n결제 지금 사용해 보세요.</string>
     <string name="loading">로드 중입니다…</string>
     <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>
-    <string name="login_site_credentials_use_web_authorization">WP 관리자 페이지에서 다시 시도</string>
     <string name="login_store_address">로그인</string>
     <string name="upgrades_plan_ended_name">%s 종료됨</string>
     <string name="upgrades_current_plan_ended_caption">구독이 종료되었으며, 모든 기능에 대한 접근 권한이 제한되었습니다.</string>

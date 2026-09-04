@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-10 21:54:48+0000
+Translation-Revision-Date: 2026-08-26 20:54:59+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">הפעלת מיקום להצגת קוראי כרטיסים</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">לאפשר מיקום להצגת קוראי כרטיסים</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">הפעלת Bluetooth להצגת קוראי כרטיסים</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">לאפשר Bluetooth להצגת קוראי כרטיסים</string>
+    <string name="woopos_card_reader_local_network_permission_message">נדרשת הרשאה לרשת מקומית כדי להתחבר לטלפון המשמש כקורא כרטיסים.</string>
+    <string name="woopos_card_reader_local_network_permission_title">נדרשת הרשאה לרשת מקומית</string>
+    <string name="woopos_refund_error_invalid_amount">סכום ההחזר הכספי אינו תקף</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">סכום ההחזר הכספי גבוה מהסכום שנותר להחזר כספי עבור פריט זה</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">סכום ההחזר הכספי גבוה מהסכום שנותר להחזר כספי עבור הזמנה זו</string>
+    <string name="woopos_refund_error_order_not_refundable">לא ניתן להנפיק החזר כספי עבור הזמנה זו</string>
+    <string name="woopos_refund_error_item_already_refunded">כבר הונפק החזר כספי מלא עבור פריט זה</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">הכמות שנבחרה גדולה יותר מהכמות שנותרה להחזר כספי</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">הצגה חוזרת של הקוד</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">גבייה בקופה</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">לא בוצע חיוב באופן מקוון. ניתן לחייב בקופה או להציג את הקוד שוב.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">הלקוח בחר לשלם באופן אישי</string>
+    <string name="woopos_remote_reader_failed_token_invalid">שגיאה בשירות התשלומים. יש לנסות להתחבר מחדש.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">יש להפעיל NFC בטלפון ולנסות שוב.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">טלפון זה אינו עומד בתנאים ל\'תשלום בהצמדה\'. יש לנסות מכשיר אחר.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">חבילה זו מכילה מוצר מינוי שאינו נתמך עבור יצירת הזמנה</string>
+    <string name="product_image_details_name_removal_blocked">האפליקציה אינה תומכת בהסרת הכותרת. יש להשתמש ב-wp-admin כדי להסירה.</string>
+    <string name="product_image_details_alt_text_removal_blocked">האפליקציה אינה תומכת בהסרת טקסט חלופי. יש להשתמש ב-wp-admin כדי להסירו.</string>
+    <string name="product_image_details_name_label">כותרת</string>
+    <string name="product_image_details_alt_text_label">טקסט חלופי</string>
+    <string name="product_image_details_title">פרטי תמונה</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">פתיחת הגדרות</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">ההרשאה לרשת המקומית חסומה. יש לפתוח את \'הגדרות\' ולהעניק גישה לרשת המקומית כדי להשתמש בתשלום בהצמדה בטלפון זה.</string>
+    <string name="card_reader_mode_local_network_permission_continue">המשך</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android דורש גישה לרשת המקומית כדי שהטאבלט שלך יוכל לאתר את הטלפון הזה. לא נשלח דבר אל מחוץ לרשת שלך.</string>
+    <string name="card_reader_mode_local_network_permission_header">נדרשת הרשאה לרשת מקומית</string>
+    <string name="card_reader_mode_error_phone_not_eligible">טלפון זה אינו עומד בתנאים ל\'תשלום בהצמדה\'. יש לנסות מכשיר אחר.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">לא הצלחנו לבדוק אם האפשרות \'תשלום במקום\' מופעלת. יש לנסות שוב מאוחר יותר.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">השבתה</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">פעולה זו משביתה את אמצעי התשלום \'מזומן במעמד המסירה\' בקופה של החנות שלך, כך שלקוחות לא יוכלו לבחור בו.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">האם להשבית את \'תשלום במקום\'?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">הפעלה</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">פעולה זו מפעילה את אמצעי התשלום \'מזומן במעמד המסירה\' בקופה של החנות שלך, ומשנה את שמו מ-\'⁦%1$s⁩\' ל\'תשלום במקום\' עבור הלקוחות שלך, כולל בקופה באתר שלך.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">פעולה זו מפעילה את אמצעי התשלום \'מזומן במעמד המסירה\' בקופה של החנות שלך.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">האם להפעיל את \'תשלום במקום\'?</string>
+    <string name="order_creation_gift_card_not_applied">לא ניתן היה להחיל כרטיס מתנה זה</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">לא ניתן להוסיף מוצר עם וריאציות שאין לו וריאציות</string>
+    <string name="login_site_credentials_use_web_authorization">יש לנסות לבצע כניסה באמצעות הדפדפן שלך במקום זאת</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">לא הצלחנו לשמור את הגדרות ביצוע הכניסה של החנות שלך. יש לנסות שוב.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">לא הצלחנו ליצור קשר עם לוח הבקרה של WordPress בכתובת זו. יש לבדוק ולנסות שוב.</string>
+    <string name="login_site_credentials_login_url_not_found_error">לא הצלחנו למצוא עמוד כניסה של WordPress בכתובת זו. יש לבדוק ולנסות שוב.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">יש להזין כתובת באותו אתר, בלי לשנות את החיבור המאובטח או היציאה שלו.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">יש להזין כתובת אינטרנט מלאה, כולל http://‎ או https://‎.</string>
+    <string name="login_site_credentials_admin_url_label">כתובת לוח הבקרה של WordPress</string>
+    <string name="login_site_credentials_admin_url_description">ייתכן שתוסף אבטחה ישנה את מיקום לוח הבקרה של WordPress. יש להזין את הכתובת המשמשת אותך לפתיחתו.</string>
+    <string name="login_site_credentials_admin_url_title">היכן לוח הבקרה של החנות שלך?</string>
+    <string name="login_site_credentials_login_url_label">כתובת כניסה של WordPress.com</string>
+    <string name="login_site_credentials_login_url_description">ייתכן שתוסף אבטחה ישתמש בכתובת כניסה מותאמת אישית של WordPress. יש להזין את הכתובת המשמשת אותך לביצוע כניסה.</string>
+    <string name="login_site_credentials_login_url_title">היכן ברצונך לבצע כניסה לחנות שלך?</string>
     <string name="login_text_otp_another">שליחת קוד מחדש באמצעות הודעת טקסט</string>
     <string name="login_text_otp">שליחת קוד מחדש באמצעות הודעת טקסט</string>
     <string name="enter_verification_code_sms_generic">שלחנו הודעת טקסט. יש להזין את קוד האימות מההודעה.</string>
@@ -2261,7 +2314,6 @@ Language: he_IL
     <string name="login_site_credentials_web_authorization_connection_rejected">אין אפשרות להתחבר מאחר שיצירת הסיסמה באפליקציה לא אושרה.</string>
     <string name="login_site_credentials_fetching_site">מביא אתרים…</string>
     <string name="login_site_credentials_fetching_site_failed">אירעה שגיאה בהבאת האתר</string>
-    <string name="login_site_credentials_use_web_authorization">לנסות שוב עם העמוד \'ניהול WP\'</string>
     <string name="login_store_address">התחברות</string>
     <string name="loading">טוען…</string>
     <string name="upgrades_plan_ended_name">התוקף של %s הסתיים</string>

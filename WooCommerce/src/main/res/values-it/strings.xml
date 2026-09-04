@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 09:57:56+0000
+Translation-Revision-Date: 2026-08-27 17:54:23+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Attiva la posizione per visualizzare i lettori di carte</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Consenti l\'accesso alla posizione per visualizzare i lettori di carte</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Attiva il Bluetooth per visualizzare i lettori di carte</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">L\'importo del rimborso è superiore a quello che rimane da rimborsare per questo articolo</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Consenti l\'accesso al Bluetooth per visualizzare i lettori di carte</string>
+    <string name="woopos_card_reader_local_network_permission_message">Per connettersi a un telefono usato come lettore di carte è richiesta l\'autorizzazione alla rete locale.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Autorizzazione alla rete locale richiesta</string>
+    <string name="woopos_refund_error_invalid_amount">L\'importo del rimborso non è valido</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">L\'importo del rimborso è superiore a quello che rimane da rimborsare per questo ordine</string>
+    <string name="woopos_refund_error_order_not_refundable">Impossibile rimborsare l\'ordine</string>
+    <string name="woopos_refund_error_item_already_refunded">Questo elemento è già stato completamente rimborsato</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">La quantità selezionata è superiore a quella rimanente da rimborsare</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Mostra di nuovo il codice</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Raccogli sul registro</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Nessun pagamento è stato effettuato online. Raccogli il codice sul registro o mostralo di nuovo.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Il cliente ha scelto di pagare di persona</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Attiva NFC sul telefono, quindi riprova.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Questo telefono non è idoneo per Tocca per pagare. Prova un dispositivo diverso.</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Errore del servizio di pagamento. Prova a riconnetterti.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Questo pacchetto contiene un prodotto in abbonamento che non è supportato per la creazione di ordini</string>
+    <string name="product_image_details_name_removal_blocked">L\'app non supporta la rimozione del titolo. Usa wp-admin per rimuoverlo.</string>
+    <string name="product_image_details_alt_text_removal_blocked">L\'app non supporta la rimozione del testo alternativo. Usa wp-admin per rimuoverlo.</string>
+    <string name="product_image_details_name_label">Titolo</string>
+    <string name="product_image_details_alt_text_label">Testo alternativo</string>
+    <string name="product_image_details_title">Dettagli Immagine</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Apri le impostazioni</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">L\'autorizzazione alla rete locale è bloccata. Apri Impostazioni e concedi l\'accesso alla rete locale per usare Tocca per pagare su questo telefono.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Continua</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android richiede l\'accesso alla rete locale in modo che il tablet possa trovare questo telefono. Non viene inviato nulla al di fuori della rete.</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Questo telefono non è idoneo per Tocca per pagare. Prova un dispositivo diverso.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Non siamo riusciti a verificare se Paga di persona è abilitato. Riprova più tardi.</string>
+    <string name="card_reader_mode_local_network_permission_header">Autorizzazione alla rete locale richiesta</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Disabilita</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">In questo modo il metodo di pagamento Pagamento alla consegna verrà disattivato nella pagina di pagamento del tuo negozio, quindi i clienti non potranno selezionarlo.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Attiva</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Abilitare Paga di persona?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">In questo modo abiliti il metodo Pagamento alla consegna al checkout del tuo negozio e ne modifichi il nome da “%1$s” a “Paga di persona” per i tuoi clienti, anche nella pagina di pagamento del tuo sito web.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">In questo modo abiliti il metodo di pagamento Pagamento alla consegna nella pagina di pagamento del negozio.</string>
+    <string name="order_creation_gift_card_not_applied">Questa gift card non può essere applicata</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Non puoi aggiungere un prodotto variabile che non ha varianti</string>
+    <string name="login_site_credentials_use_web_authorization">Prova invece ad accedere con il browser</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Abilitare Paga di persona?</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Impossibile salvare le impostazioni di accesso del negozio. Riprova.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Non siamo riusciti a raggiungere la bacheca di WordPress a questo indirizzo. Controlla e riprova.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Non abbiamo trovato una pagina di accesso a WordPress a quell\'indirizzo. Controlla e riprova.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Inserisci un indirizzo sullo stesso sito senza modificare la connessione sicura o la porta.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Inserisci un indirizzo web completo, inclusi http:// o https://.</string>
+    <string name="login_site_credentials_admin_url_label">Indirizzo della bacheca di WordPress</string>
+    <string name="login_site_credentials_admin_url_title">Dov\'è la bacheca del tuo negozio?</string>
+    <string name="login_site_credentials_login_url_label">Indirizzo di accesso WordPress</string>
+    <string name="login_site_credentials_login_url_description">Un plugin di sicurezza può utilizzare un indirizzo di accesso WordPress personalizzato. Inserisci l\'indirizzo che usi per accedere.</string>
+    <string name="login_site_credentials_admin_url_description">Un plugin di sicurezza può spostare la bacheca di WordPress. Inserisci l\'indirizzo che usi per aprirla.</string>
+    <string name="login_site_credentials_login_url_title">Dove accedi al tuo negozio?</string>
     <string name="login_text_otp_another">Rinvia il codice via messaggio</string>
     <string name="login_text_otp">Rinvia il codice via messaggio</string>
     <string name="enter_verification_code_sms_generic">Abbiamo inviato un messaggio. Inserisci il codice di verifica dal messaggio.</string>
@@ -2263,7 +2316,6 @@ Language: it
     <string name="card_reader_tap_to_pay_description">Usa il telefono per accettare i pagamenti\ncon carta. Prova ora.</string>
     <string name="loading">Caricamento in corso…</string>
     <string name="login_site_credentials_fetching_site_failed">Si è verificato un errore durante il recupero del sito web</string>
-    <string name="login_site_credentials_use_web_authorization">Riprova con la pagina Bacheca</string>
     <string name="login_store_address">Accedi</string>
     <string name="upgrades_plan_ended_name">Terminato il %s</string>
     <string name="upgrades_current_plan_ended_caption">Il tuo abbonamento è scaduto e hai un accesso limitato a tutte le funzionalità.</string>

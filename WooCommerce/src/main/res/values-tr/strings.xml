@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-10 16:54:48+0000
+Translation-Revision-Date: 2026-08-27 17:56:45+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Kart okuyucuları görmek için konumu açın</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Kart okuyucuları görmek için konuma izin ver</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Kart okuyucuları görmek için Bluetooth\'u açın</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Kart okuyucuları görmek için Bluetooth\'a izin verin</string>
+    <string name="woopos_card_reader_local_network_permission_message">Kart okuyucu olarak kullanılan bir telefona bağlanmak için yerel ağ izni gereklidir.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Yerel ağ izni gerekli</string>
+    <string name="woopos_refund_error_invalid_amount">İade tutarı geçerli değil</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">İade tutarı, bu öğe için iade yapılacak tutardan daha fazla</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">İade tutarı, bu siparişte iade yapılacak tutardan daha fazla</string>
+    <string name="woopos_refund_error_order_not_refundable">Bu siparişin iadesi yapılamaz</string>
+    <string name="woopos_refund_error_item_already_refunded">Bu ürün zaten tamamen iade edildi</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Seçilen miktar, iade edilecek kalandan daha fazla</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Kodu tekrar göster</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Kayıtta topla</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Çevrimiçi olarak ödeme alınmadı. Kayıtta toplayın veya kodu tekrar gösterin.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Müşteri şahsen ödemeyi seçti</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Ödeme hizmeti hatası. Yeniden bağlanmayı deneyin.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Telefonda NFC\'yi açın, ardından tekrar deneyin.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Bu telefon Tap to Pay için uygun değil. Farklı bir cihaz deneyin.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Bu paket, sipariş oluşturma için desteklenmeyen bir abonelik ürünü içeriyor</string>
+    <string name="product_image_details_name_removal_blocked">Uygulama başlığın kaldırılmasını desteklemiyor. Lütfen kaldırmak için wp-admin kullanın.</string>
+    <string name="product_image_details_alt_text_removal_blocked">Uygulama alternatif metnin kaldırılmasını desteklemiyor. Lütfen kaldırmak için wp-admin kullanın.</string>
+    <string name="product_image_details_name_label">Başlık</string>
+    <string name="product_image_details_alt_text_label">Alternatif metin</string>
+    <string name="product_image_details_title">Görsel ayrıntıları</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Ayarları Aç</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Yerel ağ izni engellendi. Ayarlar\'ı açın ve bu telefonda tap-to-pay\'i kullanmak için yerel ağa erişim izni verin.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Devam</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android, tabletinizin bu telefonu bulabilmesi için yerel ağ erişimi gerektirir. Ağınızın dışına hiçbir şey gönderilmez.</string>
+    <string name="card_reader_mode_local_network_permission_header">Yerel ağ izni gerekli</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Bu telefon Tap to Pay için uygun değil. Farklı bir cihaz deneyin.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Şahsen Ödeyin\'in etkinleştirilip etkinleştirilmediğini kontrol edemedik. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Devre dışı bırak</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Bu, mağazanızın ödeme aşamasında Teslimatta Nakit ödeme yöntemini devre dışı bırakır, böylece müşteriler bunu seçemez.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Etkinleştir</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Şahsen Ödeme Devre Dışı Bırakılsın Mı?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Bu, mağazanızın ödeme sayfasında Teslimatta Nakit yönteminin etkinleştirilmesini sağlar ve web sitenizin ödeme işlemi de dahil olmak üzere müşterileriniz için \"%1$s\" yöntemini \"Şahsen Ödeme\" olarak yeniden adlandırır.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Bu, mağazanızın ödeme sayfasında Teslimatta Nakit ödeme yöntemini etkinleştirir.</string>
+    <string name="order_creation_gift_card_not_applied">Bu hediye kartı uygulanamadı</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Varyasyonu olmayan değişken bir ürün ekleyemezsiniz</string>
+    <string name="login_site_credentials_use_web_authorization">Bunun yerine tarayıcınızla oturum açmayı deneyin</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Şahsen Ödeme Etkinleştirilsin Mi?</string>
+    <string name="login_site_credentials_login_url_not_found_error">Bu adreste bir WordPress oturum açma sayfası bulamadık. Kontrol edip tekrar deneyin.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Güvenli bağlantısını veya bağlantı noktasını değiştirmeden aynı siteye bir adres girin.</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Mağazanızın oturum açma ayarlarını kaydedemedik. Lütfen tekrar deneyin.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Bu adreste WordPress panosuna erişemedik. Kontrol edip tekrar deneyin.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">http:// veya https:// dahil tam web adresini girin.</string>
+    <string name="login_site_credentials_admin_url_label">WordPress pano adresi</string>
+    <string name="login_site_credentials_admin_url_description">Bir güvenlik eklentisi WordPress panosunu taşıyabilir. Açmak için kullandığınız adresi girin.</string>
+    <string name="login_site_credentials_admin_url_title">Mağazanızın panosu nerede?</string>
+    <string name="login_site_credentials_login_url_label">WordPress oturum açma adresi</string>
+    <string name="login_site_credentials_login_url_description">Bir güvenlik eklentisi özel bir WordPress oturum açma adresi kullanabilir. Oturum açmak için kullandığınız adresi girin.</string>
+    <string name="login_site_credentials_login_url_title">Mağazanızda nerede oturum açıyorsunuz?</string>
     <string name="login_text_otp_another">Kodu kısa mesaj aracılığıyla yeniden gönder</string>
     <string name="login_text_otp">Kodu kısa mesaj aracılığıyla yeniden gönder</string>
     <string name="enter_verification_code_sms_generic">Kısa mesaj gönderdik. Mesajdaki doğrulama kodunu girin.</string>
@@ -1684,11 +1737,11 @@ Language: tr
     <string name="blaze_campaign_budget_impressions_title">İzlenimler</string>
     <string name="blaze_campaign_budget_update_button">Güncelle</string>
     <string name="blaze_campaign_budget_edit_duration_button">Düzenle</string>
-    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_budget_reach_forecast">Gün başına ulaşılan tahmini insan sayısı</string>
     <string name="blaze_campaign_budget_days_duration">%1$s gün için</string>
     <string name="blaze_campaign_budget_toolbar_title">Bütçenizi oluşturun</string>
     <string name="blaze_campaign_preview_target_default_value">Tümü</string>
+    <string name="blaze_campaign_budget_impressions_info">İzlenimler, reklamlarınızın olası müşterilere gözükme sıklığını yansıtır.\n\n\n        Dalgalı çevrimiçi trafik ve kullanıcı davranışından dolayı kesin sayılardan emin olunamasa da reklamınızın asıl izlenimlerini hedef sayıya olabildiğince yakın bir şekilde eşleştirmeye çalışıyoruz.\n\n\n        İzlenimlerin görüntüleyiciler tarafından gerçekleştirilen işlemler yerine görünürlük hakkında olduğunu unutmayın.</string>
     <string name="blaze_campaign_preview_days_duration">%2$s tarihinden itibaren %1$s gün</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Başlangıç tarihi</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Ayrıntıları Onayla</string>
@@ -2263,7 +2316,6 @@ Language: tr
     <string name="card_reader_tap_to_pay_description">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
     <string name="loading">Yükleniyor…</string>
     <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>
-    <string name="login_site_credentials_use_web_authorization">Pano sayfasıyla tekrar deneyin</string>
     <string name="login_store_address">Oturum Aç</string>
     <string name="upgrades_plan_ended_name">%s sona erdi</string>
     <string name="upgrades_current_plan_ended_caption">Aboneliğiniz sona erdi ve tüm özelliklere erişiminiz sınırlandırıldı.</string>

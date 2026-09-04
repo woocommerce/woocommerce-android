@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 16:55:16+0000
+Translation-Revision-Date: 2026-08-27 09:58:57+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Schakel locatie in om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Locatie toestaan om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Schakel Bluetooth in om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Bluetooth toestaan om kaartlezers te zien</string>
+    <string name="woopos_card_reader_local_network_permission_message">Toestemming voor lokaal netwerk is vereist om verbinding te maken met een telefoon die als kaartlezer wordt gebruikt.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Toestemming voor lokaal netwerk vereist</string>
+    <string name="woopos_refund_error_invalid_amount">Het restitutiebedrag is niet geldig</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van dit artikel</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van deze bestelling</string>
+    <string name="woopos_refund_error_order_not_refundable">Bestelling kan niet terugbetaald worden</string>
+    <string name="woopos_refund_error_item_already_refunded">Dit artikel is al volledig terugbetaald</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Het geselecteerde aantal is meer dan wat er nog over is voor terugbetaling</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Toon de code opnieuw</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Verzamel in het register</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Er is geen betaling online gedaan. Verzamel het in het register of toon de code opnieuw.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Klant heeft ervoor gekozen om persoonlijk te betalen</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Foutmelding bij betaalservice. Probeer opnieuw verbinding te maken.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Schakel NFC in op de telefoon en probeer het opnieuw.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Deze telefoon komt niet in aanmerking voor Tap to Pay. Probeer een ander apparaat.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Deze bundel bevat een abonnementproduct, dat niet wordt ondersteund voor het aanmaken van bestellingen</string>
+    <string name="product_image_details_name_removal_blocked">De app ondersteunt het verwijderen van de titel niet. Gebruik wp-admin om het te verwijderen.</string>
+    <string name="product_image_details_alt_text_removal_blocked">De app ondersteunt het verwijderen van alt-tekst niet. Gebruik wp-admin om het te verwijderen.</string>
+    <string name="product_image_details_name_label">Titel</string>
+    <string name="product_image_details_alt_text_label">Alt-tekst</string>
+    <string name="product_image_details_title">Afbeeldingsdetails</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Instellingen openen</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Toestemming voor lokaal netwerk is geblokkeerd. Open Instellingen en geef toegang tot het lokale netwerk om Tap-to-Pay op deze telefoon te gebruiken.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Doorgaan</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android vereist toegang tot het lokale netwerk, zodat je tablet deze telefoon kan vinden. Er wordt niets verzonden buiten je netwerk.</string>
+    <string name="card_reader_mode_local_network_permission_header">Toestemming voor lokaal netwerk vereist</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Deze telefoon komt niet in aanmerking voor Tap to Pay. Probeer een ander apparaat.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">We konden niet controleren of fysieke betalingen zijn ingeschakeld. Probeer het later opnieuw.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Uitschakelen</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Dit schakelt de betalingsmethode Contant betalen bij ontvangst uit bij de kassa van je winkel, zodat klanten deze optie niet kunnen selecteren.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Fysieke betalingen uitschakelen?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Inschakelen</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Hierdoor wordt de betalingsmethode Contant betalen bij ontvangst ingeschakeld bij de kassa van je winkel en wordt de naam gewijzigd van \'%1$s\' naar \'Fysiek betalen\' voor je klanten, ook bij de kassa van je website.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Hierdoor wordt de betalingsmethode Contant betalen bij ontvangst ingeschakeld bij de kassa van je winkel.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Fysieke betalingen inschakelen?</string>
+    <string name="order_creation_gift_card_not_applied">Deze cadeaubon kon niet worden toegepast</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Je kunt geen variabel product zonder variaties toevoegen</string>
+    <string name="login_site_credentials_use_web_authorization">Probeer in plaats daarvan in te loggen met je browser</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">We konden de aanmeldingsinstellingen van je winkel niet opslaan. Probeer het nog eens.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">We konden het WordPress-dashboard niet bereiken op dat adres. Controleer het en probeer het opnieuw.</string>
+    <string name="login_site_credentials_login_url_not_found_error">We konden geen aanmeldingspagina voor WordPress vinden op dat adres. Controleer het en probeer het opnieuw.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Voer een adres in op dezelfde site zonder de beveiligde verbinding of poort te wijzigen.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Voer een volledig webadres in, inclusief http:// of https://.</string>
+    <string name="login_site_credentials_admin_url_label">Adres van WordPress Dashboard</string>
+    <string name="login_site_credentials_admin_url_description">Een beveiligingsplugin kan het WordPress Dashboard verplaatsen. Voer het adres in dat je gebruikt om het te openen.</string>
+    <string name="login_site_credentials_admin_url_title">Waar is het dashboard van je winkel?</string>
+    <string name="login_site_credentials_login_url_label">Adres van WordPress-aanmeldingspagina</string>
+    <string name="login_site_credentials_login_url_description">Een beveiligingsplugin kan een aangepast adres van de WordPress-aanmeldingspagina gebruiken. Voer het adres in dat je gebruikt om in te loggen.</string>
+    <string name="login_site_credentials_login_url_title">Waar log je in bij je winkel?</string>
     <string name="login_text_otp_another">Code opnieuw verzenden via sms</string>
     <string name="login_text_otp">Code opnieuw verzenden via sms</string>
     <string name="enter_verification_code_sms_generic">We hebben een sms gestuurd. Voer de verificatiecode van het bericht in.</string>
@@ -2264,7 +2317,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_description">Gebruik je telefoon om kaartbetalingen\nte accepteren Probeer het nu.</string>
     <string name="loading">Laden…</string>
     <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>
-    <string name="login_site_credentials_use_web_authorization">Probeer het opnieuw met de WP beheerderspagina</string>
     <string name="login_store_address">Inloggen</string>
     <string name="upgrades_plan_ended_name">%s beëindigd</string>
     <string name="upgrades_current_plan_ended_caption">Je abonnement is verlopen en je hebt beperkte toegang tot alle functies.</string>
