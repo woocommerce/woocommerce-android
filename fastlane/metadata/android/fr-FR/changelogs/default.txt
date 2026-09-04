@@ -1,0 +1,2 @@
+25.5 :
+Sous Android 17, Remote Tap to Pay nécessite un accès au réseau local afin que votre téléphone et votre tablette puissent se connecter. La gestion de la boutique est également plus facile : appliquez des cartes-cadeaux lors de la modification des commandes, modifiez le texte alternatif et les titres des images de produits, affichez les dates dans le format adapté à votre langue et profitez d’une expérience plus fluide pour la configuration des formules et la connexion.
