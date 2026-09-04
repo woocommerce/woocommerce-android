@@ -65,15 +65,8 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         key = "key_discount_type"
     )
 
-    private val defaultDecimalSeparator = DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString()
-
-    private val _discountInputFieldConfig = MutableStateFlow(
-        DiscountInputFieldConfig(
-            decimalSeparator = defaultDecimalSeparator,
-            numberOfDecimals = DEFAULT_DECIMALS_NUMBER
-        )
-    )
-    val discountInputFieldConfig: StateFlow<DiscountInputFieldConfig> = _discountInputFieldConfig
+    private val _discountInputFieldConfig = MutableStateFlow<DiscountInputFieldConfig?>(null)
+    val discountInputFieldConfig: StateFlow<DiscountInputFieldConfig?> = _discountInputFieldConfig
 
     init {
         launch {
@@ -81,7 +74,7 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
                 siteParamsRepo.getParameters("key_site_params", savedStateHandle).currencyFormattingParameters
             _discountInputFieldConfig.value = DiscountInputFieldConfig(
                 decimalSeparator = currencyFormattingParameters?.currencyDecimalSeparator
-                    ?: defaultDecimalSeparator,
+                    ?: DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString(),
                 numberOfDecimals = currencyFormattingParameters?.currencyDecimalNumber
                     ?: DEFAULT_DECIMALS_NUMBER
             )

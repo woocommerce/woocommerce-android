@@ -78,7 +78,7 @@ fun OrderCreateEditProductDiscountScreen(
     onDiscountAmountChange: (BigDecimal?) -> Unit,
     onPercentageDiscountSelected: () -> Unit,
     onAmountDiscountSelected: () -> Unit,
-    discountInputFieldConfig: StateFlow<DiscountInputFieldConfig>,
+    discountInputFieldConfig: StateFlow<DiscountInputFieldConfig?>,
     productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
@@ -106,40 +106,45 @@ fun OrderCreateEditProductDiscountScreen(
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.minor_100)),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    WCOutlinedTypedTextField(
+                inputFieldConfig.value?.let { config ->
+                    Row(
                         modifier = Modifier
-                            .focusRequester(focusRequester)
-                            .weight(1f),
-                        value = state.value.discountAmount,
-                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            inputFieldConfig.value.decimalSeparator,
-                            inputFieldConfig.value.numberOfDecimals
-                        ),
-                        onValueChange = onDiscountAmountChange,
-                        label = stringResource(
-                            R.string.order_creation_discount_amount_with_currency,
-                            state.value.discountType.symbol
-                        ),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        isError = discountValidationState is Invalid,
-                        trailingIcon = {
-                            if (discountValidationState is Invalid) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info_filled_24dp),
-                                    contentDescription = null,
-                                    tint = colorResource(id = R.color.woo_red_50)
-                                )
-                            }
-                        },
-                    )
-                    Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.minor_100)),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        WCOutlinedTypedTextField(
+                            modifier = Modifier
+                                .focusRequester(focusRequester)
+                                .weight(1f),
+                            value = state.value.discountAmount,
+                            valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                                config.decimalSeparator,
+                                config.numberOfDecimals
+                            ),
+                            onValueChange = onDiscountAmountChange,
+                            label = stringResource(
+                                R.string.order_creation_discount_amount_with_currency,
+                                state.value.discountType.symbol
+                            ),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError = discountValidationState is Invalid,
+                            trailingIcon = {
+                                if (discountValidationState is Invalid) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_info_filled_24dp),
+                                        contentDescription = null,
+                                        tint = colorResource(id = R.color.woo_red_50)
+                                    )
+                                }
+                            },
+                        )
+                        Switch(state.value, onPercentageDiscountSelected, onAmountDiscountSelected)
+                    }
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                    }
                 }
                 if (discountValidationState is Invalid) {
                     Text(
@@ -161,9 +166,6 @@ fun OrderCreateEditProductDiscountScreen(
                         onClick = onRemoveDiscountClicked,
                         text = stringResource(id = R.string.order_creation_remove_discount)
                     )
-                }
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
                 }
             }
         }
