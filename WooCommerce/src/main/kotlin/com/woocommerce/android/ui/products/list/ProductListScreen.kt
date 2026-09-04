@@ -234,6 +234,7 @@ internal fun ProductListScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(WooTheme.colors.surface.default)
             .testTag(ProductListTestTags.SCREEN),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -417,7 +418,7 @@ private fun ProductBrowsingControls(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(CONTROL_RAIL_HEIGHT)
-                .background(WooTheme.colors.surface.default)
+                .background(WooTheme.colors.surface.bright)
                 .testTag(ProductListTestTags.CONTROL_RAIL)
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding3),
@@ -442,6 +443,7 @@ private fun ProductBrowsingControls(
                     stringResource(R.string.product_list_filters)
                 },
                 onClick = onFiltersClicked,
+                selected = filterCount > 0,
                 modifier = Modifier.testTag(ProductListTestTags.FILTERS),
                 leadingIcon = {
                     ProductBrowsingControlIcon(WooIcons.Regular.BarsFilter)
