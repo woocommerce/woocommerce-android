@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
-        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:elevation="@dimen/minor_50"
+        android:layout_height="@dimen/woo_ds_toolbar_height"
+        app:navigationIcon="@drawable/ic_back_24dp"
         tools:title="@string/app_name" />
 
     <com.google.android.material.card.MaterialCardView

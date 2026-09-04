@@ -92,8 +92,6 @@ class SitePickerFragment :
             } else {
                 null
             },
-            hasShadow = false,
-            hasDivider = false,
         )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -67,6 +67,24 @@ class WooOverflowMenuTest {
     }
 
     @Test
+    fun `given item with trailing icon, when rendered, then trailing content is shown`() {
+        // GIVEN
+        composeTestRule.setContent {
+            WooDesignSystemTheme {
+                WooOverflowMenuItem(
+                    text = FIRST_ITEM,
+                    onClick = {},
+                    trailingIcon = { Text(text = TRAILING_CONTENT) },
+                )
+            }
+        }
+
+        // THEN
+        composeTestRule.onNodeWithText(FIRST_ITEM).assertExists()
+        composeTestRule.onNodeWithText(TRAILING_CONTENT).assertExists()
+    }
+
+    @Test
     fun `given blank item text, when rendered, then illegal argument is thrown`() {
         assertThatIllegalArgumentException().isThrownBy {
             composeTestRule.setContent {
@@ -104,5 +122,6 @@ class WooOverflowMenuTest {
         const val TRIGGER = "More"
         const val FIRST_ITEM = "Duplicate"
         const val SECOND_ITEM = "Delete"
+        const val TRAILING_CONTENT = "Selected"
     }
 }

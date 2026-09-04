@@ -6,13 +6,12 @@
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
-        style="@style/Widget.Woo.Toolbar"
+        app:navigationIcon="@drawable/ic_back_24dp"
         tools:title="@string/app_name"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:elevation="@dimen/appbar_elevation"
+        android:layout_height="@dimen/woo_ds_toolbar_height"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

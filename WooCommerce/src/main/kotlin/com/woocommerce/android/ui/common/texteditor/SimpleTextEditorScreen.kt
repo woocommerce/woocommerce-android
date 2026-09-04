@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -61,9 +60,10 @@ fun SimpleTextEditorScreen(
                 ),
                 actions = {
                     if (strategy == SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION) {
-                        TextButton(onClick = onDonePressed) {
-                            Text(text = stringResource(id = R.string.done))
-                        }
+                        TextAction(
+                            text = stringResource(id = R.string.done),
+                            onClick = onDonePressed,
+                        )
                     }
                 }
             )

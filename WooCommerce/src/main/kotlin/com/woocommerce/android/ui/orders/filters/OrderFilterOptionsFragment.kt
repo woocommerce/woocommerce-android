@@ -42,10 +42,7 @@ class OrderFilterOptionsFragment :
     lateinit var dateUtils: DateUtils
 
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            hasShadow = false,
-            hasDivider = true
-        )
+        get() = AppBarStatus.Visible()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

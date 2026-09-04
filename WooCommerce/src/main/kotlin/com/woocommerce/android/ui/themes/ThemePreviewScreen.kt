@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,10 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -45,7 +41,10 @@ import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.component.WCOverflowMenuItem
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
+import com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenu
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
@@ -226,59 +225,50 @@ private fun DemoSectionsToolbar(
 }
 
 @Composable
-private fun ThemePreviewMenu(
+private fun WooTopAppBarActionsScope.ThemePreviewMenu(
     selectedType: PreviewType,
     onPreviewTypeChanged: (PreviewType) -> Unit
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
     @Composable
     fun PreviewMenuItem(
         previewType: PreviewType,
         @StringRes previewMenuTextResourceId: Int,
+        dismiss: () -> Unit,
     ) {
-        DropdownMenuItem(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.major_175)),
+        WCOverflowMenuItem(
+            text = stringResource(id = previewMenuTextResourceId),
             onClick = {
-                showMenu = false
+                dismiss()
                 onPreviewTypeChanged(previewType)
-            }
-        ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(id = previewMenuTextResourceId))
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                        .defaultMinSize(dimensionResource(id = R.dimen.major_300))
-                )
-                if (selectedType == previewType) {
+            },
+            trailingIcon = if (selectedType == previewType) {
+                {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                         tint = MaterialTheme.colors.primary,
                         contentDescription = stringResource(R.string.toggle_option_checked)
                     )
                 }
+            } else {
+                null
             }
-        }
-    }
-
-    IconButton(onClick = { showMenu = !showMenu }) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_devices_24dp),
-            tint = MaterialTheme.colors.onSurface,
-            contentDescription = stringResource(R.string.theme_preview_title),
         )
     }
-    DropdownMenu(
-        expanded = showMenu,
-        onDismissRequest = { showMenu = false }
-    ) {
-        PreviewMenuItem(MOBILE, R.string.theme_preview_type_mobile)
+
+    WooOverflowMenu(
+        trigger = { onClick ->
+            IconAction(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_devices_24dp),
+                contentDescription = stringResource(R.string.theme_preview_title),
+                onClick = onClick,
+            )
+        }
+    ) { dismiss ->
+        PreviewMenuItem(MOBILE, R.string.theme_preview_type_mobile, dismiss)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        PreviewMenuItem(TABLET, R.string.theme_preview_type_tablet)
+        PreviewMenuItem(TABLET, R.string.theme_preview_type_tablet, dismiss)
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        PreviewMenuItem(DESKTOP, R.string.theme_preview_type_desktop)
+        PreviewMenuItem(DESKTOP, R.string.theme_preview_type_desktop, dismiss)
     }
 }
 

@@ -16,13 +16,32 @@ fun WooDesignSystemTheme(
     foundation: WooFoundation = WooFoundationDefaults.foundation(useDarkTheme = useDarkTheme),
     content: @Composable () -> Unit,
 ) {
+    WooDesignSystemTheme(
+        modifier = Modifier,
+        useDarkTheme = useDarkTheme,
+        foundation = foundation,
+        content = content,
+    )
+}
+
+/**
+ * Theme overload for callers that must forward layout constraints, such as a parent row weight, through the
+ * theme root. [modifier] has no default so this overload is only picked when a caller passes one.
+ */
+@Composable
+fun WooDesignSystemTheme(
+    modifier: Modifier,
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    foundation: WooFoundation = WooFoundationDefaults.foundation(useDarkTheme = useDarkTheme),
+    content: @Composable () -> Unit,
+) {
     MaterialTheme(
         colorScheme = foundation.colors.toMaterialColorScheme(useDarkTheme = useDarkTheme),
         typography = foundation.text.toMaterialTypography(),
         shapes = foundation.radius.toMaterialShapes(),
     ) {
         ProvideWooDesignSystemFoundation(foundation = foundation) {
-            Box(Modifier.semantics { testTagsAsResourceId = true }) {
+            Box(modifier.semantics { testTagsAsResourceId = true }) {
                 content()
             }
         }

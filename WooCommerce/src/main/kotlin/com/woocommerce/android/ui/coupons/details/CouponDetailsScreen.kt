@@ -13,10 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -28,16 +24,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCOverflowMenuItem
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
@@ -76,54 +71,45 @@ fun CouponDetailsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        var showMenu by remember { mutableStateOf(false) }
         var showDeleteDialog by remember { mutableStateOf(false) }
 
         Toolbar(
             title = state.couponSummary?.code ?: "",
             onNavigationButtonClick = onBackPress,
             actions = {
-                IconButton(onClick = { showMenu = !showMenu }) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
-                        contentDescription = "Coupons Menu",
-                        tint = MaterialTheme.colors.primary
+                OverflowAction(contentDescription = stringResource(id = R.string.more_menu)) { dismiss ->
+                    WCOverflowMenuItem(
+                        text = stringResource(id = R.string.coupon_details_menu_copy),
+                        onClick = {
+                            dismiss()
+                            onCopyButtonClick()
+                        }
                     )
-                }
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(onClick = {
-                        onCopyButtonClick()
-                        showMenu = false
-                    }) {
-                        Text(stringResource(id = R.string.coupon_details_menu_copy))
-                    }
-                    DropdownMenuItem(onClick = {
-                        onShareButtonClick()
-                        showMenu = false
-                    }) {
-                        Text(stringResource(id = R.string.coupon_details_menu_share))
-                    }
+                    WCOverflowMenuItem(
+                        text = stringResource(id = R.string.coupon_details_menu_share),
+                        onClick = {
+                            dismiss()
+                            onShareButtonClick()
+                        }
+                    )
 
                     if (state.couponSummary?.isEditable == true) {
-                        DropdownMenuItem(onClick = {
-                            showMenu = false
-                            onEditButtonClick()
-                        }) {
-                            Text(stringResource(id = R.string.coupon_details_menu_edit))
-                        }
+                        WCOverflowMenuItem(
+                            text = stringResource(id = R.string.coupon_details_menu_edit),
+                            onClick = {
+                                dismiss()
+                                onEditButtonClick()
+                            }
+                        )
 
-                        DropdownMenuItem(onClick = {
-                            showMenu = false
-                            showDeleteDialog = true
-                        }) {
-                            Text(
-                                stringResource(id = R.string.coupon_details_delete),
-                                color = MaterialTheme.colors.secondary
-                            )
-                        }
+                        WCOverflowMenuItem(
+                            text = stringResource(id = R.string.coupon_details_delete),
+                            onClick = {
+                                dismiss()
+                                showDeleteDialog = true
+                            },
+                            isDestructive = true
+                        )
                     }
                 }
             }

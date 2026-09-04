@@ -27,13 +27,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,6 +67,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.SelectionCheck
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -79,18 +78,11 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_configuration_title)) },
-            navigationIcon = {
-                IconButton(viewModel::onCancel) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
+        Toolbar(
+            title = stringResource(id = R.string.product_configuration_title),
+            onNavigationButtonClick = viewModel::onCancel,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            navigationIconContentDescription = stringResource(id = R.string.close),
         )
     }) { padding ->
         when (val state = viewState) {

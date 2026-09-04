@@ -120,10 +120,10 @@ private fun CustomFieldsScreen(
                 title = stringResource(id = R.string.custom_fields_list_title),
                 onNavigationButtonClick = onBackClick,
                 actions = {
-                    WCTextButton(
+                    TextAction(
                         text = stringResource(id = R.string.save),
                         onClick = onSaveClicked,
-                        enabled = state.hasChanges
+                        enabled = state.hasChanges,
                     )
                 }
             )

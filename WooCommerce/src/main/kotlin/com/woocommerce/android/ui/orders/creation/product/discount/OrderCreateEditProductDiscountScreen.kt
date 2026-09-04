@@ -19,11 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,10 +49,10 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCRemoveButton
 import com.woocommerce.android.ui.compose.component.WCSelectableChip
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel.DiscountAmountValidationState.Invalid
@@ -82,7 +80,7 @@ fun OrderCreateEditProductDiscountScreen(
     productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
-    Scaffold(topBar = { Toolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
+    Scaffold(topBar = { DiscountToolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
         val focusRequester = remember { FocusRequester() }
         Box(
             modifier = Modifier
@@ -170,28 +168,21 @@ fun OrderCreateEditProductDiscountScreen(
 }
 
 @Composable
-private fun Toolbar(
+private fun DiscountToolbar(
     onCloseClicked: () -> Unit,
     onDoneClicked: () -> Unit,
     isDoneButtonEnabled: Boolean,
 ) {
-    TopAppBar(
-        title = { Text(stringResource(id = R.string.discount)) },
-        navigationIcon = {
-            IconButton(onClick = onCloseClicked) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(id = R.string.close)
-                )
-            }
-        },
-        backgroundColor = colorResource(id = R.color.color_toolbar),
-        elevation = dimensionResource(id = R.dimen.appbar_elevation),
+    Toolbar(
+        title = stringResource(id = R.string.discount),
+        onNavigationButtonClick = onCloseClicked,
+        navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+        navigationIconContentDescription = stringResource(id = R.string.close),
         actions = {
-            WCTextButton(
+            TextAction(
+                text = stringResource(id = R.string.done),
                 onClick = onDoneClicked,
                 enabled = isDoneButtonEnabled,
-                text = stringResource(id = R.string.done)
             )
         },
     )
@@ -384,7 +375,7 @@ private fun PriceAfterDiscount(
 
 @Preview
 @Composable
-fun ToolbarPreview() = Toolbar({}, {}, true)
+fun ToolbarPreview() = DiscountToolbar({}, {}, true)
 
 @Preview
 @Composable

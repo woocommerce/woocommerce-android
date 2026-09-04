@@ -28,7 +28,6 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,11 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel.ViewState
@@ -69,7 +68,7 @@ fun TaxRateSelectorScreen(
     val state = viewState.collectAsState().value
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
-        topBar = { Toolbar(onDismiss, onInfoIconClicked) },
+        topBar = { TaxRateSelectorToolbar(onDismiss, onInfoIconClicked) },
         bottomBar = {
             if (state.isAutoTaxRateFeatureEnabled) {
                 BottomBar(onAutoRateToggleStateToggled, state)
@@ -140,28 +139,18 @@ fun EmptyTaxRateSelectorList(
 }
 
 @Composable
-private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
-    TopAppBar(
-        title = { Text(stringResource(R.string.tax_rate_selector_title)) },
-        navigationIcon = {
-            IconButton(onClick = onDismiss) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(R.string.close),
-                )
-            }
-        },
-        backgroundColor = colorResource(id = R.color.color_toolbar),
-        elevation = 0.dp,
+private fun TaxRateSelectorToolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
+    Toolbar(
+        title = stringResource(R.string.tax_rate_selector_title),
+        onNavigationButtonClick = onDismiss,
+        navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+        navigationIconContentDescription = stringResource(R.string.close),
         actions = {
-            IconButton(onClick = onInfoIconClicked) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
-                    contentDescription = stringResource(R.string.tax_rate_selector_info_icon_content_description),
-                    tint = MaterialTheme.colors.primary,
-                )
-            }
-            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+            IconAction(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
+                contentDescription = stringResource(R.string.tax_rate_selector_info_icon_content_description),
+                onClick = onInfoIconClicked,
+            )
         }
     )
 }

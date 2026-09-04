@@ -126,7 +126,7 @@ fun WooTopAppBar(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun WooTopAppBar(
+fun WooTopAppBar(
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},

@@ -274,7 +274,7 @@ private fun BlazeCampaignBottomSheetContent(
 
         learnMoreItems.forEachIndexed { i, item ->
             if (i > 0) {
-                Divider(color = colorResource(id = R.color.color_surface_elevated), thickness = 1.dp)
+                Divider(color = colorResource(id = R.color.divider_color), thickness = 1.dp)
             }
 
             StepItem(
@@ -314,7 +314,7 @@ fun CircleNumber(number: String) {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(dimensionResource(id = R.dimen.major_150))
-            .background(color = colorResource(id = R.color.color_surface_elevated), shape = CircleShape)
+            .background(color = colorResource(id = R.color.divider_color), shape = CircleShape)
     ) {
         Text(
             text = number,
