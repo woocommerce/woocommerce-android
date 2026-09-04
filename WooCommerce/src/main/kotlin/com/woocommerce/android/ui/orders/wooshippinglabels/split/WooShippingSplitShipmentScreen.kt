@@ -27,7 +27,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -58,8 +57,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ExpandableSelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
@@ -231,22 +230,16 @@ fun WooShippingSplitShipmentScreen(
 
 @Composable
 private fun TopBar(onBack: (() -> Unit)? = null, onDone: (() -> Unit)? = null) {
-    TopAppBar(
-        title = { Text(stringResource(R.string.woo_shipping_split_shipment)) },
-        navigationIcon = {
-            IconButton(onBack ?: {}) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(id = R.string.close)
-                )
-            }
-        },
-        backgroundColor = colorResource(id = R.color.color_toolbar),
+    Toolbar(
+        title = stringResource(R.string.woo_shipping_split_shipment),
+        onNavigationButtonClick = onBack ?: {},
+        navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+        navigationIconContentDescription = stringResource(id = R.string.close),
         actions = {
-            WCTextButton(
+            TextAction(
+                text = stringResource(id = R.string.done),
                 enabled = onDone != null,
                 onClick = onDone ?: {},
-                text = stringResource(id = R.string.done)
             )
         }
     )
