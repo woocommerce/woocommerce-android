@@ -500,8 +500,8 @@ class CardReaderConnectViewModel @Inject constructor(
                 trackLocationFailureFetching(result.error)
                 onReaderConnectionFailed(
                     errorCode = null,
-                    errorType = "unknown",
-                    errorMessage = null,
+                    errorType = "location_fetch_failed",
+                    errorMessage = result.error,
                 )
             }
         }

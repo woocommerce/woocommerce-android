@@ -679,6 +679,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationFailed("selected site missing")
+            verify(tracker).trackConnectionFailed("location_fetch_failed", "selected site missing")
         }
 
     @Test
