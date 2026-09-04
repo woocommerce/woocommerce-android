@@ -1,0 +1,2 @@
+25.5:
+Android 17'de, Remote Tap to Pay telefonunuzun ve tabletinizin bağlanabilmesi için yerel ağ erişimi ister. Mağaza yönetimi de daha kolay: Siparişleri düzenlerken hediye kartları uygulayın, ürün görseli alternatif metni ve başlıklarını güncelleyin, dilinize uyan sırayla tarihleri görün ve daha sorunsuz paket kurulumunun ve kaydolmanın keyfini çıkarın.

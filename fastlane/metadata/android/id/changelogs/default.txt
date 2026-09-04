@@ -1,0 +1,2 @@
+25.5:
+Pada Android 17, fitur Ketuk untuk Bayar Jarak Jauh meminta akses jaringan lokal agar ponsel dan tablet Anda dapat terhubung. Manajemen toko juga lebih mudah: menerapkan kartu hadiah saat menyunting pesanan, memperbarui teks alt dan judul gambar produk, melihat tanggal dalam urutan pilihan bahasa Anda, dan merasakan penyiapan bundel dan login yang lebih lancar.

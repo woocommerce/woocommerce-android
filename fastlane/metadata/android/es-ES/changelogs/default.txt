@@ -1,0 +1,2 @@
+25.5:
+En Android 17, Tap to Pay remoto solicita acceso a la red local para que tu teléfono y tableta puedan conectarse. La gestión de la tienda también es más fácil: aplica tarjetas regalo mientras editas pedidos, actualiza el texto alternativo de la imagen del producto y los títulos, consulta las fechas en el orden que prefieras en tu idioma y disfruta de una configuración de paquetes e inicio de sesión más fluidos.

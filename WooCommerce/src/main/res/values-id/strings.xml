@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 09:54:51+0000
+Translation-Revision-Date: 2026-08-27 09:54:11+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Aktifkan lokasi untuk melihat pembaca kartu</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Izinkan lokasi untuk melihat pembaca kartu</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Aktifkan Bluetooth untuk melihat pembaca kartu</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Izinkan Bluetooth melihat pembaca kartu</string>
+    <string name="woopos_card_reader_local_network_permission_message">Izin jaringan lokal diperlukan untuk terhubung ke telepon yang digunakan sebagai pembaca kartu.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Izin jaringan lokal diperlukan</string>
+    <string name="woopos_refund_error_invalid_amount">Jumlah pengembalian dana tidak valid.</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Jumlah pengembalian dana lebih dari yang tersisa untuk pengembalian dana item ini</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Jumlah pengembalian dana lebih dari yang tersisa untuk pengembalian dana pesanan ini</string>
+    <string name="woopos_refund_error_order_not_refundable">Dana pesanan ini tidak dapat dikembalikan</string>
+    <string name="woopos_refund_error_item_already_refunded">Dana untuk item ini sudah dikembalikan seluruhnya</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Jumlah yang dipilih lebih dari yang tersisa untuk dikembalikan</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Tampilkan kode lagi</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Terima di kasir</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Tidak ada pembayaran yang diterima secara online. Terima di kasir, atau tampilkan kode lagi.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Pelanggan memilih untuk membayar langsung</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Error pada layanan pembayaran. Coba hubungkan kembali.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Aktifkan NFC di ponsel, lalu coba lagi.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Ponsel ini tidak memenuhi syarat untuk fitur Ketuk untuk Bayar. Coba perangkat lain.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Bundel ini memuat produk langganan yang tidak didukung untuk pembuatan pesanan</string>
+    <string name="product_image_details_name_removal_blocked">Aplikasi tidak mendukung penghapusan judul. Gunakan wp-admin untuk menghapusnya.</string>
+    <string name="product_image_details_alt_text_removal_blocked">Aplikasi tidak mendukung penghapusan teks alt. Gunakan wp-admin untuk menghapusnya.</string>
+    <string name="product_image_details_name_label">Judul</string>
+    <string name="product_image_details_alt_text_label">Teks alt</string>
+    <string name="product_image_details_title">Rincian gambar</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Buka Pengaturan</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Izin jaringan lokal diblokir. Buka Pengaturan dan izinkan akses jaringan lokal untuk menggunakan fitur ketuk untuk bayar di telepon ini.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Lanjutkan</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android memerlukan akses jaringan lokal agar tablet Anda dapat menemukan ponsel ini. Tidak ada yang dikirim ke luar jaringan Anda.</string>
+    <string name="card_reader_mode_local_network_permission_header">Izin jaringan lokal diperlukan</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Ponsel ini tidak memenuhi syarat untuk fitur Ketuk untuk Bayar. Coba perangkat lain.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Kami tidak dapat memeriksa apakah Pembayaran Langsung diaktifkan. Coba lagi nanti.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Nonaktifkan</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Metode pembayaran Bayar di Tempat akan dinonaktifkan di halaman checkout toko Anda, sehingga pelanggan tidak dapat memilihnya.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Nonaktifkan Pembayaran Langsung?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Aktifkan</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Metode pembayaran Bayar di Tempat akan aktif di halaman checkout toko Anda dan berganti nama dari \"%1$s\" menjadi \"Pembayaran Langsung\" untuk pelanggan, termasuk di halaman checkout situs Anda.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Metode pembayaran Bayar di Tempat akan aktif di halaman checkout toko Anda.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Aktifkan Pembayaran Langsung?</string>
+    <string name="order_creation_gift_card_not_applied">Kartu hadiah ini tidak dapat diterapkan</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Anda tidak dapat menambahkan produk bervariasi yang tidak memiliki variasi</string>
+    <string name="login_site_credentials_use_web_authorization">Coba login dengan browser Anda</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Kami tidak dapat menyimpan pengaturan login toko Anda. Coba lagi.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Kami tidak dapat menjangkau dasbor WordPress di alamat tersebut. Periksa dan coba lagi.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Kami tidak dapat menemukan halaman login WordPress di alamat itu. Periksa dan coba lagi.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Masukkan alamat di situs yang sama tanpa mengubah sambungan atau port keamanannya.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Masukkan alamat web lengkap, termasuk http:// atau https://.</string>
+    <string name="login_site_credentials_admin_url_label">Alamat dasbor WordPress</string>
+    <string name="login_site_credentials_admin_url_description">Plugin keamanan dapat memindahkan dasbor WordPress. Masukkan alamat yang Anda gunakan untuk membukanya.</string>
+    <string name="login_site_credentials_admin_url_title">Di mana dasbor toko Anda?</string>
+    <string name="login_site_credentials_login_url_label">Alamat login WordPress</string>
+    <string name="login_site_credentials_login_url_description">Plugin keamanan dapat menggunakan alamat login WordPress khusus. Masukkan alamat yang Anda gunakan untuk login.</string>
+    <string name="login_site_credentials_login_url_title">Di mana Anda biasa login ke toko Anda?</string>
     <string name="login_text_otp_another">Kirim lagi kode via pesan teks</string>
     <string name="login_text_otp">Kirim lagi kode via pesan teks</string>
     <string name="enter_verification_code_sms_generic">Kami mengirimkan pesan teks. Masukkan kode verifikasi dari pesan.</string>
@@ -2261,7 +2314,6 @@ Language: id
     <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
     <string name="card_reader_tap_to_pay_description">Gunakan ponsel Anda untuk menerima pembayaran\nkartu. Coba sekarang.</string>
     <string name="loading">Memuat…</string>
-    <string name="login_site_credentials_use_web_authorization">Coba lagi menggunakan halaman WP Admin</string>
     <string name="login_store_address">Login</string>
     <string name="login_site_credentials_fetching_site_failed">Terjadi error saat mengambil situs web Anda.</string>
     <string name="upgrades_plan_ended_name">%s berakhir</string>
