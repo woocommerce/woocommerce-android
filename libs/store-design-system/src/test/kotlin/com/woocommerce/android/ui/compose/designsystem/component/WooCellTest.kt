@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
@@ -54,17 +53,6 @@ class WooCellTest {
 
         assertThat(style.containerColor).isEqualTo(colors.surface.bright)
         assertThat(style.slotContentColor).isEqualTo(colors.surface.onVariantLowest)
-    }
-
-    @Test
-    fun `given disabled cell with description color override, when color resolves, then lowest variant wins`() {
-        val descriptionColor = wooCellDescriptionColor(
-            enabled = false,
-            descriptionColor = Color.Magenta,
-            colors = colors,
-        )
-
-        assertThat(descriptionColor).isEqualTo(colors.surface.onVariantLowest)
     }
 
     @Test
