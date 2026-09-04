@@ -14,12 +14,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductFilterListBinding
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.filters.FilterHistoryType
+import com.woocommerce.android.ui.filters.FilterHistoryViewModel
+import com.woocommerce.android.ui.filters.SavedFilter
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.OpenFilterHistory
 import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -84,10 +89,12 @@ class ProductFilterListFragment :
 
     override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_clear, menu)
+        inflater.inflate(R.menu.menu_filter_history, menu)
     }
 
     override fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
+        menu.findItem(R.id.menu_filter_history).isVisible = viewModel.isFilterHistoryEnabled
     }
 
     override fun onMenuItemSelected(item: MenuItem): Boolean {
@@ -98,6 +105,12 @@ class ProductFilterListFragment :
                 updateClearButtonVisibility(item)
                 true
             }
+
+            R.id.menu_filter_history -> {
+                viewModel.onFilterHistoryButtonClicked()
+                true
+            }
+
             else -> false
         }
     }
@@ -116,11 +129,23 @@ class ProductFilterListFragment :
                 is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
                 }
+                is OpenFilterHistory -> navigateToFilterHistory()
                 else -> event.isHandled = false
             }
         }
 
+        handleResult<SavedFilter>(FilterHistoryViewModel.FILTER_HISTORY_RESULT_KEY) {
+            viewModel.onPastFilterSelected(it)
+        }
+
         viewModel.loadFilters()
+    }
+
+    private fun navigateToFilterHistory() {
+        findNavController().navigateSafely(
+            ProductFilterListFragmentDirections
+                .actionProductFilterListFragmentToFilterHistoryFragment(FilterHistoryType.PRODUCTS)
+        )
     }
 
     private fun showProductFilterList(productFilterList: List<ProductFilterListViewModel.FilterListItemUiModel>) {

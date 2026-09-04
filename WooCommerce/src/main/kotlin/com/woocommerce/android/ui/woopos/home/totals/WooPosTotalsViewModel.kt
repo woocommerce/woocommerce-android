@@ -789,7 +789,9 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
             is CardReaderPaymentState.PrintingReceipt,
             CardReaderPaymentState.SharingReceipt ->
-                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                throw IllegalArgumentException(
+                    "Payment state: ${paymentState::class.simpleName} not compatible with POS"
+                )
         }
     }
 
@@ -815,7 +817,9 @@ class WooPosTotalsViewModel @Inject constructor(
             is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
             is CardReaderPaymentState.PrintingReceipt,
             CardReaderPaymentState.SharingReceipt ->
-                throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                throw IllegalArgumentException(
+                    "Payment state: ${paymentState::class.simpleName} not compatible with POS"
+                )
         }
     }
 
