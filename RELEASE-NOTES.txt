@@ -23,6 +23,7 @@
 - [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
 - [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size and improving runtime performance [https://github.com/woocommerce/woocommerce-android/pull/16308]
+- [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
 
 25.5
 -----
