@@ -35,7 +35,7 @@ class ShippingCustomsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val parameterRepository: ParameterRepository = mock()
     private val dataStore: WCDataStore = mock {
-        on { getCountries() } doReturn countries
+        on { getCountriesBlocking() } doReturn countries
     }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }

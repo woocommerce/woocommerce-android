@@ -74,7 +74,7 @@ class ShippingCustomsViewModel @Inject constructor(
         get() = parameters.currencySymbol.orEmpty()
 
     val countries: List<Location>
-        get() = dataStore.getCountries().map { it.toAppModel() }
+        get() = dataStore.getCountriesBlocking().map { it.toAppModel() }
 
     val isEUShippingScenario
         get() = args.isEUShippingScenario
