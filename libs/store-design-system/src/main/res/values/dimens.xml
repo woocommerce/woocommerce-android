@@ -13,4 +13,9 @@
     <dimen name="woo_ds_toolbar_icon_border_inset">4dp</dimen>
     <dimen name="woo_ds_toolbar_icon_border_width">1dp</dimen>
     <dimen name="woo_ds_toolbar_icon_corner_radius">12dp</dimen>
+    <dimen name="woo_ds_bottom_nav_height">64dp</dimen>
+    <dimen name="woo_ds_bottom_nav_item_padding_vertical">6dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_width">56dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_height">32dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_label_padding">8dp</dimen>
 </resources>
