@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.woopos.cardreader.remote
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.CardReaderStore
 import com.woocommerce.android.cardreader.LogWrapper
-import com.woocommerce.android.cardreader.describeWithCauses
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.remote.CardReaderRemoteTabletClient
 import com.woocommerce.android.cardreader.remote.CollectPaymentOutcome
@@ -77,7 +77,7 @@ class WooPosRemoteReaderSession @Inject constructor(
             failWith(
                 message = R.string.woopos_remote_reader_failed_token_invalid,
                 reason = State.Failed.Reason.TOKEN_FETCH_FAILED,
-                errorDescription = cause.describeWithCauses(),
+                errorDescription = cause.toAnalyticsDescription(),
             )
             return null
         }
@@ -159,7 +159,7 @@ class WooPosRemoteReaderSession @Inject constructor(
                 fail(
                     message = resourceProvider.getString(R.string.woopos_remote_reader_connect_failed_generic),
                     reason = State.Failed.Reason.CONNECT_EXCEPTION,
-                    errorDescription = outcome.cause.describeWithCauses(),
+                    errorDescription = outcome.cause.toAnalyticsDescription(),
                 )
             }
         }
@@ -228,6 +228,11 @@ class WooPosRemoteReaderSession @Inject constructor(
         val failed = State.Failed(message, reason, errorDescription)
         _state.value = failed
         return failed
+    }
+
+    private fun Throwable.toAnalyticsDescription() = when (this) {
+        is WooException -> listOfNotNull(error.type.name, error.apiErrorCode).joinToString(": ")
+        else -> this::class.java.simpleName
     }
 
     sealed class State {
