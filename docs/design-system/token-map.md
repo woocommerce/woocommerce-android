@@ -83,7 +83,7 @@ Group the public API shallowly by source intent; do not collapse the source into
 | Background | Stable Android compatibility group backed by the export's three `Add-Ons` roles. `onSectionVariant` aliases `onSection`; there is no fourth source token. |
 | Overlay | Export-backed overlay roles; not validated by the Color roles frame. |
 | State layer | Export-backed, mode-aware On Surface `Opacity-08`, `Opacity-10`, `Opacity-16`, and `Opacity-24` colors under `WooTheme.colors.stateLayers.onSurface`. |
-| Tint layer | Export-backed Primary Container, On Surface, and Primary opacity families under `WooTheme.colors.tintLayers`; Segmented Control binds to Primary Container `Opacity-16`, while dividers and subtle component boundaries bind to On Surface `Opacity-16`. |
+| Tint layer | Export-backed Primary Container, On Surface, and Primary opacity families under `WooTheme.colors.tintLayers`; dividers, tab rows, and subtle component boundaries bind to On Surface `Opacity-16`. |
 | Palette | Top-level `Colors` primitive/ramp data, including White and Black, exposed as public `WooTheme.colors.palette.*` tokens. |
 
 ## Mapping Rules
@@ -151,10 +151,10 @@ When defining tokens:
 ## Public Color Source Reconciliation
 
 Every production `WooTheme.colors` field below is backed by normal `Light` / `Dark` values from
-`figma-export.json` according to the Figma export parsing rules, except for explicitly approved
-Android overrides. WOOMOB-3552 approves `#6D469C` as the dark Primary Container tint RGB base for
-08/10/16/24; the checked-in export remains unchanged as an audit/source artifact until refreshed by
-the export workflow.
+`figma-export.json` according to the Figma export parsing rules. There are no remaining Android
+overrides. WOOMOB-3552 flagged the dark Primary Container tint ramp as inconsistent, with 08/10/16
+holding white while 24 held the container colour of the day; the refreshed export resolves that by
+aliasing all four to `Purple 90`.
 
 High-contrast state-layer values are not present in the current export and are not part of normal
 runtime mapping.
@@ -163,13 +163,13 @@ runtime mapping.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `WooTheme.colors.primary` | `Woo Theme/Primary` | `figma-export.json` | `#873EFF` / 100% | `#873EFF` / 100% | `primary` | production | Core primary. |
 | `WooTheme.colors.onPrimary` | `Woo Theme/On-Primary` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onPrimary` | production | Foreground for `primary`. |
-| `WooTheme.colors.secondary` | `Woo Theme/Secondary` | `figma-export.json` | `#6108CE` / 100% | `#383146` / 100% | `secondary` | production | Core secondary. |
+| `WooTheme.colors.secondary` | `Woo Theme/Secondary` | `figma-export.json` | `#6108CE` / 100% | `#6108CE` / 100% | `secondary` | production | Core secondary. The export aliases both modes to `Colors.Purple.Purple 60`. |
 | `WooTheme.colors.onSecondary` | `Woo Theme/On-Secondary` | `figma-export.json` | `#FFFFFF` / 100% | `#F1EDFE` / 100% | `onSecondary` | production | Foreground for `secondary`. |
 | `WooTheme.colors.error` | `Woo Theme/Error` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | `error` | production | Foreground/control error role; used by Checkbox error states. |
 | `WooTheme.colors.onError` | `Woo Theme/On-Error` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | `onError` | production | Foreground paired with `error`. |
-| `WooTheme.colors.container.primaryContainer` | `Woo Theme/Primary-Container` | `figma-export.json` | `#B999FF` / 100% | `#3C087E` / 100% | `primaryContainer` | production | Accent container role. |
-| `WooTheme.colors.container.onPrimaryContainer` | `Woo Theme/On-Primary-Container` | `figma-export.json` | `#2C045D` / 100% | `#FFFFFF` / 100% | `onPrimaryContainer` | production | Foreground for `primaryContainer`. |
-| `WooTheme.colors.container.secondaryContainer` | `Woo Theme/Secondary-Container` | `figma-export.json` | `#B999FF29` | `#873EFF29` | `secondaryContainer` | production | The supplied export aliases light/dark to different opacity16 tint roles. Live published Figma still resolves stale opacity24 values. |
+| `WooTheme.colors.container.primaryContainer` | `Woo Theme/Primary-Container` | `figma-export.json` | `#E1D7FF` / 100% | `#2C045D` / 100% | `primaryContainer` | production | Accent container role, aliasing `Purple 5` / `Purple 90`. |
+| `WooTheme.colors.container.onPrimaryContainer` | `Woo Theme/On-Primary-Container` | `figma-export.json` | `#2C045D` / 100% | `#E1D7FF` / 100% | `onPrimaryContainer` | production | Foreground for `primaryContainer`. |
+| `WooTheme.colors.container.secondaryContainer` | `Woo Theme/Secondary-Container` | `figma-export.json` | `#F2EDFF` / 100% | `#473B5B` / 100% | `secondaryContainer` | production | Opaque: light aliases `Colors.Purple.Purple 0`, dark is a literal. Earlier exports mapped this role to a 16% tint layer. |
 | `WooTheme.colors.container.onSecondaryContainer` | `Woo Theme/On-Secondary-Container` | `figma-export.json` | `#873EFF` / 100% | `#FFFFFF` / 100% | `onSecondaryContainer` | production | Foreground for `secondaryContainer`; selected Filter Chip content uses this role. |
 | `WooTheme.colors.outline` | `Woo Theme/Outline/Outline` | `figma-export.json` | `#787C82` / 100% | `#8C8F94` / 100% | `outline` | production | Boundary token. |
 | `WooTheme.colors.outlineVariant` | `Woo Theme/Outline/Outline-Variant` | `figma-export.json` | `#DCDCDE` / 100% | `#50575E` / 100% | `outlineVariant` | production | Subtle boundary token. |
@@ -179,7 +179,7 @@ runtime mapping.
 | `WooTheme.colors.background.onSectionVariant` | Compatibility alias of `Woo Theme/Add-Ons/On-Section-Background` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Stable public alias only; the supplied source removed the former fourth token. |
 | `WooTheme.colors.surface.default` | `Woo Theme/Surface/Surface` | `figma-export.json` | `#F6F7F7` / 100% | `#1D2327` / 100% | `surface` | production | Generic Surface; no longer conflated with Surface Bright. |
 | `WooTheme.colors.surface.bright` | `Woo Theme/Surface/Surface-Bright` | `figma-export.json` | `#FFFFFF` / 100% | `#101517` / 100% | `surfaceBright` | production | Shell for Cell, Filter Chip, Top Navigation Bar, Page Header, Search, Segmented Control, Sheet, Tab Bar, Tabs, and Table. |
-| `WooTheme.colors.surface.surfaceDim` | `Woo Theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#101517` / 100% | `surfaceDim` | production | Promoted source-backed surface role. |
+| `WooTheme.colors.surface.surfaceDim` | `Woo Theme/Surface/Surface-Dim` | `figma-export.json` | `#F6F7F7` / 100% | `#2C3338` / 100% | `surfaceDim` | production | Promoted source-backed surface role, aliasing `Gray 0` / `Gray 80`. |
 | `WooTheme.colors.surface.surfaceContainerHighest` | `Woo Theme/Surface/Surface-Container-Highest` | `figma-export.json` | `#8C8F94` / 100% | `#50575E` / 100% | `surfaceContainerHighest` | production | Promoted source-backed surface role. |
 | `WooTheme.colors.surface.onDefault` | `Woo Theme/Surface/On-Surface` | `figma-export.json` | `#101517` / 100% | `#FFFFFF` / 100% | `onSurface` | production | Foreground for neutral surfaces. |
 | `WooTheme.colors.surface.onVariant` | `Woo Theme/Surface/On-Surface-Variant` | `figma-export.json` | `#2C3338` / 100% | `#C3C4C7` / 100% | `onSurfaceVariant` | production | Variant foreground and enabled Cell affordance color. |
@@ -199,18 +199,18 @@ runtime mapping.
 | `WooTheme.colors.status.onInfoContainer` | `Woo Theme/Alerts/On-Info-Container` | `figma-export.json` | `#001B4F` / 100% | `#001B4F` / 100% | No direct M3 role | production | Foreground for `infoContainer`. |
 | `WooTheme.colors.status.neutralContainer` | `Woo Theme/Alerts/Neutral-Container` | `figma-export.json` | `#F4F4F4` / 100% | `#F4F4F4` / 100% | No direct M3 role | production | Neutral container. |
 | `WooTheme.colors.status.onNeutralContainer` | `Woo Theme/Alerts/On-Neutral-Container` | `figma-export.json` | `#1E1E1E` / 100% | `#1E1E1E` / 100% | No direct M3 role | production | Foreground for `neutralContainer`. |
-| `WooTheme.colors.overlay.overlay20` | `Woo Theme/Overlay/Opacity-20` | `figma-export.json` | `#000000` / 20% | `#000000` / 20% | No direct M3 role | production | Overlay color. |
-| `WooTheme.colors.overlay.overlay50` | `Woo Theme/Overlay/Opacity-50` | `figma-export.json` | `#2C3338` / 50% | `#2C3338` / 50% | `scrim` | production | Overlay color; Android `#802C3338`. |
-| `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo Theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#10151714` | `#FFFFFF14` | No M3 projection | production | Disabled filled/tonal button container. |
-| `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo Theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1015171A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge and disabled outlined-button border. |
-| `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo Theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#10151729` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio containers. |
+| `WooTheme.colors.overlay.overlay20` | `Woo Theme/Tint-Layers/Overlay/Opacity-20` | `figma-export.json` | `#101517` / 20% | `#101517` / 20% | No direct M3 role | production | Overlay color; Android `#33101517`. |
+| `WooTheme.colors.overlay.overlay50` | `Woo Theme/Tint-Layers/Overlay/Opacity-50` | `figma-export.json` | `#2C3338` / 50% | `#2C3338` / 50% | `scrim` | production | Overlay color; Android `#802C3338`. |
+| `WooTheme.colors.stateLayers.onSurface.opacity08` | `Woo Theme/State-Layers/On-Surface/Opacity-08` | `figma-export.json` | `#10151714` | `#FFFFFF14` | No M3 projection | production | Android-only disabled Segmented Control track fallback (Figma has no disabled variant). |
+| `WooTheme.colors.stateLayers.onSurface.opacity10` | `Woo Theme/State-Layers/On-Surface/Opacity-10` | `figma-export.json` | `#1015171A` | `#FFFFFF1A` | No M3 projection | production | Neutral outlined badge border and disabled filled/tonal button container. |
+| `WooTheme.colors.stateLayers.onSurface.opacity16` | `Woo Theme/State-Layers/On-Surface/Opacity-16` | `figma-export.json` | `#10151729` | `#FFFFFF29` | No M3 projection | production | Disabled checkbox/radio containers and disabled outlined-button border. |
 | `WooTheme.colors.stateLayers.onSurface.opacity24` | `Woo Theme/State-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1015173D` | `#FFFFFF3D` | No M3 projection | production | Disabled button content, Search placeholder, and disabled choice-control marks/dots. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#B999FF14` | `#6D469C14` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#146D469C`. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#B999FF1A` | `#6D469C1A` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#1A6D469C`. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#B999FF29` | `#6D469C29` | No M3 projection | production | WOOMOB-3552 approved dark override; Android `#296D469C`. Canonical Segmented Control track and supplied light Secondary Container source. |
-| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#B999FF3D` | `#6D469C3D` | No M3 projection | production | WOOMOB-3552-confirmed dark base; Android `#3D6D469C`. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity08` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-08` | `figma-export.json` | `#E1D7FF14` | `#2C045D14` | No M3 projection | production | Tracks `Primary-Container`; Android `#142C045D`. Resolves the ramp inconsistency WOOMOB-3552 flagged. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity10` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-10` | `figma-export.json` | `#E1D7FF1A` | `#2C045D1A` | No M3 projection | production | Tracks `Primary-Container`; Android `#1A2C045D`. Resolves the ramp inconsistency WOOMOB-3552 flagged. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity16` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-16` | `figma-export.json` | `#E1D7FF29` | `#2C045D29` | No M3 projection | production | Tracks `Primary-Container`; Android `#292C045D`. Resolves the ramp inconsistency WOOMOB-3552 flagged. No current component consumer. |
+| `WooTheme.colors.tintLayers.primaryContainer.opacity24` | `Woo Theme/Tint-Layers/Primary-Container/Opacity-24` | `figma-export.json` | `#E1D7FF3D` | `#2C045D3D` | No M3 projection | production | Tracks `Primary-Container`; Android `#3D2C045D`. Resolves the ramp inconsistency WOOMOB-3552 flagged. |
 | `WooTheme.colors.tintLayers.onSurface.opacity08..opacity16` | `Woo Theme/Tint-Layers/On-Surface/Opacity-08..Opacity-16` | `figma-export.json` | `#10151714..#10151729` | White at matching alpha | No M3 projection | production | Explicit source values; not aliases to State Layers. |
-| `WooTheme.colors.tintLayers.onSurface.opacity24` | `Woo Theme/Tint-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1E1E1E3D` | `#FFFFFF3D` | No M3 projection | production | Light mode intentionally differs from the State Layer base. |
+| `WooTheme.colors.tintLayers.onSurface.opacity24` | `Woo Theme/Tint-Layers/On-Surface/Opacity-24` | `figma-export.json` | `#1015173D` | `#FFFFFF3D` | No M3 projection | production | Normalised to the State Layer base, as WOOMOB-3552 proposed. |
 | `WooTheme.colors.tintLayers.primary.opacity08..opacity24` | `Woo Theme/Tint-Layers/Primary/Opacity-08..Opacity-24` | `figma-export.json` | Primary at matching alpha | Primary at matching alpha | No M3 projection | production | Dark opacity16 is the supplied Secondary Container source. |
 | `WooTheme.colors.alert.red` | `Woo Theme/Alerts/Red` | `figma-export.json` | `#FC4A5B` / 100% | `#FC4A5B` / 100% | No direct M3 role | production | Alert ramp color. |
 | `WooTheme.colors.alert.onRed` | `Woo Theme/Alerts/On-Red` | `figma-export.json` | `#FFFFFF` / 100% | `#FFFFFF` / 100% | No direct M3 role | production | Foreground for `red`. |
@@ -312,11 +312,11 @@ overrides stale resolved values in the published library.
 | Component or element | Runtime binding | Notes |
 | --- | --- | --- |
 | Cell | `surface.bright` shell; `surface.onVariant` enabled slot/affordance color | Titles remain `surface.onDefault`, descriptions remain `surface.onVariant`, and disabled slots use `onVariantLowest`. |
-| Filter Chip | Resting `surface.bright` with `tintLayers.onSurface.opacity16` boundary; selected content `container.onSecondaryContainer` | Selected container continues consuming semantic `container.secondaryContainer`, including the supplied opacity16 discrepancy. |
+| Filter Chip | Resting `surface.bright` with `tintLayers.onSurface.opacity16` boundary; selected content `container.onSecondaryContainer` | Selected container continues consuming semantic `container.secondaryContainer`, now opaque per the published Figma variable. |
 | Top Navigation Bar and XML toolbar | `surface.bright` shell; global divider tint; navigation-button borders use `outlineVariant` at regular stroke | XML ownership and behavior remain unchanged. |
 | Page Header | `surface.bright` shell and global divider tint | No geometry change. |
 | Search | `surface.bright` shell; `stateLayers.onSurface.opacity24` placeholder | Active search and clear icons use `surface.onDefault`; the inner field remains `surface.surfaceDim`. |
-| Segmented Control | `surface.bright` selected segment and `tintLayers.primaryContainer.opacity16` track | Production label-only control. Selected text uses `surface.onDefault`; unselected text uses `container.onPrimaryContainer`. Because Figma has no disabled variant, the Android whole-control fallback uses `stateLayers.onSurface.opacity08` / `opacity16` containers and `opacity24` content. |
+| Segmented Control | `surface.bright` selected segment and `container.secondaryContainer` track | Production label-only control. The track follows the now-opaque `Secondary-Container` variable; the earlier 16% tint layer only approximated it in light mode and left the control nearly invisible in dark. Selected text uses `surface.onDefault`; unselected text uses `container.onPrimaryContainer`. Because Figma has no disabled variant, the Android whole-control fallback uses `stateLayers.onSurface.opacity08` / `opacity16` containers and `opacity24` content. |
 | Modal Bottom Sheet | `surface.bright` container; `surface.onVariantLowest` handle; `overlay.overlay50` scrim; no visible boundary | Production narrow wrapper. Woo supplies the semantic scrim color; Material owns scrim rendering, width, insets, gestures, focus, semantics, and platform behavior. |
 | Tab Bar and Tabs | `surface.bright` shell and global divider tint | Tab Bar remains preview-only. |
 | Table | Explicit `surface.bright` shell with thin outer stroke and global divider tint | Preview-only data/API boundary is unchanged. |

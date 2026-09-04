@@ -182,13 +182,13 @@ private fun WooButtonStyle.toButtonColors(): ButtonColors {
         WooButtonStyle.Filled -> ButtonDefaults.buttonColors(
             containerColor = colors.primary,
             contentColor = colors.onPrimary,
-            disabledContainerColor = colors.stateLayers.onSurface.opacity08,
+            disabledContainerColor = colors.stateLayers.onSurface.opacity10,
             disabledContentColor = colors.stateLayers.onSurface.opacity24,
         )
         WooButtonStyle.FilledTonal -> ButtonDefaults.filledTonalButtonColors(
             containerColor = colors.container.secondaryContainer,
             contentColor = colors.container.onSecondaryContainer,
-            disabledContainerColor = colors.stateLayers.onSurface.opacity08,
+            disabledContainerColor = colors.stateLayers.onSurface.opacity10,
             disabledContentColor = colors.stateLayers.onSurface.opacity24,
         )
         WooButtonStyle.Outlined -> ButtonDefaults.outlinedButtonColors(
@@ -210,7 +210,7 @@ private fun WooButtonStyle.toButtonBorder(enabled: Boolean): BorderStroke? =
                 color = if (enabled) {
                     colors.container.secondaryContainer
                 } else {
-                    colors.stateLayers.onSurface.opacity10
+                    colors.stateLayers.onSurface.opacity16
                 },
             )
         }

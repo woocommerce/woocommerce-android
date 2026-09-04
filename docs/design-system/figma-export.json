@@ -23,62 +23,6 @@
         "$type": "color"
       }
     },
-    "Primary": {
-      "$value": {
-        "Light": "{Colors.Purple.Purple 40}",
-        "Dark": "{Colors.Purple.Purple 40}"
-      },
-      "$type": "color"
-    },
-    "On-Primary": {
-      "$value": {
-        "Light": "{Colors.White}",
-        "Dark": "{Colors.White}"
-      },
-      "$type": "color"
-    },
-    "Secondary": {
-      "$value": {
-        "Light": "{Colors.Purple.Purple 60}",
-        "Dark": "#383146"
-      },
-      "$type": "color"
-    },
-    "On-Secondary": {
-      "$value": {
-        "Light": "{Colors.White}",
-        "Dark": "#f1edfe"
-      },
-      "$type": "color"
-    },
-    "Primary-Container": {
-      "$value": {
-        "Light": "{Colors.Purple.Purple 20}",
-        "Dark": "{Colors.Purple.Purple 80}"
-      },
-      "$type": "color"
-    },
-    "On-Primary-Container": {
-      "$value": {
-        "Light": "{Colors.Purple.Purple 90}",
-        "Dark": "{Colors.White}"
-      },
-      "$type": "color"
-    },
-    "Secondary-Container": {
-      "$value": {
-        "Light": "{Woo Theme.Tint Layers.Primary Container.Opacity-16}",
-        "Dark": "{Woo Theme.Tint Layers.Primary.Opacity-16}"
-      },
-      "$type": "color"
-    },
-    "On-Secondary-Container": {
-      "$value": {
-        "Light": "{Colors.Purple.Purple 40}",
-        "Dark": "{Colors.White}"
-      },
-      "$type": "color"
-    },
     "Alerts": {
       "Error-Container": {
         "$value": {
@@ -237,11 +181,43 @@
         "$type": "color"
       }
     },
+    "State-Layers": {
+      "On-Surface": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(16, 21, 23, 0.08)",
+            "Dark": "rgba(255, 255, 255, 0.08)"
+          },
+          "$type": "color"
+        },
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(16, 21, 23, 0.1)",
+            "Dark": "rgba(255, 255, 255, 0.1)"
+          },
+          "$type": "color"
+        },
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(16, 21, 23, 0.16)",
+            "Dark": "rgba(255, 255, 255, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(16, 21, 23, 0.24)",
+            "Dark": "rgba(255, 255, 255, 0.24)"
+          },
+          "$type": "color"
+        }
+      }
+    },
     "Surface": {
       "Surface-Dim": {
         "$value": {
           "Light": "{Colors.Gray.Gray 0}",
-          "Dark": "{Colors.Gray.Gray 100}"
+          "Dark": "{Colors.Gray.Gray 80}"
         },
         "$type": "color"
       },
@@ -309,23 +285,23 @@
         "$type": "color"
       }
     },
-    "Overlay": {
-      "Opacity-20": {
-        "$value": {
-          "Light": "rgba(0, 0, 0, 0.2)",
-          "Dark": "rgba(0, 0, 0, 0.2)"
+    "Tint-Layers": {
+      "Overlay": {
+        "Opacity-20": {
+          "$value": {
+            "Light": "rgba(16, 21, 23, 0.2)",
+            "Dark": "rgba(16, 21, 23, 0.2)"
+          },
+          "$type": "color"
         },
-        "$type": "color"
+        "Opacity-50": {
+          "$value": {
+            "Light": "rgba(44, 51, 56, 0.5)",
+            "Dark": "rgba(44, 51, 56, 0.5)"
+          },
+          "$type": "color"
+        }
       },
-      "Opacity-50": {
-        "$value": {
-          "Light": "rgba(44, 51, 56, 0.5)",
-          "Dark": "rgba(44, 51, 56, 0.5)"
-        },
-        "$type": "color"
-      }
-    },
-    "State-Layers": {
       "On-Surface": {
         "Opacity-08": {
           "$value": {
@@ -351,82 +327,6 @@
         "Opacity-24": {
           "$value": {
             "Light": "rgba(16, 21, 23, 0.24)",
-            "Dark": "rgba(255, 255, 255, 0.24)"
-          },
-          "$type": "color"
-        }
-      }
-    },
-    "Error": {
-      "$value": {
-        "Light": "#fc4a5b",
-        "Dark": "#fc4a5b"
-      },
-      "$type": "color"
-    },
-    "On-Error": {
-      "$value": {
-        "Light": "{Colors.White}",
-        "Dark": "{Colors.White}"
-      },
-      "$type": "color"
-    },
-    "Tint-Layers": {
-      "Primary-Container": {
-        "Opacity-08": {
-          "$value": {
-            "Light": "rgba(185, 153, 255, 0.08)",
-            "Dark": "rgba(255, 255, 255, 0.08)"
-          },
-          "$type": "color"
-        },
-        "Opacity-10": {
-          "$value": {
-            "Light": "rgba(185, 153, 255, 0.1)",
-            "Dark": "rgba(255, 255, 255, 0.1)"
-          },
-          "$type": "color"
-        },
-        "Opacity-16": {
-          "$value": {
-            "Light": "rgba(185, 153, 255, 0.16)",
-            "Dark": "rgba(255, 255, 255, 0.16)"
-          },
-          "$type": "color"
-        },
-        "Opacity-24": {
-          "$value": {
-            "Light": "rgba(185, 153, 255, 0.24)",
-            "Dark": "rgba(109, 70, 156, 0.24)"
-          },
-          "$type": "color"
-        }
-      },
-      "On-Surface": {
-        "Opacity-08": {
-          "$value": {
-            "Light": "rgba(16, 21, 23, 0.08)",
-            "Dark": "rgba(255, 255, 255, 0.08)"
-          },
-          "$type": "color"
-        },
-        "Opacity-10": {
-          "$value": {
-            "Light": "rgba(16, 21, 23, 0.1)",
-            "Dark": "rgba(255, 255, 255, 0.1)"
-          },
-          "$type": "color"
-        },
-        "Opacity-16": {
-          "$value": {
-            "Light": "rgba(16, 21, 23, 0.16)",
-            "Dark": "rgba(255, 255, 255, 0.16)"
-          },
-          "$type": "color"
-        },
-        "Opacity-24": {
-          "$value": {
-            "Light": "rgba(30, 30, 30, 0.24)",
             "Dark": "rgba(255, 255, 255, 0.24)"
           },
           "$type": "color"
@@ -461,7 +361,218 @@
           },
           "$type": "color"
         }
+      },
+      "Primary-Container": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.08)",
+            "Dark": "rgba(44, 4, 93, 0.08)"
+          },
+          "$type": "color"
+        },
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.1)",
+            "Dark": "rgba(44, 4, 93, 0.1)"
+          },
+          "$type": "color"
+        },
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.16)",
+            "Dark": "rgba(44, 4, 93, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.24)",
+            "Dark": "rgba(44, 4, 93, 0.24)"
+          },
+          "$type": "color"
+        }
+      },
+      "Secondary-Container": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.08)",
+            "Dark": "rgba(71, 59, 91, 0.08)"
+          },
+          "$type": "color"
+        },
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.1)",
+            "Dark": "rgba(71, 59, 91, 0.1)"
+          },
+          "$type": "color"
+        },
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.16)",
+            "Dark": "rgba(71, 59, 91, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(225, 215, 255, 0.24)",
+            "Dark": "rgba(71, 59, 91, 0.24)"
+          },
+          "$type": "color"
+        }
+      },
+      "Surface": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(246, 247, 247, 0.08)",
+            "Dark": "rgba(29, 35, 39, 0.08)"
+          },
+          "$type": "color"
+        },
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(246, 247, 247, 0.1)",
+            "Dark": "rgba(29, 35, 39, 0.1)"
+          },
+          "$type": "color"
+        },
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(246, 247, 247, 0.16)",
+            "Dark": "rgba(29, 35, 39, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(246, 247, 247, 0.24)",
+            "Dark": "rgba(29, 35, 39, 0.24)"
+          },
+          "$type": "color"
+        },
+        "Opacity-80": {
+          "$value": {
+            "Light": "rgba(246, 247, 247, 0.8)",
+            "Dark": "rgba(29, 35, 39, 0.8)"
+          },
+          "$type": "color"
+        }
+      },
+      "Surface-Container-Highest": {
+        "Opacity-08": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.08)",
+            "Dark": "rgba(80, 87, 94, 0.08)"
+          },
+          "$type": "color"
+        },
+        "Opacity-10": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.1)",
+            "Dark": "rgba(80, 87, 94, 0.1)"
+          },
+          "$type": "color"
+        },
+        "Opacity-16": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.16)",
+            "Dark": "rgba(80, 87, 94, 0.16)"
+          },
+          "$type": "color"
+        },
+        "Opacity-24": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.24)",
+            "Dark": "rgba(80, 87, 94, 0.24)"
+          },
+          "$type": "color"
+        },
+        "Opacity-32": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.32)",
+            "Dark": "rgba(80, 87, 94, 0.4)"
+          },
+          "$type": "color"
+        },
+        "Opacity-80": {
+          "$value": {
+            "Light": "rgba(140, 143, 148, 0.8)",
+            "Dark": "rgba(80, 87, 94, 0.8)"
+          },
+          "$type": "color"
+        }
       }
+    },
+    "Primary": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 40}",
+        "Dark": "{Colors.Purple.Purple 40}"
+      },
+      "$type": "color"
+    },
+    "On-Primary": {
+      "$value": {
+        "Light": "{Colors.White}",
+        "Dark": "{Colors.White}"
+      },
+      "$type": "color"
+    },
+    "Secondary": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 60}",
+        "Dark": "{Colors.Purple.Purple 60}"
+      },
+      "$type": "color"
+    },
+    "On-Secondary": {
+      "$value": {
+        "Light": "{Colors.White}",
+        "Dark": "#f1edfe"
+      },
+      "$type": "color"
+    },
+    "Primary-Container": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 5}",
+        "Dark": "{Colors.Purple.Purple 90}"
+      },
+      "$type": "color"
+    },
+    "On-Primary-Container": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 90}",
+        "Dark": "{Colors.Purple.Purple 5}"
+      },
+      "$type": "color"
+    },
+    "Secondary-Container": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 0}",
+        "Dark": "#473b5b"
+      },
+      "$type": "color"
+    },
+    "On-Secondary-Container": {
+      "$value": {
+        "Light": "{Colors.Purple.Purple 40}",
+        "Dark": "{Colors.White}"
+      },
+      "$type": "color"
+    },
+    "Error": {
+      "$value": {
+        "Light": "#fc4a5b",
+        "Dark": "#fc4a5b"
+      },
+      "$type": "color"
+    },
+    "On-Error": {
+      "$value": {
+        "Light": "{Colors.White}",
+        "Dark": "{Colors.White}"
+      },
+      "$type": "color"
     }
   },
   "Spacing": {
@@ -580,6 +691,10 @@
         "$value": 0,
         "$type": "number"
       },
+      "Extra-Small": {
+        "$value": 2,
+        "$type": "number"
+      },
       "Small": {
         "$value": 4,
         "$type": "number"
@@ -592,16 +707,12 @@
         "$value": 12,
         "$type": "number"
       },
-      "Full": {
-        "$value": 999,
-        "$type": "number"
-      },
-      "Extra-Small": {
-        "$value": 2,
-        "$type": "number"
-      },
       "Extra-Large": {
         "$value": 16,
+        "$type": "number"
+      },
+      "Full": {
+        "$value": 999,
         "$type": "number"
       }
     },
@@ -645,56 +756,35 @@
   "Font Theme": {
     "Font": {
       "Brand": {
-        "$value": {
-          "iOS": "SF Pro Text",
-          "Android": "Roboto"
-        },
+        "$value": "Roboto",
         "$type": "string"
       },
       "Plain": {
-        "$value": {
-          "iOS": "SF Pro Text",
-          "Android": "Roboto"
-        },
+        "$value": "Roboto",
         "$type": "string"
       }
     },
     "Weight": {
       "Regular": {
-        "$value": {
-          "iOS": "Regular",
-          "Android": "Regular"
-        },
+        "$value": "Regular",
         "$type": "string"
       },
       "Medium": {
-        "$value": {
-          "iOS": "Medium",
-          "Android": "Medium"
-        },
+        "$value": "Medium",
         "$type": "string"
       },
       "Bold": {
-        "$value": {
-          "iOS": "Bold",
-          "Android": "Bold"
-        },
+        "$value": "Bold",
         "$type": "string"
       }
     },
     "Tracking": {
       "None": {
-        "$value": {
-          "iOS": 0,
-          "Android": 0
-        },
+        "$value": 0,
         "$type": "number"
       },
       "Small": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": 0
-        },
+        "$value": 0,
         "$type": "number"
       }
     }
@@ -702,766 +792,451 @@
   "Typescale": {
     "Display-Large": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight-Regular": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Extra-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 56,
-          "Android": 56
-        },
+        "$value": 56,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 64,
-          "Android": 64
-        },
+        "$value": 64,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -2.5,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Display-Medium": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 48,
-          "Android": 48
-        },
+        "$value": 48,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 52,
-          "Android": 52
-        },
+        "$value": 52,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -2.5,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Display-Small": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 36,
-          "Android": 36
-        },
+        "$value": 36,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 44,
-          "Android": 44
-        },
+        "$value": 44,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -2.5,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Headline-Large": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 34,
-          "Android": 34
-        },
+        "$value": 34,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 40,
-          "Android": 40
-        },
+        "$value": 40,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -1.5,
-          "Android": -1.399999976158142
-        },
+        "$value": -1.399999976158142,
         "$type": "number"
       }
     },
     "Headline-Medium": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 28,
-          "Android": 28
-        },
+        "$value": 28,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 36,
-          "Android": 36
-        },
+        "$value": 36,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -1,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Headline-Small": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 24,
-          "Android": 24
-        },
+        "$value": 24,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 32,
-          "Android": 32
-        },
+        "$value": 32,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.75,
-          "Android": -1
-        },
+        "$value": -1,
         "$type": "number"
       }
     },
     "Title-Large": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 20,
-          "Android": 20
-        },
+        "$value": 20,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 28,
-          "Android": 28
-        },
+        "$value": 28,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Title-Medium": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 17,
-          "Android": 17
-        },
+        "$value": 17,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 20,
-          "Android": 20
-        },
+        "$value": 20,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Title-Small": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 14,
-          "Android": 14
-        },
+        "$value": 14,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 16,
-          "Android": 16
-        },
+        "$value": 16,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Label-Large": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 17,
-          "Android": 16
-        },
+        "$value": 16,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 24,
-          "Android": 24
-        },
+        "$value": 24,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Label-Medium": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 14,
-          "Android": 14
-        },
+        "$value": 14,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 20,
-          "Android": 20
-        },
+        "$value": 20,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Label-Small": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 10,
-          "Android": 10
-        },
+        "$value": 10,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 14,
-          "Android": 14
-        },
+        "$value": 14,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.07000000029802322,
-          "Android": -0.07000000029802322
-        },
+        "$value": -0.07000000029802322,
         "$type": "number"
       }
     },
     "Body-Large": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 17,
-          "Android": 17
-        },
+        "$value": 17,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 24,
-          "Android": 24
-        },
+        "$value": 24,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Body-Medium": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 14,
-          "Android": 15
-        },
+        "$value": 15,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 20,
-          "Android": 20
-        },
+        "$value": 20,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": -0.4099999964237213,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     },
     "Body-Small": {
       "Font": {
-        "$value": {
-          "iOS": "{Font Theme.Font.Plain}",
-          "Android": "{Font Theme.Font.Plain}"
-        },
+        "$value": "{Font Theme.Font.Plain}",
         "$type": "string"
       },
       "Weight-Regular": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Regular}",
-          "Android": "{Font Theme.Weight.Regular}"
-        },
+        "$value": "{Font Theme.Weight.Regular}",
         "$type": "string"
       },
       "Weight-Emphasized": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Medium}",
-          "Android": "{Font Theme.Weight.Medium}"
-        },
+        "$value": "{Font Theme.Weight.Medium}",
         "$type": "string"
       },
       "Weight-Strong": {
-        "$value": {
-          "iOS": "{Font Theme.Weight.Bold}",
-          "Android": "{Font Theme.Weight.Bold}"
-        },
+        "$value": "{Font Theme.Weight.Bold}",
         "$type": "string"
       },
       "Size": {
-        "$value": {
-          "iOS": 12,
-          "Android": 13
-        },
+        "$value": 13,
         "$type": "number"
       },
       "Line-Height": {
-        "$value": {
-          "iOS": 16,
-          "Android": 16
-        },
+        "$value": 16,
         "$type": "number"
       },
       "Tracking": {
-        "$value": {
-          "iOS": 0,
-          "Android": -0.4099999964237213
-        },
+        "$value": -0.4099999964237213,
         "$type": "number"
       }
     }
@@ -1469,17 +1244,11 @@
   "Screen Size": {
     "Mobile": {
       "Width": {
-        "$value": {
-          "iOS": 430,
-          "Android": 412
-        },
+        "$value": 412,
         "$type": "number"
       },
       "Height": {
-        "$value": {
-          "iOS": 932,
-          "Android": 892
-        },
+        "$value": 892,
         "$type": "number"
       }
     }
@@ -1620,24 +1389,24 @@
       }
     },
     "Sandstone": {
-      "Sandstone-5": {
-        "$value": "#fbf9f6",
-        "$type": "color"
-      },
-      "Sandstone-10": {
-        "$value": "#f1eeeb",
-        "$type": "color"
-      },
-      "Sandstone-20": {
-        "$value": "#e6e2de",
+      "Sandstone-60": {
+        "$value": "#8b8a89",
         "$type": "color"
       },
       "Sandstone-40": {
         "$value": "#c5c2bf",
         "$type": "color"
       },
-      "Sandstone-60": {
-        "$value": "#8b8a89",
+      "Sandstone-20": {
+        "$value": "#e6e2de",
+        "$type": "color"
+      },
+      "Sandstone-10": {
+        "$value": "#f1eeeb",
+        "$type": "color"
+      },
+      "Sandstone-5": {
+        "$value": "#fbf9f6",
         "$type": "color"
       }
     },
