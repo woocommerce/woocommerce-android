@@ -16,8 +16,6 @@ class WooPosBuildRefundContent @Inject constructor(
         selectAllItems: Boolean = true,
     ): WooPosRefundState.Content {
         val allItemIds = refundableItems.map { it.uniqueId }.toSet()
-        // A reload leaves the selection empty rather than falling back to every remaining item:
-        // the cashier picks again instead of confirming items they never chose.
         val selectedItemIds = if (selectAllItems) allItemIds else emptySet()
         val zero = PriceUtils.formatCurrency(BigDecimal.ZERO, order.currency, currencyFormatter)
 
