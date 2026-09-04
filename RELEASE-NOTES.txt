@@ -5,6 +5,7 @@
 25.7
 -----
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
+- [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
 
 25.6
 -----
