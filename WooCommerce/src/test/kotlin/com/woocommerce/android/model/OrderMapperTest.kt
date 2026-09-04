@@ -28,9 +28,11 @@ class OrderMapperTest {
         orderMapper = OrderMapper(getLocations, dateUtils)
 
         whenever(dateUtils.getDateUsingSiteTimeZone(org.mockito.kotlin.any())).thenReturn(testDate)
-        whenever(getLocations.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(
-            Pair(Location.EMPTY, AmbiguousLocation.Raw(""))
-        )
+        runTest {
+            whenever(getLocations.invoke(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(
+                Pair(Location.EMPTY, AmbiguousLocation.Raw(""))
+            )
+        }
     }
 
     @Test

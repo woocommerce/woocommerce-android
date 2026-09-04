@@ -46,7 +46,9 @@ open class CustomerListSelectionViewModel @Inject constructor(
             }
 
             allowGuests -> {
-                exitWithCustomer(customerModel)
+                launch {
+                    exitWithCustomer(customerModel)
+                }
             }
 
             else -> {
@@ -75,7 +77,7 @@ open class CustomerListSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun exitWithCustomer(wcCustomer: WCCustomerModel) {
+    private suspend fun exitWithCustomer(wcCustomer: WCCustomerModel) {
         val billingAddress = mapper.mapFromCustomerModelToBillingAddress(wcCustomer)
         val shippingAddress = mapper.mapFromCustomerModelToShippingAddress(wcCustomer)
 

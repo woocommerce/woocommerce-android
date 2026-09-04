@@ -1,0 +1,1 @@
+Les dates des commandes et les statistiques de la boutique que vous gérez utilisent désormais le format de date adapté à votre langue, ce qui les rend plus faciles à lire en un coup d’œil.

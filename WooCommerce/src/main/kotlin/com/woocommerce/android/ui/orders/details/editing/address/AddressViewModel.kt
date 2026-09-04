@@ -9,7 +9,6 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.Location
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
@@ -47,17 +46,17 @@ class AddressViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, defaultViewState())
     private var viewState by viewStateData
 
-    private val countries: List<Location>
-        get() = dataStore.getCountries().map { it.toAppModel() }
+    private suspend fun getCountries(): List<Location> =
+        dataStore.getCountries().map { it.toAppModel() }
 
-    private fun statesAvailableFor(type: AddressType): List<Location> {
+    private suspend fun statesAvailableFor(type: AddressType): List<Location> {
         return viewState.addressSelectionStates[type]?.address?.country?.code?.let { locationCode ->
             dataStore.getStates(locationCode)
                 .map { it.toAppModel() }
         }.orEmpty()
     }
 
-    private fun statesFor(countryCode: LocationCode): List<Location> {
+    private suspend fun statesFor(countryCode: LocationCode): List<Location> {
         return dataStore.getStates(countryCode)
             .map { it.toAppModel() }
     }
@@ -107,7 +106,7 @@ class AddressViewModel @Inject constructor(
             )
         }
         launch {
-            if (countries.isEmpty()) {
+            if (getCountries().isEmpty()) {
                 viewState = viewState.copy(isLoading = true)
                 dataStore.fetchCountriesAndStates(selectedSite.get())
                 viewState = viewState.copy(isLoading = false)
@@ -145,7 +144,7 @@ class AddressViewModel @Inject constructor(
         isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(FeatureFlag.BETTER_CUSTOMER_SEARCH_M2)
     )
 
-    private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
+    private suspend fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
         return when {
             countryCode.isBlank() -> DISABLED
             statesFor(countryCode).isNotEmpty() -> HAVING_LOCATIONS
@@ -154,55 +153,64 @@ class AddressViewModel @Inject constructor(
     }
 
     fun onCountrySelected(type: AddressType, countryCode: LocationCode) {
-        val selectedCountry = dataStore.getCountries().firstOrNull { it.code == countryCode }?.toAppModel()
-            ?: Location(countryCode, countryCode)
+        launch {
+            val selectedCountry = dataStore.getCountries().firstOrNull { it.code == countryCode }?.toAppModel()
+                ?: Location(countryCode, countryCode)
+            val stateSpinnerStatus = getStateSpinnerStatus(countryCode)
 
-        viewState = viewState.copy(
-            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
-                if (entry.key == type) {
-                    entry.value.copy(
-                        address = entry.value.address.copy(
-                            country = selectedCountry,
-                            state = AmbiguousLocation.EMPTY
-                        ),
-                        stateSpinnerStatus = getStateSpinnerStatus(countryCode)
-                    )
-                } else {
-                    entry.value
-                }
-            },
-        )
+            viewState = viewState.copy(
+                addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
+                    if (entry.key == type) {
+                        entry.value.copy(
+                            address = entry.value.address.copy(
+                                country = selectedCountry,
+                                state = AmbiguousLocation.EMPTY
+                            ),
+                            stateSpinnerStatus = stateSpinnerStatus
+                        )
+                    } else {
+                        entry.value
+                    }
+                },
+            )
+        }
     }
 
     fun onStateSelected(type: AddressType, selectedStateCode: LocationCode) {
-        val (_, selectedState) = getLocations(
-            countryCode = viewState.addressSelectionStates.getValue(type).address.country.code,
-            stateCode = selectedStateCode,
-        )
+        launch {
+            val (_, selectedState) = getLocations(
+                countryCode = viewState.addressSelectionStates.getValue(type).address.country.code,
+                stateCode = selectedStateCode,
+            )
 
-        viewState = viewState.copy(
-            addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
-                if (entry.key == type) {
-                    entry.value.copy(
-                        address = entry.value.address.copy(
-                            state = selectedState
+            viewState = viewState.copy(
+                addressSelectionStates = viewState.addressSelectionStates.mapValues { entry ->
+                    if (entry.key == type) {
+                        entry.value.copy(
+                            address = entry.value.address.copy(
+                                state = selectedState
+                            )
                         )
-                    )
-                } else {
-                    entry.value
+                    } else {
+                        entry.value
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     fun onCountrySpinnerClicked(type: AddressType) {
-        val event = ShowCountrySelector(type, countries)
-        triggerEvent(event)
+        launch {
+            val event = ShowCountrySelector(type, getCountries())
+            triggerEvent(event)
+        }
     }
 
     fun onStateSpinnerClicked(type: AddressType) {
-        val event = ShowStateSelector(type, statesAvailableFor(type))
-        triggerEvent(event)
+        launch {
+            val event = ShowStateSelector(type, statesAvailableFor(type))
+            triggerEvent(event)
+        }
     }
 
     fun onDeleteCustomerClicked() {
@@ -261,26 +269,6 @@ class AddressViewModel @Inject constructor(
                     entry.value
                 }
             }
-        )
-    }
-
-    fun onAddressesChanged(customer: Order.Customer) {
-        hasStarted = true
-        viewState = viewState.copy(
-            customerId = customer.customerId,
-            firstName = customer.firstName,
-            lastName = customer.lastName,
-            email = customer.email,
-            addressSelectionStates = mapOf(
-                AddressType.BILLING to AddressSelectionState(
-                    customer.billingAddress,
-                    getStateSpinnerStatus(customer.billingAddress.country.code)
-                ),
-                AddressType.SHIPPING to AddressSelectionState(
-                    customer.shippingAddress,
-                    getStateSpinnerStatus(customer.shippingAddress.country.code)
-                )
-            )
         )
     }
 

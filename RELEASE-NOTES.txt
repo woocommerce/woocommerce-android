@@ -2,11 +2,20 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.7
+-----
+- [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
+- [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
+
 25.6
 -----
-- [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
+- [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
+- [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
+- [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]
+- [Internal] Card reader and POS payment logs no longer stringify a whole payment-state object that holds a lambda, which crashed release (R8) builds via a reflective toString() [https://github.com/woocommerce/woocommerce-android/pull/16517]
 - [*] Remote images now load through the app's custom network stack again, fixing image loading on some stores [https://github.com/woocommerce/woocommerce-android/pull/16484]
 - [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
+- [Internal] The product shipping screen no longer reads the shipping class from the database on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16490]
 - [*] Product attributes and tags no longer silently discard an option or tag you typed but didn't add before leaving the screen — you're now warned before discarding [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Editing a product attribute's options no longer wipes the product's other local attributes and their variations [https://github.com/woocommerce/woocommerce-android/pull/16449]
 - [*] Login loading dialogs now use the correct background in dark mode

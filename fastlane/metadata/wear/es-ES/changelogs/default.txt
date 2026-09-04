@@ -1,0 +1,1 @@
+Las fechas de los pedidos y las estadísticas de la tienda en tu reloj ahora coinciden con el orden de fechas preferido de tu idioma, lo que facilita su lectura de un vistazo.
