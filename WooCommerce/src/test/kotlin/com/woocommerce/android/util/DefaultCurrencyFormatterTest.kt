@@ -78,6 +78,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 wcStore = wcStore,
                 selectedSite = selectedSite,
                 siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                localeProvider = localeProvider,
                 appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
                 dispatchers = coroutinesTestRule.testDispatchers
             )
@@ -150,6 +151,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 wcStore = wcStore,
                 selectedSite = selectedSite,
                 siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+                localeProvider = localeProvider,
                 appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
                 dispatchers = coroutinesTestRule.testDispatchers
             )
@@ -193,6 +195,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             wcStore = wcStore,
             selectedSite = selectedSite,
             siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+            localeProvider = localeProvider,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
@@ -223,6 +226,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             wcStore = wcStore,
             selectedSite = selectedSite,
             siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
+            localeProvider = localeProvider,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatchers = coroutinesTestRule.testDispatchers
         )
