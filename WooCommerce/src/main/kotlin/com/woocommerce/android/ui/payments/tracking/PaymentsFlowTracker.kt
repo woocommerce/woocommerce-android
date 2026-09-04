@@ -351,19 +351,6 @@ class PaymentsFlowTracker @Inject constructor(
         track(eventProvider.CARD_READER_LOCATION_PERMISSION_REQUIRED_SHOWN)
     }
 
-    fun trackConnectionFailed(errorCode: CardReaderStatus.NotConnected.ErrorCode?, errorDescription: String?) {
-        trackConnectionFailed(
-            errorType = when (errorCode) {
-                CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> "battery_critically_low"
-                CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING ->
-                    "bluetooth_peer_removed_pairing"
-                CardReaderStatus.NotConnected.ErrorCode.OTHER -> "other"
-                null -> "unknown"
-            },
-            errorDescription = errorDescription,
-        )
-    }
-
     fun trackConnectionFailed(errorType: String, errorDescription: String?) {
         track(
             eventProvider.CARD_READER_CONNECTION_FAILED,
@@ -671,4 +658,11 @@ class PaymentsFlowTracker @Inject constructor(
         private const val OPTIONAL_UPDATE = "Optional"
         private const val REQUIRED_UPDATE = "Required"
     }
+}
+
+internal fun CardReaderStatus.NotConnected.ErrorCode?.toAnalyticsValue() = when (this) {
+    CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> "battery_critically_low"
+    CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING -> "bluetooth_peer_removed_pairing"
+    CardReaderStatus.NotConnected.ErrorCode.OTHER -> "other"
+    null -> "unknown"
 }

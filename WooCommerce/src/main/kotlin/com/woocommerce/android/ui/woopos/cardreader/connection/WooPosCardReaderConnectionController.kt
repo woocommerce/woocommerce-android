@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.payments.tracking.toAnalyticsValue
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.BluetoothRequirement
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
@@ -747,7 +748,7 @@ class WooPosCardReaderConnectionController(
         errorMessage: String?
     ) {
         logger.e("Connection failed - $errorCode: $errorMessage")
-        tracker.trackConnectionFailed(errorCode, errorMessage)
+        tracker.trackConnectionFailed(errorCode.toAnalyticsValue(), errorMessage)
         when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailedBatteryLow(

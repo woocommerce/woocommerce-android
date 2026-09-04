@@ -966,7 +966,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
-            verify(tracker).trackConnectionFailed(null as CardReaderStatus.NotConnected.ErrorCode?, null)
+            verify(tracker).trackConnectionFailed("unknown", null)
         }
 
     @Test

@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.payments.tracking.toAnalyticsValue
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -505,7 +506,7 @@ class CardReaderConnectViewModel @Inject constructor(
         errorCode: CardReaderStatus.NotConnected.ErrorCode? = null,
         errorMessage: String? = null
     ) {
-        tracker.trackConnectionFailed(errorCode, errorMessage)
+        tracker.trackConnectionFailed(errorCode.toAnalyticsValue(), errorMessage)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         val hintLabel = when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW ->
