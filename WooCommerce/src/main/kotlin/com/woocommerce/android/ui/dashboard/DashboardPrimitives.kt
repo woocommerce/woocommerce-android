@@ -49,7 +49,7 @@ internal fun DashboardCardSurface(
         Surface(
             modifier = modifier,
             shape = shape,
-            color = WooTheme.colors.surface.default,
+            color = WooTheme.colors.surface.bright,
             contentColor = WooTheme.colors.surface.onDefault,
             shadowElevation = WooTheme.spacing.space0,
             tonalElevation = WooTheme.spacing.space0,
@@ -60,7 +60,7 @@ internal fun DashboardCardSurface(
             onClick = onClick,
             modifier = modifier,
             shape = shape,
-            color = WooTheme.colors.surface.default,
+            color = WooTheme.colors.surface.bright,
             contentColor = WooTheme.colors.surface.onDefault,
             shadowElevation = WooTheme.spacing.space0,
             tonalElevation = WooTheme.spacing.space0,

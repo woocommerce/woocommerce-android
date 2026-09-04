@@ -112,6 +112,7 @@ private fun DashboardScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(WooTheme.colors.surface.default)
             .testTag(DASHBOARD_CONTAINER_TEST_TAG),
     ) {
         DashboardHeader(
