@@ -36,7 +36,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         }
 
         if (!fineLocationPermissionCheck.isGranted()) {
-            logger.e("ACCESS_FINE_LOCATION not granted; built-in reader discovery is blocked")
+            logger.e("Location permission not granted; built-in reader discovery is blocked")
             return Result.failure(MissingFineLocationPermissionException())
         }
 
@@ -146,7 +146,7 @@ class WooPosBuiltInReaderConnector @Inject constructor(
 }
 
 internal class MissingFineLocationPermissionException :
-    IllegalStateException("ACCESS_FINE_LOCATION permission is required for Tap to Pay")
+    IllegalStateException("Location permission is required for Tap to Pay")
 
 internal class BuiltInReaderDiscoveryFailedException(message: String?) :
     IllegalStateException(message)

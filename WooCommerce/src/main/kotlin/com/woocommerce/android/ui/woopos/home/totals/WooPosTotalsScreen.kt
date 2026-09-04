@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -80,6 +79,7 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+import com.woocommerce.android.util.WooPermissionUtils
 
 @Composable
 fun WooPosTotalsScreen(
@@ -99,7 +99,7 @@ fun WooPosTotalsScreen(
         viewModel.screenEvents.collect { event ->
             when (event) {
                 WooPosTotalsScreenEvent.RequestFineLocationPermission ->
-                    fineLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    WooPermissionUtils.requestCardReaderLocationPermission(fineLocationPermissionLauncher)
             }
         }
     }

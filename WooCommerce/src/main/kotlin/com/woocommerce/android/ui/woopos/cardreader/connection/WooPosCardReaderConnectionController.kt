@@ -242,7 +242,7 @@ class WooPosCardReaderConnectionController(
         BluetoothAdapter.getDefaultAdapter()?.isEnabled != true ->
             BluetoothRequirement.Unmet.BluetoothOff
 
-        !WooPermissionUtils.hasFineLocationPermission(context) ->
+        !WooPermissionUtils.hasCardReaderLocationPermission(context) ->
             BluetoothRequirement.Unmet.MissingLocationPermission
 
         !locationUtils.isLocationEnabled() ->

@@ -56,10 +56,10 @@ internal class ConnectionManager(
             is SpecificReaders -> {
                 when (cardReaderTypesToDiscover) {
                     is BuiltInReaders -> {
-                        if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                        if (application.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                             != PackageManager.PERMISSION_GRANTED
                         ) {
-                            error("ACCESS_FINE_LOCATION permission is required to discover built-in readers")
+                            error("ACCESS_COARSE_LOCATION permission is required to discover built-in readers")
                         }
                         discoverReadersAction.discoverBuildInReaders(isSimulated)
                     }
@@ -115,16 +115,22 @@ internal class ConnectionManager(
 
     private fun checkIfNecessaryPermissionsAreGranted() {
         val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        val permissionsToCheck = mutableMapOf(
-            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
-                "required to discover external readers"
-        )
-
-        if (isAtLeastAndroidS) {
-            permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is " +
-                "required to discover external readers"
-            permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is " +
-                "required to discover external readers"
+        // On Android 12+ BLE scanning uses BLUETOOTH_SCAN (neverForLocation) and the SDK only needs coarse
+        // location for reporting. On Android 11 and below a BLE scan requires fine location at the OS level.
+        val permissionsToCheck = if (isAtLeastAndroidS) {
+            mapOf(
+                Manifest.permission.BLUETOOTH_CONNECT to "BLUETOOTH_CONNECT permission is " +
+                    "required to discover external readers",
+                Manifest.permission.BLUETOOTH_SCAN to "BLUETOOTH_SCAN permission is " +
+                    "required to discover external readers",
+                Manifest.permission.ACCESS_COARSE_LOCATION to "ACCESS_COARSE_LOCATION permission is " +
+                    "required to discover external readers",
+            )
+        } else {
+            mapOf(
+                Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
+                    "required to discover external readers"
+            )
         }
 
         permissionsToCheck.forEach { (permission, errorMessage) ->
