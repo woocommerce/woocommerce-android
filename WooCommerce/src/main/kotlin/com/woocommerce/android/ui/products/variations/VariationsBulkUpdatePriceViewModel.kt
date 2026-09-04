@@ -38,14 +38,14 @@ class VariationsBulkUpdatePriceViewModel @Inject constructor(
     private var viewState: ViewState by viewStateData
 
     init {
-        viewState = viewState.copy(
-            pricesGroupType = data.getPriceCollection().groupType(),
-            priceType = data.priceType,
-            variationsToUpdateCount = data.variationsToUpdate.size,
-        )
         launch {
             val parameters = parameterRepository.getParameters("key_product_parameters", savedState)
-            viewState = viewState.copy(currency = parameters.currencySymbol)
+            viewState = viewState.copy(
+                currency = parameters.currencySymbol,
+                pricesGroupType = data.getPriceCollection().groupType(),
+                priceType = data.priceType,
+                variationsToUpdateCount = data.variationsToUpdate.size,
+            )
         }
     }
 
