@@ -9,6 +9,7 @@
 
 25.6
 -----
+- [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
 - [Internal] Fixed R8 full mode stripping/abstracting reflectively-deserialized Gson DTOs in release builds, which broke several features (POS, analytics, subscriptions, shipping labels) [https://github.com/woocommerce/woocommerce-android/pull/16485]

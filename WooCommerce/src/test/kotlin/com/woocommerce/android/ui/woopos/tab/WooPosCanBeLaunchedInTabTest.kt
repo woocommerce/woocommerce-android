@@ -6,8 +6,6 @@ import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.Launchable
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NonLaunchabilityReason
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability.NotLaunchable
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -16,10 +14,15 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,8 +31,9 @@ class WooPosCanBeLaunchedInTabTest {
 
     private val appPrefs: AppPrefs = mock()
     private val selectedSite: SelectedSite = mock()
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
-    private val fetchWooCoreVersion: FetchActiveWCPluginVersion = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
+    private val getWooCorePluginStatus: WooPosGetWooCorePluginStatus = mock()
+    private val isFeatureSwitchEnabled: WooPosIsFeatureSwitchEnabled = mock()
 
     @Rule
     @JvmField
@@ -44,19 +48,37 @@ class WooPosCanBeLaunchedInTabTest {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         runBlocking {
-            whenever(getWooCoreVersion()).thenReturn("10.0.0")
-            whenever(fetchWooCoreVersion()).thenReturn("10.0.0")
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("US", "USD"))
+            whenever(getWooCorePluginStatus(any()))
+                .thenReturn(WooPosWooCorePluginStatus.Active("10.0.0"))
+            whenever(isFeatureSwitchEnabled(any())).thenReturn(Result.success(true))
         }
         whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
 
         sut = WooPosCanBeLaunchedInTab(
             appPrefs = appPrefs,
             selectedSite = selectedSite,
-            getWooCoreCachedVersion = getWooCoreVersion,
-            fetchWooCoreVersion = fetchWooCoreVersion,
+            wooCommerceStore = wooCommerceStore,
+            getWooCorePluginStatus = getWooCorePluginStatus,
+            isFeatureSwitchEnabled = isFeatureSwitchEnabled,
             wooPosLog = mock()
         )
     }
+
+    private fun settings(countryCode: String, currencyCode: String) = Settings(
+        currencyCode = currencyCode,
+        currencyPosition = CurrencyPosition.LEFT,
+        currencyThousandSeparator = ",",
+        currencyDecimalSeparator = ".",
+        currencyDecimalNumber = 2,
+        countryCode = countryCode,
+        stateCode = "",
+        address = "",
+        address2 = "",
+        city = "",
+        postalCode = "",
+        couponsEnabled = true,
+    )
 
     // --- Happy paths ---
 
@@ -65,13 +87,6 @@ class WooPosCanBeLaunchedInTabTest {
         val result = sut()
         assertEquals(Launchable, result)
         verify(appPrefs, times(1)).setPOSLaunchableForSite(eq(siteModel.id))
-    }
-
-    @Test
-    fun `given any country code, when invoked, then return Launchable regardless of country`() = runTest {
-        // No country gate exists any more — POS is available worldwide; card-payment
-        // gating moved to the POS UI. This test guards against regression.
-        assertEquals(Launchable, sut())
     }
 
     // --- No site ---
@@ -85,47 +100,174 @@ class WooPosCanBeLaunchedInTabTest {
         verify(appPrefs, times(0)).clearPOSLaunchableForSite(any())
     }
 
+    // --- Currency checks ---
+
+    @Test
+    fun `given store currency does not match store country, when invoked, then NotLaunchable UnsupportedCurrency`() =
+        runTest {
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("CA", "EUR"))
+
+            val result = sut()
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
+            verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
+        }
+
+    @Test
+    fun `given every supported country with its currency, when invoked, then Launchable`() = runTest {
+        val pairs = listOf(
+            "US" to "USD", "PR" to "USD", "GB" to "GBP", "CA" to "CAD",
+            "FI" to "EUR", "IE" to "EUR", "LU" to "EUR", "NL" to "EUR",
+            "SG" to "SGD", "NZ" to "NZD", "AU" to "AUD",
+        )
+
+        pairs.forEach { (country, currency) ->
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings(country, currency))
+
+            assertEquals(Launchable, sut(), "$country/$currency should be launchable")
+        }
+    }
+
+    @Test
+    fun `given lowercase currency code, when invoked, then matches case-insensitively`() = runTest {
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("GB", "gbp"))
+
+        assertEquals(Launchable, sut())
+    }
+
+    @Test
+    fun `given country outside the POS table, when invoked, then currency is not validated`() = runTest {
+        // Only reachable with the all-countries flag on. There is no currency to validate against.
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("DE", "EUR"))
+
+        assertEquals(Launchable, sut())
+    }
+
+    @Test
+    fun `given site settings unavailable with no cached positive, when invoked, then UnknownNoPositiveCache`() =
+        runTest {
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+            whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(mock())
+
+            val result = sut()
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
+            verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+        }
+
+    @Test
+    fun `given site settings unavailable with cached positive, when invoked, then Launchable`() = runTest {
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(mock())
+        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
+
+        assertEquals(Launchable, sut())
+    }
+
+    // --- WooCommerce plugin checks ---
+
+    @Test
+    fun `given the WooCommerce plugin is missing or inactive, when invoked, then WooCommercePluginNotFound`() =
+        runTest {
+            whenever(getWooCorePluginStatus(any()))
+                .thenReturn(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+
+            val result = sut()
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.WooCommercePluginNotFound), result)
+            verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
+        }
+
+    @Test
+    fun `given the plugin state is unknown with no cached positive, when invoked, then UnknownNoPositiveCache`() =
+        runTest {
+            whenever(getWooCorePluginStatus(any())).thenReturn(WooPosWooCorePluginStatus.CouldNotDetermine)
+
+            val result = sut()
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
+            verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+        }
+
+    @Test
+    fun `given the plugin state is unknown with cached positive, when invoked, then Launchable`() = runTest {
+        whenever(getWooCorePluginStatus(any())).thenReturn(WooPosWooCorePluginStatus.CouldNotDetermine)
+        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
+
+        assertEquals(Launchable, sut())
+    }
+
     // --- Version checks ---
 
     @Test
-    fun `given unsupported WooCommerce version, when invoked, then NotLaunchable UnsupportedWooCommerceVersion and clears cache`() = runTest {
-        whenever(getWooCoreVersion()).thenReturn("9.5.0")
+    fun `given unsupported WooCommerce version, when invoked, then UnsupportedWooCommerceVersion and clears cache`() =
+        runTest {
+            whenever(getWooCorePluginStatus(any())).thenReturn(WooPosWooCorePluginStatus.Active("9.5.0"))
+
+            val result = sut()
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedWooCommerceVersion), result)
+            verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
+        }
+
+    @Test
+    fun `given WC 9_6_0 (minimum supported), when invoked, then Launchable`() = runTest {
+        whenever(getWooCorePluginStatus(any())).thenReturn(WooPosWooCorePluginStatus.Active("9.6.0"))
+
+        assertEquals(Launchable, sut())
+    }
+
+    // --- Feature switch checks ---
+
+    @Test
+    fun `given WC below 10_0_0, when invoked, then the feature switch is not read`() = runTest {
+        whenever(getWooCorePluginStatus(any())).thenReturn(WooPosWooCorePluginStatus.Active("9.9.0"))
+
+        assertEquals(Launchable, sut())
+        verify(isFeatureSwitchEnabled, never()).invoke(any())
+    }
+
+    @Test
+    fun `given the POS feature switch is off, when invoked, then FeatureSwitchDisabled and clears cache`() = runTest {
+        whenever(isFeatureSwitchEnabled(any())).thenReturn(Result.success(false))
+
         val result = sut()
-        assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedWooCommerceVersion), result)
+
+        assertEquals(NotLaunchable(NonLaunchabilityReason.FeatureSwitchDisabled), result)
         verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
     }
 
     @Test
-    fun `given WC 9_6_0 (minimum supported), when invoked, then Launchable`() = runTest {
-        whenever(getWooCoreVersion()).thenReturn("9.6.0")
+    fun `given the switch cannot be read with no cached positive, when invoked, then UnknownNoPositiveCache`() = runTest {
+        whenever(isFeatureSwitchEnabled(any())).thenReturn(Result.failure(Exception()))
+
         val result = sut()
-        assertEquals(Launchable, result)
+
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
+        verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+    }
+
+    @Test
+    fun `given the feature switch cannot be read with cached positive, when invoked, then Launchable`() = runTest {
+        whenever(isFeatureSwitchEnabled(any())).thenReturn(Result.failure(Exception()))
+        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
+
+        assertEquals(Launchable, sut())
     }
 
     // --- Force refresh paths ---
 
     @Test
-    fun `given forceRefresh true with valid data, when invoked, then Launchable and set cache`() = runTest {
-        val result = sut(forceRefresh = true)
-        assertEquals(Launchable, result)
-        verify(appPrefs, times(1)).setPOSLaunchableForSite(eq(siteModel.id))
-    }
+    fun `given forceRefresh true, when invoked, then settings plugin and switch are all read remotely`() = runTest {
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
+            .thenReturn(WooResult(settings("US", "USD")))
 
-    @Test
-    fun `given forceRefresh true and fetchWooCoreVersion returns null with no cached positive, when invoked, then NotLaunchable UnknownNoPositiveCache and does not clear`() = runTest {
-        whenever(fetchWooCoreVersion()).thenReturn(null)
-        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(false)
         val result = sut(forceRefresh = true)
-        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
-        verify(appPrefs, times(0)).clearPOSLaunchableForSite(any())
-    }
 
-    @Test
-    fun `given forceRefresh true and fetchWooCoreVersion returns null with cached positive, when invoked, then Launchable`() = runTest {
-        whenever(fetchWooCoreVersion()).thenReturn(null)
-        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
-        val result = sut(forceRefresh = true)
         assertEquals(Launchable, result)
+        verify(wooCommerceStore).fetchSiteGeneralSettings(siteModel)
+        verify(getWooCorePluginStatus).invoke(true)
+        verify(isFeatureSwitchEnabled).invoke(true)
     }
 
     // --- Plan eligibility ---
