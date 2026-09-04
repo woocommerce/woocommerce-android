@@ -67,9 +67,16 @@ class AccountRepository @Inject constructor(
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
 
+        // Capture the site before the suspension point below, it may be reset while we are suspended.
+        val applicationPasswordSite = selectedSite.getOrNull()
+
         pushNotificationRepository.unregisterDeviceFromPushNotifications()
 
-        return if (accountStore.hasAccessToken()) logoutWpComAccount() else logoutApplicationPasswordAccount()
+        return if (accountStore.hasAccessToken()) {
+            logoutWpComAccount()
+        } else {
+            logoutApplicationPasswordAccount(applicationPasswordSite)
+        }
     }
 
     suspend fun closeAccount(): CloseAccountResult {
@@ -126,8 +133,12 @@ class AccountRepository @Inject constructor(
         return true
     }
 
-    private fun logoutApplicationPasswordAccount(): Boolean {
-        deleteApplicationPassword(selectedSite.get())
+    private fun logoutApplicationPasswordAccount(site: SiteModel?): Boolean {
+        if (site != null) {
+            deleteApplicationPassword(site)
+        } else {
+            WooLog.w(LOGIN, "Skipping application password deletion, the selected site is not available")
+        }
         completeLogout()
         return true
     }
