@@ -121,7 +121,9 @@ internal fun AddressSectionPortrait(
                     .constrainAs(shipFromValue) {
                         top.linkTo(shipFromLabel.top)
                         start.linkTo(shipFromLabel.end)
-                        end.linkTo(endBarrier)
+                        // endBarrier follows shipFromSelect, which only exists when editable; in
+                        // read-only mode anchor to parent.end so the width doesn't collapse on 1.1+.
+                        end.linkTo(if (isReadOnly) parent.end else endBarrier)
                         width = Dimension.fillToConstraints
                     }
                     .padding(
@@ -177,7 +179,7 @@ internal fun AddressSectionPortrait(
                         .constrainAs(shipToValue) {
                             top.linkTo(shipToLabel.top)
                             start.linkTo(barrier)
-                            end.linkTo(shipToEdit.start)
+                            end.linkTo(if (isReadOnly) parent.end else shipToEdit.start)
                             width = Dimension.fillToConstraints
                         }
                         .padding(
