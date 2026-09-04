@@ -970,6 +970,27 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given Stripe error code, when connecting to reader fails, then Stripe error type is tracked`() =
+        testBlocking {
+            // GIVEN
+            init()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+
+            // WHEN
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
+                    errorMessage = "Connection timed out",
+                    stripeErrorCode = "request_timed_out",
+                )
+            )
+
+            // THEN
+            verify(tracker).trackConnectionFailed("request_timed_out", "Connection timed out")
+        }
+
+    @Test
     fun `given connecting failed screen shown, when user clicks on retry, then flow restarted`() =
         testBlocking {
             init()

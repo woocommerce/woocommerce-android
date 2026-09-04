@@ -666,3 +666,10 @@ internal fun CardReaderStatus.NotConnected.ErrorCode?.toAnalyticsValue() = when 
     CardReaderStatus.NotConnected.ErrorCode.OTHER -> "other"
     null -> "unknown"
 }
+
+internal fun CardReaderStatus.NotConnected.toAnalyticsErrorType() = when (errorCode) {
+    CardReaderStatus.NotConnected.ErrorCode.OTHER -> stripeErrorCode ?: errorCode.toAnalyticsValue()
+    CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
+    CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING,
+    null -> errorCode.toAnalyticsValue()
+}
