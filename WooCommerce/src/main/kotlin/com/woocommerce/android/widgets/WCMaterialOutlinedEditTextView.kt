@@ -121,6 +121,12 @@ class WCMaterialOutlinedEditTextView @JvmOverloads constructor(
         }
     }
 
+    /** Shows a custom label (e.g. "Add") on the keyboard action key, keeping [imeAction] so listeners fire. */
+    fun setImeActionLabel(label: CharSequence, imeAction: Int = EditorInfo.IME_ACTION_DONE) {
+        binding.editText.imeOptions = imeAction
+        binding.editText.setImeActionLabel(label, imeAction)
+    }
+
     fun setOnEditorActionListener(cb: (text: String) -> Boolean) {
         binding.editText.setOnEditorActionListener { _, action, _ ->
             if (action == EditorInfo.IME_ACTION_DONE) {

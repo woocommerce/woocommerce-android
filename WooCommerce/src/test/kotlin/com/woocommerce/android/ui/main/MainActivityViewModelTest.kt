@@ -17,6 +17,7 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
@@ -174,7 +175,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     private val ageEligibilityChecker: AgeEligibilityChecker = mock {
         on { ageEligibilityState } doReturn MutableStateFlow(
             AgeEligibilityChecker.AgeEligibilityState(
-                isUserAgeRangeEligible = true,
+                decision = AgeEligibilityDecision.Allowed,
                 ageRestrictedTitle = 0,
                 ageRestrictedMessage = 0
             )

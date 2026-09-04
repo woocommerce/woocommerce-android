@@ -15,7 +15,6 @@ import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
-import com.woocommerce.android.util.StringUtils
 import java.math.BigDecimal
 
 class OrderDetailProductChildItemListAdapter(
@@ -76,13 +75,20 @@ class OrderDetailProductChildItemListAdapter(
             }
 
             val productPrice = formatCurrencyForDisplay(item.price)
-            val attributes = item.attributesDescription
-                .takeIf { it.isNotEmpty() }
-                ?.let { "$it \u2981 " }
-                ?: StringUtils.EMPTY
-            binding.productInfoAttributes.text = itemView.resources.getString(
-                R.string.orderdetail_product_lineitem_attributes,
-                attributes, item.quantity.formatToString(), productPrice
+            with(binding.productInfoAttributes) {
+                val attributes = item.displayableAttributes
+                isVisible = attributes.isNotEmpty()
+                text = attributes.joinToString(separator = "\n") {
+                    itemView.resources.getString(
+                        R.string.orderdetail_product_lineitem_attribute,
+                        it.key,
+                        it.value
+                    )
+                }
+            }
+            binding.productInfoQuantityAndPrice.text = itemView.resources.getString(
+                R.string.orderdetail_product_lineitem_quantity_and_price,
+                item.quantity.formatToString(), productPrice
             )
 
             productImage?.let {

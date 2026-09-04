@@ -836,6 +836,79 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(draftAttribute.name).isEqualTo(newName)
     }
 
+    @Test
+    fun `given a unique name, when addLocalAttribute, then it returns true and is added to the draft`() =
+        testBlocking {
+            // GIVEN
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+            viewModel.start()
+
+            // WHEN
+            val result = viewModel.addLocalAttribute("Size", isVariationCreation = false)
+
+            // THEN
+            Assertions.assertThat(result).isTrue()
+            Assertions.assertThat(viewModel.productDraftAttributes).anyMatch { it.name == "Size" }
+        }
+
+    @Test
+    fun `given a duplicate name, when addLocalAttribute, then it returns false and is not added`() = testBlocking {
+        // GIVEN
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        viewModel.start()
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
+        viewModel.event.observeForever { if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it }
+        val countBefore = viewModel.productDraftAttributes.size
+
+        // WHEN
+        val result = viewModel.addLocalAttribute("Color", isVariationCreation = false)
+
+        // THEN
+        Assertions.assertThat(result).isFalse()
+        Assertions.assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_attribute_name_already_exists))
+        Assertions.assertThat(viewModel.productDraftAttributes).hasSize(countBefore)
+    }
+
+    @Test
+    fun `given multiple local attributes, when a term is removed from one, then the others are kept`() =
+        testBlocking {
+            // GIVEN two local attributes (both share id 0)
+            viewModel.productDetailViewStateData.observeForever { _, _ -> }
+            val attributes = listOf(
+                ProductAttribute(
+                    id = 0,
+                    name = "Color",
+                    terms = listOf("Red", "Blue"),
+                    isVisible = true,
+                    isVariation = true
+                ),
+                ProductAttribute(
+                    id = 0,
+                    name = "Size",
+                    terms = listOf("S", "M"),
+                    isVisible = true,
+                    isVariation = true
+                )
+            )
+            val storedProductAggregate = productAggregate.copy(
+                product = productAggregate.product.copy(attributes = attributes)
+            )
+            doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
+            viewModel.start()
+
+            // WHEN a term is removed from the first attribute
+            viewModel.removeAttributeTermFromDraft(0, "Color", "Red")
+
+            // THEN the other attribute is untouched and the edited one keeps its remaining term
+            val draft = viewModel.productDraftAttributes
+            Assertions.assertThat(draft.map { it.name }).containsExactlyInAnyOrder("Color", "Size")
+            Assertions.assertThat(draft.first { it.name == "Size" }.terms).containsExactly("S", "M")
+            Assertions.assertThat(draft.first { it.name == "Color" }.terms).containsExactly("Blue")
+        }
+
     /**
      * Protection for a race condition bug in Variations.
      *

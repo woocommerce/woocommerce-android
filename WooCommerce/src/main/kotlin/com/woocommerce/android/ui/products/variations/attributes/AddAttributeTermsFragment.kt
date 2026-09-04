@@ -135,18 +135,16 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
 
         _binding = FragmentAddAttributeTermsBinding.bind(view)
 
+        // restore a pending rename before the views (and toolbar title) are built off attributeName
+        renamedAttributeName = savedInstanceState?.getString(KEY_RENAMED_ATTRIBUTE_NAME)
+
         initializeViews(savedInstanceState)
         setupObservers()
         setupResultHandlers()
         getAttributeTerms()
 
-        savedInstanceState?.let { bundle ->
-            if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
-                confirmRemoveAttribute()
-            }
-            if (bundle.containsKey(KEY_RENAMED_ATTRIBUTE_NAME)) {
-                renamedAttributeName = bundle.getString(KEY_RENAMED_ATTRIBUTE_NAME)
-            }
+        if (savedInstanceState?.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING) == true) {
+            confirmRemoveAttribute()
         }
     }
 
@@ -214,11 +212,39 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        handleExit()
+        return false
+    }
+
+    private fun handleExit() {
+        when {
+            // a typed-but-unadded option always wins, so it's never discarded without a warning
+            binding.termEditText.text.isNotBlank() ->
+                confirmDiscardPendingInputThenExit(hasPendingInput = true) { exitAttributeTermsScreen() }
+            // an attribute with no options can't exist, so warn before leaving removes it
+            assignedTermsAdapter.isEmpty() ->
+                confirmRemoveEmptyAttribute()
+            else ->
+                exitAttributeTermsScreen()
+        }
+    }
+
+    private fun confirmRemoveEmptyAttribute() {
+        WooDialog.showDialog(
+            requireActivity(),
+            messageId = R.string.product_attribute_no_options_warning,
+            positiveButtonId = R.string.remove,
+            posBtnAction = { _, _ -> exitAttributeTermsScreen() },
+            negativeButtonId = R.string.cancel
+        )
+    }
+
+    private fun exitAttributeTermsScreen() {
+        // an attribute must have at least one option, so drop a new one that never got any
         if (navArgs.isNewAttribute and assignedTermsAdapter.isEmpty()) {
             viewModel.removeAttributeFromDraft(navArgs.attributeId, attributeName)
         }
         saveChangesAndReturn()
-        return false
     }
 
     private fun saveChangesAndReturn() {
@@ -274,6 +300,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             layoutManagerGlobal!!.onRestoreInstanceState(it)
         }
 
+        binding.termEditText.setImeActionLabel(getString(R.string.add_action))
         binding.termEditText.setOnEditorActionListener { termName ->
             if (termName.isNotBlank() && !assignedTermsAdapter.containsTerm(termName)) {
                 addTerm(termName)
@@ -287,7 +314,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    viewModel.onBackButtonClicked(ExitProductAddAttributeTerms)
+                    handleExit()
                 }
                 onCreateMenu(toolbar)
             }
@@ -350,6 +377,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             // note we always pass 0L as the attributeId since renaming is only supported for local attributes
             if (viewModel.renameAttributeInDraft(0L, oldAttributeName = attributeName, newAttributeName = it)) {
                 renamedAttributeName = it
+                requireView().findViewById<Toolbar>(R.id.toolbar)?.title = attributeName
             }
         }
     }

@@ -41,6 +41,24 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
         setupObservers(viewModel)
     }
 
+    /**
+     * Shows the standard "discard changes?" dialog when the screen has pending, uncommitted text in an
+     * input field; runs [onExit] immediately otherwise, or only if the user confirms discarding.
+     */
+    protected fun confirmDiscardPendingInputThenExit(hasPendingInput: Boolean, onExit: () -> Unit) {
+        if (hasPendingInput) {
+            WooDialog.showDialog(
+                requireActivity(),
+                posBtnAction = { _, _ -> onExit() },
+                messageId = R.string.discard_message,
+                positiveButtonId = R.string.discard,
+                negativeButtonId = R.string.keep_editing
+            )
+        } else {
+            onExit()
+        }
+    }
+
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

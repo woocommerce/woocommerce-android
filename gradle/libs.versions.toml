@@ -1,5 +1,5 @@
 [versions]
-agp = '9.3.1'
+agp = '9.3.2'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
@@ -34,7 +34,7 @@ androidx-test-rules = '1.7.0'
 androidx-test-runner = '1.7.0'
 androidx-test-orchestrator = '1.6.1'
 androidx-test-uiautomator = '2.4.0'
-androidx-transition = '1.7.0'
+androidx-transition = '1.7.1'
 androidx-wear-compose = '1.4.0'
 androidx-wear-protolayout = '1.2.1'
 androidx-wear-tooling = '1.0.0'
@@ -72,7 +72,7 @@ google-mlkit-subject-segmentation = '16.0.0-beta1'
 google-mlkit-text-recognition = '16.0.1'
 google-play-app-update = '2.1.0'
 google-play-review = '2.0.2'
-google-play-ageSignals = "0.0.3"
+google-play-ageSignals = "0.0.4"
 google-play-services-auth = '21.6.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '20.0.1'
@@ -113,7 +113,7 @@ wordpress-libaddressinput = '0.0.2'
 wordpress-lint = "2.2.0"
 wordpress-mediapicker = '0.3.5'
 wordpress-utils = '3.15.0'
-zendesk = '5.5.3'
+zendesk = '5.6.0'
 
 [libraries]
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
@@ -204,7 +204,6 @@ automattic-tracks-android = { group = "com.automattic", name = "Automattic-Track
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }
 bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", version.ref = "bumptech-glide" }
-bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "bumptech-glide" }
 bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "bumptech-glide" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "cashapp-turbine" }
