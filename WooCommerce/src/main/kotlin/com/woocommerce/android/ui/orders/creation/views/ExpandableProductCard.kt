@@ -125,6 +125,7 @@ fun ExpandableProductCard(
         } else {
             createBottomBarrier(quantity)
         }
+        val showsCollapsedDiscount = !isExpanded && product.productInfo.hasDiscount
         ProductThumbnail(
             modifier = Modifier
                 .constrainAs(img) {
@@ -159,9 +160,7 @@ fun ExpandableProductCard(
             modifier = Modifier
                 .constrainAs(stock) {
                     start.linkTo(name.start)
-                    end.linkTo(
-                        if (!isExpanded && product.productInfo.hasDiscount) discount.start else chevron.start
-                    )
+                    end.linkTo(if (showsCollapsedDiscount) discount.start else chevron.start)
                     top.linkTo(name.bottom)
                     width = Dimension.fillToConstraints
                 }
@@ -171,7 +170,7 @@ fun ExpandableProductCard(
             overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.color_on_surface_disabled)
         )
-        if (!isExpanded && product.productInfo.hasDiscount) {
+        if (showsCollapsedDiscount) {
             Text(
                 modifier = Modifier
                     .constrainAs(discount) {
