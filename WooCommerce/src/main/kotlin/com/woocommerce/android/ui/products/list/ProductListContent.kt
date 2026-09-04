@@ -154,8 +154,10 @@ private fun ProductLazyList(
             )
             WooDivider(
                 modifier = Modifier
+                    .background(WooTheme.colors.surface.bright)
                     .padding(horizontal = WooTheme.padding.padding7)
-                    .testTag(ProductListTestTags.productDivider(product.remoteId))
+                    .testTag(ProductListTestTags.productDivider(product.remoteId)),
+                color = WooTheme.colors.outlineVariant,
             )
         }
         if (isLoadingMore) {
@@ -200,7 +202,7 @@ private fun ProductListItem(
     }
     val background = when {
         isSelected || isHighlighted -> colorResource(R.color.color_item_selected)
-        else -> WooTheme.colors.surface.default
+        else -> WooTheme.colors.surface.bright
     }
 
     Row(
@@ -341,6 +343,7 @@ private fun ProductListSkeleton() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = PRODUCT_ROW_MIN_HEIGHT)
+                    .background(WooTheme.colors.surface.bright)
                     .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding4),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
