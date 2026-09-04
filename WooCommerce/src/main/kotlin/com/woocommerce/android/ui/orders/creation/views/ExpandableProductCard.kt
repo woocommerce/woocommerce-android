@@ -120,9 +120,6 @@ fun ExpandableProductCard(
             .then(modifier)
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
-        // sku (expanded) and quantity (collapsed) are mutually exclusive, so the barrier must only
-        // reference the one that is actually composed - constraintlayout-compose 1.1+ collapses the
-        // layout when a barrier references a widget that isn't present.
         val collapsedStateBottomBarrier = if (isExpanded) {
             createBottomBarrier(sku)
         } else {
@@ -162,8 +159,6 @@ fun ExpandableProductCard(
             modifier = Modifier
                 .constrainAs(stock) {
                     start.linkTo(name.start)
-                    // discount is only composed when collapsed with a discount; otherwise anchor to
-                    // the chevron so the fillToConstraints width doesn't collapse on 1.1+.
                     end.linkTo(
                         if (!isExpanded && product.productInfo.hasDiscount) discount.start else chevron.start
                     )
@@ -328,8 +323,6 @@ fun ExtendedProductCardContent(
         val isBundledProduct = product.productInfo.productType == ProductType.BUNDLE
         val discountButtonsEnabled = state.value?.areDiscountButtonsEnabled == true
 
-        // configurationButton is only composed for configurable products; reference it in the
-        // barrier only when present, otherwise 1.1+ collapses the expanded content.
         val buttonBarrier = if (product.productInfo.isConfigurable) {
             createTopBarrier(removeButton, configurationButton)
         } else {

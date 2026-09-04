@@ -260,9 +260,6 @@ fun ExpandableChildrenProductCard(
             .then(modifier)
     ) {
         val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
-        // sku (expanded) and quantity (collapsed) are mutually exclusive, so the barrier must only
-        // reference the one that is actually composed - constraintlayout-compose 1.1+ collapses the
-        // layout when a barrier references a widget that isn't present.
         val collapsedStateBottomBarrier = if (isExpanded) {
             createBottomBarrier(sku)
         } else {
@@ -302,8 +299,6 @@ fun ExpandableChildrenProductCard(
             modifier = Modifier
                 .constrainAs(stock) {
                     start.linkTo(name.start)
-                    // No discount widget exists in the child card, so anchor to the chevron -
-                    // referencing the never-composed discount ref collapses the width on 1.1+.
                     end.linkTo(chevron.start)
                     top.linkTo(name.bottom)
                     width = Dimension.fillToConstraints
