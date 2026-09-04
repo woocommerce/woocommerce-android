@@ -1,0 +1,126 @@
+# Smoke Test: Hub Menu - Coupons
+# p2: hub.coupons.create
+# P2 ref: Hub menu > Coupons > Create a coupon
+#
+# Verifies:
+#   - Coupons section reachable from the More Menu
+#   - Coupon list screen opens (either the populated list or the empty
+#     state — both include the add-coupon FAB)
+#   - Tap the add-coupon FAB to reach the "Create Coupon" type picker
+#     bottom sheet (Percentage, Fixed Cart, Fixed Product)
+#   - Pick Percentage Discount and confirm the edit-coupon screen
+#     opens
+#   - Create a run-scoped coupon and verify it appears in the list
+appId: com.woocommerce.android
+name: "Hub Menu - Coupons"
+tags:
+  - smoke_extended
+  - flaky_quarantine
+  - hub_menu
+  - destructive
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Coupons lives in the General section of the More Menu — scroll to it.
+- scrollUntilVisible:
+    element: "Coupons"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Coupons in hub menu"
+
+- tapOn:
+    text: "Coupons"
+    label: "Open Coupons"
+
+# ── Coupon list screen ───────────────────────────────────────────────
+# The add-coupon FAB (id: add_coupon_button, contentDescription "Add
+# coupon") is always present on the coupon list screen — both for
+# populated lists AND for the empty state. Asserting it is visible
+# proves we actually navigated off the More Menu.
+- extendedWaitUntil:
+    visible:
+      id: "add_coupon_button"
+    timeout: 15000
+
+- takeScreenshot: hub_coupons_list
+
+# ── Open the coupon type picker ──────────────────────────────────────
+- tapOn:
+    id: "add_coupon_button"
+    retryTapIfNoChange: true
+    label: "Tap add-coupon FAB"
+
+# CouponTypePickerScreen is a bottom sheet titled "Create Coupon" with
+# three choices: Percentage Discount, Fixed Cart Discount, Fixed
+# Product Discount. Asserting all three proves the whole sheet
+# rendered, not just the title row.
+- extendedWaitUntil:
+    visible: "Create Coupon"
+    timeout: 15000
+
+- assertVisible: "Percentage Discount"
+- assertVisible: "Fixed Cart Discount"
+- assertVisible: "Fixed Product Discount"
+
+- takeScreenshot: hub_coupons_type_picker
+
+# ── Pick Percentage Discount → edit-coupon screen ────────────────────
+- tapOn:
+    text: "Percentage Discount"
+    label: "Choose Percentage Discount"
+
+# EditCouponFragment. Uniquely titled — the toolbar shows "Create
+# coupon" (lowercase c) and the body has an amount field and a
+# "Generate coupon code" / "Coupon code" CTA. "Amount" is present on
+# every coupon type editor.
+- extendedWaitUntil:
+    visible: ".*Amount.*"
+    timeout: 15000
+
+- takeScreenshot: hub_coupons_edit_form
+
+- tapOn:
+    id: "edit_coupon_amount_input"
+- eraseText
+- inputText: "10"
+- hideKeyboard
+
+- tapOn:
+    id: "edit_coupon_code_input"
+- eraseText
+- inputText: SUITE-${SUITE_RUN_ID}-UI
+- hideKeyboard
+
+- tapOn:
+    id: "edit_coupon_save_button"
+    retryTapIfNoChange: true
+    label: "Create run-scoped coupon"
+
+# ── Back on coupon list ──────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: "add_coupon_button"
+    timeout: 30000
+
+- extendedWaitUntil:
+    visible: ".*${SUITE_RUN_ID}.*"
+    timeout: 30000
+    label: "Wait for created coupon"
+
+- assertVisible:
+    text: ".*${SUITE_RUN_ID}.*"
+    label: "Created coupon is visible in the list"
+
+- takeScreenshot: hub_coupons_created
+
+# Back to the More Menu
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "more_menu_compose_view"
+    timeout: 10000

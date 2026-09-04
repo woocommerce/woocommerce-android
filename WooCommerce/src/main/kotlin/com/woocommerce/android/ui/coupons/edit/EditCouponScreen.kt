@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -132,7 +133,8 @@ fun EditCouponScreen(
                 text = stringResource(id = viewState.saveButtonText),
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .testTag(EditCouponTestTags.SAVE_BUTTON),
                 enabled = viewState.hasChanges
             )
         }
@@ -177,7 +179,9 @@ private fun DetailsSection(
             onValueChange = { onCouponCodeChanged(it.toLowerCase(Locale.current)) },
             helperText = stringResource(id = R.string.coupon_edit_code_helper),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(EditCouponTestTags.CODE_INPUT)
         )
         WCTextButton(
             onClick = {
@@ -331,8 +335,16 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(EditCouponTestTags.AMOUNT_INPUT)
     )
+}
+
+internal object EditCouponTestTags {
+    const val AMOUNT_INPUT = "edit_coupon_amount_input"
+    const val CODE_INPUT = "edit_coupon_code_input"
+    const val SAVE_BUTTON = "edit_coupon_save_button"
 }
 
 @Composable

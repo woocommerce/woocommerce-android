@@ -1,0 +1,30 @@
+# Device-agnostic keyboard dismissal.
+#
+# Maestro's built-in hideKeyboard is a BACK press, which is not safe across
+# devices: when there is no on-screen keyboard to dismiss — a hardware keyboard,
+# or an IME that only shows a floating toolbar — the BACK either navigates the
+# screen back (popping dialogs and login steps) or throws "Couldn't hide the
+# keyboard" on some Compose screens. Only a real soft keyboard needs dismissing.
+#
+# The one reliable, device-independent signal is whether the element the caller
+# needs next is actually reachable. So this subflow dismisses the keyboard ONLY
+# when that element is not currently visible (i.e. a soft keyboard is covering
+# it). Pass the element's resource id as KEYBOARD_TARGET_ID:
+#
+#   - runFlow:
+#       file: ../subflows/hide_keyboard.yaml   # or hide_keyboard.yaml from subflows/
+#       env:
+#         KEYBOARD_TARGET_ID: "bottom_button"
+#
+# When the target is already visible (no keyboard, hardware keyboard, or a
+# floating toolbar that doesn't cover it) the hide is skipped — no stray back
+# press, no throw. When it is hidden, a real soft keyboard is up and hideKeyboard
+# dismisses it so the caller can tap the target.
+appId: com.woocommerce.android.dev
+---
+- runFlow:
+    when:
+      notVisible:
+        id: ${KEYBOARD_TARGET_ID}
+    commands:
+      - hideKeyboard

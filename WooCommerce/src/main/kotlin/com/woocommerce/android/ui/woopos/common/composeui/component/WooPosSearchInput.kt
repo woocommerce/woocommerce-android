@@ -36,6 +36,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextRange
@@ -54,6 +55,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
 
@@ -70,7 +72,7 @@ fun WooPosSearchInput(
     )
 
     Box(
-        modifier = modifier,
+        modifier = modifier.testTag(WooPosTestTags.SEARCH_INPUT),
         contentAlignment = Alignment.CenterEnd
     ) {
         when (state) {

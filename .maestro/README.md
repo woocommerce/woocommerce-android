@@ -1,0 +1,172 @@
+# Maestro Smoke Tests
+
+Automated UI smoke tests for the WooCommerce Android P2 checklist:
+WooMobile P2: Smoke testing page
+
+## Operating Model
+
+The suite has two store targets:
+
+- `lab`: default for local development, repair loops, can-fail checks, and destructive iteration. Use an
+  automation-owned WooCommerce store that is connected to Jetpack/WP.com with a dedicated WP.com test account.
+- `shared`: `inpersonpayments.wpcomstaging.com`, used for release-tool runs, Thursday burst runs, and explicit
+  non-destructive developer runs.
+
+The no-Jetpack login scenario uses its own `MAESTRO_WOO_NO_JETPACK_*` variables. Do not reuse those Jurassic Ninja
+site credentials as the `lab` store block when running the broader suite. The runner removes a trailing
+`/wp-admin` or `/wp-admin/` from this flow's site URL. The not-Woo fixture always uses its dedicated
+`MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME/PASSWORD` pair, including through WP.com-style screens.
+
+Destructive flows against the shared store are refused outside CI. In CI, they require `--seed`, the complete
+`MAESTRO_WOO_SHARED_*` login and REST credential block, and the exact `inpersonpayments.wpcomstaging.com` host. The
+runner acquires a REST-backed store lock before any ADB interaction and removes it on exit.
+
+## Local Setup
+
+Install prerequisites:
+
+```bash
+source .maestro/scripts/configure-toolchain.sh
+adb devices
+```
+
+Source the setup script from Bash or Zsh so its `JAVA_HOME` and `PATH` exports
+remain active in the current shell.
+
+The script selects an installed JDK 21, downloads the immutable Maestro 2.9.0
+release archive into the workspace, verifies the SHA-256 in
+`toolchain.properties`, and runs the checker. The runner, doctor, and CI fail
+fast when either version differs; Buildkite uses the same path before building.
+
+Create local credentials:
+
+```bash
+cp .maestro/env.example .maestro/.env.local
+```
+
+Fill `.maestro/.env.local` yourself from the canonical secret store. Do not paste credential values into agent conversations.
+Validate the file before running flows, especially after pasting passwords:
+
+```bash
+.maestro/scripts/lint-env.py
+```
+
+Run the pre-flight doctor when setting up a machine, changing credentials, or preparing CI secrets:
+
+```bash
+.maestro/scripts/doctor.sh --profile phone-full --store lab --device emulator-5554
+```
+
+The doctor requires the non-debuggable production package (`com.woocommerce.android`). If it is missing from the
+selected device, the doctor downloads the universal APK from the latest stable GitHub release, verifies its published
+SHA-256 digest, and installs it. The runner enforces the same check before starting any flow. When multiple devices are
+connected, pass `--device` so installation cannot target the wrong device.
+
+The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
+APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
+
+### Store data prerequisites
+
+`orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
+The app creates that `Order.Customer` in `OrderCreateEditCustomerAddFragment` and
+`OrderCreateEditViewModel.onCustomerEdited` replaces only `orderDraft.customer`; it does not update the store customer.
+The flow captures the selected email, verifies it on the draft, verifies the edited marker on the persisted order,
+then searches the customer list again and requires the original email to be unchanged. The configured store must have
+at least two existing customers with email addresses; missing data fails as an explicit prerequisite.
+
+## Running
+
+Default local run: lab store, `smoke_core` only, quarantine excluded.
+
+```bash
+.maestro/scripts/run-smoke-tests.sh --store lab
+```
+
+Common variants:
+
+```bash
+.maestro/scripts/run-smoke-tests.sh --profile core
+.maestro/scripts/run-smoke-tests.sh --plan --profile phone-full
+.maestro/scripts/run-smoke-tests.sh --profile phone-full --device emulator-5554
+.maestro/scripts/run-smoke-tests.sh --profile release
+.maestro/scripts/run-smoke-tests.sh --profile burst
+.maestro/scripts/run-smoke-tests.sh --profile pos-tablet --device Pixel_Tablet_API_35
+.maestro/scripts/run-smoke-tests.sh --profile android-system --device Pixel_8_API_35
+.maestro/scripts/doctor.sh --profile phone-full --store lab
+.maestro/scripts/run-smoke-tests.sh --device emulator-5554
+.maestro/scripts/run-smoke-tests.sh --apk /path/to/WooCommerce-production-release.apk
+.maestro/scripts/run-smoke-tests.sh --include-tags smoke_extended --include-quarantine --store lab
+.maestro/scripts/run-smoke-tests.sh --include-tags flaky_quarantine .maestro/flows/orders_create.yaml
+.maestro/scripts/run-smoke-tests.sh --store shared --include-tags smoke_core
+.maestro/scripts/run-smoke-tests.sh --repeat 3 --store lab --include-tags smoke_core
+.maestro/scripts/run-smoke-tests.sh --rerun-failed ~/woocommerce-maestro-output/20260708141815/report.xml --store lab
+```
+
+Profiles are copy/paste-safe presets:
+
+- `core`: lab store, all login flows plus the other `smoke_core` paths, with quarantine and Android system surfaces excluded.
+- `phone-full`: lab store, `smoke_core,smoke_extended`, tablet POS and Android system surfaces excluded. This includes quarantined non-login phone flows.
+- `release`: shared store, `smoke_core,smoke_extended,destructive`, quarantine, tablet POS, and Android system surfaces excluded.
+- `burst`: same as `release`, repeated 3 times.
+- `pos-tablet`: lab store, `pos_tablet`, quarantine included.
+- `android-system`: lab store, `android_system`, quarantine included. Requires an English Pixel Launcher AVD with the
+  production app discoverable as `Woo` in the app drawer.
+
+Use `--plan` with a profile or tag selection to print the exact store, repeat count, filters, and ordered flow list.
+Planning is side-effect-free: it does not load credentials, create output directories, call Maestro/ADB, or acquire a
+store lock. `flaky_quarantine` stays excluded unless the selected profile includes it or `--include-quarantine` is
+passed explicitly. A zero-flow selection is an error in both the runner and doctor.
+
+`--rerun-failed report.xml` reads failed/flaky JUnit test cases and runs only those flow files. It still honors
+store, device, APK, repeat, and profile options.
+
+The runner:
+
+- targets the production package (`com.woocommerce.android`) and rejects dev or debuggable APKs;
+- downloads and installs the latest stable GitHub release when no production app or candidate APK is installed;
+- selects one connected device automatically, or prompts when several are attached;
+- captures and restores animation settings;
+- can seed deterministic fixtures through the WooCommerce REST API when `--seed` is used;
+- writes created entity IDs to `run-manifest.json` when seeding;
+- deletes exactly those manifest IDs during cleanup when seeding;
+- performs a guarded stale-orphan sweep for `SUITE-<date>-<hash>` entities older than 48h when seeding;
+- retries each failed non-destructive flow once and records pass-on-retry as a passing flaky result;
+- preserves flaky status in HTML/JUnit reports and `--rerun-failed` selection without failing the runner;
+- never blindly retries a failed destructive mutation; cleanup runs first and the failure remains visible;
+- redacts `MAESTRO_WOO_*` values from logs;
+- stores artifacts outside the repo under `$HOME/woocommerce-maestro-output/<timestamp>/`;
+- writes copy/paste commands into the HTML report for rerunning the same selection, rerunning failed flows, and running
+  the doctor.
+
+## Tags
+
+- `smoke_core`: stable non-destructive release signal paths.
+- `smoke_extended`: broader P2 coverage.
+- `pos_tablet`: POS flows, tablet AVD required.
+- `android_system`: launcher/system-surface flows, English Pixel Launcher AVD required.
+- `system_surface`: flow enters Android-owned UI; assertions stop at the documented handoff boundary.
+- `destructive`: mutates store data.
+- `flaky_quarantine`: provisional or unstable flows excluded from real runs.
+
+All login flows are required `smoke_core` coverage. Other provisional imported flows remain tagged `flaky_quarantine`
+until they graduate through the burst-based promotion policy.
+
+## Coverage
+
+Traceability is committed in `.maestro/smoke-coverage.yaml`. Each flow declares covered checklist items in a `# p2:` header.
+
+Validate offline:
+
+```bash
+.maestro/scripts/check-smoke-coverage.py
+```
+
+Regenerate strings env after copy changes:
+
+```bash
+.maestro/scripts/generate-strings-env.py --check-flow-references
+```
+
+## Documentation
+
+The self-contained system guide lives at `.maestro/docs/index.html`.
