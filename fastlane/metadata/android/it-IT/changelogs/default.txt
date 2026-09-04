@@ -1,2 +1,0 @@
-25.5:
-Su Android 17, Remote Tap to Pay richiede l'accesso alla rete locale in modo che il telefono e il tablet possano connettersi. Anche la gestione del negozio è più semplice: puoi applicare le gift card mentre modifichi gli ordini, aggiornare il testo alternativo e i titoli delle immagini dei prodotti, visualizzare le date nell'ordine preferito della tua lingua e usufruire di una configurazione dei pacchetti e di un accesso più fluidi.
