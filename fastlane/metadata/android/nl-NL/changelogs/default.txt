@@ -1,0 +1,2 @@
+25.5:
+Op Android 17 vraagt Remote Tap to Pay om toegang tot het lokale netwerk, zodat je telefoon en tablet verbinding kunnen maken. Winkelbeheer is ook eenvoudiger: pas cadeaubonnen toe tijdens het bewerken van bestellingen, werk de alt-tekst en -titels van de productafbeelding bij, bekijk data in de voorkeursvolgorde van je taal en geniet van een soepelere configuratie van de bundel en aanmelding.

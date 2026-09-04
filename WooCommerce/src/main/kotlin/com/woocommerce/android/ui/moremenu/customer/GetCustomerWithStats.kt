@@ -30,7 +30,7 @@ class GetCustomerWithStats @Inject constructor(
         return mergeResults(customer, analyticsCustomer)
     }
 
-    private fun mergeResults(
+    private suspend fun mergeResults(
         customer: WCCustomerModel?,
         analyticsCustomer: WCCustomerFromAnalytics?
     ): Result<CustomerWithAnalytics> {
@@ -56,7 +56,7 @@ class GetCustomerWithStats @Inject constructor(
         }
     }
 
-    private fun customerWithBothValues(
+    private suspend fun customerWithBothValues(
         customer: WCCustomerModel,
         analyticsCustomer: WCCustomerFromAnalytics
     ): CustomerWithAnalytics {
@@ -112,7 +112,7 @@ class GetCustomerWithStats @Inject constructor(
         )
     }
 
-    private fun customerWithOutAnalytics(customer: WCCustomerModel): CustomerWithAnalytics {
+    private suspend fun customerWithOutAnalytics(customer: WCCustomerModel): CustomerWithAnalytics {
         val (billingCountry, billingState) = getLocations(customer.billingCountry, customer.billingState)
         val (shippingCountry, shippingState) = getLocations(customer.shippingCountry, customer.shippingState)
         return CustomerWithAnalytics(
@@ -158,7 +158,7 @@ class GetCustomerWithStats @Inject constructor(
         )
     }
 
-    private fun analyticsWithoutCustomer(analyticsCustomer: WCCustomerFromAnalytics): CustomerWithAnalytics {
+    private suspend fun analyticsWithoutCustomer(analyticsCustomer: WCCustomerFromAnalytics): CustomerWithAnalytics {
         val (country, state) = getLocations(analyticsCustomer.country, analyticsCustomer.state)
         val nameSplit = analyticsCustomer.name.split(" ")
         val firstName = nameSplit.firstOrNull().orEmpty()

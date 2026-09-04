@@ -823,7 +823,7 @@ class WooPosCardReaderConnectionController(
             is WooPosCardReaderConnectionState.UpdateAvailable -> {
                 _state.value = currentState.copy(showCancelWarning = true)
             }
-            else -> error("Invalid state $currentState for update back button clicked")
+            else -> error("Invalid state ${currentState::class.simpleName} for update back button clicked")
         }
     }
 

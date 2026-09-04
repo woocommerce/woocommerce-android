@@ -1,0 +1,1 @@
+Die Datumsangaben für Bestellungen und Shop-Statistiken auf deiner Uhr entsprechen nun der in deiner Sprache bevorzugten Datumsreihenfolge, sodass sie auf einen Blick leichter zu erkennen sind.
