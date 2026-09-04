@@ -743,6 +743,39 @@ fun ExpandableProductCardPreview() {
     }
 }
 
+@Preview(name = "Expanded", widthDp = 360)
+@Preview(name = "Expanded - Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES, widthDp = 360)
+@Composable
+fun ExpandableProductCardExpandedPreview() {
+    val item = Order.Item.EMPTY.copy(
+        name = "Test Product Long Long Long Long Long Long Name",
+        quantity = 3.0f,
+        sku = "123",
+        itemId = 10L
+    )
+    val product = OrderCreationProduct.ProductItem(
+        item = item,
+        productInfo = ProductInfo(
+            imageUrl = "",
+            isStockManaged = true,
+            stockQuantity = 3.0,
+            stockStatus = ProductStockStatus.InStock,
+            pricePreDiscount = "$1000",
+            priceTotal = "$3000",
+            priceSubtotal = "$3000",
+            discountAmount = "$5",
+            priceAfterDiscount = "$2995",
+            hasDiscount = true,
+            isConfigurable = false,
+            productType = ProductType.SIMPLE
+        )
+    )
+    val state = remember { mutableStateOf(OrderCreateEditViewModel.ViewState()) }
+    WooThemeWithBackground {
+        ExpandableProductCard(state, product, {}, {}, {}, {}, { _, _ -> }, isExpanded = true)
+    }
+}
+
 @Preview
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
