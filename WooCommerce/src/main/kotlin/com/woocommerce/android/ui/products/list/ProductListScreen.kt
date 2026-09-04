@@ -442,6 +442,7 @@ private fun ProductBrowsingControls(
                     stringResource(R.string.product_list_filters)
                 },
                 onClick = onFiltersClicked,
+                selected = filterCount > 0,
                 modifier = Modifier.testTag(ProductListTestTags.FILTERS),
                 leadingIcon = {
                     ProductBrowsingControlIcon(WooIcons.Regular.BarsFilter)

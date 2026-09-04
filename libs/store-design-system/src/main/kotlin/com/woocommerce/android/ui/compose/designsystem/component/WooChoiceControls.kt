@@ -194,11 +194,12 @@ fun WooActionChip(
     label: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    selected: Boolean = false,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val style = wooFilterChipStyle(
-        selected = false,
+        selected = selected,
         enabled = enabled,
         colors = WooTheme.colors,
         stroke = WooTheme.stroke,
