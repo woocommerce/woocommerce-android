@@ -43,6 +43,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeRestrictionSupportLauncher
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
 import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFragment
 import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
@@ -199,6 +200,9 @@ class LoginActivity :
 
     @Inject
     internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
+    @Inject
+    internal lateinit var ageRestrictionSupportLauncher: AgeRestrictionSupportLauncher
 
     @Inject
     internal lateinit var registerDevice: RegisterDevice
@@ -1223,6 +1227,10 @@ class LoginActivity :
             .setMessage(state.ageRestrictedMessage)
             .setCancelable(false)
             .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
+            .setNegativeButton(R.string.support_contact) { _, _ ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CONTACT_SUPPORT_TAPPED)
+                ageRestrictionSupportLauncher.open(this)
+            }
             .create()
             .also {
                 it.show()
