@@ -725,11 +725,14 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `given root endpoint advertises HTTP, when fetching site, then normalize and require configuration`() = test {
-        val jetpackCPSite = SiteModel().apply { setIsJetpackConnected(false) }
+    fun `given root endpoint advertises HTTP on another URL, when fetching site, then keep the WPCom URL and require configuration`() = test {
+        val jetpackCPSite = SiteModel().apply {
+            url = "https://test.com"
+            setIsJetpackConnected(false)
+        }
         initRootEndpointResponse(
             RootWPAPIRestResponse(
-                url = "http://test.com",
+                url = "http://test.com/wp",
                 namespaces = listOf("wc/v3"),
                 authentication = RootWPAPIRestResponse.Authentication(
                     applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(

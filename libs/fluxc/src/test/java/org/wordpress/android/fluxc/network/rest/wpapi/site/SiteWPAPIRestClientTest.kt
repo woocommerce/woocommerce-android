@@ -180,6 +180,20 @@ class SiteWPAPIRestClientTest {
     }
 
     @Test
+    fun `given server reports a different site URL, when fetching site, then keep the entered address`() = test {
+        givenSiteResponse(
+            RootWPAPIRestResponse(
+                url = "$SITE_URL/wp",
+                namespaces = listOf("wc/v3"),
+            )
+        )
+
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(HTTP_SITE_URL))
+
+        assertThat(site.url).isEqualTo(SITE_URL)
+    }
+
+    @Test
     fun `given application passwords and empty namespaces, when fetching site, then return invalid response error`() =
         test {
             givenSiteResponse(

@@ -91,7 +91,7 @@ class SiteWPAPIRestClient @Inject constructor(
                     adminUrl = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl)
 
                     wpApiRestUrl = discoveredWpApiUrl
-                    this.url = serverUrl?.normalizedUrl ?: cleanedUrl
+                    this.url = cleanedUrl
                     this.username = payload.username
                     this.password = payload.password
                 }

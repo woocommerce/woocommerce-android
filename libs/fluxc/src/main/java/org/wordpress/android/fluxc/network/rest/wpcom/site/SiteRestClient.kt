@@ -685,7 +685,6 @@ class SiteRestClient @Inject constructor(
 
     private fun SiteModel.applyServerHttpsConfiguration(serverUrl: HttpsUrlNormalizer.Result?) {
         serverUrl ?: return
-        url = serverUrl.normalizedUrl
         httpsConfigurationState = if (serverUrl.wasUpgraded) {
             SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
         } else {
