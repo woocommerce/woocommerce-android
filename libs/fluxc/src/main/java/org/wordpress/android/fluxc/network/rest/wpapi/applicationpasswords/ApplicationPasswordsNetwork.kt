@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.network.toVolleyMethod
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.AppLog
 import java.util.Optional
@@ -31,7 +32,8 @@ private const val UNAUTHORIZED = 401
 class ApplicationPasswordsNetwork @Inject constructor(
     @Named("no-cookies") private val requestQueue: RequestQueue,
     private val userAgent: UserAgent,
-    private val listener: Optional<ApplicationPasswordsListener>
+    private val listener: Optional<ApplicationPasswordsListener>,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) : WPAPINetwork {
     // We can't use construction injection for this variable, as its class is internal
     @Inject
@@ -58,7 +60,9 @@ class ApplicationPasswordsNetwork @Inject constructor(
         ): WPAPIGsonRequest<T> {
             val request = WPAPIGsonRequest(
                 method.toVolleyMethod(),
-                (site.wpApiRestUrl ?: site.url.slashJoin("wp-json")).slashJoin(path),
+                httpsUrlNormalizer.normalize(
+                    (site.wpApiRestUrl ?: site.url.slashJoin("wp-json")).slashJoin(path)
+                ).normalizedUrl,
                 params,
                 body,
                 clazz,

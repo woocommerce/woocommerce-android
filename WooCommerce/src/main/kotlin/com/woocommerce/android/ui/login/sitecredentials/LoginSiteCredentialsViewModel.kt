@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.Endpoint as ValidationEndpoint
@@ -51,6 +52,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
@@ -59,6 +61,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
     private val wpApiSiteRepository: WPApiSiteRepository,
     private val selectedSite: SelectedSite,
     private val loginAnalyticsListener: LoginAnalyticsListener,
@@ -73,6 +76,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         const val USERNAME_KEY = "username"
         const val PASSWORD_KEY = "password"
         const val IS_JETPACK_CONNECTED_KEY = "is-jetpack-connected"
+        const val WAS_URL_NORMALIZED_TO_HTTPS_KEY = "was-url-normalized-to-https"
         private const val REDIRECTION_URL = "woocommerce://login"
         private const val SUCCESS_PARAMETER = "success"
         private const val USERNAME_PARAMETER = "user_login"
@@ -82,10 +86,25 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         private const val ADMIN_BASE_URL_KEY = "admin-base-url"
     }
 
+    private val wasSiteAddressNormalizedToHttps =
+        savedStateHandle[WAS_URL_NORMALIZED_TO_HTTPS_KEY]
+            ?: normalizeSiteAddress(requireNotNull(savedStateHandle.get<String>(SITE_ADDRESS_KEY)))?.wasUpgraded
+            ?: false
+
     private var siteAddress: String
-        get() = savedStateHandle[SITE_ADDRESS_KEY]!!
+        get() {
+            val rawUrl = requireNotNull(savedStateHandle.get<String>(SITE_ADDRESS_KEY))
+            return normalizeSiteAddress(rawUrl)?.normalizedUrl ?: rawUrl
+        }
         set(value) {
-            savedStateHandle[SITE_ADDRESS_KEY] = value
+            savedStateHandle[SITE_ADDRESS_KEY] = normalizeSiteAddress(value)?.normalizedUrl ?: value
+        }
+
+    private fun normalizeSiteAddress(rawUrl: String): HttpsUrlNormalizer.Result? =
+        try {
+            httpsUrlNormalizer.normalize(rawUrl, addHttpsSchemeIfMissing = true)
+        } catch (_: IllegalArgumentException) {
+            null
         }
 
     // The URL the WP.com `connect/site-info` endpoint reports as the canonical site URL is
@@ -375,6 +394,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         hasVerifiedCustomLoginEntry: Boolean
     ) {
         when {
+            authenticationError?.networkErrorType == INVALID_SSL_CERTIFICATE -> {
+                showNativeAuthenticationError(authenticationError.errorMessage)
+            }
+
             hasVerifiedCustomLoginEntry -> authError.value = AuthenticationError(
                 errorMessage = requireNotNull(authenticationError).errorMessage,
                 showWpAdminFallbackOption = authenticationError.errorType == INVALID_RESPONSE
@@ -573,7 +596,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             LOGIN_SITE_CREDENTIALS_LOGIN_FAILED,
             mapOf(
                 AnalyticsTracker.KEY_STEP to step.name.lowercase(),
-                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to statusCode?.toString().orEmpty()
+                AnalyticsTracker.KEY_NETWORK_STATUS_CODE to statusCode?.toString().orEmpty(),
+                AnalyticsTracker.KEY_URL_WAS_NORMALIZED_TO_HTTPS to wasSiteAddressNormalizedToHttps.toString(),
             ),
             errorContext = errorContext,
             errorType = errorType,

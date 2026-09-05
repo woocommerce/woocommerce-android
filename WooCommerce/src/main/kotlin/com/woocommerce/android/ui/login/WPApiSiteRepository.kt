@@ -19,6 +19,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints
@@ -222,10 +224,11 @@ class WPApiSiteRepository @Inject constructor(
             ?: UiStringRes(string.error_generic)
 
         return CookieNonceAuthenticationException(
-            errorMessage,
-            type,
-            networkStatusCode,
-            loginEntryVerified
+            errorMessage = errorMessage,
+            errorType = type,
+            networkStatusCode = networkStatusCode,
+            loginEntryVerified = loginEntryVerified,
+            networkErrorType = networkError?.type
         )
     }
 
@@ -248,6 +251,8 @@ class WPApiSiteRepository @Inject constructor(
         type == CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
         type == CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
         type == BASIC_AUTH_REQUIRED -> UiStringRes(string.login_site_credentials_http_basic_auth_error)
+        networkError?.type == INVALID_SSL_CERTIFICATE -> UiStringRes(string.error_site_url_remote_certificate)
+        networkError != null -> null
         else -> message?.takeIf { it.isNotEmpty() }?.let { UiStringText(it) }
     }
 
@@ -255,7 +260,8 @@ class WPApiSiteRepository @Inject constructor(
         val errorMessage: UiString,
         val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?,
-        val loginEntryVerified: Boolean = false
+        val loginEntryVerified: Boolean = false,
+        val networkErrorType: GenericErrorType? = null
     ) : Exception((errorMessage as? UiStringText)?.text)
 
     companion object {
