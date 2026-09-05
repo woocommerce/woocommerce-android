@@ -8,7 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -52,13 +51,19 @@ class ProductShippingViewModel @Inject constructor(
     )
     private var viewState by viewStateData
 
-    val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
-    }
-
     private val originalShippingData = navArgs.shippingData
 
     private var shippingClassNameJob: Job? = null
+
+    init {
+        launch {
+            val parameters = parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            viewState = viewState.copy(
+                weightUnit = parameters.weightUnit,
+                dimensionUnit = parameters.dimensionUnit
+            )
+        }
+    }
 
     val shippingData
         get() = viewState.shippingData
@@ -130,7 +135,9 @@ class ProductShippingViewModel @Inject constructor(
     data class ViewState(
         val shippingData: ShippingData = ShippingData(),
         val isShippingClassSectionVisible: Boolean? = null,
-        @IgnoredOnParcel val shippingClassName: String? = null
+        @IgnoredOnParcel val shippingClassName: String? = null,
+        val weightUnit: String? = null,
+        val dimensionUnit: String? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isOneTimeShippingSectionVisible = shippingData.subscriptionShippingData != null

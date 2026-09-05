@@ -166,7 +166,7 @@ class CreateShippingLabelViewModel @Inject constructor(
     }
 
     private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
+        parameterRepository.getParametersBlocking(KEY_SHIPPING_LABELS_PARAMETERS, savedState)
     }
 
     private val arguments: CreateShippingLabelFragmentArgs by savedState.navArgs()

@@ -61,7 +61,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
 
-    val siteParameters: SiteParameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
+    val siteParameters: SiteParameters by lazy { parameterRepository.getParametersBlocking(KEY_PARAMETERS, savedState) }
 
     private var availablePackages: List<ShippingPackage>? = null
 

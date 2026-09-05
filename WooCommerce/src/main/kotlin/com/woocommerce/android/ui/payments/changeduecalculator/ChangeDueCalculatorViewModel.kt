@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -30,13 +31,13 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
-    private val siteParameters = parameterRepository.getParameters()
 
     data class UiState(
         val amountDue: BigDecimal = BigDecimal.ZERO,
         val change: BigDecimal = BigDecimal.ZERO,
         val amountReceived: BigDecimal = BigDecimal.ZERO,
-        val loading: Boolean = false,
+        val isLoading: Boolean = false,
+        val isMarkingOrderComplete: Boolean = false,
         val recordTransactionDetailsChecked: Boolean = false,
         val canCompleteOrder: Boolean,
         val currencySymbol: String,
@@ -49,12 +50,12 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         UiState(
-            loading = true,
+            isLoading = true,
             canCompleteOrder = false,
-            currencySymbol = siteParameters.currencySymbol.orEmpty(),
-            currencyPosition = getCurrencySymbolPosition(),
-            decimalSeparator = getDecimalSeparator(),
-            numberOfDecimals = getNumberOfDecimals(),
+            currencySymbol = "",
+            currencyPosition = CurrencyPosition.LEFT,
+            decimalSeparator = DEFAULT_DECIMAL_SEPARATOR,
+            numberOfDecimals = DEFAULT_NUMBER_OF_DECIMALS,
         )
     )
     val uiState: StateFlow<UiState> = _uiState
@@ -65,6 +66,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     private fun loadOrderDetails() {
         launch {
+            val siteParameters = parameterRepository.getParameters()
             val order = orderDetailRepository.getOrderById(orderId)!!
             _uiState.value = UiState(
                 amountDue = order.total,
@@ -72,9 +74,9 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 amountReceived = order.total,
                 canCompleteOrder = true,
                 currencySymbol = siteParameters.currencySymbol.orEmpty(),
-                currencyPosition = getCurrencySymbolPosition(),
-                decimalSeparator = getDecimalSeparator(),
-                numberOfDecimals = getNumberOfDecimals(),
+                currencyPosition = getCurrencySymbolPosition(siteParameters),
+                decimalSeparator = getDecimalSeparator(siteParameters),
+                numberOfDecimals = getNumberOfDecimals(siteParameters),
                 title = getTitleText(order.total),
                 changeDueText = "-"
             )
@@ -107,7 +109,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 val noteString = generateOrderNoteString(noteStringTemplate)
                 val draftNote = OrderNote(note = noteString, isCustomerNote = false)
 
-                _uiState.value = _uiState.value.copy(loading = true)
+                _uiState.value = _uiState.value.copy(isMarkingOrderComplete = true)
 
                 orderDetailRepository.addOrderNote(orderId, draftNote)
                     .fold(
@@ -129,32 +131,21 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-    private fun getCurrencySymbolPosition(): CurrencyPosition {
-        val siteParameters = parameterRepository.getParameters()
-        var position = CurrencyPosition.LEFT
-        if (siteParameters.currencyFormattingParameters != null) {
-            position = siteParameters.currencyFormattingParameters.currencyPosition
-        }
-        return position
+    private fun getCurrencySymbolPosition(siteParameters: SiteParameters): CurrencyPosition {
+        return siteParameters.currencyFormattingParameters?.currencyPosition ?: CurrencyPosition.LEFT
     }
 
-    private fun getDecimalSeparator(): String {
-        if (siteParameters.currencyFormattingParameters == null) {
-            return "."
-        }
-        return siteParameters.currencyFormattingParameters.currencyDecimalSeparator
+    private fun getDecimalSeparator(siteParameters: SiteParameters): String {
+        return siteParameters.currencyFormattingParameters?.currencyDecimalSeparator ?: DEFAULT_DECIMAL_SEPARATOR
     }
 
-    private fun getNumberOfDecimals(): Int {
-        if (siteParameters.currencyFormattingParameters == null) {
-            return 2
-        }
-        return siteParameters.currencyFormattingParameters.currencyDecimalNumber
+    private fun getNumberOfDecimals(siteParameters: SiteParameters): Int {
+        return siteParameters.currencyFormattingParameters?.currencyDecimalNumber ?: DEFAULT_NUMBER_OF_DECIMALS
     }
 
     private fun generateOrderNoteString(noteStringTemplate: String): String {
         val state = _uiState.value
-        val currencySymbol = siteParameters.currencySymbol.orEmpty()
+        val currencySymbol = state.currencySymbol
         return String.format(
             noteStringTemplate,
             "$currencySymbol${state.amountReceived.toPlainString()}",
@@ -175,5 +166,10 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         } else {
             currencyFormatter.formatCurrency(newChange)
         }
+    }
+
+    companion object {
+        private const val DEFAULT_DECIMAL_SEPARATOR = "."
+        private const val DEFAULT_NUMBER_OF_DECIMALS = 2
     }
 }
