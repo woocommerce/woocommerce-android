@@ -182,6 +182,15 @@ internal fun WooNoticeBannerDemo(
                 )
             },
         )
+        WooNoticeBanner(
+            title = "Secure your store with HTTPS",
+            description = "Your store address still uses HTTP.",
+            tone = WooNoticeBannerTone.Warning,
+            actionLabel = "Learn more",
+            onActionClick = {},
+            dismissContentDescription = "Dismiss HTTPS notice",
+            onDismissClick = {},
+        )
     }
 }
 
