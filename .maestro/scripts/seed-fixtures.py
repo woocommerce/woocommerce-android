@@ -397,11 +397,41 @@ def cleanup(args: argparse.Namespace) -> None:
         else:
             manifest["entities"].remove(entity)
             write_json(manifest_path, manifest)
+    run_id = str(manifest.get("run_id", "")).strip()
+    stragglers = 0
+    if run_id:
+        for entity_type, path in (
+            ("coupon", "coupons"),
+            ("product", "products"),
+            ("order", "orders"),
+            ("customer", "customers"),
+        ):
+            query: dict[str, Any] = {"search": run_id}
+            if entity_type in {"product", "order"}:
+                query["status"] = "any"
+            try:
+                found = client.list(path, **query)
+            except SmokeSetupError as exc:
+                errors.append(str(exc))
+                continue
+            for item in found:
+                if run_id.lower() not in entity_label(entity_type, item).lower():
+                    continue
+                try:
+                    client.delete(path, int(item["id"]))
+                except SmokeSetupError as exc:
+                    errors.append(str(exc))
+                else:
+                    stragglers += 1
+
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
         raise SmokeSetupError(f"Cleanup completed with {len(errors)} deletion error(s).")
-    print(f"Cleaned {original_count} manifest entities")
+    suffix = f" and {stragglers} entity created outside the manifest" if stragglers == 1 else (
+        f" and {stragglers} entities created outside the manifest" if stragglers else ""
+    )
+    print(f"Cleaned {original_count} manifest entities{suffix}")
 
 
 def sweep(args: argparse.Namespace) -> None:
