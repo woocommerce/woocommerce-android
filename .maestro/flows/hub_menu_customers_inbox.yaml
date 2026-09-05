@@ -65,14 +65,16 @@ tags:
     label: "Open Inbox"
 
 # Same problem as Customers: "Inbox" is also the More Menu button
-# text. The Inbox screen renders either an empty state ("Congrats,
-# you've read everything!" from empty_inbox_title) or a list of notes
-# with "Moments ago" / "X hours ago" / "Created on ..." timestamps.
-# Match on the empty state OR any of the recency labels.
+# text. Match on a note timestamp, which only the note list renders.
+#
+# The empty state, "Congrats, you've read everything!" from
+# empty_inbox_title, used to satisfy this too. It made an empty or
+# ineligible Inbox indistinguishable from a working one, so the store
+# having no notes is now a failure rather than a pass.
 - extendedWaitUntil:
-    visible: ".*Congrats.*|.*Moments ago.*|.*hours ago.*|.*days ago.*|.*minutes ago.*|.*Created on.*"
+    visible: ".*Moments ago.*|.*hours ago.*|.*days ago.*|.*minutes ago.*|.*Created on.*"
     timeout: 20000
-    label: "Wait for inbox content or empty state"
+    label: "Wait for inbox notes"
 
 - takeScreenshot: hub_inbox
 
