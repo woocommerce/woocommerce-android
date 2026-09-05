@@ -4,8 +4,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
@@ -95,6 +98,9 @@ fun WooNoticeBanner(
                     TextButton(
                         onClick = onActionClick,
                         colors = ButtonDefaults.textButtonColors(contentColor = colors.contentColor),
+                        contentPadding = PaddingValues(
+                            vertical = ButtonDefaults.TextButtonContentPadding.calculateTopPadding(),
+                        ),
                     ) {
                         Text(
                             text = actionLabel,
@@ -104,8 +110,10 @@ fun WooNoticeBanner(
                 }
             }
             if (dismissContentDescription != null && onDismissClick != null) {
+                val dismissInset = (MIN_TOUCH_TARGET_SIZE - WooTheme.iconSize.size24) / 2
                 IconButton(
                     onClick = onDismissClick,
+                    modifier = Modifier.offset(x = dismissInset, y = -dismissInset),
                     colors = IconButtonDefaults.iconButtonColors(contentColor = colors.contentColor),
                 ) {
                     Icon(
@@ -209,3 +217,5 @@ private data class WooNoticeBannerColors(
     val contentColor: Color,
     val border: BorderStroke? = null,
 )
+
+private val MIN_TOUCH_TARGET_SIZE = 48.dp
