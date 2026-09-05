@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.7
+-----
+- [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
+
 25.6
 -----
 - [*] Order detail: product line items now show each attribute with its label on its own line, so Product Add-Ons text values are readable instead of running together [https://github.com/woocommerce/woocommerce-android/pull/16476]
@@ -16,7 +20,6 @@
 - [*] The unread reviews count on the Menu tab and the Reviews row no longer gets stuck on stores where the app cannot track which reviews were read [https://github.com/woocommerce/woocommerce-android/pull/16473]
 - [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
-- [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 
 25.5
 -----
