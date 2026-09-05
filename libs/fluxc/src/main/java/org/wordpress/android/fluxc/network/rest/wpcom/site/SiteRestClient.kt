@@ -238,18 +238,10 @@ class SiteRestClient @Inject constructor(
 
         return when {
             result is JetpackResponse.JetpackSuccess && result.data != null -> {
-                val serverUrl = try {
-                    result.data.url?.let(httpsUrlNormalizer::normalize)
-                } catch (_: IllegalArgumentException) {
-                    return SiteModel().apply { error = BaseNetworkError(GenericErrorType.INVALID_RESPONSE) }
-                }
                 // Keep existing fields, and update only fields fetched from the root endpoint
                 site.apply {
                     name = result.data.name
                     timezone = result.data.gmtOffset
-                    serverUrl?.let {
-                        url = it.normalizedUrl
-                    }
                     hasWooCommerce = result.data.namespaces?.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
                     } ?: false
@@ -681,7 +673,7 @@ class SiteRestClient @Inject constructor(
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
             "options,plan,capabilities,meta,jetpack_modules"
-        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,url,namespaces,authentication"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"

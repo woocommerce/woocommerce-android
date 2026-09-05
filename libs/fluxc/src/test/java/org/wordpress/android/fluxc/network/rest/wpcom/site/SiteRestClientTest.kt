@@ -723,11 +723,14 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `given root endpoint advertises HTTP, when fetching site, then normalize fields`() = test {
-        val jetpackCPSite = SiteModel().apply { setIsJetpackConnected(false) }
+    fun `given root endpoint reports a different site URL, when fetching site, then keep the WPCom URL`() = test {
+        val jetpackCPSite = SiteModel().apply {
+            url = "https://test.com"
+            setIsJetpackConnected(false)
+        }
         initRootEndpointResponse(
             RootWPAPIRestResponse(
-                url = "http://test.com",
+                url = "http://test.com/wp",
                 namespaces = listOf("wc/v3"),
                 authentication = RootWPAPIRestResponse.Authentication(
                     applicationPasswords = RootWPAPIRestResponse.Authentication.ApplicationPasswords(
@@ -743,22 +746,6 @@ class SiteRestClientTest {
 
         assertThat(result.url).isEqualTo("https://test.com")
         assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo("https://test.com/application-passwords")
-    }
-
-    @Test
-    fun `given root endpoint server URL is invalid, when fetching site, then fail without mutating the site`() = test {
-        val jetpackCPSite = SiteModel().apply {
-            url = "https://test.com"
-            name = "Original"
-            setIsJetpackConnected(false)
-        }
-        initRootEndpointResponse(RootWPAPIRestResponse(name = "Updated", url = "ftp://test.com"))
-
-        val result = restClient.fetchSite(jetpackCPSite)
-
-        assertThat(result.isError).isTrue()
-        assertThat(result.error.type).isEqualTo(GenericErrorType.INVALID_RESPONSE)
-        assertThat(jetpackCPSite.name).isEqualTo("Original")
     }
 
     @Test
