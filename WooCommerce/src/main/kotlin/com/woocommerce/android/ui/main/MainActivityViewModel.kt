@@ -40,20 +40,35 @@ import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.SystemVersionUtilsWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.observeEvents
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import javax.inject.Inject
 
 @HiltViewModel
 @Suppress("LongParameterList")
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    private val dispatcher: Dispatcher,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val storeConnectionErrorMonitor: StoreConnectionErrorMonitor,
@@ -65,6 +80,7 @@ class MainActivityViewModel @Inject constructor(
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
     private val systemVersionUtilsWrapper: SystemVersionUtilsWrapper,
+    private val currentTimeProvider: CurrentTimeProvider,
     ageEligibilityChecker: AgeEligibilityChecker,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
@@ -95,6 +111,14 @@ class MainActivityViewModel @Inject constructor(
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
     val isUserAgeRangeEligible = ageEligibilityChecker.ageEligibilityState.asLiveData()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val httpsConfigurationWarningVisible = combine(
+        observeSelectedSiteUpdates(),
+        prefs.observePrefs().onStart { emit(Unit) },
+    ) { site, _ -> site }
+        .flatMapLatest(::httpsConfigurationWarningVisibility)
+        .toStateFlow(initialValue = false)
 
     // Snoozes the dialog when the merchant taps Dismiss. Reset when the app goes to the background
     // (see [onAppBackgrounded]) so a still-unreachable store reminds the merchant again next session.
@@ -130,6 +154,50 @@ class MainActivityViewModel @Inject constructor(
 
     fun onStoreConnectionErrorDismissed() {
         connectionErrorSnoozed.value = true
+    }
+
+    fun onHttpsConfigurationWarningDismissed() {
+        selectedSite.getOrNull()?.id?.takeIf { it > 0 }?.let { localSiteId ->
+            prefs.setHttpsConfigurationWarningDismissedAt(
+                localSiteId = localSiteId,
+                dismissedAt = currentTimeProvider.currentDate().time,
+            )
+        }
+    }
+
+    private fun observeSelectedSiteUpdates(): Flow<SiteModel?> = merge(
+        selectedSite.observe(),
+        dispatcher.observeEvents<OnSiteChanged>().map { event ->
+            val selectedLocalId = selectedSite.getOrNull()?.id ?: return@map null
+            event.updatedSites.firstOrNull { it.id == selectedLocalId }
+                ?: siteStore.getSiteByLocalId(selectedLocalId)
+                ?: selectedSite.getOrNull()
+        },
+    )
+
+    private fun httpsConfigurationWarningVisibility(site: SiteModel?): Flow<Boolean> = flow {
+        if (site == null || !site.requiresHttpsConfigurationWarning()) {
+            emit(false)
+            return@flow
+        }
+
+        val dismissedAt = prefs.getHttpsConfigurationWarningDismissedAt(site.id)
+        val elapsedSinceDismissal = currentTimeProvider.currentDate().time - dismissedAt
+        val remainingDismissal = HTTPS_WARNING_DISMISSAL_DURATION_MILLIS - elapsedSinceDismissal
+        if (dismissedAt > 0L && remainingDismissal > 0L) {
+            emit(false)
+            delay(remainingDismissal)
+        }
+        emit(true)
+        awaitCancellation()
+    }
+
+    private fun SiteModel.requiresHttpsConfigurationWarning(): Boolean = when (httpsConfigurationState) {
+        SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS -> true
+        SiteModel.HTTPS_CONFIGURATION_SECURE -> false
+        else -> sequenceOf(url, loginUrl, prefs.getLoginSiteAddress())
+            .filterNotNull()
+            .any { it.startsWith("http://", ignoreCase = true) }
     }
 
     fun onAppBackgrounded() {
@@ -440,5 +508,9 @@ class MainActivityViewModel @Inject constructor(
     sealed class BottomBarState : Event() {
         object Visible : BottomBarState()
         object Hidden : BottomBarState()
+    }
+
+    companion object {
+        private const val HTTPS_WARNING_DISMISSAL_DURATION_MILLIS = 24 * 60 * 60 * 1000L
     }
 }

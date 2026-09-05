@@ -239,7 +239,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             val originalSiteUrl = "http://site.example"
             whenever(repository.login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS))
                 .thenReturn(Result.success(Unit))
-            whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD)).thenReturn(Result.success(site))
+            whenever(repository.fetchSite(SITE_URL, USERNAME, PASSWORD, true)).thenReturn(Result.success(site))
             setup(siteAddress = originalSiteUrl)
 
             viewModel.viewState.observeForTesting {
@@ -248,7 +248,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             }
 
             verify(repository).login(SITE_URL, USERNAME, PASSWORD, DEFAULT_ENDPOINTS)
-            verify(repository).fetchSite(SITE_URL, USERNAME, PASSWORD)
+            verify(repository).fetchSite(SITE_URL, USERNAME, PASSWORD, true)
             verify(repository, never()).login(eq(originalSiteUrl), any(), any(), any())
             verify(repository).checkIfUserIsEligible(site)
             assertThat(viewModel.viewState.value?.endpointRecovery).isNull()

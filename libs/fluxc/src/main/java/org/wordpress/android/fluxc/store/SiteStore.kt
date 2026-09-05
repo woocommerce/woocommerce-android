@@ -85,6 +85,7 @@ open class SiteStore @Inject constructor(
         val url: String,
         val username: String? = null,
         val password: String? = null,
+        val wasUrlNormalizedToHttps: Boolean = false,
     ) : Payload<BaseNetworkError>()
 
     data class FetchSitesPayload @JvmOverloads constructor(

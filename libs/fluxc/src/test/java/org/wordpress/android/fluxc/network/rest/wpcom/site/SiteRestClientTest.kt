@@ -111,7 +111,7 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `given WPCom response advertises HTTP, when fetching site, then normalize fields`() =
+    fun `given WPCom response advertises HTTP, when fetching site, then normalize fields and require configuration`() =
         test {
             val response = SiteWPComRestResponse().apply {
                 ID = siteId
@@ -129,6 +129,8 @@ class SiteRestClientTest {
             assertThat(responseModel.url).isEqualTo("https://site.example/store")
             assertThat(responseModel.adminUrl).isEqualTo("https://site.example/store/wp-admin/")
             assertThat(responseModel.loginUrl).isEqualTo("https://site.example/store/wp-login.php")
+            assertThat(responseModel.httpsConfigurationState)
+                .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
         }
 
     @Test
@@ -723,7 +725,7 @@ class SiteRestClientTest {
     }
 
     @Test
-    fun `given root endpoint reports a different site URL, when fetching site, then keep the WPCom URL`() = test {
+    fun `given root endpoint advertises HTTP on another URL, when fetching site, then keep the WPCom URL and require configuration`() = test {
         val jetpackCPSite = SiteModel().apply {
             url = "https://test.com"
             setIsJetpackConnected(false)
@@ -746,6 +748,27 @@ class SiteRestClientTest {
 
         assertThat(result.url).isEqualTo("https://test.com")
         assertThat(result.applicationPasswordsAuthorizeUrl).isEqualTo("https://test.com/application-passwords")
+        assertThat(result.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
+    }
+
+    @Test
+    fun `given root endpoint server URL is invalid, when fetching site, then fail without changing stored state`() = test {
+        val jetpackCPSite = SiteModel().apply {
+            url = "https://test.com"
+            name = "Original"
+            httpsConfigurationState = SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+            setIsJetpackConnected(false)
+        }
+        initRootEndpointResponse(RootWPAPIRestResponse(name = "Updated", url = "ftp://test.com"))
+
+        val result = restClient.fetchSite(jetpackCPSite)
+
+        assertThat(result.isError).isTrue()
+        assertThat(result.error.type).isEqualTo(GenericErrorType.INVALID_RESPONSE)
+        assertThat(jetpackCPSite.name).isEqualTo("Original")
+        assertThat(jetpackCPSite.httpsConfigurationState)
+            .isEqualTo(SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS)
     }
 
     @Test

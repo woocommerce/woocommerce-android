@@ -216,6 +216,9 @@ class SiteRestClient @Inject constructor(
                 if (site.id > 0) {
                     newSite.id = site.id
                 }
+                if (newSite.httpsConfigurationState == SiteModel.HTTPS_CONFIGURATION_UNKNOWN) {
+                    newSite.httpsConfigurationState = site.httpsConfigurationState
+                }
                 newSite
             }
 
@@ -238,10 +241,16 @@ class SiteRestClient @Inject constructor(
 
         return when {
             result is JetpackResponse.JetpackSuccess && result.data != null -> {
+                val serverUrl = try {
+                    result.data.url?.let(httpsUrlNormalizer::normalize)
+                } catch (_: IllegalArgumentException) {
+                    return SiteModel().apply { error = BaseNetworkError(GenericErrorType.INVALID_RESPONSE) }
+                }
                 // Keep existing fields, and update only fields fetched from the root endpoint
                 site.apply {
                     name = result.data.name
                     timezone = result.data.gmtOffset
+                    applyServerHttpsConfiguration(serverUrl)
                     hasWooCommerce = result.data.namespaces?.any {
                         it.startsWith(WOO_API_NAMESPACE_PREFIX)
                     } ?: false
@@ -618,6 +627,11 @@ class SiteRestClient @Inject constructor(
         val site = SiteModel()
         site.siteId = from.ID
         site.url = normalizedSiteUrl.normalizedUrl
+        site.httpsConfigurationState = when {
+            normalizedSiteUrl.wasUpgraded -> SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+            from.URL.startsWith("https://", ignoreCase = true) -> SiteModel.HTTPS_CONFIGURATION_SECURE
+            else -> SiteModel.HTTPS_CONFIGURATION_UNKNOWN
+        }
         site.name = StringEscapeUtils.unescapeHtml4(from.name)
         site.setIsJetpackConnected(from.jetpack && from.jetpack_connection)
         site.setIsJetpackInstalled(from.jetpack)
@@ -669,11 +683,20 @@ class SiteRestClient @Inject constructor(
     private fun String.normalizeOptionalUrl(): String? =
         runCatching { httpsUrlNormalizer.normalize(this).normalizedUrl }.getOrNull()
 
+    private fun SiteModel.applyServerHttpsConfiguration(serverUrl: HttpsUrlNormalizer.Result?) {
+        serverUrl ?: return
+        httpsConfigurationState = if (serverUrl.wasUpgraded) {
+            SiteModel.HTTPS_CONFIGURATION_REQUIRES_HTTPS
+        } else {
+            SiteModel.HTTPS_CONFIGURATION_SECURE
+        }
+    }
+
     companion object {
         @VisibleForTesting
         const val SITE_FIELDS = "ID,URL,name,jetpack,jetpack_connection,is_private," +
             "options,plan,capabilities,meta,jetpack_modules"
-        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,namespaces,authentication"
+        private const val ROOT_ENDPOINT_FIELDS = "name,gmt_offset,url,namespaces,authentication"
         private const val WOO_API_NAMESPACE_PREFIX = "wc/"
         private const val FIELDS = "fields"
         private const val FILTERS = "filters"
