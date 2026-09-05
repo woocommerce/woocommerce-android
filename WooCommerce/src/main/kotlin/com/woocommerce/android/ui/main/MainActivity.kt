@@ -161,7 +161,7 @@ class MainActivity :
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
         private const val HTTPS_CONFIGURATION_LEARN_MORE_URL =
-            "https://developer.wordpress.org/advanced-administration/security/https/"
+            "https://woocommerce.com/document/ssl-and-https/#for-new-websites-stores"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
