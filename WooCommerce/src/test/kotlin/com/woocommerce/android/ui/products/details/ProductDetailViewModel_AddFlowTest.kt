@@ -105,7 +105,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         gmtOffset = 0f
     )
     private val parameterRepository: ParameterRepository = mock {
-        on(it.getParameters(any(), any<SavedStateHandle>())).thenReturn(siteParams)
+        on { getParameters(any(), any<SavedStateHandle>()) } doReturn siteParams
     }
     private val generateVariationCandidates: GenerateVariationCandidates = mock()
     private val duplicateProduct: DuplicateProduct = mock()

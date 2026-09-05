@@ -679,6 +679,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
 
             verify(tracker).trackFetchingLocationFailed("selected site missing")
+            verify(tracker).trackConnectionFailed("location_fetch_failed", "selected site missing")
         }
 
     @Test
@@ -966,7 +967,28 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             readerStatusFlow.emit(CardReaderStatus.Connecting)
             readerStatusFlow.emit(CardReaderStatus.NotConnected())
 
-            verify(tracker).trackConnectionFailed()
+            verify(tracker).trackConnectionFailed("unknown", null)
+        }
+
+    @Test
+    fun `given Stripe error code, when connecting to reader fails, then Stripe error type is tracked`() =
+        testBlocking {
+            // GIVEN
+            init()
+            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
+            readerStatusFlow.emit(CardReaderStatus.Connecting)
+
+            // WHEN
+            readerStatusFlow.emit(
+                CardReaderStatus.NotConnected(
+                    errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
+                    errorMessage = "Connection timed out",
+                    stripeErrorCode = "request_timed_out",
+                )
+            )
+
+            // THEN
+            verify(tracker).trackConnectionFailed("request_timed_out", "Connection timed out")
         }
 
     @Test

@@ -23,6 +23,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -38,7 +39,9 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
         private val SAMPLE_UPLOADED_IMAGE = Product.Image(0, "image", null, "url", Date(), false)
     }
 
-    private val buildProductPreviewProperties: BuildProductPreviewProperties = mock()
+    private val buildProductPreviewProperties: BuildProductPreviewProperties = mock {
+        on { invoke(any(), any()) } doReturn emptyList()
+    }
     private val generateProductWithAI: GenerateProductWithAI = mock {
         on { invoke(any()) } doSuspendableAnswer {
             delay(100)

@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.payments.tracking.toAnalyticsErrorType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.BluetoothRequirement
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
@@ -648,8 +649,11 @@ class WooPosCardReaderConnectionController(
                 _state.value = Connected(readerName = phone.name)
             }
             is WooPosRemoteReaderSession.State.Failed -> {
-                logger.e("Remote reader connection failed: ${result.message}")
-                tracker.trackConnectionFailed()
+                logger.e("Remote reader connection failed: ${result.errorDescription}")
+                tracker.trackConnectionFailed(
+                    errorType = result.reason.analyticsValue,
+                    errorDescription = result.errorDescription,
+                )
                 appPrefsWrapper.removeLastConnectedPhoneDeviceId()
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
                     errorMessage = result.message,
@@ -730,7 +734,7 @@ class WooPosCardReaderConnectionController(
             }
             is CardReaderStatus.NotConnected -> {
                 if (_state.value is WooPosCardReaderConnectionState.Connecting) {
-                    handleConnectionFailed(status.errorCode, status.errorMessage)
+                    handleConnectionFailed(status)
                 }
             }
 
@@ -739,13 +743,10 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    private fun handleConnectionFailed(
-        errorCode: CardReaderStatus.NotConnected.ErrorCode?,
-        errorMessage: String?
-    ) {
-        logger.e("Connection failed - $errorCode: $errorMessage")
-        tracker.trackConnectionFailed()
-        when (errorCode) {
+    private fun handleConnectionFailed(status: CardReaderStatus.NotConnected) {
+        logger.e("Connection failed - ${status.errorCode}: ${status.errorMessage}")
+        tracker.trackConnectionFailed(status.toAnalyticsErrorType(), status.errorMessage)
+        when (status.errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailedBatteryLow(
                     onCancelClicked = { cancel() }
@@ -755,7 +756,7 @@ class WooPosCardReaderConnectionController(
             CardReaderStatus.NotConnected.ErrorCode.OTHER,
             null -> {
                 _state.value = WooPosCardReaderConnectionState.ConnectingFailed(
-                    errorMessage = errorMessage ?: "Connection failed",
+                    errorMessage = status.errorMessage ?: "Connection failed",
                     onRetryClicked = {
                         selectedReader?.let { connectToReader(it) } ?: checkRequirementsAndStartDiscovery()
                     },
@@ -822,7 +823,7 @@ class WooPosCardReaderConnectionController(
             is WooPosCardReaderConnectionState.UpdateAvailable -> {
                 _state.value = currentState.copy(showCancelWarning = true)
             }
-            else -> error("Invalid state $currentState for update back button clicked")
+            else -> error("Invalid state ${currentState::class.simpleName} for update back button clicked")
         }
     }
 

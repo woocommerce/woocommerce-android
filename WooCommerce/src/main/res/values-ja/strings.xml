@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-12 09:56:10+0000
+Translation-Revision-Date: 2026-08-27 09:58:09+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">位置情報をオンにしてカードリーダーを表示</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">位置情報にカードリーダーの表示を許可</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Bluetooth をオンにしてカードリーダーを表示</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Bluetooth にカードリーダーの表示を許可</string>
+    <string name="woopos_card_reader_local_network_permission_message">カードリーダーとして使用するスマートフォンに接続するには、ローカルネットワークの権限が必要です。</string>
+    <string name="woopos_card_reader_local_network_permission_title">ローカルネットワークの権限が必要です</string>
+    <string name="woopos_refund_error_invalid_amount">返金額が有効ではありません。</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">返金額が、このアイテムの返金可能残額を超えています</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">返金額が、この注文の返金可能残額を超えています</string>
+    <string name="woopos_refund_error_order_not_refundable">この注文は返金できません</string>
+    <string name="woopos_refund_error_item_already_refunded">このアイテムはすでに全額返金されています</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">選択した数量が、返金可能残量を超えています。</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">コードを再表示</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">レジで集金</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">オンラインで行われた支払いはありません。 レジで集金するか、コードを再表示します。</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">顧客が直接支払いを選択しました</string>
+    <string name="woopos_remote_reader_failed_token_invalid">支払いサービスエラー。  再接続を試行してください。</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">スマートフォンで NFC をオンにしてから、もう一度お試しください。</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">このスマートフォンは Tap to Pay の対象ではありません。 別の端末をお試しください。</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">このパッケージにはサブスクリプション商品が含まれており、注文作成ではサポートされていません</string>
+    <string name="product_image_details_name_removal_blocked">アプリはタイトルの削除をサポートしていません。 wp-admin を使用して削除してください。</string>
+    <string name="product_image_details_alt_text_removal_blocked">アプリは代替テキストの削除をサポートしていません。 wp-admin を使用して削除してください。</string>
+    <string name="product_image_details_name_label">タイトル</string>
+    <string name="product_image_details_alt_text_label">代替テキスト</string>
+    <string name="product_image_details_title">画像詳細</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">設定を開く</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">ローカルネットワークの権限がブロックされています。 「設定」を開き、このスマートフォンで Tap to Pay を使用するためのローカルネットワークアクセスを許可してください。</string>
+    <string name="card_reader_mode_local_network_permission_continue">続行</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">タブレットがこのスマートフォンを見つけられるようにするには、Android にローカルネットワークアクセスが必要です。 ネットワーク外には何も送信されません。</string>
+    <string name="card_reader_mode_local_network_permission_header">ローカルネットワークの権限が必要です</string>
+    <string name="card_reader_mode_error_phone_not_eligible">このスマートフォンは Tap to Pay の対象ではありません。 別の端末をお試しください。</string>
+    <string name="card_reader_pay_in_person_fetch_failed">「直接支払い」が有効かどうかを確認できませんでした。 しばらくしてからもう一度お試しください。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">無効化</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">これにより、ストアの購入手続き時に代金引換の支払い方法が無効になり、顧客が選択できなくなります。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">直接支払いを無効化しますか ?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">有効化</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">これにより、ストアの購入手続き時に代金引換の支払い方法が有効になり、サイトの購入手続きを含め、顧客向けの名称が「%1$s」から「直接支払い」に変更されます。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">これによりストアの購入手続き時に代金引換の支払い方法が有効になります。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">直接支払いを有効化しますか ?</string>
+    <string name="order_creation_gift_card_not_applied">このギフトカードを適用できませんでした</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">バリエーションのないバリエーション商品は追加できません</string>
+    <string name="login_site_credentials_use_web_authorization">代わりにブラウザーでログインしてみてください</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">ストアのログイン設定を保存できませんでした。 もう一度お試しください。</string>
+    <string name="login_site_credentials_admin_url_not_found_error">そのアドレスでは WordPress ダッシュボードにアクセスできませんでした。 確認して、もう一度お試しください。</string>
+    <string name="login_site_credentials_login_url_not_found_error">そのアドレスに WordPress のログインページが見つかりませんでした。 確認して、もう一度お試しください。</string>
+    <string name="login_site_credentials_endpoint_same_site_error">保護された接続またはポートを変更せずに、同じサイトのアドレスを入力してください。</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">http:// または https:// を含むウェブアドレス全体を入力してください。</string>
+    <string name="login_site_credentials_admin_url_label">WordPress ダッシュボードのアドレス</string>
+    <string name="login_site_credentials_admin_url_description">セキュリティプラグインが WordPress ダッシュボードを移動する場合があります。 ダッシュボードを開くために使用するアドレスを入力してください。</string>
+    <string name="login_site_credentials_admin_url_title">ストアのダッシュボードはどこにありますか ?</string>
+    <string name="login_site_credentials_login_url_label">WordPress ログインのアドレス</string>
+    <string name="login_site_credentials_login_url_description">セキュリティプラグインは WordPress のカスタムログインアドレスを使用する可能性があります。 ログインに使用するアドレスを入力してください。</string>
+    <string name="login_site_credentials_login_url_title">ストアにはどこでログインしますか ?</string>
     <string name="login_text_otp_another">テキストメッセージでコードを再送</string>
     <string name="login_text_otp">テキストメッセージでコードを再送</string>
     <string name="enter_verification_code_sms_generic">テキストメッセージを送信しました。 メッセージから認証コードを入力してください。</string>
@@ -2262,7 +2315,6 @@ Language: ja_JP
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
     <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>
-    <string name="login_site_credentials_use_web_authorization">WP 管理画面ページでもう一度お試しください</string>
     <string name="login_store_address">ログイン</string>
     <string name="loading">読込中…</string>
     <string name="upgrades_plan_ended_name">%sが終了しました</string>

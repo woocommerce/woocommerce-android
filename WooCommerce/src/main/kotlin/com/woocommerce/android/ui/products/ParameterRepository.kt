@@ -20,13 +20,21 @@ class ParameterRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite
 ) {
-    fun getParameters(key: String, savedState: SavedStateHandle): SiteParameters {
+    suspend fun getParameters(key: String, savedState: SavedStateHandle): SiteParameters {
         val parameters = savedState.get<SiteParameters>(key) ?: loadParameters()
         savedState[key] = parameters
         return parameters
     }
 
-    fun getParameters(): SiteParameters = loadParameters()
+    suspend fun getParameters(): SiteParameters = loadParameters()
+
+    /**
+     * Blocks the calling thread. Kept for the WooCommerce Services shipping label screens, which are
+     * scheduled for removal, and must not be used anywhere else.
+     */
+    fun getParametersBlocking(key: String, savedState: SavedStateHandle): SiteParameters = runBlocking {
+        getParameters(key, savedState)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun fetchParameters(): Result<SiteParameters> = coroutineScope {
@@ -53,21 +61,17 @@ class ParameterRepository @Inject constructor(
             return@coroutineScope Result.failure(WooException(productSettingsTask.getCompleted().error))
         }
 
-        return@coroutineScope withContext(Dispatchers.IO) {
-            Result.success(loadParameters())
-        }
+        return@coroutineScope Result.success(loadParameters())
     }
 
-    private fun loadParameters(): SiteParameters {
+    private suspend fun loadParameters(): SiteParameters = withContext(Dispatchers.IO) {
         val site = selectedSite.get()
         val siteSettings = wooCommerceStore.getSiteSettings(site)
         val currencyCode = siteSettings?.currencyCode
         val currencySymbol = wooCommerceStore.getSiteCurrency(site, currencyCode)
         val gmtOffset = site.timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = runBlocking {
-            wooCommerceStore.getProductSettings(site).let {
-                Pair(it?.weightUnit, it?.dimensionUnit)
-            }
+        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(site).let {
+            Pair(it?.weightUnit, it?.dimensionUnit)
         }
         val currencyFormattingParameters = siteSettings?.let {
             CurrencyFormattingParameters(
@@ -78,7 +82,7 @@ class ParameterRepository @Inject constructor(
             )
         }
 
-        return SiteParameters(
+        SiteParameters(
             currencyCode,
             currencySymbol,
             currencyFormattingParameters,

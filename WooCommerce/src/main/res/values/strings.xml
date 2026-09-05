@@ -305,6 +305,7 @@
     <string name="login_install_woo">Install WooCommerce</string>
     <string name="login_open_installation_page">Open installation page</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
+    <string name="login_not_wordpress_site_title">Not a WordPress site</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
     <string name="login_site_info_fallback_dialog_title">Connection Issue</string>
     <string name="login_site_info_fallback_dialog_message">We couldn\'t verify your site details. You can try logging in with your site credentials instead.</string>
@@ -4742,6 +4743,9 @@
     <string name="age_restriction_dialog_title">Account Access Restricted</string>
     <string name="age_restriction_supervised_user_account_dialog_message">Your Google Account settings indicate that you need a parent or guardian\'s permission to continue. They can grant access using their Google account to get you back online.</string>
     <string name="age_restriction_user_below_tos_minimum_age_dialog_message">Your Google Account indicates that you are under 13 years old, which is below the minimum age allowed to use the WooCommerce platform under its terms of service.</string>
+    <string name="age_verification_required_title">Verify your age to continue</string>
+    <string name="age_verification_required_message">Google Play needs you to verify your age before WooCommerce can check whether you can use the app. Complete verification in Google Play, then return here and try again.</string>
+    <string name="age_verification_open_google_play">Open Google Play</string>
 
     <!-- Woo POS Promo Carousel -->
     <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>

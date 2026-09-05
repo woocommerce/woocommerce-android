@@ -13,8 +13,14 @@ class LoginNotWPDialogFragment : LoginBaseErrorDialogFragment() {
         const val TAG = "LoginNotWPDialogFragment"
     }
 
+    override val title: String
+        get() = getString(R.string.login_not_wordpress_site_title)
+
     override val text: CharSequence
         get() = getString(R.string.login_not_wordpress_site_v2)
+
+    override val onNavigationButtonClick: () -> Unit
+        get() = { dismiss() }
 
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_SITE_ADDRESS

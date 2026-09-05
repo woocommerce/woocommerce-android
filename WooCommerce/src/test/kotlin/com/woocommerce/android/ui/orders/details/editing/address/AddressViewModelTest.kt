@@ -43,6 +43,7 @@ class AddressViewModelTest : BaseUnitTest() {
 
     private val dataStore: WCDataStore = mock {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)
+        on { getStates(any()) } doReturn emptyList()
         on { getStates(newCountry.code) } doReturn listOf(newState)
     }
     private val featureFlagRepository: FeatureFlagRepository = mock()
@@ -71,8 +72,8 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should fetch countries and states on start if they've never been fetched`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
+            whenever(dataStore.getCountries()).thenReturn(emptyList())
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -82,8 +83,8 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should NOT execute start more than once`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
+            whenever(dataStore.getCountries()).thenReturn(emptyList())
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -96,8 +97,8 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should execute start again after onScreenDetached is called`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
         testBlocking {
+            whenever(dataStore.getCountries()).thenReturn(emptyList())
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
@@ -129,7 +130,9 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should apply country and state changes to view state safely on start if countries list is empty`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        testBlocking {
+            whenever(dataStore.getCountries()).thenReturn(emptyList())
+        }
         addressViewModel.start(
             mapOf(SHIPPING to shippingAddress)
         )
@@ -169,7 +172,9 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should update viewState with country code instead of name if country code is NOT on countries list`() {
-        whenever(dataStore.getCountries()).thenReturn(emptyList())
+        testBlocking {
+            whenever(dataStore.getCountries()).thenReturn(emptyList())
+        }
         val missingCountryCode = "countryCode"
 
         addressViewModel.start(mapOf(SHIPPING to shippingAddress))
@@ -216,7 +221,9 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Should update viewState with state code instead of name if state code is NOT on states list`() {
-        whenever(dataStore.getStates(any())).thenReturn(emptyList())
+        testBlocking {
+            whenever(dataStore.getStates(any())).thenReturn(emptyList())
+        }
         val stateCode = "stateCode"
 
         addressViewModel.start(mapOf(SHIPPING to shippingAddress))
