@@ -67,12 +67,6 @@ class SiteWPAPIRestClient @Inject constructor(
                         error = BaseNetworkError(INVALID_RESPONSE)
                     }
                 }
-                val serverUrl = try {
-                    response.url?.let(httpsUrlNormalizer::normalize)
-                } catch (_: IllegalArgumentException) {
-                    return SiteModel().apply { error = BaseNetworkError(INVALID_RESPONSE) }
-                }
-
                 SiteModel().apply {
                     name = response.name
                     timezone = response.gmtOffset
@@ -87,7 +81,7 @@ class SiteWPAPIRestClient @Inject constructor(
                     adminUrl = inferAdminBaseUrl(applicationPasswordsAuthorizeUrl)
 
                     wpApiRestUrl = discoveredWpApiUrl
-                    this.url = serverUrl?.normalizedUrl ?: cleanedUrl
+                    this.url = cleanedUrl
                     this.username = payload.username
                     this.password = payload.password
                 }

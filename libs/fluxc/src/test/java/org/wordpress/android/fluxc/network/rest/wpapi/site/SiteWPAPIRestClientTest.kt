@@ -135,18 +135,17 @@ class SiteWPAPIRestClientTest {
     }
 
     @Test
-    fun `given server URL has unsupported scheme, when fetching site, then return invalid response`() = test {
+    fun `given server reports a different site URL, when fetching site, then keep the entered address`() = test {
         givenSiteResponse(
             RootWPAPIRestResponse(
-                url = "ftp://site.example",
+                url = "$SITE_URL/wp",
                 namespaces = listOf("wc/v3"),
             )
         )
 
-        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(SITE_URL))
+        val site = subject.fetchWPAPISite(FetchWPAPISitePayload(HTTP_SITE_URL))
 
-        assertThat(site.isError).isTrue()
-        assertThat(site.error.type).isEqualTo(INVALID_RESPONSE)
+        assertThat(site.url).isEqualTo(SITE_URL)
     }
 
     @Test
