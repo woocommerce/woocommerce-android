@@ -312,11 +312,10 @@ class MainActivity :
             if (f is DialogFragment) return
             lastToolbarFragment = WeakReference(f)
             val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
+            httpsConfigurationWarningAllowedForDestination = f is TopLevelFragment && shouldShowBottomNavigation
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    httpsConfigurationWarningAllowedForDestination =
-                        f is TopLevelFragment && shouldShowBottomNavigation
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
@@ -342,7 +341,6 @@ class MainActivity :
                 }
 
                 AppBarStatus.Hidden -> {
-                    httpsConfigurationWarningAllowedForDestination = false
                     hideToolbar()
                     appBarHasShadow = false
                     updateAppBarElevation()
