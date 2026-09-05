@@ -423,8 +423,8 @@ def sweep(args: argparse.Namespace) -> None:
 
     for entity_type, path, item in candidates:
         label = entity_label(entity_type, item)
-        match = re.search(r"SUITE-\d{8,14}-[A-Za-z0-9]+", label)
-        if "SUITE-" in label and not match:
+        match = re.search(r"SUITE-\d{8,14}-[A-Za-z0-9]+", label, re.IGNORECASE)
+        if "suite-" in label.lower() and not match:
             raise SmokeSetupError(
                 f"Orphan sweep refused loose automation match for {entity_type} {item.get('id')}: {label!r}"
             )
