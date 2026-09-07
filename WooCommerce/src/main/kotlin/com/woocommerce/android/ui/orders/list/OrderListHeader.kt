@@ -28,17 +28,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
+import com.woocommerce.android.ui.compose.designsystem.component.WooActionChipAppearance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
@@ -288,6 +291,11 @@ private fun OrderListBrowsingControls(
     onFiltersClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val filterStateDescription = if (filterCount > 0) {
+        pluralStringResource(R.plurals.filters_applied_state_description, filterCount, filterCount)
+    } else {
+        stringResource(R.string.no_filters_applied_state_description)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -334,13 +342,19 @@ private fun OrderListBrowsingControls(
             }
             WooActionChip(
                 label = if (filterCount > 0) {
-                    stringResource(R.string.product_list_filters_count, filterCount)
+                    stringResource(R.string.product_list_filters_selected, filterCount)
                 } else {
                     stringResource(R.string.product_list_filters)
                 },
                 onClick = onFiltersClicked,
-                selected = filterCount > 0,
-                modifier = Modifier.testTag(OrderListTestTags.FILTERS),
+                appearance = if (filterCount > 0) {
+                    WooActionChipAppearance.Accent
+                } else {
+                    WooActionChipAppearance.Neutral
+                },
+                modifier = Modifier
+                    .testTag(OrderListTestTags.FILTERS)
+                    .semantics { stateDescription = filterStateDescription },
                 leadingIcon = {
                     OrderFilterChipIcon(WooIcons.Regular.BarsFilter)
                 },
