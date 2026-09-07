@@ -421,25 +421,22 @@ class OrderCreateEditViewModel @Inject constructor(
 
         when (mode) {
             is Mode.Creation -> {
-                _orderDraft.update {
-                    it.copy(
-                        currency = parameterRepository.getParameters(
-                            PARAMETERS_KEY,
-                            savedState
-                        ).currencyCode.orEmpty()
-                    )
-                }
-                monitorOrderChanges()
-                // Presence of barcode indicates that this screen was called from the
-                // Order listing screen after scanning the barcode.
-                if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
-                    viewState = viewState.copy(isUpdatingOrderDraft = true)
-                    fetchProductBySKU(
-                        BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
-                        ScanningSource.ORDER_LIST
-                    )
-                }
                 launch {
+                    val currencyCode = parameterRepository.getParameters(
+                        PARAMETERS_KEY,
+                        savedState
+                    ).currencyCode.orEmpty()
+                    _orderDraft.update { it.copy(currency = currencyCode) }
+                    monitorOrderChanges()
+                    // Presence of barcode indicates that this screen was called from the
+                    // Order listing screen after scanning the barcode.
+                    if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
+                        viewState = viewState.copy(isUpdatingOrderDraft = true)
+                        fetchProductBySKU(
+                            BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
+                            ScanningSource.ORDER_LIST
+                        )
+                    }
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
                     getAutoTaxRateSetting()?.let {

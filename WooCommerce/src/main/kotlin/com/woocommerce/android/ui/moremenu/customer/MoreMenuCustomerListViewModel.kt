@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewM
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
@@ -34,7 +35,9 @@ class CustomerListDetailsViewModel @Inject constructor(
     stringUtils
 ) {
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
-        triggerEvent(CustomerSelected(customerModel.toCustomerWithAnalytics(repository, mapper)))
+        launch {
+            triggerEvent(CustomerSelected(customerModel.toCustomerWithAnalytics(repository, mapper)))
+        }
     }
 }
 

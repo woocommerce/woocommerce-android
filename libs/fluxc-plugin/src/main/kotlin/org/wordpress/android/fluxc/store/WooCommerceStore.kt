@@ -45,6 +45,7 @@ import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -70,6 +71,7 @@ open class WooCommerceStore @Inject internal constructor(
     private val settingsDao: SettingsDao,
     private val analyticsScheduledImportDao: AnalyticsScheduledImportDao,
     private val subscriptionProductCreationSettingsDao: SubscriptionProductCreationSettingsDao,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -288,6 +290,7 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
+                        ?.let { runCatching { httpsUrlNormalizer.normalize(it).normalizedUrl }.getOrNull() }
                     try {
                         siteStore.insertOrUpdateSite(site)
                     } catch (e: SiteStorePersistence.DuplicateSiteException) {

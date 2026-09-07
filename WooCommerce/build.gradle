@@ -339,7 +339,7 @@ dependencies {
     implementation(libs.mpandroidchart)
 
     implementation(libs.bumptech.glide.main)
-    ksp(libs.bumptech.glide.compiler)
+    ksp(libs.bumptech.glide.ksp)
     implementation(libs.bumptech.glide.volley.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)

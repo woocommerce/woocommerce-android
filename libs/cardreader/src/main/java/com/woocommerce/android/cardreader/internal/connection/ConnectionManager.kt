@@ -148,6 +148,7 @@ internal class ConnectionManager(
                     CardReaderStatus.NotConnected(
                         errorCode = e.errorCode.toErrorCode(),
                         errorMessage = e.errorMessage,
+                        stripeErrorCode = e.errorCode.name.lowercase(),
                     )
                 )
             }
