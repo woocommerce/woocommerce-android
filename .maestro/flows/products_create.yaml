@@ -11,7 +11,7 @@
 #   4. Configure Inventory with a unique SKU and managed stock quantity
 #   5. Add Shipping dimensions and prove the draft is a physical Simple product
 #   6. Create and attach a unique tag
-#   7. Add an Upsell from Linked products
+#   7. Add the seeded run-owned product as an Upsell from Linked products
 #   8. Add a downloadable file by URL
 #   9. Tap "Add more details" (productDetail_addMoreButton) — on a
 #      freshly-created simple product the Short description and
@@ -526,10 +526,39 @@ tags:
     timeout: 20000
     label: "Wait for product selection list"
 
+# Search for the seeded run-owned product instead of taking whichever
+# row renders first. An arbitrary product would satisfy the count check
+# below just as well, so the count would not prove anything.
 - tapOn:
-    id: "productName"
-    index: 0
-    label: "Select first existing product as Upsell"
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${MAESTRO_FIXTURE_SIMPLE_PRODUCT}
+- hideKeyboard
+
+# Scope both to the result list: the search field holds the same text,
+# and an unscoped match lands on the toolbar instead of the row.
+- extendedWaitUntil:
+    visible:
+      text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+      childOf:
+        id: "productsRecycler"
+    timeout: 20000
+    label: "Wait for the seeded product in search results"
+
+- tapOn:
+    text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+    childOf:
+      id: "productsRecycler"
+    retryTapIfNoChange: true
+    label: "Select the seeded product as Upsell"
 
 - extendedWaitUntil:
     visible:
@@ -542,10 +571,9 @@ tags:
     label: "Confirm Upsell product"
 
 - extendedWaitUntil:
-    visible:
-      id: "productName"
+    visible: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
     timeout: 15000
-    label: "Upsell product appears in the linked list"
+    label: "The seeded product is the attached Upsell"
 
 - tapOn:
     point: "7%,6%"
@@ -1001,7 +1029,24 @@ tags:
     if (!maestro.copiedText || !maestro.copiedText.trim().startsWith('1')) {
         throw new Error('Published product did not retain its Upsell');
     }
+
+# A count of one says an Upsell survived, not which one. Open the list
+# and check the seeded run-owned product is the one that is attached.
+- tapOn:
+    id: "add_upsell_products"
+    retryTapIfNoChange: true
+    label: "Open the persisted Upsell list"
+- extendedWaitUntil:
+    visible: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+    timeout: 15000
+    label: "Published product retains the seeded product as its Upsell"
 - takeScreenshot: product_persisted_linked_product
+- back
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 10000
+    label: "Return to Linked products"
 - back
 
 - extendedWaitUntil:
