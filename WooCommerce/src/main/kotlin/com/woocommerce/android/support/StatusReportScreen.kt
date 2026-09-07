@@ -14,8 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -25,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,20 +50,18 @@ fun StatusReportScreen(
                 title = title,
                 onNavigationButtonClick = onBackPressed,
                 actions = {
-                    IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_copy_white_24dp),
-                            contentDescription = copyContentDescription,
-                            tint = colorResource(id = R.color.color_icon_menu),
-                        )
-                    }
-                    IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_share_24dp),
-                            contentDescription = shareContentDescription,
-                            tint = colorResource(id = R.color.color_icon_menu)
-                        )
-                    }
+                    IconAction(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
+                        contentDescription = copyContentDescription,
+                        onClick = onCopyButtonClick,
+                        enabled = !isLoading,
+                    )
+                    IconAction(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_share_24dp),
+                        contentDescription = shareContentDescription,
+                        onClick = onShareButtonClick,
+                        enabled = !isLoading,
+                    )
                 },
             )
         },
@@ -126,8 +121,8 @@ private fun StatusReportScreenPreview() {
         title = stringResource(id = R.string.support_mobile_status_report),
         isLoading = false,
         reportText = "This is the example report content.",
-        copyContentDescription = "",
-        shareContentDescription = "",
+        copyContentDescription = "Copy report",
+        shareContentDescription = "Share report",
         onBackPressed = {},
         onCopyButtonClick = {},
         onShareButtonClick = {},

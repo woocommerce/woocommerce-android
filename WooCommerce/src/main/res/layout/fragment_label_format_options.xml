@@ -7,22 +7,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:elevation="@dimen/appbar_elevation"
+        android:layout_height="@dimen/woo_ds_toolbar_height"
         app:layout_collapseMode="pin"
-        style="@style/Widget.Woo.Toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/app_name"/>
-
-    <View
-        android:id="@+id/app_bar_divider"
-        android:layout_gravity="bottom"
-        style="@style/Woo.Divider" />
 
     <ScrollView
         android:layout_width="match_parent"

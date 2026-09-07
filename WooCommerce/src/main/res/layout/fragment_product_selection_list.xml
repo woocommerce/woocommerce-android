@@ -7,15 +7,15 @@
     android:layout_height="match_parent"
     tools:context="com.woocommerce.android.ui.products.ProductSelectionListFragment">
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
-        style="@style/Widget.Woo.Toolbar"
         android:layout_width="0dp"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="@dimen/woo_ds_toolbar_height"
         app:layout_collapseMode="pin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back_24dp"
         tools:title="@string/products" />
 
     <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout

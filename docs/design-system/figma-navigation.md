@@ -129,7 +129,7 @@ Use Android API names to choose likely Figma search terms, then verify against l
 | `WooSwitch` | Material 3 / token adapter; no canonical `Switch` component is currently found in Mobile Design System library search |
 | `WooSwitchSettingsRow` | Adapter composition over `Cell` / `Cell Content` plus `WooSwitch` |
 | `WooTabRow`, `WooTab` | `Tabs`, `tab-item` |
-| `WooTopAppBar`, `WooTopAppBarAction`, `WooDesignSystemToolbar` | `Navigation`, `Top Navigation Bar`, `navigation-button` |
+| `WooTopAppBar`, `WooTopAppBarAction`, `WooTopAppBarActionsScope`, `WooDesignSystemToolbar` | `Navigation`, `Top Navigation Bar`, `navigation-button` |
 | Section header | `section-header` may appear in search, but its master lives in `Components Playground`, not on a promoted component page. Treat it as not public and ignore it for Android production API work for now |
 | Preview-only families | `Tab Bar`, `Table` |
 

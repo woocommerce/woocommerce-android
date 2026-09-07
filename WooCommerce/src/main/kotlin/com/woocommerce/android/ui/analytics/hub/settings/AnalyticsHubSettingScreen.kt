@@ -12,19 +12,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -35,6 +30,7 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
 import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItem
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.rememberDragDropState
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -67,26 +63,16 @@ fun AnalyticsHubSettingScreen(
     onExplorePlugin: (String) -> Unit
 ) {
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(text = stringResource(id = R.string.customize_analytics)) },
-            navigationIcon = {
-                IconButton(onBackPressed) {
-                    Icon(
-                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
+        Toolbar(
+            title = stringResource(id = R.string.customize_analytics),
+            onNavigationButtonClick = onBackPressed,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
             actions = {
-                TextButton(
+                TextAction(
+                    text = stringResource(id = R.string.save),
                     onClick = onSaveChanges,
-                    enabled = state is AnalyticsHubSettingsViewState.CardsConfiguration && state.isSaveButtonEnabled
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.save).uppercase()
-                    )
-                }
+                    enabled = state is AnalyticsHubSettingsViewState.CardsConfiguration && state.isSaveButtonEnabled,
+                )
             },
         )
     }) { padding ->

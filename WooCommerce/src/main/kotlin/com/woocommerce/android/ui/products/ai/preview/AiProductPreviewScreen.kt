@@ -121,12 +121,11 @@ private fun AiProductPreviewScreen(
                         }
 
                         else -> {
-                            WCTextButton(
+                            TextAction(
+                                text = stringResource(id = R.string.product_detail_save_as_draft),
+                                onClick = onSaveProductAsDraft,
                                 enabled = state is AiProductPreviewViewModel.State.Success,
-                                onClick = onSaveProductAsDraft
-                            ) {
-                                Text(text = stringResource(id = R.string.product_detail_save_as_draft))
-                            }
+                            )
                         }
                     }
                 }

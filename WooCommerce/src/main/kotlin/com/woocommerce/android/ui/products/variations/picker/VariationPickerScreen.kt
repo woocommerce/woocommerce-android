@@ -15,12 +15,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,6 +38,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.EmptyVariationList
 import com.woocommerce.android.ui.products.variations.selector.VariationListSkeleton
@@ -64,18 +62,11 @@ fun VariationPickerScreen(
     onCancel: () -> Unit
 ) {
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_variation_picker_title)) },
-            navigationIcon = {
-                IconButton(onCancel) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
+        Toolbar(
+            title = stringResource(id = R.string.product_variation_picker_title),
+            onNavigationButtonClick = onCancel,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            navigationIconContentDescription = stringResource(id = R.string.close),
         )
     }) { padding ->
         when {

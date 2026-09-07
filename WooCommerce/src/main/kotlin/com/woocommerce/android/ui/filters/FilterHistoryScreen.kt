@@ -82,10 +82,10 @@ fun FilterHistoryScreen(
                 navigationIconContentDescription = stringResource(id = R.string.filter_history_cancel),
                 onNavigationButtonClick = onCancelClick,
                 actions = {
-                    WCTextButton(
+                    TextAction(
+                        text = stringResource(id = R.string.filter_history_apply),
                         onClick = onApplyClick,
                         enabled = viewState.isApplyEnabled,
-                        text = stringResource(id = R.string.filter_history_apply)
                     )
                 }
             )

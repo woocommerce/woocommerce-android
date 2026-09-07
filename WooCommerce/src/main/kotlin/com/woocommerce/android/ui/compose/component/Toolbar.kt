@@ -1,23 +1,21 @@
 package com.woocommerce.android.ui.compose.component
 
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.autoMirror
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,9 +51,9 @@ fun Toolbar(
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
 ) {
-    Toolbar(
+    ToolbarWithActions(
         modifier = modifier,
-        title = { Text(title) },
+        title = title,
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
@@ -76,21 +74,20 @@ fun Toolbar(
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
 ) {
-    Toolbar(
+    ToolbarWithActions(
         modifier = modifier,
-        title = { Text(title) },
+        title = title,
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
         actions = {
-            IconButton(onClick = onActionButtonClick) {
-                Icon(
-                    imageVector = actionButtonIcon,
-                    contentDescription = actionIconContentDescription,
-                )
-            }
-        }
+            IconAction(
+                imageVector = actionButtonIcon,
+                contentDescription = actionIconContentDescription,
+                onClick = onActionButtonClick,
+            )
+        },
     )
 }
 
@@ -103,16 +100,16 @@ fun Toolbar(
     navigationIcon: ImageVector? = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {}
 ) {
-    Toolbar(
+    ToolbarWithActions(
         modifier = modifier,
-        title = { Text(title) },
+        title = title,
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
-        actions = actions
+        actions = actions,
     )
 }
 
@@ -128,18 +125,19 @@ fun Toolbar(
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
-    Toolbar(
+    ToolbarWithActions(
         modifier = modifier,
-        title = { Text(title) },
+        title = title,
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
         actions = {
-            TextButton(onClick = onActionButtonClick) {
-                Text(text = actionButtonText)
-            }
-        }
+            TextAction(
+                text = actionButtonText,
+                onClick = onActionButtonClick,
+            )
+        },
     )
 }
 
@@ -152,34 +150,77 @@ fun Toolbar(
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {}
 ) {
-    TopAppBar(
-        windowInsets = windowInsets,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(id = R.color.color_toolbar),
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.primary,
-        ),
+    ToolbarWithActions(
+        modifier = modifier,
         title = title,
-        navigationIcon = {
-            if (navigationIcon != null) {
-                if (onNavigationButtonClick == null) {
-                    error("Please make sure to set onNavigationButtonClick when having a navigation icon")
-                }
-                IconButton(onClick = onNavigationButtonClick) {
-                    Icon(
-                        navigationIcon,
-                        contentDescription = navigationIconContentDescription,
-                        modifier = Modifier.then(
-                            if (navigationIcon.autoMirror) Modifier else Modifier.autoMirror()
-                        )
-                    )
-                }
-            }
-        },
+        onNavigationButtonClick = onNavigationButtonClick,
+        navigationIcon = navigationIcon,
+        navigationIconContentDescription = navigationIconContentDescription,
+        windowInsets = windowInsets,
         actions = actions,
-        modifier = modifier
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolbarWithActions(
+    modifier: Modifier,
+    title: String,
+    onNavigationButtonClick: (() -> Unit)?,
+    navigationIcon: ImageVector?,
+    navigationIconContentDescription: String,
+    windowInsets: WindowInsets,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
+) {
+    WooDesignSystemTheme(modifier = modifier) {
+        WooTopAppBar(
+            title = title,
+            navigationIcon = navigationIcon,
+            navigationIconContentDescription = navigationIconContentDescription,
+            onNavigationClick = onNavigationButtonClick,
+            windowInsets = windowInsets,
+            actions = actions,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolbarWithActions(
+    modifier: Modifier,
+    title: @Composable () -> Unit,
+    onNavigationButtonClick: (() -> Unit)?,
+    navigationIcon: ImageVector?,
+    navigationIconContentDescription: String,
+    windowInsets: WindowInsets,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit,
+) {
+    WooDesignSystemTheme(modifier = modifier) {
+        WooTopAppBar(
+            title = title,
+            navigationIcon = {
+                if (navigationIcon != null) {
+                    if (onNavigationButtonClick == null) {
+                        error("Please make sure to set onNavigationButtonClick when having a navigation icon")
+                    }
+                    WooOutlinedIconButton(
+                        onClick = onNavigationButtonClick,
+                        contentDescription = navigationIconContentDescription,
+                    ) {
+                        Icon(
+                            imageVector = navigationIcon,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(WooTheme.iconSize.size18)
+                                .then(if (navigationIcon.autoMirror) Modifier else Modifier.autoMirror()),
+                        )
+                    }
+                }
+            },
+            windowInsets = windowInsets,
+            actions = actions,
+        )
+    }
 }

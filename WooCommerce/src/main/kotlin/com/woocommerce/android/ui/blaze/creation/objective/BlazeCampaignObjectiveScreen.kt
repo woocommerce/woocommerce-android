@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
@@ -66,10 +65,10 @@ private fun ObjectiveScreen(
                 title = stringResource(id = R.string.blaze_campaign_preview_details_objective),
                 onNavigationButtonClick = onBackPressed,
                 actions = {
-                    WCTextButton(
+                    TextAction(
+                        text = stringResource(R.string.save),
                         onClick = onSaveTapped,
                         enabled = state.isSaveButtonEnabled,
-                        text = stringResource(R.string.save)
                     )
                 }
             )

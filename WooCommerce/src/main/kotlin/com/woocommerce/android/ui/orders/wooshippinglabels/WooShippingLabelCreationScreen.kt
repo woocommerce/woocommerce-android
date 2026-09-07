@@ -28,7 +28,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.HorizontalDivider
@@ -58,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -523,18 +523,9 @@ private fun CreateShippingCards(
 }
 
 @Composable
-private fun TopBar(title: Int = R.string.shipping_label_create_title, onNavigateBack: () -> Unit) = TopAppBar(
-    title = { Text(stringResource(title)) },
-    navigationIcon = {
-        IconButton(onNavigateBack) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
-                contentDescription = stringResource(id = R.string.back)
-            )
-        }
-    },
-    backgroundColor = colorResource(id = R.color.color_toolbar),
-    elevation = 0.dp,
+private fun TopBar(title: Int = R.string.shipping_label_create_title, onNavigateBack: () -> Unit) = Toolbar(
+    title = stringResource(title),
+    onNavigationButtonClick = onNavigateBack,
 )
 
 @Composable

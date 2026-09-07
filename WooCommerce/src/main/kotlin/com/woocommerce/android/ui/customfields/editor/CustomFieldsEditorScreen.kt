@@ -58,8 +58,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCOverflowMenu
-import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.WCOverflowMenuItem
 import com.woocommerce.android.ui.compose.component.aztec.OutlinedAztecEditor
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -103,33 +102,37 @@ private fun CustomFieldsEditorScreen(
                 title = "Custom Field",
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(
-                        onClick = onDoneClicked,
+                    TextAction(
                         text = stringResource(R.string.done),
-                        enabled = state.enableDoneButton
+                        onClick = onDoneClicked,
+                        enabled = state.enableDoneButton,
                     )
-                    WCOverflowMenu(
-                        items = listOfNotNull(
-                            R.string.custom_fields_editor_copy_key,
-                            R.string.custom_fields_editor_copy_value,
-                            if (!state.isCreatingNewItem) R.string.delete else null,
-                        ),
-                        mapper = { stringResource(it) },
-                        itemColor = {
-                            when (it) {
-                                R.string.delete -> MaterialTheme.colors.error
-                                else -> LocalContentColor.current
+                    OverflowAction(contentDescription = stringResource(R.string.more_menu)) { dismiss ->
+                        WCOverflowMenuItem(
+                            text = stringResource(R.string.custom_fields_editor_copy_key),
+                            onClick = {
+                                dismiss()
+                                onCopyKeyClicked()
                             }
-                        },
-                        onSelected = { resourceId ->
-                            when (resourceId) {
-                                R.string.delete -> onDeleteClicked()
-                                R.string.custom_fields_editor_copy_key -> onCopyKeyClicked()
-                                R.string.custom_fields_editor_copy_value -> onCopyValueClicked()
-                                else -> error("Unhandled menu item")
+                        )
+                        WCOverflowMenuItem(
+                            text = stringResource(R.string.custom_fields_editor_copy_value),
+                            onClick = {
+                                dismiss()
+                                onCopyValueClicked()
                             }
+                        )
+                        if (!state.isCreatingNewItem) {
+                            WCOverflowMenuItem(
+                                text = stringResource(R.string.delete),
+                                onClick = {
+                                    dismiss()
+                                    onDeleteClicked()
+                                },
+                                isDestructive = true
+                            )
                         }
-                    )
+                    }
                 }
             )
         },

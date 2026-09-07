@@ -54,9 +54,7 @@ class OrderFilterCategoriesFragment :
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Visible(
-            navigationIcon = R.drawable.ic_gridicons_cross_24dp,
-            hasShadow = false,
-            hasDivider = true
+            navigationIcon = R.drawable.ic_gridicons_cross_24dp
         )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

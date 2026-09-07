@@ -28,9 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BlazeCampaignListFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Visible(
-            hasShadow = false
-        )
+        get() = AppBarStatus.Visible()
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
