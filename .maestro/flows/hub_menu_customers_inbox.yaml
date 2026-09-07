@@ -71,8 +71,10 @@ tags:
 # empty_inbox_title, used to satisfy this too. It made an empty or
 # ineligible Inbox indistinguishable from a working one, so the store
 # having no notes is now a failure rather than a pass.
+#
+# The alternatives are the seven strings formatNoteCreationDate can return.
 - extendedWaitUntil:
-    visible: ".*Moments ago.*|.*hours ago.*|.*days ago.*|.*minutes ago.*|.*Created on.*"
+    visible: ".*Moments ago.*|.*minutes ago.*|.*An hour ago.*|.*hours ago.*|.*A day ago.*|.*days ago.*|.*Created on.*"
     timeout: 20000
     label: "Wait for inbox notes"
 
