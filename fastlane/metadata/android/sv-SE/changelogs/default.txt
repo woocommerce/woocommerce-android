@@ -1,2 +1,0 @@
-25.5:
-I Android 17 begär funktionen Tryck för att betala på distans åtkomst till det lokala nätverket så att din telefon och surfplatta kan ansluta till varandra. Butikshanteringen blir också enklare: lägg till presentkort när du redigerar beställningar, uppdatera alternativa texter och rubriker för produktbilder, visa datum i den ordning som föredras på ditt språk och dra nytta av smidigare konfigurering av produktpaket och inloggning.

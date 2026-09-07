@@ -66,7 +66,7 @@ class ShippingCustomsViewModel @Inject constructor(
 
     private val args: ShippingCustomsFragmentArgs by savedStateHandle.navArgs()
 
-    private val parameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
+    private val parameters by lazy { parameterRepository.getParametersBlocking(KEY_PARAMETERS, savedState) }
     val weightUnit: String
         get() = parameters.weightUnit.orEmpty()
 

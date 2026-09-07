@@ -74,6 +74,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var refundJob: Job? = null
     private var previewJob: Job? = null
     private var pendingReaderConnectionRefund: PendingReaderConnectionRefund? = null
+    private var flowDraft: FlowDraft? = null
 
     init {
         observeReaderConnectionForPendingRefund()
@@ -126,17 +127,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun loadRefundableItems() {
         if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
-        loadContent(preservedSelection = null, isFlowStart = true)
+        val isFlowStart = flowDraft == null
+        loadContent(selectAllItems = isFlowStart, isFlowStart = isFlowStart)
     }
 
     private fun refreshRefundableItems() {
-        val draft = (_state.value as? WooPosRefundState.Content) ?: contentStateBeforeRefund
+        val content = (_state.value as? WooPosRefundState.Content) ?: contentStateBeforeRefund
+        flowDraft = FlowDraft(refundReason = content?.refundReason.orEmpty())
         cancelPreview()
         cancelRefundSubmission()
-        loadContent(draft?.selectedItemIds, isFlowStart = false, preservedReason = draft?.refundReason.orEmpty())
+        loadContent(selectAllItems = false, isFlowStart = false)
     }
 
-    private fun loadContent(preservedSelection: Set<String>?, isFlowStart: Boolean, preservedReason: String = "") {
+    private fun loadContent(selectAllItems: Boolean, isFlowStart: Boolean) {
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
@@ -180,8 +183,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 order = order,
                 refundableItems = refundableItems,
                 paymentMethod = paymentMethodResult.getOrThrow(),
-                preservedSelection = preservedSelection,
-                preservedReason = preservedReason,
+                selectAllItems = selectAllItems,
                 isFlowStart = isFlowStart,
             )
         }
@@ -191,17 +193,18 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
         paymentMethod: String,
-        preservedSelection: Set<String>? = null,
-        preservedReason: String = "",
-        isFlowStart: Boolean = true,
+        selectAllItems: Boolean,
+        isFlowStart: Boolean,
     ) {
+        val refundReason = flowDraft?.refundReason.orEmpty()
         _state.value = buildRefundContent(
             order = order,
             refundableItems = refundableItems,
             paymentMethod = paymentMethod,
-            preservedSelection = preservedSelection,
-        ).copy(refundReason = preservedReason)
+            selectAllItems = selectAllItems,
+        ).copy(refundReason = refundReason)
 
+        flowDraft = FlowDraft(refundReason = refundReason)
         if (isFlowStart) {
             viewModelScope.launch {
                 analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
@@ -276,18 +279,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         if (currentState is WooPosRefundState.Content &&
             !currentState.step.isNonCancelable()
         ) {
-            val refundStep = when (currentState.step) {
-                WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
-                WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
-                WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
-                WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
-                WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
-                is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
-                WooPosRefundState.Content.RefundStep.Processing,
-                WooPosRefundState.Content.RefundStep.ProcessingRefund,
-                WooPosRefundState.Content.RefundStep.NotifyingStore ->
-                    error("Non-cancelable step should be unreachable in handleRefundFlowDismissed")
-            }
+            val refundStep = currentState.step.analyticsName()
 
             viewModelScope.launch {
                 analyticsTracker.track(
@@ -298,6 +290,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
         cancelRefundSubmission()
         cancelPreview()
+        flowDraft = null
         _state.value = WooPosRefundState.Loading
         loadingJob?.cancel()
     }
@@ -759,4 +752,22 @@ class WooPosRefundViewModel @AssistedInject constructor(
         val contentState: WooPosRefundState.Content,
         val request: WooPosRefundSubmissionRequest,
     )
+
+    /**
+     * Set while the refund flow is open. Carries the parts of the cashier's draft that must survive
+     * a reload of the refundable items, so both reload paths restore the same thing.
+     */
+    private data class FlowDraft(val refundReason: String)
+}
+
+private fun WooPosRefundState.Content.RefundStep.analyticsName(): String = when (this) {
+    WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
+    WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
+    WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
+    WooPosRefundState.Content.RefundStep.PreparingReader -> "preparing_reader"
+    WooPosRefundState.Content.RefundStep.ReaderDisconnected -> "reader_disconnected"
+    is WooPosRefundState.Content.RefundStep.ReadyForRefund -> "ready_for_refund"
+    WooPosRefundState.Content.RefundStep.Processing -> "processing"
+    WooPosRefundState.Content.RefundStep.ProcessingRefund -> "processing_refund"
+    WooPosRefundState.Content.RefundStep.NotifyingStore -> "notifying_store"
 }

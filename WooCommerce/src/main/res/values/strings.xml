@@ -54,6 +54,9 @@
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
+    <string name="https_configuration_warning_title">Secure your store with HTTPS</string>
+    <string name="https_configuration_warning_message">Your store supports HTTPS, but its address is configured to use HTTP. Update it to HTTPS to protect your store and prevent connection problems.</string>
+    <string name="https_configuration_warning_dismiss">Dismiss HTTPS security notice</string>
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
