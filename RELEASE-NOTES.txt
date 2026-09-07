@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a store country POS does not support, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
@@ -11,7 +12,6 @@
 
 25.6
 -----
-- [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a store country POS does not support, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
 - [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
