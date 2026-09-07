@@ -6,10 +6,10 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosCouldNotDetermineValueException
-import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 /**
@@ -20,16 +20,20 @@ import javax.inject.Inject
  * reads. A missing field is reported as a failure rather than "off", so a store is never blocked
  * because the report could not be read.
  *
+ * The report is read through [WooCommerceStore.fetchSitePluginsAndSettings], which asks for the
+ * plugins and `settings` in one request, so this never costs more than the plugin check already
+ * does. Callers that already hold a freshly fetched report pass it as [systemStatusSettings] so it
+ * is not fetched twice.
+ *
  * The report is a slow endpoint and this runs on the POS launch path, so the last value read for a
  * site is kept in prefs. Launches answer from that value and refresh it in the background, which
- * leaves it at most one launch behind. Callers that already hold a freshly fetched report pass it
- * as [systemStatusSettings] so it is not fetched twice.
+ * leaves it at most one launch behind.
  *
  * Runs on the caller's context; every call it makes switches to its own dispatcher.
  */
 class WooPosIsFeatureSwitchEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val ssrFetcher: WCSSRModelCachingFetcher,
+    private val wooCommerceStore: WooCommerceStore,
     private val gson: Gson,
     private val appPrefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
@@ -51,12 +55,12 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
                 remoteSiteId = site.siteId,
                 selfHostedSiteId = site.selfHostedSiteId
             )?.let { stored ->
-                appCoroutineScope.launch { store(site, loadEnabledFeatures(site, forceRefresh = false)) }
+                appCoroutineScope.launch { store(site, loadEnabledFeatures(site)) }
                 return Result.success(stored)
             }
         }
 
-        return store(site, loadEnabledFeatures(site, forceRefresh))
+        return store(site, loadEnabledFeatures(site))
     }
 
     private fun store(site: SiteModel, enabledFeatures: List<*>?): Result<Boolean> {
@@ -72,12 +76,11 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         return Result.success(isEnabled)
     }
 
-    private suspend fun loadEnabledFeatures(site: SiteModel, forceRefresh: Boolean): List<*>? {
-        val result = ssrFetcher.load(site, forceRefresh)
-        if (result.isError) return null
-
-        return result.model?.settings?.let { parseEnabledFeatures(it) }
-    }
+    private suspend fun loadEnabledFeatures(site: SiteModel): List<*>? =
+        wooCommerceStore.fetchSitePluginsAndSettings(site)
+            .model
+            ?.settings
+            ?.let { parseEnabledFeatures(it) }
 
     private fun parseEnabledFeatures(settings: String): List<*>? = runCatching {
         val type = object : TypeToken<Map<String, Any>>() {}.type

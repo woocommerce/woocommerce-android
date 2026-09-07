@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -20,11 +19,11 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosIsFeatureSwitchEnabledTest {
@@ -35,7 +34,7 @@ class WooPosIsFeatureSwitchEnabledTest {
         selfHostedSiteId = 678L
     }
     private val selectedSite: SelectedSite = mock { on { getOrNull() } doReturn site }
-    private val ssrFetcher: WCSSRModelCachingFetcher = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val appPrefs: AppPrefs = mock()
 
     @Rule
@@ -51,15 +50,24 @@ class WooPosIsFeatureSwitchEnabledTest {
     private val sut by lazy {
         WooPosIsFeatureSwitchEnabled(
             selectedSite = selectedSite,
-            ssrFetcher = ssrFetcher,
+            wooCommerceStore = wooCommerceStore,
             gson = Gson(),
             appPrefs = appPrefs,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
         )
     }
 
-    private fun ssrWithSettings(settingsJson: String?) =
-        WooResult(WCSSRModel(remoteSiteId = 1, settings = settingsJson))
+    private suspend fun stubReport(settingsJson: String?) {
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any(), any())).thenReturn(
+            WooResult(WooCommerceStore.SitePluginsAndSettings(plugins = emptyList(), settings = settingsJson))
+        )
+    }
+
+    private suspend fun stubReportFailure() {
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any(), any())).thenReturn(
+            WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
+        )
+    }
 
     private fun stubStoredValue(stored: Boolean?) {
         whenever(
@@ -82,16 +90,14 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     @Test
     fun `given point_of_sale is in enabled_features, when invoked, then returns true`() = runTest {
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale","other_feature"]}"""))
+        stubReport("""{"enabled_features":["point_of_sale","other_feature"]}""")
 
         assertThat(sut(forceRefresh = false).getOrNull()).isTrue
     }
 
     @Test
     fun `given point_of_sale is absent from enabled_features, when invoked, then returns false`() = runTest {
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
+        stubReport("""{"enabled_features":["other_feature"]}""")
 
         assertThat(sut(forceRefresh = false).getOrNull()).isFalse
     }
@@ -99,7 +105,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given enabled_features is missing, when invoked, then the value could not be determined`() = runTest {
         // A missing field must not read as "off" — that would block every store on a shape change.
-        whenever(ssrFetcher.load(any(), any())).thenReturn(ssrWithSettings("""{"currency":"USD"}"""))
+        stubReport("""{"currency":"USD"}""")
 
         assertThat(sut(forceRefresh = false).isFailure).isTrue
     }
@@ -107,16 +113,14 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given the settings payload is not valid json, when invoked, then the value could not be determined`() =
         runTest {
-            whenever(ssrFetcher.load(any(), any())).thenReturn(ssrWithSettings("not json"))
+            stubReport("not json")
 
             assertThat(sut(forceRefresh = false).isFailure).isTrue
         }
 
     @Test
-    fun `given the SSR request fails, when invoked, then the value could not be determined`() = runTest {
-        whenever(ssrFetcher.load(any(), any())).thenReturn(
-            WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
-        )
+    fun `given the report request fails, when invoked, then the value could not be determined`() = runTest {
+        stubReportFailure()
 
         assertThat(sut(forceRefresh = false).isFailure).isTrue
     }
@@ -129,13 +133,12 @@ class WooPosIsFeatureSwitchEnabledTest {
     }
 
     @Test
-    fun `given forceRefresh, when invoked, then the report is fetched remotely`() = runTest {
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
+    fun `given forceRefresh, when invoked, then the plugins and settings are fetched in one request`() = runTest {
+        stubReport("""{"enabled_features":["point_of_sale"]}""")
 
         sut(forceRefresh = true)
 
-        verify(ssrFetcher).load(site, true)
+        verify(wooCommerceStore).fetchSitePluginsAndSettings(site, true)
     }
 
     // --- Stored value ---
@@ -143,8 +146,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given nothing is stored, when invoked, then the report is read and the value is stored`() = runTest {
         stubStoredValue(null)
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
+        stubReport("""{"enabled_features":["point_of_sale"]}""")
 
         assertThat(sut(forceRefresh = false).getOrNull()).isTrue
         verifyStored(true)
@@ -153,8 +155,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given a stored value, when invoked, then it is returned without waiting on the report`() = runTest {
         stubStoredValue(false)
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
+        stubReport("""{"enabled_features":["point_of_sale"]}""")
 
         // The stored "off" wins over the report, which says "on" — the report only updates the store.
         assertThat(sut(forceRefresh = false).getOrNull()).isFalse
@@ -163,8 +164,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given a stored value, when invoked, then the report is refreshed in the background`() = runTest {
         stubStoredValue(true)
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
+        stubReport("""{"enabled_features":["other_feature"]}""")
 
         sut(forceRefresh = false)
 
@@ -174,8 +174,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given forceRefresh, when invoked, then the stored value is ignored`() = runTest {
         stubStoredValue(true)
-        whenever(ssrFetcher.load(any(), any()))
-            .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
+        stubReport("""{"enabled_features":["other_feature"]}""")
 
         assertThat(sut(forceRefresh = true).getOrNull()).isFalse
     }
@@ -183,9 +182,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given the report cannot be read, when invoked, then the stored value is left alone`() = runTest {
         stubStoredValue(null)
-        whenever(ssrFetcher.load(any(), any())).thenReturn(
-            WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
-        )
+        stubReportFailure()
 
         assertThat(sut(forceRefresh = false).isFailure).isTrue
         verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any(), any(), any())
@@ -198,7 +195,7 @@ class WooPosIsFeatureSwitchEnabledTest {
         val result = sut(forceRefresh = true, systemStatusSettings = """{"enabled_features":["point_of_sale"]}""")
 
         assertThat(result.getOrNull()).isTrue
-        verify(ssrFetcher, never()).load(any(), any())
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any(), any())
         verifyStored(true)
     }
 
@@ -207,7 +204,7 @@ class WooPosIsFeatureSwitchEnabledTest {
         val result = sut(forceRefresh = true, systemStatusSettings = """{"enabled_features":["other_feature"]}""")
 
         assertThat(result.getOrNull()).isFalse
-        verify(ssrFetcher, never()).load(any(), any())
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any(), any())
     }
 
     @Test
