@@ -134,7 +134,7 @@ class WooPosEligibilityViewModel @Inject constructor(
             resourceProvider.getString(
                 R.string.woopos_eligibility_reason_unsupported_currency_country_pair,
                 countryName,
-                supportedCurrencies.sorted().joinToString(separator = ", ")
+                supportedCurrencies.joinToString(separator = ", ")
             )
         } else {
             resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)

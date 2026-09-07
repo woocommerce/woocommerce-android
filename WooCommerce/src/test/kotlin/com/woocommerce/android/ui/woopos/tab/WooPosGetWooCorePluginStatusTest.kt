@@ -18,6 +18,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.SitePluginsAndSettings
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosGetWooCorePluginStatusTest {
@@ -90,7 +91,7 @@ class WooPosGetWooCorePluginStatusTest {
 
     @Test
     fun `given forceRefresh and the fetch fails, when invoked, then returns CouldNotDetermine`() = runTest {
-        whenever(wooCommerceStore.fetchSitePlugins(site))
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(site))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR)))
 
         assertThat(sut(forceRefresh = true))
@@ -99,12 +100,29 @@ class WooPosGetWooCorePluginStatusTest {
 
     @Test
     fun `given forceRefresh and the fetch succeeds, when invoked, then returns the fetched state`() = runTest {
-        whenever(wooCommerceStore.fetchSitePlugins(site))
-            .thenReturn(WooResult(listOf(plugin("woocommerce/woocommerce", "10.2.0", isActive = true))))
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(site)).thenReturn(
+            WooResult(
+                SitePluginsAndSettings(
+                    plugins = listOf(plugin("woocommerce/woocommerce", "10.2.0", isActive = true)),
+                    settings = SETTINGS_JSON,
+                )
+            )
+        )
 
         assertThat(sut(forceRefresh = true))
-            .isEqualTo(WooPosWooCorePluginStatus.Active("10.2.0"))
+            .isEqualTo(WooPosWooCorePluginStatus.Active("10.2.0", SETTINGS_JSON))
     }
+
+    @Test
+    fun `given forceRefresh and the report lists no Woo plugin, when invoked, then NotInstalledOrInactive`() =
+        runTest {
+            // The report answered, so the plugin's absence is the site's actual state, not an unknown.
+            whenever(wooCommerceStore.fetchSitePluginsAndSettings(site))
+                .thenReturn(WooResult(SitePluginsAndSettings(plugins = emptyList(), settings = null)))
+
+            assertThat(sut(forceRefresh = true))
+                .isEqualTo(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+        }
 
     @Test
     fun `given a plugin name without a directory prefix, when invoked, then it still matches Woo core`() = runTest {
@@ -113,5 +131,9 @@ class WooPosGetWooCorePluginStatusTest {
 
         assertThat(sut(forceRefresh = false))
             .isEqualTo(WooPosWooCorePluginStatus.Active("10.1.0"))
+    }
+
+    private companion object {
+        const val SETTINGS_JSON = """{"enabled_features":["point_of_sale"]}"""
     }
 }

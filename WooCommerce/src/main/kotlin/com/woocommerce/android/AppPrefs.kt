@@ -232,6 +232,8 @@ object AppPrefs {
 
         POS_LAUNCHABLE,
 
+        POS_FEATURE_SWITCH_ENABLED,
+
         WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN,
 
         WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
@@ -1409,6 +1411,31 @@ object AppPrefs {
     }
 
     /**
+     * Keyed by the remote site id, not the local one. A stored `false` blocks POS outright, and
+     * local ids are handed out per account, so a key that survives a logout must not be able to
+     * land on a different account's store.
+     */
+    fun setPOSFeatureSwitchEnabledForSite(siteId: Long, enabled: Boolean) {
+        setBoolean(
+            key = posFeatureSwitchKey(siteId),
+            value = enabled
+        )
+    }
+
+    /**
+     * The last value read from the store, or null when it has never been read for this site.
+     */
+    fun getPOSFeatureSwitchEnabledForSite(siteId: Long): Boolean? {
+        val key = posFeatureSwitchKey(siteId)
+        return if (exists(key)) getBoolean(key, false) else null
+    }
+
+    private fun posFeatureSwitchKey(siteId: Long) =
+        PrefKeyString("$POS_FEATURE_SWITCH_ENABLED_PREFIX$siteId")
+
+    private val POS_FEATURE_SWITCH_ENABLED_PREFIX = "${UndeletablePrefKey.POS_FEATURE_SWITCH_ENABLED}:"
+
+    /**
      * Remove all user and site-related preferences.
      */
     fun resetUserPreferences() {
@@ -1430,7 +1457,10 @@ object AppPrefs {
     private fun removePreferencesWithDynamicKey(editor: Editor) {
         getPreferences()
             .all
-            .filter { it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) }
+            .filter {
+                it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
+                    it.key.startsWith(POS_FEATURE_SWITCH_ENABLED_PREFIX, ignoreCase = true)
+            }
             .forEach {
                 editor.remove(it.key)
             }

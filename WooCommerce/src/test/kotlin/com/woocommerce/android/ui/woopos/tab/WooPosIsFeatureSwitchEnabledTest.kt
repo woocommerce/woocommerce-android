@@ -1,17 +1,22 @@
 package com.woocommerce.android.ui.woopos.tab
 
 import com.google.gson.Gson
+import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.WCSSRModelCachingFetcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,19 +29,33 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosIsFeatureSwitchEnabledTest {
 
-    private val site = SiteModel().apply { id = 1 }
+    private val site = SiteModel().apply {
+        id = 1
+        siteId = 12345L
+    }
     private val selectedSite: SelectedSite = mock { on { getOrNull() } doReturn site }
     private val ssrFetcher: WCSSRModelCachingFetcher = mock()
+    private val appPrefs: AppPrefs = mock()
 
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val sut = WooPosIsFeatureSwitchEnabled(
-        selectedSite = selectedSite,
-        ssrFetcher = ssrFetcher,
-        gson = Gson(),
-    )
+    @Before
+    fun setup() {
+        // Mockito answers a boxed Boolean with false, which would read as "the switch is stored as off".
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(any())).thenReturn(null)
+    }
+
+    private val sut by lazy {
+        WooPosIsFeatureSwitchEnabled(
+            selectedSite = selectedSite,
+            ssrFetcher = ssrFetcher,
+            gson = Gson(),
+            appPrefs = appPrefs,
+            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
+        )
+    }
 
     private fun ssrWithSettings(settingsJson: String?) =
         WooResult(WCSSRModel(remoteSiteId = 1, settings = settingsJson))
@@ -97,5 +116,85 @@ class WooPosIsFeatureSwitchEnabledTest {
         sut(forceRefresh = true)
 
         verify(ssrFetcher).load(site, true)
+    }
+
+    // --- Stored value ---
+
+    @Test
+    fun `given nothing is stored, when invoked, then the report is read and the value is stored`() = runTest {
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(null)
+        whenever(ssrFetcher.load(any(), any()))
+            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
+
+        assertThat(sut(forceRefresh = false).getOrNull()).isTrue
+        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(true))
+    }
+
+    @Test
+    fun `given a stored value, when invoked, then it is returned without waiting on the report`() = runTest {
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(false)
+        whenever(ssrFetcher.load(any(), any()))
+            .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
+
+        // The stored "off" wins over the report, which says "on" — the report only updates the store.
+        assertThat(sut(forceRefresh = false).getOrNull()).isFalse
+    }
+
+    @Test
+    fun `given a stored value, when invoked, then the report is refreshed in the background`() = runTest {
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(true)
+        whenever(ssrFetcher.load(any(), any()))
+            .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
+
+        sut(forceRefresh = false)
+
+        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(false))
+    }
+
+    @Test
+    fun `given forceRefresh, when invoked, then the stored value is ignored`() = runTest {
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(true)
+        whenever(ssrFetcher.load(any(), any()))
+            .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
+
+        assertThat(sut(forceRefresh = true).getOrNull()).isFalse
+    }
+
+    @Test
+    fun `given the report cannot be read, when invoked, then the stored value is left alone`() = runTest {
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(null)
+        whenever(ssrFetcher.load(any(), any())).thenReturn(
+            WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
+        )
+
+        assertThat(sut(forceRefresh = false).isFailure).isTrue
+        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any())
+    }
+
+    // --- Report handed over by the plugin check ---
+
+    @Test
+    fun `given settings from the same report, when invoked, then it is used without a fetch`() = runTest {
+        val result = sut(forceRefresh = true, systemStatusSettings = """{"enabled_features":["point_of_sale"]}""")
+
+        assertThat(result.getOrNull()).isTrue
+        verify(ssrFetcher, never()).load(any(), any())
+        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(true))
+    }
+
+    @Test
+    fun `given settings from the same report without the switch, when invoked, then the switch is off`() = runTest {
+        val result = sut(forceRefresh = true, systemStatusSettings = """{"enabled_features":["other_feature"]}""")
+
+        assertThat(result.getOrNull()).isFalse
+        verify(ssrFetcher, never()).load(any(), any())
+    }
+
+    @Test
+    fun `given settings from the same report that omit the field, when invoked, then it fails`() = runTest {
+        val result = sut(forceRefresh = true, systemStatusSettings = """{"other":1}""")
+
+        assertThat(result.isFailure).isTrue
+        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any())
     }
 }

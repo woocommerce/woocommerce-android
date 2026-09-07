@@ -21,6 +21,7 @@ object WooPosSupportedCountries {
         "AU" to setOf("AUD"),
     )
 
+    /** The whole table, so a test can assert it against the iOS one without missing an extra entry. */
     val countryCodes: Set<String> = CURRENCIES_BY_COUNTRY.keys
 
     fun isSupported(countryCode: String): Boolean = countryCode.uppercase() in CURRENCIES_BY_COUNTRY
