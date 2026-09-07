@@ -1089,6 +1089,7 @@ run_one_attempt() {
   local log_file="$LOGS_DIR/${repeat_index}_${base}_attempt${attempt}.log"
   local attempt_screenshots_dir="$SCREENSHOTS_DIR/${repeat_index}_${base}_attempt${attempt}"
   local attempt_screenshots_rel="screenshots/${repeat_index}_${base}_attempt${attempt}/"
+  local attempt_debug_dir="$TMP_DIR/maestro-debug/${repeat_index}_${base}_attempt${attempt}"
   local media_rel=""
   local device_recording=""
   local host_recording=""
@@ -1114,27 +1115,21 @@ run_one_attempt() {
   local started ended exit_code
   started=$(date +%s)
   set +e
-  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" "$flow" >"$log_file" 2>&1
+  mkdir -p "$attempt_debug_dir"
+  "${MAESTRO_PROCESS_ENV_ARGS[@]}" maestro test "${MAESTRO_DEVICE_ARGS[@]}" "${MAESTRO_ENV_ARGS[@]}" \
+    --debug-output "$attempt_debug_dir" --flatten-debug-output "$flow" >"$log_file" 2>&1
   exit_code=$?
   set -e
   ended=$(date +%s)
 
+  # Maestro 2.9.0 writes named screenshots under its debug output as
+  # <debug dir>/<flow name>/takeScreenshot/<name>.png. Each attempt gets its
+  # own directory, so nothing here can pick up a screenshot left by an earlier
+  # attempt or run.
   mkdir -p "$attempt_screenshots_dir"
-  while IFS= read -r screenshot_name; do
-    [[ -z "$screenshot_name" ]] && continue
-    screenshot_name="${screenshot_name%.png}"
-    if [[ -f "$REPO_ROOT/$screenshot_name.png" ]]; then
-      mv "$REPO_ROOT/$screenshot_name.png" "$attempt_screenshots_dir/"
-    fi
-  done < <(
-    awk -F'takeScreenshot:[[:space:]]*' '
-      /takeScreenshot:/ {
-        name = $2
-        gsub(/^[[:space:]"'\''"]+|[[:space:]"'\''"]+$/, "", name)
-        if (name != "") print name
-      }
-    ' "$flow"
-  )
+  while IFS= read -r screenshot_path; do
+    [[ -f "$screenshot_path" ]] && mv "$screenshot_path" "$attempt_screenshots_dir/"
+  done < <(find "$attempt_debug_dir" -type f -path '*/takeScreenshot/*.png' 2>/dev/null)
   if compgen -G "$attempt_screenshots_dir/*.png" >/dev/null; then
     media_rel="$attempt_screenshots_rel"
   else
@@ -1149,7 +1144,7 @@ run_one_attempt() {
       adb -s "$DEVICE_SERIAL" pull "$device_recording" "$host_recording" >/dev/null 2>&1 || true
       adb -s "$DEVICE_SERIAL" shell "rm -f $device_recording" >/dev/null 2>&1 || true
       if [[ -f "$host_recording" ]]; then
-        media_rel="recordings/$(basename "$host_recording")"
+        media_rel="${media_rel:+$media_rel,}recordings/$(basename "$host_recording")"
       fi
     fi
   elif [[ "$exit_code" -ne 0 ]]; then
@@ -1159,7 +1154,7 @@ run_one_attempt() {
     adb -s "$DEVICE_SERIAL" pull "$device_screenshot" "$screenshot_file" >/dev/null 2>&1 || true
     adb -s "$DEVICE_SERIAL" shell "rm -f $device_screenshot" >/dev/null 2>&1 || true
     if [[ -f "$screenshot_file" ]]; then
-      media_rel="screenshots/$(basename "$screenshot_file")"
+      media_rel="${media_rel:+$media_rel,}screenshots/$(basename "$screenshot_file")"
     fi
   fi
 
@@ -1326,7 +1321,15 @@ HTML_HEAD
     IFS='|' read -r status repeat_index name duration media log_rel error recovery <<< "$result"
     artifact=""
     if [[ -n "$media" ]]; then
-      artifact="<a href=\"$media\">media</a>"
+      IFS=',' read -r -a media_items <<< "$media"
+      for media_item in "${media_items[@]}"; do
+        case "$media_item" in
+          recordings/*) media_label="recording" ;;
+          screenshots/*) media_label="screenshots" ;;
+          *) media_label="media" ;;
+        esac
+        artifact="$artifact${artifact:+ | }<a href=\"$media_item\">$media_label</a>"
+      done
     fi
     if [[ -n "$log_rel" && -f "$OUTPUT_DIR/$log_rel" ]]; then
       artifact="$artifact ${artifact:+| }<a href=\"$log_rel\">log</a>"

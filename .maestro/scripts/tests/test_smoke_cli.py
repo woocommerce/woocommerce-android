@@ -235,6 +235,7 @@ class SmokeCliContractTest(unittest.TestCase):
         env_overrides: dict[str, str],
         fail_first_attempt: bool = False,
         device_locale: str = "en-US",
+        screenshot_names: tuple[str, ...] = (),
     ) -> tuple[subprocess.CompletedProcess[str], str, Path]:
         temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(temporary_directory.cleanup)
@@ -250,6 +251,24 @@ class SmokeCliContractTest(unittest.TestCase):
             "if [ \"${1:-}\" = --version ]; then printf '%s\\n' '2.9.0'; exit 0; fi\n"
             f"printf 'ARGS:%s\\n' \"$*\" >> '{maestro_args}'\n"
             f"env | grep -E '^(MAESTRO_)?WOO_' | sort >> '{maestro_args}'\n"
+            # Maestro 2.9.0 writes named screenshots under --debug-output, in a
+            # directory named after the flow, never into the working directory.
+            + (
+                "debug_out=\nprev=\n"
+                "for arg in \"$@\"; do\n"
+                "  if [ \"$prev\" = --debug-output ]; then debug_out=$arg; fi\n"
+                "  prev=$arg\n"
+                "done\n"
+                "if [ -n \"$debug_out\" ]; then\n"
+                "  mkdir -p \"$debug_out/Flow name with spaces/takeScreenshot\"\n"
+                + "".join(
+                    f"  : > \"$debug_out/Flow name with spaces/takeScreenshot/{name}.png\"\n"
+                    for name in screenshot_names
+                )
+                + "fi\n"
+                if screenshot_names
+                else ""
+            )
             + (
                 f"if [ ! -f '{first_attempt_marker}' ]; then\n"
                 f"  : > '{first_attempt_marker}'\n"
@@ -680,6 +699,34 @@ class SmokeCliContractTest(unittest.TestCase):
         self.assertIn("MAESTRO_WOO_NO_JETPACK_SITE_URL=https://shop.example.com/subdir/", args)
         self.assertNotIn("/wp-admin/", args)
         self.assertNotIn("source=jn", args)
+
+    def test_named_screenshots_are_collected_from_the_maestro_debug_output(self) -> None:
+        result, args, output_root = self.run_with_recorded_maestro_args(
+            "--device",
+            "emulator-5554",
+            ".maestro/flows/login_successful.yaml",
+            env_overrides={
+                "MAESTRO_WOO_LAB_JETPACK_STORE_URL": "https://lab.example.com/",
+                "MAESTRO_WOO_LAB_WPCOM_EMAIL": "lab@example.com",
+                "MAESTRO_WOO_LAB_WPCOM_PASSWORD": "selected-password",
+            },
+            screenshot_names=("login_done", "login_store_ready"),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("--debug-output", args)
+        self.assertIn("--flatten-debug-output", args)
+
+        run_directory = next(path for path in output_root.iterdir() if path.is_dir())
+        collected = sorted(run_directory.glob("screenshots/*/*.png"))
+        self.assertEqual(
+            ["login_done.png", "login_store_ready.png"],
+            sorted(path.name for path in collected),
+        )
+        self.assertIn(
+            f"screenshots/{collected[0].parent.name}/",
+            (run_directory / "report.html").read_text(encoding="utf-8"),
+        )
 
 
 if __name__ == "__main__":
