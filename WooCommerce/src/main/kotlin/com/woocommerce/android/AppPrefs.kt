@@ -1421,11 +1421,6 @@ object AppPrefs {
         remove(PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"))
     }
 
-    /**
-     * A stored `false` blocks POS outright, so the key has to name exactly one store. The remote id
-     * is 0 for self-hosted sites, so it is combined with the local and self-hosted ids, the way
-     * receipts and the card reader banners are keyed.
-     */
     fun setPOSFeatureSwitchEnabledForSite(
         localSiteId: Int,
         remoteSiteId: Long,
@@ -1438,9 +1433,6 @@ object AppPrefs {
         )
     }
 
-    /**
-     * The last value read from the store, or null when it has never been read for this site.
-     */
     fun getPOSFeatureSwitchEnabledForSite(
         localSiteId: Int,
         remoteSiteId: Long,

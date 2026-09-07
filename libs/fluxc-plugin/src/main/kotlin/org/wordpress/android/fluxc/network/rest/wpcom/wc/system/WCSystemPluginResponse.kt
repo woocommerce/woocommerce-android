@@ -8,20 +8,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 data class WCSystemPluginResponse(
     @SerializedName("active_plugins") private val activePlugins: List<SystemPluginModel>?,
     @SerializedName("inactive_plugins") private val inactivePlugins: List<SystemPluginModel>?,
-    /**
-     * Only populated when the caller asked for the `settings` field, which
-     * [WooSystemRestClient.fetchInstalledPlugins] does on request.
-     */
     @SerializedName("settings") val settings: Settings? = null
 ) {
     val plugins: List<SystemPluginModel>
         get() = activePlugins.orEmpty().map { it.copy(isActive = true) } + inactivePlugins.orEmpty()
 
+    /** @param enabledFeatures null when the report left the field out, which is not the same as off. */
     data class Settings(
-        /**
-         * The store's enabled feature slugs. Null when the report left the field out, which is
-         * not the same as an empty list: a feature missing from a list that is present is off.
-         */
         @SerializedName("enabled_features") val enabledFeatures: List<String>? = null
     )
 

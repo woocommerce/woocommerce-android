@@ -15,11 +15,6 @@ class WooSystemRestClient @Inject constructor(private val wooNetwork: WooNetwork
         private const val SAVE_SITE_TITLE_RESPONSE_FIELD = "title"
     }
 
-    /**
-     * The system status report is one of the slowest WooCommerce endpoints, and `_fields` only
-     * trims the response after the whole report has been built. [includeSettings] lets a caller
-     * that also needs `settings` read both out of a single request.
-     */
     suspend fun fetchInstalledPlugins(
         site: SiteModel,
         includeSettings: Boolean = false

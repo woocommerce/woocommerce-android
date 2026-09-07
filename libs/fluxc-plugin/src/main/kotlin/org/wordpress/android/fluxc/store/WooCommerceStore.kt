@@ -205,11 +205,6 @@ open class WooCommerceStore @Inject internal constructor(
         return WooResult(model.plugins)
     }
 
-    /**
-     * Fetches the site's plugins and, when [includeSettings] is set, the store's enabled features
-     * from the `settings` object of the same system status report. Both come out of one request
-     * because the report is expensive to build and `_fields` only trims what is sent back.
-     */
     suspend fun fetchSitePluginsAndSettings(
         site: SiteModel,
         includeSettings: Boolean = true
@@ -232,10 +227,7 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
-    /**
-     * @param enabledFeatures null when the report left `settings.enabled_features` out, or when
-     * the caller did not ask for it. An empty list means the store has no features enabled.
-     */
+    /** @param enabledFeatures null when the field was absent or not asked for; empty means none. */
     data class SitePluginsAndFeatures(
         val plugins: List<SitePluginModel>,
         val enabledFeatures: List<String>?
@@ -660,9 +652,5 @@ open class WooCommerceStore @Inject internal constructor(
     }
 }
 
-/**
- * The system status endpoint reports plugin names as `directory/file`, but some sites report the
- * file alone, so both are matched on the file part.
- */
 fun SitePluginModel.matches(plugin: WooCommerceStore.WooPlugin): Boolean =
     name.substringAfterLast('/') == plugin.pluginName.substringAfterLast('/')

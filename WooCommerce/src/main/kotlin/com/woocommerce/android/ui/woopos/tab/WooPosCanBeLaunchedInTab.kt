@@ -14,12 +14,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Determines if POS can be launched *from within the POS tab*.
- *
- * The checks and their order match the iOS `POSTabEligibilityChecker`: store country and currency,
- * WooCommerce plugin presence, WooCommerce version, and finally the store's POS feature switch.
- */
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val appPrefs: AppPrefs,
@@ -83,8 +77,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         val siteSettings = resolved.settings
 
-        // The settings response can omit the country, which the mapper stores as an empty string.
-        // That is an unknown, not an unsupported country, so it is treated like the other unknowns.
         if (siteSettings.countryCode.isBlank()) {
             return reasonIfNoPositiveCache(cachedPositive)?.let { Ineligibility(it) }
         }
@@ -92,11 +84,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         val supportedCurrencies = WooPosSupportedCountries.currenciesFor(siteSettings.countryCode)
 
         if (supportedCurrencies.isEmpty()) {
-            // The country gate that makes the tab visible caches its verdict, so a store that moves
-            // to an unsupported country keeps reaching this check. iOS blocks that case and asks the
-            // merchant to relaunch, and reports it as SiteSettingsUnavailable; this does the same.
-            // With the all-countries flag on there is no country to enforce, and no currency to
-            // validate against either, so the store is let through.
             return if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) {
                 null
             } else {
@@ -104,18 +91,12 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             }
         }
 
-        // The settings response can omit the currency, which the mapper stores as an empty string.
-        // That is an unknown, not a mismatch, so it is treated like the other unknowns here.
         if (siteSettings.currencyCode.isBlank()) {
             return reasonIfNoPositiveCache(cachedPositive)?.let { Ineligibility(it) }
         }
 
         if (siteSettings.currencyCode.uppercase() in supportedCurrencies) return null
 
-        // A mismatch read from local settings can be stale: the merchant may have already fixed the
-        // currency remotely. It still blocks this launch, but only a mismatch confirmed by a fresh
-        // fetch is definite enough to drop the positive cache. iOS decides this on settings it has
-        // just refreshed, in `waitForSiteSettingsRefresh`.
         return Ineligibility(
             reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
             isDefinite = resolved.isFresh
@@ -158,11 +139,8 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         forceRefresh: Boolean,
         cachedPositive: Boolean
     ): WooPosLaunchability.NonLaunchabilityReason? {
-        // Below the version that introduced the switch the feature is always on.
         if (!isFeatureSwitchSupported(wooCoreVersion)) return null
 
-        // The plugin check hands over the report it read the plugin from, so the switch is taken
-        // from that instead of asking the same endpoint for it a second time.
         return when (isFeatureSwitchEnabled(forceRefresh, report).getOrNull()) {
             true -> null
             false -> WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
@@ -198,20 +176,11 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
-    /**
-     * @param isFresh whether the settings came from a request just made, rather than from what was
-     * already stored for the site.
-     */
     private data class ResolvedSettings(
         val settings: Settings,
         val isFresh: Boolean,
     )
 
-    /**
-     * @param isDefinite whether the reason reflects the store's actual state. Defaults to what the
-     * reason itself implies, and is overridden where the same reason can be reached from data that
-     * may be stale.
-     */
     private data class Ineligibility(
         val reason: WooPosLaunchability.NonLaunchabilityReason,
         val isDefinite: Boolean = reason.isDefiniteIneligibility,
@@ -224,11 +193,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     }
 }
 
-/**
- * Whether the reason reflects the store's actual state rather than a failure to determine it.
- * Only a definite reason drops the positive cache, which is what iOS's `isDefiniteIneligibility`
- * decides.
- */
 private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: Boolean
     get() = when (this) {
         WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
