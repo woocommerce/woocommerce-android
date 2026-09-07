@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.wc
 
 import androidx.test.core.app.ApplicationProvider
+import com.google.gson.JsonParser
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.flow.first
@@ -204,6 +205,20 @@ class WooCommerceStoreTest {
                     model.isActive == it.isActive
                 }
             }
+    }
+
+    @Test
+    fun `when fetching plugins and settings, then both come from one request`() = test {
+        val settings = JsonParser.parseString("""{"enabled_features":["point_of_sale"]}""")
+        whenever(restClient.fetchInstalledPlugins(any(), any()))
+            .thenReturn(WooPayload(response.copy(settings = settings)))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
+        assertThat(result.model?.settings).isEqualTo(settings.toString())
+        verify(restClient).fetchInstalledPlugins(site, true)
     }
 
     @Test
@@ -566,9 +581,9 @@ class WooCommerceStoreTest {
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(WooPayload(error))
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(payload)
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSitePlugins(site)
     }

@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.system
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
@@ -7,7 +8,12 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 
 data class WCSystemPluginResponse(
     @SerializedName("active_plugins") private val activePlugins: List<SystemPluginModel>?,
-    @SerializedName("inactive_plugins") private val inactivePlugins: List<SystemPluginModel>?
+    @SerializedName("inactive_plugins") private val inactivePlugins: List<SystemPluginModel>?,
+    /**
+     * Only populated when the caller asked for the `settings` field, which
+     * [WooSystemRestClient.fetchInstalledPlugins] does on request.
+     */
+    val settings: JsonElement? = null
 ) {
     val plugins: List<SystemPluginModel>
         get() = activePlugins.orEmpty().map { it.copy(isActive = true) } + inactivePlugins.orEmpty()

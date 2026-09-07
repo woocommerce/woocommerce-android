@@ -180,12 +180,7 @@ open class WooCommerceStore @Inject internal constructor(
 
     fun getActiveSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
         return runBlocking {
-            val allPlugins = sitePluginDao.getActiveSitePlugins(site.localId())
-            val extractedRequestedPluginName = plugin.pluginName.substringAfterLast('/')
-            allPlugins.firstOrNull { sitePlugin ->
-                val extractedPluginName = sitePlugin.name.substringAfterLast('/')
-                extractedPluginName == extractedRequestedPluginName
-            }
+            sitePluginDao.getActiveSitePlugins(site.localId()).firstOrNull { it.matches(plugin) }
         }
     }
 
@@ -203,8 +198,22 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     suspend fun fetchSitePlugins(site: SiteModel): WooResult<List<SitePluginModel>> {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchSitePlugins") {
-            val response = systemRestClient.fetchInstalledPlugins(site)
+        val result = fetchSitePluginsAndSettings(site, includeSettings = false)
+        val model = result.model ?: return WooResult(result.error ?: WooError(GENERIC_ERROR, UNKNOWN))
+        return WooResult(model.plugins)
+    }
+
+    /**
+     * Fetches the site's plugins and, when [includeSettings] is set, the `settings` object of the
+     * same system status report. Both come out of one request because the report is expensive to
+     * build and `_fields` only trims what is sent back.
+     */
+    suspend fun fetchSitePluginsAndSettings(
+        site: SiteModel,
+        includeSettings: Boolean = true
+    ): WooResult<SitePluginsAndSettings> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSitePluginsAndSettings") {
+            val response = systemRestClient.fetchInstalledPlugins(site, includeSettings)
             return@withDefaultContext when {
                 response.isError -> {
                     WooResult(response.error)
@@ -213,13 +222,18 @@ open class WooCommerceStore @Inject internal constructor(
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
                     sitePluginDao.replaceAllSitePlugins(site.localId(), plugins)
-                    WooResult(plugins)
+                    WooResult(SitePluginsAndSettings(plugins, response.result.settings?.toString()))
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
     }
+
+    data class SitePluginsAndSettings(
+        val plugins: List<SitePluginModel>,
+        val settings: String?
+    )
 
     suspend fun fetchSystemPlugins(site: SiteModel): WooResult<List<SystemPluginModel>> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSystemPlugins") {
@@ -638,3 +652,10 @@ open class WooCommerceStore @Inject internal constructor(
         return formatCurrencyForDisplay(amount.toString(), site, currencyCode, applyDecimalFormatting)
     }
 }
+
+/**
+ * The system status endpoint reports plugin names as `directory/file`, but some sites report the
+ * file alone, so both are matched on the file part.
+ */
+fun SitePluginModel.matches(plugin: WooCommerceStore.WooPlugin): Boolean =
+    name.substringAfterLast('/') == plugin.pluginName.substringAfterLast('/')
