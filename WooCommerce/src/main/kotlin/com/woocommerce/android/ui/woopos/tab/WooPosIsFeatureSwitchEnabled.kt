@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.tab
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
@@ -22,8 +20,8 @@ import javax.inject.Inject
  *
  * The report is read through [WooCommerceStore.fetchSitePluginsAndSettings], which asks for the
  * plugins and `settings` in one request, so this never costs more than the plugin check already
- * does. Callers that already hold a freshly fetched report pass it as [systemStatusSettings] so it
- * is not fetched twice.
+ * does. Callers that already read a report pass it as [report] so it is not fetched twice, even
+ * when that report left the field out.
  *
  * The report is a slow endpoint and this runs on the POS launch path, so the last value read for a
  * site is kept in prefs. Launches answer from that value and refresh it in the background, which
@@ -34,20 +32,19 @@ import javax.inject.Inject
 class WooPosIsFeatureSwitchEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val gson: Gson,
     private val appPrefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     suspend operator fun invoke(
         forceRefresh: Boolean,
-        systemStatusSettings: String? = null,
+        report: WooPosSystemStatusReport? = null,
     ): Result<Boolean> {
         val site = selectedSite.getOrNull()
             ?: return Result.failure(WooPosCouldNotDetermineValueException())
 
-        systemStatusSettings?.let { settings ->
-            return store(site, parseEnabledFeatures(settings))
-        }
+        // The caller already read a report. Whether or not it carried the field, that is the
+        // answer this request has, so fetching the same report again would add nothing.
+        report?.let { return store(site, it.enabledFeatures) }
 
         if (!forceRefresh) {
             appPrefs.getPOSFeatureSwitchEnabledForSite(
@@ -63,10 +60,10 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         return store(site, loadEnabledFeatures(site))
     }
 
-    private fun store(site: SiteModel, enabledFeatures: List<*>?): Result<Boolean> {
+    private fun store(site: SiteModel, enabledFeatures: List<String>?): Result<Boolean> {
         if (enabledFeatures == null) return Result.failure(WooPosCouldNotDetermineValueException())
 
-        val isEnabled = enabledFeatures.contains(POINT_OF_SALE_FEATURE)
+        val isEnabled = POINT_OF_SALE_FEATURE in enabledFeatures
         appPrefs.setPOSFeatureSwitchEnabledForSite(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
@@ -76,20 +73,10 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         return Result.success(isEnabled)
     }
 
-    private suspend fun loadEnabledFeatures(site: SiteModel): List<*>? =
-        wooCommerceStore.fetchSitePluginsAndSettings(site)
-            .model
-            ?.settings
-            ?.let { parseEnabledFeatures(it) }
-
-    private fun parseEnabledFeatures(settings: String): List<*>? = runCatching {
-        val type = object : TypeToken<Map<String, Any>>() {}.type
-        val settingsMap: Map<String, Any> = gson.fromJson(settings, type)
-        settingsMap[ENABLED_FEATURES_KEY] as? List<*>
-    }.getOrNull()
+    private suspend fun loadEnabledFeatures(site: SiteModel): List<String>? =
+        wooCommerceStore.fetchSitePluginsAndSettings(site).model?.enabledFeatures
 
     private companion object {
-        const val ENABLED_FEATURES_KEY = "enabled_features"
         const val POINT_OF_SALE_FEATURE = "point_of_sale"
     }
 }

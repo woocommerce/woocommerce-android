@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.wc
 
 import androidx.test.core.app.ApplicationProvider
-import com.google.gson.JsonParser
 import com.wellsql.generated.SiteModelTable
 import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.flow.first
@@ -209,7 +208,7 @@ class WooCommerceStoreTest {
 
     @Test
     fun `when fetching plugins and settings, then both come from one request`() = test {
-        val settings = JsonParser.parseString("""{"enabled_features":["point_of_sale"]}""")
+        val settings = WCSystemPluginResponse.Settings(enabledFeatures = listOf("point_of_sale"))
         whenever(restClient.fetchInstalledPlugins(any(), any()))
             .thenReturn(WooPayload(response.copy(settings = settings)))
 
@@ -217,8 +216,19 @@ class WooCommerceStoreTest {
 
         assertThat(result.isError).isFalse
         assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
-        assertThat(result.model?.settings).isEqualTo(settings.toString())
+        assertThat(result.model?.enabledFeatures).containsExactly("point_of_sale")
         verify(restClient).fetchInstalledPlugins(site, true)
+    }
+
+    @Test
+    fun `given the report omits settings, when fetching plugins and settings, then features are null`() = test {
+        // Null must stay distinguishable from an empty list: the field being absent is not the same
+        // as the store having no features enabled.
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.model?.enabledFeatures).isNull()
     }
 
     @Test

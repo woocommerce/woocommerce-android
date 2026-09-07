@@ -204,14 +204,14 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     /**
-     * Fetches the site's plugins and, when [includeSettings] is set, the `settings` object of the
-     * same system status report. Both come out of one request because the report is expensive to
-     * build and `_fields` only trims what is sent back.
+     * Fetches the site's plugins and, when [includeSettings] is set, the store's enabled features
+     * from the `settings` object of the same system status report. Both come out of one request
+     * because the report is expensive to build and `_fields` only trims what is sent back.
      */
     suspend fun fetchSitePluginsAndSettings(
         site: SiteModel,
         includeSettings: Boolean = true
-    ): WooResult<SitePluginsAndSettings> {
+    ): WooResult<SitePluginsAndFeatures> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSitePluginsAndSettings") {
             val response = systemRestClient.fetchInstalledPlugins(site, includeSettings)
             return@withDefaultContext when {
@@ -222,7 +222,7 @@ open class WooCommerceStore @Inject internal constructor(
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
                     sitePluginDao.replaceAllSitePlugins(site.localId(), plugins)
-                    WooResult(SitePluginsAndSettings(plugins, response.result.settings?.toString()))
+                    WooResult(SitePluginsAndFeatures(plugins, response.result.settings?.enabledFeatures))
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -230,9 +230,13 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
-    data class SitePluginsAndSettings(
+    /**
+     * @param enabledFeatures null when the report left `settings.enabled_features` out, or when
+     * the caller did not ask for it. An empty list means the store has no features enabled.
+     */
+    data class SitePluginsAndFeatures(
         val plugins: List<SitePluginModel>,
-        val settings: String?
+        val enabledFeatures: List<String>?
     )
 
     suspend fun fetchSystemPlugins(site: SiteModel): WooResult<List<SystemPluginModel>> {
