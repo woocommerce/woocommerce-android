@@ -235,7 +235,7 @@ class ReviewListViewModel @Inject constructor(
 
     private fun observeReviewUpdates() {
         viewModelScope.launch {
-            unseenReviewsCountHandler.observeUnseenCount()
+            unseenReviewsCountHandler.observeReviewNotificationChanges()
                 .drop(1)
                 .collectLatest { forceRefreshReviews() }
         }

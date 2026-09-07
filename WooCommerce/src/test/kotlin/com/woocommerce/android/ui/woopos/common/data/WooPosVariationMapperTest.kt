@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.VariantOption
@@ -24,12 +23,11 @@ import java.math.BigDecimal
 class WooPosVariationMapperTest : BaseUnitTest() {
 
     private lateinit var sut: WooPosVariationMapper
-    private val gson = Gson()
     private val resourceProvider: ResourceProvider = mock()
 
     @Before
     fun setup() {
-        sut = WooPosVariationMapper(gson)
+        sut = WooPosVariationMapper()
         whenever(resourceProvider.getString(R.string.woopos_variations_any_variation, "Color"))
             .thenReturn("Any Color")
         whenever(resourceProvider.getString(R.string.woopos_variations_any_variation, "Size"))

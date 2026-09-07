@@ -62,6 +62,8 @@ import java.util.Date
 @SuppressLint("StaticFieldLeak")
 @SuppressWarnings("LargeClass")
 object AppPrefs {
+    private const val HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX =
+        "HTTPS_CONFIGURATION_WARNING_DISMISSAL"
     interface PrefKey
 
     @JvmInline
@@ -238,6 +240,8 @@ object AppPrefs {
 
         IS_USER_AGE_ELIGIBLE_FOR_APP_USE,
 
+        USER_AGE_RESTRICTION_REASON,
+
         QR_LOGIN_ROLLOUT_BUCKET,
 
         // Anonymous device id sent in remote feature flag requests to keep rollout bucketing stable
@@ -377,6 +381,10 @@ object AppPrefs {
     var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    var userAgeRestrictionReason: String
+        get() = getString(key = UndeletablePrefKey.USER_AGE_RESTRICTION_REASON, defaultValue = "")
+        set(value) = setString(key = UndeletablePrefKey.USER_AGE_RESTRICTION_REASON, value = value)
 
     var isAiAssistantEarlyAccessNoticeDismissed: Boolean
         get() = getBoolean(
@@ -544,6 +552,16 @@ object AppPrefs {
             selfHostedSiteId
         )
     )
+
+    fun getHttpsConfigurationWarningDismissedAt(localSiteId: Int): Long =
+        getLong(getHttpsConfigurationWarningDismissalKey(localSiteId))
+
+    fun setHttpsConfigurationWarningDismissedAt(localSiteId: Int, dismissedAt: Long) {
+        setLong(getHttpsConfigurationWarningDismissalKey(localSiteId), dismissedAt)
+    }
+
+    private fun getHttpsConfigurationWarningDismissalKey(localSiteId: Int) =
+        "$HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX:$localSiteId"
 
     private fun getCardReaderUpsellDismissedForeverKey(
         localSiteId: Int,
@@ -1424,7 +1442,10 @@ object AppPrefs {
     private fun removePreferencesWithDynamicKey(editor: Editor) {
         getPreferences()
             .all
-            .filter { it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) }
+            .filter {
+                it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
+                    it.key.startsWith(HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX)
+            }
             .forEach {
                 editor.remove(it.key)
             }

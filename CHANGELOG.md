@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 25.6
+This release makes the app smaller and faster. Product editing is safer: you're warned before losing an attribute option or tag you typed, and editing options no longer wipes other attributes. Order details show product add-ons clearly, images load reliably on more stores, and the unread reviews badge no longer gets stuck. Plus crash fixes.
+
 ## 25.5
 On Android 17, Remote Tap to Pay asks for local network access so your phone and tablet can connect. Store management is easier, too: apply gift cards while editing orders, update product image alt text and titles, see dates in your language's preferred order, and enjoy smoother bundle setup and sign-in.
 

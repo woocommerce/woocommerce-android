@@ -3,6 +3,7 @@ package com.woocommerce.android.di
 import android.app.Application
 import android.content.Context
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.CardReaderManagerFactory
 import com.woocommerce.android.cardreader.CardReaderStore
@@ -42,7 +43,8 @@ class InPersonPaymentsModule {
                 )!!.toInPersonPaymentsPluginType(),
                 selectedSite.get()
             )
-            return result.model?.token.orEmpty()
+            result.error?.let { throw WooException(it) }
+            return checkNotNull(result.model) { "Connection token response was empty" }.token
         }
 
         override suspend fun preparePaymentIntent(

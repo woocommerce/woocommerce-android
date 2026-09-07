@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
@@ -12,15 +10,16 @@ import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Unknown
 import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 class CookieNonceAuthenticator @Inject constructor(
     private val nonceRestClient: NonceRestClient,
     private val discoveryWPAPIRestClient: DiscoveryWPAPIRestClient,
     private val siteStore: SiteStore,
-    private val coroutineEngine: CoroutineEngine
+    private val coroutineEngine: CoroutineEngine,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) {
     suspend fun authenticate(
         siteUrl: String,
@@ -38,15 +37,7 @@ class CookieNonceAuthenticator @Inject constructor(
         password: String
     ): CookieNonceAuthenticationResult {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "authenticate") {
-            val siteUrlWithScheme = if (endpoints.siteUrl.toHttpUrlOrNull() == null) {
-                // If the URL is missing a scheme, try inferring it from the API endpoint
-                val siteUrl = endpoints.siteUrl
-                val wpApiUrl = discoverApiEndpoint(UrlUtils.addUrlSchemeIfNeeded(siteUrl, false))
-                val scheme = wpApiUrl.toHttpUrl().scheme
-                UrlUtils.addUrlSchemeIfNeeded(UrlUtils.removeScheme(siteUrl), scheme == "https")
-            } else endpoints.siteUrl
-
-            val resolvedEndpoints = endpoints.copy(siteUrl = siteUrlWithScheme)
+            val resolvedEndpoints = endpoints.normalizedToHttps()
             when (val nonce = nonceRestClient.requestNonce(resolvedEndpoints, username, password)) {
                 is Available -> CookieNonceAuthenticationResult.Success
                 is FailedRequest -> {
@@ -72,7 +63,8 @@ class CookieNonceAuthenticator @Inject constructor(
     ): WPAPIResponse<T> {
         val usingSavedRestUrl = site.wpApiRestUrl != null
         if (!usingSavedRestUrl) {
-            site.wpApiRestUrl = discoverApiEndpoint(site.url)
+            val normalizedSiteUrl = httpsUrlNormalizer.normalize(site.url, addHttpsSchemeIfMissing = true).normalizedUrl
+            site.wpApiRestUrl = httpsUrlNormalizer.normalize(discoverApiEndpoint(normalizedSiteUrl)).normalizedUrl
             try {
                 siteStore.insertOrUpdateSite(site)
             } catch (e: SiteStorePersistence.DuplicateSiteException) {
@@ -119,14 +111,16 @@ class CookieNonceAuthenticator @Inject constructor(
         password: String,
         fetchMethod: suspend (wpApiUrl: String, nonce: Available) -> WPAPIResponse<T>
     ): WPAPIResponse<T> {
-        var nonce = nonceRestClient.getNonce(endpoints.siteUrl, username)
+        val normalizedEndpoints = endpoints.normalizedToHttps()
+        val normalizedWpApiUrl = httpsUrlNormalizer.normalize(wpApiUrl).normalizedUrl
+        var nonce = nonceRestClient.getNonce(normalizedEndpoints.siteUrl, username)
         val usingSavedNonce = nonce is Available
         if (nonce !is Available) {
-            nonce = nonceRestClient.requestNonce(endpoints, username, password)
+            nonce = nonceRestClient.requestNonce(normalizedEndpoints, username, password)
         }
         if (nonce !is Available) return nonce.toErrorResponse()
 
-        val response = fetchMethod(wpApiUrl, nonce)
+        val response = fetchMethod(normalizedWpApiUrl, nonce)
 
         if (response is WPAPIResponse.Success<*>) return response
 
@@ -139,12 +133,12 @@ class CookieNonceAuthenticator @Inject constructor(
                 if (usingSavedNonce) {
                     // Call with saved nonce failed, so try getting a new one
                     val previousNonce = nonce
-                    val newNonce = nonceRestClient.requestNonce(endpoints, username, password)
+                    val newNonce = nonceRestClient.requestNonce(normalizedEndpoints, username, password)
 
                     // Try original call again if we have a new nonce
                     when {
                         newNonce !is Available -> newNonce.toErrorResponse()
-                        newNonce != previousNonce -> fetchMethod(wpApiUrl, newNonce)
+                        newNonce != previousNonce -> fetchMethod(normalizedWpApiUrl, newNonce)
                         else -> response
                     }
                 } else {
@@ -162,6 +156,12 @@ class CookieNonceAuthenticator @Inject constructor(
         return discoveryWPAPIRestClient.discoverWPAPIBaseURL(url) // discover rest api endpoint
             ?: WPAPIDiscoveryUtils.buildDefaultRESTBaseUrl(url)
     }
+
+    private fun CookieNonceAuthenticationEndpoints.normalizedToHttps() = copy(
+        siteUrl = httpsUrlNormalizer.normalize(siteUrl, addHttpsSchemeIfMissing = true).normalizedUrl,
+        loginEntryUrl = loginEntryUrl?.let { httpsUrlNormalizer.normalize(it).normalizedUrl },
+        adminBaseUrl = adminBaseUrl?.let { httpsUrlNormalizer.normalize(it).normalizedUrl },
+    )
 
     private fun <T> Nonce.toErrorResponse(): WPAPIResponse.Error<T> {
         val (genericErrorType, message) = when (this) {

@@ -14,7 +14,6 @@ import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.util.StringUtils
 import java.math.BigDecimal
 
 typealias ViewAddonClickListener = (Order.Item) -> Unit
@@ -38,13 +37,16 @@ class OrderDetailProductItemView @JvmOverloads constructor(
         binding.productInfoTotal.text = orderTotal
 
         val productPrice = formatCurrencyForDisplay(item.price)
-        val attributes = item.attributesDescription
-            .takeIf { it.isNotEmpty() }
-            ?.let { "$it \u2981 " }
-            ?: StringUtils.EMPTY
-        binding.productInfoAttributes.text = context.getString(
-            R.string.orderdetail_product_lineitem_attributes,
-            attributes, item.quantity.formatToString(), productPrice
+        with(binding.productInfoAttributes) {
+            val attributes = item.displayableAttributes
+            isVisible = attributes.isNotEmpty()
+            text = attributes.joinToString(separator = "\n") {
+                context.getString(R.string.orderdetail_product_lineitem_attribute, it.key, it.value)
+            }
+        }
+        binding.productInfoQuantityAndPrice.text = context.getString(
+            R.string.orderdetail_product_lineitem_quantity_and_price,
+            item.quantity.formatToString(), productPrice
         )
 
         with(binding.productInfoSKU) {
