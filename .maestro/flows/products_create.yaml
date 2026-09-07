@@ -781,7 +781,11 @@ tags:
 - copyTextFrom:
     id: "categoryName"
     index: 0
-- evalScript: ${output.selectedCategory = maestro.copiedText.trim()}
+# The name goes straight into a regex below and a store is free to call
+# a category "Sale (50%)", so escape it. fromCharCode is needed for the
+# last three: an inline ${...} silently yields undefined if it contains a
+# literal $, and fails to parse on a literal brace.
+- evalScript: ${output.selectedCategory = String(maestro.copiedText).trim().split(String.fromCharCode(92)).join(String.fromCharCode(92) + String.fromCharCode(92)).split('.').join('\\.').split('*').join('\\*').split('+').join('\\+').split('?').join('\\?').split('^').join('\\^').split('(').join('\\(').split(')').join('\\)').split('|').join('\\|').split('[').join('\\[').split(']').join('\\]').split(String.fromCharCode(36)).join('\\' + String.fromCharCode(36)).split(String.fromCharCode(123)).join('\\' + String.fromCharCode(123)).split(String.fromCharCode(125)).join('\\' + String.fromCharCode(125))}
 - assertTrue:
     condition: ${output.selectedCategory.length > 0}
     label: "Captured the category being attached"
