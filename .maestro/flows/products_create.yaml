@@ -22,8 +22,8 @@
 #      → select the first category ("Uncategorized" if present) → Done
 #  12. Tap PUBLISH in the toolbar
 #  13. Search by run ID, reopen the exact product, and verify Description,
-#      Price, Inventory, Shipping, type, tag, Short description, Upsell, and
-#      Downloadable file values persisted in their editors
+#      Price, Inventory, Shipping, type, category, tag, Short description,
+#      Upsell, and Downloadable file values persisted in their editors
 #
 # ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on the
 # staging store and creates a real tag every run. The runner's cleanup
@@ -774,6 +774,17 @@ tags:
 
 - takeScreenshot: product_create_category_screen
 
+# Remember which category is about to be ticked. Index 0 is whichever
+# category renders at the top of this store's list, so the name has to
+# be read here to be checked after publishing.
+- copyTextFrom:
+    id: "categoryName"
+    index: 0
+- evalScript: ${output.selectedCategory = maestro.copiedText.trim()}
+- assertTrue:
+    condition: ${output.selectedCategory.length > 0}
+    label: "Captured the category being attached"
+
 # Only the checkbox itself toggles selection —
 # ProductCategoriesAdapter wires the click listener exclusively on
 # `categoryCheckbox`, NOT on the row or the category name TextView
@@ -1087,6 +1098,17 @@ tags:
     label: "Published product retains its Simple downloadable type"
 - assertVisible:
     text: "Downloadable product"
+
+# Categories persistence. Everything else the flow sets is verified
+# after publishing, and the category was the one value it changed
+# without ever checking that it stuck.
+- scrollUntilVisible:
+    element: ".*${output.selectedCategory}.*"
+    direction: UP
+    timeout: 10000
+    label: "Published product retains the category picked during creation"
+- assertVisible:
+    text: ".*${output.selectedCategory}.*"
 
 # Tag persistence in the tags editor.
 - scrollUntilVisible:
