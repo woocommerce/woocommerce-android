@@ -120,7 +120,7 @@ tags:
     label: "Open store picker"
 
 - extendedWaitUntil:
-    visible: ".*Select store.*|.*Connected Stores.*"
+    visible: ".*Select store.*"
     timeout: 15000
     label: "Require store picker"
 - extendedWaitUntil:

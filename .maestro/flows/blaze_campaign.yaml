@@ -60,7 +60,7 @@ tags:
       # flow passes regardless of the store's current campaign/product
       # state.
       - extendedWaitUntil:
-          visible: ".*Blaze campaigns.*|.*Get your products seen.*|.*Start your campaign.*|.*Select products.*|.*Campaign preview.*"
+          visible: ".*Blaze campaigns.*|.*Get your products seen.*|.*Start your campaign.*"
           timeout: 20000
           label: "Wait for Blaze destination screen"
 
