@@ -18,7 +18,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.SitePluginsAndSettings
+import org.wordpress.android.fluxc.store.WooCommerceStore.SitePluginsAndFeatures
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosGetWooCorePluginStatusTest {
@@ -102,15 +102,15 @@ class WooPosGetWooCorePluginStatusTest {
     fun `given forceRefresh and the fetch succeeds, when invoked, then returns the fetched state`() = runTest {
         whenever(wooCommerceStore.fetchSitePluginsAndSettings(site)).thenReturn(
             WooResult(
-                SitePluginsAndSettings(
+                SitePluginsAndFeatures(
                     plugins = listOf(plugin("woocommerce/woocommerce", "10.2.0", isActive = true)),
-                    settings = SETTINGS_JSON,
+                    enabledFeatures = ENABLED_FEATURES,
                 )
             )
         )
 
         assertThat(sut(forceRefresh = true))
-            .isEqualTo(WooPosWooCorePluginStatus.Active("10.2.0", SETTINGS_JSON))
+            .isEqualTo(WooPosWooCorePluginStatus.Active("10.2.0", WooPosSystemStatusReport(ENABLED_FEATURES)))
     }
 
     @Test
@@ -118,10 +118,28 @@ class WooPosGetWooCorePluginStatusTest {
         runTest {
             // The report answered, so the plugin's absence is the site's actual state, not an unknown.
             whenever(wooCommerceStore.fetchSitePluginsAndSettings(site))
-                .thenReturn(WooResult(SitePluginsAndSettings(plugins = emptyList(), settings = null)))
+                .thenReturn(WooResult(SitePluginsAndFeatures(plugins = emptyList(), enabledFeatures = null)))
 
             assertThat(sut(forceRefresh = true))
                 .isEqualTo(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+        }
+
+    @Test
+    fun `given forceRefresh and a report without enabled_features, when invoked, then the report is still carried`() =
+        runTest {
+            whenever(wooCommerceStore.fetchSitePluginsAndSettings(site)).thenReturn(
+                WooResult(
+                    SitePluginsAndFeatures(
+                        plugins = listOf(plugin("woocommerce/woocommerce", "10.2.0", isActive = true)),
+                        enabledFeatures = null,
+                    )
+                )
+            )
+
+            // Not Active("10.2.0", null): the report answered, and that has to stay distinguishable
+            // from a state read out of local data, which is what null means.
+            assertThat(sut(forceRefresh = true))
+                .isEqualTo(WooPosWooCorePluginStatus.Active("10.2.0", WooPosSystemStatusReport(null)))
         }
 
     @Test
@@ -134,6 +152,6 @@ class WooPosGetWooCorePluginStatusTest {
     }
 
     private companion object {
-        const val SETTINGS_JSON = """{"enabled_features":["point_of_sale"]}"""
+        val ENABLED_FEATURES = listOf("point_of_sale")
     }
 }

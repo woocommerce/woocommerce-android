@@ -13,10 +13,10 @@ import javax.inject.Inject
  * missing or deactivated" from "we could not reach the site", so POS can report the two apart the
  * way iOS does.
  *
- * When it reads remotely it asks for the system status report's `settings` too and hands it back on
- * [WooPosWooCorePluginStatus.Active.systemStatusSettings], so the POS feature switch is read from
- * the same request. iOS reads both from one report in `loadWooCommercePluginAndPOSFeatureSwitch`,
- * and the report is expensive enough that asking for it twice is worth avoiding.
+ * When it reads remotely it asks for the system status report's `settings` too and hands the report
+ * back on [WooPosWooCorePluginStatus.Active.report], so the POS feature switch is read from the same
+ * request. iOS reads both from one report in `loadWooCommercePluginAndPOSFeatureSwitch`, and the
+ * report is expensive enough that asking for it twice is worth avoiding.
  *
  * Runs on the caller's context; every call it makes switches to its own dispatcher.
  */
@@ -33,41 +33,50 @@ class WooPosGetWooCorePluginStatus @Inject constructor(
                 ?: return WooPosWooCorePluginStatus.CouldNotDetermine
 
             // The report answered, so an absent plugin is the site's actual state.
-            statusOf(fetched.plugins, systemStatusSettings = fetched.settings)
+            statusOf(fetched.plugins, report = WooPosSystemStatusReport(fetched.enabledFeatures))
         } else {
             val plugins = wooCommerceStore.getSitePlugins(site)
 
             // Nothing has ever been synced for this site, so the plugin's absence proves nothing.
             if (plugins.isEmpty()) return WooPosWooCorePluginStatus.CouldNotDetermine
 
-            statusOf(plugins, systemStatusSettings = null)
+            statusOf(plugins, report = null)
         }
     }
 
     private fun statusOf(
         plugins: List<SitePluginModel>,
-        systemStatusSettings: String?
+        report: WooPosSystemStatusReport?
     ): WooPosWooCorePluginStatus {
         val wooCore = plugins.firstOrNull { it.matches(WooCommerceStore.WooPlugin.WOO_CORE) }
             ?: return WooPosWooCorePluginStatus.NotInstalledOrInactive
 
         return if (wooCore.isActive) {
-            WooPosWooCorePluginStatus.Active(wooCore.version, systemStatusSettings)
+            WooPosWooCorePluginStatus.Active(wooCore.version, report)
         } else {
             WooPosWooCorePluginStatus.NotInstalledOrInactive
         }
     }
 }
 
+/**
+ * The system status report the plugin state was read from.
+ *
+ * @param enabledFeatures the report's `settings.enabled_features`, or null when the report left the
+ * field out. A report that answered without the field is still an answer, so holding it here keeps
+ * [WooPosIsFeatureSwitchEnabled] from asking for the same report again.
+ */
+data class WooPosSystemStatusReport(val enabledFeatures: List<String>?)
+
 sealed interface WooPosWooCorePluginStatus {
     /**
-     * @param systemStatusSettings the `settings` object of the system status report this state was
-     * read from, or null when it came from local data. [WooPosIsFeatureSwitchEnabled] reads the POS
-     * feature switch out of it instead of fetching the report again.
+     * @param report the system status report this state was read from, or null when it came from
+     * local data. [WooPosIsFeatureSwitchEnabled] reads the POS feature switch out of it instead of
+     * fetching the report again.
      */
     data class Active(
         val version: String,
-        val systemStatusSettings: String? = null,
+        val report: WooPosSystemStatusReport? = null,
     ) : WooPosWooCorePluginStatus
 
     data object NotInstalledOrInactive : WooPosWooCorePluginStatus
