@@ -4,6 +4,8 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
@@ -15,8 +17,8 @@ import javax.inject.Singleton
 /**
  * Determines if POS can be launched *from within the POS tab*.
  *
- * The checks and their order match the iOS `POSTabEligibilityChecker`: store currency, WooCommerce
- * plugin presence, WooCommerce version, and finally the store's POS feature switch.
+ * The checks and their order match the iOS `POSTabEligibilityChecker`: store country and currency,
+ * WooCommerce plugin presence, WooCommerce version, and finally the store's POS feature switch.
  */
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
@@ -25,6 +27,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val getWooCorePluginStatus: WooPosGetWooCorePluginStatus,
     private val isFeatureSwitchEnabled: WooPosIsFeatureSwitchEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLog: WooPosLogWrapper,
 ) {
 
@@ -45,7 +48,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
-        getNonLaunchabilityReasonFromCurrency(site, forceRefresh, cachedPositive)?.let {
+        getNonLaunchabilityReasonFromSiteSettings(site, forceRefresh, cachedPositive)?.let {
             return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
         }
 
@@ -61,14 +64,31 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         siteId: Int,
         reason: WooPosLaunchability.NonLaunchabilityReason
     ): WooPosLaunchability.NotLaunchable {
-        if (reason != WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache) {
+        if (reason.isDefiniteIneligibility) {
             appPrefs.clearPOSLaunchableForSite(siteId)
         }
 
         return WooPosLaunchability.NotLaunchable(reason)
     }
 
-    private suspend fun getNonLaunchabilityReasonFromCurrency(
+    /**
+     * Whether the reason reflects the store's actual state rather than a failure to determine it.
+     * Only a definite reason drops the positive cache, which is what iOS's `isDefiniteIneligibility`
+     * decides.
+     */
+    private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: Boolean
+        get() = when (this) {
+            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion,
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
+            WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> true
+
+            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+            WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
+            WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> false
+        }
+
+    private suspend fun getNonLaunchabilityReasonFromSiteSettings(
         site: SiteModel,
         forceRefresh: Boolean,
         cachedPositive: Boolean
@@ -78,9 +98,22 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         val supportedCurrencies = WooPosSupportedCountries.currenciesFor(siteSettings.countryCode)
 
-        // Countries outside the POS table are only reachable with the all-countries flag on. There
-        // is no currency to validate against, so the store is let through.
-        if (supportedCurrencies.isEmpty()) return null
+        if (supportedCurrencies.isEmpty()) {
+            // The country gate that makes the tab visible caches its verdict, so a store that moves
+            // to an unsupported country keeps reaching this check. iOS blocks that case and asks the
+            // merchant to relaunch, and reports it as SiteSettingsUnavailable; this does the same.
+            // With the all-countries flag on there is no country to enforce, and no currency to
+            // validate against either, so the store is let through.
+            return if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) {
+                null
+            } else {
+                WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
+            }
+        }
+
+        // The settings response can omit the currency, which the mapper stores as an empty string.
+        // That is an unknown, not a mismatch, so it is treated like the other unknowns here.
+        if (siteSettings.currencyCode.isBlank()) return reasonIfNoPositiveCache(cachedPositive)
 
         return if (siteSettings.currencyCode.uppercase() in supportedCurrencies) {
             null
@@ -102,7 +135,12 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
             is WooPosWooCorePluginStatus.Active ->
                 getNonLaunchabilityReasonFromWooCoreVersion(status.version)
-                    ?: getNonLaunchabilityReasonFromFeatureSwitch(status.version, forceRefresh, cachedPositive)
+                    ?: getNonLaunchabilityReasonFromFeatureSwitch(
+                        wooCoreVersion = status.version,
+                        systemStatusSettings = status.systemStatusSettings,
+                        forceRefresh = forceRefresh,
+                        cachedPositive = cachedPositive,
+                    )
         }
 
     private fun getNonLaunchabilityReasonFromWooCoreVersion(
@@ -116,13 +154,16 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
     private suspend fun getNonLaunchabilityReasonFromFeatureSwitch(
         wooCoreVersion: String,
+        systemStatusSettings: String?,
         forceRefresh: Boolean,
         cachedPositive: Boolean
     ): WooPosLaunchability.NonLaunchabilityReason? {
         // Below the version that introduced the switch the feature is always on.
         if (!isFeatureSwitchSupported(wooCoreVersion)) return null
 
-        return when (isFeatureSwitchEnabled(forceRefresh).getOrNull()) {
+        // The plugin check hands over the report it read the plugin from, so the switch is taken
+        // from that instead of asking the same endpoint for it a second time.
+        return when (isFeatureSwitchEnabled(forceRefresh, systemStatusSettings).getOrNull()) {
             true -> null
             false -> WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
             null -> reasonIfNoPositiveCache(cachedPositive)
