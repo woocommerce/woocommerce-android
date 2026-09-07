@@ -8,6 +8,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.INVALID_SSL_CERTIFICATE
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticationEndpoints.AdminBaseVerification
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.Available
@@ -100,7 +101,7 @@ class NonceRestClient @Inject constructor(
                     }
                 }
                 is Error -> {
-                    if (response.error.volleyError is NoConnectionError) {
+                    if (response.error.isUnclassifiedNoConnectionError()) {
                         return LoginPreflight.Failure(Unknown(username))
                     }
                     val networkResponse = response.error.volleyError?.networkResponse
@@ -148,7 +149,7 @@ class NonceRestClient @Inject constructor(
         response: Error<String>,
         transaction: LoginTransaction
     ): Nonce {
-        if (response.error.volleyError is NoConnectionError) return Unknown(transaction.username)
+        if (response.error.isUnclassifiedNoConnectionError()) return Unknown(transaction.username)
 
         val networkResponse = response.error.volleyError?.networkResponse
         if (networkResponse?.statusCode?.isRedirect() != true) {
@@ -191,7 +192,7 @@ class NonceRestClient @Inject constructor(
                     else failed(username, CookieNonceErrorType.CUSTOM_ADMIN_URL)
                 }
                 is Error -> {
-                    if (response.error.volleyError is NoConnectionError) {
+                    if (response.error.isUnclassifiedNoConnectionError()) {
                         return Unknown(username)
                     }
                     val networkResponse = response.error.volleyError?.networkResponse
@@ -275,6 +276,9 @@ class NonceRestClient @Inject constructor(
     }
 
     private fun String.toNetworkUrlOrNull() = toHttpUrlOrNull()?.takeIf { it.scheme == "http" || it.scheme == "https" }
+
+    private fun WPAPINetworkError.isUnclassifiedNoConnectionError() =
+        volleyError is NoConnectionError && type != INVALID_SSL_CERTIFICATE
 
     private fun HttpUrl.withoutFragment(): HttpUrl = newBuilder().fragment(null).build()
 

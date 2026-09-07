@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 13:58:28+0000
+Translation-Revision-Date: 2026-08-27 17:55:56+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Standort aktivieren, um Kartenlesegeräte anzuzeigen</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Standort erlauben, um Kartenlesegeräte anzuzeigen</string>
+    <string name="woopos_card_reader_local_network_permission_title">Berechtigung für lokales Netzwerk erforderlich</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Bluetooth aktivieren, um Kartenlesegeräte anzuzeigen</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Bluetooth erlauben, Kartenlesegeräte anzuzeigen</string>
+    <string name="woopos_card_reader_local_network_permission_message">Zum Herstellen einer Verbindung zu einem als Kartenlesegerät verwendeten Mobiltelefon ist die Berechtigung für das lokale Netzwerk erforderlich.</string>
+    <string name="woopos_refund_error_invalid_amount">Der Erstattungsbetrag ist nicht gültig</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Der Erstattungsbetrag ist höher als der verbleibende Erstattungsbetrag für diesen Artikel</string>
+    <string name="woopos_refund_error_item_already_refunded">Dieser Artikel wurde bereits vollständig rückerstattet</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Code erneut anzeigen</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Im Register erfassen</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Es wurde keine Online-Zahlung vorgenommen. Erfasse sie im Register oder zeige den Code erneut an.</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Der Erstattungsbetrag ist höher als der verbleibende Erstattungsbetrag für diese Bestellung</string>
+    <string name="woopos_refund_error_order_not_refundable">Diese Bestellung kann nicht zurückerstattet werden</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Die ausgewählte Menge ist größer als die verbleibende Menge, die erstattet werden soll</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Der Kunde hat sich entschieden, persönlich zu bezahlen</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Dieses Paket enthält ein Abonnementprodukt, das für die Erstellung von Bestellungen nicht unterstützt wird</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Fehler beim Zahlungsdienst. Versuche, erneut eine Verbindung herzustellen.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Aktiviere auf dem Mobiltelefon NFC und versuche es dann erneut.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Dieses Smartphone ist nicht für „Tap to Pay“ geeignet. Versuche es mit einem anderen Gerät.</string>
+    <string name="product_image_details_name_label">Titel</string>
+    <string name="product_image_details_alt_text_label">Alt-Text</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Einstellungen öffnen</string>
+    <string name="product_image_details_name_removal_blocked">Das Entfernen des Titels wird von der App nicht unterstützt. Bitte entferne ihn mit wp-admin.</string>
+    <string name="product_image_details_alt_text_removal_blocked">Die App unterstützt das Entfernen von Alt-Text nicht. Bitte entferne ihn mit wp-admin.</string>
+    <string name="product_image_details_title">Bilddetails</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Die Berechtigung für das lokale Netzwerk wird blockiert. Öffne Einstellungen und gewähre lokalen Netzwerkzugriff, um Tap-to-Pay auf diesem Mobiltelefon zu verwenden.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Weiter</string>
+    <string name="card_reader_mode_local_network_permission_header">Berechtigung für lokales Netzwerk erforderlich</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Wir konnten nicht überprüfen, ob „Persönliche Zahlung“ aktiviert ist. Bitte versuche es später erneut.</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android benötigt lokalen Netzwerkzugriff, damit dein Tablet dieses Mobiltelefon finden kann. Es wird nichts außerhalb deines Netzwerks gesendet.</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Dieses Smartphone ist nicht für „Tap to Pay“ geeignet. Versuche es mit einem anderen Gerät.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Deaktivieren</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Dadurch wird die Zahlungsmethode „Per Nachnahme“ beim Bezahlen in deinem Shop deaktiviert, sodass Kunden sie nicht auswählen können.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Aktivieren</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">„Persönliche Zahlung“ deaktivieren?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Dadurch wird die Zahlungsmethode „Per Nachnahme“ beim Bezahlen in deinem Shop aktiviert und für deine Kunden von „%1$s“ in „Persönlich bezahlen“ umbenannt, auch beim Bezahlen auf deiner Website.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Dadurch wird beim Bezahlen in deinem Shop die Zahlungsmethode „Per Nachnahme“ aktiviert.</string>
+    <string name="order_creation_gift_card_not_applied">Diese Geschenkkarte konnte nicht angewendet werden</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Du kannst kein variables Produkt ohne Varianten hinzufügen</string>
+    <string name="login_site_credentials_use_web_authorization">Versuche stattdessen, dich mit deinem Browser anzumelden</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">„Persönliche Zahlung“ aktivieren?</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Wir konnten die Anmeldeeinstellungen deines Shops nicht speichern. Bitte versuche es erneut.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Wir konnten das WordPress-Dashboard unter dieser Adresse nicht erreichen. Überprüfe sie und versuche es erneut.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Wir konnten unter dieser Adresse keine WordPress-Anmeldeseite finden. Überprüfe sie und versuche es erneut.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Gib eine Adresse auf derselben Website ein, ohne die sichere Verbindung oder den sicheren Port zu ändern.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Gib eine vollständige Webadresse ein, einschließlich http:// oder https://.</string>
+    <string name="login_site_credentials_admin_url_label">WordPress-Dashboard-Adresse</string>
+    <string name="login_site_credentials_admin_url_title">Wo ist das Dashboard deines Shops?</string>
+    <string name="login_site_credentials_login_url_label">WordPress-Anmeldeadresse</string>
+    <string name="login_site_credentials_login_url_description">Ein Sicherheits-Plugin kann eine individuelle WordPress-Anmeldeadresse verwenden. Gib die Adresse ein, mit der du dich anmeldest.</string>
+    <string name="login_site_credentials_admin_url_description">Ein Sicherheits-Plugin kann das WordPress-Dashboard verschieben. Gib die Adresse ein, mit der du es öffnest.</string>
+    <string name="login_site_credentials_login_url_title">Wo meldest du dich in deinem Shop an?</string>
     <string name="login_text_otp_another">Code per SMS erneut senden</string>
     <string name="login_text_otp">Code per SMS erneut senden</string>
     <string name="enter_verification_code_sms_generic">Wir haben eine SMS gesendet. Gib den Verifizierungscode aus der Nachricht ein.</string>
@@ -2263,7 +2316,6 @@ Language: de
     <string name="card_reader_tap_to_pay_description">Nutze dein Mobiltelefon zum Akzeptieren von\nKartenzahlungen. Teste es jetzt.</string>
     <string name="loading">Lädt…</string>
     <string name="login_site_credentials_fetching_site_failed">Beim Abrufen der Website ist ein Fehler aufgetreten</string>
-    <string name="login_site_credentials_use_web_authorization">Versuche es über die WP Admin-Seite erneut</string>
     <string name="login_store_address">Anmelden</string>
     <string name="upgrades_plan_ended_name">%s wurde beendet</string>
     <string name="upgrades_current_plan_ended_caption">Dein Abonnement wurde beendet. Du hast jetzt nur noch eingeschränkten Zugriff auf alle Funktionen.</string>

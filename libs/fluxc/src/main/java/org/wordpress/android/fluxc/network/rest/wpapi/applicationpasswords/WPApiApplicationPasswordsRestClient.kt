@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -28,6 +29,7 @@ import kotlin.coroutines.resume
 internal class WPApiApplicationPasswordsRestClient @Inject constructor(
     private val wpApiGsonRequestBuilder: WPAPIGsonRequestBuilder,
     private val cookieNonceAuthenticator: CookieNonceAuthenticator,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
     @Named("no-cookies") private val noCookieRequestQueue: RequestQueue,
     @Named("regular") requestQueue: RequestQueue,
     dispatcher: Dispatcher,
@@ -226,6 +228,6 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
 
     private fun SiteModel.buildUrl(path: String): String {
         val baseUrl = wpApiRestUrl ?: url.slashJoin("/wp-json")
-        return baseUrl.slashJoin(path)
+        return httpsUrlNormalizer.normalize(baseUrl.slashJoin(path)).normalizedUrl
     }
 }

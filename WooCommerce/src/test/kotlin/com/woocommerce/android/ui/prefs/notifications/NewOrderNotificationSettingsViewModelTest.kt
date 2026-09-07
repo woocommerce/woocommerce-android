@@ -20,7 +20,9 @@ import org.junit.Test
 import org.mockito.Mockito.mockingDetails
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -36,8 +38,8 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: NewOrderNotificationSettingsViewModel
 
     private fun setup(prepareMocks: () -> Unit = {}) {
-        whenever(parameterRepository.getParameters()).thenReturn(
-            SiteParameters(
+        parameterRepository.stub {
+            on { getParameters() } doReturn SiteParameters(
                 currencyCode = "USD",
                 currencySymbol = "$",
                 currencyFormattingParameters = null,
@@ -45,7 +47,7 @@ class NewOrderNotificationSettingsViewModelTest : BaseUnitTest() {
                 dimensionUnit = null,
                 gmtOffset = 0f
             )
-        )
+        }
         whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
             .thenReturn(NotificationChannelsHandler.NewOrderNotificationSoundStatus.DEFAULT)
         prepareMocks()

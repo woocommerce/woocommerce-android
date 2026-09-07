@@ -42,7 +42,7 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
 
     fun setup() {
         val savedState = ShippingLabelCreatePackageFragmentArgs(0).toSavedStateHandle()
-        whenever(parameterRepository.getParameters(any(), any<SavedStateHandle>())).thenReturn(
+        whenever(parameterRepository.getParametersBlocking(any(), any<SavedStateHandle>())).thenReturn(
             SiteParameters(
                 currencyCode = "USD",
                 currencySymbol = "$",
