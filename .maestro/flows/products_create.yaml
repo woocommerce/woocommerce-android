@@ -791,11 +791,11 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Publish"
 
-# After publishing the app may stay on the detail screen (with
-# action label swapping PUBLISH → SAVE) or return to the products
-# list. Either settling signal is good.
+# Publishing keeps the app on the detail screen. The toolbar action
+# becomes SHARE and a "Product published" snackbar appears. The
+# snackbar is transient, so SHARE is the signal that survives.
 - extendedWaitUntil:
-    visible: ".*productsRecycler.*|.*SAVE.*|.*updated.*|.*published.*"
+    visible: ".*SHARE.*|.*published.*"
     timeout: 45000
     label: "Wait for publish to complete"
 
