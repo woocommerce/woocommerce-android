@@ -115,8 +115,7 @@ class WooPosEligibilityViewModel @Inject constructor(
                 resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency ->
                 getUnsupportedCurrencyText()
-            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
-                resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
+            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
