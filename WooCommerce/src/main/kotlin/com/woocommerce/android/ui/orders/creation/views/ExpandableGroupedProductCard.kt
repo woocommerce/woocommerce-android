@@ -231,6 +231,7 @@ fun ExpandableChildrenSkeleton(
 }
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 fun ExpandableChildrenProductCard(
     product: OrderCreationProduct,
@@ -259,7 +260,7 @@ fun ExpandableChildrenProductCard(
             }
             .then(modifier)
     ) {
-        val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()
+        val (img, name, stock, sku, quantity, _, price, chevron, expandedPart) = createRefs()
         val collapsedStateBottomBarrier = if (isExpanded) {
             createBottomBarrier(sku)
         } else {
