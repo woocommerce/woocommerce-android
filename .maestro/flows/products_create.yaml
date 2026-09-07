@@ -25,11 +25,10 @@
 #      Price, Inventory, Shipping, type, tag, Short description, Upsell, and
 #      Downloadable file values persisted in their editors
 #
-# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on
-# the staging store every run. Clean up periodically by searching
-# "Maestro Smoke" in wp-admin → Products and bulk-trashing the matches.
-# A future improvement would be to trash the product automatically at
-# the end of the flow (menu_trash_product exists).
+# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on the
+# staging store and creates a real tag every run. The runner's cleanup
+# step deletes both by searching the store for the run id, so run this
+# flow with --seed, which is what produces the manifest cleanup reads.
 #
 # Source strings (res/values/strings.xml):
 #   - product_price_empty                → "Add price"
