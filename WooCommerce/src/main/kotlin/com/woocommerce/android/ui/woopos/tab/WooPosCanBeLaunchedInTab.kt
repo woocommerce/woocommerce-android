@@ -49,7 +49,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
 
         getNonLaunchabilityReasonFromSiteSettings(site, forceRefresh, cachedPositive)?.let {
-            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
+            return prepareNotLaunchableStateWithCacheUpdate(site.id, it.reason, it.isDefinite)
         }
 
         getNonLaunchabilityReasonFromPlugin(forceRefresh, cachedPositive)?.let {
@@ -62,39 +62,32 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
     private fun prepareNotLaunchableStateWithCacheUpdate(
         siteId: Int,
-        reason: WooPosLaunchability.NonLaunchabilityReason
+        reason: WooPosLaunchability.NonLaunchabilityReason,
+        isDefinite: Boolean = reason.isDefiniteIneligibility
     ): WooPosLaunchability.NotLaunchable {
-        if (reason.isDefiniteIneligibility) {
+        if (isDefinite) {
             appPrefs.clearPOSLaunchableForSite(siteId)
         }
 
         return WooPosLaunchability.NotLaunchable(reason)
     }
 
-    /**
-     * Whether the reason reflects the store's actual state rather than a failure to determine it.
-     * Only a definite reason drops the positive cache, which is what iOS's `isDefiniteIneligibility`
-     * decides.
-     */
-    private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: Boolean
-        get() = when (this) {
-            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion,
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
-            WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> true
-
-            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
-            WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
-            WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> false
-        }
-
+    @Suppress("ReturnCount")
     private suspend fun getNonLaunchabilityReasonFromSiteSettings(
         site: SiteModel,
         forceRefresh: Boolean,
         cachedPositive: Boolean
-    ): WooPosLaunchability.NonLaunchabilityReason? {
-        val siteSettings = resolveSiteSettings(site, forceRefresh)
-            ?: return reasonIfNoPositiveCache(cachedPositive)
+    ): Ineligibility? {
+        val resolved = resolveSiteSettings(site, forceRefresh)
+            ?: return reasonIfNoPositiveCache(cachedPositive)?.let { Ineligibility(it) }
+
+        val siteSettings = resolved.settings
+
+        // The settings response can omit the country, which the mapper stores as an empty string.
+        // That is an unknown, not an unsupported country, so it is treated like the other unknowns.
+        if (siteSettings.countryCode.isBlank()) {
+            return reasonIfNoPositiveCache(cachedPositive)?.let { Ineligibility(it) }
+        }
 
         val supportedCurrencies = WooPosSupportedCountries.currenciesFor(siteSettings.countryCode)
 
@@ -107,19 +100,26 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             return if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) {
                 null
             } else {
-                WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
+                Ineligibility(WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable)
             }
         }
 
         // The settings response can omit the currency, which the mapper stores as an empty string.
         // That is an unknown, not a mismatch, so it is treated like the other unknowns here.
-        if (siteSettings.currencyCode.isBlank()) return reasonIfNoPositiveCache(cachedPositive)
-
-        return if (siteSettings.currencyCode.uppercase() in supportedCurrencies) {
-            null
-        } else {
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
+        if (siteSettings.currencyCode.isBlank()) {
+            return reasonIfNoPositiveCache(cachedPositive)?.let { Ineligibility(it) }
         }
+
+        if (siteSettings.currencyCode.uppercase() in supportedCurrencies) return null
+
+        // A mismatch read from local settings can be stale: the merchant may have already fixed the
+        // currency remotely. It still blocks this launch, but only a mismatch confirmed by a fresh
+        // fetch is definite enough to drop the positive cache. iOS decides this on settings it has
+        // just refreshed, in `waitForSiteSettingsRefresh`.
+        return Ineligibility(
+            reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
+            isDefinite = resolved.isFresh
+        )
     }
 
     private suspend fun getNonLaunchabilityReasonFromPlugin(
@@ -137,7 +137,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
                 getNonLaunchabilityReasonFromWooCoreVersion(status.version)
                     ?: getNonLaunchabilityReasonFromFeatureSwitch(
                         wooCoreVersion = status.version,
-                        systemStatusSettings = status.systemStatusSettings,
+                        report = status.report,
                         forceRefresh = forceRefresh,
                         cachedPositive = cachedPositive,
                     )
@@ -154,7 +154,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
     private suspend fun getNonLaunchabilityReasonFromFeatureSwitch(
         wooCoreVersion: String,
-        systemStatusSettings: String?,
+        report: WooPosSystemStatusReport?,
         forceRefresh: Boolean,
         cachedPositive: Boolean
     ): WooPosLaunchability.NonLaunchabilityReason? {
@@ -163,7 +163,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
 
         // The plugin check hands over the report it read the plugin from, so the switch is taken
         // from that instead of asking the same endpoint for it a second time.
-        return when (isFeatureSwitchEnabled(forceRefresh, systemStatusSettings).getOrNull()) {
+        return when (isFeatureSwitchEnabled(forceRefresh, report).getOrNull()) {
             true -> null
             false -> WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled
             null -> reasonIfNoPositiveCache(cachedPositive)
@@ -179,12 +179,16 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
         }
 
-    private suspend fun resolveSiteSettings(site: SiteModel, forceRefresh: Boolean): Settings? =
-        if (forceRefresh) {
-            wooCommerceStore.fetchSiteGeneralSettings(site).model
-        } else {
-            wooCommerceStore.getSiteSettings(site) ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
+    private suspend fun resolveSiteSettings(site: SiteModel, forceRefresh: Boolean): ResolvedSettings? {
+        if (!forceRefresh) {
+            wooCommerceStore.getSiteSettings(site)?.let {
+                return ResolvedSettings(settings = it, isFresh = false)
+            }
         }
+
+        val fetched = wooCommerceStore.fetchSiteGeneralSettings(site).model ?: return null
+        return ResolvedSettings(settings = fetched, isFresh = true)
+    }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(MINIMUM_SUPPORTED_WC_VERSION) >= 0
@@ -194,6 +198,25 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
     }
 
+    /**
+     * @param isFresh whether the settings came from a request just made, rather than from what was
+     * already stored for the site.
+     */
+    private data class ResolvedSettings(
+        val settings: Settings,
+        val isFresh: Boolean,
+    )
+
+    /**
+     * @param isDefinite whether the reason reflects the store's actual state. Defaults to what the
+     * reason itself implies, and is overridden where the same reason can be reached from data that
+     * may be stale.
+     */
+    private data class Ineligibility(
+        val reason: WooPosLaunchability.NonLaunchabilityReason,
+        val isDefinite: Boolean = reason.isDefiniteIneligibility,
+    )
+
     companion object {
         const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
 
@@ -201,8 +224,26 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     }
 }
 
+/**
+ * Whether the reason reflects the store's actual state rather than a failure to determine it.
+ * Only a definite reason drops the positive cache, which is what iOS's `isDefiniteIneligibility`
+ * decides.
+ */
+private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: Boolean
+    get() = when (this) {
+        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
+        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> true
+
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> false
+    }
+
 sealed class WooPosLaunchability {
     object Launchable : WooPosLaunchability()
+
     data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
     enum class NonLaunchabilityReason {

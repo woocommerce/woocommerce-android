@@ -115,8 +115,63 @@ class WooPosCanBeLaunchedInTabTest {
             val result = sut()
 
             assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
+        }
+
+    @Test
+    fun `given a currency mismatch read from local settings, when invoked, then the positive cache survives`() =
+        runTest {
+            // Local settings can be stale: the merchant may have already fixed the currency
+            // remotely. iOS decides this on settings it has just refreshed.
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("CA", "EUR"))
+
+            sut()
+
+            verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+        }
+
+    @Test
+    fun `given a currency mismatch read from a fresh fetch, when invoked, then the positive cache is cleared`() =
+        runTest {
+            whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
+                .thenReturn(WooResult(settings("CA", "EUR")))
+
+            val result = sut(forceRefresh = true)
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), result)
             verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
         }
+
+    @Test
+    fun `given no settings stored and a fetched currency mismatch, when invoked, then the cache is cleared`() =
+        runTest {
+            // The non-forced path falls back to a fetch when nothing is stored, and what that fetch
+            // returns is as fresh as forceRefresh would be.
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+            whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
+                .thenReturn(WooResult(settings("CA", "EUR")))
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), sut())
+            verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
+        }
+
+    @Test
+    fun `given a blank country code with no cached positive, when invoked, then UnknownNoPositiveCache`() = runTest {
+        // The settings response can omit the country. That is an unknown, not an unsupported one.
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("", "USD"))
+
+        val result = sut()
+
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), result)
+        verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+    }
+
+    @Test
+    fun `given a blank country code with cached positive, when invoked, then Launchable`() = runTest {
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("", "USD"))
+        whenever(appPrefs.isPOSLaunchableForSite(eq(siteModel.id))).thenReturn(true)
+
+        assertEquals(Launchable, sut())
+    }
 
     @Test
     fun `given every supported country with its currency, when invoked, then Launchable`() = runTest {
@@ -315,12 +370,12 @@ class WooPosCanBeLaunchedInTabTest {
         whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
             .thenReturn(WooResult(settings("US", "USD")))
         whenever(getWooCorePluginStatus(any()))
-            .thenReturn(WooPosWooCorePluginStatus.Active("10.0.0", SETTINGS_JSON))
+            .thenReturn(WooPosWooCorePluginStatus.Active("10.0.0", REPORT))
 
         assertEquals(Launchable, sut(forceRefresh = true))
 
         // The report is the slowest WooCommerce endpoint; it is read once, not once per check.
-        verify(isFeatureSwitchEnabled).invoke(true, SETTINGS_JSON)
+        verify(isFeatureSwitchEnabled).invoke(true, REPORT)
     }
 
     // --- Plan eligibility ---
@@ -335,6 +390,6 @@ class WooPosCanBeLaunchedInTabTest {
     }
 
     private companion object {
-        const val SETTINGS_JSON = """{"enabled_features":["point_of_sale"]}"""
+        val REPORT = WooPosSystemStatusReport(listOf("point_of_sale"))
     }
 }
