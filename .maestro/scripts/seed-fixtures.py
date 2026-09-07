@@ -405,6 +405,7 @@ def cleanup(args: argparse.Namespace) -> None:
             ("product", "products"),
             ("order", "orders"),
             ("customer", "customers"),
+            ("product_tag", "products/tags"),
         ):
             query: dict[str, Any] = {"search": run_id}
             if entity_type in {"product", "order"}:
