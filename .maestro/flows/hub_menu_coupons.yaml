@@ -92,7 +92,7 @@ tags:
 - tapOn:
     id: "edit_coupon_code_input"
 - eraseText
-- inputText: SUITE-${SUITE_RUN_ID}-UI
+- inputText: ${SUITE_RUN_ID}-UI
 - hideKeyboard
 
 - tapOn:

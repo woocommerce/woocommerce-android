@@ -20,7 +20,7 @@
 # floating toolbar that doesn't cover it) the hide is skipped — no stray back
 # press, no throw. When it is hidden, a real soft keyboard is up and hideKeyboard
 # dismisses it so the caller can tap the target.
-appId: com.woocommerce.android.dev
+appId: com.woocommerce.android
 ---
 - runFlow:
     when:

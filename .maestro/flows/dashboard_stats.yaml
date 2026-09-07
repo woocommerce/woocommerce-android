@@ -1,13 +1,12 @@
 # Smoke Test: Dashboard / Stats
 # p2: dashboard.stats
-# P2 ref: Dashboard/Stats > Charts respond, View All analytics, Customization
+# P2 ref: Dashboard/Stats > Charts/graphs all respond
 #
 # Verifies:
 #   - Dashboard loads with stats cards
-#   - Revenue, Orders, Visitors, Conversion stats are visible
-#   - Date range switching works (Today, This Week, This Month, This Year)
+#   - The Orders, Visitors and Conversion stat tiles are visible
+#   - Switching the date range to This Week
 #   - Top performers card is visible
-#   - "View All" store analytics navigation
 appId: com.woocommerce.android
 name: "Dashboard - Stats and analytics"
 tags:
@@ -36,24 +35,32 @@ tags:
     id: "dashboard_stats_card"
     label: "Stats card is visible"
 
-# Verify at least one stat-tile label is rendered on the card.
+# Verify the stat tiles are rendered on the card.
 #
-# The card's inner layout is a legacy AndroidView (DashboardStatsView)
-# with four side-by-side tiles. Their labels come from:
-#   - R.string.analytics_total_sales_title  → "Total sales"
-#     (was "Revenue" on older builds — fall back to that spelling)
-#   - R.string.dashboard_stats_orders       → "Orders"
-#   - dashboard_stats_visitors              → "Visitors"
-#   - dashboard_stats_conversion            → "Conversion"
+# The card's inner layout is a legacy AndroidView (DashboardStatsView).
+# Its tile labels come from:
+#   - dashboard_stats_placed_orders / dashboard_stats_paid_orders
+#     "Placed orders" or "Paid orders", the tile has a mode picker
+#   - dashboard_stats_visitors     "Visitors"
+#   - dashboard_stats_conversion   "Conversion"
 #
-# Labels render immediately after the card inflates — only the tile
-# *values* show the skeleton em-dash ("—") while the Analytics API
-# request is in flight. Matching any one of the labels is the most
-# stable signal that the card rendered with its tiles, and it's
-# robust against future string renames.
+# Labels render as soon as the card inflates. Only the tile values show
+# the skeleton dash while the Analytics request is in flight, so these
+# do not need to wait.
+#
+# Assert each tile separately. A single alternation over several labels
+# passes when only one of them is on screen, which hides a missing tile.
 - assertVisible:
-    text: ".*Total sales.*|.*Revenue.*|.*Orders.*|.*Visitors.*"
-    label: "At least one stats tile label is visible"
+    text: ".*Placed orders.*|.*Paid orders.*"
+    label: "Orders stats tile is visible"
+
+- assertVisible:
+    text: "Visitors"
+    label: "Visitors stats tile is visible"
+
+- assertVisible:
+    text: "Conversion"
+    label: "Conversion stats tile is visible"
 
 - takeScreenshot: dashboard_stats_overview
 

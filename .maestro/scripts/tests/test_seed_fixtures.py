@@ -38,10 +38,31 @@ class PartiallyFailingCleanupClient:
     def __init__(self) -> None:
         self.delete_count = 0
 
+    def list(self, path: str, **query: object) -> list[dict[str, object]]:
+        return []
+
     def delete(self, path: str, entity_id: int) -> None:
         self.delete_count += 1
         if self.delete_count == 2:
             raise seed_fixtures.SmokeSetupError("injected cleanup failure")
+
+
+class RunOwnedStragglerClient:
+    """Returns a coupon the flow made in the UI, so it is absent from the manifest."""
+
+    def __init__(self) -> None:
+        self.deleted: list[tuple[str, int]] = []
+
+    def list(self, path: str, **query: object) -> list[dict[str, object]]:
+        if path == "coupons":
+            return [
+                {"id": 900, "code": "suite-20260805-abc123-ui"},
+                {"id": 901, "code": "summer-sale"},
+            ]
+        return []
+
+    def delete(self, path: str, entity_id: int) -> None:
+        self.deleted.append((path, entity_id))
 
 
 class SeedFixturesTests(unittest.TestCase):
@@ -125,6 +146,27 @@ class SeedFixturesTests(unittest.TestCase):
             [{"type": "product", "id": 301, "label": "first"}],
             saved["entities"],
         )
+
+    def test_cleanup_removes_run_owned_entities_the_flow_created_outside_the_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "run-manifest.json"
+            manifest.write_text(
+                json.dumps(
+                    {"run_id": "SUITE-20260805-abc123", "store": "lab", "entities": []}
+                ),
+                encoding="utf-8",
+            )
+            args = argparse.Namespace(manifest=str(manifest), store=None)
+            original_client = seed_fixtures.WooClient
+            client = RunOwnedStragglerClient()
+            seed_fixtures.WooClient = lambda: client
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    seed_fixtures.cleanup(args)
+            finally:
+                seed_fixtures.WooClient = original_client
+
+        self.assertEqual([("coupons", 900)], client.deleted)
 
 
 if __name__ == "__main__":
