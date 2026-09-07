@@ -23,7 +23,8 @@
 #  12. Tap PUBLISH in the toolbar
 #  13. Search by run ID, reopen the exact product, and verify Description,
 #      Price, Inventory, Shipping, type, category, tag, Short description,
-#      Upsell, and Downloadable file values persisted in their editors
+#      Upsell, and Downloadable file values persisted in their editors,
+#      and open the product type settings sheet without changing the type
 #
 # ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on the
 # staging store and creates a real tag every run. The runner's cleanup
@@ -1098,6 +1099,47 @@ tags:
     label: "Published product retains its Simple downloadable type"
 - assertVisible:
     text: "Downloadable product"
+
+# Product type settings. The row only becomes tappable once the product
+# is saved (remoteId != 0), so this is the first point in the flow where
+# the type editor can be opened. Confirm it offers the types and leave
+# without changing anything: switching type rewrites product data and
+# would invalidate the checks around it.
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Open product type settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "productDetailInfo_optionsList"
+    timeout: 15000
+    label: "Wait for the product type sheet"
+
+- assertVisible:
+    text: "Select a product type"
+    label: "Type sheet is open"
+
+# The sheet leaves out the type the product already has, so a Simple
+# physical product is offered every type except its own.
+- assertVisible:
+    text: "Variable product"
+    label: "Type sheet offers Variable product"
+- assertVisible:
+    text: "Grouped product"
+    label: "Type sheet offers Grouped product"
+- assertNotVisible:
+    text: "Simple physical product"
+    label: "Type sheet leaves out the product's current type"
+
+- takeScreenshot: product_type_settings_sheet
+
+- back
+
+- extendedWaitUntil:
+    visible: "Downloadable product"
+    timeout: 10000
+    label: "Type is unchanged after leaving the sheet"
 
 # Categories persistence. Everything else the flow sets is verified
 # after publishing, and the category was the one value it changed
