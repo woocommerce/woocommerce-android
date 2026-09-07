@@ -8,6 +8,7 @@
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
 - [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
+- [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
 
 25.6
 -----
@@ -31,7 +32,6 @@
 - [*] Blaze: picking an ad image the device cannot decode now shows the "unsupported image type" message instead of crashing the app [https://github.com/woocommerce/woocommerce-android/pull/16468]
 - [*] Fixed the JITM banner's button showing no padding around its pressed/highlighted state [https://github.com/woocommerce/woocommerce-android/pull/16407]
 - [*****] [Internal] Enabled R8 optimizations and resource shrinking for release builds, reducing app size and improving runtime performance [https://github.com/woocommerce/woocommerce-android/pull/16308]
-- [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
 
 25.5
 -----
