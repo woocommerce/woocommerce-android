@@ -1,11 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 14:54:40+0000
+Translation-Revision-Date: 2026-08-27 09:58:57+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Schakel locatie in om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Locatie toestaan om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Schakel Bluetooth in om kaartlezers te zien</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Bluetooth toestaan om kaartlezers te zien</string>
+    <string name="woopos_card_reader_local_network_permission_message">Toestemming voor lokaal netwerk is vereist om verbinding te maken met een telefoon die als kaartlezer wordt gebruikt.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Toestemming voor lokaal netwerk vereist</string>
+    <string name="woopos_refund_error_invalid_amount">Het restitutiebedrag is niet geldig</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van dit artikel</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Het restitutiebedrag is meer dan wat er nog over is voor terugbetaling van deze bestelling</string>
+    <string name="woopos_refund_error_order_not_refundable">Bestelling kan niet terugbetaald worden</string>
+    <string name="woopos_refund_error_item_already_refunded">Dit artikel is al volledig terugbetaald</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Het geselecteerde aantal is meer dan wat er nog over is voor terugbetaling</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Toon de code opnieuw</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Verzamel in het register</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Er is geen betaling online gedaan. Verzamel het in het register of toon de code opnieuw.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Klant heeft ervoor gekozen om persoonlijk te betalen</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Foutmelding bij betaalservice. Probeer opnieuw verbinding te maken.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Schakel NFC in op de telefoon en probeer het opnieuw.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Deze telefoon komt niet in aanmerking voor Tap to Pay. Probeer een ander apparaat.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Deze bundel bevat een abonnementproduct, dat niet wordt ondersteund voor het aanmaken van bestellingen</string>
+    <string name="product_image_details_name_removal_blocked">De app ondersteunt het verwijderen van de titel niet. Gebruik wp-admin om het te verwijderen.</string>
+    <string name="product_image_details_alt_text_removal_blocked">De app ondersteunt het verwijderen van alt-tekst niet. Gebruik wp-admin om het te verwijderen.</string>
+    <string name="product_image_details_name_label">Titel</string>
+    <string name="product_image_details_alt_text_label">Alt-tekst</string>
+    <string name="product_image_details_title">Afbeeldingsdetails</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Instellingen openen</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Toestemming voor lokaal netwerk is geblokkeerd. Open Instellingen en geef toegang tot het lokale netwerk om Tap-to-Pay op deze telefoon te gebruiken.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Doorgaan</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android vereist toegang tot het lokale netwerk, zodat je tablet deze telefoon kan vinden. Er wordt niets verzonden buiten je netwerk.</string>
+    <string name="card_reader_mode_local_network_permission_header">Toestemming voor lokaal netwerk vereist</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Deze telefoon komt niet in aanmerking voor Tap to Pay. Probeer een ander apparaat.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">We konden niet controleren of fysieke betalingen zijn ingeschakeld. Probeer het later opnieuw.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Uitschakelen</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Dit schakelt de betalingsmethode Contant betalen bij ontvangst uit bij de kassa van je winkel, zodat klanten deze optie niet kunnen selecteren.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Fysieke betalingen uitschakelen?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Inschakelen</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Hierdoor wordt de betalingsmethode Contant betalen bij ontvangst ingeschakeld bij de kassa van je winkel en wordt de naam gewijzigd van \'%1$s\' naar \'Fysiek betalen\' voor je klanten, ook bij de kassa van je website.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Hierdoor wordt de betalingsmethode Contant betalen bij ontvangst ingeschakeld bij de kassa van je winkel.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Fysieke betalingen inschakelen?</string>
+    <string name="order_creation_gift_card_not_applied">Deze cadeaubon kon niet worden toegepast</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Je kunt geen variabel product zonder variaties toevoegen</string>
+    <string name="login_site_credentials_use_web_authorization">Probeer in plaats daarvan in te loggen met je browser</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">We konden de aanmeldingsinstellingen van je winkel niet opslaan. Probeer het nog eens.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">We konden het WordPress-dashboard niet bereiken op dat adres. Controleer het en probeer het opnieuw.</string>
+    <string name="login_site_credentials_login_url_not_found_error">We konden geen aanmeldingspagina voor WordPress vinden op dat adres. Controleer het en probeer het opnieuw.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Voer een adres in op dezelfde site zonder de beveiligde verbinding of poort te wijzigen.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Voer een volledig webadres in, inclusief http:// of https://.</string>
+    <string name="login_site_credentials_admin_url_label">Adres van WordPress Dashboard</string>
+    <string name="login_site_credentials_admin_url_description">Een beveiligingsplugin kan het WordPress Dashboard verplaatsen. Voer het adres in dat je gebruikt om het te openen.</string>
+    <string name="login_site_credentials_admin_url_title">Waar is het dashboard van je winkel?</string>
+    <string name="login_site_credentials_login_url_label">Adres van WordPress-aanmeldingspagina</string>
+    <string name="login_site_credentials_login_url_description">Een beveiligingsplugin kan een aangepast adres van de WordPress-aanmeldingspagina gebruiken. Voer het adres in dat je gebruikt om in te loggen.</string>
+    <string name="login_site_credentials_login_url_title">Waar log je in bij je winkel?</string>
+    <string name="login_text_otp_another">Code opnieuw verzenden via sms</string>
+    <string name="login_text_otp">Code opnieuw verzenden via sms</string>
+    <string name="enter_verification_code_sms_generic">We hebben een sms gestuurd. Voer de verificatiecode van het bericht in.</string>
+    <string name="enter_verification_code">Voer een verificatiecode in om door te gaan.</string>
+    <string name="logviewer_share_all_logs_error">Kan de logs niet voorbereiden om te delen</string>
+    <string name="logviewer_preparing_logs">Logs voorbereiden …</string>
+    <string name="logviewer_share_all_logs">Alle logs delen</string>
+    <string name="support_mobile_status_report_share_error">Kan mobielstatusrapport niet delen</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Fout bij kopiëren van mobielstatusrapport naar klembord</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Mobielstatusrapport gekopieerd naar klembord</string>
+    <string name="support_mobile_status_report_share_label">Mobielstatusrapport delen</string>
+    <string name="support_mobile_status_report_copy_label">Mobielstatusrapport kopiëren naar klembord</string>
+    <string name="support_mobile_status_report_clipboard_label">WooCommerce-mobielstatusrapport</string>
+    <string name="support_mobile_status_report_detail">App-, apparaat- en winkelinformatie van deze app</string>
+    <string name="support_mobile_status_report">Mobielstatusrapport</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Korting niet toegepast</string>
     <string name="product_duplicate_discard_changes_action">Weggooien en dupliceren</string>
     <string name="product_duplicate_discard_changes_message">Je niet-opgeslagen wijzigingen gaan verloren. Het duplicaat gebruikt de laatst opgeslagen versie.</string>
@@ -1074,7 +1142,6 @@ Language: nl
     <string name="woo_shipping_fetching_countries_and_states">Landen en provincies ophalen</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">We konden de land- en provinciespecifieke informatie niet ophalen. Probeer het nog eens.</string>
     <string name="product_upload_error_title">Foutmeldingen bij upload afbeelding</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
     <string name="woo_shipping_label_phone">Telefoon</string>
     <string name="woo_shipping_label_email">E-mail</string>
@@ -2249,7 +2316,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_description">Gebruik je telefoon om kaartbetalingen\nte accepteren Probeer het nu.</string>
     <string name="loading">Laden…</string>
     <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>
-    <string name="login_site_credentials_use_web_authorization">Probeer het opnieuw met de WP beheerderspagina</string>
     <string name="login_store_address">Inloggen</string>
     <string name="upgrades_plan_ended_name">%s beëindigd</string>
     <string name="upgrades_current_plan_ended_caption">Je abonnement is verlopen en je hebt beperkte toegang tot alle functies.</string>
@@ -3986,7 +4052,6 @@ Language: nl
     <string name="signup_magic_link_error">Er is een fout opgetreden bij het verzenden van de e-mail. Je kunt het nu opnieuw proberen of het venster sluiten en later opnieuw proberen.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">placeholder</string>
     <string name="notification_channel_general_title">Algemeen</string>
-    <string name="login_text_otp_another">Stuur me via SMS een andere code.</string>
     <string name="enter_verification_code_sms">We hebben een sms gestuurd naar het telefoonnummer dat eindigt op %s. Voer de verificatiecode in de sms in.</string>
     <string name="enter_wpcom_password_google">Om door te gaan met dit Google-account moet je eerst het wachtwoord van WordPress.com opgeven. Je hoeft dit slechts één keer in te vullen.</string>
     <string name="login_log_in_for_share_intent">Log in op WordPress.com om inhoud te delen.</string>
@@ -4005,7 +4070,6 @@ Language: nl
     <string name="login_magic_link_email_requesting">E-mail voor inloggen aangevraagd</string>
     <string name="password_incorrect">Het lijkt erop alsof dit wachtwoord onjuist is. Controleer je gegevens en probeer het nogmaals.</string>
     <string name="requesting_otp">Verificatiecode via sms aanvragen.</string>
-    <string name="login_text_otp">Sms de code in plaats daarvan naar me.</string>
     <string name="open_mail">Open e-mail</string>
     <string name="next">Volgende</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
@@ -4092,7 +4156,6 @@ Language: nl
     <string name="orderdetail_note_private">Privé</string>
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
     <string name="order_error_fetch_notes_generic">Fout bij ophalen notities</string>
-    <string name="enter_verification_code">Bijna klaar! Voer de verificatiecode voor WordPress.com uit je Authenticator-app in.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

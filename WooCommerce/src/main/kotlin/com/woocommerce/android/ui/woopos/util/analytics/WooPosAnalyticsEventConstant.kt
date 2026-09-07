@@ -1,6 +1,37 @@
 package com.woocommerce.android.ui.woopos.util.analytics
 
 object WooPosAnalyticsEventConstant {
+    enum class RefundFlow(val value: String) {
+        LOCAL("local"),
+        SERVER_COMPUTED("server_computed");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val REFUND_FLOW = "refund_flow"
+        }
+    }
+
+    /**
+     * Why a refund never reached submission after `refund_processing_started` fired. Reported on
+     * `refund_processing_precondition_failed` so the started event always has a terminal event to
+     * pair with.
+     */
+    enum class RefundPreconditionReason(val value: String) {
+        ORDER_UNAVAILABLE("order_unavailable"),
+        CURRENCY_SETTINGS_UNAVAILABLE("currency_settings_unavailable");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val REASON = "reason"
+        }
+    }
+
     enum class DeviceType(val value: String) {
         PHONE("phone"),
         TABLET("tablet");

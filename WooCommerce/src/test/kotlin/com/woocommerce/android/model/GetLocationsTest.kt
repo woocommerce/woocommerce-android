@@ -1,5 +1,6 @@
 package com.woocommerce.android.model
 
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +19,7 @@ class GetLocationsTest {
     }
 
     @Test
-    fun `should provide country and associated state if locations are in database`() {
+    fun `should provide country and associated state if locations are in database`() = runTest {
         // given
         val country = WCLocationModel(code = "US", name = "United States")
         val associatedState = WCLocationModel(parentCode = "US", code = "CA", "California")
@@ -34,7 +35,7 @@ class GetLocationsTest {
     }
 
     @Test
-    fun `should provide country and state with location code only if state is not found in database`() {
+    fun `should provide country and state with location code only if state is not found in database`() = runTest {
         // given
         val country = WCLocationModel(code = "US", name = "United States")
         val nonExistentStateLocationCode = "AABBCC"
@@ -50,7 +51,7 @@ class GetLocationsTest {
     }
 
     @Test
-    fun `should provide country and state with location codes only if data not found in database`() {
+    fun `should provide country and state with location codes only if data not found in database`() = runTest {
         // given
         val nonExistentCountryLocationCode = "ZZXXYY"
         val nonExistentStateLocationCode = "AABBCC"

@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import com.woocommerce.android.R
@@ -32,7 +31,6 @@ fun SelectionCheck(
 
     val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
 
-    val description = stringResource(id = R.string.card_selection_control)
     val state = if (!isEnabled) stringResource(id = R.string.disabled) else ""
 
     val controlModifier = if (isEnabled && onSelectionChange != null) {
@@ -44,7 +42,6 @@ fun SelectionCheck(
     Box(
         modifier = controlModifier
             .semantics {
-                contentDescription = description
                 stateDescription = state
             },
         contentAlignment = Alignment.Center

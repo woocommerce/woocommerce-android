@@ -85,6 +85,7 @@ open class SiteStore @Inject constructor(
         val url: String,
         val username: String? = null,
         val password: String? = null,
+        val wasUrlNormalizedToHttps: Boolean = false,
     ) : Payload<BaseNetworkError>()
 
     data class FetchSitesPayload @JvmOverloads constructor(
@@ -134,7 +135,8 @@ open class SiteStore @Inject constructor(
         @JvmField val isJetpackActive: Boolean = false,
         @JvmField val isJetpackConnected: Boolean = false,
         @JvmField val isWPCom: Boolean = false,
-        @JvmField val urlAfterRedirects: String? = null
+        @JvmField val urlAfterRedirects: String? = null,
+        @JvmField val wasUrlNormalizedToHttps: Boolean = false,
     ) : Payload<SiteError>() {
         constructor(url: String, error: SiteError?) : this(url) {
             this.error = error

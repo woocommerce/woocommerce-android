@@ -145,16 +145,6 @@
             app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
             app:nullable="true" />
         <argument
-            android:name="giftCardCode"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="giftCardAmount"
-            android:defaultValue="@null"
-            app:argType="java.math.BigDecimal"
-            app:nullable="true" />
-        <argument
             android:name="orderCurrency"
             android:defaultValue="@null"
             app:argType="string"

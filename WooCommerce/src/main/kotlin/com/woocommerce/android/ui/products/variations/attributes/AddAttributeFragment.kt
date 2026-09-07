@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.products.variations.attributes
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,12 +32,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     companion object {
         const val TAG: String = "AddAttributeFragment"
         private const val LIST_STATE_KEY = "list_state"
-        private const val ID_ADD_ATTRIBUTES = 1
     }
 
     private var layoutManager: LayoutManager? = null
     private val skeletonView = SkeletonView()
-    private var moveNextMenuItem: MenuItem? = null
+    private var nextMenuItem: MenuItem? = null
 
     private val navArgs: AddAttributeFragmentArgs by navArgs()
 
@@ -59,7 +58,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked(ExitProductAddAttribute)
+        confirmDiscardPendingInputThenExit(!binding.attributeEditText.text.isNullOrBlank()) {
+            viewModel.onBackButtonClicked(ExitProductAddAttribute)
+        }
         return false
     }
 
@@ -76,25 +77,53 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
-        if (navArgs.isVariationCreation) {
-            moveNextMenuItem = toolbar.menu.add(Menu.FIRST, ID_ADD_ATTRIBUTES, Menu.FIRST, R.string.next).apply {
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                isVisible = false
-            }
-        }
+        toolbar.inflateMenu(R.menu.menu_add_attribute)
+        nextMenuItem = toolbar.menu.findItem(R.id.menu_add_attribute)
+        updateNextMenuItem()
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            ID_ADD_ATTRIBUTES -> {
-                viewModel.saveAttributeChanges()
-                AddAttributeFragmentDirections
-                    .actionAddAttributeFragmentToAttributeListFragment(isVariationCreation = true)
-                    .run { findNavController().navigateSafely(this) }
+            R.id.menu_add_attribute -> {
+                onNextClicked()
                 true
             }
             else -> false
         }
+    }
+
+    /**
+     * The single "Next" action: commit a typed attribute name and go to its options; or, in the variation
+     * wizard when there's no pending name but at least one attribute exists, advance to the attribute list.
+     */
+    private fun onNextClicked() {
+        if (!binding.attributeEditText.text.isNullOrBlank()) {
+            onAttributeNameEntered()
+        } else if (navArgs.isVariationCreation) {
+            viewModel.saveAttributeChanges()
+            AddAttributeFragmentDirections
+                .actionAddAttributeFragmentToAttributeListFragment(isVariationCreation = true)
+                .run { findNavController().navigateSafely(this) }
+        }
+    }
+
+    /**
+     * Commits the typed attribute name to the draft and advances to its options screen.
+     * Shared by the keyboard action key and the toolbar "Next" button.
+     */
+    private fun onAttributeNameEntered() {
+        val attributeName = binding.attributeEditText.text?.toString().orEmpty()
+        if (attributeName.isBlank()) return
+        // keep the typed name in the field if it was rejected (e.g. duplicate), only clear on success
+        if (viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)) {
+            binding.attributeEditText.text?.clear()
+        }
+    }
+
+    private fun updateNextMenuItem() {
+        val hasPendingName = !binding.attributeEditText.text.isNullOrBlank()
+        nextMenuItem?.isEnabled = hasPendingName ||
+            (navArgs.isVariationCreation && viewModel.productDraftAttributes.isNotEmpty())
     }
 
     private fun initializeViews(savedInstanceState: Bundle?) {
@@ -109,13 +138,11 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
         binding.attributeList.itemAnimator = null
 
         binding.attributeEditText.setOnEditorActionListener { _, _, _ ->
-            val attributeName = binding.attributeEditText.text?.toString() ?: ""
-            if (attributeName.isNotBlank()) {
-                binding.attributeEditText.text?.clear()
-                viewModel.addLocalAttribute(attributeName, navArgs.isVariationCreation)
-            }
+            onAttributeNameEntered()
             true
         }
+
+        binding.attributeEditText.doAfterTextChanged { updateNextMenuItem() }
 
         viewModel.fetchGlobalAttributes()
 
@@ -124,7 +151,9 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    viewModel.onBackButtonClicked(ExitProductAddAttribute)
+                    confirmDiscardPendingInputThenExit(!binding.attributeEditText.text.isNullOrBlank()) {
+                        viewModel.onBackButtonClicked(ExitProductAddAttribute)
+                    }
                 }
                 onCreateMenu(toolbar)
             }
@@ -157,7 +186,8 @@ class AddAttributeFragment : BaseProductFragment(R.layout.fragment_add_attribute
      * passed global attributes and the existing draft local attributes
      */
     private fun showAttributes(globalAttributes: List<ProductGlobalAttribute>) {
-        moveNextMenuItem?.isVisible = navArgs.isVariationCreation and viewModel.productDraftAttributes.isNotEmpty()
+        // the "Next → attribute list" affordance depends on how many attributes exist, so refresh it here
+        updateNextMenuItem()
 
         val adapter: AddAttributeAdapter
         if (binding.attributeList.adapter == null) {

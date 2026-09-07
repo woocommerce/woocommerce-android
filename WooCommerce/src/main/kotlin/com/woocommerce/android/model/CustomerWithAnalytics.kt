@@ -30,7 +30,7 @@ data class CustomerWithAnalytics(
     fun getBillingAddress(): String = billingAddress.getFullAddress()
 }
 
-fun WCCustomerModel.toCustomerWithAnalytics(
+suspend fun WCCustomerModel.toCustomerWithAnalytics(
     repository: CustomerListRepository,
     mapper: CustomerListViewModelMapper,
 ): CustomerWithAnalytics {

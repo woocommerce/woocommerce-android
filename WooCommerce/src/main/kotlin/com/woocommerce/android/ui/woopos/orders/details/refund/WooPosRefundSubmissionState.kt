@@ -16,7 +16,8 @@ sealed class WooPosRefundSubmissionState {
 
     /**
      * [apiErrorCode] is the store's REST error code, when it returned one. Kept raw rather than
-     * pre-mapped so unrecognised codes survive for analytics too.
+     * pre-mapped so unrecognised codes reach analytics: the cashier-facing message for those is
+     * generic, so the code is the only way to tell which rejections stores actually return.
      *
      * A code that [WooPosRefundApiError] recognises makes the failure non-retryable by default:
      * those are deterministic validation rejections, so resubmitting the same request produces the

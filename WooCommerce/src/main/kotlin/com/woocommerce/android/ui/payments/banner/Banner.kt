@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.payments.banner
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,6 +41,7 @@ import com.woocommerce.android.util.UiHelpers
 fun Banner(bannerState: JitmState.Banner) {
     val majorMargin = dimensionResource(id = R.dimen.major_100)
     val minorMargin = dimensionResource(id = R.dimen.minor_100)
+    val ctaContentHorizontalPadding = dimensionResource(id = R.dimen.major_75)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -108,10 +109,10 @@ fun Banner(bannerState: JitmState.Banner) {
 
             TextButton(
                 onClick = bannerState.onPrimaryActionClicked,
-                contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
+                contentPadding = ButtonDefaults.TextButtonContentPadding,
                 modifier = Modifier.constrainAs(ctaButton) {
                     top.linkTo(description.bottom)
-                    start.linkTo(parent.start, margin = majorMargin)
+                    start.linkTo(parent.start, margin = majorMargin - ctaContentHorizontalPadding)
                 }
             ) {
                 Text(

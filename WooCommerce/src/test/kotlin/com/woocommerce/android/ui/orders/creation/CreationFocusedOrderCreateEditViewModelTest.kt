@@ -2408,4 +2408,19 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
     //endregion
+
+    @Test
+    fun `given creation, when a gift card is applied, then show the code but no discount amount`() = testBlocking {
+        initMocksForAnalyticsWithOrder(defaultOrderValue)
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever { orderDraft = it }
+
+        sut.onGiftCardSelected("1234-5678-9012-3456")
+
+        // The store can't redeem a gift card against an auto-draft order, so nothing is synced during creation:
+        // the code is shown for the user, but the discount only materializes once the order is created.
+        assertThat(orderDraft?.selectedGiftCard).isEqualTo("1234-5678-9012-3456")
+        assertThat(orderDraft?.giftCardDiscountedAmount).isNull()
+    }
 }

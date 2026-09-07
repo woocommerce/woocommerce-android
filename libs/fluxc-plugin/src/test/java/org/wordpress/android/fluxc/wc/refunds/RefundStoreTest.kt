@@ -161,6 +161,8 @@ class RefundStoreTest {
             orderId = orderId,
             reason = "reason",
             autoRefund = false,
+            restockItems = true,
+            amount = null,
             items = lineItems,
         )
 
@@ -185,6 +187,7 @@ class RefundStoreTest {
         val result = store.createComputedItemsRefund(
             site = site,
             orderId = orderId,
+            reason = "",
             autoRefund = true,
             restockItems = false,
             amount = "12.34".toBigDecimal(),
@@ -213,6 +216,10 @@ class RefundStoreTest {
         val result = store.createComputedItemsRefund(
             site = site,
             orderId = orderId,
+            reason = "",
+            autoRefund = false,
+            restockItems = true,
+            amount = null,
             items = lineItems,
         )
 

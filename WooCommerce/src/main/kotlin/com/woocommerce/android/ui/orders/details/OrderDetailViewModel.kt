@@ -392,12 +392,9 @@ class OrderDetailViewModel @Inject constructor(
         launch {
             val order = awaitOrder()
             tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-            val firstGiftCard = order.giftCards.firstOrNull()
             triggerEvent(
                 EditOrder(
                     orderId = order.id,
-                    giftCard = firstGiftCard?.code,
-                    appliedDiscount = firstGiftCard?.used,
                     orderCurrency = order.currency
                 )
             )

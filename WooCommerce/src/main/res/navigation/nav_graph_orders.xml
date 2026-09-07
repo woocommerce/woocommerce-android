@@ -277,14 +277,6 @@
                 android:name="barcodeFormat"
                 app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
                 app:nullable="true" />
-            <argument
-                android:name="giftCardCode"
-                app:argType="string"
-                app:nullable="true" />
-            <argument
-                android:name="giftCardAmount"
-                app:argType="java.math.BigDecimal"
-                app:nullable="true" />
         </action>
 
         <action
