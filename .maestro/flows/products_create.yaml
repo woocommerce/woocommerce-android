@@ -11,7 +11,7 @@
 #   4. Configure Inventory with a unique SKU and managed stock quantity
 #   5. Add Shipping dimensions and prove the draft is a physical Simple product
 #   6. Create and attach a unique tag
-#   7. Add an Upsell from Linked products
+#   7. Add the seeded run-owned product as an Upsell from Linked products
 #   8. Add a downloadable file by URL
 #   9. Tap "Add more details" (productDetail_addMoreButton) — on a
 #      freshly-created simple product the Short description and
@@ -22,14 +22,14 @@
 #      → select the first category ("Uncategorized" if present) → Done
 #  12. Tap PUBLISH in the toolbar
 #  13. Search by run ID, reopen the exact product, and verify Description,
-#      Price, Inventory, Shipping, type, tag, Short description, Upsell, and
-#      Downloadable file values persisted in their editors
+#      Price, Inventory, Shipping, type, category, tag, Short description,
+#      Upsell, and Downloadable file values persisted in their editors,
+#      and open the product type settings sheet without changing the type
 #
-# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on
-# the staging store every run. Clean up periodically by searching
-# "Maestro Smoke" in wp-admin → Products and bulk-trashing the matches.
-# A future improvement would be to trash the product automatically at
-# the end of the flow (menu_trash_product exists).
+# ⚠️  STAGING-STORE MUTATION: this flow publishes a REAL product on the
+# staging store and creates a real tag every run. The runner's cleanup
+# step deletes both by searching the store for the run id, so run this
+# flow with --seed, which is what produces the manifest cleanup reads.
 #
 # Source strings (res/values/strings.xml):
 #   - product_price_empty                → "Add price"
@@ -526,10 +526,39 @@ tags:
     timeout: 20000
     label: "Wait for product selection list"
 
+# Search for the seeded run-owned product instead of taking whichever
+# row renders first. An arbitrary product would satisfy the count check
+# below just as well, so the count would not prove anything.
 - tapOn:
-    id: "productName"
-    index: 0
-    label: "Select first existing product as Upsell"
+    id: "menu_search"
+    label: "Open product search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: ${MAESTRO_FIXTURE_SIMPLE_PRODUCT}
+- hideKeyboard
+
+# Scope both to the result list: the search field holds the same text,
+# and an unscoped match lands on the toolbar instead of the row.
+- extendedWaitUntil:
+    visible:
+      text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+      childOf:
+        id: "productsRecycler"
+    timeout: 20000
+    label: "Wait for the seeded product in search results"
+
+- tapOn:
+    text: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+    childOf:
+      id: "productsRecycler"
+    retryTapIfNoChange: true
+    label: "Select the seeded product as Upsell"
 
 - extendedWaitUntil:
     visible:
@@ -542,10 +571,9 @@ tags:
     label: "Confirm Upsell product"
 
 - extendedWaitUntil:
-    visible:
-      id: "productName"
+    visible: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
     timeout: 15000
-    label: "Upsell product appears in the linked list"
+    label: "The seeded product is the attached Upsell"
 
 - tapOn:
     point: "7%,6%"
@@ -747,6 +775,21 @@ tags:
 
 - takeScreenshot: product_create_category_screen
 
+# Remember which category is about to be ticked. Index 0 is whichever
+# category renders at the top of this store's list, so the name has to
+# be read here to be checked after publishing.
+- copyTextFrom:
+    id: "categoryName"
+    index: 0
+# The name goes straight into a regex below and a store is free to call
+# a category "Sale (50%)", so escape it. fromCharCode is needed for the
+# last three: an inline ${...} silently yields undefined if it contains a
+# literal $, and fails to parse on a literal brace.
+- evalScript: ${output.selectedCategory = String(maestro.copiedText).trim().split(String.fromCharCode(92)).join(String.fromCharCode(92) + String.fromCharCode(92)).split('.').join('\\.').split('*').join('\\*').split('+').join('\\+').split('?').join('\\?').split('^').join('\\^').split('(').join('\\(').split(')').join('\\)').split('|').join('\\|').split('[').join('\\[').split(']').join('\\]').split(String.fromCharCode(36)).join('\\' + String.fromCharCode(36)).split(String.fromCharCode(123)).join('\\' + String.fromCharCode(123)).split(String.fromCharCode(125)).join('\\' + String.fromCharCode(125))}
+- assertTrue:
+    condition: ${output.selectedCategory.length > 0}
+    label: "Captured the category being attached"
+
 # Only the checkbox itself toggles selection —
 # ProductCategoriesAdapter wires the click listener exclusively on
 # `categoryCheckbox`, NOT on the row or the category name TextView
@@ -791,11 +834,11 @@ tags:
     retryTapIfNoChange: true
     label: "Tap Publish"
 
-# After publishing the app may stay on the detail screen (with
-# action label swapping PUBLISH → SAVE) or return to the products
-# list. Either settling signal is good.
+# Publishing keeps the app on the detail screen. The toolbar action
+# becomes SHARE and a "Product published" snackbar appears. The
+# snackbar is transient, so SHARE is the signal that survives.
 - extendedWaitUntil:
-    visible: ".*productsRecycler.*|.*SAVE.*|.*updated.*|.*published.*"
+    visible: ".*SHARE.*|.*published.*"
     timeout: 45000
     label: "Wait for publish to complete"
 
@@ -1001,7 +1044,24 @@ tags:
     if (!maestro.copiedText || !maestro.copiedText.trim().startsWith('1')) {
         throw new Error('Published product did not retain its Upsell');
     }
+
+# A count of one says an Upsell survived, not which one. Open the list
+# and check the seeded run-owned product is the one that is attached.
+- tapOn:
+    id: "add_upsell_products"
+    retryTapIfNoChange: true
+    label: "Open the persisted Upsell list"
+- extendedWaitUntil:
+    visible: ".*${MAESTRO_FIXTURE_SIMPLE_PRODUCT}.*"
+    timeout: 15000
+    label: "Published product retains the seeded product as its Upsell"
 - takeScreenshot: product_persisted_linked_product
+- back
+- extendedWaitUntil:
+    visible:
+      id: "upsells_count"
+    timeout: 10000
+    label: "Return to Linked products"
 - back
 
 - extendedWaitUntil:
@@ -1043,6 +1103,58 @@ tags:
     label: "Published product retains its Simple downloadable type"
 - assertVisible:
     text: "Downloadable product"
+
+# Product type settings. The row only becomes tappable once the product
+# is saved (remoteId != 0), so this is the first point in the flow where
+# the type editor can be opened. Confirm it offers the types and leave
+# without changing anything: switching type rewrites product data and
+# would invalidate the checks around it.
+- tapOn:
+    text: "Product type"
+    retryTapIfNoChange: true
+    label: "Open product type settings"
+
+- extendedWaitUntil:
+    visible:
+      id: "productDetailInfo_optionsList"
+    timeout: 15000
+    label: "Wait for the product type sheet"
+
+- assertVisible:
+    text: "Select a product type"
+    label: "Type sheet is open"
+
+# The sheet leaves out the type the product already has, so a Simple
+# physical product is offered every type except its own.
+- assertVisible:
+    text: "Variable product"
+    label: "Type sheet offers Variable product"
+- assertVisible:
+    text: "Grouped product"
+    label: "Type sheet offers Grouped product"
+- assertNotVisible:
+    text: "Simple physical product"
+    label: "Type sheet leaves out the product's current type"
+
+- takeScreenshot: product_type_settings_sheet
+
+- back
+
+- extendedWaitUntil:
+    visible: "Downloadable product"
+    timeout: 10000
+    label: "Type is unchanged after leaving the sheet"
+
+# Categories persistence. Everything else the flow sets is verified
+# after publishing, and the category was the one value it changed
+# without ever checking that it stuck.
+- scrollUntilVisible:
+    element: ".*${output.selectedCategory}.*"
+    direction: UP
+    timeout: 10000
+    label: "Published product retains the category picked during creation"
+- assertVisible:
+    text: ".*${output.selectedCategory}.*"
 
 # Tag persistence in the tags editor.
 - scrollUntilVisible:

@@ -48,7 +48,7 @@ class PartiallyFailingCleanupClient:
 
 
 class RunOwnedStragglerClient:
-    """Returns a coupon the flow made in the UI, so it is absent from the manifest."""
+    """Returns a coupon and a tag the flow made in the UI, absent from the manifest."""
 
     def __init__(self) -> None:
         self.deleted: list[tuple[str, int]] = []
@@ -58,6 +58,11 @@ class RunOwnedStragglerClient:
             return [
                 {"id": 900, "code": "suite-20260805-abc123-ui"},
                 {"id": 901, "code": "summer-sale"},
+            ]
+        if path == "products/tags":
+            return [
+                {"id": 910, "name": "Maestro tag SUITE-20260805-abc123"},
+                {"id": 911, "name": "Sale"},
             ]
         return []
 
@@ -166,7 +171,7 @@ class SeedFixturesTests(unittest.TestCase):
             finally:
                 seed_fixtures.WooClient = original_client
 
-        self.assertEqual([("coupons", 900)], client.deleted)
+        self.assertEqual([("coupons", 900), ("products/tags", 910)], client.deleted)
 
 
 if __name__ == "__main__":
