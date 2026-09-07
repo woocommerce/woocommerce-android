@@ -32,6 +32,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     private val site = SiteModel().apply {
         id = 1
         siteId = 12345L
+        selfHostedSiteId = 678L
     }
     private val selectedSite: SelectedSite = mock { on { getOrNull() } doReturn site }
     private val ssrFetcher: WCSSRModelCachingFetcher = mock()
@@ -44,7 +45,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Before
     fun setup() {
         // Mockito answers a boxed Boolean with false, which would read as "the switch is stored as off".
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(any())).thenReturn(null)
+        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(any(), any(), any())).thenReturn(null)
     }
 
     private val sut by lazy {
@@ -59,6 +60,25 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     private fun ssrWithSettings(settingsJson: String?) =
         WooResult(WCSSRModel(remoteSiteId = 1, settings = settingsJson))
+
+    private fun stubStoredValue(stored: Boolean?) {
+        whenever(
+            appPrefs.getPOSFeatureSwitchEnabledForSite(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )
+        ).thenReturn(stored)
+    }
+
+    private fun verifyStored(enabled: Boolean) {
+        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(
+            localSiteId = eq(site.id),
+            remoteSiteId = eq(site.siteId),
+            selfHostedSiteId = eq(site.selfHostedSiteId),
+            enabled = eq(enabled)
+        )
+    }
 
     @Test
     fun `given point_of_sale is in enabled_features, when invoked, then returns true`() = runTest {
@@ -122,17 +142,17 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     @Test
     fun `given nothing is stored, when invoked, then the report is read and the value is stored`() = runTest {
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(null)
+        stubStoredValue(null)
         whenever(ssrFetcher.load(any(), any()))
             .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
 
         assertThat(sut(forceRefresh = false).getOrNull()).isTrue
-        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(true))
+        verifyStored(true)
     }
 
     @Test
     fun `given a stored value, when invoked, then it is returned without waiting on the report`() = runTest {
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(false)
+        stubStoredValue(false)
         whenever(ssrFetcher.load(any(), any()))
             .thenReturn(ssrWithSettings("""{"enabled_features":["point_of_sale"]}"""))
 
@@ -142,18 +162,18 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     @Test
     fun `given a stored value, when invoked, then the report is refreshed in the background`() = runTest {
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(true)
+        stubStoredValue(true)
         whenever(ssrFetcher.load(any(), any()))
             .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
 
         sut(forceRefresh = false)
 
-        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(false))
+        verifyStored(false)
     }
 
     @Test
     fun `given forceRefresh, when invoked, then the stored value is ignored`() = runTest {
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(true)
+        stubStoredValue(true)
         whenever(ssrFetcher.load(any(), any()))
             .thenReturn(ssrWithSettings("""{"enabled_features":["other_feature"]}"""))
 
@@ -162,13 +182,13 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     @Test
     fun `given the report cannot be read, when invoked, then the stored value is left alone`() = runTest {
-        whenever(appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)).thenReturn(null)
+        stubStoredValue(null)
         whenever(ssrFetcher.load(any(), any())).thenReturn(
             WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
         )
 
         assertThat(sut(forceRefresh = false).isFailure).isTrue
-        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any())
+        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any(), any(), any())
     }
 
     // --- Report handed over by the plugin check ---
@@ -179,7 +199,7 @@ class WooPosIsFeatureSwitchEnabledTest {
 
         assertThat(result.getOrNull()).isTrue
         verify(ssrFetcher, never()).load(any(), any())
-        verify(appPrefs).setPOSFeatureSwitchEnabledForSite(eq(site.siteId), eq(true))
+        verifyStored(true)
     }
 
     @Test
@@ -195,6 +215,6 @@ class WooPosIsFeatureSwitchEnabledTest {
         val result = sut(forceRefresh = true, systemStatusSettings = """{"other":1}""")
 
         assertThat(result.isFailure).isTrue
-        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any())
+        verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any(), any(), any())
     }
 }

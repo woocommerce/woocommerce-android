@@ -1,0 +1,15 @@
+sandbox_mode = "workspace-write"
+
+[mcp_servers.context-a8c]
+command = "npx"
+args = [
+    "-y",
+    "@automattic/mcp-context-a8c@latest",
+]
+
+[mcp_servers.mobile-mcp]
+command = "npx"
+args = [
+    "-y",
+    "@mobilenext/mobile-mcp@latest",
+]

@@ -98,6 +98,7 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
+        POS_FEATURE_SWITCH_ENABLED,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
@@ -231,8 +232,6 @@ object AppPrefs {
         POS_TAB_VISIBILITY,
 
         POS_LAUNCHABLE,
-
-        POS_FEATURE_SWITCH_ENABLED,
 
         WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN,
 
@@ -1411,13 +1410,18 @@ object AppPrefs {
     }
 
     /**
-     * Keyed by the remote site id, not the local one. A stored `false` blocks POS outright, and
-     * local ids are handed out per account, so a key that survives a logout must not be able to
-     * land on a different account's store.
+     * A stored `false` blocks POS outright, so the key has to name exactly one store. The remote id
+     * is 0 for self-hosted sites, so it is combined with the local and self-hosted ids, the way
+     * receipts and the card reader banners are keyed.
      */
-    fun setPOSFeatureSwitchEnabledForSite(siteId: Long, enabled: Boolean) {
+    fun setPOSFeatureSwitchEnabledForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        enabled: Boolean
+    ) {
         setBoolean(
-            key = posFeatureSwitchKey(siteId),
+            key = posFeatureSwitchKey(localSiteId, remoteSiteId, selfHostedSiteId),
             value = enabled
         )
     }
@@ -1425,15 +1429,19 @@ object AppPrefs {
     /**
      * The last value read from the store, or null when it has never been read for this site.
      */
-    fun getPOSFeatureSwitchEnabledForSite(siteId: Long): Boolean? {
-        val key = posFeatureSwitchKey(siteId)
+    fun getPOSFeatureSwitchEnabledForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): Boolean? {
+        val key = posFeatureSwitchKey(localSiteId, remoteSiteId, selfHostedSiteId)
         return if (exists(key)) getBoolean(key, false) else null
     }
 
-    private fun posFeatureSwitchKey(siteId: Long) =
-        PrefKeyString("$POS_FEATURE_SWITCH_ENABLED_PREFIX$siteId")
+    private fun posFeatureSwitchKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PrefKeyString("$POS_FEATURE_SWITCH_ENABLED_PREFIX$localSiteId:$remoteSiteId:$selfHostedSiteId")
 
-    private val POS_FEATURE_SWITCH_ENABLED_PREFIX = "${UndeletablePrefKey.POS_FEATURE_SWITCH_ENABLED}:"
+    private val POS_FEATURE_SWITCH_ENABLED_PREFIX = "${DeletablePrefKey.POS_FEATURE_SWITCH_ENABLED}:"
 
     /**
      * Remove all user and site-related preferences.

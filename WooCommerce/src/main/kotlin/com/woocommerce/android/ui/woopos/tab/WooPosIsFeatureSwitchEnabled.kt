@@ -46,7 +46,11 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         }
 
         if (!forceRefresh) {
-            appPrefs.getPOSFeatureSwitchEnabledForSite(site.siteId)?.let { stored ->
+            appPrefs.getPOSFeatureSwitchEnabledForSite(
+                localSiteId = site.id,
+                remoteSiteId = site.siteId,
+                selfHostedSiteId = site.selfHostedSiteId
+            )?.let { stored ->
                 appCoroutineScope.launch { store(site, loadEnabledFeatures(site, forceRefresh = false)) }
                 return Result.success(stored)
             }
@@ -59,7 +63,12 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         if (enabledFeatures == null) return Result.failure(WooPosCouldNotDetermineValueException())
 
         val isEnabled = enabledFeatures.contains(POINT_OF_SALE_FEATURE)
-        appPrefs.setPOSFeatureSwitchEnabledForSite(site.siteId, isEnabled)
+        appPrefs.setPOSFeatureSwitchEnabledForSite(
+            localSiteId = site.id,
+            remoteSiteId = site.siteId,
+            selfHostedSiteId = site.selfHostedSiteId,
+            enabled = isEnabled
+        )
         return Result.success(isEnabled)
     }
 
