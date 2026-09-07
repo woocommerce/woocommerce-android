@@ -477,7 +477,6 @@ private fun ProductBrowsingControlIcon(imageVector: ImageVector) {
     Icon(
         imageVector = imageVector,
         contentDescription = null,
-        modifier = Modifier.size(WooTheme.iconSize.size14),
     )
 }
 
