@@ -50,6 +50,12 @@
                 android:layout_gravity="bottom"
                 style="@style/Woo.Divider"
                 android:visibility="gone" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/https_configuration_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout

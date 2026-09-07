@@ -699,7 +699,7 @@ class CardReaderPaymentController(
 
             else -> WooLog.e(
                 WooLog.T.CARD_READER,
-                "Got SDK message when cardReaderPaymentController is in ${_paymentState.value}"
+                "Got SDK message when cardReaderPaymentController is in ${_paymentState.value::class.simpleName}"
             )
         }
     }

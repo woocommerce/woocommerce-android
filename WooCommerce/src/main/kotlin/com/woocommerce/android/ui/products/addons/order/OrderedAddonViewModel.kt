@@ -60,11 +60,17 @@ class OrderedAddonViewModel @Inject constructor(
     /**
      * Provides the currencyCode for views who requires display prices
      */
-    val currencyCode =
-        parameterRepository
-            .getParameters(KEY_PRODUCT_PARAMETERS, savedState)
-            .currencyCode
-            .orEmpty()
+    var currencyCode = ""
+        private set
+
+    init {
+        launch {
+            currencyCode = parameterRepository
+                .getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+                .currencyCode
+                .orEmpty()
+        }
+    }
 
     fun start(
         orderID: Long,

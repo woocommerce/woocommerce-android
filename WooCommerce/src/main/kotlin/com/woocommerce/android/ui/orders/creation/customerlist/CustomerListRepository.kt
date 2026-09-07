@@ -37,7 +37,7 @@ class CustomerListRepository @Inject constructor(
         countries.find { it.code == countryCode }
             ?: Location.EMPTY
 
-    fun getState(countryCode: String, stateCode: String) =
+    suspend fun getState(countryCode: String, stateCode: String) =
         dataStore.getStates(countryCode)
             .find { it.code == stateCode }?.toAppModel()
             ?: Location.EMPTY

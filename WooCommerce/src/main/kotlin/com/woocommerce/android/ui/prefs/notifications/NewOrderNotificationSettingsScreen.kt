@@ -115,10 +115,10 @@ private fun NewOrderNotificationSettingsScreen(
                 enabled = sharedViewState.notificationsEnabled,
                 onClick = { onNotificationPreferenceChanged(NewOrderNotificationPreference.HighValueOrders) }
             )
-            AnimatedVisibility(visible = isHighValuePreferenceSelected) {
+            AnimatedVisibility(visible = isHighValuePreferenceSelected && viewState.currencySymbol != null) {
                 ThresholdAmountField(
                     amount = sharedViewState.thresholdAmount,
-                    currencySymbol = viewState.currencySymbol,
+                    currencySymbol = viewState.currencySymbol.orEmpty(),
                     enabled = sharedViewState.notificationsEnabled,
                     onAmountChanged = onThresholdAmountChanged
                 )
