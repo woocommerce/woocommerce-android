@@ -26,7 +26,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class ApplicationPasswordTutorialFragment : BaseFragment() {
     val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
 
-    private val url: String by lazy { requireArguments().getString(URL_KEY, "") }
+    private val verifiedLoginUrl: String? by lazy {
+        requireArguments().getString(VERIFIED_LOGIN_URL_KEY)
+    }
+    private val applicationPasswordAuthorizationUrl: String by lazy {
+        requireArguments().getString(APPLICATION_PASSWORD_AUTHORIZATION_URL_KEY, "")
+    }
     private val errorMessage: String? by lazy {
         requireArguments()
             .getString(ERROR_MESSAGE_KEY, "")
@@ -58,7 +63,8 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         viewModel.onWebViewDataAvailable(
-            authorizationUrl = url,
+            verifiedLoginUrl = verifiedLoginUrl,
+            applicationPasswordAuthorizationUrl = applicationPasswordAuthorizationUrl,
             errorMessage = errorMessage
         )
     }
@@ -80,7 +86,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
 
         setFragmentResult(
             requestKey = WEB_NAVIGATION_RESULT,
-            result = Bundle().apply { putString(URL_KEY, url) }
+            result = Bundle().apply { putString(WEB_NAVIGATION_RESULT_URL_KEY, url) }
         )
         parentFragmentManager.popBackStack()
     }
@@ -95,13 +101,20 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ApplicationPasswordTutorialFragment"
-        const val URL_KEY = "url"
+        const val WEB_NAVIGATION_RESULT_URL_KEY = "url"
+        private const val VERIFIED_LOGIN_URL_KEY = "verified_login_url"
+        private const val APPLICATION_PASSWORD_AUTHORIZATION_URL_KEY = "application_password_authorization_url"
         const val ERROR_MESSAGE_KEY = "error_message"
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
-        fun newInstance(url: String, errorMessage: String) =
+        fun newInstance(
+            verifiedLoginUrl: String?,
+            applicationPasswordAuthorizationUrl: String,
+            errorMessage: String
+        ) =
             ApplicationPasswordTutorialFragment().apply {
                 arguments = Bundle().apply {
-                    putString(URL_KEY, url)
+                    putString(VERIFIED_LOGIN_URL_KEY, verifiedLoginUrl)
+                    putString(APPLICATION_PASSWORD_AUTHORIZATION_URL_KEY, applicationPasswordAuthorizationUrl)
                     putString(ERROR_MESSAGE_KEY, errorMessage)
                 }
             }

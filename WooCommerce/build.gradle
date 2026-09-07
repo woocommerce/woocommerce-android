@@ -179,9 +179,10 @@ android {
 
     buildTypes {
         release {
-            // Proguard is used to shrink our apk, and reduce the number of methods in our final apk,
-            // but we don't obfuscate the bytecode.
+            // R8 shrinks and optimizes the app (dead code removal, inlining, class merging),
+            // but we don't obfuscate the bytecode (-dontobfuscate in proguard-rules.pro).
             minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -338,7 +339,7 @@ dependencies {
     implementation(libs.mpandroidchart)
 
     implementation(libs.bumptech.glide.main)
-    ksp(libs.bumptech.glide.compiler)
+    ksp(libs.bumptech.glide.ksp)
     implementation(libs.bumptech.glide.volley.integration)
     implementation(libs.google.play.app.update)
     implementation(libs.google.play.review)

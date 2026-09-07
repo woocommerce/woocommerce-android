@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications
 
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.reviews.domain.SupportsReviewsReadStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,10 +22,11 @@ import javax.inject.Singleton
 class UnseenReviewsCountHandler @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
+    private val supportsReviewsReadStatus: SupportsReviewsReadStatus,
     selectedSite: SelectedSite
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val unseenReviewsCount: SharedFlow<Int> =
+    private val unreadReviewNotificationsCount: SharedFlow<Int> =
         selectedSite.observe()
             .filterNotNull()
             .flatMapLatest { site ->
@@ -33,7 +35,7 @@ class UnseenReviewsCountHandler @Inject constructor(
                     filterBySubtype = listOf(STORE_REVIEW.toString())
                 )
             }
-            .map { it.count { notification -> !notification.read } }
+            .map { notifications -> notifications.count { !it.read } }
             .distinctUntilChanged()
             .shareIn(
                 scope = appCoroutineScope,
@@ -41,5 +43,10 @@ class UnseenReviewsCountHandler @Inject constructor(
                 replay = 1
             )
 
-    fun observeUnseenCount(): Flow<Int> = unseenReviewsCount
+    fun observeUnseenCount(): Flow<Int> =
+        unreadReviewNotificationsCount
+            .map { count -> if (supportsReviewsReadStatus()) count else 0 }
+            .distinctUntilChanged()
+
+    fun observeReviewNotificationChanges(): Flow<Int> = unreadReviewNotificationsCount
 }

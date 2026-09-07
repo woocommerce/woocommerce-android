@@ -4,7 +4,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelPaperSizeSelectorDialog.ShippingLabelPaperSize
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import java.math.BigDecimal
 
 sealed class OrderNavigationTarget : Event() {
     data class ViewOrderStatusSelector(
@@ -74,8 +73,6 @@ sealed class OrderNavigationTarget : Event() {
         OrderNavigationTarget()
     data class EditOrder(
         val orderId: Long,
-        val giftCard: String? = null,
-        val appliedDiscount: BigDecimal? = null,
         val orderCurrency: String? = null,
     ) : OrderNavigationTarget()
     data class ShowOrder(val orderId: Long, val allOrderIds: LongArray) : OrderNavigationTarget()

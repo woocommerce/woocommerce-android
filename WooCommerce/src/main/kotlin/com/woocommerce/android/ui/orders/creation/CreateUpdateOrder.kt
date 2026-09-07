@@ -23,7 +23,11 @@ class CreateUpdateOrder @Inject constructor(
 
     private fun createOrUpdateOrder(order: Order) = flow {
         emit(OrderUpdateStatus.Ongoing)
-        orderCreateEditRepository.createOrUpdateOrder(order, source = OrderCreationSource.STORE_MANAGEMENT)
+        orderCreateEditRepository.createOrUpdateOrder(
+            order,
+            source = OrderCreationSource.STORE_MANAGEMENT,
+            giftCard = order.selectedGiftCard.orEmpty()
+        )
             .fold(
                 onSuccess = { emit(OrderUpdateStatus.Succeeded(it)) },
                 onFailure = { emit(OrderUpdateStatus.Failed(it)) }

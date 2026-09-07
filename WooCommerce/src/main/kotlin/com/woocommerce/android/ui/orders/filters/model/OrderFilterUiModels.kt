@@ -20,6 +20,8 @@ sealed class OrderFilterEvent : MultiLiveEvent.Event() {
     ) : OrderFilterEvent()
 
     object OnShowOrders : OrderFilterEvent()
+
+    object OpenFilterHistory : OrderFilterEvent()
 }
 
 @Parcelize

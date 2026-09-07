@@ -1,11 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 18:55:14+0000
+Translation-Revision-Date: 2026-08-27 17:58:20+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Включите определение местоположения, чтобы просмотреть устройства чтения карт</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Разрешить определение местоположения для просмотра устройств чтения карт</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Включите Bluetooth, чтобы просмотреть устройства чтения карт</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Разрешить Bluetooth для просмотра устройств чтения карт</string>
+    <string name="woopos_card_reader_local_network_permission_message">Для подключения к телефону, используемому в качестве устройства чтения карт, требуется разрешение на доступ к локальной сети.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Требуется разрешение на доступ к локальной сети</string>
+    <string name="woopos_refund_error_invalid_amount">Недопустимая сумма возврата</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Сумма возврата превышает сумму, которую осталось вернуть за этот товар</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Сумма возврата превышает сумму, которую осталось вернуть по этому заказу</string>
+    <string name="woopos_refund_error_order_not_refundable">Средства за этот заказ не могут быть возвращены</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">Выбранное количество превышает остаток для возврата</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Показать код снова</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Принять через кассу</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Платёж не был произведён онлайн. Примите его через кассу или покажите код снова.</string>
+    <string name="woopos_refund_error_item_already_refunded">Средства за этот товар уже возвращены в полном объёме</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Клиент выбрал очную оплату</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Ошибка платёжной системы. Попробуйте подключиться ещё раз.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Включите NFC на телефоне и повторите попытку.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Этот телефон не поддерживает функцию Tap to Pay (Оплата в касание). Попробуйте использовать другое устройство.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Этот комплект содержит товар по подписке, который не поддерживается при создании заказа</string>
+    <string name="product_image_details_name_removal_blocked">Приложение не поддерживает удаление заголовка. Используйте консоль wp-admin, чтобы удалить его.</string>
+    <string name="product_image_details_alt_text_removal_blocked">Приложение не поддерживает удаление альтернативного текста. Используйте консоль wp-admin, чтобы удалить его.</string>
+    <string name="product_image_details_name_label">Заголовок</string>
+    <string name="product_image_details_alt_text_label">Альтернативный текст</string>
+    <string name="product_image_details_title">Параметры изображения</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Открыть настройки</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">Разрешение на доступ к локальной сети заблокировано. Откройте настройки и разрешите доступ к локальной сети, чтобы использовать функцию оплаты в касание на этом телефоне.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Продолжить</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Системе Android требуется доступ к локальной сети, чтобы ваш планшет мог найти этот телефон. За пределы вашей сети ничего не отправляется.</string>
+    <string name="card_reader_mode_local_network_permission_header">Требуется разрешение на доступ к локальной сети</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Этот телефон не поддерживает функцию Tap to Pay (Оплата в касание). Попробуйте использовать другое устройство.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Не удалось проверить, включена ли опция «Очная оплата». Повторите попытку позже.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Отключить</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Отключает способ оплаты «Наложенный платёж» при оформлении заказа в вашем магазине, поэтому клиенты не смогут его выбрать.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Отключить опцию «Очная оплата»?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Включить</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Это активирует способ оплаты «Наложенный платёж» при оформлении заказа в вашем магазине и изменяет его название для ваших клиентов с «%1$s» на «Очная оплата», в том числе при оформлении заказов на вашем веб-сайте.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Это активирует способ оплаты «Наложенный платёж» при оформлении заказа в магазине.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Включить опцию «Очная оплата»?</string>
+    <string name="order_creation_gift_card_not_applied">Не удалось применить эту подарочную карту</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Нельзя добавить товар с вариантами, в котором нет вариантов</string>
+    <string name="login_site_credentials_use_web_authorization">Попробуйте войти в браузере</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Не удалось сохранить настройки входа в магазин. Повторите попытку.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Не удалось подключиться к консоли WordPress по этому адресу. Проверьте его и повторите попытку.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Не удалось найти страницу входа в WordPress по этому адресу. Проверьте его и повторите попытку.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Введите адрес на том же сайте, не меняя защищённое соединение или порт.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Введите полный веб-адрес, включая http:// или https://.</string>
+    <string name="login_site_credentials_admin_url_label">Адрес консоли WordPress</string>
+    <string name="login_site_credentials_admin_url_description">Плагин безопасности может переместить консоль WordPress. Введите адрес, который вы используете для его открытия.</string>
+    <string name="login_site_credentials_admin_url_title">По какому адресу находится консоль вашего магазина?</string>
+    <string name="login_site_credentials_login_url_label">Адрес для входа в WordPress</string>
+    <string name="login_site_credentials_login_url_description">Плагин безопасности может использовать пользовательский адрес для входа в WordPress. Введите адрес, который вы используете для входа.</string>
+    <string name="login_site_credentials_login_url_title">Какой адрес вы используете для входа в свой магазин?</string>
+    <string name="login_text_otp_another">Отправить код повторно через SMS</string>
+    <string name="login_text_otp">Отправить код повторно через SMS</string>
+    <string name="enter_verification_code_sms_generic">Мы отправили SMS. Введите проверочный код из сообщения.</string>
+    <string name="enter_verification_code">Чтобы продолжить, введите проверочный код.</string>
+    <string name="logviewer_share_all_logs_error">Не удалось подготовить журналы для общего доступа</string>
+    <string name="logviewer_preparing_logs">Подготовка журналов…</string>
+    <string name="logviewer_share_all_logs">Поделиться всеми журналами</string>
+    <string name="support_mobile_status_report_share_error">Не удалось отправить отчёт о состоянии мобильного устройства</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">Ошибка при копировании отчёта о состоянии мобильного устройства в буфер обмена</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">Отчёт о состоянии мобильного устройства скопирован в буфер обмена</string>
+    <string name="support_mobile_status_report_share_label">Отправить отчёт о состоянии мобильного устройства</string>
+    <string name="support_mobile_status_report_copy_label">Копировать отчёт о состоянии мобильного устройства в буфер обмена</string>
+    <string name="support_mobile_status_report_clipboard_label">Отчёт о состоянии WooCommerce для мобильных устройств</string>
+    <string name="support_mobile_status_report_detail">Информация о приложении, устройстве и магазине из этого приложения</string>
+    <string name="support_mobile_status_report">Отчёт о состоянии мобильного устройства</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">Скидка не применена</string>
     <string name="product_duplicate_discard_changes_action">Отменить и создать дубликат</string>
     <string name="product_duplicate_discard_changes_message">Несохранённые изменения будут утрачены. Дубликат будет использовать последнюю сохранённую версию.</string>
@@ -1074,7 +1142,6 @@ Language: ru
     <string name="woo_shipping_field_required_error">Обязательное поле.</string>
     <string name="woo_shipping_fetching_countries_and_states">Получение стран и регионов.</string>
     <string name="product_upload_error_title">Ошибки при загрузке изображения</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары, товары с вариантами и виртуальные товары — \nсначала создайте такой товар.</string>
     <string name="woo_shipping_label_phone">Телефон</string>
     <string name="woo_shipping_label_email">Электронная почта</string>
@@ -2249,7 +2316,6 @@ Language: ru
     <string name="card_reader_tap_to_pay_description">Для получения платежей по карте используйте\nсвой телефон. Попробуйте прямо сейчас.</string>
     <string name="loading">Загрузка…</string>
     <string name="login_site_credentials_fetching_site_failed">Произошла ошибка при получении веб-сайта</string>
-    <string name="login_site_credentials_use_web_authorization">Повторите попытку, используя страницу консоли</string>
     <string name="login_store_address">Войти</string>
     <string name="upgrades_current_plan_ended_caption">Действие вашей подписки завершено, и теперь вам доступны не все функции.</string>
     <string name="upgrades_plan_ended_name">%s завершён</string>
@@ -3986,7 +4052,6 @@ Language: ru
     <string name="enter_wpcom_or_jetpack_site">Укажите сайт WordPress.com или автономный сайт с подключённым модулем Jetpack</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">заполнитель</string>
     <string name="notification_channel_general_title">Общее</string>
-    <string name="login_text_otp_another">Пришлите мне другой код.</string>
     <string name="enter_verification_code_sms">Мы послали текстовое сообщение на телефонный номер оканчивающийся на %s. Пожалуйста введите проверочный код из SMS.</string>
     <string name="enter_wpcom_password_google">Чтобы войти через эту учетную запись Google, пожалуйста укажите соответствующий пароль WordPress.com. Это запрашивается только один раз.</string>
     <string name="login_log_in_for_share_intent">Войдите в WordPress.com чтобы поделиться содержимым.</string>
@@ -4005,7 +4070,6 @@ Language: ru
     <string name="login_magic_link_email_requesting">Выполняется запрос электронного письма со ссылкой для входа</string>
     <string name="password_incorrect">Похоже, пароль введён неправильно. Проверьте правильность введенных данных и повторите попытку.</string>
     <string name="requesting_otp">Выполняется запрос на получение проверочного кода в SMS-сообщении.</string>
-    <string name="login_text_otp">Пришлите мне сообщение с кодом.</string>
     <string name="open_mail">Открыть почту</string>
     <string name="next">Вперед</string>
     <string name="already_logged_in_wpcom">Вы уже вошли в учетную запись WordPress.com. Вы не можете добавить сайт WordPress.com, привязанный к другой учетной записи.</string>
@@ -4092,7 +4156,6 @@ Language: ru
     <string name="orderdetail_note_private">Личный</string>
     <string name="dashboard_top_performers_empty">Нет активности за этот период</string>
     <string name="order_error_fetch_notes_generic">Ошибка при получении примечаний</string>
-    <string name="enter_verification_code">Почти готово! Введите проверочный код для WordPress.com из приложения Authenticator.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

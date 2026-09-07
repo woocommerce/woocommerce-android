@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
+import org.wordpress.android.fluxc.persistence.dao.FilterHistoryDao
 import org.wordpress.android.fluxc.persistence.dao.GatewaysDao
 import org.wordpress.android.fluxc.persistence.dao.GlobalAttributesDao
 import org.wordpress.android.fluxc.persistence.dao.InboxNotesDao
@@ -85,6 +86,7 @@ import org.wordpress.android.fluxc.persistence.entity.AddonOptionEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEmailEntity
 import org.wordpress.android.fluxc.persistence.entity.CouponEntity
 import org.wordpress.android.fluxc.persistence.entity.CustomerFromAnalyticsEntity
+import org.wordpress.android.fluxc.persistence.entity.FilterHistoryEntity
 import org.wordpress.android.fluxc.persistence.entity.GatewayEntity
 import org.wordpress.android.fluxc.persistence.entity.GlobalAddonGroupEntity
 import org.wordpress.android.fluxc.persistence.entity.InboxNoteActionEntity
@@ -141,7 +143,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 91
+const val WC_DATABASE_VERSION = 92
 
 // Matches the CursorWindow size used by WooWellSqlConfig; raises SQLite's ~2 MB default on API 28+.
 @Suppress("MagicNumber")
@@ -202,6 +204,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         WooPushNotificationPreferencesEntity::class,
         SupportChatBookmarkEntity::class,
         AnalyticsScheduledImportSettingEntity::class,
+        FilterHistoryEntity::class,
     ],
     autoMigrations = [
         AutoMigration(from = 12, to = 13),
@@ -272,6 +275,7 @@ private val CURSOR_WINDOW_SIZE_BYTES = 1024L * 1024L * 10L
         AutoMigration(from = 88, to = 89),
         AutoMigration(from = 89, to = 90, spec = AutoMigration89to90::class),
         AutoMigration(from = 90, to = 91),
+        AutoMigration(from = 91, to = 92),
     ]
 )
 @TypeConverters(
@@ -329,6 +333,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     internal abstract val wooPushNotificationPreferencesDao: WooPushNotificationPreferencesDao
     abstract val supportChatBookmarkDao: SupportChatBookmarkDao
     abstract val analyticsScheduledImportDao: AnalyticsScheduledImportDao
+    abstract val filterHistoryDao: FilterHistoryDao
 
     companion object {
         fun buildDb(

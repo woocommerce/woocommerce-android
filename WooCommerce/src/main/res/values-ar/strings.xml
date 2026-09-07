@@ -1,11 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-07-28 21:56:40+0000
+Translation-Revision-Date: 2026-08-27 11:56:11+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">قم بتشغيل الموقع الجغرافي لرؤية أجهزة قارئ البطاقات</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">السماح للموقع الجغرافي برؤية أجهزة قارئ البطاقات</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">قم بتشغيل Bluetooth لرؤية أجهزة قارئ البطاقات</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">السماح للـ Bluetooth برؤية أجهزة قارئ البطاقات</string>
+    <string name="woopos_card_reader_local_network_permission_message">صلاحية الشبكة المحلية مطلوبة للاتصال بهاتف مُستخدَم قارئ بطاقات.</string>
+    <string name="woopos_card_reader_local_network_permission_title">صلاحية الشبكة المحلية مطلوبة</string>
+    <string name="woopos_refund_error_invalid_amount">مبلغ استرداد الأموال غير صالح</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">مبلغ استرداد الأموال أكبر مما تبقى للاسترداد لهذا العنصر</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">مبلغ استرداد الأموال أكبر مما تبقى للاسترداد في هذا الطلب</string>
+    <string name="woopos_refund_error_order_not_refundable">لا يمكن استرداد أموال هذا الطلب</string>
+    <string name="woopos_refund_error_item_already_refunded">لقد تم بالفعل استرداد أموال هذا العنصر بالكامل</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">الكمية المحددة أكبر مما تبقى للاسترداد</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">أظهر الكود مرة أخرى</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">التحصيل على آلة التسجيل</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">لم يتم استلام أي مدفوعات عبر الإنترنت. قم بتحصيله على آلة التسجيل، أو أظهر الكود مرة أخرى.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">اختار العميل الدفع بصفة شخصية</string>
+    <string name="woopos_remote_reader_failed_token_invalid">خطأ في خدمة الدفع. حاول إعادة الاتصال.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">قم بتشغيل NFC على الهاتف، ثم حاول مرة أخرى.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">هذا الهاتف غير مؤهل لميزة Tap to Pay. جرِّب جهازًا مختلفًا.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">تحتوي هذه الحزمة على منتج الاشتراك، وهو غير مدعوم لإنشاء الطلبات</string>
+    <string name="product_image_details_name_removal_blocked">التطبيق لا يدعم إزالة العنوان. يُرجى استخدام wp-admin لإزالته.</string>
+    <string name="product_image_details_alt_text_removal_blocked">التطبيق لا يدعم إزالة النصّ البديل. يُرجى استخدام wp-admin لإزالته.</string>
+    <string name="product_image_details_name_label">العنوان</string>
+    <string name="product_image_details_alt_text_label">النصّ البديل</string>
+    <string name="product_image_details_title">تفاصيل الصورة</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">أفتح الإعدادات</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">صلاحية الشبكة المحلية محظور. افتح الإعدادات وأمنح الوصول إلى الشبكة المحلية لاستخدام ميزة \"tap-to-pay\" على هذا الهاتف.</string>
+    <string name="card_reader_mode_local_network_permission_continue">متابعة</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">يتطلب نظام التشغيل Android الوصول إلى الشبكة المحلية لكي يتمكن جهازك اللوحي من العثور على هذا الهاتف. لم يتم إرسال أي شيء خارج شبكتك.</string>
+    <string name="card_reader_mode_local_network_permission_header">صلاحية الشبكة المحلية مطلوبة</string>
+    <string name="card_reader_mode_error_phone_not_eligible">هذا الهاتف غير مؤهل لميزة Tap to Pay. جرِّب جهازًا مختلفًا.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">يتعذر علينا التحقق مما إذا تم تمكين \"Pay In Person\" أم لا. يُرجى إعادة المحاولة لاحقاً.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">تعطيل</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">يؤدي هذا إلى تعطيل طريقة الدفع عند التسليم عند إتمام الشراء في متجرك، لذلك لن يتمكن العملاء من تحديدها.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">هل تريد تعطيل \"Pay In Person\"؟</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">تمكين</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">يتيح هذا طريقة الدفع عند التسليم عند السداد في متجرك ويعيد تسميتها من \"⁦%1$s⁩\" إلى \"Pay in Person\" لعملائك، بما في ذلك عند إتمام الشراء على موقع إلكتروني خاص بك.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">يؤدي هذا إلى تمكين طريقة الدفع نقدًا عند التسليم عند إتمام الشراء في متجرك.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">هل تريد تمكين \"Pay In Person\"؟</string>
+    <string name="order_creation_gift_card_not_applied">تعذَّر تطبيق بطاقة الهدايا هذه</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">لا يمكنك إضافة منتج متغير ليس له متغيرات</string>
+    <string name="login_site_credentials_use_web_authorization">جرب تسجيل الدخول بمتصفحك بدلاً من ذلك</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">لم نتمكن من حفظ إعدادات تسجيل الدخول لمتجرك. يُرجى إعادة المحاولة.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">لم نتمكن من الوصول إلى لوحة تحكم ووردبريس على هذا العنوان. يُرجى التحقق منه وإعادة المحاولة.</string>
+    <string name="login_site_credentials_login_url_not_found_error">لم نتمكن من العثور على صفحة تسجيل دخول ووردبريس على هذا العنوان. يُرجى التحقق منه وإعادة المحاولة.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">أدخل عنوانًا على نفس الموقع دون تغيير اتصاله الآمن أو المنفذ الخاص به.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">أدخل عنوان ويب كامل، مثل http:// أو https://.</string>
+    <string name="login_site_credentials_admin_url_label">عنوان لوحة تحكم ووردبريس</string>
+    <string name="login_site_credentials_admin_url_description">قد تقوم إضافة أمان بنقل لوحة تحكم ووردبريس. أدخل العنوان الذي تستخدمه لفتحه.</string>
+    <string name="login_site_credentials_admin_url_title">أين توجد لوحة التحكم بمتجرك؟</string>
+    <string name="login_site_credentials_login_url_label">عنوان تسجيل الدخول إلى ووردبريس</string>
+    <string name="login_site_credentials_login_url_description">قد تستخدم إضافة أمان عنوان تسجيل الدخول المخصص لووردبريس. أدخل العنوان الذي تستخدمه لتسجيل الدخول.</string>
+    <string name="login_site_credentials_login_url_title">أين تقوم بتسجيل الدخول إلى متجرك؟</string>
+    <string name="login_text_otp_another">إعادة إرسال الكود عبر رسالة نصية</string>
+    <string name="login_text_otp">إعادة إرسال الكود عبر رسالة نصية</string>
+    <string name="enter_verification_code_sms_generic">أرسلنا رسالة نصية. أدخِل رمز التحقق من الرسالة.</string>
+    <string name="enter_verification_code">أدخِل رمز تحقق للمتابعة.</string>
+    <string name="logviewer_share_all_logs_error">يتعذر إعداد السجلات للمشاركة</string>
+    <string name="logviewer_preparing_logs">جارٍ تحضير السجلات…</string>
+    <string name="logviewer_share_all_logs">مشاركة جميع السجلات</string>
+    <string name="support_mobile_status_report_share_error">تتعذر مشاركة تقرير حالة الأجهزة المحمولة</string>
+    <string name="support_mobile_status_report_error_copy_to_clipboard">خطأ في نسخ تقرير حالة الأجهزة المحمولة إلى الحافظة</string>
+    <string name="support_mobile_status_report_copied_to_clipboard">تم نسخ تقرير حالة الأجهزة المحمولة إلى الحافظة</string>
+    <string name="support_mobile_status_report_share_label">مشاركة تقرير حالة الأجهزة المحمولة</string>
+    <string name="support_mobile_status_report_copy_label">نسخ تقرير حالة الأجهزة المحمولة إلى الحافظة</string>
+    <string name="support_mobile_status_report_clipboard_label">تقرير حالة تطبيق WooCommerce للأجهزة المحمولة</string>
+    <string name="support_mobile_status_report_detail">معلومات التطبيق والجهاز والمتجر من هذا التطبيق</string>
+    <string name="support_mobile_status_report">تقرير حالة الأجهزة المحمولة</string>
     <string name="woopos_cart_custom_amount_discount_not_applied">لم يتم تطبيق الخصم</string>
     <string name="product_duplicate_discard_changes_action">تجاهل وتكرار</string>
     <string name="product_duplicate_discard_changes_message">ستُفقد التغييرات التي لم يتم حفظها. ستُنشأ النسخة المكررة وفقًا إلى آخر إصدار محفوظ.</string>
@@ -1074,7 +1142,6 @@ Language: ar
     <string name="woo_shipping_fetching_countries_and_states_failed">تعذر علينا استرداد معلومات البلد والولاية. يرجى المحاولة مجددًا.</string>
     <string name="woo_shipping_field_required_error">هذا الحقل مطلوب.</string>
     <string name="product_upload_error_title">أخطاء رفع الصور</string>
-    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">لا تدعم نقطة البيع حاليًا سوى المنتجات البسيطة والمتغيرة والافتراضية - \nأنشئ واحدة للبدء.</string>
     <string name="woo_shipping_label_phone">الهاتف</string>
     <string name="woo_shipping_label_email">البريد الإلكتروني</string>
@@ -2249,7 +2316,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_description">استخدم هاتفك لقبول الدفع\nبالبطاقة. جربها الآن.</string>
     <string name="loading">جاري التحميل…</string>
     <string name="login_site_credentials_fetching_site_failed">حدث خطأ في أثناء إحضار موقعك على الويب</string>
-    <string name="login_site_credentials_use_web_authorization">المحاولة مجددًا باستخدام صفحة مسؤول ووردبريس</string>
     <string name="login_store_address">تسجيل الدخول</string>
     <string name="upgrades_plan_ended_name">تم انتهاء %s</string>
     <string name="upgrades_current_plan_ended_caption">انتهى اشتراكك، وأصبح لديك وصول محدود إلى كل الميزات.</string>
@@ -3986,7 +4052,6 @@ Language: ar
     <string name="signup_magic_link_error">حدثت بعض المشكلات أثناء إرسال البريد الإلكتروني. يمكنك إعادة المحاولة الآن أو الإغلاق والمحاولة مرة أخرى لاحقًا.</string>
     <string name="default_web_client_id" a8c-src-lib="module:login">عنصر نائب</string>
     <string name="notification_channel_general_title">عام</string>
-    <string name="login_text_otp_another">أرسل إليّ رمزًا آخر بدلاً من ذلك.</string>
     <string name="enter_verification_code_sms">أرسلنا رسالة نصية إلى رقم الهاتف الذي ينتهي بـ %s. يرجى إرسال رمز التحقق في رسالة نصية قصيرة.</string>
     <string name="enter_wpcom_password_google">للمتابعة باستخدام حساب Google هذا، يرجى إدخال كلمة مرور متطابقة في وردبرس.كوم. ستتم المطالبة بها لمرة واحدة.</string>
     <string name="login_log_in_for_share_intent">سجّل الدخول إلى وردبرس.كوم لمشاركة المحتوى.</string>
@@ -4005,7 +4070,6 @@ Language: ar
     <string name="login_magic_link_email_requesting">طلب بريد إلكتروني لتسجيل الدخول</string>
     <string name="password_incorrect">يبدو أن كلمة المرور هذه غير صحيحة. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="requesting_otp">طلب رمز تحقق عن طريق رسالة نصية قصيرة (SMS).</string>
-    <string name="login_text_otp">اكتب رمزًا لي بدلاً من ذلك</string>
     <string name="open_mail">فتح البريد</string>
     <string name="next">التالي</string>
     <string name="already_logged_in_wpcom">أنت قيد تسجيل الدخول بالفعل إلى حساب وردبرس.كوم، ولا يمكنك إضافة موقع وردبرس.كوم مرتبط بحساب آخر.</string>
@@ -4092,7 +4156,6 @@ Language: ar
     <string name="orderdetail_note_private">خاص</string>
     <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>
     <string name="order_error_fetch_notes_generic">حدث خطأ في أثناء إحضار الملاحظات</string>
-    <string name="enter_verification_code">تقريبًا هناك! يرجى إدخال كود التحقق الخاص بووردبريس.كوم من تطبيق الموثق الخاص بك.</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

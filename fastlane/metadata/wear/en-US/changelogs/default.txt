@@ -1,1 +1,1 @@
-This release includes internal updates and maintenance improvements for a smoother, more reliable WooCommerce Wear experience.
+Dates for orders and store stats on your watch now match your language's preferred date order, making them easier to read at a glance.

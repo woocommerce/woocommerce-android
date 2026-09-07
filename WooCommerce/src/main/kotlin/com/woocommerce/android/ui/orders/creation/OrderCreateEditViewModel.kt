@@ -257,9 +257,10 @@ class OrderCreateEditViewModel @Inject constructor(
         get() = pluginsInformation.value[WOO_GIFT_CARDS.pluginName]
             ?.isOperational ?: false
 
-    private val _selectedGiftCard = savedState.getStateFlow(
+    private val _giftCardToApply = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = args.giftCardCode.orEmpty()
+        initialValue = "",
+        key = "gift_card_to_apply"
     )
 
     private val _orderDraft = savedState.getStateFlow(
@@ -271,10 +272,11 @@ class OrderCreateEditViewModel @Inject constructor(
     )
 
     val orderDraft = _orderDraft
-        .combine(_selectedGiftCard) { order, giftCard ->
+        .combine(_giftCardToApply) { order, giftCardToApply ->
+            val appliedGiftCard = order.giftCards.firstOrNull()
             order.copy(
-                selectedGiftCard = giftCard,
-                giftCardDiscountedAmount = args.giftCardAmount
+                selectedGiftCard = appliedGiftCard?.code ?: giftCardToApply,
+                giftCardDiscountedAmount = appliedGiftCard?.used
             )
         }.asLiveData()
 
@@ -290,16 +292,18 @@ class OrderCreateEditViewModel @Inject constructor(
     val totalsData: LiveData<TotalsSectionsState> =
         viewStateData.liveData.combineWith(
             _orderDraft.asLiveData(),
-            _selectedGiftCard.asLiveData()
-        ) { viewState, order, selectedGiftCard ->
+            _giftCardToApply.asLiveData()
+        ) { viewState, order, giftCardToApply ->
+            val appliedGiftCard = order!!.giftCards.firstOrNull()
+            val displayedGiftCard = appliedGiftCard?.code ?: giftCardToApply
             totalsHelper.mapToPaymentTotalsState(
-                order = order!!.copy(
-                    selectedGiftCard = selectedGiftCard,
-                    giftCardDiscountedAmount = args.giftCardAmount
+                order = order.copy(
+                    selectedGiftCard = displayedGiftCard,
+                    giftCardDiscountedAmount = appliedGiftCard?.used
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
+                onGiftClicked = { onEditGiftCardButtonClicked(displayedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
                 onRecalculateButtonClicked = { onTotalsSectionRecalculateButtonClicked() },
@@ -417,25 +421,22 @@ class OrderCreateEditViewModel @Inject constructor(
 
         when (mode) {
             is Mode.Creation -> {
-                _orderDraft.update {
-                    it.copy(
-                        currency = parameterRepository.getParameters(
-                            PARAMETERS_KEY,
-                            savedState
-                        ).currencyCode.orEmpty()
-                    )
-                }
-                monitorOrderChanges()
-                // Presence of barcode indicates that this screen was called from the
-                // Order listing screen after scanning the barcode.
-                if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
-                    viewState = viewState.copy(isUpdatingOrderDraft = true)
-                    fetchProductBySKU(
-                        BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
-                        ScanningSource.ORDER_LIST
-                    )
-                }
                 launch {
+                    val currencyCode = parameterRepository.getParameters(
+                        PARAMETERS_KEY,
+                        savedState
+                    ).currencyCode.orEmpty()
+                    _orderDraft.update { it.copy(currency = currencyCode) }
+                    monitorOrderChanges()
+                    // Presence of barcode indicates that this screen was called from the
+                    // Order listing screen after scanning the barcode.
+                    if (args.sku.isNotNullOrEmpty() && args.barcodeFormat != null) {
+                        viewState = viewState.copy(isUpdatingOrderDraft = true)
+                        fetchProductBySKU(
+                            BarcodeOptions(sku = args.sku!!, barcodeFormat = args.barcodeFormat!!),
+                            ScanningSource.ORDER_LIST
+                        )
+                    }
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
                     getAutoTaxRateSetting()?.let {
@@ -862,9 +863,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateAddGiftCardButtonVisibility(order: Order) {
+        val hasGiftCard = order.giftCards.isNotEmpty() || _giftCardToApply.value.isNotEmpty()
         val shouldEnableAddGiftCardButton = order.hasProducts() &&
             order.isEditable &&
-            _selectedGiftCard.value.isEmpty()
+            !hasGiftCard
 
         viewState = viewState.copy(isAddGiftCardButtonEnabled = shouldEnableAddGiftCardButton)
 
@@ -1243,9 +1245,23 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onGiftCardSelected(selectedGiftCard: String) {
-        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _selectedGiftCard.value.isNotEmpty()
+        val giftCardWasRemoved = selectedGiftCard.isEmpty() && _giftCardToApply.value.isNotEmpty()
         trackGiftCardSet(giftCardWasRemoved)
-        _selectedGiftCard.update { selectedGiftCard }
+        _giftCardToApply.update { selectedGiftCard }
+    }
+
+    /**
+     * Once a sync completes, the applied gift card is reflected by the synced order's [Order.giftCards], so the pending
+     * selection is cleared (it is only sent once). If the store did not redeem the card the merchant just entered — a
+     * used or invalid card comes back with no applied gift cards — they are notified.
+     */
+    private fun reconcileGiftCardWithSyncedOrder(syncedOrder: Order) {
+        val attemptedGiftCard = _giftCardToApply.value
+        _giftCardToApply.update { "" }
+        val appliedGiftCard = syncedOrder.giftCards.firstOrNull()?.code.orEmpty()
+        if (attemptedGiftCard.isNotEmpty() && appliedGiftCard != attemptedGiftCard) {
+            triggerEvent(ShowSnackbar(string.order_creation_gift_card_not_applied))
+        }
     }
 
     fun onAddOrEditShippingClicked(itemId: Long? = null) {
@@ -1375,11 +1391,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private fun createOrder(order: Order, onSuccess: (Order) -> Unit) {
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
-            val giftCard = _selectedGiftCard.value
+            val giftCardToApply = _giftCardToApply.value
             orderCreateEditRepository.createOrUpdateOrder(
                 order,
                 source = OrderCreationSource.STORE_MANAGEMENT,
-                giftCard
+                giftCardToApply
             ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
@@ -1430,7 +1446,10 @@ class OrderCreateEditViewModel @Inject constructor(
             var ignoreIfOrderJustUpdatedFromRemote = false
             val changes =
                 if (mode is Mode.Edit) {
-                    _orderDraft.drop(1)
+                    // Gift cards are only redeemed against a real order status, so sync them in edit mode only.
+                    combine(_orderDraft, _giftCardToApply) { order, giftCardToApply ->
+                        order.copy(selectedGiftCard = giftCardToApply)
+                    }.drop(1)
                 } else {
                     // When we are in the order creation flow, we need to keep the order status as auto-draft.
                     // In this way, when the draft of the created order needs to synchronize the price modifiers,
@@ -1488,6 +1507,9 @@ class OrderCreateEditViewModel @Inject constructor(
                                         updateStatus.order
                                     }
                                 }.also {
+                                    if (mode is Mode.Edit) {
+                                        reconcileGiftCardWithSyncedOrder(it)
+                                    }
                                     updateCouponAndDiscountButtonsState(it)
                                     updateAddShippingButtonVisibility(it)
                                     updateAddGiftCardButtonVisibility(it)

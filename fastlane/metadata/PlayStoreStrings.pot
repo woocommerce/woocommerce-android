@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-07 08:12+0000\n"
+"PO-Revision-Date: 2026-09-04 12:03+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: fastlane-plugin-wpmreleasetoolkit 14.11.2\n"
+"X-Generator: fastlane-plugin-wpmreleasetoolkit 15.0.0\n"
 
 #. translators: Title to be displayed in the Play Store. Limit to 50 characters including spaces and commas!
 msgctxt "play_store_app_title"
@@ -116,20 +116,20 @@ msgid ""
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_254"
+msgctxt "release_note_256"
 msgid ""
-"25.4:\n"
-"Payments are more reliable: if a card charge succeeds but confirmation fails, "
-"the app now verifies it and shows success, preventing double charges. Rotating"
-" your device mid-payment no longer crashes. We also fixed refunded orders ling"
-"ering in the Completed filter, and added a prompt before discarding unsaved or"
-"der edits. Plus POS and login fixes.\n"
+"25.6:\n"
+"This release makes the app smaller and faster. Product editing is safer: you'r"
+"e warned before losing an attribute option or tag you typed, and editing optio"
+"ns no longer wipes other attributes. Order details show product add-ons clearl"
+"y, images load reliably on more stores, and the unread reviews badge no longer"
+" gets stuck. Plus crash fixes.\n"
 msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
 msgid ""
-"This release includes internal updates and maintenance improvements for a smoo"
-"ther, more reliable WooCommerce Wear experience."
+"Dates for orders and store stats on your watch now match your language's prefe"
+"rred date order, making them easier to read at a glance."
 msgstr ""
 
