@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.persistence
 import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -55,6 +56,40 @@ class SiteStorePersistenceTest {
     }
 
     // endregion
+
+    @Test
+    fun `given application-password site local ID, when URL is normalized, then update the existing row`() {
+        val site = SiteModel().apply {
+            url = "http://test.com"
+            origin = SiteModel.ORIGIN_WPAPI
+        }
+        sut.insertOrUpdateSite(site)
+        val originalLocalId = site.id
+
+        site.url = "https://test.com"
+        val result = sut.insertOrUpdateSite(site)
+
+        assertThat(result).isEqualTo(1)
+        assertThat(site.id).isEqualTo(originalLocalId)
+        assertThat(siteSqlUtils.getSites()).singleElement().extracting(SiteModel::getUrl)
+            .isEqualTo("https://test.com")
+    }
+
+    @Test
+    fun `given HTTP and HTTPS rows collide, when normalizing by local ID, then preserve both and fail`() {
+        val httpSite = SiteModel().apply { url = "http://test.com" }
+        val httpsSite = SiteModel().apply { url = "https://test.com" }
+        sut.insertOrUpdateSite(httpSite)
+        sut.insertOrUpdateSite(httpsSite)
+
+        httpSite.url = "https://test.com"
+
+        assertThatThrownBy { sut.insertOrUpdateSite(httpSite) }
+            .isInstanceOf(SiteStorePersistence.DuplicateSiteException::class.java)
+        assertThat(siteSqlUtils.getSites()).hasSize(2)
+        assertThat(siteSqlUtils.getSites().map(SiteModel::getUrl))
+            .containsExactlyInAnyOrder("http://test.com", "https://test.com")
+    }
 
     // region insert (case 4)
 

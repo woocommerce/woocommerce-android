@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
+import com.woocommerce.android.ui.payments.tracking.toAnalyticsErrorType
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -288,7 +289,8 @@ class CardReaderConnectViewModel @Inject constructor(
                     if (connectionStarted) {
                         onReaderConnectionFailed(
                             errorCode = status.errorCode,
-                            errorMessage = status.errorMessage
+                            errorType = status.toAnalyticsErrorType(),
+                            errorMessage = status.errorMessage,
                         )
                     }
                 }
@@ -496,16 +498,21 @@ class CardReaderConnectViewModel @Inject constructor(
 
             is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
                 trackLocationFailureFetching(result.error)
-                onReaderConnectionFailed()
+                onReaderConnectionFailed(
+                    errorCode = null,
+                    errorType = "location_fetch_failed",
+                    errorMessage = result.error,
+                )
             }
         }
     }
 
     private fun onReaderConnectionFailed(
-        errorCode: CardReaderStatus.NotConnected.ErrorCode? = null,
-        errorMessage: String? = null
+        errorCode: CardReaderStatus.NotConnected.ErrorCode?,
+        errorType: String,
+        errorMessage: String?,
     ) {
-        tracker.trackConnectionFailed()
+        tracker.trackConnectionFailed(errorType, errorMessage)
         WooLog.e(WooLog.T.CARD_READER, "Connecting to reader failed.")
         val hintLabel = when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW ->

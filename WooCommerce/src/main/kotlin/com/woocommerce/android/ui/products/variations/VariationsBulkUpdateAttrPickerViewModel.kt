@@ -9,7 +9,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_VARIANTS_BULK_UP
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.track
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdateInventoryViewModel.InventoryUpdateData
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceType
 import com.woocommerce.android.ui.products.variations.VariationsBulkUpdatePriceViewModel.PriceUpdateData
@@ -18,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -31,15 +31,7 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val args: VariationsBulkUpdateAttrPickerDialogArgs by savedState.navArgs()
 
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters("key_product_parameters", savedState)
-    }
-
-    private val _viewState = MutableStateFlow(
-        ViewState(
-            currency = parameters.currencySymbol
-        )
-    )
+    private val _viewState = MutableStateFlow(ViewState())
     val viewState: LiveData<ViewState> = _viewState.asLiveData()
 
     init {
@@ -53,6 +45,11 @@ class VariationsBulkUpdateAttrPickerViewModel @Inject constructor(
             salePriceGroupType = salePriceValues.groupType(),
             stockQuantityGroupType = stockQuantityValues.groupType()
         )
+
+        launch {
+            val parameters = parameterRepository.getParameters("key_product_parameters", savedState)
+            _viewState.value = _viewState.value.copy(currency = parameters.currencySymbol)
+        }
     }
 
     fun onRegularPriceUpdateClicked() {
