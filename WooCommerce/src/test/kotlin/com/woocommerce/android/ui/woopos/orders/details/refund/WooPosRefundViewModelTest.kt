@@ -18,8 +18,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RefundPreconditionReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CompletableDeferred
@@ -36,7 +34,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -72,9 +69,6 @@ class WooPosRefundViewModelTest {
     private val refundPreview: WooPosRefundPreview = mock()
     private val serverRefundAvailabilityCache = WooPosServerRefundAvailabilityCache()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
-    private val featureFlagRepository: FeatureFlagRepository = mock {
-        on { isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) } doReturn true
-    }
     private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
     private val calculateRefundTax = WooPosCalculateRefundTax()
     private val resourceProvider: ResourceProvider = mock()
@@ -191,7 +185,6 @@ class WooPosRefundViewModelTest {
                 selectedSite = selectedSite,
                 availabilityCache = serverRefundAvailabilityCache,
                 getWooCoreVersion = getWooCoreVersion,
-                featureFlagRepository = featureFlagRepository,
             ),
             serverRefundAvailabilityCache = serverRefundAvailabilityCache,
             calculateRefundSubtotal = calculateRefundSubtotal,
