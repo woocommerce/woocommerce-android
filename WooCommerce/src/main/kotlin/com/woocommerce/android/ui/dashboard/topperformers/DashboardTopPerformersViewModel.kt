@@ -223,6 +223,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                         }
                         _topPerformersState.value = _topPerformersState.value?.copy(
                             isLoading = false,
+                            error = null,
                             isOutdated = result.topPerformers.isOutdated,
                             topPerformers = result.topPerformers.value.toTopPerformersUiList(),
                         )
@@ -230,7 +231,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
                     is GetTopPerformers.TopPerformerResult.Loading -> {
                         parentViewModel.hideRefreshingIndicator()
-                        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
+                        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, error = null)
                     }
                 }
             }
