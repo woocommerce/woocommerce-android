@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.accountmismatch
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,15 +49,18 @@ import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         BackHandler(onBack = viewState.onBackPressed)
+        val scrollState = rememberScrollState()
 
         Scaffold(topBar = {
             ToolbarWithHelpButton(
                 onNavigationButtonClick = viewState.onBackPressed,
-                onHelpButtonClick = viewModel::onHelpButtonClick
+                onHelpButtonClick = viewModel::onHelpButtonClick,
+                showDivider = scrollState.canScrollBackward,
             )
         }) { paddingValues ->
             AccountMismatchErrorScreen(
                 viewState = viewState,
+                scrollState = scrollState,
                 modifier = Modifier.padding(paddingValues)
             )
         }
@@ -66,6 +70,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
 @Composable
 private fun AccountMismatchErrorScreen(
     viewState: ViewState,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -80,7 +85,7 @@ private fun AccountMismatchErrorScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         )
 
         ButtonBar(
@@ -222,7 +227,8 @@ private fun AccountMismatchPreview() {
                 inlineButtonAction = {},
                 showJetpackTermsConsent = true,
                 onBackPressed = {}
-            )
+            ),
+            scrollState = rememberScrollState()
         )
     }
 }

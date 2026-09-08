@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -40,6 +42,7 @@ fun <T> MultiSelectList(
     itemFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
     allItemsButton: MultiSelectAllItemsButton? = null,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     Column(modifier = modifier) {
         allItemsButton?.let {
@@ -52,7 +55,7 @@ fun <T> MultiSelectList(
             Divider()
         }
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             items(items, key = itemKey) { item ->
                 MultiSelectItem(
                     item = itemFormatter(item),

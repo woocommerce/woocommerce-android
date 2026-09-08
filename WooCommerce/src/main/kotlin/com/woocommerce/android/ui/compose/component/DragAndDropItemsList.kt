@@ -46,9 +46,9 @@ fun <T> DragAndDropItemsList(
     itemKey: ((index: Int, item: T) -> Any),
     modifier: Modifier = Modifier,
     isItemDraggable: (T) -> Boolean = { true },
+    listState: LazyListState = rememberLazyListState(),
     itemContent: @Composable (item: T, dragDropState: DragDropState) -> Unit
 ) {
-    val listState = rememberLazyListState()
     // This is needed to make sure that we access the updated list in the captured value in isDraggable lambda
     val itemsState by rememberUpdatedState(newValue = items)
     val dragDropState = rememberDragDropState(

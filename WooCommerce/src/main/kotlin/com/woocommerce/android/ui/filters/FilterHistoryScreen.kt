@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -73,6 +75,7 @@ fun FilterHistoryScreen(
     onClearHistoryDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberLazyListState()
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -81,6 +84,7 @@ fun FilterHistoryScreen(
                 navigationIcon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_cross_24dp),
                 navigationIconContentDescription = stringResource(id = R.string.filter_history_cancel),
                 onNavigationButtonClick = onCancelClick,
+                showDivider = !viewState.isEmpty && listState.canScrollBackward,
                 actions = {
                     TextAction(
                         text = stringResource(id = R.string.filter_history_apply),
@@ -103,6 +107,7 @@ fun FilterHistoryScreen(
                 onFilterClick = onFilterClick,
                 onDeleteFilter = onDeleteFilter,
                 onClearHistoryClick = onClearHistoryClick,
+                listState = listState,
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
@@ -124,10 +129,11 @@ private fun FilterHistoryList(
     onFilterClick: (SavedFilter) -> Unit,
     onDeleteFilter: (SavedFilter) -> Unit,
     onClearHistoryClick: () -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             item {
                 Text(
                     text = stringResource(id = R.string.filter_history_recent_header).uppercase(),

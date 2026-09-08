@@ -59,11 +59,13 @@ fun WooSitesVisibilityScreen(
     onSiteTapped: (WooStoreUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(topBar = {
         Toolbar(
             title = stringResource(id = R.string.site_picker_edit_store_list_title),
             onNavigationButtonClick = onBack,
             navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            showDivider = scrollState.canScrollBackward,
             actions = {
                 if (state.isLoading) {
                     CircularProgressIndicator(
@@ -88,7 +90,7 @@ fun WooSitesVisibilityScreen(
                 .padding(padding)
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp)
         ) {
             Text(

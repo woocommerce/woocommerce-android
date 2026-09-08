@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
@@ -57,6 +58,8 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 @Composable
 fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     val viewState by viewModel.viewSate.observeAsState(ViewState())
+    val listState = rememberLazyListState()
+    val skeletonListState = rememberLazyListState()
     BackHandler(onBack = viewModel::onBackPress)
     Scaffold(
         topBar = {
@@ -64,6 +67,11 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
                 title = viewState.productName,
                 onNavigationButtonClick = viewModel::onBackPress,
                 windowInsets = WindowInsets.statusBars,
+                showDivider = when {
+                    viewState.variations.isNotEmpty() -> listState.canScrollBackward
+                    viewState.loadingState == LOADING -> skeletonListState.canScrollBackward
+                    else -> false
+                }
             )
         },
         content = {
@@ -71,7 +79,9 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
                 state = viewState,
                 onClearButtonClick = viewModel::onClearButtonClick,
                 onVariationClick = viewModel::onVariationClick,
-                onLoadMore = viewModel::onLoadMore
+                onLoadMore = viewModel::onLoadMore,
+                listState = listState,
+                skeletonListState = skeletonListState
             )
         }
     )
@@ -82,17 +92,20 @@ fun VariationSelectorScreen(
     state: ViewState,
     onClearButtonClick: () -> Unit,
     onVariationClick: (VariationListItem) -> Unit,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    listState: LazyListState,
+    skeletonListState: LazyListState = rememberLazyListState()
 ) {
     when {
         state.variations.isNotEmpty() -> VariationList(
             state = state,
             onClearButtonClick = onClearButtonClick,
             onVariationClick = onVariationClick,
-            onLoadMore = onLoadMore
+            onLoadMore = onLoadMore,
+            listState = listState
         )
 
-        state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton()
+        state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton(skeletonListState)
         else -> EmptyVariationList()
     }
 }
@@ -129,8 +142,8 @@ private fun VariationList(
     onClearButtonClick: () -> Unit,
     onVariationClick: (VariationListItem) -> Unit,
     onLoadMore: () -> Unit,
+    listState: LazyListState = rememberLazyListState()
 ) {
-    val listState = rememberLazyListState()
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -200,10 +213,11 @@ private fun VariationList(
 
 @Composable
 @Suppress("MagicNumber")
-fun VariationListSkeleton() {
+fun VariationListSkeleton(listState: LazyListState = rememberLazyListState()) {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(
         Modifier.background(color = MaterialTheme.colors.surface),
+        state = listState,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         repeat(numberOfInboxSkeletonRows) {

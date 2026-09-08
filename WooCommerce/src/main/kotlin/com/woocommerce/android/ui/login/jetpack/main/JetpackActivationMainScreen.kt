@@ -86,8 +86,9 @@ fun JetpackActivationMainScreen(
     onGetHelpClick: () -> Unit = {},
     onRetryClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
-        topBar = { Toolbar(onNavigationButtonClick = onCloseClick) }
+        topBar = { Toolbar(onNavigationButtonClick = onCloseClick, showDivider = scrollState.canScrollBackward) }
     ) { paddingValues ->
         val transition = updateTransition(targetState = viewState, label = "State Transition")
 
@@ -97,7 +98,7 @@ fun JetpackActivationMainScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .height(IntrinsicSize.Max)
         ) {
             JetpackToWooHeader(isError = viewState is JetpackActivationMainViewModel.ViewState.ErrorViewState)

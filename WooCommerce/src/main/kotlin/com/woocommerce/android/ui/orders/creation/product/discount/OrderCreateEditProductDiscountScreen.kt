@@ -80,7 +80,17 @@ fun OrderCreateEditProductDiscountScreen(
     productItem: MutableStateFlow<OrderCreationProduct>,
 ) {
     val state = viewState.collectAsState()
-    Scaffold(topBar = { DiscountToolbar(onCloseClicked, onDoneClicked, state.value.isDoneButtonEnabled) }) { padding ->
+    val scrollState = rememberScrollState()
+    Scaffold(
+        topBar = {
+            DiscountToolbar(
+                onCloseClicked,
+                onDoneClicked,
+                state.value.isDoneButtonEnabled,
+                showDivider = scrollState.canScrollBackward,
+            )
+        }
+    ) { padding ->
         val focusRequester = remember { FocusRequester() }
         Box(
             modifier = Modifier
@@ -90,7 +100,7 @@ fun OrderCreateEditProductDiscountScreen(
             Column(
                 Modifier
                     .padding(dimensionResource(id = R.dimen.minor_100))
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 val discountValidationState = state.value.discountValidationState
 
@@ -172,12 +182,14 @@ private fun DiscountToolbar(
     onCloseClicked: () -> Unit,
     onDoneClicked: () -> Unit,
     isDoneButtonEnabled: Boolean,
+    showDivider: Boolean = false,
 ) {
     Toolbar(
         title = stringResource(id = R.string.discount),
         onNavigationButtonClick = onCloseClicked,
         navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
         navigationIconContentDescription = stringResource(id = R.string.close),
+        showDivider = showDivider,
         actions = {
             TextAction(
                 text = stringResource(id = R.string.done),

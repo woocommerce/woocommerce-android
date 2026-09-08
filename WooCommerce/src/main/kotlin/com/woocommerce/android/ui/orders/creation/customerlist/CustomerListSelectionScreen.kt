@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -23,6 +25,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
+import com.woocommerce.android.ui.customer.canScrollBackward
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 
 /**
@@ -68,6 +71,9 @@ private fun CustomerListSelectionScreen(
     onEndOfListReached: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberLazyListState()
+    val emptyScrollState = rememberScrollState()
+    val skeletonListState = rememberLazyListState()
     Scaffold(
         topBar = {
             if (showToolbar) {
@@ -75,6 +81,7 @@ private fun CustomerListSelectionScreen(
                     title = stringResource(id = R.string.order_creation_add_customer),
                     onNavigationButtonClick = onNavigateBack,
                     windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
+                    showDivider = state.canScrollBackward(listState, emptyScrollState, skeletonListState),
                 )
             }
         },
@@ -100,6 +107,9 @@ private fun CustomerListSelectionScreen(
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTypeChanged = onSearchTypeChanged,
             onEndOfListReached = onEndOfListReached,
+            listState = listState,
+            emptyScrollState = emptyScrollState,
+            skeletonListState = skeletonListState,
         )
     }
 }

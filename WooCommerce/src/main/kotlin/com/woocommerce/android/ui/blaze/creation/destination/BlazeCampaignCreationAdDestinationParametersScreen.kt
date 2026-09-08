@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -75,17 +76,20 @@ fun AdDestinationParametersScreen(
     onParameterBottomSheetDismissed: () -> Unit
 ) {
     val modalSheetState = rememberModalBottomSheetState()
+    val listState = rememberLazyListState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
                 onNavigationButtonClick = onBackPressed,
+                showDivider = listState.canScrollBackward,
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)

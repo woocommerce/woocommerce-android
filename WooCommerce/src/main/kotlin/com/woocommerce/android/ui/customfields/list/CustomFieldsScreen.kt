@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.customfields.list
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.Interaction
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -114,11 +117,20 @@ private fun CustomFieldsScreen(
 ) {
     BackHandler { onBackClick() }
 
+    val listState = rememberLazyListState()
+    val emptyScrollState = rememberScrollState()
+    val showDivider = if (state.customFields.isNotEmpty()) {
+        listState.canScrollBackward
+    } else {
+        emptyScrollState.canScrollBackward
+    }
+
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.custom_fields_list_title),
                 onNavigationButtonClick = onBackClick,
+                showDivider = showDivider,
                 actions = {
                     TextAction(
                         text = stringResource(id = R.string.save),
@@ -168,11 +180,13 @@ private fun CustomFieldsScreen(
                         customFields = state.customFields,
                         onCustomFieldClicked = onCustomFieldClicked,
                         onCustomFieldValueClicked = onCustomFieldValueClicked,
+                        listState = listState,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
                     CustomFieldsEmptyView(
                         onLearnMoreClicked = onLearnMoreClicked,
+                        scrollState = emptyScrollState,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -206,9 +220,11 @@ private fun CustomFieldsList(
     customFields: List<CustomFieldUiModel>,
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
+        state = listState,
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -226,13 +242,14 @@ private fun CustomFieldsList(
 @Composable
 private fun CustomFieldsEmptyView(
     onLearnMoreClicked: () -> Unit,
+    scrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

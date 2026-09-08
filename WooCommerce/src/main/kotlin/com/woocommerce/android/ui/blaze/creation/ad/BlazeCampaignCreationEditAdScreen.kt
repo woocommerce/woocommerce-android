@@ -96,20 +96,22 @@ private fun BlazeCampaignCreationEditAdScreen(
         )
     }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_preview_edit_ad),
                 onNavigationButtonClick = onBackButtonTapped,
                 onActionButtonClick = onSaveTapped,
-                actionButtonText = stringResource(id = R.string.save).uppercase()
+                actionButtonText = stringResource(id = R.string.save).uppercase(),
+                showDivider = scrollState.canScrollBackward,
             )
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
