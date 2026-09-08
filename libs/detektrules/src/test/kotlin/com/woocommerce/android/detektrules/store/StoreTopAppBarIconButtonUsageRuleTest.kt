@@ -30,6 +30,54 @@ class StoreTopAppBarIconButtonUsageRuleTest {
     }
 
     @Test
+    fun `given WooOutlinedIconButton in WooTopAppBar actions, when linting, then violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
+            import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+
+            fun usage() {
+                WooTopAppBar(title = "Title", actions = {
+                    WooOutlinedIconButton(
+                        imageVector = Any(),
+                        contentDescription = "Share",
+                        onClick = {},
+                    )
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+        assertThat(findings.single().message).contains("Use IconAction")
+    }
+
+    @Test
+    fun `given fully qualified WooOutlinedIconButton in Toolbar actions, when linting, then violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import com.woocommerce.android.ui.compose.component.Toolbar
+
+            fun usage() {
+                Toolbar(actions = {
+                    com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton(
+                        imageVector = Any(),
+                        contentDescription = "Share",
+                        onClick = {},
+                    )
+                })
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
     fun `given Material IconButton in trailing WooTopAppBar actions, when linting, then violation is reported`() {
         val code = """
             package com.woocommerce.android.ui.orders
@@ -399,6 +447,29 @@ class StoreTopAppBarIconButtonUsageRuleTest {
             fun usage() {
                 WooTopAppBar(title = "Title")
                 IconButton(onClick = {}) {}
+            }
+        """.trimIndent()
+
+        val findings = StoreTopAppBarIconButtonUsageRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
+    fun `given WooOutlinedIconButton outside top app bar actions, when linting, then no violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
+            import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+
+            fun usage() {
+                WooTopAppBar(title = "Title")
+                WooOutlinedIconButton(
+                    imageVector = Any(),
+                    contentDescription = "Share",
+                    onClick = {},
+                )
             }
         """.trimIndent()
 

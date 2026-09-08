@@ -43,9 +43,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChipAppearance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.BarcodeScan
 import com.woocommerce.android.ui.compose.designsystem.icons.BarsFilter
@@ -117,17 +116,17 @@ private fun OrderListBrowsingHeader(
     onFiltersClicked: () -> Unit,
 ) {
     Column {
-        WooPageHeader(
+        WooTopAppBar(
             title = stringResource(R.string.orders),
             showDivider = false,
             actions = {
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.BarcodeScan,
                     contentDescription = stringResource(R.string.scan_barcode),
                     onClick = onBarcodeClicked,
                     modifier = Modifier.testTag(OrderListTestTags.BARCODE_ACTION),
                 )
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.MagnifyingGlass,
                     contentDescription = stringResource(R.string.orderlist_search_hint),
                     onClick = onSearchClicked,

@@ -3,11 +3,7 @@ package com.woocommerce.android.ui.compose.designsystem.component
 import androidx.compose.animation.core.AnimationState
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
@@ -24,28 +20,28 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * Defaults for [WooPageHeader]. Attach [WooPageHeaderScrollBehavior.nestedScrollConnection] to the caller's
+ * Defaults for [WooTopAppBar]. Attach [WooTopAppBarScrollBehavior.nestedScrollConnection] to the caller's
  * scrolling container when using [exitUntilCollapsedScrollBehavior].
  */
 @OptIn(ExperimentalMaterial3Api::class)
-object WooPageHeaderDefaults {
+object WooTopAppBarDefaults {
     @Composable
     fun exitUntilCollapsedScrollBehavior(
         canScroll: () -> Boolean = { true },
-    ): WooPageHeaderScrollBehavior {
+    ): WooTopAppBarScrollBehavior {
         val materialScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             state = rememberTopAppBarState(),
             canScroll = canScroll,
             snapAnimationSpec = null,
         )
         return remember(materialScrollBehavior) {
-            WooPageHeaderScrollBehavior(materialScrollBehavior)
+            WooTopAppBarScrollBehavior(materialScrollBehavior)
         }
     }
 }
 
 /**
- * Adds programmatic expansion to Material 3's exit-until-collapsed behavior for a collapsible [WooPageHeader].
+ * Adds programmatic expansion to Material 3's exit-until-collapsed behavior for a collapsible [WooTopAppBar].
  *
  * Attach [nestedScrollConnection] to the container that owns the scrolling body. Material 3 remains responsible for
  * ordinary nested scrolling, direct header dragging, and decay settling. Meaningful nested user input and both fling
@@ -53,31 +49,22 @@ object WooPageHeaderDefaults {
  */
 @Stable
 @OptIn(ExperimentalMaterial3Api::class)
-class WooPageHeaderScrollBehavior internal constructor(
+class WooTopAppBarScrollBehavior internal constructor(
     private val materialScrollBehavior: TopAppBarScrollBehavior,
-    private val expansionAnimator: WooPageHeaderExpansionAnimator = DefaultWooPageHeaderExpansionAnimator,
+    private val expansionAnimator: WooTopAppBarExpansionAnimator = DefaultWooTopAppBarExpansionAnimator,
 ) {
     private var activeExpansion: Job? = null
 
-    val nestedScrollConnection: NestedScrollConnection = WooPageHeaderNestedScrollConnection(
+    internal val materialScrollBehaviorDelegate: TopAppBarScrollBehavior
+        get() = materialScrollBehavior
+
+    internal val overlappedFraction: Float
+        get() = materialScrollBehavior.state.overlappedFraction
+
+    val nestedScrollConnection: NestedScrollConnection = WooTopAppBarNestedScrollConnection(
         delegate = materialScrollBehavior.nestedScrollConnection,
         cancelExpansion = ::cancelActiveExpansion,
     )
-
-    @Composable
-    internal fun RenderMediumTopAppBar(
-        title: @Composable () -> Unit,
-        actions: @Composable RowScope.() -> Unit,
-        colors: TopAppBarColors,
-    ) {
-        MediumTopAppBar(
-            title = title,
-            actions = actions,
-            windowInsets = WindowInsets(0, 0, 0, 0),
-            colors = colors,
-            scrollBehavior = materialScrollBehavior,
-        )
-    }
 
     /**
      * Animates the header from its current height to fully expanded and resets its accumulated content offset. Call
@@ -133,7 +120,7 @@ class WooPageHeaderScrollBehavior internal constructor(
     }
 }
 
-private class WooPageHeaderNestedScrollConnection(
+private class WooTopAppBarNestedScrollConnection(
     private val delegate: NestedScrollConnection,
     private val cancelExpansion: () -> Unit,
 ) : NestedScrollConnection {
@@ -166,11 +153,11 @@ private class WooPageHeaderNestedScrollConnection(
     }
 }
 
-internal fun interface WooPageHeaderExpansionAnimator {
+internal fun interface WooTopAppBarExpansionAnimator {
     suspend fun animate(initialValue: Float, onFrame: (Float) -> Unit)
 }
 
-private object DefaultWooPageHeaderExpansionAnimator : WooPageHeaderExpansionAnimator {
+private object DefaultWooTopAppBarExpansionAnimator : WooTopAppBarExpansionAnimator {
     override suspend fun animate(initialValue: Float, onFrame: (Float) -> Unit) {
         AnimationState(initialValue = initialValue).animateTo(
             targetValue = 0f,

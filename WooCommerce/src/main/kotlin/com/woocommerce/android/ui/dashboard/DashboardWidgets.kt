@@ -49,8 +49,8 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarDefaults
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarScrollBehavior
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.Pen
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -96,7 +96,7 @@ internal fun DashboardWidgets(
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     scrollToTopTrigger: Flow<Unit>,
-    scrollBehavior: WooPageHeaderScrollBehavior,
+    scrollBehavior: WooTopAppBarScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -135,7 +135,7 @@ private fun DashboardLayout(
     hasNewWidgets: Boolean,
     showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
-    scrollBehavior: WooPageHeaderScrollBehavior,
+    scrollBehavior: WooTopAppBarScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
@@ -190,7 +190,7 @@ private fun DashboardWidgetLayout(
     showCustomizeButton: Boolean,
     onEditWidgetsClicked: () -> Unit,
     widgetContent: @Composable (DashboardWidgetUiModel, Modifier) -> Unit,
-    scrollBehavior: WooPageHeaderScrollBehavior,
+    scrollBehavior: WooTopAppBarScrollBehavior,
     contentBeforeWidgets: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     numberOfColumns: Int = 1,
@@ -585,7 +585,7 @@ private fun DashboardWideLayoutPreview() {
 @Composable
 private fun DashboardPreviewContent(widgets: List<DashboardWidgetUiModel>) {
     WooDesignSystemThemeWithBackground {
-        val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
+        val scrollBehavior = WooTopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         Column {
             DashboardHeader(
                 storeName = "Example Store",
