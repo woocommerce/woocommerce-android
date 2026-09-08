@@ -102,10 +102,12 @@ private fun AiProductPreviewScreen(
     onSaveProductAsDraft: () -> Unit,
     onGenerateAgainClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward,
                 actions = {
                     when {
                         state is AiProductPreviewViewModel.State.Success &&
@@ -135,7 +137,7 @@ private fun AiProductPreviewScreen(
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {

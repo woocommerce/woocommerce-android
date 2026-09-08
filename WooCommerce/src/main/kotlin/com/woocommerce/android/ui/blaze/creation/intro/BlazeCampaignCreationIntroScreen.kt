@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.blaze.creation.intro
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -80,12 +81,14 @@ fun BlazeCampaignCreationIntroScreen(
     val modalSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onDismissClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         },
     ) { paddingValues ->
@@ -95,6 +98,7 @@ fun BlazeCampaignCreationIntroScreen(
                 showBottomSheet = true
                 onLearnMoreClick()
             },
+            scrollState = scrollState,
             modifier = Modifier
                 .padding(paddingValues)
                 .background(MaterialTheme.colors.surface)
@@ -121,6 +125,7 @@ fun BlazeCampaignCreationIntroScreen(
 private fun BlazeCampaignCreationIntroContent(
     onContinueClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -134,7 +139,7 @@ private fun BlazeCampaignCreationIntroContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Row(

@@ -66,11 +66,13 @@ fun WPComLoginPasswordScreen(
         R.string.login_jetpack_install
     }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -79,7 +81,7 @@ fun WPComLoginPasswordScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
         ) {
             Column(
                 modifier = Modifier

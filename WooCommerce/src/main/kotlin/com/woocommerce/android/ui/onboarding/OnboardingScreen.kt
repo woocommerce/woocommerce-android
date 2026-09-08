@@ -63,15 +63,16 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.Onboarding
 @Composable
 fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
     viewModel.viewState.observeAsState().value?.let { onboardingState ->
+        val scrollState = rememberScrollState()
         Scaffold(topBar = {
-            Toolbar(onNavigationButtonClick = viewModel::onBackPressed)
+            Toolbar(onNavigationButtonClick = viewModel::onBackPressed, showDivider = scrollState.canScrollBackward)
         }) { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .background(MaterialTheme.colors.surface)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(
                         top = dimensionResource(id = dimen.major_100),
                         bottom = dimensionResource(id = dimen.major_100)

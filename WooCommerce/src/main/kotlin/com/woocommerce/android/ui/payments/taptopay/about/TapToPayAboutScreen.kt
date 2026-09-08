@@ -49,11 +49,13 @@ fun TapToPayAboutScreen(
     onBackClick: () -> Unit,
     state: TapToPayAboutViewModel.UiState,
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.card_reader_tap_to_pay_about_title),
                 onNavigationButtonClick = onBackClick,
+                showDivider = scrollState.canScrollBackward,
             )
         },
         content = { paddingValues ->
@@ -62,7 +64,7 @@ fun TapToPayAboutScreen(
                     .background(MaterialTheme.colors.surface)
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.size(16.dp))
                 Text(

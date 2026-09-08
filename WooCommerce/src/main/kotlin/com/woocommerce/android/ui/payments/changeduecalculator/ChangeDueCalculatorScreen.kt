@@ -58,11 +58,13 @@ fun ChangeDueCalculatorScreen(
     onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     WooThemeWithBackground {
+        val scrollState = rememberScrollState()
         Scaffold(
             topBar = {
                 Toolbar(
                     title = uiState.title,
                     onNavigationButtonClick = onNavigateUp,
+                    showDivider = scrollState.canScrollBackward,
                 )
             }
         ) { paddingValues ->
@@ -74,7 +76,7 @@ fun ChangeDueCalculatorScreen(
                 Column(
                     modifier = Modifier
                         .padding(paddingValues)
-                        .verticalScroll(rememberScrollState())
+                        .verticalScroll(scrollState)
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.Top,

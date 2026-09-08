@@ -158,6 +158,7 @@ fun WooShippingEditAddressScreen(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scrollState = rememberScrollState()
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) {
@@ -170,7 +171,8 @@ fun WooShippingEditAddressScreen(
         topBar = {
             Toolbar(
                 title = screenTitle,
-                onNavigationButtonClick = onNavigateBack
+                onNavigationButtonClick = onNavigateBack,
+                showDivider = scrollState.canScrollBackward
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -178,7 +180,7 @@ fun WooShippingEditAddressScreen(
         Column(modifier = modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(padding)
                     .padding(16.dp)
                     .weight(1f),

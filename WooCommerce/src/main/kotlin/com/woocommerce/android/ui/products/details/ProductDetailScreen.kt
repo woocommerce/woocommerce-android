@@ -80,6 +80,7 @@ fun ProductDetailScreen(
                 title = state.title,
                 state = state.topAppBar,
                 callbacks = callbacks.topAppBar,
+                showDivider = state.screen is ProductDetailScreenState.Content && contentListState.canScrollBackward,
             )
             Box(modifier = Modifier.weight(1F)) {
                 ProductDetailPageBody(
@@ -301,6 +302,7 @@ private fun ProductDetailTopAppBar(
     title: String,
     state: ProductDetailTopAppBarUiState,
     callbacks: ProductDetailTopAppBarCallbacks,
+    showDivider: Boolean,
 ) {
     val navigationIcon = when (state.navigation) {
         ProductDetailTopAppBarNavigation.BACK -> WooIcons.Regular.AngleLeft
@@ -319,6 +321,7 @@ private fun ProductDetailTopAppBar(
         onNavigationClick = callbacks.onNavigationClicked.takeIf { state.navigation != null },
         windowInsets = WindowInsets(0),
         modifier = Modifier.testTag(ProductDetailTestTags.TOP_APP_BAR),
+        showDivider = showDivider,
         actions = {
             state.primaryAction?.let { action ->
                 TextAction(

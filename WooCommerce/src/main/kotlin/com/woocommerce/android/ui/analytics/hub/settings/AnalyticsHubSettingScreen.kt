@@ -62,11 +62,13 @@ fun AnalyticsHubSettingScreen(
     onDiscardChanges: () -> Unit,
     onExplorePlugin: (String) -> Unit
 ) {
+    val listState = rememberLazyListState()
     Scaffold(topBar = {
         Toolbar(
             title = stringResource(id = R.string.customize_analytics),
             onNavigationButtonClick = onBackPressed,
             navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            showDivider = state is AnalyticsHubSettingsViewState.CardsConfiguration && listState.canScrollBackward,
             actions = {
                 TextAction(
                     text = stringResource(id = R.string.save),
@@ -83,6 +85,7 @@ fun AnalyticsHubSettingScreen(
                     onOrderChange = onOrderChange,
                     itemKey = { _, card -> card.card },
                     isItemDraggable = { it is AnalyticCardConfigurationUI.SelectableCardConfigurationUI },
+                    listState = listState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)

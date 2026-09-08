@@ -284,6 +284,7 @@ private fun LabelCreationScreenWithBottomSheet(
     onLearnMoreClicked: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val pagerScrollState = rememberScrollState()
 
     val selectedShipment = shipmentUIList[uiState.selectedIndex]
     val selectedAddress = shippingAddresses[uiState.selectedIndex]
@@ -324,7 +325,7 @@ private fun LabelCreationScreenWithBottomSheet(
         },
         sheetPeekHeight = bottomSheetPeekHeight,
         scaffoldState = scaffoldState,
-        topBar = { TopBar(screenTitle, onNavigateBack) },
+        topBar = { TopBar(screenTitle, onNavigateBack, showDivider = pagerScrollState.canScrollBackward) },
     ) { innerPadding ->
         Surface(
             modifier
@@ -398,7 +399,7 @@ private fun LabelCreationScreenWithBottomSheet(
                     state = pagerState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
+                        .verticalScroll(pagerScrollState),
                     verticalAlignment = Alignment.Top,
                 ) { page ->
                     CreateShippingCards(
@@ -523,9 +524,14 @@ private fun CreateShippingCards(
 }
 
 @Composable
-private fun TopBar(title: Int = R.string.shipping_label_create_title, onNavigateBack: () -> Unit) = Toolbar(
+private fun TopBar(
+    title: Int = R.string.shipping_label_create_title,
+    onNavigateBack: () -> Unit,
+    showDivider: Boolean = false,
+) = Toolbar(
     title = stringResource(title),
     onNavigationButtonClick = onNavigateBack,
+    showDivider = showDivider,
 )
 
 @Composable

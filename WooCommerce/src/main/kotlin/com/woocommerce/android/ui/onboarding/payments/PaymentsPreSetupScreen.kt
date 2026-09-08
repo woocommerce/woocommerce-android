@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.onboarding.payments
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,9 +39,10 @@ fun PaymentsPreSetupScreen(
     onContinueButtonClick: () -> Unit = {},
     onLearnMoreButtonClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
-            Toolbar(onNavigationButtonClick = backButtonClick)
+            Toolbar(onNavigationButtonClick = backButtonClick, showDivider = scrollState.canScrollBackward)
         },
         bottomBar = {
             PaymentsPreSetupFooter(
@@ -54,6 +56,7 @@ fun PaymentsPreSetupScreen(
             isWooPaymentsTask = isWooPaymentsTask,
             onTermsOfServiceClick = onTermsOfServiceClick,
             onPrivacyPolicyClick = onPrivacyPolicyClick,
+            scrollState = scrollState,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
@@ -67,13 +70,14 @@ private fun PaymentsPreSetupContent(
     isWooPaymentsTask: Boolean,
     onTermsOfServiceClick: () -> Unit = {},
     onPrivacyPolicyClick: () -> Unit = {},
+    scrollState: ScrollState,
     modifier: Modifier,
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_300)))
         Image(
