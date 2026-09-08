@@ -3,5 +3,5 @@
     <item
         android:color="@color/woo_ds_color_surface_on_variant_lowest"
         android:state_enabled="false" />
-    <item android:color="@color/woo_ds_color_primary" />
+    <item android:color="@color/woo_ds_color_surface_on_default" />
 </selector>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/woo_ds_toolbar_configuration_test"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/woo_ds_toolbar_medium_height"
+    app:title="XML Products"
+    app:wooToolbarConfiguration="medium"
+    app:wooToolbarSupportingText="All products"
+    app:wooToolbarTitleAlignment="center" />
