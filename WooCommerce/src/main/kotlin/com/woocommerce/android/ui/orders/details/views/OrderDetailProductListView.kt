@@ -13,12 +13,12 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductListBinding
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductItemListAdapter
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailProductListAdapter
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
@@ -33,7 +33,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     @Suppress("LongParameterList")
     fun updateProductItemsList(
         orderProductItems: List<OrderProduct>,
-        productImageMap: ProductImageMap,
+        productImageLoaderFactory: ProductImageLoader.Factory,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
         onProductMenuItemClicked: () -> Unit,
@@ -41,7 +41,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     ) {
         val adapter = OrderDetailProductItemListAdapter(
             orderProductItems,
-            productImageMap,
+            productImageLoaderFactory,
             formatCurrencyForDisplay,
             productClickListener,
             onViewAddonsClick
@@ -55,7 +55,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
     fun updateProductList(
         orderItems: List<Order.Item>,
-        productImageMap: ProductImageMap,
+        productImageLoaderFactory: ProductImageLoader.Factory,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         productClickListener: OrderProductActionListener,
         onProductMenuItemClicked: () -> Unit,
@@ -63,7 +63,7 @@ class OrderDetailProductListView @JvmOverloads constructor(
     ) {
         val adapter = OrderDetailProductListAdapter(
             orderItems,
-            productImageMap,
+            productImageLoaderFactory,
             formatCurrencyForDisplay,
             productClickListener,
             onViewAddonsClick
@@ -118,12 +118,6 @@ class OrderDetailProductListView @JvmOverloads constructor(
 
         binding.productListBtnMenu.setOnClickListener {
             popupMenu.show()
-        }
-    }
-
-    fun notifyProductChanged(remoteProductId: Long) {
-        with(binding.productListProducts.adapter as? OrderDetailProductListAdapter) {
-            this?.notifyProductChanged(remoteProductId)
         }
     }
 
