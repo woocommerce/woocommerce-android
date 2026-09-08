@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] The Top performers card on My Store no longer stays on "Unable to load data" after a retry or pull to refresh succeeds [https://github.com/woocommerce/woocommerce-android/pull/16542]
 - [*****] Updated the Stripe Terminal SDK to 5.8.0; card readers now use coarse location on Android 12+ so the app no longer requests precise location for in-person payments except on older devices [https://github.com/woocommerce/woocommerce-android/pull/16507]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
