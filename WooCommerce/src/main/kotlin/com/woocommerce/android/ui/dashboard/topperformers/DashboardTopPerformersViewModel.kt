@@ -201,13 +201,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                     is GetTopPerformers.TopPerformerResult.Error -> {
                         parentViewModel.hideRefreshingIndicator()
                         _topPerformersState.value = _topPerformersState.value?.copy(
-                            error = if (
-                                (result.exception as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND
-                            ) {
-                                ErrorType.WCAnalyticsInactive
-                            } else {
-                                ErrorType.Generic
-                            },
+                            error = result.exception.toErrorType(),
                             isLoading = false
                         )
                         trackEventForTopPerformersCard(
@@ -247,6 +241,13 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                     AnalyticData.TOP_PERFORMERS
                 ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
             }
+        }
+
+    private fun Throwable.toErrorType() =
+        if ((this as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
+            ErrorType.WCAnalyticsInactive
+        } else {
+            ErrorType.Generic
         }
 
     private fun List<TopPerformerProduct>.toTopPerformersUiList() = map { it.toTopPerformersUiModel() }
