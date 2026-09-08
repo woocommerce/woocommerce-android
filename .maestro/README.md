@@ -65,6 +65,24 @@ connected, pass `--device` so installation cannot target the wrong device.
 The selected device's primary system locale must use English (`en`, with any region). The doctor and runner fail before
 APK setup or Maestro execution when another language is primary; they do not change the device language automatically.
 
+### Which APK to run against
+
+To run the flows against the current checkout instead of the release the
+doctor installs, for example while a branch adds test tags that the last
+release does not have yet, build it and pass it in with `--apk`:
+
+```bash
+./gradlew :WooCommerce:assembleVanillaRelease
+.maestro/scripts/run-smoke-tests.sh --apk WooCommerce/build/outputs/apk/vanilla/release/WooCommerce-vanilla-release.apk
+```
+
+Only the Vanilla release variant passes the package and debuggable checks
+described above.
+
+Whenever the runner installs an APK, downloaded or passed in, it validates it
+with `aapt` first, so `aapt` has to be on `PATH` or under `build-tools` in
+`ANDROID_HOME` or `ANDROID_SDK_ROOT`.
+
 ### Store data prerequisites
 
 `orders_create` selects an existing live-store customer and edits only the customer copy attached to the order draft.
