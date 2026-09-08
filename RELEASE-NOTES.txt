@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [Internal] Removed the POS server-calculated refunds feature flag; the flow is on for every store running WooCommerce 11.1.0 or later [https://github.com/woocommerce/woocommerce-android/pull/16539]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
