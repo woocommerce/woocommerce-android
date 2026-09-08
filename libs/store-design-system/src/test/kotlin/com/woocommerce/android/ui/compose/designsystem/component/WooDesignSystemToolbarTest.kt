@@ -20,6 +20,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.SearchView
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.children
@@ -29,7 +30,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.woocommerce.android.ui.compose.designsystem.R
+import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooTypography
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -390,6 +393,14 @@ class WooDesignSystemToolbarTest {
             .isEqualTo(android.view.Gravity.CENTER_HORIZONTAL)
         assertThat(subtitleView.visibility).isEqualTo(View.VISIBLE)
         assertThat(subtitleView.top).isGreaterThan(titleView.top)
+        assertThat(subtitleView.textSize).isEqualTo(toolbar.sp(MEDIUM_SUPPORTING_TEXT_TEXT_SIZE_SP))
+        assertThat(subtitleView.lineHeight)
+            .isEqualTo(toolbar.sp(MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP).roundToInt())
+        assertThat(subtitleView.letterSpacing)
+            .isCloseTo(MEDIUM_SUPPORTING_TEXT_LETTER_SPACING_EM, within(LETTER_SPACING_TOLERANCE))
+        assertThat(subtitleView.currentTextColor)
+            .isEqualTo(ContextCompat.getColor(toolbar.context, R.color.woo_ds_color_surface_on_variant))
+        assertThat(subtitleView.includeFontPadding).isFalse()
     }
 
     @Test
@@ -402,7 +413,14 @@ class WooDesignSystemToolbarTest {
             .isEqualTo(scenario.toolbar.resources.getDimensionPixelSize(R.dimen.woo_ds_toolbar_medium_height))
         assertThat(titleView.textSize).isEqualTo(scenario.toolbar.sp(MEDIUM_TITLE_TEXT_SIZE_SP))
         assertThat(titleView.lineHeight).isEqualTo(scenario.toolbar.sp(MEDIUM_TITLE_LINE_HEIGHT_SP).roundToInt())
+        assertThat(titleView.letterSpacing)
+            .isCloseTo(MEDIUM_TITLE_LETTER_SPACING_EM, within(LETTER_SPACING_TOLERANCE))
+        assertThat(titleView.typeface?.isBold).isFalse()
+        assertThat(shadowOf(titleView.typeface).fontDescription.familyName).isEqualTo("sans-serif-medium")
         assertThat(subtitleView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(subtitleView.textSize).isEqualTo(scenario.toolbar.sp(MEDIUM_SUPPORTING_TEXT_TEXT_SIZE_SP))
+        assertThat(subtitleView.lineHeight)
+            .isEqualTo(scenario.toolbar.sp(MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP).roundToInt())
 
         scenario.scrollView.scrollTo(0, scenario.toolbar.dp(SCROLL_OFFSET_DP))
         scenario.toolbar.viewTreeObserver.dispatchOnScrollChanged()
@@ -416,7 +434,16 @@ class WooDesignSystemToolbarTest {
         assertThat(scenario.toolbar.isDividerVisible).isTrue()
         assertThat(titleView.textSize).isEqualTo(scenario.toolbar.sp(SMALL_TITLE_TEXT_SIZE_SP))
         assertThat(titleView.lineHeight).isEqualTo(scenario.toolbar.sp(SMALL_TITLE_LINE_HEIGHT_SP).roundToInt())
+        assertThat(titleView.letterSpacing)
+            .isCloseTo(SMALL_TITLE_LETTER_SPACING_EM, within(LETTER_SPACING_TOLERANCE))
+        assertThat(titleView.typeface?.isBold).isFalse()
+        assertThat(shadowOf(titleView.typeface).fontDescription.familyName).isEqualTo("sans-serif-medium")
         assertThat(subtitleView.visibility).isEqualTo(View.GONE)
+        assertThat(subtitleView.textSize).isEqualTo(scenario.toolbar.sp(SMALL_SUPPORTING_TEXT_TEXT_SIZE_SP))
+        assertThat(subtitleView.lineHeight)
+            .isEqualTo(scenario.toolbar.sp(SMALL_SUPPORTING_TEXT_LINE_HEIGHT_SP).roundToInt())
+        assertThat(subtitleView.letterSpacing)
+            .isCloseTo(SMALL_SUPPORTING_TEXT_LETTER_SPACING_EM, within(LETTER_SPACING_TOLERANCE))
 
         scenario.scrollView.scrollTo(0, 0)
         scenario.toolbar.viewTreeObserver.dispatchOnScrollChanged()
@@ -431,6 +458,9 @@ class WooDesignSystemToolbarTest {
         assertThat(titleView.textSize).isEqualTo(scenario.toolbar.sp(MEDIUM_TITLE_TEXT_SIZE_SP))
         assertThat(titleView.lineHeight).isEqualTo(scenario.toolbar.sp(MEDIUM_TITLE_LINE_HEIGHT_SP).roundToInt())
         assertThat(subtitleView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(subtitleView.textSize).isEqualTo(scenario.toolbar.sp(MEDIUM_SUPPORTING_TEXT_TEXT_SIZE_SP))
+        assertThat(subtitleView.lineHeight)
+            .isEqualTo(scenario.toolbar.sp(MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP).roundToInt())
     }
 
     @Test
@@ -1383,9 +1413,32 @@ class WooDesignSystemToolbarTest {
         const val DECORATION_PADDING_TOP_DP = 24
         const val DECORATION_INSET_DP = 16
         const val DECORATION_SCROLL_OFFSET_DP = 8
-        const val MEDIUM_TITLE_TEXT_SIZE_SP = 24
-        const val MEDIUM_TITLE_LINE_HEIGHT_SP = 32
-        const val SMALL_TITLE_TEXT_SIZE_SP = 17
-        const val SMALL_TITLE_LINE_HEIGHT_SP = 24
+        val SMALL_TITLE_STYLE = DefaultWooTypography.titleLarge.emphasized
+        val MEDIUM_TITLE_STYLE = DefaultWooTypography.headlineSmall.regular.copy(
+            fontWeight = DefaultWooTypography.titleLarge.emphasized.fontWeight,
+        )
+        val SMALL_SUPPORTING_TEXT_STYLE = DefaultWooTypography.bodySmall.regular.copy(
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+        )
+        val MEDIUM_SUPPORTING_TEXT_STYLE = DefaultWooTypography.bodyMedium.regular.copy(
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+        )
+        val MEDIUM_TITLE_TEXT_SIZE_SP = MEDIUM_TITLE_STYLE.fontSize.value.toInt()
+        val MEDIUM_TITLE_LINE_HEIGHT_SP = MEDIUM_TITLE_STYLE.lineHeight.value.toInt()
+        val MEDIUM_TITLE_LETTER_SPACING_EM = MEDIUM_TITLE_STYLE.letterSpacing.value / MEDIUM_TITLE_STYLE.fontSize.value
+        val SMALL_TITLE_TEXT_SIZE_SP = SMALL_TITLE_STYLE.fontSize.value.toInt()
+        val SMALL_TITLE_LINE_HEIGHT_SP = SMALL_TITLE_STYLE.lineHeight.value.toInt()
+        val SMALL_TITLE_LETTER_SPACING_EM = SMALL_TITLE_STYLE.letterSpacing.value / SMALL_TITLE_STYLE.fontSize.value
+        val MEDIUM_SUPPORTING_TEXT_TEXT_SIZE_SP = MEDIUM_SUPPORTING_TEXT_STYLE.fontSize.value.toInt()
+        val MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP = MEDIUM_SUPPORTING_TEXT_STYLE.lineHeight.value.toInt()
+        val MEDIUM_SUPPORTING_TEXT_LETTER_SPACING_EM = MEDIUM_SUPPORTING_TEXT_STYLE.letterSpacing.value /
+            MEDIUM_SUPPORTING_TEXT_STYLE.fontSize.value
+        val SMALL_SUPPORTING_TEXT_TEXT_SIZE_SP = SMALL_SUPPORTING_TEXT_STYLE.fontSize.value.toInt()
+        val SMALL_SUPPORTING_TEXT_LINE_HEIGHT_SP = SMALL_SUPPORTING_TEXT_STYLE.lineHeight.value.toInt()
+        val SMALL_SUPPORTING_TEXT_LETTER_SPACING_EM = SMALL_SUPPORTING_TEXT_STYLE.letterSpacing.value /
+            SMALL_SUPPORTING_TEXT_STYLE.fontSize.value
+        const val LETTER_SPACING_TOLERANCE = 0.0001f
     }
 }

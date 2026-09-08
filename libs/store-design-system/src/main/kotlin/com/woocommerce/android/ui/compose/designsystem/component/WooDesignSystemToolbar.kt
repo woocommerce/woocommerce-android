@@ -206,7 +206,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     private fun applyStaticChrome() {
         setTitleCentered(false)
         setTitleTextColor(context.color(R.color.woo_ds_color_surface_on_default))
-        setSubtitleTextColor(context.color(R.color.woo_ds_color_surface_on_default))
+        setSubtitleTextColor(context.color(R.color.woo_ds_color_surface_on_variant))
         background = context.drawable(R.drawable.woo_ds_toolbar_background)
         val edgeInset = context.dimensionPixelSize(R.dimen.woo_ds_toolbar_edge_padding)
         setContentInsetsAbsolute(edgeInset, edgeInset)
@@ -220,8 +220,12 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
             Configuration.SMALL -> R.style.TextAppearance_Woo_DesignSystem_ToolbarTitle
             Configuration.MEDIUM -> R.style.TextAppearance_Woo_DesignSystem_ToolbarMediumTitle
         }
+        val subtitleAppearance = when (displayConfiguration) {
+            Configuration.SMALL -> R.style.TextAppearance_Woo_DesignSystem_ToolbarSupportingText
+            Configuration.MEDIUM -> R.style.TextAppearance_Woo_DesignSystem_ToolbarMediumSupportingText
+        }
         setTitleTextAppearance(context, titleAppearance)
-        setSubtitleTextAppearance(context, R.style.TextAppearance_Woo_DesignSystem_ToolbarSupportingText)
+        setSubtitleTextAppearance(context, subtitleAppearance)
         minimumHeight = context.dimensionPixelSize(
             when (displayConfiguration) {
                 Configuration.SMALL -> R.dimen.woo_ds_toolbar_height
@@ -239,12 +243,18 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         val titleView = children.filterIsInstance<TextView>().firstOrNull { it.text == title } ?: return false
         val subtitleView = children.filterIsInstance<TextView>()
             .firstOrNull { it !== titleView && it.text == subtitle }
-        val titleLineHeight = if (displayConfiguration == Configuration.MEDIUM) {
-            MEDIUM_TITLE_LINE_HEIGHT_SP
+        val titleLineHeight: Float
+        val subtitleLineHeight: Float
+        if (displayConfiguration == Configuration.MEDIUM) {
+            titleLineHeight = MEDIUM_TITLE_LINE_HEIGHT_SP
+            subtitleLineHeight = MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP
         } else {
-            SMALL_TITLE_LINE_HEIGHT_SP
+            titleLineHeight = SMALL_TITLE_LINE_HEIGHT_SP
+            subtitleLineHeight = SMALL_SUPPORTING_TEXT_LINE_HEIGHT_SP
         }
-        return titleView.applyToolbarTextStyle(titleLineHeight) || (subtitleView?.applyToolbarTextStyle() == true)
+        val titleChanged = titleView.applyToolbarTextStyle(titleLineHeight)
+        val subtitleChanged = subtitleView?.applyToolbarTextStyle(subtitleLineHeight) == true
+        return titleChanged || subtitleChanged
     }
 
     private fun decorateRenderedMenuActions(): Boolean {
@@ -579,7 +589,9 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     private companion object {
         const val MAX_AUTO_DISCOVERY_ATTEMPTS = 5
         const val MEDIUM_TITLE_LINE_HEIGHT_SP = 32f
-        const val SMALL_TITLE_LINE_HEIGHT_SP = 24f
+        const val SMALL_TITLE_LINE_HEIGHT_SP = 28f
+        const val MEDIUM_SUPPORTING_TEXT_LINE_HEIGHT_SP = 20f
+        const val SMALL_SUPPORTING_TEXT_LINE_HEIGHT_SP = 16f
     }
 }
 

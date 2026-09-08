@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.woocommerce.android.ui.compose.designsystem.foundation.DefaultWooTypography
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -85,7 +86,12 @@ class WooTopAppBarTest {
 
         // THEN
         assertThat(height.roundToInt()).isEqualTo((SMALL_HEIGHT_DP * density).roundToInt())
-        assertThat(titleLayoutResult().layoutInput.style.fontSize).isEqualTo(20.sp)
+        val titleStyle = titleLayoutResult().layoutInput.style
+        val expectedTitleStyle = DefaultWooTypography.titleLarge.emphasized
+        assertThat(titleStyle.fontSize).isEqualTo(expectedTitleStyle.fontSize)
+        assertThat(titleStyle.lineHeight).isEqualTo(expectedTitleStyle.lineHeight)
+        assertThat(titleStyle.letterSpacing).isEqualTo(expectedTitleStyle.letterSpacing)
+        assertThat(titleStyle.fontWeight).isEqualTo(expectedTitleStyle.fontWeight)
     }
 
     @Test
@@ -94,7 +100,18 @@ class WooTopAppBarTest {
 
         assertThat(headerHeightInPixels()).isGreaterThanOrEqualTo(MEDIUM_EXPANDED_HEIGHT_DP * density)
         composeTestRule.onNodeWithText(SUPPORTING_TEXT).assertExists()
-        assertThat(titleLayoutResult().layoutInput.style.fontSize).isEqualTo(24.sp)
+        val titleStyle = titleLayoutResult().layoutInput.style
+        val expectedTitleStyle = DefaultWooTypography.headlineSmall.regular.copy(
+            fontWeight = DefaultWooTypography.titleLarge.emphasized.fontWeight,
+        )
+        assertThat(titleStyle.fontSize).isEqualTo(expectedTitleStyle.fontSize)
+        assertThat(titleStyle.lineHeight).isEqualTo(expectedTitleStyle.lineHeight)
+        assertThat(titleStyle.letterSpacing).isEqualTo(expectedTitleStyle.letterSpacing)
+        assertThat(titleStyle.fontWeight).isEqualTo(expectedTitleStyle.fontWeight)
+        val supportingTextStyle = titleLayoutResult(SUPPORTING_TEXT).layoutInput.style
+        assertThat(supportingTextStyle.fontSize).isEqualTo(14.sp)
+        assertThat(supportingTextStyle.lineHeight).isEqualTo(20.sp)
+        assertThat(supportingTextStyle.letterSpacing).isEqualTo(DefaultWooTypography.bodyMedium.regular.letterSpacing)
     }
 
     @Test
