@@ -55,6 +55,7 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
     private var scrollTarget: View? = null
     private var explicitScrollTarget: View? = null
     private var scrollTargetId = NO_ID
+
     @VisibleForTesting
     internal var autoDiscoveryFailureCount = 0
         private set
@@ -238,7 +239,11 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
         val titleView = children.filterIsInstance<TextView>().firstOrNull { it.text == title } ?: return false
         val subtitleView = children.filterIsInstance<TextView>()
             .firstOrNull { it !== titleView && it.text == subtitle }
-        val titleLineHeight = if (displayConfiguration == Configuration.MEDIUM) 32f else 24f
+        val titleLineHeight = if (displayConfiguration == Configuration.MEDIUM) {
+            MEDIUM_TITLE_LINE_HEIGHT_SP
+        } else {
+            SMALL_TITLE_LINE_HEIGHT_SP
+        }
         return titleView.applyToolbarTextStyle(titleLineHeight) || (subtitleView?.applyToolbarTextStyle() == true)
     }
 
@@ -573,6 +578,8 @@ class WooDesignSystemToolbar @JvmOverloads constructor(
 
     private companion object {
         const val MAX_AUTO_DISCOVERY_ATTEMPTS = 5
+        const val MEDIUM_TITLE_LINE_HEIGHT_SP = 32f
+        const val SMALL_TITLE_LINE_HEIGHT_SP = 24f
     }
 }
 
