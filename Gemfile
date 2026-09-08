@@ -17,7 +17,7 @@ gem 'fastlane-plugin-wpmreleasetoolkit', '~> 15.0'
 group :screenshots, optional: true do
   # Capped below 7: rmagick 7 breaks promo-screenshot generation with the
   # wpmreleasetoolkit 13.8 PromoScreenshots helper. See AINFRA-2482.
-  gem 'rmagick', '>= 4.1', '< 7'
+  gem 'rmagick', '>= 4.1', '< 8'
 end
 
 # To avoid errors like:
