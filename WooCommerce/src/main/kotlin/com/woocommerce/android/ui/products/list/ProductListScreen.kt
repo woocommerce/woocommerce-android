@@ -266,6 +266,7 @@ internal fun ProductListScreen(
                     )
                     ProductListHeaderMode.Browsing -> ProductListHeader(
                         showBarcode = state.isBarcodeScanningAvailable,
+                        showDivider = !showBrowsingControls,
                         onSearchClicked = onSearchClicked,
                         onBarcodeClicked = onBarcodeClicked,
                     )
@@ -324,12 +325,13 @@ internal fun ProductListScreen(
 @Composable
 private fun ProductListHeader(
     showBarcode: Boolean,
+    showDivider: Boolean,
     onSearchClicked: () -> Unit,
     onBarcodeClicked: () -> Unit,
 ) {
     WooTopAppBar(
         title = stringResource(R.string.products),
-        showDivider = false,
+        showDivider = showDivider,
         actions = {
             if (showBarcode) {
                 IconAction(
