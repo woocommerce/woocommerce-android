@@ -1211,7 +1211,19 @@ for repeat_index in $(seq 1 "$REPEAT"); do
     else
       PASSED=$((PASSED + 1))
       [[ -n "$first_log" ]] && rm -f "$OUTPUT_DIR/$first_log" 2>/dev/null || true
-      [[ -n "$first_media" ]] && rm -f "$OUTPUT_DIR/$first_media" 2>/dev/null || true
+      # A clean pass drops its recording but keeps the named screenshots, and
+      # the report only links what is left.
+      kept_media=""
+      if [[ -n "$first_media" ]]; then
+        IFS=',' read -r -a media_entries <<< "$first_media"
+        for media_entry in "${media_entries[@]}"; do
+          case "$media_entry" in
+            recordings/*) rm -f "$OUTPUT_DIR/$media_entry" 2>/dev/null || true ;;
+            *) kept_media="${kept_media:+$kept_media,}$media_entry" ;;
+          esac
+        done
+      fi
+      media="$kept_media"
     fi
 
     RESULTS+=("$status|$repeat_index|$base|$duration|$media|$log_rel|$error|$recovery")

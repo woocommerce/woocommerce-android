@@ -295,6 +295,9 @@ class SmokeCliContractTest(unittest.TestCase):
             "  printf '  versionName=25.4\\n  flags=[ HAS_CODE ]\\n'\n"
             "elif printf '%s\\n' \"$*\" | grep -q 'settings get global'; then\n"
             "  printf '1\\n'\n"
+            # A pull lands the recording on the host, like the real adb does.
+            "elif printf '%s\\n' \"$*\" | grep -q ' pull '; then\n"
+            "  : > \"$(printf '%s\\n' \"$*\" | awk '{print $NF}')\"\n"
             "fi\n"
         )
         adb.chmod(0o755)
@@ -723,10 +726,13 @@ class SmokeCliContractTest(unittest.TestCase):
             ["login_done.png", "login_store_ready.png"],
             sorted(path.name for path in collected),
         )
-        self.assertIn(
-            f"screenshots/{collected[0].parent.name}/",
-            (run_directory / "report.html").read_text(encoding="utf-8"),
-        )
+        report = (run_directory / "report.html").read_text(encoding="utf-8")
+        self.assertIn(f"screenshots/{collected[0].parent.name}/", report)
+
+        # A clean pass keeps the screenshots as evidence but drops the recording,
+        # and the report must not link the file it just removed.
+        self.assertEqual([], list(run_directory.glob("recordings/*.mp4")))
+        self.assertNotIn("recordings/", report)
 
 
 if __name__ == "__main__":
