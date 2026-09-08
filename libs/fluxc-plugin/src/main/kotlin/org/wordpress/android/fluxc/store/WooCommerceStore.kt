@@ -200,16 +200,19 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     suspend fun fetchSitePlugins(site: SiteModel): WooResult<List<SitePluginModel>> {
-        val result = fetchSitePluginsAndSettings(site, includeSettings = false)
+        val result = fetchInstalledPlugins(site, includeSettings = false)
         val model = result.model ?: return WooResult(result.error ?: WooError(GENERIC_ERROR, UNKNOWN))
         return WooResult(model.plugins)
     }
 
-    suspend fun fetchSitePluginsAndSettings(
+    suspend fun fetchSitePluginsAndSettings(site: SiteModel): WooResult<SitePluginsAndFeatures> =
+        fetchInstalledPlugins(site, includeSettings = true)
+
+    private suspend fun fetchInstalledPlugins(
         site: SiteModel,
-        includeSettings: Boolean = true
+        includeSettings: Boolean
     ): WooResult<SitePluginsAndFeatures> {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchSitePluginsAndSettings") {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchInstalledPlugins") {
             val response = systemRestClient.fetchInstalledPlugins(site, includeSettings)
             return@withDefaultContext when {
                 response.isError -> {
@@ -219,7 +222,10 @@ open class WooCommerceStore @Inject internal constructor(
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
                     sitePluginDao.replaceAllSitePlugins(site.localId(), plugins)
-                    WooResult(SitePluginsAndFeatures(plugins, response.result.settings?.enabledFeatures))
+                    val enabledFeatures = response.result.settings?.enabledFeatures
+                        ?.let { EnabledFeatures.Known(it) }
+                        ?: EnabledFeatures.Unknown
+                    WooResult(SitePluginsAndFeatures(plugins, enabledFeatures))
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
@@ -227,11 +233,18 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
-    /** @param enabledFeatures null when the field was absent or not asked for; empty means none. */
     data class SitePluginsAndFeatures(
         val plugins: List<SitePluginModel>,
-        val enabledFeatures: List<String>?
+        val enabledFeatures: EnabledFeatures
     )
+
+    sealed interface EnabledFeatures {
+        /** The features the store reports as on. Empty means the store has none of them on. */
+        data class Known(val features: List<String>) : EnabledFeatures
+
+        /** The report left the field out, or it was not asked for. */
+        data object Unknown : EnabledFeatures
+    }
 
     suspend fun fetchSystemPlugins(site: SiteModel): WooResult<List<SystemPluginModel>> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSystemPlugins") {

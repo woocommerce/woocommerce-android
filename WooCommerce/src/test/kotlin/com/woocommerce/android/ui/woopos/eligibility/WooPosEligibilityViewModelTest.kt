@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy.ForceRefresh
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.IneligibleUIRetryTapped
@@ -49,7 +50,7 @@ class WooPosEligibilityViewModelTest {
     @Test
     fun `given POS is eligible on retry, when retry tapped, then navigation event is emitted`() = runTest {
         // GIVEN
-        whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.Launchable)
+        whenever(canBeLaunchedInTab(ForceRefresh)).thenReturn(WooPosLaunchability.Launchable)
         val sut = createSut()
         sut.initialize(WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable)
         val navigated = mutableListOf<Unit>()
@@ -68,7 +69,7 @@ class WooPosEligibilityViewModelTest {
     fun `given POS is ineligible on retry, should update state to Ineligible with suggestion text`() = runTest {
         // GIVEN
         val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
-        whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(
+        whenever(canBeLaunchedInTab(ForceRefresh)).thenReturn(
             WooPosLaunchability.NotLaunchable(reason)
         )
         val sut = createSut()
@@ -124,7 +125,7 @@ class WooPosEligibilityViewModelTest {
         // GIVEN
         val reason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val tracker: WooPosAnalyticsTracker = mock()
-        whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
+        whenever(canBeLaunchedInTab(ForceRefresh)).thenReturn(WooPosLaunchability.NotLaunchable(reason))
         val sut = WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             tracker,
@@ -152,7 +153,7 @@ class WooPosEligibilityViewModelTest {
         val initialReason = WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable
         val retryReason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
         val tracker: WooPosAnalyticsTracker = mock()
-        whenever(canBeLaunchedInTab(forceRefresh = true)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))
+        whenever(canBeLaunchedInTab(ForceRefresh)).thenReturn(WooPosLaunchability.NotLaunchable(retryReason))
         val sut = WooPosEligibilityViewModel(
             canBeLaunchedInTab,
             tracker,

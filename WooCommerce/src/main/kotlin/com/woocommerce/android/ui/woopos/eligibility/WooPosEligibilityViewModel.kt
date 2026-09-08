@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy
 import com.woocommerce.android.ui.woopos.tab.WooPosSupportedCountries
 import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -77,7 +78,7 @@ class WooPosEligibilityViewModel @Inject constructor(
             selectedSite.getOrNull()?.let { site ->
                 wooCommerceStore.fetchWooCommerceSite(site).model?.let { selectedSite.set(it) }
             }
-            val result = canBeLaunchedInTab(forceRefresh = true)
+            val result = canBeLaunchedInTab(WooPosLaunchabilityRefreshPolicy.ForceRefresh)
 
             when (result) {
                 is WooPosLaunchability.Launchable -> {

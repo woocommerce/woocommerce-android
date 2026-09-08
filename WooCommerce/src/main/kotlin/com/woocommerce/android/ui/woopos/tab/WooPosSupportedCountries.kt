@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.tab
 
-/** Mirrors the iOS `POSCountryCurrencyValidator`. Keep the two in sync. */
+/** The countries and currencies POS supports. iOS keeps the same table in `POSCountryCurrencyValidator`. */
 object WooPosSupportedCountries {
     private val CURRENCIES_BY_COUNTRY: Map<String, Set<String>> = mapOf(
         "US" to setOf("USD"),

@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.EnabledFeatures
 import javax.inject.Inject
 
 class WooPosIsFeatureSwitchEnabled @Inject constructor(
@@ -17,32 +18,42 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     suspend operator fun invoke(
-        forceRefresh: Boolean,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy,
         report: WooPosSystemStatusReport? = null,
     ): Result<Boolean> {
-        val site = selectedSite.getOrNull()
-            ?: return Result.failure(WooPosCouldNotDetermineValueException())
+        val site = selectedSite.getOrNull() ?: return couldNotDetermine()
 
-        report?.let { return store(site, it.enabledFeatures) }
+        if (report != null) return store(site, report.enabledFeatures)
 
-        if (!forceRefresh) {
+        storedValue(site, refreshPolicy)?.let { stored ->
+            if (refreshPolicy == WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh) {
+                appCoroutineScope.launch { store(site, loadEnabledFeatures(site)) }
+            }
+            return Result.success(stored)
+        }
+
+        return if (refreshPolicy == WooPosLaunchabilityRefreshPolicy.UseCache) {
+            couldNotDetermine()
+        } else {
+            store(site, loadEnabledFeatures(site))
+        }
+    }
+
+    private fun storedValue(site: SiteModel, refreshPolicy: WooPosLaunchabilityRefreshPolicy): Boolean? =
+        if (refreshPolicy == WooPosLaunchabilityRefreshPolicy.ForceRefresh) {
+            null
+        } else {
             appPrefs.getPOSFeatureSwitchEnabledForSite(
                 localSiteId = site.id,
                 remoteSiteId = site.siteId,
                 selfHostedSiteId = site.selfHostedSiteId
-            )?.let { stored ->
-                appCoroutineScope.launch { store(site, loadEnabledFeatures(site)) }
-                return Result.success(stored)
-            }
+            )
         }
 
-        return store(site, loadEnabledFeatures(site))
-    }
+    private fun store(site: SiteModel, enabledFeatures: EnabledFeatures): Result<Boolean> {
+        if (enabledFeatures !is EnabledFeatures.Known) return couldNotDetermine()
 
-    private fun store(site: SiteModel, enabledFeatures: List<String>?): Result<Boolean> {
-        if (enabledFeatures == null) return Result.failure(WooPosCouldNotDetermineValueException())
-
-        val isEnabled = POINT_OF_SALE_FEATURE in enabledFeatures
+        val isEnabled = POINT_OF_SALE_FEATURE in enabledFeatures.features
         appPrefs.setPOSFeatureSwitchEnabledForSite(
             localSiteId = site.id,
             remoteSiteId = site.siteId,
@@ -52,8 +63,10 @@ class WooPosIsFeatureSwitchEnabled @Inject constructor(
         return Result.success(isEnabled)
     }
 
-    private suspend fun loadEnabledFeatures(site: SiteModel): List<String>? =
-        wooCommerceStore.fetchSitePluginsAndSettings(site).model?.enabledFeatures
+    private suspend fun loadEnabledFeatures(site: SiteModel): EnabledFeatures =
+        wooCommerceStore.fetchSitePluginsAndSettings(site).model?.enabledFeatures ?: EnabledFeatures.Unknown
+
+    private fun couldNotDetermine(): Result<Boolean> = Result.failure(WooPosCouldNotDetermineValueException())
 
     private companion object {
         const val POINT_OF_SALE_FEATURE = "point_of_sale"

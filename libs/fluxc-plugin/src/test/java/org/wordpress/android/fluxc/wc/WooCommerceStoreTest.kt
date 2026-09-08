@@ -218,19 +218,29 @@ class WooCommerceStoreTest {
 
         assertThat(result.isError).isFalse
         assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
-        assertThat(result.model?.enabledFeatures).containsExactly("point_of_sale")
+        assertThat(result.model?.enabledFeatures)
+            .isEqualTo(WooCommerceStore.EnabledFeatures.Known(listOf("point_of_sale")))
         verify(restClient).fetchInstalledPlugins(site, true)
     }
 
     @Test
-    fun `given the report omits settings, when fetching plugins and settings, then features are null`() = test {
-        // Null must stay distinguishable from an empty list: the field being absent is not the same
+    fun `given the report omits settings, when fetching plugins and settings, then features are Unknown`() = test {
+        // Unknown must stay distinguishable from an empty list: the field being absent is not the same
         // as the store having no features enabled.
         whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
 
         val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
 
-        assertThat(result.model?.enabledFeatures).isNull()
+        assertThat(result.model?.enabledFeatures).isEqualTo(WooCommerceStore.EnabledFeatures.Unknown)
+    }
+
+    @Test
+    fun `when fetching plugins only, then the settings are not requested`() = test {
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        wooCommerceStore.fetchSitePlugins(site)
+
+        verify(restClient).fetchInstalledPlugins(site, false)
     }
 
     @Test

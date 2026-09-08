@@ -13,7 +13,6 @@ data class WCSystemPluginResponse(
     val plugins: List<SystemPluginModel>
         get() = activePlugins.orEmpty().map { it.copy(isActive = true) } + inactivePlugins.orEmpty()
 
-    /** @param enabledFeatures null when the report left the field out, which is not the same as off. */
     data class Settings(
         @SerializedName("enabled_features") val enabledFeatures: List<String>? = null
     )

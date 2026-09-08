@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.EnabledFeatures
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosIsFeatureSwitchEnabledTest {
@@ -55,8 +56,12 @@ class WooPosIsFeatureSwitchEnabledTest {
         )
     }
 
-    private suspend fun stubReport(enabledFeatures: List<String>?) {
-        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any(), any())).thenReturn(
+    private suspend fun stubReport(vararg enabledFeatures: String) {
+        stubReport(EnabledFeatures.Known(enabledFeatures.toList()))
+    }
+
+    private suspend fun stubReport(enabledFeatures: EnabledFeatures) {
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any())).thenReturn(
             WooResult(
                 WooCommerceStore.SitePluginsAndFeatures(
                     plugins = emptyList(),
@@ -67,7 +72,7 @@ class WooPosIsFeatureSwitchEnabledTest {
     }
 
     private suspend fun stubReportFailure() {
-        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any(), any())).thenReturn(
+        whenever(wooCommerceStore.fetchSitePluginsAndSettings(any())).thenReturn(
             WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.NETWORK_ERROR))
         )
     }
@@ -93,47 +98,47 @@ class WooPosIsFeatureSwitchEnabledTest {
 
     @Test
     fun `given point_of_sale is in enabled_features, when invoked, then returns true`() = runTest {
-        stubReport(listOf("point_of_sale", "other_feature"))
+        stubReport("point_of_sale", "other_feature")
 
-        assertThat(sut(forceRefresh = false).getOrNull()).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).getOrNull()).isTrue
     }
 
     @Test
     fun `given point_of_sale is absent from enabled_features, when invoked, then returns false`() = runTest {
-        stubReport(listOf("other_feature"))
+        stubReport("other_feature")
 
-        assertThat(sut(forceRefresh = false).getOrNull()).isFalse
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).getOrNull()).isFalse
     }
 
     @Test
     fun `given enabled_features is missing, when invoked, then the value could not be determined`() = runTest {
         // A missing field must not read as "off" — that would block every store on a shape change.
-        stubReport(null)
+        stubReport(EnabledFeatures.Unknown)
 
-        assertThat(sut(forceRefresh = false).isFailure).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).isFailure).isTrue
     }
 
     @Test
     fun `given the report request fails, when invoked, then the value could not be determined`() = runTest {
         stubReportFailure()
 
-        assertThat(sut(forceRefresh = false).isFailure).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).isFailure).isTrue
     }
 
     @Test
     fun `given no site is selected, when invoked, then the value could not be determined`() = runTest {
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
-        assertThat(sut(forceRefresh = false).isFailure).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).isFailure).isTrue
     }
 
     @Test
-    fun `given forceRefresh, when invoked, then the plugins and settings are fetched in one request`() = runTest {
-        stubReport(listOf("point_of_sale"))
+    fun `given ForceRefresh, when invoked, then the plugins and settings are fetched in one request`() = runTest {
+        stubReport("point_of_sale")
 
-        sut(forceRefresh = true)
+        sut(WooPosLaunchabilityRefreshPolicy.ForceRefresh)
 
-        verify(wooCommerceStore).fetchSitePluginsAndSettings(site, true)
+        verify(wooCommerceStore).fetchSitePluginsAndSettings(site)
     }
 
     // --- Stored value ---
@@ -141,37 +146,37 @@ class WooPosIsFeatureSwitchEnabledTest {
     @Test
     fun `given nothing is stored, when invoked, then the report is read and the value is stored`() = runTest {
         stubStoredValue(null)
-        stubReport(listOf("point_of_sale"))
+        stubReport("point_of_sale")
 
-        assertThat(sut(forceRefresh = false).getOrNull()).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).getOrNull()).isTrue
         verifyStored(true)
     }
 
     @Test
     fun `given a stored value, when invoked, then it is returned without waiting on the report`() = runTest {
         stubStoredValue(false)
-        stubReport(listOf("point_of_sale"))
+        stubReport("point_of_sale")
 
         // The stored "off" wins over the report, which says "on" — the report only updates the store.
-        assertThat(sut(forceRefresh = false).getOrNull()).isFalse
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).getOrNull()).isFalse
     }
 
     @Test
-    fun `given a stored value, when invoked, then the report is refreshed in the background`() = runTest {
+    fun `given UseCacheAndRefresh and a stored value, when invoked, then the report is refreshed after`() = runTest {
         stubStoredValue(true)
-        stubReport(listOf("other_feature"))
+        stubReport("other_feature")
 
-        sut(forceRefresh = false)
+        sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh)
 
         verifyStored(false)
     }
 
     @Test
-    fun `given forceRefresh, when invoked, then the stored value is ignored`() = runTest {
+    fun `given ForceRefresh, when invoked, then the stored value is ignored`() = runTest {
         stubStoredValue(true)
-        stubReport(listOf("other_feature"))
+        stubReport("other_feature")
 
-        assertThat(sut(forceRefresh = true).getOrNull()).isFalse
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.ForceRefresh).getOrNull()).isFalse
     }
 
     @Test
@@ -179,36 +184,63 @@ class WooPosIsFeatureSwitchEnabledTest {
         stubStoredValue(null)
         stubReportFailure()
 
-        assertThat(sut(forceRefresh = false).isFailure).isTrue
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh).isFailure).isTrue
         verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any(), any(), any())
+    }
+
+    // --- UseCache ---
+
+    @Test
+    fun `given UseCache and a stored value, when invoked, then it is returned and nothing is fetched`() = runTest {
+        stubStoredValue(true)
+
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCache).getOrNull()).isTrue
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any())
+    }
+
+    @Test
+    fun `given UseCache and nothing stored, when invoked, then it fails and nothing is fetched`() = runTest {
+        stubStoredValue(null)
+
+        assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCache).isFailure).isTrue
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any())
     }
 
     // --- Report handed over by the plugin check ---
 
     @Test
     fun `given a report from the plugin check, when invoked, then it is used without a fetch`() = runTest {
-        val result = sut(forceRefresh = true, report = WooPosSystemStatusReport(listOf("point_of_sale")))
+        val result = sut(
+            WooPosLaunchabilityRefreshPolicy.ForceRefresh,
+            report = WooPosSystemStatusReport(EnabledFeatures.Known(listOf("point_of_sale")))
+        )
 
         assertThat(result.getOrNull()).isTrue
-        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any(), any())
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any())
         verifyStored(true)
     }
 
     @Test
     fun `given a report without the switch, when invoked, then the switch is off`() = runTest {
-        val result = sut(forceRefresh = true, report = WooPosSystemStatusReport(listOf("other_feature")))
+        val result = sut(
+            WooPosLaunchabilityRefreshPolicy.ForceRefresh,
+            report = WooPosSystemStatusReport(EnabledFeatures.Known(listOf("other_feature")))
+        )
 
         assertThat(result.getOrNull()).isFalse
-        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any(), any())
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any())
     }
 
     @Test
     fun `given a report that omits the field, when invoked, then it fails and is not refetched`() = runTest {
-        val result = sut(forceRefresh = true, report = WooPosSystemStatusReport(enabledFeatures = null))
+        val result = sut(
+            WooPosLaunchabilityRefreshPolicy.ForceRefresh,
+            report = WooPosSystemStatusReport(EnabledFeatures.Unknown)
+        )
 
         // A report that answered without the field is still an answer. Asking for the same report
         // again would return the same thing, so it must not be fetched twice.
-        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any(), any())
+        verify(wooCommerceStore, never()).fetchSitePluginsAndSettings(any())
 
         assertThat(result.isFailure).isTrue
         verify(appPrefs, never()).setPOSFeatureSwitchEnabledForSite(any(), any(), any(), any())
