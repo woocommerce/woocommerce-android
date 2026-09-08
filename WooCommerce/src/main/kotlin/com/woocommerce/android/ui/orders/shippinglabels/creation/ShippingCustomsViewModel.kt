@@ -66,7 +66,7 @@ class ShippingCustomsViewModel @Inject constructor(
 
     private val args: ShippingCustomsFragmentArgs by savedStateHandle.navArgs()
 
-    private val parameters by lazy { parameterRepository.getParameters(KEY_PARAMETERS, savedState) }
+    private val parameters by lazy { parameterRepository.getParametersBlocking(KEY_PARAMETERS, savedState) }
     val weightUnit: String
         get() = parameters.weightUnit.orEmpty()
 
@@ -74,7 +74,7 @@ class ShippingCustomsViewModel @Inject constructor(
         get() = parameters.currencySymbol.orEmpty()
 
     val countries: List<Location>
-        get() = dataStore.getCountries().map { it.toAppModel() }
+        get() = dataStore.getCountriesBlocking().map { it.toAppModel() }
 
     val isEUShippingScenario
         get() = args.isEUShippingScenario

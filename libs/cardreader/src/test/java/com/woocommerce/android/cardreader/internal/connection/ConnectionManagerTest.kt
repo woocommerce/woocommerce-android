@@ -348,6 +348,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 CardReaderStatus.NotConnected(
                     errorCode = CardReaderStatus.NotConnected.ErrorCode.OTHER,
                     errorMessage = message,
+                    stripeErrorCode = "reader_software_update_failed_reader_error",
                 )
             )
         }
@@ -375,6 +376,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
                 CardReaderStatus.NotConnected(
                     errorCode = CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW,
                     errorMessage = message,
+                    stripeErrorCode = "reader_battery_critically_low",
                 )
             )
         }

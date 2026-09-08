@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 11:57:52+0000
+Translation-Revision-Date: 2026-08-27 17:58:17+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Activer les services de localisation pour voir les lecteurs de carte</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Autoriser l’accès aux services de localisation pour voir les lecteurs de carte</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Activer le Bluetooth pour voir les lecteurs de carte</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Autoriser l’accès au Bluetooth pour voir les lecteurs de carte</string>
+    <string name="woopos_card_reader_local_network_permission_message">L’autorisation d’accès au réseau local est requise pour se connecter à un téléphone utilisé comme lecteur de carte.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Autorisation d’accès au réseau local requise</string>
+    <string name="woopos_refund_error_invalid_amount">Le montant du remboursement n’est pas valide.</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">Le montant du remboursement est supérieur à ce qui reste à rembourser pour cet article.</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">Le montant du remboursement est supérieur à ce qui reste à rembourser pour cette commande.</string>
+    <string name="woopos_refund_error_order_not_refundable">Cette commande ne peut pas être remboursée.</string>
+    <string name="woopos_refund_error_item_already_refunded">Cet article a déjà été intégralement remboursé.</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">La quantité sélectionnée est supérieure à ce qui reste à rembourser.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Afficher le code à nouveau</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Percevoir en caisse</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Aucun paiement n’a été effectué en ligne. Percevez-le en caisse ou affichez le code à nouveau.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">Le client a choisi de payer en personne.</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Erreur du service de paiement. Essayez de vous reconnecter.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Activez le NFC sur le téléphone, puis réessayez.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Ce téléphone n’est pas éligible au service Tap to Pay. Essayez un autre appareil.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Cette formule contient un produit soumis à un abonnement, qui n’est pas pris en charge pour la création de commande.</string>
+    <string name="product_image_details_name_removal_blocked">L’application ne permet pas de supprimer le titre. Veuillez utiliser wp-admin pour réaliser cette action.</string>
+    <string name="product_image_details_alt_text_removal_blocked">L’application ne permet pas de supprimer le texte alternatif. Veuillez utiliser wp-admin pour réaliser cette action.</string>
+    <string name="product_image_details_name_label">Titre</string>
+    <string name="product_image_details_alt_text_label">Texte alternatif</string>
+    <string name="product_image_details_title">Détails de l’image</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Ouvrir les réglages</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">L’autorisation d’accès au réseau local est bloquée. Ouvrez les réglages et accordez l’accès au réseau local pour utiliser la fonctionnalité Tap to Pay sur ce téléphone.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Continuer</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android requiert un accès au réseau local afin que votre tablette puisse trouver ce téléphone. Aucune information ne sortira de votre réseau.</string>
+    <string name="card_reader_mode_local_network_permission_header">Autorisation d’accès au réseau local requise</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Ce téléphone n’est pas éligible au service Tap to Pay. Essayez un autre appareil.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Nous n’avons pas pu vérifier si la fonctionnalité Payer en personne est activée. Veuillez réessayer plus tard.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Désactiver</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Cette option désactive le moyen de paiement Paiement à la livraison lors de la validation de commande sur votre boutique. Les clients ne pourront donc pas sélectionner cette option.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Désactiver la fonctionnalité Payer en personne ?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Activer</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Cette option active le moyen de paiement Paiement à la livraison lors de la validation de commande sur votre boutique. Elle apparaît sous la forme « Payer en personne » et non « %1$s » auprès de la clientèle, y compris sur la page de validation de commande sur votre site Web.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Cette option active le moyen de paiement Paiement à la livraison lors de la validation de commande sur votre boutique.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Activer la fonctionnalité Payer en personne ?</string>
+    <string name="order_creation_gift_card_not_applied">Impossible d’appliquer cette carte-cadeau.</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Vous ne pouvez pas ajouter un produit variable qui n’a aucune variante.</string>
+    <string name="login_site_credentials_use_web_authorization">Essayez plutôt de vous connecter sur votre navigateur.</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Nous n’avons pas pu enregistrer les réglages de connexion de votre boutique. Veuillez réessayer.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Nous n’avons pas pu atteindre le tableau de bord WordPress à cette adresse. Veuillez la vérifier, puis réessayez.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Nous n’avons pas trouvé de page de connexion à WordPress à cette adresse. Veuillez la vérifier, puis réessayez.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Saisissez une adresse qui correspond au même site, sans modifier sa connexion sécurisée ou son port.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Saisissez une adresse Web complète, avec http:// ou https://.</string>
+    <string name="login_site_credentials_admin_url_label">Adresse du tableau de bord WordPress</string>
+    <string name="login_site_credentials_admin_url_description">Il est possible qu’une extension de sécurité ait déplacé le tableau de bord WordPress. Saisissez l’adresse que vous utilisez pour l’ouvrir.</string>
+    <string name="login_site_credentials_admin_url_title">Où se trouve le tableau de bord de votre boutique ?</string>
+    <string name="login_site_credentials_login_url_label">Adresse de connexion WordPress</string>
+    <string name="login_site_credentials_login_url_description">Il est possible qu’une extension de sécurité vous fasse utiliser une adresse de connexion à WordPress personnalisée. Saisissez l’adresse que vous utilisez pour vous connecter.</string>
+    <string name="login_site_credentials_login_url_title">Où vous connectez-vous à votre boutique ?</string>
     <string name="login_text_otp_another">Renvoyer le code par SMS</string>
     <string name="login_text_otp">Renvoyer le code par SMS</string>
     <string name="enter_verification_code_sms_generic">Nous avons envoyé un SMS. Saisissez le code de vérification du message.</string>
@@ -2262,7 +2315,6 @@ Language: fr
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossible de se connecter, car le mot de passe créé pour l’application n’est pas approuvé.</string>
     <string name="login_site_credentials_fetching_site">Récupération du site…</string>
     <string name="login_site_credentials_fetching_site_failed">Une erreur est survenue lors de la récupération de votre site Web</string>
-    <string name="login_site_credentials_use_web_authorization">Réessayer sur le tableau de bord</string>
     <string name="login_store_address">Se connecter</string>
     <string name="loading">Chargement…</string>
     <string name="upgrades_plan_ended_name">%s s’est terminé</string>
