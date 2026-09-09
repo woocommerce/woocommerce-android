@@ -108,12 +108,7 @@ class WPApiApplicationPasswordsRestClientTest {
                 """{"name":"woo-app"}""",
                 ApplicationPasswordsFetchResponse::class.java
             )
-            whenever(
-                cookieNonceAuthenticator.makeAuthenticatedWPAPIRequest<Array<ApplicationPasswordsFetchResponse>>(
-                    eq(testSite),
-                    any()
-                )
-            ).thenReturn(WPAPIResponse.Success(arrayOf(listedPassword), emptyList()))
+            givenCookieAuthReturns(WPAPIResponse.Success(arrayOf(listedPassword), emptyList()))
 
             // WHEN
             val payload = restClient.fetchApplicationPasswordUUID(testSite, "woo-app")
@@ -212,7 +207,7 @@ class WPApiApplicationPasswordsRestClientTest {
 
     private fun givenSuccessResponse(response: Any?) = givenSuccessResponses(response)
 
-    @Suppress("UNCHECKED_CAST", "SpreadOperator")
+    @Suppress("UNCHECKED_CAST")
     private fun givenSuccessResponses(vararg responses: Any?) {
         val remaining = responses.toMutableList()
         whenever(noCookieRequestQueue.add(any<WPAPIGsonRequest<Any>>())).thenAnswer { invocation ->
