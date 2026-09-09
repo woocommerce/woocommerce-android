@@ -58,7 +58,51 @@ allprojects {
     }
 }
 
+// Registers a type-resolution detekt task on a module for one variant. The rule it runs guards against
+// stringifying lambda-bearing objects, which crashes under R8 full mode via a reflective toString().
+// Any module that ships in the release build can introduce that crash, so the guard is registered on every
+// Kotlin app/library module below rather than the app alone. The variant only needs to compile (static type
+// analysis, so R8 being off in debug is irrelevant); PR runs use the debug variant, the release gate uses
+// release.
+def registerDetektWithTypeResolution = { Project targetProject, String taskName, String variantCapitalized, String variantLower ->
+    targetProject.tasks.register(taskName, Detekt) { detektTask ->
+        detektTask.description = "Runs detekt with type resolution over ${targetProject.name} main sources ($variantLower)."
+        // Only the custom type-resolution rules run here; the built-in rulesets already run in detektAll.
+        detektTask.disableDefaultRuleSets = true
+        detektTask.buildUponDefaultConfig = false
+        detektTask.ignoreFailures = false
+        detektTask.config.setFrom(targetProject.files("$rootDir/config/detekt/type-resolution.yml"))
+        // Modules split between src/main/kotlin and src/main/java for their Kotlin sources; cover both.
+        detektTask.setSource(targetProject.files("src/main/kotlin", "src/main/java"))
+        detektTask.include("**/*.kt")
+        detektTask.jvmTarget = libs.versions.java.get()
+        // Wiring through the compile task's provider gives the exact classpath the compiler used — all
+        // external deps, sibling modules such as :libs:cardreader, generated R/Hilt/KSP — and adds the
+        // task dependency automatically, so this only runs once the variant is compiled.
+        detektTask.classpath.from(
+            targetProject.tasks.named("compile${variantCapitalized}Kotlin", KotlinCompile).map { it.libraries }
+        )
+        // Add the runtime classpath too: :libs:cardreader exposes Stripe Terminal types in its API but
+        // pulls Stripe in as `implementation`, so without this, cardreader-using files get a poisoned
+        // binding context and their sites resolve to error types and are silently skipped.
+        detektTask.classpath.from(
+            targetProject.configurations.getByName("${variantLower}RuntimeClasspath").incoming.artifactView { view ->
+                view.lenient(true)
+                view.attributes { attrs ->
+                    attrs.attribute(Attribute.of("artifactType", String), "android-classes-jar")
+                }
+            }.files
+        )
+        detektTask.reports {
+            xml.required.set(true)
+            html.required.set(false)
+            txt.required.set(false)
+        }
+    }
+}
+
 subprojects {
+    def currentProject = project
     plugins.withType(com.android.build.gradle.AppPlugin) {
         android {
             lintOptions {
@@ -69,12 +113,26 @@ subprojects {
         dependencies {
             lintChecks(libs.wordpress.lint)
             lintChecks(libs.android.security.lint)
+            // Puts the CommonRules ruleset (StringifyLambdaBearingObjectRule) on this module's detekt classpath.
+            detektPlugins(project(':libs:detektrules'))
+        }
+        // App modules carry product flavors, so the type-resolution variants are flavor+buildType.
+        currentProject.afterEvaluate {
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "VanillaRelease", "vanillaRelease")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "JalapenoDebug", "jalapenoDebug")
         }
     }
     plugins.withType(com.android.build.gradle.LibraryPlugin) {
         dependencies {
             lintChecks(libs.wordpress.lint)
             lintChecks(libs.android.security.lint)
+            // Puts the CommonRules ruleset (StringifyLambdaBearingObjectRule) on this module's detekt classpath.
+            detektPlugins(project(':libs:detektrules'))
+        }
+        // Library modules have no flavors, so the variant is just the build type.
+        currentProject.afterEvaluate {
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "Release", "release")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "Debug", "debug")
         }
     }
 }

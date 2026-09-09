@@ -22,11 +22,11 @@ steps:
     command: |
       checkout_release_branch "$RELEASE_VERSION"
 
-      ./gradlew :WooCommerce:detektWithTypeResolution
+      ./gradlew detektWithTypeResolution
     priority: 1
     plugins: [$CI_TOOLKIT]
     artifact_paths:
-      - "WooCommerce/build/reports/detekt/detekt.xml"
+      - "**/build/reports/detekt/detekt.xml"
 
   # Wait for Gradle Wrapper validation and the type-resolution detekt gate before any other jobs
   - wait
