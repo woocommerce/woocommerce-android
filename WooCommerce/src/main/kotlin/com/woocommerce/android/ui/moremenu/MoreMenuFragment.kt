@@ -16,7 +16,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -76,7 +76,7 @@ class MoreMenuFragment : TopLevelFragment() {
         (requireActivity() as MainActivity).setAppBarBackgroundColor(
             DesignSystemR.color.woo_ds_color_surface_default
         )
-        return designSystemComposeView {
+        return composeView {
             MoreMenuScreen(viewModel, scrollToTopTrigger)
         }.apply {
             id = R.id.more_menu_compose_view

@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewMod
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
@@ -114,7 +114,7 @@ class DashboardFragment : TopLevelFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = designSystemComposeView {
+    ): View = composeView {
         DashboardScreen(
             viewModel = dashboardViewModel,
             mainActivityViewModel = mainActivityViewModel,

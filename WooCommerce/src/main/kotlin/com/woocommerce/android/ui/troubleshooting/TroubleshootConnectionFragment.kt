@@ -13,7 +13,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.aisupportchat.AiSupportChatActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenAiSupportChat
 import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenSupportRequest
 import com.woocommerce.android.ui.troubleshooting.TroubleshootConnectionViewModel.OpenWebView
@@ -32,7 +32,7 @@ class TroubleshootConnectionFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     TroubleshootConnectionScreen(viewModel = viewModel)
                 }
             }

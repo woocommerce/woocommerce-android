@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
@@ -34,7 +34,7 @@ class JetpackActivationWebViewFragment : BaseFragment() {
     lateinit var userAgent: UserAgent
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        composeView {
+        legacyComposeView {
             JetpackActivationWebViewScreen(
                 viewModel = viewModel,
                 authenticator = authenticator,

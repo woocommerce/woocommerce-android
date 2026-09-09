@@ -30,7 +30,7 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun QrLoginErrorScreen(
@@ -129,7 +129,7 @@ private fun Buttons(
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginErrorScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QrLoginErrorScreen(
             content = QrLoginErrorContent(
                 title = R.string.login_qr_scanner_error_token_title,

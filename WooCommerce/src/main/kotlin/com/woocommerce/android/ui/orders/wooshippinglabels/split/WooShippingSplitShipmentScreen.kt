@@ -59,7 +59,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.ExpandableSelectableShippingProduct
 import com.woocommerce.android.ui.orders.wooshippinglabels.ProductsSummary
 import com.woocommerce.android.ui.orders.wooshippinglabels.SelectableShippingProduct
@@ -606,7 +606,7 @@ private fun LoadingScreen() {
 
 @Preview
 @Composable
-private fun WooShippingSplitShipmentScreenPreview() = WooThemeWithBackground {
+private fun WooShippingSplitShipmentScreenPreview() = LegacyWooThemeWithBackground {
     WooShippingSplitShipmentScreen(
         viewState = SplitShipmentViewState.DataState(
             shipmentSelected = 0,

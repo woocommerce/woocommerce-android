@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState
 import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.HasPlan
@@ -151,7 +151,7 @@ fun PlanSubscriptionScreen(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialInProgress() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(
             state = TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
             {}
@@ -164,7 +164,7 @@ private fun TrialInProgress() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TrialEnded() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(
             state = TrialEnded("Trial ended"),
             {}
@@ -177,7 +177,7 @@ private fun TrialEnded() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun NonUpgradeable() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(
             state = NonUpgradeable("eCommerce", "March 2, 2023"),
             {}
@@ -190,7 +190,7 @@ private fun NonUpgradeable() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PlanEnded() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(state = PlanEnded("eCommerce ended"), {})
     }
 }
@@ -200,7 +200,7 @@ private fun PlanEnded() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Loading() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(state = Loading, {})
     }
 }
@@ -210,7 +210,7 @@ private fun Loading() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun Error() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PlanSubscriptionScreen(state = Error, {})
     }
 }

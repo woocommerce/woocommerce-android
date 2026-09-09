@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
@@ -412,7 +412,7 @@ private fun ErrorContent(
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionLoadingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Loading,
             onContinueClick = {},
@@ -427,7 +427,7 @@ private fun WooPushNotificationsIntroductionLoadingPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionNotConnectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.NotConnected,
             onContinueClick = {},
@@ -442,7 +442,7 @@ private fun WooPushNotificationsIntroductionNotConnectedPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.UpdateRequired,
             onContinueClick = {},
@@ -457,7 +457,7 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionConnectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Connected,
             onContinueClick = {},
@@ -472,7 +472,7 @@ private fun WooPushNotificationsIntroductionConnectedPreview() {
 @Composable
 @Preview
 private fun WooPushNotificationsIntroductionErrorPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.GenericError,
             onContinueClick = {},

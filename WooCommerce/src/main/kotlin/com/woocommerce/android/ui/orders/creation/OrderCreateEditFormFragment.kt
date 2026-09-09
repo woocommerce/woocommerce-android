@@ -55,8 +55,8 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.FeedbackDialog
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -458,7 +458,7 @@ class OrderCreateEditFormFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 viewModel.shippingLineSection.observeAsState().value?.let { shippingLineSection ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         ShippingLineFormSection(
                             shippingLineDetails = shippingLineSection.shippingLines,
                             isEnabled = shippingLineSection.isEnabled,
@@ -480,7 +480,7 @@ class OrderCreateEditFormFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 viewModel.couponLinesLiveData.observeAsState().value?.let { couponSection ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         CouponLineFormSection(
                             couponLineDetails = couponSection.couponLines,
                             isEnabled = couponSection.isEnabled,

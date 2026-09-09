@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.DragDropState
 import com.woocommerce.android.ui.compose.DraggableItem
 import com.woocommerce.android.ui.compose.dragContainerForDragHandle
 import com.woocommerce.android.ui.compose.rememberDragDropState
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
@@ -140,7 +140,7 @@ fun <T> DragAndDropSelectableItem(
 @Preview
 @Composable
 fun DragAndDropSelectableItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         DragAndDropSelectableItem(
             item = Unit,
             isSelected = false,

@@ -17,7 +17,7 @@ The component catalog has three boundaries:
   navigation, or data semantics remain unsettled.
 
 The module must not import app `R`, legacy app theme classes, app modifiers, Hilt, feature packages,
-POS APIs, or `WooThemeWithBackground`.
+POS APIs, or `LegacyWooThemeWithBackground`.
 
 ## Figma-Backed Production API Scope
 
@@ -74,7 +74,7 @@ split module keeps the component API clean:
 - Component previews use `WooDesignSystemTheme` or `WooDesignSystemThemeWithBackground` from the
   library module.
 - The Developer Options entry hosts the same module catalog screen through app-level navigation.
-- The old `WooThemeWithBackground` legacy-compatible top-app-bar path is not ported into the module.
+- The app-owned `LegacyWooThemeWithBackground` compatibility path is not ported into the module.
 - `WooTopAppBar` is the single design-system top app bar for small, medium, and collapsible configurations.
   Material 3 owns its internal layout: small and collapsed medium content is 64dp high, and ordinary
   expanded medium content is 112dp high. Supporting text and larger fonts can increase the measured height.
@@ -121,7 +121,7 @@ Migrate app screen previews separately; do not make the library depend on app pr
 legacy app themes.
 
 Design-system component previews should wrap content in `WooDesignSystemTheme`, not
-`WooThemeWithBackground`. Migrated screen previews should cover the design-system root in light and
+`LegacyWooThemeWithBackground`. Migrated screen previews should cover the design-system root in light and
 dark mode.
 
 Preview coverage exists for the production components and for preview-only catalog samples. Screenshot

@@ -59,7 +59,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import kotlinx.coroutines.delay
 
@@ -473,7 +473,7 @@ private class ViewStatePreviewProvider : PreviewParameterProvider<JetpackActivat
 private fun JetpackActivationPreview(
     @PreviewParameter(provider = ViewStatePreviewProvider::class) state: JetpackActivationMainViewModel.ViewState
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationMainScreen(
             viewState = state
         )
@@ -519,7 +519,7 @@ private fun JetpackActivationProgressToErrorPreview() {
         state = errorState
     }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationMainScreen(
             viewState = state,
             onRetryClick = {

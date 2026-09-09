@@ -29,7 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryViewModel.UiState
 
 @Composable
@@ -151,7 +151,7 @@ fun TapToPaySummaryScreen(
 @PreviewLightDark
 @Composable
 fun TapToPaySummaryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TapToPaySummaryScreen(
             uiState = UiState(
                 isProgressVisible = false,

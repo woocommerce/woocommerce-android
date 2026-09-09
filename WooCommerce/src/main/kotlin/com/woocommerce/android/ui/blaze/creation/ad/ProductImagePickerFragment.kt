@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerViewModel.ImageSelectedResult
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -27,7 +27,7 @@ class ProductImagePickerFragment : BaseFragment() {
     val viewModel: ProductImagePickerViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             ProductImagePickerScreen(viewModel = viewModel)
         }
     }

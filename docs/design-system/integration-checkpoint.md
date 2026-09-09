@@ -7,8 +7,8 @@ is the canonical source for first-wave scope and out-of-scope child flows.
 
 Root rollout update: [rollout-direction.md](rollout-direction.md) now supersedes the older
 root/foundation-selection notes preserved below. The current direction is explicit screen migration:
-migrated screens opt into the design-system root, non-migrated screens stay on the legacy root, and
-existing `composeView {}` calls do not get root-selection indirection.
+migrated screens use `composeView {}`, non-migrated screens use `legacyComposeView {}`, and neither
+path uses root-selection indirection.
 
 ## Scope
 
@@ -28,13 +28,15 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
 
 - Use an Android Design System Adapter, not a global app rewrite.
 - Keep the adapter Store-only, with foundations and components in `:libs:store-design-system`.
-- The rollout strategy is decided. First-wave scope is Dashboard, Products, Orders, More,
-  top Product Detail, and top Order Detail.
-- Product Detail and Order Detail launched child flows are out of scope for the first wave.
+- The rollout strategy is decided. First-wave scope is Dashboard, Products, Orders, More, and top
+  Product Detail.
+- Product Detail launched child flows are out of scope for the first wave.
+- Order Detail is postponed and remains on its existing XML and legacy Compose implementation.
 - Each migrated first-wave screen should have one design-system UI implementation.
-- Migrated screens use an explicit design-system root builder during migration.
-- Non-migrated screens stay on the legacy root until the controlled rename boundary in
-  [rollout-direction.md](rollout-direction.md).
+- Migrated Fragment hosts use `composeView {}`; embedded migrated content uses
+  `setDesignSystemContent {}`.
+- Non-migrated Fragment hosts use `legacyComposeView {}` and other legacy hosts use
+  `LegacyWooThemeWithBackground {}`.
 - The XML bridge explored in earlier branches is out of scope.
 - Heavy XML screens may retain an XML shell only where needed for compatibility, with `ComposeView`
   hosting migrated sections, rows, or content areas.
@@ -106,8 +108,7 @@ Do not expand these shorthands into raw P2 or Figma URLs in public repo docs.
   component-facing accessor for theme-scoped foundation values.
 - `WooDesignSystemThemeWithBackground` uses the real design-system foundation for explicitly
   migrated screens.
-- The legacy Store theme root remains app-owned until the controlled rename boundary in
-  [rollout-direction.md](rollout-direction.md).
+- The legacy Store theme root remains app-owned as `LegacyWooThemeWithBackground`.
 - The design-system module does not read app resources directly.
 - `WooTopAppBar` in the module is design-system-only. The old root-provided legacy-compatible
   appearance from the broad branch is intentionally not part of the library.

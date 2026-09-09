@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.woocommerce.android.AppUrls.BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +22,7 @@ class BlazeCampaignSuccessBottomSheetFragment : WCBottomSheetDialogFragment() {
     lateinit var shouldShowFeedbackRequest: ShouldShowFeedbackRequest
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             BlazeCampaignSuccessBottomSheet(
                 ::onDoneClicked,
                 ::onFeedbackRequestTapped,

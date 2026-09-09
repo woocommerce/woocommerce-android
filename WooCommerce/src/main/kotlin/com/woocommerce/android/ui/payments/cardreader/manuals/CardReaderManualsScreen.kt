@@ -29,14 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun CardReaderManualsScreen(
     viewModel: CardReaderManualsViewModel,
     navController: NavController
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val listState = rememberLazyListState()
         Scaffold(
             topBar = {

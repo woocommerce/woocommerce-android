@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.Header
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import java.math.BigDecimal
@@ -118,7 +118,7 @@ fun ShippingLineDetailsCard(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ShippingLineDetailsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingLineDetailsCard(
             name = "UPS Shipping",
             method = "UPS",

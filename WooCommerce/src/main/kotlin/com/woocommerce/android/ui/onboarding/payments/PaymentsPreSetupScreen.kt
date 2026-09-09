@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun PaymentsPreSetupScreen(
@@ -164,7 +164,7 @@ private fun PaymentsPreSetupFooter(
 @Preview
 @Composable
 private fun WooPaymentsPreSetupPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsPreSetupScreen(isWooPaymentsTask = true)
     }
 }
@@ -172,7 +172,7 @@ private fun WooPaymentsPreSetupPreview() {
 @Preview
 @Composable
 private fun PaymentsPreSetupPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsPreSetupScreen(isWooPaymentsTask = false)
     }
 }

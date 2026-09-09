@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun FeedbackDialog(
@@ -125,7 +125,7 @@ fun FeedbackDialog(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun FeedbackDialogPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FeedbackDialog(
             title = "Shipping added!",
             message = "Does Woo make shipping easy?",

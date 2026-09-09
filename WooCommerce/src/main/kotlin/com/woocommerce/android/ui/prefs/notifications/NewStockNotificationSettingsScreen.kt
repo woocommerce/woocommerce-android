@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.prefs.notifications.NewStockNotificationSettingsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.notifications.compose.EnableNotificationsCard
 
@@ -287,7 +287,7 @@ private fun LowStockDetails(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewStockNotificationSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         NewStockNotificationSettingsScreen(
             viewState = ViewState(),
             sharedViewState = NotificationSettingsSharedViewModel.NewStockNotificationSettingsViewState(),

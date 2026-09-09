@@ -45,7 +45,7 @@ import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.filters.FilterHistoryViewModel.ViewState
 
 @Composable
@@ -301,7 +301,7 @@ private fun ClearHistoryConfirmationDialog(
 @LightDarkThemePreviews
 @Composable
 private fun FilterHistoryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FilterHistoryScreen(
             viewState = ViewState(
                 filters = listOf(
@@ -325,7 +325,7 @@ private fun FilterHistoryScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun FilterHistoryEmptyPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FilterHistoryScreen(
             viewState = ViewState(filters = emptyList()),
             onFilterClick = {},

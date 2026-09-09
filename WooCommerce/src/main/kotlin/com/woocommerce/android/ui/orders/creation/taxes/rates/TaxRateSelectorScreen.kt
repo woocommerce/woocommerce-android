@@ -50,7 +50,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorViewModel.ViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -411,7 +411,7 @@ fun EditTaxRatesInAdminButton(onClick: () -> Unit) {
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
+fun TaxRateSelectorScreenPreview() = LegacyWooThemeWithBackground {
     val viewState = ViewState(
         taxRates = listOf(
             TaxRateSelectorViewModel.TaxRateUiModel(
@@ -447,14 +447,14 @@ fun TaxRateSelectorScreenPreview() = WooThemeWithBackground {
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun FooterPreview() = WooThemeWithBackground {
+fun FooterPreview() = LegacyWooThemeWithBackground {
     Footer(onEditTaxRatesInAdminClicked = {})
 }
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TaxRatesPreview() = WooThemeWithBackground {
+fun TaxRatesPreview() = LegacyWooThemeWithBackground {
     val viewState = ViewState(
         isLoading = true,
         taxRates = listOf(
@@ -489,14 +489,14 @@ fun TaxRatesPreview() = WooThemeWithBackground {
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TaxRateEmptyListPreview() = WooThemeWithBackground {
+fun TaxRateEmptyListPreview() = LegacyWooThemeWithBackground {
     EmptyTaxRateSelectorList(onButtonClicked = {})
 }
 
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun BottomBarPreview() = WooThemeWithBackground {
+fun BottomBarPreview() = LegacyWooThemeWithBackground {
     val viewState = ViewState(isAutoRateEnabled = true)
     val state by remember { mutableStateOf(viewState) }
     BottomBar({}, state)

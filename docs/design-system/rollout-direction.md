@@ -1,6 +1,6 @@
 # Store Design System Rollout Direction
 
-Status: current direction as of June 23, 2026.
+Status: current direction as of September 9, 2026.
 
 This document is the canonical source for Store Management App design-system rollout scope. It
 supersedes the earlier pilot-first and open-strategy framing in the design-system docs. Branches
@@ -17,7 +17,9 @@ The first coherent wave migrates:
 - Orders tab surface.
 - More tab surface.
 - Top Product Detail surface.
-- Top Order Detail surface.
+
+The Order Detail migration originally planned for this wave is postponed. Order Detail remains on
+its existing XML and legacy Compose implementation until separately scheduled.
 
 Each migrated screen should have one design-system UI implementation. Do not keep permanent duplicate
 legacy and design-system screen trees, and do not use the XML bridge explored in earlier branches as
@@ -31,24 +33,16 @@ toolbar behavior, or existing Fragment integration.
 ## Theme Root Rollout
 
 Screen migration is explicit: migrated screens opt into the design-system root, and non-migrated
-screens stay on the legacy root. The current `composeView {}` implementation is legacy-rooted; no
-runtime root switching exists yet, so this is the root contract to build rather than a change to
-shipped behavior.
+screens stay on the legacy root. The final root API contract is:
 
-- During migration work, design-system screens should use an explicit DS-specific builder, such as
-  `designSystemComposeView {}`.
-- Existing legacy screens continue using the current legacy Compose root.
-- Do not add root-selection indirection to existing `composeView {}` calls. A screen is migrated by
-  changing its call site to the DS root builder.
+- `composeView {}` is the ergonomic default for migrated design-system Fragment hosts.
+- `setDesignSystemContent {}` configures embedded `ComposeView` hosts for migrated content.
+- `legacyComposeView {}` is explicit for non-migrated Fragment hosts.
+- `LegacyWooThemeWithBackground {}` is explicit for legacy previews and manually hosted content.
+- No compatibility alias or runtime root-selection indirection exists.
 
-Before the final merge of the migration branch, restore the ergonomic default API through a
-controlled rename boundary:
-
-- Rename the current legacy `composeView` to `legacyComposeView`.
-- Rename the current `WooThemeWithBackground` to `LegacyWooThemeWithBackground`.
-- Rename the DS-specific builder to `composeView`.
-- Audit every remaining `composeView` call as intentionally migrated.
-- Move every non-migrated screen to `legacyComposeView`.
+Every `composeView` call must therefore be an intentionally migrated host, while every non-migrated
+host remains explicit through `legacyComposeView`.
 
 Verify the rename boundary with strict `rg` audits for legacy root usage, DS root usage, and
 remaining ambiguous `composeView` call sites. Do not document a legacy-compatible design-system
@@ -70,13 +64,15 @@ editors, reviews, custom fields, and share/webview flows.
 
 ### Order Detail
 
-Order Detail is larger. The top surface is in scope, including the initial rendered detail hub:
+Order Detail is larger, and its migration is postponed from this wave. The future top-surface scope
+still includes the initial rendered detail hub:
 status, product list, totals/custom amounts, shipping lines, refunds summary, shipping label
 summary/cards, payment summary, customer summary, subscriptions, gift cards, tracking summary,
 attribution, notes summary, trash action, loading/empty states, and toolbar chrome such as
 previous/next/edit actions.
 
-Launched child flows are out of scope for this wave. Examples include shipping label
+Until that migration is scheduled, the complete Order Detail screen remains on its existing XML and
+legacy Compose roots. Its launched child flows also remain out of scope. Examples include shipping label
 creation/refund/print/customs/Woo Shipping flows, refund creation, order editing/status/address
 flows, payment and card-reader flows, add note, shipment tracking add/provider/barcode flows,
 receipt/printing, fulfillment, custom fields, AI thank-you-note, and product detail launched from
@@ -87,7 +83,7 @@ order items.
 After the first-wave screens, converge existing XML and legacy Compose foundations toward the
 design-system look for safe tokens only. This is broader visual convergence for screens that remain
 legacy; it is separate from explicit screen migration and does not require changing the root used by
-existing `composeView {}` calls.
+existing `legacyComposeView {}` calls.
 
 Allowed convergence areas:
 
@@ -148,7 +144,7 @@ This keeps the migration focused on UI consistency without forcing a full app re
 | Orders tab | In | Migrate the tab surface to design-system UI. |
 | More tab | In | Migrate the tab surface to design-system UI. |
 | Product Detail top surface | In | Migrate the top detail surface and chrome. Keep launched child/edit flows out. |
-| Order Detail top surface | In | Migrate the top detail hub and chrome. Keep launched child flows out. |
+| Order Detail top surface | Deferred | Keep the existing XML and legacy Compose implementation until separately scheduled. |
 | Product creation and AI creation | Out | Leave legacy for this wave unless separately assigned later. |
 | Product editors and selectors | Out | Leave pricing, inventory, shipping, taxonomy, linked product, variation, add-on, subscription, review, and custom-field flows legacy for this wave. |
 | Order shipping label flows | Out | Leave creation, refund, print, customs, and Woo Shipping child flows legacy for this wave. |

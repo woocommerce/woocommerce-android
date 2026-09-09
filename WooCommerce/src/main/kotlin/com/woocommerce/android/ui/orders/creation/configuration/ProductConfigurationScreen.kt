@@ -71,7 +71,7 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 internal const val OUTLINED_BORDER_OPACITY = 0.14f
 
@@ -427,7 +427,7 @@ fun QuantityProductItem(
 @Preview
 @Composable
 fun QuantityProductItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QuantityProductItem(
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
@@ -467,7 +467,7 @@ fun OptionalProductItem(
 @Preview
 @Composable
 fun OptionalChildrenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OptionalProductItem(
             title = "This is an optional item with a very very very long title that should wrap into two columns",
             imageUrl = null,
@@ -482,7 +482,7 @@ fun OptionalChildrenPreview() {
 @Composable
 fun SelectionCheckPreview() {
     var value: Boolean by rememberSaveable { mutableStateOf(false) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SelectionCheck(
             isSelected = value,
             onSelectionChange = { newValue -> value = newValue }
@@ -521,7 +521,7 @@ fun ConfigurableListItem(
 @Preview
 @Composable
 fun ConfigurableListItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ConfigurableListItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -584,7 +584,7 @@ fun OrderProductItem(
 @Preview
 @Composable
 fun OrderProductItemWithInfoPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderProductItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -596,7 +596,7 @@ fun OrderProductItemWithInfoPreview() {
 @Preview
 @Composable
 fun OrderProductItemWithoutInfoPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         OrderProductItem(
             title = "This the product title",
             imageUrl = "not valid url",
@@ -691,7 +691,7 @@ fun Stepper(
 @Composable
 fun StepperPreview() {
     var value: Float by rememberSaveable { mutableStateOf(100f) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Stepper(
             value = value,
             onStepDown = { newValue -> value = newValue },
@@ -749,7 +749,7 @@ fun ConfigurationIssues(
 @Preview
 @Composable
 fun ConfigurationIssuesPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ConfigurationIssues(listOf("Need to select 2 items", "Caipi -> please choose product options"))
     }
 }
@@ -978,7 +978,7 @@ fun VariableSelection(
 @Preview
 @Composable
 fun VariableQuantityProductItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         VariableQuantityProductItem(
             title = "This is an item with title",
             imageUrl = null,

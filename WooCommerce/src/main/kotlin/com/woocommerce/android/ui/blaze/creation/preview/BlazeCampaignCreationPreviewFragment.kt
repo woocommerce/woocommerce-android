@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLoca
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetLocationSelectionViewModel.TargetLocationResult
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionFragment
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeCampaignTargetSelectionViewModel.TargetSelectionResult
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -43,7 +43,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
     val viewModel: BlazeCampaignCreationPreviewViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return composeView {
+        return legacyComposeView {
             BlazeCampaignCreationPreviewScreen(viewModel = viewModel)
         }
     }

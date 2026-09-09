@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +28,7 @@ fun ScanToUpdateInventoryScreen(
     onViewProductDetailsClicked: () -> Unit,
     onManualQuantityEntered: (String) -> Unit,
     onManageStockClicked: () -> Unit,
-) = WooThemeWithBackground {
+) = LegacyWooThemeWithBackground {
     BarcodeScannerScreen(
         onNewFrame = onNewFrame,
         onBindingException = onBindingException,

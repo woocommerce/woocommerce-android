@@ -32,7 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 import java.util.Date
 
@@ -131,7 +131,7 @@ fun ReviewListItem(
 @Preview(name = "Approved with product and rating", showBackground = true)
 @Composable
 private fun ReviewListItemApprovedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ReviewListItem(
             review = ProductReview(
                 remoteId = 1L,
@@ -157,7 +157,7 @@ private fun ReviewListItemApprovedPreview() {
 @Preview(name = "Pending review", showBackground = true)
 @Composable
 private fun ReviewListItemPendingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ReviewListItem(
             review = ProductReview(
                 remoteId = 2L,
@@ -183,7 +183,7 @@ private fun ReviewListItemPendingPreview() {
 @Preview(name = "Without product info", showBackground = true)
 @Composable
 private fun ReviewListItemNoProductPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ReviewListItem(
             review = ProductReview(
                 remoteId = 3L,
@@ -205,7 +205,7 @@ private fun ReviewListItemNoProductPreview() {
 @Preview(name = "No rating, no divider", showBackground = true)
 @Composable
 private fun ReviewListItemNoRatingNoDividerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ReviewListItem(
             review = ProductReview(
                 remoteId = 4L,
@@ -232,7 +232,7 @@ private fun ReviewListItemNoRatingNoDividerPreview() {
 @Preview(name = "Long review text", showBackground = true)
 @Composable
 private fun ReviewListItemLongTextPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ReviewListItem(
             review = ProductReview(
                 remoteId = 5L,
