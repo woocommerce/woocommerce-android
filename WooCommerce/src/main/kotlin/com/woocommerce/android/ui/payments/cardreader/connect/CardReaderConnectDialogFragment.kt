@@ -207,12 +207,12 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             when (event) {
                 is CheckLocationPermissions -> {
                     event.onLocationPermissionsCheckResult(
-                        WooPermissionUtils.hasFineLocationPermission(requireContext()),
-                        WooPermissionUtils.shouldShowFineLocationPermissionRationale(requireActivity())
+                        WooPermissionUtils.hasCardReaderLocationPermission(requireContext()),
+                        WooPermissionUtils.shouldShowCardReaderLocationPermissionRationale(requireActivity())
                     )
                 }
                 is RequestLocationPermissions -> {
-                    WooPermissionUtils.requestFineLocationPermission(requestPermissionLauncher)
+                    WooPermissionUtils.requestCardReaderLocationPermission(requestPermissionLauncher)
                 }
                 is OpenPermissionsSettings -> {
                     WooPermissionUtils.showAppSettings(requireContext(), openInNewStack = false)
