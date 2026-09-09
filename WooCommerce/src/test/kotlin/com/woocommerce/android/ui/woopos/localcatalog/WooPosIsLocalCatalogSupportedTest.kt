@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy.UseCache
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -34,7 +35,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
         whenever(getWooVersion()).thenReturn("10.5.0")
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(true))
-        whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(WooPosLaunchability.Launchable)
+        whenever(posCanBeLaunchedInTab.invoke(UseCache)).thenReturn(WooPosLaunchability.Launchable)
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
             wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
@@ -133,7 +134,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     @Test
     fun `given POS cannot be launched in tab, when check invoked, then returns false`() = testBlocking {
         // GIVEN
-        whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(
+        whenever(posCanBeLaunchedInTab.invoke(UseCache)).thenReturn(
             WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
             )

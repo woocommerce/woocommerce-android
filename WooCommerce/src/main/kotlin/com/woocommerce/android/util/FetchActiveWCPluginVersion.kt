@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.matches
 import javax.inject.Inject
 
 class FetchActiveWCPluginVersion @Inject constructor(
@@ -24,15 +25,6 @@ class FetchActiveWCPluginVersion @Inject constructor(
         }
     }
 
-    private fun List<SitePluginModel>?.getWooPlugin(): SitePluginModel? {
-        if (this.isNullOrEmpty()) return null
-
-        val pluginName = WooCommerceStore.WooPlugin.WOO_CORE.pluginName.substringAfterLast('/')
-
-        val activePlugin = this.firstOrNull { plugin ->
-            plugin.name.substringAfterLast('/') == (pluginName) && plugin.isActive
-        }
-
-        return activePlugin
-    }
+    private fun List<SitePluginModel>?.getWooPlugin(): SitePluginModel? =
+        this?.firstOrNull { it.matches(WooCommerceStore.WooPlugin.WOO_CORE) && it.isActive }
 }
