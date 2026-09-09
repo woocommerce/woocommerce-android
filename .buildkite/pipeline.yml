@@ -55,7 +55,7 @@ steps:
           ./gradlew detektWithTypeResolutionPR
         plugins: [$CI_TOOLKIT]
         artifact_paths:
-          - "**/build/reports/detekt/detekt.xml"
+          - "**/build/reports/detekt/detektWithTypeResolutionPR.xml"
 
       - label: "lint"
         command: .buildkite/commands/lint.sh

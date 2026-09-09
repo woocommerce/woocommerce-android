@@ -26,7 +26,7 @@ steps:
     priority: 1
     plugins: [$CI_TOOLKIT]
     artifact_paths:
-      - "**/build/reports/detekt/detekt.xml"
+      - "**/build/reports/detekt/detektWithTypeResolution.xml"
 
   # Wait for Gradle Wrapper validation and the type-resolution detekt gate before any other jobs
   - wait

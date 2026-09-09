@@ -95,6 +95,9 @@ def registerDetektWithTypeResolution = { Project targetProject, String taskName,
         )
         detektTask.reports {
             xml.required.set(true)
+            // Name the report after the task so each module's uploaded artifact says which task produced it,
+            // and the module's detekt tasks don't share one detekt.xml.
+            xml.outputLocation.set(targetProject.layout.buildDirectory.file("reports/detekt/${taskName}.xml"))
             html.required.set(false)
             txt.required.set(false)
         }
