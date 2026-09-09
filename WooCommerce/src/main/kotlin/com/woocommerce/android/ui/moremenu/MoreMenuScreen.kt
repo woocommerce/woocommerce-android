@@ -449,7 +449,11 @@ private fun MoreMenuIcon(
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
-        R.drawable.ic_more_menu_upgrades -> DesignSystemIcon(WooIcons.Regular.Bolt, modifier = modifier)
+        R.drawable.ic_more_menu_upgrades -> DesignSystemIcon(
+            icon = WooIcons.Regular.Bolt,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
         R.drawable.ic_more_menu_payments -> DesignSystemIcon(
             icon = WooIcons.Regular.CreditCard,
             tone = WooIconContainerTone.Sandstone,
