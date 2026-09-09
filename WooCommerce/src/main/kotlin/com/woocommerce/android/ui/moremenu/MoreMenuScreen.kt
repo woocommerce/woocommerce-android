@@ -360,6 +360,7 @@ private fun MoreMenuCell(
     WooCell(
         title = stringResource(item.title),
         description = stringResource(item.description),
+        descriptionColor = WooTheme.colors.surface.onVariantLowest,
         onClick = item.onClick,
         modifier = modifier
             .testTag(MoreMenuTestTags.item(item.title))

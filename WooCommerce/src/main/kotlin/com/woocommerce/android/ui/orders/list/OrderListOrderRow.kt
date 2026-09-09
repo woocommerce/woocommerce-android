@@ -89,7 +89,7 @@ internal fun OrderListOrderRow(
     val background = if (isBulkSelected || isDetailHighlighted) {
         colorResource(R.color.color_item_selected)
     } else {
-        WooTheme.colors.surface.default
+        WooTheme.colors.surface.bright
     }
 
     OrderListSwipeToComplete(

@@ -37,10 +37,10 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDefaults
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderScrollBehavior
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarDefaults
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarScrollBehavior
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarSize
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -103,15 +103,16 @@ private fun DashboardScreen(
     showJetpackBenefitsBanner: Boolean,
     onJetpackBenefitsBannerClicked: () -> Unit,
     onJetpackBenefitsBannerDismissed: () -> Unit,
-    dashboardContent: @Composable (Modifier, WooPageHeaderScrollBehavior, @Composable () -> Unit) -> Unit,
+    dashboardContent: @Composable (Modifier, WooTopAppBarScrollBehavior, @Composable () -> Unit) -> Unit,
     jitmContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scrollBehavior = WooPageHeaderDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = WooTopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(WooTheme.colors.surface.default)
             .testTag(DASHBOARD_CONTAINER_TEST_TAG),
     ) {
         DashboardHeader(
@@ -141,16 +142,17 @@ internal fun DashboardHeader(
     storeName: String,
     showShareStoreButton: Boolean,
     onShareStoreClicked: () -> Unit,
-    scrollBehavior: WooPageHeaderScrollBehavior,
+    scrollBehavior: WooTopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    WooPageHeader(
+    WooTopAppBar(
         title = storeName,
         modifier = modifier,
+        size = WooTopAppBarSize.Medium,
         scrollBehavior = scrollBehavior,
         actions = {
             if (showShareStoreButton) {
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.Share,
                     contentDescription = stringResource(R.string.share_store_button),
                     onClick = onShareStoreClicked,

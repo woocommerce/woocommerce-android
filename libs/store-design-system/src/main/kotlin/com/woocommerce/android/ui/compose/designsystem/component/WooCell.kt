@@ -35,6 +35,7 @@ internal fun WooCellContent(
     modifier: Modifier = Modifier,
     description: String? = null,
     enabled: Boolean = true,
+    descriptionColor: Color? = null,
 ) {
     val colors = WooTheme.colors
 
@@ -51,7 +52,11 @@ internal fun WooCellContent(
         if (description != null) {
             Text(
                 text = description,
-                color = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
+                color = wooCellDescriptionColor(
+                    enabled = enabled,
+                    descriptionColor = descriptionColor,
+                    colors = colors,
+                ),
                 style = WooTheme.text.bodyMedium.regular,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -79,6 +84,7 @@ fun WooCell(
     modifier: Modifier = Modifier,
     description: String? = null,
     enabled: Boolean = true,
+    descriptionColor: Color? = null,
     onClick: (() -> Unit)? = null,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -97,6 +103,7 @@ fun WooCell(
         title = title,
         description = description,
         enabled = enabled,
+        descriptionColor = descriptionColor,
         modifier = rowModifier,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
@@ -108,6 +115,7 @@ internal fun WooCellLayout(
     title: String,
     description: String?,
     enabled: Boolean,
+    descriptionColor: Color? = null,
     modifier: Modifier = Modifier,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
@@ -137,6 +145,7 @@ internal fun WooCellLayout(
             title = title,
             description = description,
             enabled = enabled,
+            descriptionColor = descriptionColor,
             modifier = Modifier.weight(1f),
         )
 
@@ -162,6 +171,16 @@ internal fun wooCellStyle(enabled: Boolean, colors: WooColors): WooCellStyle = W
     containerColor = colors.surface.bright,
     slotContentColor = if (enabled) colors.surface.onVariant else colors.surface.onVariantLowest,
 )
+
+internal fun wooCellDescriptionColor(
+    enabled: Boolean,
+    descriptionColor: Color?,
+    colors: WooColors,
+): Color = if (enabled) {
+    descriptionColor ?: colors.surface.onVariant
+} else {
+    colors.surface.onVariantLowest
+}
 
 @Suppress("UnusedPrivateMember")
 @PreviewLightDark

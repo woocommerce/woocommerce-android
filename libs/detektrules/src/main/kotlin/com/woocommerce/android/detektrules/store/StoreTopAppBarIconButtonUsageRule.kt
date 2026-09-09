@@ -22,21 +22,22 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
     override val issue = Issue(
         javaClass.simpleName,
         Severity.Style,
-        "Material IconButton must not be used directly in Store top app bar actions.",
+        "Raw icon buttons must not be used directly in Store top app bar actions.",
         Debt.FIVE_MINS
     )
 
-    private var iconButtonNames: Set<String> = emptySet()
+    private var materialIconButtonNames: Set<String> = emptySet()
+    private var wooOutlinedIconButtonNames: Set<String> = emptySet()
     private var topAppBarNames: Set<String> = emptySet()
     private var menuOwnerNames: Set<String> = emptySet()
     private var actionsScopeNames: Set<String> = emptySet()
 
     override fun visitKtFile(file: KtFile) {
-        iconButtonNames = file.importedMaterialNames(ICON_BUTTON_NAME)
-        topAppBarNames = file.importedCallableNames(TARGET_CALLABLES)
-        menuOwnerNames = file.importedMaterialNames(DROP_DOWN_MENU_NAME) +
-            file.importedCallableNames(setOf(WOO_OVERFLOW_MENU_CALLABLE))
-        actionsScopeNames = file.importedCallableNames(setOf(TOP_APP_BAR_ACTIONS_SCOPE))
+        materialIconButtonNames = file.importedMaterialIconButtonNames()
+        wooOutlinedIconButtonNames = file.importedWooOutlinedIconButtonNames()
+        topAppBarNames = file.importedTopAppBarNames()
+        menuOwnerNames = file.importedMenuOwnerNames()
+        actionsScopeNames = file.importedActionsScopeNames()
 
         super.visitKtFile(file)
     }
@@ -44,19 +45,28 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
     override fun visitCallExpression(expression: KtCallExpression) {
         super.visitCallExpression(expression)
 
-        if (!expression.isMaterialIconButton() || !expression.isInsideTopAppBarActions()) return
+        if (!expression.isDisallowedIconButton() || !expression.isInsideTopAppBarActions()) return
 
         report(
             CodeSmell(
                 issue,
                 Entity.from(expression),
-                "Use IconAction inside WooTopAppBar or Toolbar actions instead of Material IconButton."
+                "Use IconAction inside WooTopAppBar or Toolbar actions instead of a raw icon button."
             )
         )
     }
 
+    private fun KtCallExpression.isDisallowedIconButton(): Boolean =
+        isMaterialIconButton() || isWooOutlinedIconButton()
+
     private fun KtCallExpression.isMaterialIconButton(): Boolean =
-        matchesCallable(MATERIAL_ICON_BUTTON_CALLABLES, iconButtonNames)
+        matchesCallable(MATERIAL_ICON_BUTTON_CALLABLES, materialIconButtonNames)
+
+    private fun KtCallExpression.isWooOutlinedIconButton(): Boolean =
+        matchesCallable(
+            callables = setOf(WOO_OUTLINED_ICON_BUTTON_CALLABLE),
+            importedNames = wooOutlinedIconButtonNames,
+        )
 
     /**
      * A qualified call only matches when its receiver spells out a target package, so an unrelated
@@ -173,6 +183,12 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         return scopeNames.any { declaredType.contains("$it.(") }
     }
 
+    private fun KtFile.importedMaterialIconButtonNames(): Set<String> =
+        importedMaterialNames(ICON_BUTTON_NAME)
+
+    private fun KtFile.importedWooOutlinedIconButtonNames(): Set<String> =
+        importedCallableNames(setOf(WOO_OUTLINED_ICON_BUTTON_CALLABLE))
+
     private fun KtFile.importedMaterialNames(simpleName: String): Set<String> = buildSet {
         importDirectives.forEach { directive ->
             val path = directive.importPath?.pathStr ?: return@forEach
@@ -199,6 +215,14 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         }
     }
 
+    private fun KtFile.importedMenuOwnerNames(): Set<String> =
+        importedMaterialNames(DROP_DOWN_MENU_NAME) + importedCallableNames(setOf(WOO_OVERFLOW_MENU_CALLABLE))
+
+    private fun KtFile.importedTopAppBarNames(): Set<String> = importedCallableNames(TARGET_CALLABLES)
+
+    private fun KtFile.importedActionsScopeNames(): Set<String> =
+        importedCallableNames(setOf(TOP_APP_BAR_ACTIONS_SCOPE))
+
     private companion object {
         const val ACTIONS_ARGUMENT_NAME = "actions"
         const val CONTENT_ARGUMENT_NAME = "content"
@@ -208,6 +232,8 @@ class StoreTopAppBarIconButtonUsageRule(config: Config) : Rule(config) {
         const val MIN_POSITIONAL_ACTIONS_INDEX = 4
         const val WOO_OVERFLOW_MENU_CALLABLE =
             "com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenu"
+        const val WOO_OUTLINED_ICON_BUTTON_CALLABLE =
+            "com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton"
         const val TOP_APP_BAR_ACTIONS_SCOPE =
             "com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarActionsScope"
 

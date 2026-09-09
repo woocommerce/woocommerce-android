@@ -23,7 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalMaterial3Api::class)
-class WooPageHeaderScrollBehaviorTest {
+class WooTopAppBarScrollBehaviorTest {
     @Test
     fun `given collapsed header, when expand completes, then height and content offsets reset`() = runTest {
         // GIVEN
@@ -31,7 +31,7 @@ class WooPageHeaderScrollBehaviorTest {
         val fixture = givenBehavior(
             heightOffset = -COLLAPSE_RANGE,
             contentOffset = CONTENT_OFFSET,
-            expansionAnimator = WooPageHeaderExpansionAnimator { initialValue, onFrame ->
+            expansionAnimator = WooTopAppBarExpansionAnimator { initialValue, onFrame ->
                 initialValues += initialValue
                 onFrame(0f)
             },
@@ -54,7 +54,7 @@ class WooPageHeaderScrollBehaviorTest {
             val fixture = givenBehavior(
                 heightOffset = -PARTIAL_OFFSET,
                 contentOffset = CONTENT_OFFSET,
-                expansionAnimator = WooPageHeaderExpansionAnimator { initialValue, onFrame ->
+                expansionAnimator = WooTopAppBarExpansionAnimator { initialValue, onFrame ->
                     frames += initialValue
                     onFrame(-INTERMEDIATE_OFFSET)
                     frames += -INTERMEDIATE_OFFSET
@@ -81,7 +81,7 @@ class WooPageHeaderScrollBehaviorTest {
         val fixture = givenBehavior(
             heightOffset = -COLLAPSE_RANGE,
             contentOffset = CONTENT_OFFSET,
-            expansionAnimator = WooPageHeaderExpansionAnimator { _, onFrame ->
+            expansionAnimator = WooTopAppBarExpansionAnimator { _, onFrame ->
                 animationJobs += currentCoroutineContext()[Job] ?: error("Expansion requires a child Job")
                 invocation += 1
                 if (invocation == 1) {
@@ -338,7 +338,7 @@ class WooPageHeaderScrollBehaviorTest {
         heightOffset: Float,
         contentOffset: Float = 0f,
         delegate: NestedScrollConnection = object : NestedScrollConnection {},
-        expansionAnimator: WooPageHeaderExpansionAnimator,
+        expansionAnimator: WooTopAppBarExpansionAnimator,
     ): BehaviorFixture {
         val state = TopAppBarState(
             initialHeightOffsetLimit = -COLLAPSE_RANGE,
@@ -350,7 +350,7 @@ class WooPageHeaderScrollBehaviorTest {
             nestedScrollConnection = delegate,
         )
         return BehaviorFixture(
-            behavior = WooPageHeaderScrollBehavior(
+            behavior = WooTopAppBarScrollBehavior(
                 materialScrollBehavior = materialScrollBehavior,
                 expansionAnimator = expansionAnimator,
             ),
@@ -359,11 +359,11 @@ class WooPageHeaderScrollBehaviorTest {
     }
 
     private data class BehaviorFixture(
-        val behavior: WooPageHeaderScrollBehavior,
+        val behavior: WooTopAppBarScrollBehavior,
         val state: TopAppBarState,
     )
 
-    private class BlockingExpansionAnimator : WooPageHeaderExpansionAnimator {
+    private class BlockingExpansionAnimator : WooTopAppBarExpansionAnimator {
         val started = CompletableDeferred<Unit>()
         lateinit var job: Job
 
@@ -374,7 +374,7 @@ class WooPageHeaderScrollBehaviorTest {
         }
     }
 
-    private class CompletingExpansionAnimator : WooPageHeaderExpansionAnimator {
+    private class CompletingExpansionAnimator : WooTopAppBarExpansionAnimator {
         val started = CompletableDeferred<Unit>()
         val finish = CompletableDeferred<Unit>()
         lateinit var job: Job

@@ -122,7 +122,7 @@ The toolbar goal is a unified design-system visual look, not one mandatory imple
 - Compose-owned screens use `WooTopAppBar`.
 - The module `WooTopAppBar` is design-system-only and lives in `:libs:store-design-system`.
 - Heavy XML screens may keep XML toolbar ownership if the toolbar matches the design-system look.
-- `Widget.Woo.DesignSystem.Toolbar` is a style scaffold for colors, centered title, and insets; it is
+- `Widget.Woo.DesignSystem.Toolbar` is a style scaffold for colors, title alignment, and insets; it is
   not enough on its own for parity with the Compose top app bar.
 - XML-heavy screens that need visual parity can use `WooDesignSystemToolbar` from
   `:libs:store-design-system` for automatic design-system chrome. The library also owns

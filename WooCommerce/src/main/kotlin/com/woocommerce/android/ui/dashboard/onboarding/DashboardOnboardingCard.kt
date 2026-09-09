@@ -176,7 +176,7 @@ fun StoreOnboardingCardContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(WooTheme.colors.surface.default)
+            .background(WooTheme.colors.surface.bright)
     ) {
         @Suppress("MagicNumber")
         OnboardingCardProgressHeader(

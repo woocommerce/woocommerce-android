@@ -37,7 +37,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -48,12 +51,12 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
+import com.woocommerce.android.ui.compose.designsystem.component.WooActionChipAppearance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowDownArrowUp
@@ -234,6 +237,7 @@ internal fun ProductListScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(WooTheme.colors.surface.default)
             .testTag(ProductListTestTags.SCREEN),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -325,19 +329,19 @@ private fun ProductListHeader(
     onSearchClicked: () -> Unit,
     onBarcodeClicked: () -> Unit,
 ) {
-    WooPageHeader(
+    WooTopAppBar(
         title = stringResource(R.string.products),
         showDivider = showDivider,
         actions = {
             if (showBarcode) {
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.BarcodeScan,
                     contentDescription = stringResource(R.string.scan_barcode),
                     onClick = onBarcodeClicked,
                     modifier = Modifier.testTag(ProductListTestTags.BARCODE_ACTION),
                 )
             }
-            WooOutlinedIconButton(
+            IconAction(
                 imageVector = WooIcons.Regular.MagnifyingGlass,
                 contentDescription = stringResource(R.string.product_search_hint),
                 onClick = onSearchClicked,
@@ -412,12 +416,17 @@ private fun ProductBrowsingControls(
     onSortClicked: () -> Unit,
     onFiltersClicked: () -> Unit,
 ) {
+    val filterStateDescription = if (filterCount > 0) {
+        pluralStringResource(R.plurals.filters_applied_state_description, filterCount, filterCount)
+    } else {
+        stringResource(R.string.no_filters_applied_state_description)
+    }
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(CONTROL_RAIL_HEIGHT)
-                .background(WooTheme.colors.surface.default)
+                .background(WooTheme.colors.surface.bright)
                 .testTag(ProductListTestTags.CONTROL_RAIL)
                 .horizontalScroll(rememberScrollState())
                 .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding3),
@@ -437,12 +446,19 @@ private fun ProductBrowsingControls(
             )
             WooActionChip(
                 label = if (filterCount > 0) {
-                    stringResource(R.string.product_list_filters_count, filterCount)
+                    stringResource(R.string.product_list_filters_selected, filterCount)
                 } else {
                     stringResource(R.string.product_list_filters)
                 },
                 onClick = onFiltersClicked,
-                modifier = Modifier.testTag(ProductListTestTags.FILTERS),
+                appearance = if (filterCount > 0) {
+                    WooActionChipAppearance.Accent
+                } else {
+                    WooActionChipAppearance.Neutral
+                },
+                modifier = Modifier
+                    .testTag(ProductListTestTags.FILTERS)
+                    .semantics { stateDescription = filterStateDescription },
                 leadingIcon = {
                     ProductBrowsingControlIcon(WooIcons.Regular.BarsFilter)
                 },
@@ -460,7 +476,6 @@ private fun ProductBrowsingControlIcon(imageVector: ImageVector) {
     Icon(
         imageVector = imageVector,
         contentDescription = null,
-        modifier = Modifier.size(WooTheme.iconSize.size14),
     )
 }
 

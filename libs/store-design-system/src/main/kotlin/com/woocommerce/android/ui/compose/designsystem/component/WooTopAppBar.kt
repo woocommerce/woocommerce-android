@@ -1,99 +1,76 @@
 package com.woocommerce.android.ui.compose.designsystem.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.add
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.compose.designsystem.R
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun WooTopAppBar(
-    title: String,
-    modifier: Modifier = Modifier,
-    navigationIcon: ImageVector? = null,
-    navigationIconContentDescription: String? = null,
-    onNavigationClick: (() -> Unit)? = null,
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: List<WooTopAppBarAction> = emptyList(),
-) {
-    WooTopAppBarLayout(
-        title = { TopAppBarTitle(title) },
-        modifier = modifier,
-        navigationIcon = topAppBarNavigationIcon(
-            navigationIcon = navigationIcon,
-            navigationIconContentDescription = navigationIconContentDescription,
-            onNavigationClick = onNavigationClick,
-        ),
-        windowInsets = windowInsets,
-        actions = {
-            WooTopAppBarActions(actions)
-        },
-    )
+/** Visual size of a [WooTopAppBar]. */
+enum class WooTopAppBarSize {
+    Small,
+    Medium,
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun WooTopAppBar(
-    title: @Composable () -> Unit,
-    modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = {},
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: List<WooTopAppBarAction> = emptyList(),
-) {
-    WooTopAppBarLayout(
-        title = title,
-        modifier = modifier,
-        navigationIcon = navigationIcon,
-        windowInsets = windowInsets,
-        actions = {
-            WooTopAppBarActions(actions)
-        },
-    )
+/** Horizontal alignment of the app-bar title content. */
+enum class WooTopAppBarTitleAlignment {
+    Start,
+    Center,
 }
 
 /**
- * Prefer descriptor [WooTopAppBarAction] actions for screens that only need standard actions. Scoped [actions] are
- * an escape hatch for screens that additionally need inline custom content — a counter, a progress indicator, or a
- * menu anchored to its trigger — kept in source order alongside [WooTopAppBarActionsScope.IconAction] and
- * [WooTopAppBarActionsScope.TextAction]. The design system owns the spacing between emitted actions, so callers
- * must not wrap them in their own spacing row.
+ * Native WooCommerce top app bar.
+ *
+ * Two mutually exclusive families are available:
+ * - Fixed (this overload): the bar never collapses. Pass [showDivider] to control the bottom divider directly,
+ *   e.g. from a scroll state's `canScrollBackward`.
+ * - Collapsible: pass a required [WooTopAppBarScrollBehavior] and attach its `nestedScrollConnection` to the
+ *   container that owns the scrolling content. The divider is derived automatically from how far content has
+ *   scrolled under the bar.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,10 +81,21 @@ fun WooTopAppBar(
     navigationIconContentDescription: String? = null,
     onNavigationClick: (() -> Unit)? = null,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: @Composable WooTopAppBarActionsScope.() -> Unit,
+    size: WooTopAppBarSize = WooTopAppBarSize.Small,
+    titleAlignment: WooTopAppBarTitleAlignment = WooTopAppBarTitleAlignment.Start,
+    supportingText: String? = null,
+    showDivider: Boolean = false,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
 ) {
     WooTopAppBarLayout(
-        title = { TopAppBarTitle(title) },
+        title = {
+            TopAppBarTitle(
+                title = title,
+                supportingText = supportingText,
+                size = size,
+                titleAlignment = titleAlignment,
+            )
+        },
         modifier = modifier,
         navigationIcon = topAppBarNavigationIcon(
             navigationIcon = navigationIcon,
@@ -115,15 +103,84 @@ fun WooTopAppBar(
             onNavigationClick = onNavigationClick,
         ),
         windowInsets = windowInsets,
+        size = size,
+        titleAlignment = titleAlignment,
+        scrollBehavior = null,
+        showDivider = showDivider,
+        actions = { WooTopAppBarScopedActions(actions) },
+    )
+}
+
+/** See the fixed-family [WooTopAppBar] overload for the divider contract. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WooTopAppBar(
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = {},
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    size: WooTopAppBarSize = WooTopAppBarSize.Small,
+    titleAlignment: WooTopAppBarTitleAlignment = WooTopAppBarTitleAlignment.Start,
+    showDivider: Boolean = false,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
+) {
+    WooTopAppBarLayout(
+        title = title,
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        windowInsets = windowInsets,
+        size = size,
+        titleAlignment = titleAlignment,
+        scrollBehavior = null,
+        showDivider = showDivider,
         actions = { WooTopAppBarScopedActions(actions) },
     )
 }
 
 /**
- * Prefer descriptor actions for screens that only need standard actions. Scoped actions are an escape hatch for
- * screens that additionally need inline custom content kept in source order; the design system owns the spacing
- * between emitted actions.
+ * Collapsible [WooTopAppBar]. Attach [scrollBehavior]'s `nestedScrollConnection` to the container that owns the
+ * scrolling content; the divider is derived automatically from how far content has scrolled under the bar.
  */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WooTopAppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigationIcon: ImageVector? = null,
+    navigationIconContentDescription: String? = null,
+    onNavigationClick: (() -> Unit)? = null,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    size: WooTopAppBarSize = WooTopAppBarSize.Small,
+    titleAlignment: WooTopAppBarTitleAlignment = WooTopAppBarTitleAlignment.Start,
+    supportingText: String? = null,
+    scrollBehavior: WooTopAppBarScrollBehavior,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
+) {
+    WooTopAppBarLayout(
+        title = {
+            TopAppBarTitle(
+                title = title,
+                supportingText = supportingText,
+                size = size,
+                titleAlignment = titleAlignment,
+            )
+        },
+        modifier = modifier,
+        navigationIcon = topAppBarNavigationIcon(
+            navigationIcon = navigationIcon,
+            navigationIconContentDescription = navigationIconContentDescription,
+            onNavigationClick = onNavigationClick,
+        ),
+        windowInsets = windowInsets,
+        size = size,
+        titleAlignment = titleAlignment,
+        scrollBehavior = scrollBehavior,
+        showDivider = false,
+        actions = { WooTopAppBarScopedActions(actions) },
+    )
+}
+
+/** See the collapsible [WooTopAppBar] overload above for the divider contract. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WooTopAppBar(
@@ -131,13 +188,20 @@ fun WooTopAppBar(
     modifier: Modifier = Modifier,
     navigationIcon: @Composable () -> Unit = {},
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
-    actions: @Composable WooTopAppBarActionsScope.() -> Unit,
+    size: WooTopAppBarSize = WooTopAppBarSize.Small,
+    titleAlignment: WooTopAppBarTitleAlignment = WooTopAppBarTitleAlignment.Start,
+    scrollBehavior: WooTopAppBarScrollBehavior,
+    actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
 ) {
     WooTopAppBarLayout(
         title = title,
         modifier = modifier,
         navigationIcon = navigationIcon,
         windowInsets = windowInsets,
+        size = size,
+        titleAlignment = titleAlignment,
+        scrollBehavior = scrollBehavior,
+        showDivider = false,
         actions = { WooTopAppBarScopedActions(actions) },
     )
 }
@@ -149,56 +213,115 @@ private fun WooTopAppBarLayout(
     modifier: Modifier,
     navigationIcon: @Composable () -> Unit,
     windowInsets: WindowInsets,
+    size: WooTopAppBarSize,
+    titleAlignment: WooTopAppBarTitleAlignment,
+    scrollBehavior: WooTopAppBarScrollBehavior?,
+    showDivider: Boolean,
     actions: @Composable RowScope.() -> Unit,
 ) {
-    val edgeInset = dimensionResource(R.dimen.woo_ds_toolbar_edge_padding)
-    val addedHorizontalInset = edgeInset -
-        MATERIAL_TOP_APP_BAR_HORIZONTAL_PADDING -
-        MATERIAL_ICON_BUTTON_VISUAL_TOUCH_TARGET_PADDING
     val titleColor = WooTheme.colors.surface.onDefault
-
+    val actionColors = wooTopAppBarActionColors(WooTheme.colors)
+    val colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = WooTheme.colors.surface.bright,
+        scrolledContainerColor = WooTheme.colors.surface.bright,
+        navigationIconContentColor = titleColor,
+        titleContentColor = titleColor,
+        actionIconContentColor = actionColors.contentColor,
+    )
+    val isScrolled by remember(scrollBehavior, showDivider) {
+        derivedStateOf {
+            showDivider || (scrollBehavior?.overlappedFraction ?: 0f) > SCROLLED_FRACTION_THRESHOLD
+        }
+    }
+    val appBarTitle: @Composable () -> Unit = {
+        CompositionLocalProvider(
+            LocalContentColor provides titleColor,
+        ) {
+            ProvideTextStyle(LocalTextStyle.current.copy(fontWeight = WooTheme.text.titleLarge.emphasized.fontWeight)) {
+                title()
+            }
+        }
+    }
     Box(modifier = modifier) {
-        CenterAlignedTopAppBar(
-            title = {
-                CompositionLocalProvider(LocalContentColor provides titleColor) {
-                    ProvideTextStyle(WooTheme.text.bodyLarge.strong) {
-                        title()
-                    }
-                }
-            },
-            navigationIcon = navigationIcon,
-            actions = actions,
-            windowInsets = windowInsets.add(
-                WindowInsets(
-                    left = addedHorizontalInset,
-                    right = addedHorizontalInset,
-                ),
-            ),
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = WooTheme.colors.surface.bright,
-                navigationIconContentColor = WooTheme.colors.surface.onDefault,
-                titleContentColor = titleColor,
-                actionIconContentColor = WooTheme.colors.primary,
-            ),
-        )
-        WooDivider(modifier = Modifier.align(Alignment.BottomCenter))
+        when (size) {
+            WooTopAppBarSize.Small -> when (titleAlignment) {
+                WooTopAppBarTitleAlignment.Start -> TopAppBar(
+                    title = appBarTitle,
+                    navigationIcon = navigationIcon,
+                    actions = actions,
+                    windowInsets = windowInsets,
+                    colors = colors,
+                    scrollBehavior = scrollBehavior?.materialScrollBehaviorDelegate,
+                )
+
+                WooTopAppBarTitleAlignment.Center -> CenterAlignedTopAppBar(
+                    title = appBarTitle,
+                    navigationIcon = navigationIcon,
+                    actions = actions,
+                    windowInsets = windowInsets,
+                    colors = colors,
+                    scrollBehavior = scrollBehavior?.materialScrollBehaviorDelegate,
+                )
+            }
+
+            WooTopAppBarSize.Medium -> MediumTopAppBar(
+                title = appBarTitle,
+                navigationIcon = navigationIcon,
+                actions = actions,
+                windowInsets = windowInsets,
+                colors = colors,
+                scrollBehavior = scrollBehavior?.materialScrollBehaviorDelegate,
+            )
+        }
+        if (isScrolled) {
+            WooDivider(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .testTag(WOO_TOP_APP_BAR_DIVIDER_TEST_TAG),
+            )
+        }
     }
 }
 
 @Composable
 private fun TopAppBarTitle(
     title: String,
-    modifier: Modifier = Modifier,
+    supportingText: String?,
+    size: WooTopAppBarSize,
+    titleAlignment: WooTopAppBarTitleAlignment,
 ) {
-    Text(
-        text = title,
-        modifier = modifier,
-        color = WooTheme.colors.surface.onDefault,
-        style = WooTheme.text.bodyLarge.strong,
-        textAlign = TextAlign.Center,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
+    val textAlign = if (titleAlignment == WooTopAppBarTitleAlignment.Center) TextAlign.Center else TextAlign.Start
+    val titleModifier = if (titleAlignment == WooTopAppBarTitleAlignment.Center) {
+        Modifier.fillMaxWidth()
+    } else {
+        Modifier
+    }
+    Column(modifier = titleModifier.semantics { heading() }) {
+        Text(
+            text = title,
+            color = WooTheme.colors.surface.onDefault,
+            style = LocalTextStyle.current,
+            textAlign = textAlign,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        supportingText?.takeIf(String::isNotBlank)?.let {
+            Text(
+                text = it,
+                color = WooTheme.colors.surface.onVariant,
+                style = supportingTextStyle(size),
+                textAlign = textAlign,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+private fun supportingTextStyle(size: WooTopAppBarSize) = when (size) {
+    WooTopAppBarSize.Small -> WooTheme.text.bodySmall.regular.copy(fontSize = 12.sp, lineHeight = 16.sp)
+    WooTopAppBarSize.Medium -> WooTheme.text.bodyMedium.regular.copy(fontSize = 14.sp, lineHeight = 20.sp)
 }
 
 @Composable
@@ -207,9 +330,7 @@ private fun topAppBarNavigationIcon(
     navigationIconContentDescription: String?,
     onNavigationClick: (() -> Unit)?,
 ): @Composable () -> Unit {
-    if (navigationIcon == null) {
-        return {}
-    }
+    if (navigationIcon == null) return {}
 
     val navigationClick = requireNotNull(onNavigationClick) {
         "WooTopAppBar requires onNavigationClick when navigationIcon is set"
@@ -228,14 +349,7 @@ private fun topAppBarNavigationIcon(
     }
 }
 
-/**
- * Scope for content emitted into the [WooTopAppBar] action slot.
- *
- * The design system places emitted content in one spacing container that applies [WooTheme.spacing].space1 between
- * direct child layout bounds. For [IconAction], those are the 48dp interactive bounds around the visible 40dp
- * outline, so the visible outline gap also includes both 4dp visual insets. Conditional content that emits no child
- * adds no gap. Because the scope extends [RowScope], callers can emit arbitrary composables in source order.
- */
+/** Scope for content emitted into the [WooTopAppBar] action slot. */
 interface WooTopAppBarActionsScope : RowScope {
     @Composable
     fun IconAction(
@@ -254,10 +368,7 @@ interface WooTopAppBarActionsScope : RowScope {
         enabled: Boolean = true,
     )
 
-    /**
-     * Standard outlined ellipsis trigger anchoring a [WooOverflowMenu]. [content] receives the callback that closes
-     * the menu; invoke it before running a selected action. [modifier] applies to the trigger.
-     */
+    /** Standard ellipsis trigger anchoring a [WooOverflowMenu]. */
     @Composable
     fun OverflowAction(
         contentDescription: String,
@@ -281,12 +392,13 @@ private class WooTopAppBarActionsScopeImpl(
         require(contentDescription.isNotBlank()) {
             "WooTopAppBar icon action contentDescription must not be blank"
         }
-        WooOutlinedIconButton(
+        WooIconButton(
             imageVector = imageVector,
             contentDescription = contentDescription,
             onClick = onClick,
             modifier = modifier,
             enabled = enabled,
+            emphasis = WOO_TOP_APP_BAR_ACTION_ICON_EMPHASIS,
         )
     }
 
@@ -300,12 +412,7 @@ private class WooTopAppBarActionsScopeImpl(
         require(text.isNotBlank()) {
             "WooTopAppBar text action text must not be blank"
         }
-        WooTopAppBarTextAction(
-            text = text,
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-        )
+        WooTopAppBarTextAction(text, onClick, enabled, modifier)
     }
 
     @Composable
@@ -333,44 +440,9 @@ private class WooTopAppBarActionsScopeImpl(
 @Composable
 private fun WooTopAppBarScopedActions(actions: @Composable WooTopAppBarActionsScope.() -> Unit) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         WooTopAppBarActionsScopeImpl(this).actions()
-    }
-}
-
-@Composable
-private fun WooTopAppBarActions(actions: List<WooTopAppBarAction>) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space1),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        actions.forEach { action ->
-            RenderWooTopAppBarAction(action)
-        }
-    }
-}
-
-@Composable
-private fun RenderWooTopAppBarAction(action: WooTopAppBarAction) {
-    when (action) {
-        is WooTopAppBarAction.Icon -> {
-            WooOutlinedIconButton(
-                imageVector = action.imageVector,
-                contentDescription = action.contentDescription,
-                onClick = action.onClick,
-                enabled = action.enabled,
-            )
-        }
-
-        is WooTopAppBarAction.Text -> {
-            WooTopAppBarTextAction(
-                text = action.text,
-                onClick = action.onClick,
-                enabled = action.enabled,
-            )
-        }
     }
 }
 
@@ -381,13 +453,14 @@ private fun WooTopAppBarTextAction(
     enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val colors = wooTopAppBarActionColors(WooTheme.colors)
     TextButton(
         onClick = onClick,
         modifier = modifier.widthIn(max = ACTION_TEXT_MAX_WIDTH),
         enabled = enabled,
         colors = ButtonDefaults.textButtonColors(
-            contentColor = WooTheme.colors.primary,
-            disabledContentColor = WooTheme.colors.surface.onVariantLowest,
+            contentColor = colors.contentColor,
+            disabledContentColor = colors.disabledContentColor,
         ),
     ) {
         Text(
@@ -399,13 +472,24 @@ private fun WooTopAppBarTextAction(
     }
 }
 
+internal data class WooTopAppBarActionColors(
+    val contentColor: Color,
+    val disabledContentColor: Color,
+)
+
+internal fun wooTopAppBarActionColors(colors: WooColors): WooTopAppBarActionColors =
+    WooTopAppBarActionColors(
+        contentColor = colors.surface.onDefault,
+        disabledContentColor = colors.surface.onVariantLowest,
+    )
+
 @Composable
 private fun WooTopAppBarNavigationIcon(
     imageVector: ImageVector,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    WooOutlinedIconButton(
+    WooIconButton(
         onClick = onClick,
         contentDescription = contentDescription,
     ) {
@@ -427,11 +511,8 @@ private fun TopAppBarIcon(
         imageVector = imageVector,
         contentDescription = contentDescription,
         modifier = Modifier
-            .size(WooTheme.iconSize.size18)
-            .autoMirrorWhenNeeded(
-                imageVector = imageVector,
-                enabled = autoMirror,
-            ),
+            .size(WooTheme.iconSize.size24)
+            .autoMirrorWhenNeeded(imageVector, autoMirror),
     )
 }
 
@@ -447,9 +528,10 @@ private fun Modifier.autoMirrorWhenNeeded(
     }
 
 @Suppress("UnusedPrivateMember")
+@OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
 @Composable
-private fun WooTopAppBarDesignSystemPreview() {
+private fun WooTopAppBarSmallPreview() {
     WooDesignSystemTheme {
         WooTopAppBar(
             title = "Store settings",
@@ -457,105 +539,55 @@ private fun WooTopAppBarDesignSystemPreview() {
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
-            actions = listOf(
-                WooTopAppBarAction.Icon(
-                    imageVector = WooIcons.Regular.ArrowUpRight,
-                    contentDescription = "Open",
-                    onClick = {},
-                ),
-                WooTopAppBarAction.Text(
-                    text = "Done",
-                    onClick = {},
-                ),
-            ),
-        )
-    }
-}
-
-@Suppress("UnusedPrivateMember")
-@PreviewLightDark
-@Composable
-private fun WooTopAppBarLongTitlePreview() {
-    WooDesignSystemTheme {
-        WooTopAppBar(
-            title = "A very long top app bar title that should truncate before actions",
-            navigationIcon = WooIcons.Regular.AngleLeft,
-            navigationIconContentDescription = "Back",
-            onNavigationClick = {},
-            windowInsets = WindowInsets(0),
-            actions = listOf(
-                WooTopAppBarAction.Text(
-                    text = "Save",
-                    onClick = {},
-                ),
-                WooTopAppBarAction.Icon(
-                    imageVector = WooIcons.Regular.ArrowUpRight,
-                    contentDescription = "Open",
-                    onClick = {},
-                ),
-            ),
-        )
-    }
-}
-
-@Suppress("UnusedPrivateMember")
-@PreviewLightDark
-@Composable
-private fun WooTopAppBarLongTextActionPreview() {
-    WooDesignSystemTheme {
-        Column(modifier = Modifier.width(PREVIEW_PHONE_WIDTH)) {
-            WooTopAppBar(
-                title = "Products",
-                navigationIcon = WooIcons.Regular.AngleLeft,
-                navigationIconContentDescription = "Back",
-                onNavigationClick = {},
-                windowInsets = WindowInsets(0),
-                actions = listOf(
-                    WooTopAppBarAction.Text(
-                        text = "Complete setup changes",
-                        onClick = {},
-                    ),
-                    WooTopAppBarAction.Icon(
-                        imageVector = WooIcons.Regular.ArrowUpRight,
-                        contentDescription = "Open",
-                        onClick = {},
-                    ),
-                ),
-            )
-        }
-    }
-}
-
-@Suppress("UnusedPrivateMember")
-@PreviewLightDark
-@Composable
-private fun WooTopAppBarScopedActionsPreview() {
-    WooDesignSystemTheme {
-        WooTopAppBar(
-            title = "Product",
-            navigationIcon = WooIcons.Regular.AngleLeft,
-            navigationIconContentDescription = "Back",
-            onNavigationClick = {},
-            windowInsets = WindowInsets(0),
             actions = {
-                TextAction(
-                    text = "Save",
-                    onClick = {},
-                )
                 IconAction(
                     imageVector = WooIcons.Regular.ArrowUpRight,
                     contentDescription = "Open",
                     onClick = {},
                 )
-                OverflowAction(contentDescription = "More options") { dismiss ->
-                    WooOverflowMenuItem(text = "Duplicate", onClick = dismiss)
-                }
             },
         )
     }
 }
 
 @Suppress("UnusedPrivateMember")
+@OptIn(ExperimentalMaterial3Api::class)
+@PreviewLightDark
+@Composable
+private fun WooTopAppBarMediumPreview() {
+    WooDesignSystemTheme {
+        WooTopAppBar(
+            title = "Products",
+            supportingText = "12 products",
+            size = WooTopAppBarSize.Medium,
+            windowInsets = WindowInsets(0),
+            actions = {
+                IconAction(
+                    imageVector = WooIcons.Regular.ArrowUpRight,
+                    contentDescription = "Open",
+                    onClick = {},
+                )
+            },
+        )
+    }
+}
+
+@Suppress("UnusedPrivateMember")
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(name = "Centered", showBackground = true)
+@Composable
+private fun WooTopAppBarCenteredPreview() {
+    WooDesignSystemTheme {
+        WooTopAppBar(
+            title = "Centered title",
+            titleAlignment = WooTopAppBarTitleAlignment.Center,
+            windowInsets = WindowInsets(0),
+        )
+    }
+}
+
+@Suppress("UnusedPrivateMember")
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(name = "RTL", locale = "ar", showBackground = true)
 @Composable
 private fun WooTopAppBarRtlPreview() {
@@ -572,11 +604,8 @@ private fun WooTopAppBarRtlPreview() {
     }
 }
 
+internal const val WOO_TOP_APP_BAR_DIVIDER_TEST_TAG = "woo_top_app_bar_divider"
+
+private const val SCROLLED_FRACTION_THRESHOLD = 0.01f
 private val ACTION_TEXT_MAX_WIDTH = 136.dp
-private val PREVIEW_PHONE_WIDTH = 360.dp
-
-// Material3's top app bar adds this private slot padding internally; subtract it from our desired edge inset.
-private val MATERIAL_TOP_APP_BAR_HORIZONTAL_PADDING = 4.dp
-
-// Material3 centers the 40dp outlined icon button inside a 48dp touch target, adding another 4dp visual inset.
-private val MATERIAL_ICON_BUTTON_VISUAL_TOUCH_TARGET_PADDING = 4.dp
+internal val WOO_TOP_APP_BAR_ACTION_ICON_EMPHASIS = WooIconButtonEmphasis.Neutral

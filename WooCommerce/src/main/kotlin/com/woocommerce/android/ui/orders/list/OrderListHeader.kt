@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,27 +24,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
-import com.woocommerce.android.ui.compose.designsystem.component.WooButtonSize
+import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
+import com.woocommerce.android.ui.compose.designsystem.component.WooActionChipAppearance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
-import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.BarcodeScan
+import com.woocommerce.android.ui.compose.designsystem.icons.BarsFilter
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.MagnifyingGlass
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -112,17 +116,17 @@ private fun OrderListBrowsingHeader(
     onFiltersClicked: () -> Unit,
 ) {
     Column {
-        WooPageHeader(
+        WooTopAppBar(
             title = stringResource(R.string.orders),
             showDivider = false,
             actions = {
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.BarcodeScan,
                     contentDescription = stringResource(R.string.scan_barcode),
                     onClick = onBarcodeClicked,
                     modifier = Modifier.testTag(OrderListTestTags.BARCODE_ACTION),
                 )
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.MagnifyingGlass,
                     contentDescription = stringResource(R.string.orderlist_search_hint),
                     onClick = onSearchClicked,
@@ -285,6 +289,11 @@ private fun OrderListBrowsingControls(
     onFiltersClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val filterStateDescription = if (filterCount > 0) {
+        pluralStringResource(R.plurals.filters_applied_state_description, filterCount, filterCount)
+    } else {
+        stringResource(R.string.no_filters_applied_state_description)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -329,24 +338,39 @@ private fun OrderListBrowsingControls(
                     )
                 }
             }
-            if (filterCount > 0) {
-                WooFilledButton(
-                    text = stringResource(R.string.product_list_filters_selected, filterCount),
-                    onClick = onFiltersClicked,
-                    size = WooButtonSize.Small,
-                    modifier = Modifier.testTag(OrderListTestTags.FILTERS),
-                )
-            } else {
-                WooOutlinedButton(
-                    text = stringResource(R.string.product_list_filters),
-                    onClick = onFiltersClicked,
-                    size = WooButtonSize.Small,
-                    modifier = Modifier.testTag(OrderListTestTags.FILTERS),
-                )
-            }
+            WooActionChip(
+                label = if (filterCount > 0) {
+                    stringResource(R.string.product_list_filters_selected, filterCount)
+                } else {
+                    stringResource(R.string.product_list_filters)
+                },
+                onClick = onFiltersClicked,
+                appearance = if (filterCount > 0) {
+                    WooActionChipAppearance.Accent
+                } else {
+                    WooActionChipAppearance.Neutral
+                },
+                modifier = Modifier
+                    .testTag(OrderListTestTags.FILTERS)
+                    .semantics { stateDescription = filterStateDescription },
+                leadingIcon = {
+                    OrderFilterChipIcon(WooIcons.Regular.BarsFilter)
+                },
+                trailingIcon = {
+                    OrderFilterChipIcon(WooIcons.Regular.AngleDown)
+                },
+            )
         }
         WooDivider()
     }
+}
+
+@Composable
+private fun OrderFilterChipIcon(imageVector: ImageVector) {
+    Icon(
+        imageVector = imageVector,
+        contentDescription = null,
+    )
 }
 
 private val SELECTION_HEADER_HEIGHT = 64.dp

@@ -188,17 +188,24 @@ fun WooFilterChip(
     )
 }
 
+/** Visual emphasis only; callers provide any associated accessibility state through [Modifier.semantics]. */
+enum class WooActionChipAppearance {
+    Neutral,
+    Accent,
+}
+
 @Composable
 fun WooActionChip(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    appearance: WooActionChipAppearance = WooActionChipAppearance.Neutral,
     leadingIcon: (@Composable () -> Unit)? = null,
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val style = wooFilterChipStyle(
-        selected = false,
+        selected = appearance == WooActionChipAppearance.Accent,
         enabled = enabled,
         colors = WooTheme.colors,
         stroke = WooTheme.stroke,

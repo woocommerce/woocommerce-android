@@ -158,9 +158,10 @@ private fun OrderLazyList(
                     if (item.showDivider) {
                         WooDivider(
                             modifier = Modifier
-                                .background(WooTheme.colors.surface.default)
+                                .background(WooTheme.colors.surface.bright)
                                 .padding(start = WooTheme.padding.padding5)
-                                .testTag(OrderListTestTags.orderDivider(orderId))
+                                .testTag(OrderListTestTags.orderDivider(orderId)),
+                            color = WooTheme.colors.outlineVariant,
                         )
                     }
                 }
@@ -286,7 +287,7 @@ private fun OrderListDateSection(section: OrderListItemUiModel.DateSection) {
 
 @Composable
 private fun OrderListItemSkeleton(testTag: String) {
-    Column(modifier = Modifier.background(WooTheme.colors.surface.default)) {
+    Column(modifier = Modifier.background(WooTheme.colors.surface.bright)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -324,8 +325,10 @@ private fun OrderListItemSkeleton(testTag: String) {
         }
         WooDivider(
             modifier = Modifier
+                .background(WooTheme.colors.surface.bright)
                 .padding(start = WooTheme.padding.padding5)
-                .testTag(OrderListTestTags.SKELETON_DIVIDER)
+                .testTag(OrderListTestTags.SKELETON_DIVIDER),
+            color = WooTheme.colors.outlineVariant,
         )
     }
 }
