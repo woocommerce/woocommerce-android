@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT_SPACE
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition.RIGHT_SPACE
 import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.model.settings.SubscriptionProductCreationSettingsEntity
 import org.wordpress.android.fluxc.model.settings.WCAnalyticsOrderDateType
 import org.wordpress.android.fluxc.model.settings.WCSettingsMapper
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.persistence.SiteStorePersistence
 import org.wordpress.android.fluxc.persistence.dao.AnalyticsScheduledImportDao
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
+import org.wordpress.android.fluxc.persistence.dao.SubscriptionProductCreationSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
@@ -68,6 +70,7 @@ open class WooCommerceStore @Inject internal constructor(
     private val productSettingsDao: ProductSettingsDao,
     private val settingsDao: SettingsDao,
     private val analyticsScheduledImportDao: AnalyticsScheduledImportDao,
+    private val subscriptionProductCreationSettingsDao: SubscriptionProductCreationSettingsDao,
     private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
@@ -442,6 +445,37 @@ open class WooCommerceStore @Inject internal constructor(
             }
         }
     }
+
+    suspend fun fetchSubscriptionProductCreationSettings(
+        site: SiteModel
+    ): WooResult<SubscriptionProductCreationSettingsEntity> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSubscriptionProductCreationSettings") {
+            val response = wcCoreRestClient.fetchSiteSettingsSubscriptions(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(
+                        T.API,
+                        "Failed to fetch Woo Subscriptions settings for site ${site.siteId}"
+                    )
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    val settings = settingsMapper.mapSubscriptionProductCreationSettings(response.result, site)
+                    subscriptionProductCreationSettingsDao.insertOrUpdate(settings)
+
+                    WooResult(settings)
+                }
+
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
+    suspend fun getSubscriptionProductCreationSettings(site: SiteModel): SubscriptionProductCreationSettingsEntity? =
+        subscriptionProductCreationSettingsDao.getSettings(site.localId())
 
     suspend fun fetchTaxBasedOnSettings(site: SiteModel): WooResult<TaxBasedOnSettingEntity> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchTaxBasedOnSettings") {

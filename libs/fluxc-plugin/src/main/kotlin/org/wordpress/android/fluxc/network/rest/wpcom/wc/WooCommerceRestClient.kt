@@ -84,6 +84,16 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         return response.toWooPayload { it.toList() }
     }
 
+    suspend fun fetchSiteSettingsSubscriptions(site: SiteModel): WooPayload<List<SiteSettingsResponse>> {
+        val url = WOOCOMMERCE.settings.subscriptions.pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<SiteSettingsResponse>::class.java
+        )
+        return response.toWooPayload { it.toList() }
+    }
+
     suspend fun enableAnalytics(site: SiteModel): WooPayload<Boolean> {
         val url = WOOCOMMERCE.settings.group(ADVANCED_SETTING_GROUP).id(ANALYTICS_ENABLED_SETTING_ID).pathV3
         val param = mapOf("value" to "yes")
