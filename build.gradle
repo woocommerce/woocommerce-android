@@ -64,9 +64,9 @@ allprojects {
 // Kotlin app/library module below rather than the app alone. The variant only needs to compile (static type
 // analysis, so R8 being off in debug is irrelevant); PR runs use the debug variant, the release gate uses
 // release.
-def registerDetektWithTypeResolution = { Project targetProject, String taskName, String variantCapitalized, String variantLower ->
+def registerDetektWithTypeResolution = { Project targetProject, String taskName, String variant ->
     targetProject.tasks.register(taskName, Detekt) { detektTask ->
-        detektTask.description = "Runs detekt with type resolution over ${targetProject.name} main sources ($variantLower)."
+        detektTask.description = "Runs detekt with type resolution over ${targetProject.name} main sources ($variant)."
         // Only the custom type-resolution rules run here; the built-in rulesets already run in detektAll.
         detektTask.disableDefaultRuleSets = true
         detektTask.buildUponDefaultConfig = false
@@ -80,13 +80,13 @@ def registerDetektWithTypeResolution = { Project targetProject, String taskName,
         // external deps, sibling modules such as :libs:cardreader, generated R/Hilt/KSP — and adds the
         // task dependency automatically, so this only runs once the variant is compiled.
         detektTask.classpath.from(
-            targetProject.tasks.named("compile${variantCapitalized}Kotlin", KotlinCompile).map { it.libraries }
+            targetProject.tasks.named("compile${variant.capitalize()}Kotlin", KotlinCompile).map { it.libraries }
         )
         // Add the runtime classpath too: :libs:cardreader exposes Stripe Terminal types in its API but
         // pulls Stripe in as `implementation`, so without this, cardreader-using files get a poisoned
         // binding context and their sites resolve to error types and are silently skipped.
         detektTask.classpath.from(
-            targetProject.configurations.getByName("${variantLower}RuntimeClasspath").incoming.artifactView { view ->
+            targetProject.configurations.getByName("${variant}RuntimeClasspath").incoming.artifactView { view ->
                 view.lenient(true)
                 view.attributes { attrs ->
                     attrs.attribute(Attribute.of("artifactType", String), "android-classes-jar")
@@ -121,8 +121,8 @@ subprojects {
         }
         // App modules carry product flavors, so the type-resolution variants are flavor+buildType.
         currentProject.afterEvaluate {
-            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "VanillaRelease", "vanillaRelease")
-            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "JalapenoDebug", "jalapenoDebug")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "vanillaRelease")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "jalapenoDebug")
         }
     }
     plugins.withType(com.android.build.gradle.LibraryPlugin) {
@@ -134,8 +134,8 @@ subprojects {
         }
         // Library modules have no flavors, so the variant is just the build type.
         currentProject.afterEvaluate {
-            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "Release", "release")
-            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "Debug", "debug")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolution", "release")
+            registerDetektWithTypeResolution(currentProject, "detektWithTypeResolutionPR", "debug")
         }
     }
 }
