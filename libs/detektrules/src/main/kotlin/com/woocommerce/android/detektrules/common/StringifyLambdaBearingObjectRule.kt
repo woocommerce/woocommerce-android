@@ -14,9 +14,14 @@ import org.jetbrains.kotlin.builtins.isSuspendFunctionType
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.VariableDescriptor
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtBinaryExpression
+import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtReferenceExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateEntryWithExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
@@ -33,13 +38,21 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.error.ErrorUtils
 
 /**
- * Flags string-interpolating a whole object whose type (or, for a sealed type, any of its subclasses)
- * carries a function-type (lambda / function-reference) property.
+ * Flags stringifying a whole object whose type (or, for a sealed type, any of its subclasses) carries a
+ * function-type (lambda / function-reference) property. Covers the three common ways an object reaches its
+ * generated `toString()`: string-template interpolation (`"$x"`), an explicit `x.toString()` call, and
+ * string concatenation (`"a: " + x`).
  *
  * Why: stringifying such an object invokes its generated `toString()`, which renders the lambda through
  * `FunctionReference.toString()` -> kotlin-reflect. Under R8 full mode kotlin-reflect fails to resolve the
  * members ("no members found") and the app crashes at runtime — release builds only. Interpolate a field
  * or `x::class.simpleName` instead of the whole object.
+ *
+ * Known limitations, all deliberate:
+ * - Other paths to the same generated `toString()` are not flagged: `StringBuilder.append(x)`,
+ *   `listOf(x).joinToString()`, `String.format(...)`, or handing the object to a logger that stringifies it.
+ * - Only sealed hierarchies are walked (via [subclassTypes]); a data-class subtype of a non-sealed `open`
+ *   or `abstract` root is not discovered, since the runtime type cannot be known statically.
  */
 @RequiresTypeResolution
 class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
@@ -57,21 +70,42 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
 
         expression.entries
             .filterIsInstance<KtStringTemplateEntryWithExpression>()
-            .forEach { entry ->
-                val interpolated = entry.expression ?: return@forEach
-                val type = resolvedType(interpolated) ?: return@forEach
-                if (rendersLambdaReflectively(type, mutableSetOf())) {
-                    report(
-                        CodeSmell(
-                            issue,
-                            Entity.from(interpolated),
-                            "'${interpolated.text}' is stringified whole; its type carries a function-type " +
-                                "property, so its toString() reflects on the lambda and can crash under R8. " +
-                                "Interpolate a field or '${interpolated.text}::class.simpleName' instead."
-                        )
-                    )
-                }
-            }
+            .forEach { entry -> entry.expression?.let { reportIfRendersLambda(it) } }
+    }
+
+    // An explicit `x.toString()` reaches the same generated toString() that interpolation does.
+    override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
+        super.visitDotQualifiedExpression(expression)
+        if (bindingContext == BindingContext.EMPTY) return
+
+        val call = expression.selectorExpression as? KtCallExpression ?: return
+        if (call.calleeExpression?.text != "toString" || call.valueArguments.isNotEmpty()) return
+        reportIfRendersLambda(expression.receiverExpression)
+    }
+
+    // String concatenation (`"a: " + x`) stringifies the non-String operand through the same toString().
+    override fun visitBinaryExpression(expression: KtBinaryExpression) {
+        super.visitBinaryExpression(expression)
+        if (bindingContext == BindingContext.EMPTY) return
+
+        if (expression.operationToken != KtTokens.PLUS) return
+        if (bindingContext.getType(expression)?.let { KotlinBuiltIns.isString(it) } != true) return
+        listOfNotNull(expression.left, expression.right).forEach { reportIfRendersLambda(it) }
+    }
+
+    private fun reportIfRendersLambda(expression: KtExpression) {
+        val type = resolvedType(expression) ?: return
+        if (rendersLambdaReflectively(type, mutableSetOf())) {
+            report(
+                CodeSmell(
+                    issue,
+                    Entity.from(expression),
+                    "'${expression.text}' is stringified whole; its type carries a function-type " +
+                        "property, so its toString() reflects on the lambda and can crash under R8. " +
+                        "Interpolate a field or '${expression.text}::class.simpleName' instead."
+                )
+            )
+        }
     }
 
     // Prefer the expression's own type (it reflects smart-casts); fall back to the variable's declared type,
@@ -123,7 +157,8 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
      *
      * The property check is gated on [ClassDescriptor.isData]: only data classes generate a toString() that
      * renders their properties. A non-data class inherits Object's identity toString() and never touches its
-     * lambda, so flagging it would be a false positive. Subclass recursion stays ungated — a non-data sealed
+     * lambda, so flagging it would be a false positive. It is also skipped when the data class declares its
+     * own toString(), which replaces the generated one. Subclass recursion stays ungated — a non-data sealed
      * root can still have data-class subclasses that do render a lambda.
      */
     private fun rendersLambdaReflectively(type: KotlinType, visited: MutableSet<ClassDescriptor>): Boolean {
@@ -133,11 +168,18 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
         val descriptor = type.constructor.declarationDescriptor as? ClassDescriptor ?: return false
         if (!visited.add(descriptor)) return false
 
-        val ownPropertyRendersLambda = descriptor.isData &&
+        val ownPropertyRendersLambda = descriptor.isData && !descriptor.declaresOwnToString() &&
             descriptor.unsubstitutedPrimaryConstructor?.valueParameters.orEmpty()
                 .any { rendersLambdaReflectively(it.type, visited) }
         return ownPropertyRendersLambda ||
             subclassTypes(descriptor).any { rendersLambdaReflectively(it, visited) }
+    }
+
+    // A data class that declares its own toString() never uses the generated one, so it will not render the
+    // lambda reflectively. Detected from source; a compiled data class with an override is not covered.
+    private fun ClassDescriptor.declaresOwnToString(): Boolean {
+        val declaration = DescriptorToSourceUtils.descriptorToDeclaration(this) as? KtClassOrObject ?: return false
+        return declaration.declarations.any { it is KtNamedFunction && it.name == "toString" }
     }
 
     // Arrays and any Collection/Iterable/Map render their elements in toString() (`[Function0]`,

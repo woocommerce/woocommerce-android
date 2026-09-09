@@ -237,4 +237,69 @@ class StringifyLambdaBearingObjectRuleTest {
         )
         assertThat(findings).isEmpty()
     }
+
+    @Test
+    fun `when toString is called explicitly on a lambda-bearing object, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Loading(val onCancel: () -> Unit)
+            fun log(s: Loading): String = s.toString()
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `when a lambda-bearing object is concatenated to a string, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Loading(val onCancel: () -> Unit)
+            fun log(s: Loading): String = "state: " + s
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `when a data class overrides toString, then it is not flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Loading(val onCancel: () -> Unit) {
+                override fun toString(): String = "Loading"
+            }
+            fun log(s: Loading): String = "state: ${'$'}s"
+            """.trimIndent()
+        )
+        assertThat(findings).isEmpty()
+    }
+
+    // Documents a known limitation: paths other than templates/toString()/concatenation are not flagged.
+    @Test
+    fun `when a lambda-bearing object is appended to a string builder, then it is not flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Loading(val onCancel: () -> Unit)
+            fun log(s: Loading): String = StringBuilder().append(s).toString()
+            """.trimIndent()
+        )
+        assertThat(findings).isEmpty()
+    }
+
+    // Documents a known limitation: only sealed hierarchies are walked, so a non-sealed root is not flagged.
+    @Test
+    fun `when the root is a non-sealed abstract class, then it is not flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            abstract class State
+            data class Loading(val onCancel: () -> Unit) : State()
+            fun log(s: State): String = "state: ${'$'}s"
+            """.trimIndent()
+        )
+        assertThat(findings).isEmpty()
+    }
 }
