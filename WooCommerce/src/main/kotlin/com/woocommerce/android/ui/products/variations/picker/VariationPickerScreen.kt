@@ -40,7 +40,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.EmptyVariationList
 import com.woocommerce.android.ui.products.variations.selector.VariationListSkeleton
 
@@ -180,7 +180,7 @@ fun VariationItem(
 @Preview
 @Composable
 fun VariationItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         VariationItem(
             title = "This the product title",
             imageUrl = "not valid url",

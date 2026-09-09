@@ -43,7 +43,7 @@ import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationAdDestinationParametersScreen(
@@ -231,7 +231,7 @@ private fun ParameterItem(
 @LightDarkThemePreviews
 @Composable
 fun PreviewAdDestinationParametersScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
                 targetUrl = "https://woocommerce.com",
@@ -334,7 +334,7 @@ private fun ParameterBottomSheetContent(
 @LightDarkThemePreviews
 @Composable
 fun PreviewEmptyAdDestinationParametersScreen() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AdDestinationParametersScreen(
             viewState = ViewState(
                 targetUrl = "https://woocommerce.com?utm_source=woocommerce&utm_medium=android&utm_campaign=blaze",

@@ -62,7 +62,7 @@ import com.woocommerce.android.ui.compose.component.WCOverflowMenuItem
 import com.woocommerce.android.ui.compose.component.aztec.OutlinedAztecEditor
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 
 @Composable
@@ -324,7 +324,7 @@ private val DpSize.Companion.Saver by lazy {
 @Composable
 private fun CustomFieldsEditorScreenPreview() {
     var useHtmlEditor by remember { mutableStateOf(false) }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomFieldsEditorScreen(
             CustomFieldsEditorViewModel.UiState(
                 customField = CustomFieldUiModel("key", "value"),

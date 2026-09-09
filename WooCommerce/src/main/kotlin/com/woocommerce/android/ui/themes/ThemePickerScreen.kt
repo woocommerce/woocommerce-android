@@ -53,7 +53,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CarouselState.Success.CarouselItem
 import com.woocommerce.android.ui.themes.ThemePickerViewModel.CurrentThemeState
@@ -378,7 +378,7 @@ private fun Theme(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewThemePickerError() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
@@ -395,7 +395,7 @@ private fun PreviewThemePickerError() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewThemePickerLoading() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
@@ -413,7 +413,7 @@ private fun PreviewThemePickerLoading() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewThemePickerSettings() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(

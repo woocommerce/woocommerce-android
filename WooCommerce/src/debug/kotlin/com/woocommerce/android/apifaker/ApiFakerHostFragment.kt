@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.findNavController
 import com.woocommerce.android.apifaker.ui.ApiFakerNavHost
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 
 class ApiFakerHostFragment : BaseFragment() {
@@ -21,7 +21,7 @@ class ApiFakerHostFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     ApiFakerNavHost(
                         onExit = { findNavController().navigateUp() }
                     )

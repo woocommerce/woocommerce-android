@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun PrivacyBannerScreen(viewModel: PrivacyBannerViewModel) {
@@ -160,7 +160,7 @@ private fun textAppearanceWooBody2() = TextStyle(
 @Preview(name = "Smaller screen", device = Devices.NEXUS_5)
 @Composable
 private fun Default() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PrivacyBannerScreen(
             state = PrivacyBannerViewModel.State(
                 analyticsSwitchEnabled = false,

@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.JetpackActivationSiteCredentialsViewState
 
@@ -163,7 +163,7 @@ fun JetpackActivationSiteCredentialsScreen(
 @Preview
 @Composable
 private fun JetpackActivationSiteCredentialsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationSiteCredentialsScreen(
             viewState = JetpackActivationSiteCredentialsViewState(
                 isJetpackInstalled = false,

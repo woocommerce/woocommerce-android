@@ -39,7 +39,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.start.JetpackActivationStartViewModel.JetpackActivationState
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
@@ -249,7 +249,7 @@ private fun SiteUrlAndIcon(
 @Composable
 @Preview
 private fun JetpackActivationStartPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",
@@ -264,7 +264,7 @@ private fun JetpackActivationStartPreview() {
 @Composable
 @Preview
 private fun JetpackConnectionDismissPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationStartScreen(
             viewState = JetpackActivationState(
                 url = "reallyniceshirts.com",

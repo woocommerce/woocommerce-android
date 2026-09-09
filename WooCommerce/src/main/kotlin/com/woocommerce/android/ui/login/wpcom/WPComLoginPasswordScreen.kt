@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
 
@@ -169,7 +169,7 @@ fun WPComLoginPasswordScreen(
 @Preview
 @Composable
 private fun JetpackModePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginPasswordScreen(
             viewState = WPComLoginPasswordViewModel.ViewState(
                 isJetpackInstalled = false,

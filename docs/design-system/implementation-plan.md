@@ -5,9 +5,9 @@ This plan sequences the Woo Mobile Design System i1 adapter work for trunk-based
 The rollout direction is decided in [rollout-direction.md](rollout-direction.md). The short version is:
 
 - Build Store-only foundations and production-ready components.
-- Migrate the first coherent wave: Dashboard, Products, Orders, More, top Product Detail, and top
-  Order Detail.
-- Keep Product Detail and Order Detail launched child flows out of scope for this wave.
+- Migrate the first coherent wave: Dashboard, Products, Orders, More, and top Product Detail.
+- Keep Product Detail launched child flows out of scope for this wave.
+- Defer Order Detail, including its top surface, until separately scheduled.
 - After the first wave, converge legacy XML and legacy Compose foundations toward the design-system
   look for safe color/chrome tokens only.
 
@@ -56,13 +56,11 @@ Expected output:
   `WooTheme` wrapper exists. Future consolidation can happen after the legacy wrapper is removed.
 - `WooTheme` foundation accessors for theme-scoped production APIs.
 - `WooDesignSystemThemeWithBackground` providing the real design-system foundation.
-- A DS-specific builder, such as `designSystemComposeView {}`, for explicitly migrated screens.
-- Existing legacy screens continue using the current legacy Compose root until they are intentionally
-  migrated or renamed to `legacyComposeView` at the controlled boundary.
-- No root-selection indirection inside shared/default `composeView {}` calls. The root should be
-  obvious at the call site.
-- Follow [rollout-direction.md](rollout-direction.md) for the exact controlled root-API rename
-  boundary and audits.
+- `composeView {}` as the design-system default for explicitly migrated Fragment hosts.
+- `setDesignSystemContent {}` for migrated content embedded in an XML `ComposeView` host.
+- `legacyComposeView {}` and `LegacyWooThemeWithBackground {}` for explicitly retained legacy roots.
+- No root-selection indirection or compatibility aliases. The root stays obvious at the call site.
+- Follow [rollout-direction.md](rollout-direction.md) for the final root API contract and audits.
 - Manual i1 runtime tokens, with colors as the XML-safe resource-backed exception and non-color
   foundations remaining Kotlin/Compose-owned.
 - Foundation groups for color, typography, spacing, padding, radius, icon size, and stroke.
@@ -151,7 +149,7 @@ Expected output:
 - Orders tab surface migrated to design-system UI.
 - More tab surface migrated to design-system UI.
 - Top Product Detail surface migrated, with launched child/edit flows left legacy.
-- Top Order Detail surface migrated, with launched child flows left legacy.
+- Order Detail remains on its existing XML and legacy Compose implementation until separately scheduled.
 - Existing Fragments, XML nav graphs, SafeArgs, ViewModels, analytics, strings, and product behavior
   preserved unless there is an explicit product decision.
 - One design-system UI implementation per migrated screen. No permanent duplicate legacy/design-system screen trees.
@@ -161,8 +159,8 @@ Expected output:
 - Previews and screenshot review for migrated surfaces under the design-system root in light and
   dark mode.
 
-Before final merge of the migration branch, follow the controlled root-API rename boundary defined
-in [rollout-direction.md](rollout-direction.md).
+The migration branch uses the final root API contract defined in
+[rollout-direction.md](rollout-direction.md).
 
 The XML bridge explored in earlier branches is out of scope. A retained XML shell is allowed only as
 a compatibility boundary around migrated design-system content.

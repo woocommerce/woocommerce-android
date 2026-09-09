@@ -30,7 +30,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun <T> MultiSelectList(
@@ -126,7 +126,7 @@ data class MultiSelectAllItemsButton(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun MultiSelectListPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val items by remember { mutableStateOf(List(20) { "Item $it" }) }
         var selectedItems by remember { mutableStateOf(emptyList<String>()) }
         val allItemsButton = rememberMultiSelectAllItemsButton(

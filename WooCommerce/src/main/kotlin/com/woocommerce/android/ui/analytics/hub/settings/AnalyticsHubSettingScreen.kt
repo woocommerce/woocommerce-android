@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
 import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItem
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.rememberDragDropState
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
@@ -200,7 +200,7 @@ fun AnalyticsHubSettingScreenPreview() {
 @Composable
 @Preview
 fun AnalyticCardItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         DragAndDropSelectableItem(
             item = AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
             isSelected = true,
@@ -214,7 +214,7 @@ fun AnalyticCardItemPreview() {
 @Composable
 @Preview(name = "Screen", device = Devices.PIXEL_4)
 fun LoadingCardsConfigurationPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoadWidgetsConfiguration()
     }
 }

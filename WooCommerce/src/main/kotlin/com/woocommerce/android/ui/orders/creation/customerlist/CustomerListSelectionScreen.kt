@@ -23,7 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.customer.CustomerListScreen
 import com.woocommerce.android.ui.customer.canScrollBackward
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
@@ -131,7 +131,7 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
 @Preview
 @Composable
 fun OrderCustomerListScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CustomerListSelectionScreen(
             state = CustomerListViewState(
                 searchHint = R.string.order_creation_customer_search_hint,

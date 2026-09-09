@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun ProgressDialog(
@@ -57,7 +57,7 @@ fun ProgressDialog(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ProgressDialogPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProgressDialog(title = "Title", subtitle = "Subtitle")
     }
 }

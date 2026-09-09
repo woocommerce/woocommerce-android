@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.error.base.LoginBaseErrorDialogFragment.LoginErrorButton
 
 @Composable
@@ -178,7 +178,7 @@ private fun ButtonBar(
 @Preview("Portrait")
 @Preview("Landscape", widthDp = 700, heightDp = 400)
 private fun LoginErrorScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoginErrorScreen(
             title = stringResource(id = string.login_no_wpcom_account_found_title),
             text = stringResource(id = string.login_error_generic),

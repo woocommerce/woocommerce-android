@@ -85,7 +85,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.RoundedBorderDropDownWithLabel
@@ -898,7 +898,7 @@ fun LoadingModal(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = "spec:width=1280dp,height=800dp,dpi=240")
 @Composable
 fun LoadingModalPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoadingModal(title = "Loading", description = "Please wait")
     }
 }

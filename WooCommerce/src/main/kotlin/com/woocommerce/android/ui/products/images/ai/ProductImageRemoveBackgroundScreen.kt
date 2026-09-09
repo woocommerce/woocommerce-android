@@ -34,7 +34,7 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +184,7 @@ private fun BottomActionMenu(
 @Preview
 @Composable
 fun ProductImageRemoveBackgroundScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val state = remember {
             mutableStateOf(ViewState.Success(createBitmap(23, 23)))
         }
@@ -202,7 +202,7 @@ fun ProductImageRemoveBackgroundScreenPreview() {
 @Preview
 @Composable
 fun ProductImageRemoveBackgroundScreenProgressPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val state = remember {
             mutableStateOf(ViewState.BackgroundProcessingInProgress("".toUri()))
         }

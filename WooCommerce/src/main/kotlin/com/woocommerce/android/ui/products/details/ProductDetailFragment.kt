@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.designSystemComposeView
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BottomNavigationPosition
@@ -165,7 +165,7 @@ class ProductDetailFragment :
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View = designSystemComposeView {
+    ): View = composeView {
         ProductDetailScreen(
             state = productDetailPageState,
             callbacks = pageCallbacks,

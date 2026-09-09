@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
-import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.compose.legacyComposeView
 import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooLog
@@ -101,7 +101,7 @@ class QrLoginScannerFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = composeView {
+    ): View = legacyComposeView {
         val permissionState = scannerViewModel.permissionState.observeAsState(
             initial = BarcodeScanningViewModel.PermissionState.Unknown
         )

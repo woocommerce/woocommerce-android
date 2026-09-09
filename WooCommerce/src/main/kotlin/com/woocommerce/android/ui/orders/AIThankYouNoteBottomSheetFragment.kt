@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.CopyDescriptionToClipboard
 import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.ShareNote
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -25,7 +25,7 @@ class AIThankYouNoteBottomSheetFragment : WCBottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     AIThankYouNoteBottomSheet(viewModel)
                 }
             }

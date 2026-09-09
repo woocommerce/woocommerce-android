@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.FragmentCouponDetailsBinding
 import com.woocommerce.android.extensions.copyToClipboard
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CopyCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShareCodeEvent
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.ShowEditCoupon
@@ -45,7 +45,7 @@ class CouponDetailsFragment : BaseFragment(R.layout.fragment_coupon_details) {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     CouponDetailsScreen(viewModel) {
                         findNavController().popBackStack()
                     }

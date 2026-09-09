@@ -38,7 +38,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.databinding.ViewAztecBinding
 import com.woocommerce.android.databinding.ViewAztecOutlinedBinding
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -434,7 +434,7 @@ private data class AztecViewsHolder(
 private fun OutlinedAztecEditorPreview() {
     val state = rememberAztecEditorState("something")
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column {
             OutlinedAztecEditor(
                 state = state,
@@ -457,7 +457,7 @@ private fun AztecEditorPreview() {
 
     var enableSourceEditor by remember { mutableStateOf(true) }
 
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         Column {
             AztecEditor(
                 state = state,

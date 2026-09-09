@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -296,7 +296,7 @@ private fun LoginSiteCredentialsAdminRecoveryErrorPreview() {
 
 @Composable
 private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsViewModel.ViewState) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoginSiteCredentialsScreen(
             viewState = viewState,
             onUsernameChanged = {},

@@ -24,7 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun ProductImageDetailsScreen(viewModel: ProductImageDetailsViewModel) {
@@ -110,7 +110,7 @@ private fun ProductImageDetailsScreen(
 @LightDarkThemePreviews
 @Composable
 private fun ProductImageDetailsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductImageDetailsScreen(
             state = ProductImageDetailsViewModel.UiState(
                 imageUrl = "https://example.com/image.jpg",
@@ -127,7 +127,7 @@ private fun ProductImageDetailsScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun ProductImageDetailsScreenClearedAltTextPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductImageDetailsScreen(
             state = ProductImageDetailsViewModel.UiState(
                 imageUrl = "https://example.com/image.jpg",
