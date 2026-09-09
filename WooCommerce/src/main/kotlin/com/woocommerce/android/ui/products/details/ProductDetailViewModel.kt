@@ -2077,7 +2077,8 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * Show the upsell/cross-sell promo if it hasn't already been shown and the product
-     * doesn't already have linked products
+     * doesn't already have linked products and the store has at least
+     * [MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO] published products
      */
     private fun checkLinkedProductPromo() {
         if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS) ||
