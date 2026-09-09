@@ -4,8 +4,9 @@
         <item name="android:background">@drawable/woo_ds_toolbar_background</item>
         <item name="android:minHeight">@dimen/woo_ds_toolbar_height</item>
         <item name="minHeight">@dimen/woo_ds_toolbar_height</item>
-        <item name="titleCentered">true</item>
+        <item name="titleCentered">false</item>
         <item name="titleTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarTitle</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.Woo.DesignSystem.ToolbarSupportingText</item>
         <item name="titleTextColor">@color/woo_ds_color_surface_on_default</item>
         <item name="subtitleTextColor">@color/woo_ds_color_surface_on_default</item>
         <item name="navigationIconTint">@color/woo_ds_color_surface_on_default</item>

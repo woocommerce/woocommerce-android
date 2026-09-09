@@ -53,11 +53,10 @@ import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChip
 import com.woocommerce.android.ui.compose.designsystem.component.WooActionChipAppearance
 import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
-import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButton
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowDownArrowUp
@@ -330,19 +329,19 @@ private fun ProductListHeader(
     onSearchClicked: () -> Unit,
     onBarcodeClicked: () -> Unit,
 ) {
-    WooPageHeader(
+    WooTopAppBar(
         title = stringResource(R.string.products),
         showDivider = showDivider,
         actions = {
             if (showBarcode) {
-                WooOutlinedIconButton(
+                IconAction(
                     imageVector = WooIcons.Regular.BarcodeScan,
                     contentDescription = stringResource(R.string.scan_barcode),
                     onClick = onBarcodeClicked,
                     modifier = Modifier.testTag(ProductListTestTags.BARCODE_ACTION),
                 )
             }
-            WooOutlinedIconButton(
+            IconAction(
                 imageVector = WooIcons.Regular.MagnifyingGlass,
                 contentDescription = stringResource(R.string.product_search_hint),
                 onClick = onSearchClicked,
