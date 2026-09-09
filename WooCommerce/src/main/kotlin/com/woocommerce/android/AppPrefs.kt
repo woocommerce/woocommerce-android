@@ -1471,7 +1471,7 @@ object AppPrefs {
             .all
             .filter {
                 it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
-                    it.key.startsWith(POS_FEATURE_SWITCH_ENABLED_PREFIX, ignoreCase = true) ||
+                    it.key.contains(POS_FEATURE_SWITCH_ENABLED_PREFIX, ignoreCase = true) ||
                     it.key.startsWith(HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX)
             }
             .forEach {
