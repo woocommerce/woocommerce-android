@@ -58,23 +58,41 @@ class WooPosGetWooCorePluginStatusTest {
     }
 
     @Test
-    fun `given the Woo plugin is installed but inactive, when invoked, then returns NotInstalledOrInactive`() =
+    fun `given the stored Woo plugin is inactive, when invoked, then returns CouldNotDetermine`() =
         runTest {
+            // The stored row can be stale, so it must not block POS on its own.
             whenever(wooCommerceStore.getSitePlugins(site))
                 .thenReturn(listOf(plugin("woocommerce/woocommerce", "10.1.0", isActive = false)))
 
             assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCache))
-                .isEqualTo(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+                .isEqualTo(WooPosWooCorePluginStatus.CouldNotDetermine)
         }
 
     @Test
-    fun `given other plugins but no Woo plugin, when invoked, then returns NotInstalledOrInactive`() = runTest {
+    fun `given stored plugins without the Woo plugin, when invoked, then returns CouldNotDetermine`() = runTest {
+        // The stored list can be partial, so a missing row is not proof the plugin is gone.
         whenever(wooCommerceStore.getSitePlugins(site))
             .thenReturn(listOf(plugin("jetpack/jetpack", "13.0", isActive = true)))
 
         assertThat(sut(WooPosLaunchabilityRefreshPolicy.UseCache))
-            .isEqualTo(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+            .isEqualTo(WooPosWooCorePluginStatus.CouldNotDetermine)
     }
+
+    @Test
+    fun `given ForceRefresh and the fetched Woo plugin is inactive, when invoked, then NotInstalledOrInactive`() =
+        runTest {
+            whenever(wooCommerceStore.fetchSitePluginsAndSettings(site)).thenReturn(
+                WooResult(
+                    SitePluginsAndFeatures(
+                        plugins = listOf(plugin("woocommerce/woocommerce", "10.1.0", isActive = false)),
+                        enabledFeatures = KNOWN_FEATURES,
+                    )
+                )
+            )
+
+            assertThat(sut(WooPosLaunchabilityRefreshPolicy.ForceRefresh))
+                .isEqualTo(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+        }
 
     @Test
     fun `given nothing has been synced for the site, when invoked, then returns CouldNotDetermine`() = runTest {

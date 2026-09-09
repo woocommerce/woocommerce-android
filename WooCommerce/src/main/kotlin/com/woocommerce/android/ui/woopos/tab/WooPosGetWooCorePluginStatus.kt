@@ -24,11 +24,11 @@ class WooPosGetWooCorePluginStatus @Inject constructor(
     }
 
     private suspend fun storedStatus(site: SiteModel): WooPosWooCorePluginStatus {
-        val plugins = wooCommerceStore.getSitePlugins(site)
+        // The stored list can be stale or partial, so only a fetch may report the plugin as missing.
+        val wooCore = activePlugin(wooCommerceStore.getSitePlugins(site))
+            ?: return WooPosWooCorePluginStatus.CouldNotDetermine
 
-        if (plugins.isEmpty()) return WooPosWooCorePluginStatus.CouldNotDetermine
-
-        return statusOf(plugins, report = null)
+        return WooPosWooCorePluginStatus.Active(wooCore.version, report = null)
     }
 
     private suspend fun fetchedStatus(site: SiteModel): WooPosWooCorePluginStatus {
@@ -39,20 +39,16 @@ class WooPosGetWooCorePluginStatus @Inject constructor(
 
         val fetched = result.model ?: return WooPosWooCorePluginStatus.CouldNotDetermine
 
-        return statusOf(fetched.plugins, report = WooPosSystemStatusReport(fetched.enabledFeatures))
-    }
-
-    private fun statusOf(
-        plugins: List<SitePluginModel>,
-        report: WooPosSystemStatusReport?
-    ): WooPosWooCorePluginStatus {
-        // Another plugin can share WooCommerce's file name, and the stored list is sorted by name,
-        // so an inactive one can come first. Only an active match is WooCommerce.
-        val wooCore = plugins.firstOrNull { it.matches(WooCommerceStore.WooPlugin.WOO_CORE) && it.isActive }
+        val wooCore = activePlugin(fetched.plugins)
             ?: return WooPosWooCorePluginStatus.NotInstalledOrInactive
 
-        return WooPosWooCorePluginStatus.Active(wooCore.version, report)
+        return WooPosWooCorePluginStatus.Active(wooCore.version, WooPosSystemStatusReport(fetched.enabledFeatures))
     }
+
+    // Another plugin can share WooCommerce's file name, and the stored list is sorted by name,
+    // so an inactive one can come first. Only an active match is WooCommerce.
+    private fun activePlugin(plugins: List<SitePluginModel>): SitePluginModel? =
+        plugins.firstOrNull { it.matches(WooCommerceStore.WooPlugin.WOO_CORE) && it.isActive }
 }
 
 data class WooPosSystemStatusReport(val enabledFeatures: EnabledFeatures)
