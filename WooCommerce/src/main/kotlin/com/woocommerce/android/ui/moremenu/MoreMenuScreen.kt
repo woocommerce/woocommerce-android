@@ -80,6 +80,7 @@ import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
 import com.woocommerce.android.ui.compose.designsystem.icons.CreditCard
 import com.woocommerce.android.ui.compose.designsystem.icons.Envelope
+import com.woocommerce.android.ui.compose.designsystem.icons.Gauge
 import com.woocommerce.android.ui.compose.designsystem.icons.Gear
 import com.woocommerce.android.ui.compose.designsystem.icons.Globe
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
@@ -454,13 +455,8 @@ private fun MoreMenuIcon(
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
-        R.drawable.ic_blaze -> DesignSystemIcon(
-            icon = WooIcons.Regular.Star,
-            tone = WooIconContainerTone.Sandstone,
-            modifier = modifier,
-        )
         R.drawable.ic_more_menu_wp_admin -> DesignSystemIcon(
-            icon = WooIcons.Regular.Star,
+            icon = WooIcons.Regular.Gauge,
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
