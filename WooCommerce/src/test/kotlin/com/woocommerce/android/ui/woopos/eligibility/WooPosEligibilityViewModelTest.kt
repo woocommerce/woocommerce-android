@@ -209,6 +209,35 @@ class WooPosEligibilityViewModelTest {
     }
 
     @Test
+    fun `given an unsupported country, when initialized, then the country copy names it`() = runTest {
+        // GIVEN
+        whenever(mockGetStoreCountryCode()).thenReturn("de")
+        whenever(mockGetStoreCountryDisplayName("de")).thenReturn("Germany")
+        val sut = createSut()
+
+        // WHEN
+        sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry)
+
+        // THEN
+        verify(mockResourceProvider).getString(R.string.woopos_eligibility_reason_unsupported_country, "Germany")
+    }
+
+    @Test
+    fun `given an unsupported and unknown country, when initialized, then the generic country copy is used`() =
+        runTest {
+            // GIVEN
+            whenever(mockGetStoreCountryCode()).thenReturn(null)
+            val sut = createSut()
+
+            // WHEN
+            sut.initialize(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry)
+
+            // THEN
+            verify(mockResourceProvider)
+                .getString(R.string.woopos_eligibility_reason_unsupported_country_generic)
+        }
+
+    @Test
     fun `given the WooCommerce plugin is missing, when initialized, then the plugin copy is used`() = runTest {
         // GIVEN
         val sut = createSut()

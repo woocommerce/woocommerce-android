@@ -114,12 +114,24 @@ class WooPosEligibilityViewModel @Inject constructor(
                 resourceProvider.getString(R.string.woopos_eligibility_reason_woocommerce_plugin_not_found)
             WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry ->
+                getUnsupportedCountryText()
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency ->
                 getUnsupportedCurrencyText()
             WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
+        }
+    }
+
+    private suspend fun getUnsupportedCountryText(): String {
+        val countryName = getStoreCountryCode()?.let { getStoreCountryDisplayName(it) }
+
+        return if (countryName != null) {
+            resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_country, countryName)
+        } else {
+            resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_country_generic)
         }
     }
 

@@ -1437,6 +1437,7 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
     return when (this) {
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion -> "wc_plugin_version"
         WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound -> "unknown_wc_plugin"
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry -> "store_country"
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency -> "store_currency"
         WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> "feature_switch_disabled"
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable -> "site_settings_unavailable"

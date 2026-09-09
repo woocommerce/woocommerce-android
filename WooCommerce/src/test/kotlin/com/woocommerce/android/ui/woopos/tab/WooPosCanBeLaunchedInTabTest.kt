@@ -148,15 +148,23 @@ class WooPosCanBeLaunchedInTabTest {
     @Test
     fun `given no settings stored and a fetched currency mismatch, when invoked, then the cache is cleared`() =
         runTest {
-            // The cached path falls back to a fetch when nothing is stored, and what that fetch
+            // UseCacheAndRefresh falls back to a fetch when nothing is stored, and what that fetch
             // returns is as fresh as ForceRefresh would be.
             whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
             whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
                 .thenReturn(WooResult(settings("CA", "EUR")))
 
-            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), sut(UseCache))
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCurrency), sut(UseCacheAndRefresh))
             verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
         }
+
+    @Test
+    fun `given UseCache and no settings stored, when invoked, then no settings are fetched`() = runTest {
+        whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+
+        assertEquals(NotLaunchable(NonLaunchabilityReason.UnknownNoPositiveCache), sut(UseCache))
+        verify(wooCommerceStore, never()).fetchSiteGeneralSettings(any())
+    }
 
     @Test
     fun `given a blank country code with no cached positive, when invoked, then UnknownNoPositiveCache`() = runTest {
@@ -210,17 +218,29 @@ class WooPosCanBeLaunchedInTabTest {
         }
 
     @Test
-    fun `given country outside the POS table and the flag off, when invoked, then SiteSettingsUnavailable`() =
+    fun `given country outside the POS table and the flag off, when invoked, then UnsupportedCountry`() =
         runTest {
-            // Matches iOS, which reports an unsupported country as siteSettingsNotAvailable.
             whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
             whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings("DE", "EUR"))
 
             val result = sut(UseCache)
 
-            assertEquals(NotLaunchable(NonLaunchabilityReason.SiteSettingsUnavailable), result)
-            // iOS treats siteSettingsNotAvailable as indeterminate, so the positive cache survives.
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCountry), result)
+            // Stored settings can be stale, so the positive cache survives.
             verify(appPrefs, never()).clearPOSLaunchableForSite(any())
+        }
+
+    @Test
+    fun `given an unsupported country read from a fresh fetch, when invoked, then the positive cache is cleared`() =
+        runTest {
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)).thenReturn(false)
+            whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel))
+                .thenReturn(WooResult(settings("DE", "EUR")))
+
+            val result = sut(ForceRefresh)
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.UnsupportedCountry), result)
+            verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
         }
 
     @Test
@@ -264,6 +284,20 @@ class WooPosCanBeLaunchedInTabTest {
     }
 
     // --- WooCommerce plugin checks ---
+
+    @Test
+    fun `given settings cannot be read and the plugin is missing, when invoked, then WooCommercePluginNotFound`() =
+        runTest {
+            // A deactivated plugin takes the wc/v3 routes with it, so the settings read fails first.
+            whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(null)
+            whenever(wooCommerceStore.fetchSiteGeneralSettings(siteModel)).thenReturn(WooResult(null))
+            whenever(getWooCorePluginStatus(any()))
+                .thenReturn(WooPosWooCorePluginStatus.NotInstalledOrInactive)
+
+            val result = sut(ForceRefresh)
+
+            assertEquals(NotLaunchable(NonLaunchabilityReason.WooCommercePluginNotFound), result)
+        }
 
     @Test
     fun `given the WooCommerce plugin is missing or inactive, when invoked, then WooCommercePluginNotFound`() =

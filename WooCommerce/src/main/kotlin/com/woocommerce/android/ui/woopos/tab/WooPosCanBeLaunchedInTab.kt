@@ -43,24 +43,36 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
                 reason = WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
-        val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
-
-        checkSiteSettings(site, refreshPolicy, cachedPositive)?.let { return it }
-        checkPlugin(site, refreshPolicy, cachedPositive)?.let { return it }
+        findBlockingReason(site, refreshPolicy)?.let { return it }
 
         appPrefs.setPOSLaunchableForSite(site.id)
         return WooPosLaunchability.Launchable
     }
 
-    @Suppress("ReturnCount")
-    private suspend fun checkSiteSettings(
+    private suspend fun findBlockingReason(
         site: SiteModel,
-        refreshPolicy: WooPosLaunchabilityRefreshPolicy,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy
+    ): WooPosLaunchability.NotLaunchable? {
+        val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
+        val resolvedSettings = resolveSiteSettings(site, refreshPolicy)
+
+        if (resolvedSettings != null) {
+            checkSiteSettings(site, resolvedSettings, cachedPositive)?.let { return it }
+        }
+
+        checkPlugin(site, refreshPolicy, cachedPositive)?.let { return it }
+
+        // A deactivated plugin takes the wc/v3 routes with it, so settings we could not read are
+        // only reported as indeterminate once the plugin check has had its say.
+        return if (resolvedSettings == null) couldNotDetermine(site.id, cachedPositive) else null
+    }
+
+    @Suppress("ReturnCount")
+    private fun checkSiteSettings(
+        site: SiteModel,
+        resolved: ResolvedSettings,
         cachedPositive: Boolean
     ): WooPosLaunchability.NotLaunchable? {
-        val resolved = resolveSiteSettings(site, refreshPolicy)
-            ?: return couldNotDetermine(site.id, cachedPositive)
-
         val siteSettings = resolved.settings
 
         if (siteSettings.countryCode.isBlank()) return couldNotDetermine(site.id, cachedPositive)
@@ -68,11 +80,14 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         val supportedCurrencies = WooPosSupportedCountries.currenciesFor(siteSettings.countryCode)
 
         if (supportedCurrencies.isEmpty()) {
-            return if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) {
-                null
-            } else {
-                notLaunchable(site.id, WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable)
-            }
+            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) return null
+
+            // Stored settings can be stale, so only a country confirmed by a fetch drops the cached positive.
+            return notLaunchable(
+                siteId = site.id,
+                reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry,
+                isDefinite = resolved.isFresh
+            )
         }
 
         if (siteSettings.currencyCode.isBlank()) return couldNotDetermine(site.id, cachedPositive)
@@ -171,6 +186,8 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
             }
         }
 
+        if (refreshPolicy == WooPosLaunchabilityRefreshPolicy.UseCache) return null
+
         val fetched = wooCommerceStore.fetchSiteGeneralSettings(site).model ?: return null
         return ResolvedSettings(settings = fetched, isFresh = true)
     }
@@ -199,6 +216,7 @@ private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: 
     get() = when (this) {
         WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry,
         WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
         WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> true
 
@@ -215,6 +233,7 @@ sealed class WooPosLaunchability {
     enum class NonLaunchabilityReason {
         WooCommercePluginNotFound,
         UnsupportedWooCommerceVersion,
+        UnsupportedCountry,
         UnsupportedCurrency,
         FeatureSwitchDisabled,
         SiteSettingsUnavailable,
