@@ -3,8 +3,11 @@ package com.woocommerce.android.tools
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchSingleProductPayload
 import java.lang.ref.WeakReference
@@ -37,8 +40,51 @@ class ProductImageMap @Inject constructor(
         HashSet<Long>()
     }
 
+    private val images = mutableMapOf<Long, Deferred<String?>>()
+    private val requestedProductIds = mutableSetOf<Long>()
+
+    suspend fun getAsync(remoteProductId: Long): String? {
+        val request = synchronized(images) {
+            val site = selectedSite.getIfExists() ?: return null
+            images.getOrPut(remoteProductId) {
+                val fetchIfMissing = requestedProductIds.add(remoteProductId)
+                appCoroutineScope.async(dispatchers.io) {
+                    loadImage(site, remoteProductId, fetchIfMissing)
+                }
+            }
+        }
+        return try {
+            request.await().also { image ->
+                if (image == null) {
+                    synchronized(images) { images.remove(remoteProductId, request) }
+                }
+            }
+        } finally {
+            if (request.isCancelled) {
+                synchronized(images) { images.remove(remoteProductId, request) }
+            }
+        }
+    }
+
+    private suspend fun loadImage(site: SiteModel, remoteProductId: Long, fetchIfMissing: Boolean): String? {
+        productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImageUrl()?.let { return it }
+        if (!fetchIfMissing) return null
+        val result = productStore.fetchSingleProduct(FetchSingleProductPayload(site, remoteProductId))
+        return when (result.isError) {
+            true -> null
+            false -> productStore.getProductByRemoteId(site, remoteProductId)?.getFirstImageUrl()
+        }
+    }
+
     fun reset() {
         map.clear()
+        val requests = synchronized(images) {
+            images.values.toList().also {
+                images.clear()
+                requestedProductIds.clear()
+            }
+        }
+        requests.forEach { it.cancel() }
     }
 
     fun get(remoteProductId: Long): String? {
@@ -80,10 +126,6 @@ class ProductImageMap @Inject constructor(
         }
 
         return null
-    }
-
-    fun remove(remoteProductId: Long) {
-        map.remove(remoteProductId)
     }
 
     fun subscribeToOnProductFetchedEvents(observer: OnProductFetchedListener) {

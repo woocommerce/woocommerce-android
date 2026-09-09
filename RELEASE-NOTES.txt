@@ -5,6 +5,10 @@
 25.7
 -----
 - [*] The linked products promo no longer appears after creating a product on a store with fewer than three published products [https://github.com/woocommerce/woocommerce-android/pull/16511]
+- [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a store country POS does not support, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
+- [*] Logging out of a store-credentials login no longer restarts the app or leaves account data behind when the selected site is reset mid-logout [https://github.com/woocommerce/woocommerce-android/pull/16483]
+- [*] Logging in with site credentials no longer crashes when the store lists an application password without a UUID [https://github.com/woocommerce/woocommerce-android/pull/16483]
+- [Internal] The age restriction dialog now offers a Contact Support action that opens Help & Support while keeping the restriction enforced [https://github.com/woocommerce/woocommerce-android/pull/16523]
 - [*] Order detail: the "Need a shipping label?" banner dismiss button is now announced as "Dismiss" by TalkBack instead of a refund message [https://github.com/woocommerce/woocommerce-android/pull/16538]
 - [*****] Updated the Stripe Terminal SDK to 5.8.0; card readers now use coarse location on Android 12+ so the app no longer requests precise location for in-person payments except on older devices [https://github.com/woocommerce/woocommerce-android/pull/16507]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
