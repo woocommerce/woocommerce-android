@@ -11,6 +11,7 @@
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
 - [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
 - [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]
+- [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
 
 25.6
 -----

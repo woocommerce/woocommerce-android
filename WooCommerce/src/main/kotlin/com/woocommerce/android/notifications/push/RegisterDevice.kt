@@ -76,6 +76,7 @@ class RegisterDevice @Inject constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun register(trigger: Trigger) {
         val token = appPrefsWrapper.getFCMToken()
         if (token.isEmpty()) {
@@ -84,6 +85,23 @@ class RegisterDevice @Inject constructor(
         }
 
         val shouldForce = trigger == Trigger.TOKEN_REFRESH
+
+        // For WPCom, site switching doesn't affect registration
+        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
+            (shouldForce || !pushNotificationRepository.isWpComPushRegistered())
+
+        if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
+            try {
+                pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            } catch (cancellationException: CancellationException) {
+                throw cancellationException
+            } catch (throwable: Throwable) {
+                WooLog.e(WooLog.T.NOTIFICATIONS, "WP.com push registration failed for $trigger", throwable)
+            }
+        } else {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
+        }
 
         if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             val sites = when (trigger) {
@@ -116,17 +134,6 @@ class RegisterDevice @Inject constructor(
             }
         } else {
             migrateWooPushRegistrationsToWpCom(trigger, token)
-        }
-
-        // For WPCom, site switching doesn't affect registration
-        val shouldEvaluateWpCom = trigger != Trigger.SITE_SWITCH &&
-            (shouldForce || !pushNotificationRepository.isWpComPushRegistered())
-
-        if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
-            pushNotificationRepository.registerPushTokenInWpComSystem(token)
-        } else {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
     }
 

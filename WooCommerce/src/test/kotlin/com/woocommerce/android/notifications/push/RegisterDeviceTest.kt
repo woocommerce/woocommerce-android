@@ -529,7 +529,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
             verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
+            // Each run registers the device with WPCom before the Woo registrations, so the
+            // cancelled run registers it once and the forced restart registers it again.
+            verify(pushNotificationRepository, times(2)).registerPushTokenInWpComSystem(TEST_TOKEN)
         }
 
     @Test
