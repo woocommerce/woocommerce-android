@@ -336,7 +336,7 @@ private fun topAppBarNavigationIcon(
         "WooTopAppBar requires onNavigationClick when navigationIcon is set"
     }
     val contentDescription = navigationIconContentDescription.orEmpty()
-    require(contentDescription.isNotBlank()) {
+    assert(contentDescription.isNotBlank()) {
         "WooTopAppBar navigationIconContentDescription must not be blank when navigationIcon is set"
     }
 
