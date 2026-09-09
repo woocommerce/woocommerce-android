@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIGsonRequest
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -46,6 +47,7 @@ class WPApiApplicationPasswordsRestClientTest {
     private val restClient = WPApiApplicationPasswordsRestClient(
         wpApiGsonRequestBuilder = mock(),
         cookieNonceAuthenticator = cookieNonceAuthenticator,
+        httpsUrlNormalizer = HttpsUrlNormalizer(),
         noCookieRequestQueue = noCookieRequestQueue,
         requestQueue = mock(),
         dispatcher = mock<Dispatcher>(),
