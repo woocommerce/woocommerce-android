@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -44,10 +45,11 @@ import com.woocommerce.android.util.UiHelpers
 internal fun JitmBanner(
     state: JitmState.Banner,
     modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(WooTheme.radius.extraLarge),
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(WooTheme.radius.extraLarge),
+        shape = shape,
         color = WooTheme.colors.surface.bright,
         contentColor = WooTheme.colors.surface.onDefault,
         shadowElevation = WooTheme.spacing.space0,
