@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
@@ -200,10 +201,11 @@ private fun VariationList(
 
 @Composable
 @Suppress("MagicNumber")
-fun VariationListSkeleton() {
+fun VariationListSkeleton(listState: LazyListState = rememberLazyListState()) {
     val numberOfInboxSkeletonRows = 10
     LazyColumn(
         Modifier.background(color = MaterialTheme.colors.surface),
+        state = listState,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         repeat(numberOfInboxSkeletonRows) {

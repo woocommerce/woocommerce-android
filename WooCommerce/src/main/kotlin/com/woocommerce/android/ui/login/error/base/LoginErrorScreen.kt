@@ -54,6 +54,7 @@ fun LoginErrorScreen(
     primaryButton: LoginErrorButton?,
     secondaryButton: LoginErrorButton?
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
@@ -64,6 +65,7 @@ fun LoginErrorScreen(
                     ImageVector.vectorResource(R.drawable.ic_back_24dp)
                 },
                 onHelpButtonClick = onHelpButtonClick,
+                showDivider = scrollState.canScrollBackward,
                 modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
             )
         },
@@ -81,7 +83,7 @@ fun LoginErrorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
                 val illustrationModifier = if (isLandscape) {

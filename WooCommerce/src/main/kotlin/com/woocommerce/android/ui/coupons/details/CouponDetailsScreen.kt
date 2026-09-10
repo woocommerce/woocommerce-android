@@ -72,10 +72,12 @@ fun CouponDetailsScreen(
             .fillMaxSize()
     ) {
         var showDeleteDialog by remember { mutableStateOf(false) }
+        val scrollState = rememberScrollState()
 
         Toolbar(
             title = state.couponSummary?.code ?: "",
             onNavigationButtonClick = onBackPress,
+            showDivider = scrollState.canScrollBackward,
             actions = {
                 OverflowAction(contentDescription = stringResource(id = R.string.more_menu)) { dismiss ->
                     WCOverflowMenuItem(
@@ -117,7 +119,7 @@ fun CouponDetailsScreen(
 
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier.verticalScroll(scrollState)
         ) {
             state.couponSummary?.let { coupon ->
                 CouponSummaryHeading(

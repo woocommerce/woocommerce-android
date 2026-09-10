@@ -95,12 +95,14 @@ private fun CustomFieldsEditorScreen(
     onBackButtonClick: () -> Unit,
 ) {
     BackHandler { onBackButtonClick() }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 title = "Custom Field",
                 onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward,
                 actions = {
                     TextAction(
                         text = stringResource(R.string.done),
@@ -145,7 +147,7 @@ private fun CustomFieldsEditorScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .heightIn(max = max(maxHeight, 320.dp))
             ) {
                 WCOutlinedTextField(

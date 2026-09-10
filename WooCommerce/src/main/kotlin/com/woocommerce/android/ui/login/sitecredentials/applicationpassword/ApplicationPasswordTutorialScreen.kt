@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -72,13 +73,15 @@ fun ApplicationPasswordTutorialScreen(
     onContactSupportClicked: () -> Unit,
     onNavigationButtonClicked: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = ImageVector.vectorResource(
                     if (authorizationStarted) R.drawable.ic_close_24dp else R.drawable.ic_back_24dp
-                )
+                ),
+                showDivider = !authorizationStarted && scrollState.canScrollBackward
             )
         }
     ) { paddingValues ->
@@ -96,7 +99,8 @@ fun ApplicationPasswordTutorialScreen(
                 paddingValues = paddingValues,
                 errorMessage = errorMessage,
                 onContinueClicked = onContinueClicked,
-                onContactSupportClicked = onContactSupportClicked
+                onContactSupportClicked = onContactSupportClicked,
+                scrollState = scrollState
             )
         }
     }
@@ -108,7 +112,8 @@ private fun TutorialContentScreen(
     paddingValues: PaddingValues,
     errorMessage: String?,
     onContinueClicked: () -> Unit,
-    onContactSupportClicked: () -> Unit
+    onContactSupportClicked: () -> Unit,
+    scrollState: ScrollState
 ) {
     Column(
         modifier = modifier
@@ -118,7 +123,7 @@ private fun TutorialContentScreen(
     ) {
         Column(
             modifier = modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .weight(6f, true)
         ) {
             Column(

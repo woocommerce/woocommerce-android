@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.onboarding.payments
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,11 +51,13 @@ fun WooPaymentsSetupInstructionsScreen(
     onBeginButtonClick: () -> Unit = {},
     onLearnMoreClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 onNavigationButtonClick = onCloseButtonClick,
+                showDivider = scrollState.canScrollBackward,
             )
         },
         bottomBar = {
@@ -66,6 +69,7 @@ fun WooPaymentsSetupInstructionsScreen(
     ) { paddingValues ->
         WooPaymentsSetupInstructionsContent(
             onWPComAccountMoreDetailsClick,
+            scrollState = scrollState,
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
@@ -77,13 +81,14 @@ fun WooPaymentsSetupInstructionsScreen(
 @Composable
 private fun WooPaymentsSetupInstructionsContent(
     onWPComAccountMoreDetailsClick: () -> Unit = {},
+    scrollState: ScrollState,
     modifier: Modifier
 ) {
     Column(
         modifier = modifier
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 

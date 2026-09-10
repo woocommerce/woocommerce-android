@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,12 +62,20 @@ fun VariationPickerScreen(
     onLoadMore: () -> Unit,
     onCancel: () -> Unit
 ) {
+    val listState = rememberLazyListState()
+    val skeletonListState = rememberLazyListState()
     Scaffold(topBar = {
         Toolbar(
             title = stringResource(id = R.string.product_variation_picker_title),
             onNavigationButtonClick = onCancel,
             navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
             navigationIconContentDescription = stringResource(id = R.string.close),
+            showDivider = when {
+                state.variations.isNotEmpty() -> listState.canScrollBackward
+                state.loadingState == VariationPickerViewModel.LoadingState.LOADING ->
+                    skeletonListState.canScrollBackward
+                else -> false
+            },
         )
     }) { padding ->
         when {
@@ -74,10 +83,12 @@ fun VariationPickerScreen(
                 state = state,
                 onVariationClick = onVariationClick,
                 onLoadMore = onLoadMore,
+                listState = listState,
                 modifier = Modifier.padding(padding)
             )
 
-            state.loadingState == VariationPickerViewModel.LoadingState.LOADING -> VariationListSkeleton()
+            state.loadingState == VariationPickerViewModel.LoadingState.LOADING ->
+                VariationListSkeleton(skeletonListState)
             else -> EmptyVariationList()
         }
     }
@@ -88,9 +99,9 @@ private fun VariationList(
     state: VariationPickerViewModel.ViewState,
     onVariationClick: (variation: VariationPickerViewModel.VariationListItem) -> Unit,
     onLoadMore: () -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    val listState = rememberLazyListState()
     Column(
         modifier = modifier
             .fillMaxHeight()

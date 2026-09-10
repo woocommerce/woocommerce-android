@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -33,11 +34,13 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     viewModel.viewState.observeAsState().value?.let { state ->
+        val listState = rememberLazyListState()
         Scaffold(topBar = {
             Toolbar(
                 title = stringResource(id = R.string.my_store_edit_screen_widgets),
                 onNavigationButtonClick = viewModel::onBackPressed,
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = true,
                 actions = {
                     TextAction(
                         text = stringResource(id = R.string.save),
@@ -57,7 +60,8 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding),
-                        isItemDraggable = { it.isAvailable }
+                        isItemDraggable = { it.isAvailable },
+                        listState = listState,
                     ) { item, dragDropState ->
                         when (item.isAvailable) {
                             true -> {

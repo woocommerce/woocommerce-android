@@ -77,11 +77,13 @@ private fun WooPushNotificationsConnectionStepsScreen(
     onUpdatePluginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         modifier = modifier,
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
+                showDivider = scrollState.canScrollBackward,
                 actions = {
                     if (viewState.isError) {
                         IconAction(
@@ -106,7 +108,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 WordPressWooBadge()
 

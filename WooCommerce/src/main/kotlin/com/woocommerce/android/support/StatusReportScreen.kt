@@ -44,6 +44,7 @@ fun StatusReportScreen(
     onCopyButtonClick: () -> Unit,
     onShareButtonClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
@@ -63,6 +64,7 @@ fun StatusReportScreen(
                         enabled = !isLoading,
                     )
                 },
+                showDivider = scrollState.canScrollBackward,
             )
         },
         modifier = Modifier
@@ -70,8 +72,6 @@ fun StatusReportScreen(
             .background(color = colorResource(id = R.color.color_toolbar))
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
-        val scrollState = rememberScrollState()
-
         // Column is used here despite just having one child component, so that StatusReportContent can use `weight`
         // Modifier. This allows `CircularProgressIndicator` in the loading state to be centered vertically and
         // horizontally.

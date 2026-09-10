@@ -69,12 +69,14 @@ fun LoginSiteCredentialsScreen(
     onErrorDialogDismissed: () -> Unit,
     onStartWebAuthorizationClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
                 onHelpButtonClick = onHelpButtonClick,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -88,7 +90,7 @@ fun LoginSiteCredentialsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 if (viewState.endpointRecovery != null) {

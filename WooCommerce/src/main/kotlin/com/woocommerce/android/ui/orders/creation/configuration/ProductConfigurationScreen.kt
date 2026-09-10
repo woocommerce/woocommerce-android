@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -76,6 +78,7 @@ internal const val OUTLINED_BORDER_OPACITY = 0.14f
 @Composable
 fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
     val viewState by viewModel.viewState.collectAsState()
+    val listState = rememberLazyListState()
     BackHandler(onBack = viewModel::onCancel)
     Scaffold(topBar = {
         Toolbar(
@@ -83,6 +86,7 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
             onNavigationButtonClick = viewModel::onCancel,
             navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
             navigationIconContentDescription = stringResource(id = R.string.close),
+            showDivider = listState.canScrollBackward
         )
     }) { padding ->
         when (val state = viewState) {
@@ -97,7 +101,8 @@ fun ProductConfigurationScreen(viewModel: ProductConfigurationViewModel) {
                     onSaveConfigurationClick = viewModel::onSaveConfiguration,
                     modifier = Modifier.padding(padding),
                     configurationIssues = state.configurationIssues,
-                    onSelectChildrenAttributes = viewModel::onSelectChildrenAttributes
+                    onSelectChildrenAttributes = viewModel::onSelectChildrenAttributes,
+                    listState = listState
                 )
             }
         }
@@ -113,13 +118,14 @@ fun ProductConfigurationScreen(
     onUpdateChildrenConfiguration: (Long, String, String) -> Unit,
     onSaveConfigurationClick: () -> Unit,
     onSelectChildrenAttributes: (itemId: Long) -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier,
     configurationIssues: List<String> = emptyList()
 ) {
     Surface {
         Column(modifier = modifier) {
             val isMaxChildrenReached = productConfiguration.isMaxChildrenReached()
-            LazyColumn(Modifier.weight(1f)) {
+            LazyColumn(modifier = Modifier.weight(1f), state = listState) {
                 val configurationItems = productConfiguration.childrenConfiguration?.entries?.toList() ?: emptyList()
                 items(configurationItems) { childMapEntry ->
                     val item = productsInfo.getOrDefault(

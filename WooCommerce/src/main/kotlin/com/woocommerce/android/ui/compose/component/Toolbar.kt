@@ -26,6 +26,7 @@ fun ToolbarWithHelpButton(
     navigationIcon: ImageVector? = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
     onHelpButtonClick: (() -> Unit)
 ) {
     Toolbar(
@@ -37,7 +38,8 @@ fun ToolbarWithHelpButton(
         actionButtonIcon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
         onActionButtonClick = onHelpButtonClick,
         actionIconContentDescription = stringResource(id = R.string.help),
-        windowInsets = windowInsets
+        windowInsets = windowInsets,
+        showDivider = showDivider,
     )
 }
 
@@ -50,6 +52,7 @@ fun Toolbar(
     navigationIcon: ImageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
 ) {
     ToolbarWithActions(
         modifier = modifier,
@@ -58,6 +61,7 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
+        showDivider = showDivider,
     )
 }
 
@@ -70,6 +74,7 @@ fun Toolbar(
     navigationIcon: ImageVector? = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
     actionIconContentDescription: String
@@ -81,6 +86,7 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
+        showDivider = showDivider,
         actions = {
             IconAction(
                 imageVector = actionButtonIcon,
@@ -100,6 +106,7 @@ fun Toolbar(
     navigationIcon: ImageVector? = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
     actions: @Composable WooTopAppBarActionsScope.() -> Unit = {}
 ) {
     ToolbarWithActions(
@@ -109,6 +116,7 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
+        showDivider = showDivider,
         actions = actions,
     )
 }
@@ -122,6 +130,7 @@ fun Toolbar(
     navigationIcon: ImageVector? = ImageVector.vectorResource(R.drawable.ic_back_24dp),
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
 ) {
@@ -132,6 +141,7 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
+        showDivider = showDivider,
         actions = {
             TextAction(
                 text = actionButtonText,
@@ -150,6 +160,7 @@ fun Toolbar(
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
+    showDivider: Boolean = false,
     actions: @Composable WooTopAppBarActionsScope.() -> Unit = {}
 ) {
     ToolbarWithActions(
@@ -159,6 +170,7 @@ fun Toolbar(
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
         windowInsets = windowInsets,
+        showDivider = showDivider,
         actions = actions,
     )
 }
@@ -172,6 +184,7 @@ private fun ToolbarWithActions(
     navigationIcon: ImageVector?,
     navigationIconContentDescription: String,
     windowInsets: WindowInsets,
+    showDivider: Boolean = false,
     actions: @Composable WooTopAppBarActionsScope.() -> Unit = {},
 ) {
     WooDesignSystemTheme(modifier = modifier) {
@@ -181,6 +194,7 @@ private fun ToolbarWithActions(
             navigationIconContentDescription = navigationIconContentDescription,
             onNavigationClick = onNavigationButtonClick,
             windowInsets = windowInsets,
+            showDivider = showDivider,
             actions = actions,
         )
     }
@@ -195,6 +209,7 @@ private fun ToolbarWithActions(
     navigationIcon: ImageVector?,
     navigationIconContentDescription: String,
     windowInsets: WindowInsets,
+    showDivider: Boolean,
     actions: @Composable WooTopAppBarActionsScope.() -> Unit,
 ) {
     WooDesignSystemTheme(modifier = modifier) {
@@ -220,6 +235,7 @@ private fun ToolbarWithActions(
                 }
             },
             windowInsets = windowInsets,
+            showDivider = showDivider,
             actions = actions,
         )
     }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,9 +67,16 @@ fun TaxRateSelectorScreen(
     onAutoRateToggleStateToggled: () -> Unit,
 ) {
     val state = viewState.collectAsState().value
+    val listState = rememberLazyListState()
     Scaffold(
         backgroundColor = MaterialTheme.colors.surface,
-        topBar = { TaxRateSelectorToolbar(onDismiss, onInfoIconClicked) },
+        topBar = {
+            TaxRateSelectorToolbar(
+                onDismiss,
+                onInfoIconClicked,
+                showDivider = listState.canScrollBackward,
+            )
+        },
         bottomBar = {
             if (state.isAutoTaxRateFeatureEnabled) {
                 BottomBar(onAutoRateToggleStateToggled, state)
@@ -83,6 +91,7 @@ fun TaxRateSelectorScreen(
             onEditTaxRatesInAdminClicked,
             onLoadMore,
             onEmptyScreenButtonClicked,
+            listState,
         )
     }
 }
@@ -139,12 +148,17 @@ fun EmptyTaxRateSelectorList(
 }
 
 @Composable
-private fun TaxRateSelectorToolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
+private fun TaxRateSelectorToolbar(
+    onDismiss: () -> Unit,
+    onInfoIconClicked: () -> Unit,
+    showDivider: Boolean,
+) {
     Toolbar(
         title = stringResource(R.string.tax_rate_selector_title),
         onNavigationButtonClick = onDismiss,
         navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
         navigationIconContentDescription = stringResource(R.string.close),
+        showDivider = showDivider,
         actions = {
             IconAction(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_info_outline_20dp),
@@ -224,8 +238,8 @@ private fun TaxRates(
     onEditTaxRatesInAdminClicked: () -> Unit,
     onLoadMore: () -> Unit = {},
     onEmptyScreenButtonClicked: () -> Unit,
+    listState: LazyListState = rememberLazyListState(),
 ) {
-    val listState = rememberLazyListState()
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = listState,

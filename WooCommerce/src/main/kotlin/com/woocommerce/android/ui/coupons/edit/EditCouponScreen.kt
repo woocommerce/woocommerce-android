@@ -103,7 +103,8 @@ fun EditCouponScreen(
             Toolbar(
                 title = viewState.screenTitle,
                 onNavigationButtonClick = { onBackPressed() },
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->

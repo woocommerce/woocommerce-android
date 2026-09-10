@@ -46,11 +46,13 @@ private fun ProductImageDetailsScreen(
 ) {
     BackHandler { onBackButtonClick() }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.product_image_details_title),
-                onNavigationButtonClick = onBackButtonClick
+                onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -58,7 +60,7 @@ private fun ProductImageDetailsScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(dimensionResource(R.dimen.major_100))
         ) {
             AsyncImage(

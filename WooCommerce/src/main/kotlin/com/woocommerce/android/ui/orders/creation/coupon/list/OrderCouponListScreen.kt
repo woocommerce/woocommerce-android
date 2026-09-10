@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -32,18 +34,22 @@ fun OrderCouponListScreen(
     onCouponClicked: (Order.CouponLine) -> Unit = {},
     couponsState: State<List<Order.CouponLine>>,
 ) {
+    val listState = rememberLazyListState()
     Scaffold(
-        topBar = { TopBar(onNavigateBackClicked) },
+        topBar = {
+            TopBar(onNavigateBackClicked, showDivider = listState.canScrollBackward)
+        },
     ) { padding ->
-        CouponList(padding, couponsState, onCouponClicked)
+        CouponList(padding, couponsState, onCouponClicked, listState)
     }
 }
 
 @Composable
-private fun TopBar(onNavigateBackClicked: () -> Unit) {
+private fun TopBar(onNavigateBackClicked: () -> Unit, showDivider: Boolean = false) {
     Toolbar(
         title = stringResource(id = R.string.order_creation_coupons_title),
         onNavigationButtonClick = onNavigateBackClicked,
+        showDivider = showDivider,
     )
 }
 
@@ -51,12 +57,14 @@ private fun TopBar(onNavigateBackClicked: () -> Unit) {
 private fun CouponList(
     padding: PaddingValues,
     couponsState: State<List<Order.CouponLine>>,
-    onCouponClicked: (Order.CouponLine) -> Unit
+    onCouponClicked: (Order.CouponLine) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(
-        Modifier
+        modifier = Modifier
             .padding(padding)
-            .background(color = MaterialTheme.colors.surface)
+            .background(color = MaterialTheme.colors.surface),
+        state = listState,
     ) {
         itemsIndexed(
             items = couponsState.value,

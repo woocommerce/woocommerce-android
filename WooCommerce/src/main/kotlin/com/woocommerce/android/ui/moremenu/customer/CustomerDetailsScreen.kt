@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.moremenu.customer
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -45,11 +46,13 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
     val state by viewModel.viewState.observeAsState()
     state?.let { currentState ->
+        val scrollState = rememberScrollState()
         Scaffold(
             topBar = {
                 Toolbar(
                     title = currentState.customerName,
                     onNavigationButtonClick = viewModel::onNavigateBack,
+                    showDivider = scrollState.canScrollBackward,
                 )
             }
         ) { padding ->
@@ -57,6 +60,7 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
                 state = currentState,
                 onRefresh = viewModel::refresh,
                 onEmailTapped = viewModel::onEmailTapped,
+                scrollState = scrollState,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -69,11 +73,12 @@ fun CustomerDetailsScreen(
     state: CustomerViewState,
     onRefresh: () -> Unit,
     onEmailTapped: () -> Unit,
+    scrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
     val pullRefreshState = rememberPullRefreshState(state.isRefreshingData, { onRefresh() })
     Box(modifier = modifier.pullRefresh(pullRefreshState)) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
             CustomerSection(
                 customer = state.customerWithAnalytics,
                 isLoadingAnalytics = state.isLoadingAnalytics,

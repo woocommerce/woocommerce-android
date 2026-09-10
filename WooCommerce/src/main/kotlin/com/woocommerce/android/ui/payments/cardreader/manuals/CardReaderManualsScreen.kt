@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,15 +37,21 @@ fun CardReaderManualsScreen(
     navController: NavController
 ) {
     WooThemeWithBackground {
+        val listState = rememberLazyListState()
         Scaffold(
             topBar = {
                 Toolbar(
                     title = stringResource(R.string.settings_card_reader_manuals),
                     onNavigationButtonClick = { navController.navigateUp() },
+                    showDivider = listState.canScrollBackward,
                 )
             }
         ) { innerPadding ->
-            CardReaderManualsScreen(cardReaderManualsViewModel = viewModel, contentPadding = innerPadding)
+            CardReaderManualsScreen(
+                cardReaderManualsViewModel = viewModel,
+                contentPadding = innerPadding,
+                listState = listState
+            )
         }
     }
 }
@@ -51,10 +59,12 @@ fun CardReaderManualsScreen(
 @Composable
 private fun CardReaderManualsScreen(
     cardReaderManualsViewModel: CardReaderManualsViewModel,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
+    listState: LazyListState
 ) {
     ManualsList(
         list = cardReaderManualsViewModel.manualState,
+        listState = listState,
         modifier = Modifier.padding(contentPadding)
     )
 }
@@ -99,10 +109,12 @@ fun ManualListItem(
 @Composable
 fun ManualsList(
     list: List<CardReaderManualsViewModel.ManualItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    listState: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
-        modifier
+        state = listState,
+        modifier = modifier
             .background(color = MaterialTheme.colorScheme.surface)
 
     ) {

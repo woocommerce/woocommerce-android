@@ -63,11 +63,13 @@ fun JetpackActivationSiteCredentialsScreen(
     onResetPasswordClick: () -> Unit = {},
     onCloseClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -81,7 +83,7 @@ fun JetpackActivationSiteCredentialsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 JetpackToWooHeader()

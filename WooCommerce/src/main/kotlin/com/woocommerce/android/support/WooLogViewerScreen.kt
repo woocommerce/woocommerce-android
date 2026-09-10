@@ -84,12 +84,14 @@ fun WooLogViewerScreen(
 @Composable
 private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList) {
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current
+    val listState = rememberLazyListState()
 
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.logviewer_activity_title),
                 onNavigationButtonClick = { backDispatcher?.onBackPressedDispatcher?.onBackPressed() },
+                showDivider = listState.canScrollBackward,
                 actions = {
                     IconAction(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_share_24dp),
@@ -105,6 +107,7 @@ private fun LogFilesListScreen(state: WooLogViewerViewModel.UiState.LogFilesList
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) { padding ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()

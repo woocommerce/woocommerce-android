@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -47,11 +49,20 @@ import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.P
 
 @Composable
 fun PluginsScreen(viewModel: PluginsViewModel) {
+    val state = viewModel.viewState.observeAsState().value
+    val loadingListState = rememberLazyListState()
+    val pluginsListState = rememberLazyListState()
+    val showDivider = when (state) {
+        is PluginsViewState.Loading -> loadingListState.canScrollBackward
+        is PluginsViewState.Loaded -> pluginsListState.canScrollBackward
+        else -> false
+    }
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.settings_plugins),
-                onNavigationButtonClick = viewModel::onBackPressed
+                onNavigationButtonClick = viewModel::onBackPressed,
+                showDivider = showDivider,
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
@@ -61,11 +72,13 @@ fun PluginsScreen(viewModel: PluginsViewModel) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            viewModel.viewState.observeAsState().value?.let { state ->
+            state?.let {
                 PluginsScreen(
-                    state = state,
+                    state = it,
                     onRetryTapped = viewModel::onRetryClicked,
                     onPluginClicked = viewModel::onPluginClicked,
+                    loadingListState = loadingListState,
+                    pluginsListState = pluginsListState,
                 )
             }
         }
@@ -77,11 +90,13 @@ private fun PluginsScreen(
     state: PluginsViewState,
     onRetryTapped: () -> Unit,
     onPluginClicked: (Plugin) -> Unit,
+    loadingListState: LazyListState = rememberLazyListState(),
+    pluginsListState: LazyListState = rememberLazyListState(),
 ) {
     Crossfade(targetState = state, label = "") {
         when (it) {
             is PluginsViewState.Loading -> {
-                ShimmerPluginsList()
+                ShimmerPluginsList(loadingListState)
             }
 
             is PluginsViewState.Error -> {
@@ -92,6 +107,7 @@ private fun PluginsScreen(
                 Plugins(
                     it.plugins,
                     onPluginClicked,
+                    pluginsListState,
                 )
             }
         }
@@ -101,9 +117,10 @@ private fun PluginsScreen(
 @Composable
 private fun Plugins(
     plugins: List<Plugin>,
-    onPluginClicked: (Plugin) -> Unit
+    onPluginClicked: (Plugin) -> Unit,
+    listState: LazyListState = rememberLazyListState(),
 ) {
-    LazyColumn {
+    LazyColumn(state = listState) {
         items(plugins) { plugin ->
             PluginItem(plugin, onPluginClicked)
 
@@ -187,8 +204,8 @@ private fun PluginItem(
 }
 
 @Composable
-fun ShimmerPluginsList() {
-    LazyColumn {
+fun ShimmerPluginsList(listState: LazyListState = rememberLazyListState()) {
+    LazyColumn(state = listState) {
         items(10) {
             ShimmerPluginItem()
 
