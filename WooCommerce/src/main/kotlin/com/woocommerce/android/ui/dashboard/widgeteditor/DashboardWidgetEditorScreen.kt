@@ -40,7 +40,7 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                 title = stringResource(id = R.string.my_store_edit_screen_widgets),
                 onNavigationButtonClick = viewModel::onBackPressed,
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                showDivider = !state.isLoading && listState.canScrollBackward,
+                showDivider = true,
                 actions = {
                     TextAction(
                         text = stringResource(id = R.string.save),

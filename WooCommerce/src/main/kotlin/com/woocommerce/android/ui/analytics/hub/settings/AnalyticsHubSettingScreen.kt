@@ -68,7 +68,7 @@ fun AnalyticsHubSettingScreen(
             title = stringResource(id = R.string.customize_analytics),
             onNavigationButtonClick = onBackPressed,
             navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-            showDivider = state is AnalyticsHubSettingsViewState.CardsConfiguration && listState.canScrollBackward,
+            showDivider = true,
             actions = {
                 TextAction(
                     text = stringResource(id = R.string.save),
