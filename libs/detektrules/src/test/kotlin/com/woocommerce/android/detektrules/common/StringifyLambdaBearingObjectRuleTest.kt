@@ -53,7 +53,7 @@ class StringifyLambdaBearingObjectRuleTest {
     }
 
     @Test
-    fun `given the 825 shape, when the when-subject is interpolated in an else branch, then it is flagged`() {
+    fun `given a when-subject narrowed only in some branches, when it is interpolated in the else branch, then it is flagged`() {
         val findings = rule.compileAndLintWithContext(
             env,
             """
