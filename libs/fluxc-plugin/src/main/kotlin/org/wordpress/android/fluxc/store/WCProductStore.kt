@@ -850,8 +850,11 @@ class WCProductStore @Inject internal constructor(
     /**
      * returns the corresponding product from the database as a [WCProductModel].
      */
-    fun getProductByRemoteId(site: SiteModel, remoteProductId: Long): WCProductModel? =
-        runBlocking { productsDao.getProduct(site.id, remoteProductId) }
+    suspend fun getProductByRemoteId(site: SiteModel, remoteProductId: Long): WCProductModel? =
+        productsDao.getProduct(site.id, remoteProductId)
+
+    fun getProductByRemoteIdBlocking(site: SiteModel, remoteProductId: Long): WCProductModel? =
+        runBlocking { getProductByRemoteId(site, remoteProductId) }
 
     /**
      * returns the corresponding variation from the database as a [WCProductVariationModel].
@@ -1618,9 +1621,11 @@ class WCProductStore @Inject internal constructor(
     }
 
     private fun updateProduct(payload: UpdateProductPayload) {
-        with(payload) {
-            val storedProduct = getProductByRemoteId(site, product.remoteProductId)
-            wcProductRestClient.updateProduct(site, storedProduct, product, payload.metadataChanges)
+        coroutineEngine.launch(T.DB, this, "updateProduct") {
+            with(payload) {
+                val storedProduct = getProductByRemoteId(site, product.remoteProductId)
+                wcProductRestClient.updateProduct(site, storedProduct, product, payload.metadataChanges)
+            }
         }
     }
 

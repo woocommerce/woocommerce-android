@@ -197,7 +197,7 @@ class AddonRepositoryTest : BaseUnitTest() {
         }
     }
 
-    private fun configureSuccessfulAddonResponse() {
+    private suspend fun configureSuccessfulAddonResponse() {
         whenever(
             productStoreMock.getProductByRemoteId(
                 testSite,
