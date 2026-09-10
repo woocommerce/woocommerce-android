@@ -123,7 +123,12 @@ private fun DashboardScreen(
         )
         Box(modifier = Modifier.weight(1f)) {
             dashboardContent(Modifier.fillMaxSize(), scrollBehavior) {
-                Box(modifier = Modifier.padding(vertical = WooTheme.padding.padding2)) {
+                Box(
+                    modifier = Modifier.padding(
+                        horizontal = WooTheme.padding.padding7,
+                        vertical = WooTheme.padding.padding2,
+                    ),
+                ) {
                     jitmContent(Modifier.fillMaxWidth())
                 }
             }
