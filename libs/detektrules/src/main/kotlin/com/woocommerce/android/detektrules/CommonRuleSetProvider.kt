@@ -1,5 +1,6 @@
-package com.woocommerce.android.detektrules.common
+package com.woocommerce.android.detektrules
 
+import com.woocommerce.android.detektrules.common.StringifyLambdaBearingObjectRule
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.RuleSet
 import io.gitlab.arturbosch.detekt.api.RuleSetProvider
