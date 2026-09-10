@@ -293,7 +293,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         }
     }
 
-    private fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
+    private suspend fun getProductFilterOptions(): List<OrderFilterOptionUiModel> {
         return listOfNotNull(
             orderFilterRepository.productFilter
                 ?.let {
@@ -407,20 +407,23 @@ class OrderFilterCategoriesViewModel @Inject constructor(
 
     fun onProductSelected(productId: Long) {
         orderFilterRepository.productFilter = productId
-        onFilterOptionsUpdated(
-            OrderFilterCategoryUiModel(
-                categoryKey = PRODUCT,
-                displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
-                displayValue = getProductDisplayValueFrom(productId),
-                listOf(
-                    OrderFilterOptionUiModel(
-                        key = productId.toString(),
-                        displayName = getProductDisplayValueFrom(productId),
-                        isSelected = true
+        launch {
+            val displayValue = getProductDisplayValueFrom(productId)
+            onFilterOptionsUpdated(
+                OrderFilterCategoryUiModel(
+                    categoryKey = PRODUCT,
+                    displayName = resourceProvider.getString(R.string.orderfilters_product_filter),
+                    displayValue = displayValue,
+                    listOf(
+                        OrderFilterOptionUiModel(
+                            key = productId.toString(),
+                            displayName = displayValue,
+                            isSelected = true
+                        )
                     )
                 )
             )
-        )
+        }
     }
 
     private suspend fun getCustomerDisplayValueFrom(customerId: Long?): String =
@@ -436,7 +439,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             )
         } ?: resourceProvider.getString(R.string.orderfilters_default_filter_value)
 
-    private fun getProductDisplayValueFrom(productId: Long?): String =
+    private suspend fun getProductDisplayValueFrom(productId: Long?): String =
         productId?.let { id ->
             productRepository.getProduct(id)?.name ?: resourceProvider.getString(
                 R.string.orderfilters_selected_filter_fallback_display_value,
