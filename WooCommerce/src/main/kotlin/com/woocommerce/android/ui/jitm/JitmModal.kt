@@ -76,6 +76,12 @@ fun JitmModal(state: JitmState.Modal) {
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
+                            .padding(
+                                start = WooTheme.padding.padding5,
+                                top = WooTheme.padding.padding5,
+                                end = WooTheme.padding.padding5,
+                            )
+                            .fillMaxWidth()
                             .height(JITM_MODAL_HERO_HEIGHT)
                     )
 
