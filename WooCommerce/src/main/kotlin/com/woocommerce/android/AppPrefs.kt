@@ -147,8 +147,7 @@ object AppPrefs {
         IS_SITE_WPCOM_SUSPENDED,
         JETPACK_APP_PASSWORDS_ENABLED,
         WOO_POS_LOCAL_CATALOG_ENABLED,
-        CLIENT_SIDE_BANNER_HIDDEN,
-        WOO_CORE_PUSH_DEVICE_UUID
+        CLIENT_SIDE_BANNER_HIDDEN
     }
 
     /**
@@ -370,10 +369,6 @@ object AppPrefs {
     var isWooPosSurveyNotificationPotentialUserShown: Boolean
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
-
-    var wooCorePushDeviceUUID: String
-        get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
-        set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
 
     var remoteFeatureFlagsDeviceId: String
         get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")

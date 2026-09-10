@@ -63,8 +63,6 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var wooPosLocalCatalogEnabled by AppPrefs::wooPosLocalCatalogEnabled
 
-    var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
-
     var remoteFeatureFlagsDeviceId by AppPrefs::remoteFeatureFlagsDeviceId
 
     fun getAppInstallationDate() = AppPrefs.installationDate

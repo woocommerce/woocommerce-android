@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_CONFIGURATION
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
@@ -20,6 +21,7 @@ import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.notifications.push.LegacyWooPushUuidMigration
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDayMigration
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
@@ -211,6 +213,9 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile("push_notifications") },
+        migrations = listOf(
+            LegacyWooPushUuidMigration(PreferenceManager.getDefaultSharedPreferences(appContext))
+        ),
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent(
                 "Corrupted data store. DataStore Type: ${WOO_CORE_PUSH_NOTIFICATIONS_TOKENS.name}"
