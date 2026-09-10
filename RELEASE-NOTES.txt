@@ -11,6 +11,7 @@
 - [Internal] The age restriction dialog now offers a Contact Support action that opens Help & Support while keeping the restriction enforced [https://github.com/woocommerce/woocommerce-android/pull/16523]
 - [*] Order detail: the "Need a shipping label?" banner dismiss button is now announced as "Dismiss" by TalkBack instead of a refund message [https://github.com/woocommerce/woocommerce-android/pull/16538]
 - [*****] Updated the Stripe Terminal SDK to 5.8.0; card readers now use coarse location on Android 12+ so the app no longer requests precise location for in-person payments except on older devices [https://github.com/woocommerce/woocommerce-android/pull/16507]
+- [*] Improved push notification reliability after transferring the app to another device [https://github.com/woocommerce/woocommerce-android/pull/16547]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]

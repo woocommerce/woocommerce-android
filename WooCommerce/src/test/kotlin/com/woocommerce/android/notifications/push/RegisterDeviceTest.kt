@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.APP_FOREGROUND
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.LOGIN_SUCCESS
 import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.SITE_SWITCH
@@ -45,14 +44,12 @@ import kotlin.time.Duration.Companion.milliseconds
 class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     private lateinit var sut: RegisterDevice
 
-    private val appPrefs: AppPrefsWrapper = mock {
-        on { getFCMToken() } doReturn TEST_TOKEN
-    }
+    private val identityStore: WooPushIdentityStore = mock()
     private val accountStore: AccountStore = mock {
         on { hasAccessToken() } doReturn true
     }
     private val pushNotificationRepository: PushNotificationRepository = mock {
-        on { shouldRegisterWooPushForSite(any(), any()) } doReturn true
+        on { shouldRegisterWooPushForSite(any()) } doReturn true
     }
     private val featureFlagRepository: FeatureFlagRepository = mock {
         on { isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1) } doReturn true
@@ -77,15 +74,20 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     @Before
     fun setUp() {
         runBlocking {
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = false)
+            )
             lenient().doReturn(emptySet<Long>())
-                .whenever(pushNotificationRepository).getWooPushRegisteredSiteIds()
+                .whenever(pushNotificationRepository).getOwnedWooPushRegisteredSiteIds()
             lenient().doReturn(WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123"))
-                .whenever(pushNotificationRepository).registerPushTokenInWpComSystem(any())
+                .whenever(pushNotificationRepository).registerPushTokenInWpComSystem()
+            lenient().doReturn(Result.success(Unit))
+                .whenever(pushNotificationRepository).registerPushTokenInWooCoreSystem(any(), any())
             lenient().doReturn(Result.success(Unit))
                 .whenever(pushNotificationRepository).enableWpComNotificationsForSites(any())
         }
         sut = RegisterDevice(
-            appPrefsWrapper = appPrefs,
+            identityStore = identityStore,
             accountStore = accountStore,
             pushNotificationRepository = pushNotificationRepository,
             featureFlagRepository = featureFlagRepository,
@@ -96,16 +98,16 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given no FCM token, when app foreground trigger runs, then does not register`() = testBlocking {
+    fun `given identity preparation fails, when app foreground trigger runs, then does not register`() = testBlocking {
         // GIVEN
-        whenever(appPrefs.getFCMToken()).thenReturn("")
+        whenever(identityStore.prepareRegistration()).thenThrow(IllegalStateException("Token fetch failed"))
 
         // WHEN
         sut(APP_FOREGROUND)
 
         // THEN
-        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(any(), any())
     }
 
     @Test
@@ -115,12 +117,114 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
         // THEN
         verify(selectedSite).getIfExists()
-        verify(pushNotificationRepository).shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
-        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
+        verify(pushNotificationRepository).shouldRegisterWooPushForSite(SELECTED_SITE_ID)
+        verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(selectedSiteModel, false)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_ONE)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_TWO)
         verify(getWooVisibleSites, never()).invoke()
     }
+
+    @Test
+    fun `given identity requires full registration, when app foreground runs, then registers all visible sites`() =
+        testBlocking {
+            // GIVEN
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = true)
+            )
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(getWooVisibleSites).invoke()
+            verify(selectedSite, never()).getIfExists()
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteTwo, false)
+            verify(identityStore).markCoreRegistrationComplete(TEST_UUID, TEST_TOKEN)
+        }
+
+    @Test
+    fun `given identity requires full registration, when one Woo registration fails, then identity stays pending`() =
+        testBlocking {
+            // GIVEN
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = true)
+            )
+            runBlocking {
+                whenever(
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(siteOne, false)
+                ).thenReturn(
+                    Result.failure(Exception("registration failed"))
+                )
+            }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteTwo, false)
+            verify(identityStore, never()).markCoreRegistrationComplete(any(), any())
+        }
+
+    @Test
+    fun `given M1 is disabled during failed Woo registration, when WPCom succeeds, then identity stays pending`() =
+        testBlocking {
+            // GIVEN
+            var isSelfDrivenPushEnabled = true
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenAnswer { isSelfDrivenPushEnabled }
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = true)
+            )
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(siteOne, false))
+                .doSuspendableAnswer {
+                    isSelfDrivenPushEnabled = false
+                    Result.failure(IllegalStateException("registration failed"))
+                }
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem()
+            verify(identityStore, never()).markCoreRegistrationComplete(any(), any())
+        }
+
+    @Test
+    fun `given identity requires full registration and no visible sites, when app foreground runs, then identity stays pending`() =
+        testBlocking {
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = true)
+            )
+            runBlocking {
+                whenever(getWooVisibleSites()).thenReturn(emptyList())
+            }
+
+            sut(APP_FOREGROUND)
+
+            verify(identityStore, never()).markCoreRegistrationComplete(any(), any())
+        }
+
+    @Test
+    fun `given identity requires full registration and M1 is disabled, when WPCom succeeds, then identity completes`() =
+        testBlocking {
+            // GIVEN
+            whenever(identityStore.prepareRegistration()).thenReturn(
+                WooPushIdentityStore.RegistrationIdentity(TEST_UUID, TEST_TOKEN, needsFullRegistration = true)
+            )
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(false)
+
+            // WHEN
+            sut(APP_FOREGROUND)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem()
+            verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(any(), any())
+            verify(identityStore).markCoreRegistrationComplete(TEST_UUID, TEST_TOKEN)
+        }
 
     @Test
     fun `given site switch trigger, when selected site exists, then evaluates only selected site and skips wpcom`() = testBlocking {
@@ -130,16 +234,15 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         // THEN
         val fallbackCaptor = argumentCaptor<Boolean>()
         verify(selectedSite).getIfExists()
-        verify(pushNotificationRepository).shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
+        verify(pushNotificationRepository).shouldRegisterWooPushForSite(SELECTED_SITE_ID)
         verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(
-            token = eq(TEST_TOKEN),
             selectedSite = eq(selectedSiteModel),
             allowWpComFallback = fallbackCaptor.capture()
         )
         assertThat(fallbackCaptor.firstValue).isFalse()
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
-        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_ONE)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_TWO)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
         verify(getWooVisibleSites, never()).invoke()
     }
 
@@ -150,11 +253,11 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(TOKEN_REFRESH)
 
             // THEN
-            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
-            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
-            verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_ONE)
+            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_TWO)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteTwo, false)
+            verify(pushNotificationRepository).registerPushTokenInWpComSystem()
         }
 
     @Test
@@ -166,7 +269,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(LOGIN_SUCCESS)
 
         // THEN
-        verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+        verify(pushNotificationRepository).registerPushTokenInWpComSystem()
     }
 
     @Test
@@ -178,7 +281,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(APP_FOREGROUND)
 
         // THEN
-        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
     }
 
     @Test
@@ -193,7 +296,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(APP_FOREGROUND)
 
         // THEN
-        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
     }
 
     @Test
@@ -205,54 +308,10 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(APP_FOREGROUND)
 
         // THEN
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_ONE)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_TWO)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(any(), any())
     }
-
-    @Test
-    fun `given M1 flag enabled, when a site registers, then clears its stale registration before registering`() =
-        testBlocking {
-            // WHEN
-            sut(TOKEN_REFRESH)
-
-            // THEN
-            val siteOneOrder = inOrder(pushNotificationRepository)
-            siteOneOrder.verify(pushNotificationRepository)
-                .clearWooPushRegistrationForStaleToken(SITE_ID_ONE, TEST_TOKEN)
-            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).clearWooPushRegistrationForStaleToken(SITE_ID_TWO, TEST_TOKEN)
-        }
-
-    @Test
-    fun `given app foreground trigger, when a site does not need registration, then does not clear its registration`() =
-        testBlocking {
-            // GIVEN
-            whenever(
-                pushNotificationRepository.shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
-            ).thenReturn(false)
-
-            // WHEN
-            sut(APP_FOREGROUND)
-
-            // THEN
-            verify(pushNotificationRepository, never())
-                .clearWooPushRegistrationForStaleToken(eq(SELECTED_SITE_ID), any())
-        }
-
-    @Test
-    fun `given M1 flag disabled, when registration runs, then does not clear stale Woo registrations`() =
-        testBlocking {
-            // GIVEN
-            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
-                .thenReturn(false)
-
-            // WHEN
-            sut(APP_FOREGROUND)
-
-            // THEN
-            verify(pushNotificationRepository, never()).clearWooPushRegistrationForStaleToken(any(), any())
-        }
 
     @Test
     fun `given M1 flag disabled and no Woo registrations, when registration runs, then does not migrate`() =
@@ -277,7 +336,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
                 .thenReturn(false)
             stubJetpackConnection(siteOne)
             runBlocking {
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds())
                     .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
             }
 
@@ -299,9 +358,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
                 .thenReturn(false)
             stubJetpackConnection(siteOne)
             runBlocking {
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds())
                     .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
-                whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).thenReturn(
+                whenever(pushNotificationRepository.registerPushTokenInWpComSystem()).thenReturn(
                     WpComPushNotificationStore.RegisterDeviceResponsePayload(
                         WpComPushNotificationStore.DeviceRegistrationError()
                     )
@@ -324,7 +383,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
                 .thenReturn(false)
             stubJetpackConnection(siteOne)
             runBlocking {
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds())
                     .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
                 whenever(pushNotificationRepository.enableWpComNotificationsForSites(any()))
                     .thenReturn(Result.failure(Exception("enable failed")))
@@ -345,7 +404,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
                 .thenReturn(false)
             whenever(accountStore.hasAccessToken()).thenReturn(false)
             runBlocking {
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds())
                     .thenReturn(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
             }
 
@@ -353,7 +412,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(APP_FOREGROUND)
 
             // THEN
-            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(any())
+            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
             verify(pushNotificationRepository, never()).enableWpComNotificationsForSites(any())
             verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(SITE_ID_ONE, HIDDEN_SITE_ID))
         }
@@ -367,14 +426,14 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             stubJetpackConnection(siteOne)
             runBlocking {
                 whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(true)
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_ONE))
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_ONE))
             }
 
             // WHEN
             sut(APP_FOREGROUND)
 
             // THEN
-            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(any())
+            verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
             verify(pushNotificationRepository).enableWpComNotificationsForSites(setOf(SITE_ID_ONE))
             verify(pushNotificationRepository).unregisterWooPushRegisteredSites(setOf(SITE_ID_ONE))
         }
@@ -386,7 +445,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
                 .thenReturn(false)
             runBlocking {
-                whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_TWO))
+                whenever(pushNotificationRepository.getOwnedWooPushRegisteredSiteIds()).thenReturn(setOf(SITE_ID_TWO))
             }
 
             // WHEN
@@ -416,7 +475,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         testBlocking {
             // GIVEN
             whenever(
-                pushNotificationRepository.shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
+                pushNotificationRepository.shouldRegisterWooPushForSite(SELECTED_SITE_ID)
             ).thenReturn(false)
 
             // WHEN
@@ -424,7 +483,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
 
             // THEN
             verify(pushNotificationRepository, never())
-                .registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), eq(selectedSiteModel), any())
+                .registerPushTokenInWooCoreSystem(eq(selectedSiteModel), any())
         }
 
     @Test
@@ -436,8 +495,8 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(APP_FOREGROUND)
 
         // THEN
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(eq(TEST_TOKEN), any())
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(any(), any())
         verify(getWooVisibleSites, never()).invoke()
     }
 
@@ -450,9 +509,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         sut(SITE_SWITCH)
 
         // THEN
-        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(eq(TEST_TOKEN), any())
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any(), any())
-        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(any(), any())
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem()
     }
 
     @Test
@@ -461,7 +520,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // GIVEN
             runBlocking {
                 whenever(
-                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(selectedSiteModel, false)
                 ).doSuspendableAnswer {
                     delay(1000.milliseconds)
                     Result.success(Unit)
@@ -481,7 +540,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(
                 pushNotificationRepository,
                 times(1)
-            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            ).registerPushTokenInWooCoreSystem(selectedSiteModel, false)
 
             // WHEN
             advanceTimeBy(1001.milliseconds)
@@ -492,7 +551,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             verify(
                 pushNotificationRepository,
                 times(2)
-            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+            ).registerPushTokenInWooCoreSystem(selectedSiteModel, false)
         }
 
     @Test
@@ -502,7 +561,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             var isFirstCall = true
             runBlocking {
                 whenever(
-                    pushNotificationRepository.registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(selectedSiteModel, false)
                 ).doSuspendableAnswer {
                     if (isFirstCall) {
                         isFirstCall = false
@@ -520,16 +579,16 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             advanceUntilIdle()
 
             // THEN
-            verify(pushNotificationRepository, times(1)).shouldRegisterWooPushForSite(TEST_TOKEN, SELECTED_SITE_ID)
-            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_ONE)
-            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(TEST_TOKEN, SITE_ID_TWO)
+            verify(pushNotificationRepository, times(1)).shouldRegisterWooPushForSite(SELECTED_SITE_ID)
+            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_ONE)
+            verify(pushNotificationRepository, never()).shouldRegisterWooPushForSite(SITE_ID_TWO)
             verify(
                 pushNotificationRepository,
                 times(1)
-            ).registerPushTokenInWooCoreSystem(TEST_TOKEN, selectedSiteModel, false)
-            verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
+            ).registerPushTokenInWooCoreSystem(selectedSiteModel, false)
+            verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository, atLeast(1)).registerPushTokenInWooCoreSystem(siteTwo, false)
+            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem()
         }
 
     @Test
@@ -538,7 +597,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             // GIVEN
             runBlocking {
                 whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false)
-                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                     .thenReturn(Result.failure(Exception("registration failed")))
             }
 
@@ -546,9 +605,9 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             sut(LOGIN_SUCCESS)
 
             // THEN
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
-            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(siteTwo, false)
+            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem()
         }
 
     @Test
@@ -558,7 +617,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             var isWpComRegistered = false
             whenever(pushNotificationRepository.isWpComPushRegistered()).thenAnswer { isWpComRegistered }
             runBlocking {
-                whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).doSuspendableAnswer {
+                whenever(pushNotificationRepository.registerPushTokenInWpComSystem()).doSuspendableAnswer {
                     delay(1000.milliseconds)
                     isWpComRegistered = true
                     WpComPushNotificationStore.RegisterDeviceResponsePayload(deviceId = "device-id-123")
@@ -571,7 +630,7 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
             advanceUntilIdle()
 
             // THEN
-            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem(TEST_TOKEN)
+            verify(pushNotificationRepository, times(1)).registerPushTokenInWpComSystem()
         }
 
     @Test
@@ -590,5 +649,6 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
         private const val SITE_ID_ONE = 456L
         private const val SITE_ID_TWO = 789L
         private const val HIDDEN_SITE_ID = 999L
+        private const val TEST_UUID = "test-uuid"
     }
 }

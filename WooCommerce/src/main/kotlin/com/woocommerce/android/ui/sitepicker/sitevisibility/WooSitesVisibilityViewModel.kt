@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.sitepicker.sitevisibility
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -38,7 +37,6 @@ class WooSitesVisibilityViewModel @Inject constructor(
     private val visibleSitesDataStore: VisibleWooSitesDataStore,
     private val notificationsStore: WpComPushNotificationStore,
     private val pushNotificationRepository: PushNotificationRepository,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val featureFlagRepository: FeatureFlagRepository,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
@@ -159,16 +157,12 @@ class WooSitesVisibilityViewModel @Inject constructor(
         if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
             return@coroutineScope Result.success(Unit)
         }
-        val token = appPrefsWrapper.getFCMToken().takeIf { it.isNotEmpty() }
-            ?: return@coroutineScope Result.success(Unit)
-
         val results = availableWooSites
             .filter { it.siteId in newlyVisibleSiteIds && it.siteId !in wooPushRegisteredSiteIds }
             .map { site ->
                 async {
-                    if (pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)) {
+                    if (pushNotificationRepository.shouldRegisterWooPushForSite(site.siteId)) {
                         pushNotificationRepository.registerPushTokenInWooCoreSystem(
-                            token = token,
                             selectedSite = site,
                             allowWpComFallback = false
                         ).recoverCatching { error ->

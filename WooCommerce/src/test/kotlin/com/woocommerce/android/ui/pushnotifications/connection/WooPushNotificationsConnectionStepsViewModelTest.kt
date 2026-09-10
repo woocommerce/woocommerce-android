@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
@@ -49,7 +48,6 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn site
     }
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock {
@@ -65,12 +63,13 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     ) {
         whenever(jetpackActivationRepository.registerSite(any(), any()))
             .thenReturn(Result.success(1L))
+        whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
+            .thenReturn(Result.failure(IllegalStateException("FCM token is empty")))
         whenever(stringUtils.getSiteDomainAndPath(site))
             .thenReturn(site.name)
         prepareMocks()
         viewModel = WooPushNotificationsConnectionStepsViewModel(
             selectedSite = selectedSite,
-            appPrefsWrapper = appPrefsWrapper,
             pushNotificationRepository = pushNotificationRepository,
             jetpackActivationRepository = jetpackActivationRepository,
             checkWCPluginSupport = checkWCPluginSupport,
@@ -111,8 +110,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     @Test
     fun `when initialized, then site address is set`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.success(Unit))
         }
 
@@ -148,8 +146,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     @Test
     fun `when close is clicked, then Exit event is triggered`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.success(Unit))
         }
 
@@ -296,7 +293,6 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     @Test
     fun `when connect store succeeds, then flow advances to enable push notifications step`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
         }
 
         val state = viewModel.viewState.runAndGetValue {
@@ -314,8 +310,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     @Test
     fun `given push registration fails, when EnablePushNotifications runs, then step is Error`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.failure(Exception("registration failed")))
         }
 
@@ -331,8 +326,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     fun `given push registration fails with WooException, when EnablePushNotifications runs, then tracks error details`() =
         testBlocking {
             setup {
-                whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                     .thenReturn(
                         Result.failure(
                             WooException(
@@ -365,9 +359,10 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given empty FCM token, when EnablePushNotifications runs, then step is Error`() = testBlocking {
+    fun `given canonical push registration fails, when EnablePushNotifications runs, then step is Error`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
+                .thenReturn(Result.failure(IllegalStateException("FCM token is empty")))
         }
 
         val state = viewModel.viewState.runAndGetValue {
@@ -382,8 +377,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     fun `given push registration fails then succeeds on retry, when retry clicked, then isDone is true`() =
         testBlocking {
             setup {
-                whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                     .thenReturn(Result.failure(Exception("registration failed")))
             }
 
@@ -392,7 +386,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             }
             assertThat(errorState.steps[2].state).isInstanceOf(StepState.Error::class.java)
 
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.success(Unit))
             viewModel.onRetryClick()
 
@@ -403,8 +397,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     @Test
     fun `when all steps succeed, then CheckPluginCompatibility and ConnectStore show as Success`() = testBlocking {
         setup {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.success(Unit))
         }
 
@@ -458,8 +451,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         ) {
             whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
-            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any(), any()))
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
                 .thenReturn(Result.success(Unit))
         }
 

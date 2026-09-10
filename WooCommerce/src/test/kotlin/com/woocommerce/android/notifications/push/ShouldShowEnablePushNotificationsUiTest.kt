@@ -7,6 +7,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -87,6 +88,29 @@ class ShouldShowEnablePushNotificationsUiTest : BaseUnitTest() {
             val result = sut().first()
 
             assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given imported Woo registration, when replacement fails and later succeeds, then enable UI stays hidden`() =
+        testBlocking {
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1))
+                .thenReturn(true)
+            val appPasswordsSite: SiteModel = mock {
+                on { siteId } doReturn TEST_SITE_ID
+                on { origin } doReturn 0
+            }
+            whenever(selectedSite.observe()).thenReturn(flowOf(appPasswordsSite))
+            whenever(pushNotificationRegistrationStatus.observe(TEST_SITE_ID)).thenReturn(
+                flowOf(
+                    PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY,
+                    PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY,
+                    PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY
+                )
+            )
+
+            val results = sut().toList()
+
+            assertThat(results).containsExactly(false, false, false)
         }
 
     @Test
