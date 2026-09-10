@@ -722,20 +722,14 @@ class OrderDetailFragment :
     }
 
     private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
+        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
-        if (refundsCount > 0) {
-            binding.orderDetailRefundsInfo.show()
-            binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
-                viewModel.onViewRefundedProductsClicked()
-            }
-        } else {
-            binding.orderDetailRefundsInfo.hide()
+        binding.orderDetailRefundsInfo.updateRefunds(refunds, formatCurrency) {
+            viewModel.onViewRefundedProductsClicked()
         }
 
         // display refunds list in the payment info section, if available
-        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-
         refunds.whenNotNullNorEmpty {
             binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {

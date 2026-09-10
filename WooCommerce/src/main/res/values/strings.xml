@@ -1425,6 +1425,7 @@
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
     <string name="order_refunds_refund_info_title">Refunded products</string>
+    <string name="order_refunds_refunded_items">Refunded items</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
