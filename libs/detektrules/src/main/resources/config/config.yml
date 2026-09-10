@@ -22,6 +22,5 @@ StoreRules:
   MixedStoreThemeImportsRule:
     active: true
 
-CommonRules:
-  StringifyLambdaBearingObjectRule:
-    active: true
+# CommonRules > StringifyLambdaBearingObjectRule is intentionally not listed here: it only works under type
+# resolution and is a no-op in detektAll. It is enabled solely in config/detekt/type-resolution.yml.
