@@ -263,6 +263,22 @@ class StringifyLambdaBearingObjectRuleTest {
     }
 
     @Test
+    fun `when a lambda-bearing object is appended to a string with plus-assign, then it is flagged`() {
+        val findings = rule.compileAndLintWithContext(
+            env,
+            """
+            data class Loading(val onCancel: () -> Unit)
+            fun log(s: Loading): String {
+                var out = "state: "
+                out += s
+                return out
+            }
+            """.trimIndent()
+        )
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
     fun `when a data class overrides toString, then it is not flagged`() {
         val findings = rule.compileAndLintWithContext(
             env,

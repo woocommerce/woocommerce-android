@@ -41,7 +41,7 @@ import org.jetbrains.kotlin.types.error.ErrorUtils
  * Flags stringifying a whole object whose type (or, for a sealed type, any of its subclasses) carries a
  * function-type (lambda / function-reference) property. Covers the three common ways an object reaches its
  * generated `toString()`: string-template interpolation (`"$x"`), an explicit `x.toString()` call, and
- * string concatenation (`"a: " + x`).
+ * string concatenation (`"a: " + x` and `s += x`).
  *
  * Why: stringifying such an object invokes its generated `toString()`, which renders the lambda through
  * `FunctionReference.toString()` -> kotlin-reflect. Under R8 full mode kotlin-reflect fails to resolve the
@@ -83,14 +83,23 @@ class StringifyLambdaBearingObjectRule(config: Config) : Rule(config) {
         reportIfRendersLambda(expression.receiverExpression)
     }
 
-    // String concatenation (`"a: " + x`) stringifies the non-String operand through the same toString().
+    // String concatenation stringifies the non-String operand through the same toString(). `+` produces a
+    // String-typed expression; `+=` produces a Unit-typed one, so its String-ness comes from the left operand.
     override fun visitBinaryExpression(expression: KtBinaryExpression) {
         super.visitBinaryExpression(expression)
         if (bindingContext == BindingContext.EMPTY) return
 
-        if (expression.operationToken != KtTokens.PLUS) return
-        if (bindingContext.getType(expression)?.let { KotlinBuiltIns.isString(it) } != true) return
-        listOfNotNull(expression.left, expression.right).forEach { reportIfRendersLambda(it) }
+        when (expression.operationToken) {
+            KtTokens.PLUS -> {
+                if (bindingContext.getType(expression)?.let { KotlinBuiltIns.isString(it) } != true) return
+                listOfNotNull(expression.left, expression.right).forEach { reportIfRendersLambda(it) }
+            }
+            KtTokens.PLUSEQ -> {
+                val left = expression.left ?: return
+                if (bindingContext.getType(left)?.let { KotlinBuiltIns.isString(it) } != true) return
+                expression.right?.let { reportIfRendersLambda(it) }
+            }
+        }
     }
 
     private fun reportIfRendersLambda(expression: KtExpression) {
