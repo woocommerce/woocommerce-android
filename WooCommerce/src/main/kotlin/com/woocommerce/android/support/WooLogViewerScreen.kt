@@ -224,7 +224,6 @@ private fun LogFileContent(
                 title = state.logFile.displayName.getText(),
                 onNavigationButtonClick = state.onBackPressed,
                 windowInsets = TopAppBarDefaults.windowInsets,
-                showDivider = lazyListState.canScrollBackward,
                 actions = {
                     SearchNavigationActions(
                         hasMatches = hasMatches,

@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -53,7 +51,6 @@ fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethods
 private fun BlazeCampaignPaymentMethodsListScreen(
     viewState: BlazeCampaignPaymentMethodsListViewModel.ViewState
 ) {
-    val listState = rememberLazyListState()
     Scaffold(
         topBar = {
             Toolbar(
@@ -69,10 +66,7 @@ private fun BlazeCampaignPaymentMethodsListScreen(
                             R.drawable.ic_close_24dp
                         }
                     }
-                ),
-                showDivider = viewState is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList &&
-                    viewState.paymentMethods.isNotEmpty() &&
-                    listState.canScrollBackward
+                )
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -81,7 +75,6 @@ private fun BlazeCampaignPaymentMethodsListScreen(
             is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> {
                 PaymentMethodsList(
                     state = viewState,
-                    listState = listState,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -99,7 +92,6 @@ private fun BlazeCampaignPaymentMethodsListScreen(
 @Composable
 private fun PaymentMethodsList(
     state: BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList,
-    listState: LazyListState,
     modifier: Modifier
 ) {
     Column(modifier) {
@@ -119,7 +111,6 @@ private fun PaymentMethodsList(
                 selectedPaymentMethod = state.selectedPaymentMethod!!,
                 onPaymentMethodClicked = state.onPaymentMethodClicked,
                 onAddPaymentMethodClicked = state.onAddPaymentMethodClicked,
-                listState = listState,
                 modifier = modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -149,10 +140,9 @@ private fun PaymentMethodsListView(
     accountUsername: String,
     onPaymentMethodClicked: (PaymentMethod) -> Unit,
     onAddPaymentMethodClicked: () -> Unit,
-    listState: LazyListState,
     modifier: Modifier
 ) {
-    LazyColumn(state = listState, modifier = modifier) {
+    LazyColumn(modifier = modifier) {
         items(paymentMethods) { paymentMethod ->
             Column {
                 PaymentMethodItem(

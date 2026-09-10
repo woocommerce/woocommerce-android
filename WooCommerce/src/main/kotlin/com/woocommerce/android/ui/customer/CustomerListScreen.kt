@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -67,9 +65,6 @@ fun CustomerListScreen(
     onSearchQueryChanged: (String) -> Unit,
     onSearchTypeChanged: (Int) -> Unit,
     onEndOfListReached: () -> Unit,
-    listState: LazyListState = rememberLazyListState(),
-    emptyScrollState: ScrollState = rememberScrollState(),
-    skeletonListState: LazyListState = rememberLazyListState(),
 ) {
     Column(
         modifier = modifier
@@ -101,40 +96,20 @@ fun CustomerListScreen(
                 body.message,
                 body.image,
                 body.button,
-                emptyScrollState,
             )
 
-            is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message, emptyScrollState)
-            CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton(skeletonListState)
+            is CustomerListViewState.CustomerList.Error -> CustomerListError(body.message)
+            CustomerListViewState.CustomerList.Loading -> CustomerListSkeleton()
             is CustomerListViewState.CustomerList.Loaded -> {
                 CustomerListLoaded(
                     body,
                     onCustomerSelected,
                     onEndOfListReached,
-                    listState,
                 )
             }
         }
     }
 }
-
-/**
- * Whether the currently visible content of [CustomerListScreen] has scrolled past its top edge, for driving
- * a divider on a hosting screen's top app bar. Must be read with the same [listState]/[emptyScrollState]/
- * [skeletonListState] instances passed into [CustomerListScreen].
- */
-fun CustomerListViewState.canScrollBackward(
-    listState: LazyListState,
-    emptyScrollState: ScrollState,
-    skeletonListState: LazyListState,
-): Boolean =
-    when (body) {
-        is CustomerListViewState.CustomerList.Empty, is CustomerListViewState.CustomerList.Error ->
-            emptyScrollState.canScrollBackward
-
-        CustomerListViewState.CustomerList.Loading -> skeletonListState.canScrollBackward
-        is CustomerListViewState.CustomerList.Loaded -> listState.canScrollBackward
-    }
 
 @Composable
 private fun PartialLoadingIndicator(state: CustomerListViewState) {
@@ -157,8 +132,9 @@ private fun CustomerListLoaded(
     body: CustomerListViewState.CustomerList.Loaded,
     onCustomerSelected: (WCCustomerModel) -> Unit,
     onEndOfListReached: () -> Unit,
-    listState: LazyListState,
 ) {
+    val listState = rememberLazyListState()
+
     LaunchedEffect(key1 = body) {
         if (body.shouldResetScrollPosition) listState.scrollToItem(0)
     }
@@ -262,32 +238,28 @@ private fun CustomerListEmpty(
     @StringRes message: Int,
     @DrawableRes image: Int,
     button: Button?,
-    scrollState: ScrollState,
 ) {
     CustomerListNoDataState(
         text = message,
         image = image,
         button = button,
-        scrollState = scrollState,
     )
 }
 
 @Composable
-private fun CustomerListError(@StringRes message: Int, scrollState: ScrollState) {
+private fun CustomerListError(@StringRes message: Int) {
     CustomerListNoDataState(
         text = message,
         image = R.drawable.img_woo_generic_error,
         button = null,
-        scrollState = scrollState,
     )
 }
 
 @Composable
-private fun CustomerListSkeleton(listState: LazyListState) {
+private fun CustomerListSkeleton() {
     val numberOfSkeletonRows = 10
     LazyColumn(
         Modifier.background(color = MaterialTheme.colors.surface),
-        state = listState,
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
     ) {
         repeat(numberOfSkeletonRows) {
@@ -309,12 +281,11 @@ private fun CustomerListNoDataState(
     @StringRes text: Int,
     @DrawableRes image: Int,
     button: Button?,
-    scrollState: ScrollState,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
             .padding(dimensionResource(id = R.dimen.major_200)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

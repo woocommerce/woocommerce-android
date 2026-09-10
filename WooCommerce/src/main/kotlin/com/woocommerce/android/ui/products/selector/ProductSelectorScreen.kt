@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.selector
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -93,14 +91,6 @@ fun ProductSelectorScreen(
     )
     viewState?.let { state ->
         val showToolbar = state.selectionMode != SelectionMode.LIVE
-        val listState = rememberLazyListState()
-        val emptyScrollState = rememberScrollState()
-        val skeletonListState = rememberLazyListState()
-        val showDivider = when {
-            state.products.isNotEmpty() -> listState.canScrollBackward
-            state.products.isEmpty() && state.loadingState == LOADING -> skeletonListState.canScrollBackward
-            else -> emptyScrollState.canScrollBackward
-        }
         Scaffold(topBar = {
             if (showToolbar) {
                 Toolbar(
@@ -108,7 +98,6 @@ fun ProductSelectorScreen(
                         ?: stringResource(id = string.coupon_conditions_products_select_products_title),
                     onNavigationButtonClick = viewModel::onNavigateBack,
                     windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
-                    showDivider = showDivider,
                 )
             }
         }) { padding ->
@@ -137,9 +126,6 @@ fun ProductSelectorScreen(
                 onSearchTypeChanged = viewModel::onSearchTypeChanged,
                 trackConfigurableProduct = viewModel::trackConfigurableProduct,
                 onEditConfiguration = viewModel::onEditConfiguration,
-                listState = listState,
-                emptyScrollState = emptyScrollState,
-                skeletonListState = skeletonListState,
             )
         }
     }
@@ -158,10 +144,7 @@ fun ProductSelectorScreen(
     onSearchTypeChanged: (Int) -> Unit,
     onClearFiltersButtonClick: () -> Unit,
     trackConfigurableProduct: () -> Unit,
-    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit,
-    listState: LazyListState = rememberLazyListState(),
-    emptyScrollState: ScrollState = rememberScrollState(),
-    skeletonListState: LazyListState = rememberLazyListState(),
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -201,12 +184,11 @@ fun ProductSelectorScreen(
                 onProductClick = onProductClick,
                 onLoadMore = onLoadMore,
                 trackConfigurableProduct = trackConfigurableProduct,
-                onEditConfiguration = onEditConfiguration,
-                listState = listState
+                onEditConfiguration = onEditConfiguration
             )
 
-            state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton(skeletonListState)
-            else -> EmptyProductList(state, onClearFiltersButtonClick, emptyScrollState)
+            state.products.isEmpty() && state.loadingState == LOADING -> ProductListSkeleton()
+            else -> EmptyProductList(state, onClearFiltersButtonClick)
         }
     }
 }
@@ -214,13 +196,12 @@ fun ProductSelectorScreen(
 @Composable
 private fun EmptyProductList(
     state: ViewState,
-    onClearFiltersButtonClick: () -> Unit,
-    scrollState: ScrollState = rememberScrollState()
+    onClearFiltersButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
             .padding(
                 horizontal = dimensionResource(id = dimen.major_200),
                 vertical = dimensionResource(id = dimen.major_200)
@@ -375,9 +356,9 @@ private fun ProductList(
     onProductClick: (ListItem, ProductSourceForTracking) -> Unit,
     onLoadMore: () -> Unit,
     trackConfigurableProduct: () -> Unit,
-    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit,
-    listState: LazyListState = rememberLazyListState()
+    onEditConfiguration: (ListItem.ConfigurableListItem) -> Unit
 ) {
+    val listState = rememberLazyListState()
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -539,9 +520,9 @@ private val ListItem.disabledReason: String?
 
 @Composable
 @Suppress("MagicNumber")
-private fun ProductListSkeleton(listState: LazyListState = rememberLazyListState()) {
+private fun ProductListSkeleton() {
     val numberOfInboxSkeletonRows = 10
-    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface), state = listState) {
+    LazyColumn(Modifier.background(color = MaterialTheme.colors.surface)) {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Row(

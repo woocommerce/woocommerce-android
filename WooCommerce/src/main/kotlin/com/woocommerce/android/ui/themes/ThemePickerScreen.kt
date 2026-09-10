@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.themes
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -62,12 +61,10 @@ import okhttp3.OkHttpClient
 @Composable
 fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
-        val scrollState = rememberScrollState()
         Scaffold(topBar = {
             Toolbar(
                 title = stringResource(id = R.string.settings_themes),
-                onNavigationButtonClick = viewModel::onArrowBackPressed,
-                showDivider = viewState.carouselState is CarouselState.Success && scrollState.canScrollBackward
+                onNavigationButtonClick = viewModel::onArrowBackPressed
             )
         }) { padding ->
             ThemePicker(
@@ -78,8 +75,7 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
                 viewState = viewState,
                 onThemeTapped = viewModel::onThemeTapped,
                 onThemeScreenshotFailure = viewModel::onThemeScreenshotFailure,
-                onRetryTapped = viewModel::onRetryTapped,
-                scrollState = scrollState
+                onRetryTapped = viewModel::onRetryTapped
             )
         }
     }
@@ -91,8 +87,7 @@ private fun ThemePicker(
     viewState: ThemePickerViewModel.ViewState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit,
-    onRetryTapped: () -> Unit,
-    scrollState: ScrollState = rememberScrollState()
+    onRetryTapped: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -105,8 +100,7 @@ private fun ThemePicker(
             viewState.carouselState,
             onThemeTapped,
             onThemeScreenshotFailure,
-            onRetryTapped,
-            scrollState
+            onRetryTapped
         )
     }
 }
@@ -171,8 +165,7 @@ private fun Carousel(
     state: CarouselState,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
     onThemeScreenshotFailure: (String, Throwable) -> Unit,
-    onRetryTapped: () -> Unit,
-    scrollState: ScrollState
+    onRetryTapped: () -> Unit
 ) {
     when (state) {
         is CarouselState.Loading -> {
@@ -184,7 +177,7 @@ private fun Carousel(
         }
 
         is CarouselState.Success -> {
-            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure, scrollState)
+            Carousel(state.carouselItems, onThemeTapped, onThemeScreenshotFailure)
         }
     }
 }
@@ -247,13 +240,12 @@ private fun Error(onRetryClick: () -> Unit) {
 private fun Carousel(
     items: List<CarouselItem>,
     onThemeTapped: (CarouselItem.Theme) -> Unit,
-    onThemeScreenshotFailure: (String, Throwable) -> Unit,
-    scrollState: ScrollState
+    onThemeScreenshotFailure: (String, Throwable) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
     ) {
         LazyRow(
             modifier = Modifier

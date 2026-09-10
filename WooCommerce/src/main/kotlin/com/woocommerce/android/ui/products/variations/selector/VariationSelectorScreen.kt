@@ -58,8 +58,6 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 @Composable
 fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     val viewState by viewModel.viewSate.observeAsState(ViewState())
-    val listState = rememberLazyListState()
-    val skeletonListState = rememberLazyListState()
     BackHandler(onBack = viewModel::onBackPress)
     Scaffold(
         topBar = {
@@ -67,11 +65,6 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
                 title = viewState.productName,
                 onNavigationButtonClick = viewModel::onBackPress,
                 windowInsets = WindowInsets.statusBars,
-                showDivider = when {
-                    viewState.variations.isNotEmpty() -> listState.canScrollBackward
-                    viewState.loadingState == LOADING -> skeletonListState.canScrollBackward
-                    else -> false
-                }
             )
         },
         content = {
@@ -79,9 +72,7 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
                 state = viewState,
                 onClearButtonClick = viewModel::onClearButtonClick,
                 onVariationClick = viewModel::onVariationClick,
-                onLoadMore = viewModel::onLoadMore,
-                listState = listState,
-                skeletonListState = skeletonListState
+                onLoadMore = viewModel::onLoadMore
             )
         }
     )
@@ -92,20 +83,17 @@ fun VariationSelectorScreen(
     state: ViewState,
     onClearButtonClick: () -> Unit,
     onVariationClick: (VariationListItem) -> Unit,
-    onLoadMore: () -> Unit,
-    listState: LazyListState,
-    skeletonListState: LazyListState = rememberLazyListState()
+    onLoadMore: () -> Unit
 ) {
     when {
         state.variations.isNotEmpty() -> VariationList(
             state = state,
             onClearButtonClick = onClearButtonClick,
             onVariationClick = onVariationClick,
-            onLoadMore = onLoadMore,
-            listState = listState
+            onLoadMore = onLoadMore
         )
 
-        state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton(skeletonListState)
+        state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton()
         else -> EmptyVariationList()
     }
 }
@@ -142,8 +130,8 @@ private fun VariationList(
     onClearButtonClick: () -> Unit,
     onVariationClick: (VariationListItem) -> Unit,
     onLoadMore: () -> Unit,
-    listState: LazyListState = rememberLazyListState()
 ) {
+    val listState = rememberLazyListState()
     Column(
         modifier = Modifier
             .fillMaxHeight()

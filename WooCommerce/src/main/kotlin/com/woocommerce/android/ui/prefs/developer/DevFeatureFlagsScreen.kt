@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -71,13 +70,11 @@ private fun DevFeatureFlagsScreenContent(
         }
     }
 
-    val listState = rememberLazyListState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.dev_feature_flags),
                 onNavigationButtonClick = onBackClick,
-                showDivider = listState.canScrollBackward,
                 actions = {
                     TextAction(
                         text = stringResource(R.string.restart),
@@ -98,7 +95,7 @@ private fun DevFeatureFlagsScreenContent(
                     .padding(dimensionResource(id = R.dimen.major_100))
             )
 
-            LazyColumn(state = listState) {
+            LazyColumn {
                 items(filteredFlags, key = { it.name }) { flag ->
                     flagStates[flag]?.let { state ->
                         FeatureFlagItem(

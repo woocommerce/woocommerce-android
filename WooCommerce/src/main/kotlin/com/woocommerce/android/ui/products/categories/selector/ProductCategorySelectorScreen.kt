@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -80,20 +79,12 @@ fun ProductCategorySelectorScreen(
     BackHandler {
         onBackPressed()
     }
-    val categoriesListState = rememberLazyListState()
-    val skeletonListState = rememberLazyListState()
-    val showDivider = when {
-        viewState.categories.isNotEmpty() -> categoriesListState.canScrollBackward
-        viewState.loadingState == LoadingState.Loading -> skeletonListState.canScrollBackward
-        else -> false
-    }
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.product_category_selector_title),
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                onNavigationButtonClick = onBackPressed,
-                showDivider = showDivider,
+                onNavigationButtonClick = onBackPressed
             )
         }
     ) { contentPadding ->
@@ -119,11 +110,10 @@ fun ProductCategorySelectorScreen(
                     viewState = viewState,
                     onLoadMore = onLoadMore,
                     onClearSelectionClick = onClearSelectionClick,
-                    onDoneClick = onDoneClick,
-                    lazyListState = categoriesListState,
+                    onDoneClick = onDoneClick
                 )
 
-                viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton(skeletonListState)
+                viewState.loadingState == LoadingState.Loading -> CategoriesSkeleton()
                 else -> EmptyCategoriesList(viewState.searchQuery)
             }
         }
@@ -135,8 +125,7 @@ private fun CategoriesList(
     viewState: ProductCategorySelectorViewModel.ViewState,
     onLoadMore: () -> Unit,
     onClearSelectionClick: () -> Unit,
-    onDoneClick: () -> Unit,
-    lazyListState: LazyListState,
+    onDoneClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -150,6 +139,7 @@ private fun CategoriesList(
                 Text(text = stringResource(id = R.string.product_category_selector_clear_selection))
             }
         }
+        val lazyListState = rememberLazyListState()
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.weight(1f)
@@ -266,9 +256,9 @@ private fun EmptyCategoriesList(searchQuery: String) {
 }
 
 @Composable
-private fun CategoriesSkeleton(listState: LazyListState) {
+private fun CategoriesSkeleton() {
     val numberOfInboxSkeletonRows = 20
-    LazyColumn(state = listState) {
+    LazyColumn {
         item {
             SkeletonView(
                 modifier = Modifier
