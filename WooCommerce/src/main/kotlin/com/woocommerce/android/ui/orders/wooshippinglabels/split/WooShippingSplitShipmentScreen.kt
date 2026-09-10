@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -38,7 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -113,13 +111,9 @@ fun WooShippingSplitShipmentScreen(
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val shipments = viewState.selectableItems.keys.toList()
-    val listStates = remember { mutableStateMapOf<Int, LazyListState>() }
-    val activeShipmentKey = viewState.shipmentSelected.takeIf { it in shipments } ?: shipments.firstOrNull()
-    val showDivider = listStates[activeShipmentKey]?.canScrollBackward == true
 
     Scaffold(
-        topBar = { TopBar(onBack, onDone, showDivider = showDivider) },
+        topBar = { TopBar(onBack, onDone) },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 val visuals = data.visuals as ShippingLabelsSnackbarVisuals
@@ -140,6 +134,8 @@ fun WooShippingSplitShipmentScreen(
                     else -> 16.dp
                 }
 
+                val shipments = viewState.selectableItems.keys.toList()
+
                 if (shipments.size > 1) {
                     MultipleShipments(
                         viewState,
@@ -148,7 +144,6 @@ fun WooShippingSplitShipmentScreen(
                         onUpdateSelectedShipment,
                         onUpdateSelection,
                         onRemoveShipmentMenuTapped,
-                        listStates,
                         modifier
                     )
 
@@ -179,7 +174,6 @@ fun WooShippingSplitShipmentScreen(
                         shipment = viewState.selectableItems.values.first(),
                         onUpdateSelection = onUpdateSelection,
                         extraBottomPadding = productsExtraPadding,
-                        listState = listStates.getOrPut(shipments.first()) { LazyListState() },
                         modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     )
                     SplitMessagesSection(
@@ -235,17 +229,12 @@ fun WooShippingSplitShipmentScreen(
 }
 
 @Composable
-private fun TopBar(
-    onBack: (() -> Unit)? = null,
-    onDone: (() -> Unit)? = null,
-    showDivider: Boolean = false
-) {
+private fun TopBar(onBack: (() -> Unit)? = null, onDone: (() -> Unit)? = null) {
     Toolbar(
         title = stringResource(R.string.woo_shipping_split_shipment),
         onNavigationButtonClick = onBack ?: {},
         navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
         navigationIconContentDescription = stringResource(id = R.string.close),
-        showDivider = showDivider,
         actions = {
             TextAction(
                 text = stringResource(id = R.string.done),
@@ -264,7 +253,6 @@ private fun MultipleShipments(
     onUpdateSelectedShipment: (shipmentKey: Int) -> Unit,
     onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     onRemoveShipmentMenuTapped: (shipmentKeys: List<Int>) -> Unit,
-    listStates: MutableMap<Int, LazyListState>,
     modifier: Modifier
 ) {
     val pagerState = rememberPagerState { shipments.size }
@@ -330,8 +318,7 @@ private fun MultipleShipments(
                     shipment = it,
                     onUpdateSelection = onUpdateSelection,
                     modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-                    extraBottomPadding = productsExtraPadding,
-                    listState = listStates.getOrPut(shipments[page]) { LazyListState() }
+                    extraBottomPadding = productsExtraPadding
                 )
             }
         }
@@ -494,7 +481,6 @@ fun SelectableProductsSection(
     shipment: SelectableShippableItemsUI,
     onUpdateSelection: (index: Int, selectedIndexes: Set<Int>?) -> Unit,
     extraBottomPadding: Dp,
-    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -531,7 +517,7 @@ fun SelectableProductsSection(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
         )
 
-        LazyColumn(state = listState) {
+        LazyColumn {
             itemsIndexed(
                 items = shipment.shippableItems,
             ) { index, shippableItem ->
