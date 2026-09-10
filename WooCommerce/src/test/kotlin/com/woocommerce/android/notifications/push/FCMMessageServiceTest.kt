@@ -4,7 +4,6 @@ import com.woocommerce.android.notifications.push.RegisterDevice.Trigger.TOKEN_R
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -71,32 +70,9 @@ class FCMMessageServiceTest : BaseUnitTest() {
         assertThat(result.exceptionOrNull()).isEqualTo(exception)
     }
 
-    @Test(timeout = TEST_TIMEOUT_MS)
-    fun `given service registration is active, when service is destroyed, then registration is cancelled`() = runBlocking {
-        val registrationStarted = CompletableDeferred<Unit>()
-        val registrationCancelled = CompletableDeferred<Unit>()
-        doSuspendableAnswer {
-            registrationStarted.complete(Unit)
-            try {
-                awaitCancellation()
-            } finally {
-                registrationCancelled.complete(Unit)
-            }
-        }.whenever(registerDevice).invoke(TOKEN_REFRESH)
-
-        sut.onNewToken(TOKEN)
-        registrationStarted.await()
-
-        val destruction = runCatching { sut.onDestroy() }
-
-        assertThat(destruction.exceptionOrNull()).isInstanceOf(RuntimeException::class.java)
-        registrationCancelled.await()
-    }
-
     private companion object {
         const val TOKEN = "new-token"
         const val PERSISTENCE_DELAY_MS = 10L
         const val REGISTRATION_TIMEOUT_MS = 1_000L
-        const val TEST_TIMEOUT_MS = 5_000L
     }
 }

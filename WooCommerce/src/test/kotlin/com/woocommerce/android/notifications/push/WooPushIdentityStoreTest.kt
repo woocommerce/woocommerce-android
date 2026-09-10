@@ -44,27 +44,18 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given empty install, when preparing, then persists a new UUID and SDK token pending registration`() = testBlocking {
-        whenever(tokenProvider.getToken()).thenReturn(TOKEN)
+    fun `given empty install, when preparing again after recreation, then reuses the persisted UUID and token`() =
+        testBlocking {
+            whenever(tokenProvider.getToken()).thenReturn(TOKEN)
 
-        val identity = newStore().prepareRegistration()
+            val identity = newStore().prepareRegistration()
 
-        assertThat(identity.uuid).isNotBlank()
-        assertThat(identity.token).isEqualTo(TOKEN)
-        assertThat(identity.needsFullRegistration).isTrue()
-        assertThat(newStore().currentUuidOrNull()).isEqualTo(identity.uuid)
-        assertThat(newStore().currentTokenOrNull()).isEqualTo(TOKEN)
-    }
-
-    @Test
-    fun `given pending identity, when store is recreated, then reuses persisted UUID and token`() = testBlocking {
-        seed(pending = true)
-
-        val identity = newStore().prepareRegistration()
-
-        assertThat(identity).isEqualTo(WooPushIdentityStore.RegistrationIdentity(UUID, TOKEN, true))
-        verify(tokenProvider, never()).getToken()
-    }
+            assertThat(identity.uuid).isNotBlank()
+            assertThat(identity.token).isEqualTo(TOKEN)
+            assertThat(identity.needsFullRegistration).isTrue()
+            assertThat(newStore().prepareRegistration()).isEqualTo(identity)
+            verify(tokenProvider).getToken()
+        }
 
     @Test
     fun `given token fetch fails, when retried, then reuses the UUID persisted before failure`() = testBlocking {
@@ -168,17 +159,6 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
         }
 
     @Test
-    fun `given pending registration, when completion has wrong UUID or token, then remains pending`() = testBlocking {
-        seed(pending = true)
-        val store = newStore()
-
-        store.markCoreRegistrationComplete("wrong-uuid", TOKEN)
-        store.markCoreRegistrationComplete(UUID, "wrong-token")
-
-        assertThat(store.prepareRegistration().needsFullRegistration).isTrue()
-    }
-
-    @Test
     fun `given pending registration, when matching identity completes, then completion survives recreation`() = testBlocking {
         seed(pending = true)
 
@@ -190,15 +170,17 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
-    fun `given token changes during registration, when old registration completes, then new token stays pending`() =
+    fun `given token changes during registration, when completions use a wrong UUID or stale token, then remains pending`() =
         testBlocking {
             seed(pending = true)
             val store = newStore()
-            store.onNewFcmToken("new-token")
+            store.onNewFcmToken(CALLBACK_TOKEN)
 
+            store.markCoreRegistrationComplete("wrong-uuid", CALLBACK_TOKEN)
             store.markCoreRegistrationComplete(UUID, TOKEN)
 
-            assertThat(store.prepareRegistration().needsFullRegistration).isTrue()
+            assertThat(newStore().prepareRegistration())
+                .isEqualTo(WooPushIdentityStore.RegistrationIdentity(UUID, CALLBACK_TOKEN, true))
         }
 
     @Test
