@@ -177,7 +177,6 @@ class NotificationMessageHandler @Inject constructor(
                     noteTypeTrackingValue = notification.noteType.trackingValue,
                     source = source
                 )
-                analyticsTracker.flush()
             }
 
             val activeNotifications = getActiveNotifications()
@@ -314,7 +313,6 @@ class NotificationMessageHandler @Inject constructor(
             noteTypeTrackingValue = noteTypeTrackingValue.orEmpty(),
             source = source
         )
-        analyticsTracker.flush()
     }
 
     private fun Notification.buildAnalyticsId(source: NotificationSource): String? = when (source) {

@@ -44,7 +44,7 @@ class NotificationAnalyticsTrackerTest : BaseUnitTest() {
     )
 
     @Test
-    fun `given delayed token read, when tracking, then records the token after reading it`() = testBlocking {
+    fun `given delayed token read, when tracking, then records the token without forcing an upload`() = testBlocking {
         val token = CompletableDeferred<String?>()
         whenever(identityStore.currentTokenOrNull()).doSuspendableAnswer { token.await() }
 
@@ -56,16 +56,18 @@ class NotificationAnalyticsTrackerTest : BaseUnitTest() {
             NotificationSource.WPCOM
         )
 
+        verify(analyticsTrackerWrapper, never()).flush()
         verify(analyticsTrackerWrapper, never()).track(any(), any<Map<String, Any>>())
         token.complete("canonical-token")
 
         val captor = argumentCaptor<Map<String, Any>>()
         verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
+        verify(analyticsTrackerWrapper, never()).flush()
         assertThat(captor.firstValue).containsEntry("push_notification_token", "canonical-token")
     }
 
     @Test
-    fun `given token is unavailable, when tracking, then records the event with an empty token`() = testBlocking {
+    fun `given token is unavailable, when tracking, then records the event without forcing an upload`() = testBlocking {
         whenever(identityStore.currentTokenOrNull()).thenReturn(null)
 
         tracker.trackNotificationAnalytics(
@@ -79,6 +81,7 @@ class NotificationAnalyticsTrackerTest : BaseUnitTest() {
         val captor = argumentCaptor<Map<String, Any>>()
         verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
         assertThat(captor.firstValue).containsEntry("push_notification_token", "")
+        verify(analyticsTrackerWrapper, never()).flush()
     }
 
     @Test

@@ -82,8 +82,4 @@ class NotificationAnalyticsTracker @Inject constructor(
         this[AnalyticsTracker.IS_JETPACK_CONNECTED] = site.isJetpackConnected
         this[AnalyticsTracker.IS_JETPACK_CP_CONNECTED] = site.isJetpackCPConnected
     }
-
-    fun flush() {
-        analyticsTrackerWrapper.flush()
-    }
 }
