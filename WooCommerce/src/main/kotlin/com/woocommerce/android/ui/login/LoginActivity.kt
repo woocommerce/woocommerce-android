@@ -43,6 +43,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeRestrictionSupportLauncher
 import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
 import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFragment
 import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
@@ -201,6 +202,9 @@ class LoginActivity :
     internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
 
     @Inject
+    internal lateinit var ageRestrictionSupportLauncher: AgeRestrictionSupportLauncher
+
+    @Inject
     internal lateinit var registerDevice: RegisterDevice
 
     @Inject
@@ -211,6 +215,7 @@ class LoginActivity :
     private var ageRestrictionDialog: AlertDialog? = null
 
     private var connectSiteInfo: ConnectSiteInfo? = null
+    private var pendingSiteAddressWasNormalizedToHttps = false
 
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
@@ -773,6 +778,7 @@ class LoginActivity :
         // in the login process.
         val siteAddressClean = inputSiteAddress.replaceFirst(PROTOCOL_REGEX, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
+        pendingSiteAddressWasNormalizedToHttps = result.wasUrlNormalizedToHttps
         if (result.hasJetpack || connectSiteInfo?.shouldUseWPComAuth == true) {
             showEmailLoginScreen(null)
         } else {
@@ -1003,11 +1009,13 @@ class LoginActivity :
             siteAddress = requireNotNull(siteAddress),
             isJetpackConnected = connectSiteInfo?.isJetpackConnected ?: false,
             username = inputUsername,
-            password = inputPassword
+            password = inputPassword,
+            wasUrlNormalizedToHttps = pendingSiteAddressWasNormalizedToHttps ||
+                siteAddress.startsWith("http://", ignoreCase = true),
         ),
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
-    )
+    ).also { pendingSiteAddressWasNormalizedToHttps = false }
 
     override fun onApplicationPasswordHelpRequired(
         verifiedLoginUrl: String?,
@@ -1079,6 +1087,7 @@ class LoginActivity :
     override fun handleSiteAddressError(siteInfo: ConnectSiteInfoPayload) {
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
         if (siteInfo.error?.wpApiDiscovery?.wpApiBaseUrl != null) {
+            pendingSiteAddressWasNormalizedToHttps = siteInfo.wasUrlNormalizedToHttps
             LoginSiteInfoFallbackDialogFragment.newInstance(siteInfo.url)
                 .show(LoginSiteInfoFallbackDialogFragment.TAG)
         } else if (!siteInfo.isWordPress) {
@@ -1223,6 +1232,10 @@ class LoginActivity :
             .setMessage(state.ageRestrictedMessage)
             .setCancelable(false)
             .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
+            .setNegativeButton(R.string.support_contact) { _, _ ->
+                AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CONTACT_SUPPORT_TAPPED)
+                ageRestrictionSupportLauncher.open(this)
+            }
             .create()
             .also {
                 it.show()

@@ -54,6 +54,9 @@
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
     <string name="learn_more">Learn more</string>
+    <string name="https_configuration_warning_title">Secure your store with HTTPS</string>
+    <string name="https_configuration_warning_message">Your store supports HTTPS, but its address is configured to use HTTP. Update it to HTTPS to protect your store and prevent connection problems.</string>
+    <string name="https_configuration_warning_dismiss">Dismiss HTTPS security notice</string>
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
@@ -302,6 +305,7 @@
     <string name="login_install_woo">Install WooCommerce</string>
     <string name="login_open_installation_page">Open installation page</string>
     <string name="login_no_jetpack">To use this app for %1$s you\'ll need to have the Jetpack plugin setup and connected to a WordPress.com account</string>
+    <string name="login_not_wordpress_site_title">Not a WordPress site</string>
     <string name="login_not_wordpress_site_v2">We were not able to detect a WordPress site at the address you entered. Please make sure WordPress is installed and that you are running the latest available version.</string>
     <string name="login_site_info_fallback_dialog_title">Connection Issue</string>
     <string name="login_site_info_fallback_dialog_message">We couldn\'t verify your site details. You can try logging in with your site credentials instead.</string>
@@ -1743,11 +1747,11 @@
     <string name="card_reader_connect_invalid_postal_code_header">Store address postcode is invalid</string>
     <string name="card_reader_connect_invalid_postal_code_hint">Please provide a valid postcode in your store settings and try again</string>
     <string name="card_reader_connect_scanning_failed_header">No reader connected</string>
-    <string name="card_reader_connect_missing_permissions_header">Missing required precise location permission</string>
+    <string name="card_reader_connect_missing_permissions_header">Missing required location permission</string>
     <string name="card_reader_connect_location_provider_disabled_header">Location is disabled</string>
     <string name="card_reader_connect_bluetooth_disabled_header">Bluetooth is disabled</string>
     <string name="card_reader_connect_permission_rationale_header">Location Access Required</string>
-    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require precise location permission</string>
+    <string name="card_reader_connect_permission_rationale_hint">Card reader payments require location permission</string>
     <string name="card_reader_connect_permission_rationale_action" translatable="false">@string/continue_button</string>
     <string name="card_reader_connect_open_permission_settings">Open settings</string>
     <string name="card_reader_connect_open_location_settings">Open settings</string>
@@ -4315,8 +4319,14 @@
 
     <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
     <string name="woopos_eligibility_retry_check_label">Retry</string>
+    <string name="woopos_eligibility_reason_woocommerce_plugin_not_found">Please make sure the WooCommerce plugin is installed and activated from your WordPress admin. If there is still an issue, contact support for assistance.</string>
     <string name="woopos_eligibility_reason_unsupported_woocommerce_version">Your WooCommerce version is not supported. The POS system requires WooCommerce version %1$s or above. Please update WooCommerce to the latest version.</string>
     <string name="woopos_eligibility_reason_check_connection">Check your internet connection and try relaunching the app. If the issue persists, please contact support.</string>
+    <string name="woopos_eligibility_reason_feature_switch_disabled">Point of Sale must be enabled to proceed. Please enable the POS feature from your WordPress admin under WooCommerce settings &gt; Advanced &gt; Features and try again.</string>
+    <string name="woopos_eligibility_reason_unsupported_country">The POS system is not available in %1$s. Please check your store address settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_country_generic">The POS system is not available in your store\'s country. Please check your store address settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_country_pair">The POS system is not available for your store\'s currency. In %1$s, it currently supports only %2$s. Please check your store currency settings or contact support for assistance.</string>
+    <string name="woopos_eligibility_reason_unsupported_currency_generic">The POS system is not available for your store\'s currency. Please check your store currency settings or contact support for assistance.</string>
     <string name="woopos_eligibility_screen_unable_to_load">Unable to load</string>
 
     <string name="woopos_scanning_setup_dialog_content_description">Scanner setup dialog</string>

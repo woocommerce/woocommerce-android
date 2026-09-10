@@ -56,10 +56,9 @@ internal class ConnectionManager(
             is SpecificReaders -> {
                 when (cardReaderTypesToDiscover) {
                     is BuiltInReaders -> {
-                        if (application.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            error("ACCESS_FINE_LOCATION permission is required to discover built-in readers")
+                        val locationPermission = requiredLocationPermission()
+                        if (application.checkSelfPermission(locationPermission) != PackageManager.PERMISSION_GRANTED) {
+                            error("$locationPermission permission is required to discover built-in readers")
                         }
                         discoverReadersAction.discoverBuildInReaders(isSimulated)
                     }
@@ -114,13 +113,12 @@ internal class ConnectionManager(
         }
 
     private fun checkIfNecessaryPermissionsAreGranted() {
-        val isAtLeastAndroidS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val locationPermission = requiredLocationPermission()
         val permissionsToCheck = mutableMapOf(
-            Manifest.permission.ACCESS_FINE_LOCATION to "ACCESS_FINE_LOCATION permission is " +
-                "required to discover external readers"
+            locationPermission to "$locationPermission permission is required to discover external readers"
         )
 
-        if (isAtLeastAndroidS) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             permissionsToCheck[Manifest.permission.BLUETOOTH_CONNECT] = "BLUETOOTH_CONNECT permission is " +
                 "required to discover external readers"
             permissionsToCheck[Manifest.permission.BLUETOOTH_SCAN] = "BLUETOOTH_SCAN permission is " +
@@ -133,6 +131,20 @@ internal class ConnectionManager(
             }
         }
     }
+
+    /**
+     * The location permission the app actually requests for card reader discovery. Stripe Terminal 5.8.0 only
+     * needs coarse location, and on Android 12+ Bluetooth LE scanning relies on BLUETOOTH_SCAN (neverForLocation),
+     * so coarse is sufficient there. On Android 11 and below a BLE scan still requires fine location at the OS
+     * level. This MUST stay in sync with WooPermissionUtils.cardReaderLocationPermission() so the check here can't
+     * verify a permission the app never requested.
+     */
+    private fun requiredLocationPermission(): String =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        } else {
+            Manifest.permission.ACCESS_FINE_LOCATION
+        }
 
     suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         (cardReader as CardReaderImpl).let {
@@ -148,6 +160,7 @@ internal class ConnectionManager(
                     CardReaderStatus.NotConnected(
                         errorCode = e.errorCode.toErrorCode(),
                         errorMessage = e.errorMessage,
+                        stripeErrorCode = e.errorCode.name.lowercase(),
                     )
                 )
             }
