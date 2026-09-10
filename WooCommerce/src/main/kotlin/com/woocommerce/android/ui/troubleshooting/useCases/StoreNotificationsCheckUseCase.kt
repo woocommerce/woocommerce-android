@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.notifications.push.RegisterDevice
+import com.woocommerce.android.notifications.push.WooPushIdentityStore
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus
 import com.woocommerce.android.ui.troubleshooting.FailureType
@@ -13,7 +13,7 @@ import kotlin.time.measureTimedValue
 
 class StoreNotificationsCheckUseCase @Inject constructor(
     private val notificationSystemStatusProvider: NotificationSystemStatusProvider,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val identityStore: WooPushIdentityStore,
     private val selectedSite: SelectedSite,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val registerDevice: RegisterDevice
@@ -60,7 +60,7 @@ class StoreNotificationsCheckUseCase @Inject constructor(
 
     fun checkPushToken(): Flow<ConnectivityCheckStatus> =
         runNotificationCheck(OPERATION_PUSH_NOTIFICATION_TOKEN) {
-            if (appPrefsWrapper.getFCMToken().isNotBlank()) {
+            if (!identityStore.currentTokenOrNull().isNullOrBlank()) {
                 ConnectivityCheckStatus.Success()
             } else {
                 notificationFailure(
@@ -87,7 +87,7 @@ class StoreNotificationsCheckUseCase @Inject constructor(
 
     suspend fun registerPushNotifications(): Result<Unit> =
         runCatching {
-            if (appPrefsWrapper.getFCMToken().isBlank()) {
+            if (identityStore.currentTokenOrNull().isNullOrBlank()) {
                 error("The device does not have an FCM token.")
             }
 

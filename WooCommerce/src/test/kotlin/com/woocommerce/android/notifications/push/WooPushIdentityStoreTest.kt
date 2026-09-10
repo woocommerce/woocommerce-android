@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,25 +13,35 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
-    private var dataStore = InMemoryPreferencesDataStore()
-    private val appPrefs: AppPrefsWrapper = mock()
+    private var dataStore: DataStore<Preferences> = InMemoryPreferencesDataStore()
     private val tokenProvider: FirebaseMessagingTokenProvider = mock()
+
+    @Test
+    fun `given stored token cannot be read, when getting current token, then returns null`() = testBlocking {
+        dataStore = mock {
+            on { data } doReturn flow { throw IOException("read failed") }
+        }
+
+        assertThat(newStore().currentTokenOrNull()).isNull()
+        verify(tokenProvider, never()).getToken()
+    }
 
     @Test
     fun `given empty install, when preparing, then persists a new UUID and SDK token pending registration`() = testBlocking {
@@ -45,8 +54,6 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
         assertThat(identity.needsFullRegistration).isTrue()
         assertThat(newStore().currentUuidOrNull()).isEqualTo(identity.uuid)
         assertThat(newStore().currentTokenOrNull()).isEqualTo(TOKEN)
-        verify(appPrefs).setFCMToken(TOKEN)
-        verify(appPrefs, never()).getFCMToken()
     }
 
     @Test
@@ -211,8 +218,6 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
             assertThat(preparation.await())
                 .isEqualTo(WooPushIdentityStore.RegistrationIdentity(uuid, CALLBACK_TOKEN, true))
             assertThat(store.currentTokenOrNull()).isEqualTo(CALLBACK_TOKEN)
-            verify(appPrefs, never()).setFCMToken(TOKEN)
-            verify(appPrefs, atLeastOnce()).setFCMToken(CALLBACK_TOKEN)
         }
 
     @Test
@@ -237,7 +242,7 @@ class WooPushIdentityStoreTest : BaseUnitTest(StandardTestDispatcher()) {
         )
     }
 
-    private fun newStore() = WooPushIdentityStore(dataStore, appPrefs, tokenProvider)
+    private fun newStore() = WooPushIdentityStore(dataStore, tokenProvider)
 
     private class InMemoryPreferencesDataStore(
         initial: Preferences = emptyPreferences()

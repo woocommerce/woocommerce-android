@@ -5,9 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
+import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -19,7 +21,6 @@ import javax.inject.Singleton
 class WooPushIdentityStore @Inject constructor(
     @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>,
-    private val appPrefs: AppPrefsWrapper,
     private val firebaseMessagingTokenProvider: FirebaseMessagingTokenProvider
 ) {
     private val mutex = Mutex()
@@ -50,7 +51,6 @@ class WooPushIdentityStore @Inject constructor(
             if (token != currentStoredToken) {
                 saveIdentity(uuid, token, needsFullRegistration)
             }
-            appPrefs.setFCMToken(token)
             RegistrationIdentity(uuid, token, needsFullRegistration)
         }
     }
@@ -60,12 +60,18 @@ class WooPushIdentityStore @Inject constructor(
         val state = pushNotificationsDataStore.data.first()
         val uuid = state[WOO_CORE_UUID] ?: UUID.randomUUID().toString()
         saveIdentity(uuid, token, pending = true)
-        appPrefs.setFCMToken(token)
     }
 
     suspend fun currentUuidOrNull(): String? = pushNotificationsDataStore.data.first()[WOO_CORE_UUID]
 
-    suspend fun currentTokenOrNull(): String? = pushNotificationsDataStore.data.first()[FCM_TOKEN]
+    @Suppress("TooGenericExceptionCaught")
+    suspend fun currentTokenOrNull(): String? = try {
+        pushNotificationsDataStore.data.first()[FCM_TOKEN]
+    } catch (exception: Exception) {
+        currentCoroutineContext().ensureActive()
+        WooLog.e(WooLog.T.NOTIFICATIONS, "Unable to read the stored push token", exception)
+        null
+    }
 
     suspend fun markCoreRegistrationComplete(uuid: String, token: String) = mutex.withLock {
         val state = pushNotificationsDataStore.data.first()

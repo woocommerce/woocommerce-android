@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.troubleshooting.useCases
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.notifications.push.RegisterDevice
+import com.woocommerce.android.notifications.push.WooPushIdentityStore
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.troubleshooting.ConnectivityCheckStatus.InProgress
@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
     private lateinit var sut: StoreNotificationsCheckUseCase
     private lateinit var notificationSystemStatusProvider: NotificationSystemStatusProvider
-    private lateinit var appPrefsWrapper: AppPrefsWrapper
+    private lateinit var identityStore: WooPushIdentityStore
     private lateinit var selectedSite: SelectedSite
     private lateinit var pushNotificationRegistrationStatus: PushNotificationRegistrationStatus
     private lateinit var registerDevice: RegisterDevice
@@ -33,7 +33,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
     @Before
     fun setUp() {
         notificationSystemStatusProvider = mock()
-        appPrefsWrapper = mock()
+        identityStore = mock()
         selectedSite = mock {
             on { get() }.thenReturn(site)
         }
@@ -41,7 +41,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
         registerDevice = mock()
         sut = StoreNotificationsCheckUseCase(
             notificationSystemStatusProvider = notificationSystemStatusProvider,
-            appPrefsWrapper = appPrefsWrapper,
+            identityStore = identityStore,
             selectedSite = selectedSite,
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             registerDevice = registerDevice
@@ -96,7 +96,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `given fcm token is missing, when check runs, then emit token failure`() = testBlocking {
-        whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
+        whenever(identityStore.currentTokenOrNull()).thenReturn("")
 
         val stateEvents = sut.checkPushToken().toList()
 
@@ -130,7 +130,7 @@ class StoreNotificationsCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `given push registration succeeds, when registering push notifications, then return success`() =
         testBlocking {
-            whenever(appPrefsWrapper.getFCMToken()).thenReturn("token")
+            whenever(identityStore.currentTokenOrNull()).thenReturn("token")
             whenever(pushNotificationRegistrationStatus(TEST_SITE_ID))
                 .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
 

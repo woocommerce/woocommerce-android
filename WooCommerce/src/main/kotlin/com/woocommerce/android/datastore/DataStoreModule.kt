@@ -21,7 +21,7 @@ import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.di.AppCoroutineScope
-import com.woocommerce.android.notifications.push.LegacyWooPushUuidMigration
+import com.woocommerce.android.notifications.push.LegacyPushPreferencesMigration
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDayMigration
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
@@ -214,7 +214,7 @@ class DataStoreModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile("push_notifications") },
         migrations = listOf(
-            LegacyWooPushUuidMigration(PreferenceManager.getDefaultSharedPreferences(appContext))
+            LegacyPushPreferencesMigration(PreferenceManager.getDefaultSharedPreferences(appContext))
         ),
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent(

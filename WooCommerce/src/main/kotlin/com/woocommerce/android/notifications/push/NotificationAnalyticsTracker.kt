@@ -1,14 +1,16 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
@@ -18,7 +20,8 @@ import javax.inject.Singleton
 class NotificationAnalyticsTracker @Inject constructor(
     private val resolveSiteBySiteId: ResolveSiteBySiteId,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val identityStore: WooPushIdentityStore,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     fun track(stat: AnalyticsEvent, siteId: Long) {
@@ -37,14 +40,16 @@ class NotificationAnalyticsTracker @Inject constructor(
         val site = resolveSiteBySiteId(siteId) ?: return
         val properties = mutableMapOf<String, Any>(
             "notification_type" to noteTypeTrackingValue,
-            "push_notification_token" to appPrefsWrapper.getFCMToken(),
             "is_from_selected_site" to site.isSelectedSite()
         ).addCommonSiteProperties(site)
         properties.putIfNotNull(
             "push_notification_source" to source?.trackingValue,
             "notification_note_id" to notificationId
         )
-        analyticsTrackerWrapper.track(stat, properties)
+        appCoroutineScope.launch {
+            properties["push_notification_token"] = identityStore.currentTokenOrNull().orEmpty()
+            analyticsTrackerWrapper.track(stat, properties)
+        }
     }
 
     fun trackError(

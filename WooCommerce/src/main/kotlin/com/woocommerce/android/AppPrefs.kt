@@ -196,8 +196,6 @@ object AppPrefs {
         // card reader welcome dialog was shown
         CARD_READER_WELCOME_SHOWN,
 
-        WC_PREF_NOTIFICATIONS_TOKEN,
-
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
 
@@ -451,12 +449,6 @@ object AppPrefs {
 
     fun setCancelledAppVersionCode(versionCode: Int) {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
-    }
-
-    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
-
-    fun setFCMToken(token: String) {
-        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {

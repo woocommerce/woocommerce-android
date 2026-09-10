@@ -15,9 +15,16 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
+class LegacyPushPreferencesMigrationTest : BaseUnitTest() {
     private val defaultPreferences: SharedPreferences = mock()
     private val editor: SharedPreferences.Editor = mock()
+
+    @Test
+    fun `given only legacy token remains, when checking migration, then runs cleanup`() = testBlocking {
+        whenever(defaultPreferences.contains(LEGACY_TOKEN_KEY)).thenReturn(true)
+
+        assertThat(LegacyPushPreferencesMigration(defaultPreferences).shouldMigrate(preferencesOf())).isTrue()
+    }
 
     @Test
     fun `given legacy UUID, when migrating, then preserves the existing push registration data`() =
@@ -31,7 +38,7 @@ class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
                 stringPreferencesKey("unrelated") to "value",
                 booleanPreferencesKey("push_identity_full_registration_pending") to false
             )
-            val migration = LegacyWooPushUuidMigration(defaultPreferences)
+            val migration = LegacyPushPreferencesMigration(defaultPreferences)
 
             assertThat(migration.shouldMigrate(currentData)).isTrue()
 
@@ -42,14 +49,16 @@ class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given legacy UUID, when cleanup succeeds, then removes only the legacy key`() = testBlocking {
+    fun `given legacy UUID, when cleanup succeeds, then removes only the legacy push keys`() = testBlocking {
         whenever(defaultPreferences.edit()).thenReturn(editor)
         whenever(editor.remove(LEGACY_UUID_KEY)).thenReturn(editor)
+        whenever(editor.remove(LEGACY_TOKEN_KEY)).thenReturn(editor)
         whenever(editor.commit()).thenReturn(true)
 
-        LegacyWooPushUuidMigration(defaultPreferences).cleanUp()
+        LegacyPushPreferencesMigration(defaultPreferences).cleanUp()
 
         verify(editor).remove(LEGACY_UUID_KEY)
+        verify(editor).remove(LEGACY_TOKEN_KEY)
         verify(editor).commit()
     }
 
@@ -57,7 +66,7 @@ class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
     fun `given no legacy UUID, when checking migration, then does not migrate`() = testBlocking {
         whenever(defaultPreferences.contains(LEGACY_UUID_KEY)).thenReturn(false)
 
-        val shouldMigrate = LegacyWooPushUuidMigration(defaultPreferences)
+        val shouldMigrate = LegacyPushPreferencesMigration(defaultPreferences)
             .shouldMigrate(preferencesOf(stringPreferencesKey("unrelated") to "value"))
 
         assertThat(shouldMigrate).isFalse()
@@ -68,8 +77,9 @@ class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
     fun `given cleanup fails, when cleanup retries, then removes the legacy key`() = testBlocking {
         whenever(defaultPreferences.edit()).thenReturn(editor)
         whenever(editor.remove(LEGACY_UUID_KEY)).thenReturn(editor)
+        whenever(editor.remove(LEGACY_TOKEN_KEY)).thenReturn(editor)
         whenever(editor.commit()).thenReturn(false, true)
-        val migration = LegacyWooPushUuidMigration(defaultPreferences)
+        val migration = LegacyPushPreferencesMigration(defaultPreferences)
 
         val failure = runCatching { migration.cleanUp() }.exceptionOrNull()
         migration.cleanUp()
@@ -81,6 +91,7 @@ class LegacyWooPushUuidMigrationTest : BaseUnitTest() {
 
     private companion object {
         const val SITE_ID = 123L
+        const val LEGACY_TOKEN_KEY = "WC_PREF_NOTIFICATIONS_TOKEN"
         const val LEGACY_UUID_KEY = "WOO_CORE_PUSH_DEVICE_UUID"
 
         fun pushTokenIdKey(siteId: Long) = stringPreferencesKey("push_token_$siteId")
