@@ -10,15 +10,12 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
-import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.isGooglePlayServicesAvailable
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
@@ -27,30 +24,22 @@ class FCMRefreshWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted params: WorkerParameters,
     private val registerDevice: RegisterDevice,
-    private val appPrefs: AppPrefsWrapper
+    private val identityStore: WooPushIdentityStore
 ) : CoroutineWorker(context, params) {
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun doWork(): Result {
         if (!context.isGooglePlayServicesAvailable()) return Result.success()
 
         WooLog.d(WooLog.T.NOTIFICATIONS, "Refreshing FCM token")
-
-        return runCatching { Firebase.messaging.token.await() }
-            .mapCatching { token ->
-                require(token.isNotNullOrEmpty()) { "Retrieved FCM token is null or empty" }
-                token
-            }
-            .fold(
-                onSuccess = { token ->
-                    WooLog.d(WooLog.T.NOTIFICATIONS, "FCM token retrieved")
-                    appPrefs.setFCMToken(token)
-                    registerDevice(RegisterDevice.Trigger.TOKEN_REFRESH)
-                    Result.success()
-                },
-                onFailure = { e ->
-                    WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to refresh FCM token", e)
-                    Result.failure()
-                }
-            )
+        return try {
+            identityStore.prepareRegistration(forceRefresh = true)
+            registerDevice(RegisterDevice.Trigger.TOKEN_REFRESH)
+            Result.success()
+        } catch (throwable: Throwable) {
+            currentCoroutineContext().ensureActive()
+            WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to refresh FCM token", throwable)
+            Result.retry()
+        }
     }
 
     companion object {
