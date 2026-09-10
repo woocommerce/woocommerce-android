@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,12 +78,28 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
                 }
             )
         }
-        is WooPosSplashState.Loaded -> {
-            onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
-        }
+        is WooPosSplashState.Loaded,
         is WooPosSplashState.NotEligible -> {
-            val reason = currentState.reason
-            onNavigationEvent(WooPosNavigationEvent.OpenEligibilityScreenFromSplash(reason))
+            WooPosSplashNavigation(currentState, onNavigationEvent)
+        }
+    }
+}
+
+@Composable
+internal fun WooPosSplashNavigation(
+    state: WooPosSplashState,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
+    LaunchedEffect(state) {
+        when (state) {
+            is WooPosSplashState.Loaded -> onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
+            is WooPosSplashState.NotEligible ->
+                onNavigationEvent(WooPosNavigationEvent.OpenEligibilityScreenFromSplash(state.reason))
+            is WooPosSplashState.Loading,
+            is WooPosSplashState.Syncing,
+            is WooPosSplashState.SyncPreparing,
+            is WooPosSplashState.SyncProgress,
+            is WooPosSplashState.SyncFailed -> Unit
         }
     }
 }
