@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -88,20 +86,12 @@ private fun TargetSelectionScreen(
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val interactionSource = remember { MutableInteractionSource() }
-    val searchListState = rememberLazyListState()
-    val multiSelectListState = rememberLazyListState()
-    val showDivider = when (state.searchState) {
-        is SearchState.Results -> searchListState.canScrollBackward
-        is SearchState.Searching, is SearchState.NoResults, is SearchState.Ready, is SearchState.Error -> false
-        else -> multiSelectListState.canScrollBackward
-    }
 
     Scaffold(
         topBar = {
             Toolbar(
                 title = state.title,
                 onNavigationButtonClick = onBackPressed,
-                showDivider = showDivider,
                 actions = {
                     if (state.searchState is SearchState.Hidden || state.searchState is Inactive) {
                         TextAction(
@@ -166,7 +156,6 @@ private fun TargetSelectionScreen(
                         focusManager = focusManager,
                         onSearchItemTapped = onSearchItemTapped,
                         onRetrySearchTapped = onRetrySearchTapped,
-                        listState = searchListState,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -182,7 +171,6 @@ private fun TargetSelectionScreen(
                             text = stringResource(id = string.blaze_campaign_preview_target_default_value),
                             onClicked = onAllButtonTapped
                         ),
-                        listState = multiSelectListState,
                         modifier = Modifier
                             .weight(1f)
                             .verticalScroll(rememberScrollState())
@@ -199,7 +187,6 @@ private fun SearchList(
     focusManager: FocusManager,
     onSearchItemTapped: (SearchItem) -> Unit,
     onRetrySearchTapped: () -> Unit,
-    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     when (state) {
@@ -219,7 +206,6 @@ private fun SearchList(
 
         is SearchState.Results -> {
             LazyColumn(
-                state = listState,
                 modifier = modifier
             ) {
                 items(state.resultItems) { item ->
