@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Re
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
-import com.woocommerce.android.ui.jitm.JitmFragment
+import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -70,6 +70,7 @@ class DashboardFragment : TopLevelFragment() {
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private val scheduledImportInfoViewModel: ScheduledImportInfoViewModel by viewModels()
+    private val jitmViewModel: JitmViewModel by viewModels()
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
     @Inject
@@ -92,8 +93,6 @@ class DashboardFragment : TopLevelFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
-    private var jitmFragment: JitmFragment? = null
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -119,15 +118,10 @@ class DashboardFragment : TopLevelFragment() {
             viewModel = dashboardViewModel,
             mainActivityViewModel = mainActivityViewModel,
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            jitmViewModel = jitmViewModel,
             scrollToTopTrigger = scrollToTopTrigger,
             onJetpackBenefitsBannerShown = ::trackJetpackBenefitsBannerShown,
             onJetpackBenefitsBannerClicked = ::onJetpackBenefitsBannerClicked,
-            jitmContent = { modifier ->
-                DashboardJitmHost(
-                    onJitmFragmentChanged = { jitmFragment = it },
-                    modifier = modifier,
-                )
-            }
         )
         ScheduledImportInfoBottomSheet(viewModel = scheduledImportInfoViewModel)
     }.apply {
@@ -182,7 +176,7 @@ class DashboardFragment : TopLevelFragment() {
                 is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
                     authenticatedWebViewLauncher.showAuthenticatedWebView(event)
 
-                is RefreshJitm -> refreshJitm()
+                is RefreshJitm -> jitmViewModel.fetchJitms()
 
                 is DashboardViewModel.DashboardEvent.OpenWooPushNotificationsIntroduction -> {
                     findNavController().navigateSafely(
@@ -208,6 +202,15 @@ class DashboardFragment : TopLevelFragment() {
         scheduledImportInfoViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is LaunchUrlInChromeTab ->
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+
+                else -> event.isHandled = false
+            }
+        }
+
+        jitmViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is JitmViewModel.CtaClick ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
 
                 else -> event.isHandled = false
@@ -263,15 +266,6 @@ class DashboardFragment : TopLevelFragment() {
     override fun onStop() {
         wasPreviouslyStopped = true
         super.onStop()
-    }
-
-    override fun onDestroyView() {
-        jitmFragment = null
-        super.onDestroyView()
-    }
-
-    private fun refreshJitm() {
-        jitmFragment?.refreshJitms()
     }
 
     override fun getFragmentTitle() = getString(R.string.my_store)
