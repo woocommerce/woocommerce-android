@@ -8,8 +8,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailRefundsInfoBinding
 import com.woocommerce.android.databinding.RefundShippingListItemBinding
-import com.woocommerce.android.model.Refund
-import com.woocommerce.android.model.getRefundedShippingLines
+import com.woocommerce.android.ui.orders.details.OrderDetailViewState.RefundsState
 import com.woocommerce.android.util.StringUtils
 import java.math.BigDecimal
 
@@ -21,13 +20,13 @@ class OrderDetailRefundsView @JvmOverloads constructor(
     private val binding = OrderDetailRefundsInfoBinding.inflate(LayoutInflater.from(ctx), this)
 
     fun updateRefunds(
-        refunds: List<Refund>,
+        state: RefundsState,
         formatCurrency: (BigDecimal) -> String,
         onTap: () -> Unit
     ) {
-        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
-        val shippingLines = refunds.getRefundedShippingLines()
-        isVisible = refundsCount > 0 || shippingLines.isNotEmpty()
+        val refundsCount = state.refundedProductsCount
+        val shippingLines = state.shippingLines
+        isVisible = state.isVisible
         binding.refundsInfoLblTitle.setText(
             when {
                 shippingLines.isEmpty() -> R.string.order_refunds_refund_info_title

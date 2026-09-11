@@ -56,7 +56,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
@@ -721,16 +720,16 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
+    private fun showOrderRefunds(state: OrderDetailViewState.RefundsState, order: Order) {
         val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
         // display the refunds count in the refunds section
-        binding.orderDetailRefundsInfo.updateRefunds(refunds, formatCurrency) {
+        binding.orderDetailRefundsInfo.updateRefunds(state, formatCurrency) {
             viewModel.onViewRefundedProductsClicked()
         }
 
         // display refunds list in the payment info section, if available
-        refunds.whenNotNullNorEmpty {
+        state.refunds.whenNotNullNorEmpty {
             binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {
             binding.orderDetailPaymentInfo.showRefundTotal(
