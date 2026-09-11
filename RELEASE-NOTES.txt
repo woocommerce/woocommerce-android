@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [Internal] POS no longer repeats initial ineligibility events when the same screen is recomposed or initialized again
 - [*] Changing the country on an order address now clears the previous region from the form [https://github.com/woocommerce/woocommerce-android/pull/16527]
 - [Internal] Removed the POS server-calculated refunds feature flag; the flow is on for every store running WooCommerce 11.1.0 or later [https://github.com/woocommerce/woocommerce-android/pull/16539]
 - [*] The linked products promo no longer appears after creating a product on a store with fewer than three published products [https://github.com/woocommerce/woocommerce-android/pull/16511]
