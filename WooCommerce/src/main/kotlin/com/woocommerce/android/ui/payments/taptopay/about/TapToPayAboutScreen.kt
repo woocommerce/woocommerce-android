@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun TapToPayAboutScreen(viewModel: TapToPayAboutViewModel) {
@@ -205,7 +205,7 @@ fun TapToPayAboutScreenImportantInfo(importantInfo: TapToPayAboutViewModel.UiSta
 @PreviewLightDark
 @Composable
 fun TapToPaySummaryAboutPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TapToPayAboutScreen(
             onBackClick = {},
             state = TapToPayAboutViewModel.UiState(
@@ -223,7 +223,7 @@ fun TapToPaySummaryAboutPreview() {
 @Preview
 @Composable
 fun TapToPaySummaryAboutWithoutImportantInfoPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TapToPayAboutScreen(
             onBackClick = {},
             state = TapToPayAboutViewModel.UiState(

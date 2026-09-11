@@ -51,7 +51,7 @@ import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.Clic
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.launch
 
 @Composable
@@ -212,7 +212,7 @@ private fun CampaignCelebrationSheet(onDismiss: () -> Unit, modifier: Modifier =
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun BlazeCampaignListScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignListScreen(
             state = BlazeCampaignListState(
                 campaigns = listOf(

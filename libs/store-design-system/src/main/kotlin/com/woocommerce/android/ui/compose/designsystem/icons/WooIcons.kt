@@ -197,6 +197,10 @@ val WooIcons.Light.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_ellipsis_24dp)
 
+val WooIcons.Light.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_envelope_24dp)
+
 val WooIcons.Light.File: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_file_24dp)
@@ -617,6 +621,10 @@ val WooIcons.Regular.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_ellipsis_24dp)
 
+val WooIcons.Regular.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_envelope_24dp)
+
 val WooIcons.Regular.File: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_file_24dp)
@@ -1036,6 +1044,10 @@ val WooIcons.Solid.CreditCard: ImageVector
 val WooIcons.Solid.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_ellipsis_24dp)
+
+val WooIcons.Solid.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_envelope_24dp)
 
 val WooIcons.Solid.File: ImageVector
     @Composable

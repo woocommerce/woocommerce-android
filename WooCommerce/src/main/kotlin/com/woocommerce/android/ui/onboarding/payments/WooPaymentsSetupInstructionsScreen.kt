@@ -41,7 +41,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.text.NumberFormat
 
 @Composable
@@ -235,7 +235,7 @@ private fun WooPaymentsSetupInstructionsFooter(
 @Preview
 @Composable
 private fun WooPaymentsSetupInstructionsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooPaymentsSetupInstructionsScreen()
     }
 }

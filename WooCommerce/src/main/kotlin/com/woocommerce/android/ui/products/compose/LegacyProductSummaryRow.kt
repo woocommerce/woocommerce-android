@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun LegacyProductSummaryRow(
@@ -104,7 +104,7 @@ fun LegacyProductSummaryRowInfo(
 @LightDarkThemePreviews
 @Composable
 private fun LegacyProductSummaryRowPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LegacyProductSummaryRow(
             title = "Woo socks",
             imageUrl = "https://example.com/socks.png",

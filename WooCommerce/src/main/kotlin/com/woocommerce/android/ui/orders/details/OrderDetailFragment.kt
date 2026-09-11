@@ -61,7 +61,7 @@ import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -511,7 +511,7 @@ class OrderDetailFragment :
                 }
 
                 shippingLineList.observeAsState().value?.let { shippingLines ->
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         ShippingLineSection(
                             shippingLineDetails = shippingLines,
                             formatCurrency = { amount ->
@@ -572,7 +572,7 @@ class OrderDetailFragment :
 
             setContent {
                 orderAttributionInfo.observeAsState().value?.let {
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         OrderDetailAttributionInfoView(attributionInfo = it)
                     }
                 }
@@ -771,7 +771,7 @@ class OrderDetailFragment :
                     value = viewModel.awaitOrder().currency
                 }.value
                 if (feeLineState.value.isEmpty().not()) {
-                    WooThemeWithBackground {
+                    LegacyWooThemeWithBackground {
                         Column(
                             modifier = Modifier.padding(bottom = 1.dp)
                         ) {
@@ -830,7 +830,7 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     OrderDetailWooShippingShipmentListView(
                         shipments = shipments,
                         onCreateShippingLabelClicked = viewModel::onCreateShippingLabelButtonTapped,

@@ -75,16 +75,16 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainer
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainerTone
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.icons.AngleDown
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
-import com.woocommerce.android.ui.compose.designsystem.icons.BadgePercent
 import com.woocommerce.android.ui.compose.designsystem.icons.Bolt
-import com.woocommerce.android.ui.compose.designsystem.icons.CaretDown
 import com.woocommerce.android.ui.compose.designsystem.icons.CreditCard
+import com.woocommerce.android.ui.compose.designsystem.icons.Envelope
 import com.woocommerce.android.ui.compose.designsystem.icons.Gauge
 import com.woocommerce.android.ui.compose.designsystem.icons.Gear
-import com.woocommerce.android.ui.compose.designsystem.icons.Inbox
+import com.woocommerce.android.ui.compose.designsystem.icons.Globe
 import com.woocommerce.android.ui.compose.designsystem.icons.Star
-import com.woocommerce.android.ui.compose.designsystem.icons.Store
+import com.woocommerce.android.ui.compose.designsystem.icons.Tag
 import com.woocommerce.android.ui.compose.designsystem.icons.UserGroup
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import kotlinx.coroutines.flow.Flow
@@ -189,7 +189,7 @@ private fun MoreMenuHeader(
             if (state.isStoreSwitcherEnabled) {
                 Spacer(modifier = Modifier.width(WooTheme.spacing.space3))
                 Icon(
-                    imageVector = WooIcons.Regular.CaretDown,
+                    imageVector = WooIcons.Regular.AngleDown,
                     contentDescription = null,
                     modifier = Modifier
                         .size(WooTheme.iconSize.size24)
@@ -446,25 +446,49 @@ private fun MoreMenuIcon(
     when (icon) {
         R.drawable.ic_more_screen_settings -> DesignSystemIcon(
             icon = WooIcons.Regular.Gear,
-            tone = WooIconContainerTone.Green,
+            tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
-        R.drawable.ic_more_menu_upgrades -> DesignSystemIcon(WooIcons.Regular.Bolt, modifier = modifier)
-        R.drawable.ic_more_menu_payments -> DesignSystemIcon(WooIcons.Regular.CreditCard, modifier = modifier)
+        R.drawable.ic_more_menu_upgrades -> DesignSystemIcon(
+            icon = WooIcons.Regular.Bolt,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
+        R.drawable.ic_more_menu_payments -> DesignSystemIcon(
+            icon = WooIcons.Regular.CreditCard,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
         R.drawable.ic_more_menu_wp_admin -> DesignSystemIcon(
             icon = WooIcons.Regular.Gauge,
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
         R.drawable.ic_more_menu_store -> DesignSystemIcon(
-            icon = WooIcons.Regular.Store,
+            icon = WooIcons.Regular.Globe,
             tone = WooIconContainerTone.Sandstone,
             modifier = modifier,
         )
-        R.drawable.ic_more_menu_coupons -> DesignSystemIcon(WooIcons.Regular.BadgePercent, modifier = modifier)
-        R.drawable.ic_more_menu_reviews -> DesignSystemIcon(WooIcons.Regular.Star, modifier = modifier)
-        R.drawable.icon_multiple_users -> DesignSystemIcon(WooIcons.Regular.UserGroup, modifier = modifier)
-        R.drawable.ic_more_menu_inbox -> DesignSystemIcon(WooIcons.Regular.Inbox, modifier = modifier)
+        R.drawable.ic_more_menu_coupons -> DesignSystemIcon(
+            icon = WooIcons.Regular.Tag,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
+        R.drawable.ic_more_menu_reviews -> DesignSystemIcon(
+            icon = WooIcons.Regular.Star,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
+        R.drawable.icon_multiple_users -> DesignSystemIcon(
+            icon = WooIcons.Regular.UserGroup,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
+        R.drawable.ic_more_menu_inbox -> DesignSystemIcon(
+            icon = WooIcons.Regular.Envelope,
+            tone = WooIconContainerTone.Sandstone,
+            modifier = modifier,
+        )
         else -> BrandIconContainer(drawable = icon, modifier = modifier)
     }
 }

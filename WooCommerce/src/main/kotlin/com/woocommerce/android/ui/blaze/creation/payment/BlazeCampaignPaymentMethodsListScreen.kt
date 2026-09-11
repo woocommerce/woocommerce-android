@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.web.WCWebView
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignPaymentMethodsListScreen(viewModel: BlazeCampaignPaymentMethodsListViewModel) {
@@ -268,7 +268,7 @@ fun AddPaymentMethodWebView(
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun EmptyPaymentMethodsListPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignPaymentMethodsListScreen(
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
                 paymentMethods = emptyList(),
@@ -307,7 +307,7 @@ private fun PaymentMethodsListPreview() {
             )
         )
     }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignPaymentMethodsListScreen(
             viewState = BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList(
                 paymentMethods = paymentMethods,

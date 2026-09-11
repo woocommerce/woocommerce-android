@@ -75,8 +75,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.common.InfoScreenFragment
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.StoreConnectionErrorDialog
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -1004,7 +1004,7 @@ class MainActivity :
                 binding.notificationsPermissionBar.apply {
                     setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                     setContent {
-                        WooThemeWithBackground {
+                        LegacyWooThemeWithBackground {
                             NotificationsPermissionCard()
                         }
                     }

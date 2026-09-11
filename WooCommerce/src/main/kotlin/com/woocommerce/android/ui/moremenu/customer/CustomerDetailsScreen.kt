@@ -39,8 +39,8 @@ import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
@@ -390,7 +390,7 @@ fun SectionValue(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValuePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(
             title = "Name",
             value = "John"
@@ -402,7 +402,7 @@ fun SectionValuePreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValueComposablePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(
             title = "Name"
         ) {
@@ -419,7 +419,7 @@ fun SectionValueComposablePreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SectionValueNoValuePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         SectionValue(title = "Name", value = null)
     }
 }

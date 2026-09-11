@@ -33,7 +33,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOverflowMenuItem
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
@@ -174,7 +174,7 @@ fun CouponDetailsScreen(
 @Preview
 @Composable
 fun CouponDetailsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CouponDetailsScreen(
             state = CouponDetailsState(
                 couponSummary = CouponSummaryUi(

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun WCOutlinedSpinner(
@@ -78,7 +78,7 @@ fun WCOutlinedSpinner(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SpinnerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         var text by remember {
             mutableStateOf("button")
         }

@@ -61,7 +61,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState.ItnMissing
@@ -134,7 +134,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
         }
 
         WooShippingLabelCreationViewModel.WooShippingViewState.Error -> {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 ErrorScreen(
                     onNavigateBack = viewModel::onNavigateBack,
                     onRetryClick = viewModel::onRetry,
@@ -813,7 +813,7 @@ internal fun ErrorScreen(
 @LightDarkThemePreviews
 @Composable
 private fun WooShippingLabelCreationScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingLabelCreationScreen(
             shipmentUIList = listOf(
                 ShipmentUI(
@@ -873,7 +873,7 @@ private fun WooShippingLabelCreationScreenPreview() {
 @Preview
 @Composable
 private fun PackageNotSelectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PackageCard(
             modifier = Modifier.padding(16.dp),
             packageSelectionState = NotSelected,
@@ -888,7 +888,7 @@ private fun PackageNotSelectedPreview() {
 @Preview
 @Composable
 private fun PackageSelectedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PackageCard(
             packageSelectionState = DataAvailable(
                 selectedPackage = PackageData(
@@ -913,4 +913,4 @@ private fun PackageSelectedPreview() {
 
 @Preview
 @Composable
-private fun ErrorScreenPreview() = WooThemeWithBackground { ErrorScreen() }
+private fun ErrorScreenPreview() = LegacyWooThemeWithBackground { ErrorScreen() }

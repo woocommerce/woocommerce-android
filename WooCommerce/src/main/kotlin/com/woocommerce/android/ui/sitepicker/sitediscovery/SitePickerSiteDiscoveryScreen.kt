@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.AddressInputState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryViewModel.ViewState.ErrorState
 
@@ -197,7 +197,7 @@ fun ErrorView(viewState: ErrorState, scrollState: ScrollState, modifier: Modifie
 @Composable
 @Preview
 private fun AddressInputViewPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AddressInputView(
             state = AddressInputState(
                 siteAddress = "",

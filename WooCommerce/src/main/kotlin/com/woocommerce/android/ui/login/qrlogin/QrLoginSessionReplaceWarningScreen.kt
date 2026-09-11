@@ -32,7 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun QrLoginSessionReplaceWarningScreen(
@@ -139,7 +139,7 @@ private fun Buttons(
 @LightDarkThemePreviews
 @Composable
 private fun QrLoginSessionReplaceWarningScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         QrLoginSessionReplaceWarningScreen(
             onConfirm = {},
             onCancel = {}

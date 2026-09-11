@@ -56,13 +56,13 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun BlazeCampaignCreationIntroScreen(
     viewModel: BlazeCampaignCreationIntroViewModel
 ) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = viewModel::onContinueClick,
             onDismissClick = viewModel::onDismissClick,
@@ -369,7 +369,7 @@ fun StepItem(currentStep: Int, steps: Int, text: AnnotatedString) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun BlazeCampaignCreationIntroScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignCreationIntroScreen(
             onContinueClick = {},
             onDismissClick = {},
@@ -382,7 +382,7 @@ private fun BlazeCampaignCreationIntroScreenPreview() {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 private fun BlazeCampaignBottomSheetContentPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BlazeCampaignBottomSheetContent(
             onDismissClick = {}
         )

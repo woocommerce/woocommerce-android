@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -240,7 +240,7 @@ private val Calendar.year
 @Preview
 @Composable
 private fun InteractiveDatePickerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         var date by remember { mutableStateOf<Date?>(null) }
         var showPicker by remember { mutableStateOf(false) }
 

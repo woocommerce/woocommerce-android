@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel) {
@@ -97,7 +97,7 @@ private val NewOrderNotificationSoundStatus.requiresAttention: Boolean
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NotificationSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         NotificationSettingsScreen(
             orderNotificationSoundStatus = NewOrderNotificationSoundStatus.DISABLED,
             onDeviceNotificationSettingsClicked = {},

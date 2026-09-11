@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 
@@ -210,7 +210,7 @@ private fun ButtonBar(
 @Preview
 @Composable
 private fun AccountMismatchPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AccountMismatchErrorScreen(
             viewState = ViewState(
                 userInfo = AccountMismatchErrorViewModel.UserInfo(

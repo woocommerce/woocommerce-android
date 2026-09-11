@@ -28,7 +28,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun ExpandableTopBanner(
@@ -117,7 +117,7 @@ fun ExpandableTopBanner(
 @Composable
 @LightDarkThemePreviews
 private fun ExpandableTopBannerPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableTopBanner(
             title = "Title",
             message = "Message",

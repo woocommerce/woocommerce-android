@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.math.BigDecimal
 
 @Composable
@@ -190,7 +190,7 @@ fun ShippingLineFormSectionLockedPreview() {
             name = "Shipping $i"
         )
     }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingLineFormSection(
             shippingLineDetails = shippingDetails,
             formatCurrency = { it.toString() },
@@ -212,7 +212,7 @@ fun ShippingLineFormSectionPreview() {
             name = "Shipping $i"
         )
     }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingLineFormSection(
             shippingLineDetails = shippingDetails,
             formatCurrency = { it.toString() },

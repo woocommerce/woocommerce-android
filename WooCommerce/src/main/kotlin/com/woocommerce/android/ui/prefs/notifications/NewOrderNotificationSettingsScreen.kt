@@ -27,7 +27,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.prefs.compose.SettingsSectionHeader
 import com.woocommerce.android.ui.prefs.notifications.NewOrderNotificationSettingsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.notifications.NotificationSettingsSharedViewModel.NewOrderNotificationPreference
@@ -185,7 +185,7 @@ private fun NotificationSettingsAction(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NewOrderNotificationSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         NewOrderNotificationSettingsScreen(
             viewState = ViewState(
                 currencySymbol = "$",

@@ -40,7 +40,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.Inactive
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.Unknown
@@ -284,7 +284,7 @@ private fun Error(onRetryTapped: () -> Unit) {
 @LightDarkThemePreviews
 @Composable
 private fun PreviewPlugins() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PluginsScreen(
             PluginsViewState.Loaded(
                 plugins = listOf(
@@ -308,7 +308,7 @@ private fun PreviewPlugins() {
 @LightDarkThemePreviews
 @Composable
 private fun PreviewError() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PluginsScreen(
             PluginsViewState.Error,
             onRetryTapped = {},
@@ -320,7 +320,7 @@ private fun PreviewError() {
 @LightDarkThemePreviews
 @Composable
 private fun PreviewLoading() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PluginsScreen(
             PluginsViewState.Loading,
             onRetryTapped = {},
