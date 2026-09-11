@@ -14,7 +14,6 @@ data class OrderDetailViewState(
     val isOrderDetailSkeletonShown: Boolean? = null,
     val isRefreshing: Boolean? = null,
     val isShipmentTrackingAvailable: Boolean? = null,
-    val refreshedProductId: Long? = null,
     val isCreateShippingLabelButtonVisible: Boolean? = null,
     val isProductListVisible: Boolean? = null,
     val isProductListMenuVisible: Boolean? = null,

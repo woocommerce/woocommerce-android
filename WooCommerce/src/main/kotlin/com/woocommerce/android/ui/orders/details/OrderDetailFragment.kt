@@ -57,7 +57,6 @@ import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Subscription
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -90,6 +89,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelM
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -128,7 +128,7 @@ class OrderDetailFragment :
     lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject
-    lateinit var productImageMap: ProductImageMap
+    lateinit var productImageLoaderFactory: ProductImageLoader.Factory
 
     @Inject
     lateinit var dateUtils: DateUtils
@@ -427,7 +427,6 @@ class OrderDetailFragment :
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.orderRefreshLayout.isRefreshing = it
             }
-            new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it, new.isWcShippingBannerEnabled)
             }
@@ -710,10 +709,6 @@ class OrderDetailFragment :
         }
     }
 
-    private fun refreshProduct(remoteProductId: Long) {
-        binding.orderDetailProductList.notifyProductChanged(remoteProductId)
-    }
-
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
         binding.orderDetailNoteList.updateOrderNotesView(orderNotes) {
             viewModel.onAddOrderNoteClicked()
@@ -745,7 +740,7 @@ class OrderDetailFragment :
             with(binding.orderDetailProductList) {
                 updateProductItemsList(
                     orderProductItems = products,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped,
@@ -844,7 +839,7 @@ class OrderDetailFragment :
                 show()
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {

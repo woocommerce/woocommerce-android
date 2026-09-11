@@ -22,7 +22,6 @@ import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -142,7 +141,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
     ).toSavedStateHandle()
 
-    private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -203,7 +201,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailRepository,
                 addonsRepository,
                 selectedSite,
-                productImageMap,
                 paymentCollectibilityChecker,
                 paymentsFlowTracker,
                 orderDetailTracker,

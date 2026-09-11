@@ -45,7 +45,7 @@ class ProductImageMapTest {
     @Test
     fun `when loading a product image, then the caller yields before reading the database`() = scope.runTest {
         // WHEN
-        val image = async(caller) { imageMap.getAsync(PRODUCT_ID) }
+        val image = async(caller) { imageMap.get(PRODUCT_ID) }
 
         // THEN
         assertThat(image.isCompleted).isFalse()
@@ -56,14 +56,14 @@ class ProductImageMapTest {
     @Test
     fun `when one caller cancels, then the shared lookup still completes and is cached`() = scope.runTest {
         // WHEN
-        val first = async(caller) { imageMap.getAsync(PRODUCT_ID) }
-        val second = async(caller) { imageMap.getAsync(PRODUCT_ID) }
+        val first = async(caller) { imageMap.get(PRODUCT_ID) }
+        val second = async(caller) { imageMap.get(PRODUCT_ID) }
         first.cancel()
 
         // THEN
         assertThat(first.isCancelled).isTrue()
         assertThat(second.await()).isEqualTo(IMAGE_URL)
-        assertThat(imageMap.getAsync(PRODUCT_ID)).isEqualTo(IMAGE_URL)
+        assertThat(imageMap.get(PRODUCT_ID)).isEqualTo(IMAGE_URL)
         verify(productStore).getProductByRemoteId(site, PRODUCT_ID)
     }
 
@@ -74,7 +74,7 @@ class ProductImageMapTest {
         whenever(productStore.fetchSingleProduct(any())).thenReturn(WCProductStore.OnProductChanged())
 
         // WHEN
-        val image = imageMap.getAsync(PRODUCT_ID)
+        val image = imageMap.get(PRODUCT_ID)
 
         // THEN
         assertThat(image).isEqualTo(IMAGE_URL)
@@ -85,14 +85,14 @@ class ProductImageMapTest {
     @Test
     fun `when resetting the cache during a lookup, then cancel the old request and load the new store image`() = scope.runTest {
         // GIVEN
-        val oldImage = async(caller) { imageMap.getAsync(PRODUCT_ID) }
+        val oldImage = async(caller) { imageMap.get(PRODUCT_ID) }
         val newSite = SiteModel().apply { id = 2 }
         whenever(selectedSite.getIfExists()).thenReturn(newSite)
         whenever(productStore.getProductByRemoteId(newSite, PRODUCT_ID)).thenReturn(product)
 
         // WHEN
         imageMap.reset()
-        val newImage = imageMap.getAsync(PRODUCT_ID)
+        val newImage = imageMap.get(PRODUCT_ID)
 
         // THEN
         assertThat(oldImage.isCancelled).isTrue()
@@ -107,10 +107,10 @@ class ProductImageMapTest {
         whenever(productStore.getProductByRemoteId(site, PRODUCT_ID)).thenReturn(null, product)
         val failedFetch = WCProductStore.OnProductChanged().apply { error = WCProductStore.ProductError() }
         whenever(productStore.fetchSingleProduct(any())).thenReturn(failedFetch)
-        assertThat(imageMap.getAsync(PRODUCT_ID)).isNull()
+        assertThat(imageMap.get(PRODUCT_ID)).isNull()
 
         // WHEN
-        val image = imageMap.getAsync(PRODUCT_ID)
+        val image = imageMap.get(PRODUCT_ID)
 
         // THEN
         assertThat(image).isEqualTo(IMAGE_URL)
@@ -120,10 +120,10 @@ class ProductImageMapTest {
     @Test
     fun `given a cached image, when loading it again, then return without dispatching`() = scope.runTest {
         // GIVEN
-        imageMap.getAsync(PRODUCT_ID)
+        imageMap.get(PRODUCT_ID)
 
         // WHEN
-        val image = async(caller) { imageMap.getAsync(PRODUCT_ID) }
+        val image = async(caller) { imageMap.get(PRODUCT_ID) }
 
         // THEN
         assertThat(image.isCompleted).isTrue()
@@ -137,8 +137,8 @@ class ProductImageMapTest {
         whenever(productStore.fetchSingleProduct(any())).thenReturn(WCProductStore.OnProductChanged())
 
         // WHEN
-        assertThat(imageMap.getAsync(PRODUCT_ID)).isNull()
-        assertThat(imageMap.getAsync(PRODUCT_ID)).isNull()
+        assertThat(imageMap.get(PRODUCT_ID)).isNull()
+        assertThat(imageMap.get(PRODUCT_ID)).isNull()
 
         // THEN
         verify(productStore).fetchSingleProduct(any())

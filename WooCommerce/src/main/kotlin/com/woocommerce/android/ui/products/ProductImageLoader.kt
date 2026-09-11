@@ -23,7 +23,7 @@ class ProductImageLoader @AssistedInject constructor(
         imageJob?.cancel()
         target.show(null)
         imageJob = scope.launch {
-            target.show(imageMap.getAsync(remoteProductId))
+            target.show(imageMap.get(remoteProductId))
         }
     }
 

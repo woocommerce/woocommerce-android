@@ -5,15 +5,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductItemBinding
 import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.products.ProductImageLoader
+import com.woocommerce.android.ui.products.ProductImageViewTarget
 import java.math.BigDecimal
 
 typealias ViewAddonClickListener = (Order.Item) -> Unit
@@ -25,9 +23,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 ) : ConstraintLayout(ctx, attrs, defStyleAttr) {
     private val binding = OrderDetailProductItemBinding.inflate(LayoutInflater.from(ctx), this, true)
 
+    private var imageTarget: ProductImageViewTarget? = null
+
     fun initView(
         item: Order.Item,
-        productImage: String?,
+        productImageLoaderFactory: ProductImageLoader.Factory,
         formatCurrencyForDisplay: (BigDecimal) -> String,
         onViewAddonsClick: ViewAddonClickListener?
     ) {
@@ -65,15 +65,10 @@ class OrderDetailProductItemView @JvmOverloads constructor(
             binding.productInfoAddons.setOnClickListener { onClick(item) }
         } ?: binding.productInfoAddons.let { it.visibility = GONE }
 
-        productImage?.let {
-            val imageSize = context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-            val imageCornerRadius = context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-            Glide.with(context)
-                .loadPhotonUrlWithFallback(it, imageSize, imageSize)
-                .placeholder(R.drawable.ic_product)
-                .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-                .into(binding.productInfoIcon)
-        } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
+        val target = imageTarget ?: ProductImageViewTarget(
+            binding.productInfoIcon, productImageLoaderFactory
+        ).also { imageTarget = it }
+        target.load(item.uniqueId)
     }
 
     fun hideProductTotal() {
