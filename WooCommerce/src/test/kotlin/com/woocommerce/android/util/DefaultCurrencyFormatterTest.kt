@@ -43,7 +43,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         SiteIndependentCurrencyFormatter(localeProvider, crashLogging)
 
     @Test
-    fun `when formatting rounded currency then use the current app locale`() = runTest {
+    fun `when formatting rounded currency, then use the current app locale`() = runTest {
         // GIVEN
         setupSitesFlow()
         val site = SiteModel()
@@ -69,7 +69,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when formatting rounded currency then round the amount without narrowing to Int`() = runTest {
+    fun `when formatting rounded currency, then round the amount without narrowing to Int`() = runTest {
         // GIVEN
         setupSitesFlow()
         val site = SiteModel()
