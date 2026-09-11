@@ -26,8 +26,8 @@ class ProductImageLoaderTest {
             val firstImage = CompletableDeferred<String?>()
             val secondImage = CompletableDeferred<String?>()
             val imageMap: ProductImageMap = mock {
-                on { getAsync(1) } doSuspendableAnswer { firstImage.await() }
-                on { getAsync(2) } doSuspendableAnswer { secondImage.await() }
+                on { get(1) } doSuspendableAnswer { firstImage.await() }
+                on { get(2) } doSuspendableAnswer { secondImage.await() }
             }
             val loader = ProductImageLoader(imageMap, target, backgroundScope)
             loader.load(1)
@@ -47,7 +47,7 @@ class ProductImageLoaderTest {
             // GIVEN
             val image = CompletableDeferred<String?>()
             val imageMap: ProductImageMap = mock {
-                on { getAsync(1) } doSuspendableAnswer { image.await() }
+                on { get(1) } doSuspendableAnswer { image.await() }
             }
             val loader = ProductImageLoader(imageMap, target, backgroundScope)
             loader.load(1)

@@ -28,8 +28,6 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.toShippingLabelModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -106,7 +104,6 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
-    private val productImageMap: ProductImageMap,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
@@ -124,7 +121,7 @@ class OrderDetailViewModel @Inject constructor(
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-) : ScopedViewModel(savedState), OnProductFetchedListener {
+) : ScopedViewModel(savedState) {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
@@ -212,7 +209,6 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        productImageMap.unsubscribeFromOnProductFetchedEvents(this)
         orderDetailsTransactionLauncher.clear()
         _productList.removeObserver(productListObserver)
     }
@@ -223,7 +219,6 @@ class OrderDetailViewModel @Inject constructor(
         get() = shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
     init {
-        productImageMap.subscribeToOnProductFetchedEvents(this)
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
@@ -1022,10 +1017,6 @@ class OrderDetailViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onProductFetched(remoteProductId: Long) {
-        viewState = viewState.copy(refreshedProductId = remoteProductId)
     }
 
     fun onCardReaderPaymentCompleted() {
