@@ -1,7 +1,9 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -12,12 +14,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import java.text.DecimalFormat
 import java.util.Currency
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 @Singleton
 class CurrencyFormatter @Inject constructor(
@@ -25,37 +26,10 @@ class CurrencyFormatter @Inject constructor(
     private val selectedSite: SelectedSite,
     private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val numberExtensionsWrapper: NumberExtensionsWrapper,
+    private val localeProvider: LocaleProvider
 ) {
-    companion object {
-        private const val ONE_THOUSAND = 1000
-        private const val ONE_MILLION = 1000000
-
-        private const val BACKOFF_DELAY = 1_000L
-        private const val BACKOFF_INTENTS = 3
-
-        // Formats the value to two decimal places
-        private val currencyFormatter: DecimalFormat by lazy {
-            DecimalFormat("0.00")
-        }
-
-        // Formats the value to one decimal place
-        private val currencyFormatterRounded: DecimalFormat by lazy {
-            DecimalFormat("0.0")
-        }
-
-        private fun currencyStringRounded(rawValue: Double): String {
-            val roundedValue = rawValue.roundToInt().toDouble()
-            return if (roundedValue.absoluteValue >= ONE_MILLION) {
-                currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
-            } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
-                currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
-            } else {
-                currencyFormatter.format(roundedValue).toString().removeSuffix(".00")
-            }
-        }
-    }
-
     private var defaultCurrencyCode = ""
 
     init {
@@ -133,20 +107,14 @@ class CurrencyFormatter @Inject constructor(
     /**
      * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
      *
-     * Additionally, if the value is a thousand or more, we return it rounded to the nearest tenth
-     * and suffixed with "k" (2500 -> 2.5k).
-     *
-     * Similarly, we add "m" for values a million or higher.
-     *
      * @param rawValue the value to be formatted
      * @param currencyCode the ISO 4217 currency code to use for formatting
      * @return the formatted value for display
      */
     fun formatCurrencyRounded(rawValue: Double, currencyCode: String = defaultCurrencyCode): String {
-        val displayFormatted = currencyStringRounded(rawValue)
-        return displayFormatted.takeIf { it.isNotEmpty() }?.let {
-            return wcStore.formatCurrencyForDisplay(it, selectedSite.get(), currencyCode, false)
-        }.orEmpty()
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        val displayFormatted = numberExtensionsWrapper.compactNumberCompat(rawValue.roundToLong(), locale)
+        return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSite.get(), currencyCode, false)
     }
 
     /**
@@ -177,4 +145,9 @@ class CurrencyFormatter @Inject constructor(
         } else {
             formatCurrency(revenue.toBigDecimal(), currencyCode)
         }
+
+    private companion object {
+        const val BACKOFF_DELAY = 1_000L
+        const val BACKOFF_INTENTS = 3
+    }
 }
