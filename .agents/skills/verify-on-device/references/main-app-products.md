@@ -6,14 +6,24 @@ Fragment: `ProductListFragment` -- Tap `products` bottom tab.
 
 ## Screen Identifiers
 
-**Products List**
+**Products List** -- Compose. Test tags are declared in `ProductListTestTags.kt` and surface in the accessibility tree as `resource-id` **verbatim**, with no `com.woocommerce.android.dev:id/` prefix.
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
-| **Primary** | `productsRecycler` | Products RecyclerView |
-| Add product FAB | `addProductButton` | contentDescription: "Add product" |
-| Sort/filter card | `products_sort_filter_card` | Filter/sort controls |
-| Empty view | `empty_view` | Shown when no products match |
+| **Primary** | `product_list_screen` | Compose root of the products list |
+| Product list | `product_list` | LazyColumn holding the product rows |
+| Product row | `product_list_row_<remoteId>` | One per product; `<remoteId>` is the remote product ID |
+| Add product FAB | `product_list_add_action` | contentDescription: "Add products". Wrapped in `product_list_add_fab` |
+| Control rail | `product_list_control_rail` | Horizontal row holding the sort and filter chips |
+| Sort chip | `product_list_sort` | Label is the active sorting title |
+| Filters chip | `product_list_filters` | `stateDescription` reports the active filter count |
+| Search icon | `product_list_search_action` | Opens the search header |
+| Search field | `product_list_search_field` | With `product_list_search_all` / `product_list_search_sku` tabs below it |
+| Barcode icon | `product_list_barcode_action` | Only shown when barcode scanning is available |
+| Empty view | `product_list_empty` | Shown when no products match |
+| Selection header | `product_list_selection_header` | Replaces the top app bar in multi-select mode |
+
+The empty view's "Add product" button carries the same `product_list_add_action` tag as the FAB. Only one of the two is on screen at a time, but match on the enclosing `product_list_empty` when you need to disambiguate.
 
 **Product Detail** -- Fragment: `ProductDetailFragment` -- tap any product row
 
@@ -34,17 +44,18 @@ Fragment: `ProductListFragment` -- Tap `products` bottom tab.
 | Step | Action | Element |
 |------|--------|---------|
 | 1 | Tap "Products" tab | id: `products` |
-| 2 | Tap a product | product row in `productsRecycler` |
-| 3 | Search products | tap search icon in toolbar |
-| 4 | Filter products | tap filter in `products_sort_filter_card` |
-| 5 | Sort products | tap sort in `products_sort_filter_card` |
-| 6 | Scan barcode | tap barcode icon |
+| 2 | Tap a product | product row in `product_list` -- `product_list_row_<remoteId>` |
+| 3 | Search products | tap `product_list_search_action`, then type into `product_list_search_field` |
+| 4 | Search by SKU | in the search header, tap the `product_list_search_sku` tab |
+| 5 | Filter products | tap `product_list_filters` |
+| 6 | Sort products | tap `product_list_sort` |
+| 7 | Scan barcode | tap `product_list_barcode_action` |
 
 ### Product Creation
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Tap Add Product FAB | id: `addProductButton` |
+| 1 | Tap Add Product FAB | `product_list_add_action` |
 | 2 | Select product type | type selection bottom sheet |
 | 3 | (Optional) Use AI to generate | AI prompt screen |
 | 4 | Fill product details | product detail fields |
@@ -101,7 +112,7 @@ All reachable by tapping the corresponding section on the Product Detail screen.
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Tap barcode scan icon on product list | barcode icon |
+| 1 | Tap barcode scan icon on product list | `product_list_barcode_action` |
 | 2 | Scan product barcode | camera scanner |
 | 3 | Update inventory count | inventory bottom sheet |
 
