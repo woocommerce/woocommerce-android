@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] Changing the country on an order address now clears the previous region from the form [https://github.com/woocommerce/woocommerce-android/pull/16527]
 - [Internal] Removed the POS server-calculated refunds feature flag; the flow is on for every store running WooCommerce 11.1.0 or later [https://github.com/woocommerce/woocommerce-android/pull/16539]
 - [*] The linked products promo no longer appears after creating a product on a store with fewer than three published products [https://github.com/woocommerce/woocommerce-android/pull/16511]
 - [**] POS now blocks stores that iOS already blocks: a store currency that does not match the store country, a store country POS does not support, a missing or deactivated WooCommerce plugin, and the Point of Sale feature switch turned off in WooCommerce settings [https://github.com/woocommerce/woocommerce-android/pull/16524]
