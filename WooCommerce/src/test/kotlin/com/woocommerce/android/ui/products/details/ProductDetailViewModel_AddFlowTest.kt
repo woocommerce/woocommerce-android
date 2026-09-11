@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onSubscription
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -579,5 +580,46 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onSaveButtonClicked()
 
         Assertions.assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
+    }
+
+    @Test
+    fun `given the store has fewer than three products, when a product is added, then the promo is not shown`() =
+        testBlocking {
+            // GIVEN
+            doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+            doReturn(2L).whenever(productRepository).fetchPublishedProductsCount()
+
+            var promoShown = false
+            viewModel.event.observeForever {
+                if (it is ProductDetailViewModel.ShowLinkedProductPromoBanner) promoShown = true
+            }
+
+            // WHEN
+            viewModel.start()
+            viewModel.onPublishButtonClicked()
+
+            // THEN
+            assertThat(promoShown).isFalse()
+        }
+
+    @Test
+    fun `given the store has three products, when a product is added, then the promo is shown`() = testBlocking {
+        // GIVEN
+        doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
+        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
+        doReturn(3L).whenever(productRepository).fetchPublishedProductsCount()
+
+        var promoShown = false
+        viewModel.event.observeForever {
+            if (it is ProductDetailViewModel.ShowLinkedProductPromoBanner) promoShown = true
+        }
+
+        // WHEN
+        viewModel.start()
+        viewModel.onPublishButtonClicked()
+
+        // THEN
+        assertThat(promoShown).isTrue()
     }
 }
