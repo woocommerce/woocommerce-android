@@ -33,12 +33,13 @@ class ProductImageViewTarget(
 
     override fun show(imageUrl: String?) {
         val request = Glide.with(imageView)
-            .loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
+            .asDrawable()
             .placeholder(R.drawable.ic_product)
         when {
             cornerRadius > 0 -> request.transform(CenterCrop(), RoundedCorners(cornerRadius))
             else -> request
-        }.into(imageView)
+        }.loadPhotonUrlWithFallback(imageUrl, imageSize, imageSize)
+            .into(imageView)
     }
 
     override fun onViewAttachedToWindow(view: View) {
