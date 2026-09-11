@@ -29,7 +29,7 @@ The current module exposes Figma-backed production Compose APIs for:
 - Checkbox, radio button, and filter chip controls.
 - Horizontal and vertical dividers.
 - Icon containers.
-- Static notice banners.
+- Notice banners with optional leading icon, text action, and dismiss button.
 - Anchored tooltips with automatic or preferred logical-side placement.
 - Page headers.
 - Controlled search fields.
@@ -151,7 +151,7 @@ component split does not add module screenshot infrastructure.
 | Divider | `WooDivider`, `WooVerticalDivider` | production | Thin divider wrappers using Tint Layers / On Surface / Opacity-16. |
 | Icon Button | `WooIconButton`, `WooOutlinedIconButton`, `WooIconButtonEmphasis` | material_adapter | Public Material 3 / token adapters. Requires non-blank content descriptions. Figma has a `navigation-button` treatment for outlined navigation actions; the generic plain/outlined icon-button APIs are Android composition utilities. |
 | Icon Container | `WooIconContainer`, `WooIconContainerTone` | production | Restricted palette-tone icon box, decorative by default unless a content description is supplied. |
-| Notice Banner | `WooNoticeBanner`, `WooNoticeBannerTone` | production | Static title/description banner. Dismissible/actionable/live-region behavior remains future work. |
+| Notice Banner | `WooNoticeBanner`, `WooNoticeBannerTone` | production | Title/description banner with optional leading icon, text action, and dismiss button. Action label and dismiss content description must be non-blank and paired with their callbacks. Live-region behavior remains future work. |
 | Progress Indicator | `WooLinearProgressIndicator`, `WooCircularProgressIndicator` | material_adapter | Thin Material 3 wrappers, including determinate progress coercion. |
 | Radio Button | `WooRadioButton` | production | Controlled Material 3 radio wrapper. Caller owns label and group semantics. |
 | Search | `WooSearchField` | production | Controlled Surface Bright search shell with optional clear/external actions, State On Surface 24 placeholder, active On Surface icons, and `surface.surfaceDim` inner field. Search orchestration remains screen-owned. |

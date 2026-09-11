@@ -119,6 +119,19 @@ fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     )
 }
 
+fun List<Refund>.getRefundedShippingLines(): List<Refund.ShippingLine> =
+    flatMap { it.shippingLines }.groupBy { it.itemId }.flatMap { (itemId, shippingLines) ->
+        when {
+            itemId <= 0 -> shippingLines
+            else -> listOf(
+                shippingLines.first().copy(
+                    total = shippingLines.sumOf { it.total },
+                    totalTax = shippingLines.sumOf { it.totalTax }
+                )
+            )
+        }
+    }
+
 fun List<Refund>.getNonRefundedProducts(
     products: List<Order.Item>
 ): List<Order.Item> {

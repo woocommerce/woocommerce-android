@@ -44,6 +44,12 @@
                     tools:text="Subtitle shop name"
                     tools:visibility="visible" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/https_configuration_warning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <FrameLayout

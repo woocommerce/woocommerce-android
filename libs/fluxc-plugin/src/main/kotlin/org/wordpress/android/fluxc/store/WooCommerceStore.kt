@@ -43,6 +43,7 @@ import org.wordpress.android.fluxc.persistence.entity.WCSettingsModel
 import org.wordpress.android.fluxc.store.SiteStore.FetchSitesPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.tools.CoroutineEngine
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.utils.WCCurrencyUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -67,6 +68,7 @@ open class WooCommerceStore @Inject internal constructor(
     private val productSettingsDao: ProductSettingsDao,
     private val settingsDao: SettingsDao,
     private val analyticsScheduledImportDao: AnalyticsScheduledImportDao,
+    private val httpsUrlNormalizer: HttpsUrlNormalizer,
 ) : Store(dispatcher) {
     enum class WooPlugin(val pluginName: String) {
         WOO_CORE("woocommerce/woocommerce"),
@@ -180,12 +182,7 @@ open class WooCommerceStore @Inject internal constructor(
 
     fun getActiveSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
         return runBlocking {
-            val allPlugins = sitePluginDao.getActiveSitePlugins(site.localId())
-            val extractedRequestedPluginName = plugin.pluginName.substringAfterLast('/')
-            allPlugins.firstOrNull { sitePlugin ->
-                val extractedPluginName = sitePlugin.name.substringAfterLast('/')
-                extractedPluginName == extractedRequestedPluginName
-            }
+            sitePluginDao.getActiveSitePlugins(site.localId()).firstOrNull { it.matches(plugin) }
         }
     }
 
@@ -203,8 +200,20 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     suspend fun fetchSitePlugins(site: SiteModel): WooResult<List<SitePluginModel>> {
-        return coroutineEngine.withDefaultContext(T.API, this, "fetchSitePlugins") {
-            val response = systemRestClient.fetchInstalledPlugins(site)
+        val result = fetchInstalledPlugins(site, includeSettings = false)
+        val model = result.model ?: return WooResult(result.error ?: WooError(GENERIC_ERROR, UNKNOWN))
+        return WooResult(model.plugins)
+    }
+
+    suspend fun fetchSitePluginsAndSettings(site: SiteModel): WooResult<SitePluginsAndFeatures> =
+        fetchInstalledPlugins(site, includeSettings = true)
+
+    private suspend fun fetchInstalledPlugins(
+        site: SiteModel,
+        includeSettings: Boolean
+    ): WooResult<SitePluginsAndFeatures> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchInstalledPlugins") {
+            val response = systemRestClient.fetchInstalledPlugins(site, includeSettings)
             return@withDefaultContext when {
                 response.isError -> {
                     WooResult(response.error)
@@ -213,12 +222,28 @@ open class WooCommerceStore @Inject internal constructor(
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
                     sitePluginDao.replaceAllSitePlugins(site.localId(), plugins)
-                    WooResult(plugins)
+                    val enabledFeatures = response.result.settings?.enabledFeatures
+                        ?.let { EnabledFeatures.Known(it) }
+                        ?: EnabledFeatures.Unknown
+                    WooResult(SitePluginsAndFeatures(plugins, enabledFeatures))
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
+    }
+
+    data class SitePluginsAndFeatures(
+        val plugins: List<SitePluginModel>,
+        val enabledFeatures: EnabledFeatures
+    )
+
+    sealed interface EnabledFeatures {
+        /** The features the store reports as on. Empty means the store has none of them on. */
+        data class Known(val features: List<String>) : EnabledFeatures
+
+        /** The report left the field out, or it was not asked for. */
+        data object Unknown : EnabledFeatures
     }
 
     suspend fun fetchSystemPlugins(site: SiteModel): WooResult<List<SystemPluginModel>> {
@@ -285,6 +310,7 @@ open class WooCommerceStore @Inject internal constructor(
                     // Persist the Application Passwords auhtorization URL
                     site.applicationPasswordsAuthorizeUrl = response.result.authentication
                         ?.applicationPasswords?.endpoints?.authorization
+                        ?.let { runCatching { httpsUrlNormalizer.normalize(it).normalizedUrl }.getOrNull() }
                     try {
                         siteStore.insertOrUpdateSite(site)
                     } catch (e: SiteStorePersistence.DuplicateSiteException) {
@@ -638,3 +664,6 @@ open class WooCommerceStore @Inject internal constructor(
         return formatCurrencyForDisplay(amount.toString(), site, currencyCode, applyDecimalFormatting)
     }
 }
+
+fun SitePluginModel.matches(plugin: WooCommerceStore.WooPlugin): Boolean =
+    name.substringAfterLast('/') == plugin.pluginName.substringAfterLast('/')

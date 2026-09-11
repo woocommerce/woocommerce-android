@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import javax.inject.Inject
@@ -27,10 +25,10 @@ sealed interface WooPosRefundFlow {
 }
 
 /**
- * Decides which refund flow the selected store uses. Server calculation needs the feature flag on,
- * a known WooCommerce version of at least [MIN_WC_VERSION_FOR_SERVER_REFUNDS], and no earlier
- * preview probe that found the endpoints missing (see [WooPosServerRefundAvailabilityCache]).
- * Anything else falls back to [LocalComputed].
+ * Decides which refund flow the selected store uses. Server calculation needs a known WooCommerce
+ * version of at least [MIN_WC_VERSION_FOR_SERVER_REFUNDS] and no earlier preview probe that found
+ * the endpoints missing (see [WooPosServerRefundAvailabilityCache]). Anything else falls back to
+ * [LocalComputed].
  *
  * [WooPosRefundFlow.ServerComputed] means eligible, not confirmed. Only a successful preview sets
  * the availability cache to `true`, and only that permits the computed create (see
@@ -40,13 +38,10 @@ class WooPosResolveRefundFlow @Inject constructor(
     private val selectedSite: SelectedSite,
     private val availabilityCache: WooPosServerRefundAvailabilityCache,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
-    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     operator fun invoke(): WooPosRefundFlow {
         val wooVersion = getWooCoreVersion()
         val eligibleVersion = when {
-            !featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_SERVER_REFUNDS) ->
-                fallBackToLocal("feature flag disabled")
             // An unknown version means the plugin info was never fetched. Fail closed.
             wooVersion == null -> fallBackToLocal("WooCommerce version unknown")
             wooVersion.semverCompareTo(MIN_WC_VERSION_FOR_SERVER_REFUNDS) < 0 ->

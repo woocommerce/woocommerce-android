@@ -18,7 +18,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.ColorRes
@@ -39,8 +38,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavOptions
@@ -70,6 +72,12 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.ageeligibility.AgeCheckTrigger
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityDecision
+import com.woocommerce.android.ui.ageeligibility.AgeVerificationRequiredDialogFragment
+import com.woocommerce.android.ui.ageeligibility.dismissAgeVerificationRequiredDialog
+import com.woocommerce.android.ui.ageeligibility.showAgeVerificationRequiredDialog
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -133,6 +141,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
 import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
@@ -149,7 +158,9 @@ class MainActivity :
     AppUpgradeActivity(),
     MainContract.View,
     MainNavigationRouter,
-    MainBottomNavigationView.MainNavigationListener {
+    BackPressTrackerOwner,
+    MainBottomNavigationView.MainNavigationListener,
+    AgeVerificationRequiredDialogFragment.Listener {
     companion object {
         private const val MAGIC_LOGIN = "magic-login"
 
@@ -157,6 +168,8 @@ class MainActivity :
         private const val KEY_UNFILLED_ORDER_COUNT = "unfilled-order-count"
 
         private const val DIALOG_NAVIGATOR_NAME = "dialog"
+        private const val HTTPS_CONFIGURATION_LEARN_MORE_URL =
+            "https://woocommerce.com/document/ssl-and-https/#for-new-websites-stores"
 
         // push notification-related constants
         const val FIELD_OPENED_FROM_PUSH = "opened-from-push-notification"
@@ -201,6 +214,9 @@ class MainActivity :
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
 
     @Inject
+    lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
+    @Inject
     lateinit var animatorHelper: MainAnimatorHelper
 
     @Inject
@@ -208,6 +224,9 @@ class MainActivity :
 
     @Inject
     lateinit var posTabController: WooPosTabController
+
+    @Inject
+    override lateinit var backPressTracker: BackPressTracker
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -227,6 +246,9 @@ class MainActivity :
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var toolbar: Toolbar
+
+    private var httpsConfigurationWarningRequired = false
+    private var httpsConfigurationWarningAllowedForDestination = false
 
     private val appBarOffsetListener by lazy {
         AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
@@ -298,6 +320,7 @@ class MainActivity :
             if (f is DialogFragment) return
             lastToolbarFragment = WeakReference(f)
             val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
+            httpsConfigurationWarningAllowedForDestination = f is TopLevelFragment && shouldShowBottomNavigation
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -324,6 +347,7 @@ class MainActivity :
 
                 AppBarStatus.Hidden -> hideToolbar()
             }
+            updateHttpsConfigurationWarningVisibility()
         }
     }
 
@@ -346,7 +370,6 @@ class MainActivity :
         // Drop stale main-flow state when no site is selected so login can take over cleanly.
         val bundle = if (SelectedSite.hasSelectedSiteId(this)) savedInstanceState else null
         super.onCreate(bundle)
-        setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
@@ -361,6 +384,7 @@ class MainActivity :
         binding.appBarLayout.stateListAnimator = null
 
         setupStoreConnectionErrorDialog()
+        setupHttpsConfigurationWarning()
 
         edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
@@ -386,6 +410,7 @@ class MainActivity :
             null
         }
         navController.setGraph(navGraph, startDestinationArgs)
+        backPressTracker.register(this, navHostFragment.childFragmentManager)
         navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleObserver, false)
         binding.bottomNav.init(navController, this)
 
@@ -423,25 +448,6 @@ class MainActivity :
         }
 
         viewModel.showFeatureAnnouncementIfNeeded()
-    }
-
-    private fun setOnBackNavigationCallback() {
-        onBackPressedDispatcher.addCallback(this) {
-            AnalyticsTracker.trackBackPressed(this@MainActivity)
-            val fragment = getActiveChildFragment()
-            if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
-                return@addCallback
-            }
-            supportFragmentManager.primaryNavigationFragment?.let {
-                updateAppBarVisibility(it)
-            }
-            // Disable this callback temporarily to prevent infinite recursion from onBackPressed() call below.
-            isEnabled = false
-            // Trigger the default back press behavior.
-            onBackPressedDispatcher.onBackPressed()
-            // Re-enable the callback for future custom back presses handling.
-            isEnabled = true
-        }
     }
 
     private fun handleIncomingImages() {
@@ -572,17 +578,6 @@ class MainActivity :
     private fun getActiveTopLevelFragment(): TopLevelFragment? {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_main) as NavHostFragment
         return navHostFragment.childFragmentManager.primaryNavigationFragment as? TopLevelFragment
-    }
-
-    /**
-     * Returns the fragment currently shown by the navigation component, or null if we're at the root
-     */
-    private fun getActiveChildFragment(): Fragment? {
-        return if (isChildFragmentShowing()) {
-            getHostChildFragment()
-        } else {
-            null
-        }
     }
 
     /**
@@ -926,6 +921,37 @@ class MainActivity :
         }
     }
 
+    private fun setupHttpsConfigurationWarning() {
+        binding.httpsConfigurationWarning.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        binding.httpsConfigurationWarning.setContent {
+            HttpsConfigurationWarningBanner(
+                title = getString(R.string.https_configuration_warning_title),
+                description = getString(R.string.https_configuration_warning_message),
+                actionLabel = getString(R.string.learn_more),
+                onActionClick = {
+                    ChromeCustomTabUtils.launchUrl(this, HTTPS_CONFIGURATION_LEARN_MORE_URL)
+                },
+                dismissContentDescription = getString(R.string.https_configuration_warning_dismiss),
+                onDismissClick = viewModel::onHttpsConfigurationWarningDismissed,
+            )
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.httpsConfigurationWarningVisible.collect { isVisible ->
+                    httpsConfigurationWarningRequired = isVisible
+                    updateHttpsConfigurationWarningVisibility()
+                }
+            }
+        }
+    }
+
+    private fun updateHttpsConfigurationWarningVisibility() {
+        binding.httpsConfigurationWarning.isVisible =
+            httpsConfigurationWarningRequired && httpsConfigurationWarningAllowedForDestination
+    }
+
     @Suppress("ComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(this) { event ->
@@ -1059,9 +1085,24 @@ class MainActivity :
 
     private fun observeUserAgeEligibilityState() {
         viewModel.isUserAgeRangeEligible.observe(this) { ageEligibilityState ->
-            if (ageEligibilityState.isUserAgeRangeEligible.not()) {
-                showLoginScreen()
+            when (ageEligibilityState.decision) {
+                AgeEligibilityDecision.Allowed -> dismissAgeVerificationRequiredDialog()
+                AgeEligibilityDecision.VerificationRequired -> showAgeVerificationRequiredDialog()
+                is AgeEligibilityDecision.Restricted -> {
+                    dismissAgeVerificationRequiredDialog()
+                    showLoginScreen()
+                }
             }
+        }
+    }
+
+    override fun onAgeVerificationPlayStoreOpened() {
+        ageEligibilityChecker.onPlayStoreOpenedForVerification()
+    }
+
+    override fun onAgeVerificationRetryRequested() {
+        lifecycleScope.launch {
+            ageEligibilityChecker.checkAge(this@MainActivity, AgeCheckTrigger.MANUAL_RETRY)
         }
     }
 

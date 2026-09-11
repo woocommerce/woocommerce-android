@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -26,10 +27,9 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.getRefundedShippingLines
 import com.woocommerce.android.model.toShippingLabelModel
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
-import com.woocommerce.android.tools.ProductImageMap.OnProductFetchedListener
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.IsStoreCurrencyMatch
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
@@ -106,7 +106,6 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
-    private val productImageMap: ProductImageMap,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
@@ -124,7 +123,7 @@ class OrderDetailViewModel @Inject constructor(
     private val refreshShippingMethods: RefreshShippingMethods,
     private val isStoreCurrencyMatch: IsStoreCurrencyMatch,
     getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-) : ScopedViewModel(savedState), OnProductFetchedListener {
+) : ScopedViewModel(savedState) {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
     val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
@@ -148,7 +147,13 @@ class OrderDetailViewModel @Inject constructor(
     val orderNotes: LiveData<List<OrderNote>> = _orderNotes
 
     private val _orderRefunds = MutableLiveData<List<Refund>>()
-    val orderRefunds: LiveData<List<Refund>> = _orderRefunds
+    val orderRefunds = _orderRefunds.map { refunds ->
+        OrderDetailViewState.RefundsState(
+            refunds = refunds,
+            refundedProductsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } },
+            shippingLines = refunds.getRefundedShippingLines()
+        )
+    }
 
     private val _productList = MutableLiveData<List<OrderProduct>>()
     val productList: LiveData<List<OrderProduct>> = _productList
@@ -212,7 +217,6 @@ class OrderDetailViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        productImageMap.unsubscribeFromOnProductFetchedEvents(this)
         orderDetailsTransactionLauncher.clear()
         _productList.removeObserver(productListObserver)
     }
@@ -223,7 +227,6 @@ class OrderDetailViewModel @Inject constructor(
         get() = shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
 
     init {
-        productImageMap.subscribeToOnProductFetchedEvents(this)
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
         }
@@ -1022,10 +1025,6 @@ class OrderDetailViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun onProductFetched(remoteProductId: Long) {
-        viewState = viewState.copy(refreshedProductId = remoteProductId)
     }
 
     fun onCardReaderPaymentCompleted() {

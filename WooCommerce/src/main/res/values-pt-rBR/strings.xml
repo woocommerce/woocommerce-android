@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-12 09:58:10+0000
+Translation-Revision-Date: 2026-08-26 16:58:33+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">Ative a localização para ver os leitores de cartão</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Permita a localização para ver os leitores de cartão</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">Ative o Bluetooth para ver os leitores de cartão</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">Permita o Bluetooth para ver os leitores de cartão</string>
+    <string name="woopos_card_reader_local_network_permission_message">Permissão de rede local obrigatória para se conectar a um celular usado como leitor de cartão.</string>
+    <string name="woopos_card_reader_local_network_permission_title">Permissão de rede local obrigatória</string>
+    <string name="woopos_refund_error_invalid_amount">O valor do reembolso não é válido</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">O valor do reembolso é superior ao que resta para reembolsar este item</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">O valor do reembolso é superior ao que resta para reembolsar este pedido</string>
+    <string name="woopos_refund_error_order_not_refundable">Este pedido não pode ser reembolsado</string>
+    <string name="woopos_refund_error_item_already_refunded">Este item já foi totalmente reembolsado</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">A quantidade selecionada é superior ao que resta para reembolsar</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">Mostrar o código novamente</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">Receber no registro</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">Nenhum pagamento foi feito online. Receba-o no registro ou mostre o código novamente.</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">O cliente optou por pagar pessoalmente</string>
+    <string name="woopos_remote_reader_failed_token_invalid">Erro no serviço de pagamento. Tente reconectar.</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">Ative o NFC no celular e tente novamente.</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">Este celular não é elegível para o Tap to Pay. Tente um dispositivo diferente.</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">Este plano contém um produto de assinatura, que não é compatível com a criação de pedidos</string>
+    <string name="product_image_details_name_removal_blocked">O aplicativo não é compatível com a remoção do título. Use o wp-admin para removê-lo.</string>
+    <string name="product_image_details_alt_text_removal_blocked">O aplicativo não oferece suporte à remoção de texto alternativo. Use o wp-admin para removê-lo.</string>
+    <string name="product_image_details_name_label">Título</string>
+    <string name="product_image_details_alt_text_label">Texto alternativo</string>
+    <string name="product_image_details_title">Detalhes da imagem</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">Abrir configurações</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">A permissão da rede local está bloqueada. Abra as Configurações e conceda acesso à rede local para usar o Tap to Pay neste celular.</string>
+    <string name="card_reader_mode_local_network_permission_continue">Continuar</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">O Android requer acesso à rede local para que seu tablet possa encontrar este celular. Nada é enviado fora da sua rede.</string>
+    <string name="card_reader_mode_local_network_permission_header">Permissão de rede local obrigatória</string>
+    <string name="card_reader_mode_error_phone_not_eligible">Este celular não é elegível para o Tap to Pay. Tente um dispositivo diferente.</string>
+    <string name="card_reader_pay_in_person_fetch_failed">Não foi possível verificar se a opção \"Pagar presencialmente\" está ativada. Tente novamente mais tarde.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">Desativar</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">Isso desativa a forma de pagamento \"Pagamento na entrega\" ao finalizar a compra na sua loja para que os clientes não possam selecioná-la.</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">Desativar o \"Pagamento presencial\"?</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">Ativar</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">Isso ativa a forma de pagamento \"Pagamento na entrega\" ao finalizar a compra na sua loja e a renomeia de \"%1$s\" para \"Pagar presencialmente\" para seus clientes, incluindo na finalização da compra no seu site.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">Isso ativa a forma de pagamento \"Pagamento na entrega\" ao finalizar a compra na sua loja.</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">Ativar \"Pagamento presencial\"?</string>
+    <string name="order_creation_gift_card_not_applied">Não foi possível aplicar este vale-presente</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">Você não pode adicionar um produto variável que não tenha variações</string>
+    <string name="login_site_credentials_use_web_authorization">Em vez disso, tente fazer login com seu navegador</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">Não foi possível salvar as configurações de login da sua loja. Tente novamente.</string>
+    <string name="login_site_credentials_admin_url_not_found_error">Não foi possível acessar o Painel do WordPress neste endereço. Verifique e tente novamente.</string>
+    <string name="login_site_credentials_login_url_not_found_error">Não encontramos uma página de login do WordPress neste endereço. Verifique e tente novamente.</string>
+    <string name="login_site_credentials_endpoint_same_site_error">Digite um endereço no mesmo site sem alterar sua porta ou conexão segura.</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">Insira um endereço completo da Web, incluindo http:// ou https://.</string>
+    <string name="login_site_credentials_admin_url_label">Endereço do Painel do WordPress</string>
+    <string name="login_site_credentials_admin_url_description">Um plugin de segurança pode mover o Painel do WordPress. Digite o endereço que você usa para abri-lo.</string>
+    <string name="login_site_credentials_admin_url_title">Onde fica o painel da sua loja?</string>
+    <string name="login_site_credentials_login_url_label">Endereço de login do WordPress</string>
+    <string name="login_site_credentials_login_url_description">Um plugin de segurança pode usar um endereço de login personalizado do WordPress. Digite o endereço que você usa para fazer login.</string>
+    <string name="login_site_credentials_login_url_title">Onde você faz login na sua loja?</string>
     <string name="login_text_otp_another">Reenviar o código por mensagem de texto</string>
     <string name="enter_verification_code">Insira um código de verificação para continuar.</string>
     <string name="logviewer_share_all_logs_error">Não foi possível preparar os registros para compartilhamento</string>
@@ -2264,7 +2317,6 @@ Language: pt_BR
     <string name="loading">Carregando…</string>
     <string name="login_store_address">Fazer login</string>
     <string name="login_site_credentials_fetching_site_failed">Ocorreu um erro ao buscar seu site</string>
-    <string name="login_site_credentials_use_web_authorization">Tente novamente com o Painel WP Admin</string>
     <string name="upgrades_plan_ended_name">%s terminou</string>
     <string name="upgrades_current_plan_ended_caption">Sua assinatura expirou e você tem acesso limitado a todas as funcionalidades.</string>
     <string name="free_trial_days_left_plural">%1$d dias</string>

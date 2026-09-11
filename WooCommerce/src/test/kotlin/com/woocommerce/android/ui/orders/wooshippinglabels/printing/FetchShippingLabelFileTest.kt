@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Environment
 import com.woocommerce.android.media.FileUtils
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.wooshippinglabels.networking.ShippingLabelPrintingResponse
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.FetchShippingLabelFile
-import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.printing.ShippingLabelPrintingResponse
 import com.woocommerce.android.util.Base64Decoder
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

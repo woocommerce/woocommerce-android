@@ -9,7 +9,7 @@ internal data class ApplicationPasswordCreationResponse(
 )
 
 internal data class ApplicationPasswordsFetchResponse(
-    @SerializedName("uuid") val uuid: ApplicationPasswordUUID,
+    @SerializedName("uuid") val uuid: ApplicationPasswordUUID?,
     @SerializedName("name") val name: String
 )
 

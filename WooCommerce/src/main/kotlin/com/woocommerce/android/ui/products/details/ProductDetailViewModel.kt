@@ -146,7 +146,7 @@ import javax.inject.Inject
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val dispatchers: CoroutineDispatchers,
-    parameterRepository: ParameterRepository,
+    private val parameterRepository: ParameterRepository,
     private val productRepository: ProductDetailRepository,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
@@ -174,6 +174,7 @@ class ProductDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private const val MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO = 3
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
@@ -183,8 +184,11 @@ class ProductDetailViewModel @Inject constructor(
      * Fetch product related properties (currency, product dimensions) for the site since we use this
      * variable in many different places in the product detail view such as pricing, shipping.
      */
-    private val parameters: SiteParameters by lazy {
-        parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+    private var siteParameters: SiteParameters? = null
+
+    private suspend fun getParameters(): SiteParameters {
+        return siteParameters ?: parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
+            .also { siteParameters = it }
     }
 
     private val isTrashActionPossibleFlow: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -286,13 +290,15 @@ class ProductDetailViewModel @Inject constructor(
 
     private val productCategorySearchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
 
-    private val cardBuilder by lazy {
-        ProductDetailCardBuilder(
+    private var cardBuilder: ProductDetailCardBuilder? = null
+
+    private suspend fun getCardBuilder(): ProductDetailCardBuilder {
+        return cardBuilder ?: ProductDetailCardBuilder(
             viewModel = this,
             selectedSite = selectedSite,
             resources = resources,
             currencyFormatter = currencyFormatter,
-            parameters = parameters,
+            parameters = getParameters(),
             addonRepository = addonRepository,
             variationRepository = variationRepository,
             appPrefsWrapper = appPrefsWrapper,
@@ -300,7 +306,7 @@ class ProductDetailViewModel @Inject constructor(
             isProductCurrentlyPromoted = isProductCurrentlyPromoted,
             customFieldsRepository = customFieldsRepository,
             analyticsTrackerWrapper = tracker,
-        )
+        ).also { cardBuilder = it }
     }
 
     private val _productDetailBottomSheetList = MutableLiveData<List<ProductDetailBottomSheetUiItem>>()
@@ -402,12 +408,13 @@ class ProductDetailViewModel @Inject constructor(
      * Provides the currencyCode for views who requires display prices
      */
     val currencyCode: String
-        get() = parameters.currencyCode.orEmpty()
+        get() = siteParameters?.currencyCode.orEmpty()
 
     private var imageUploadsJob: Job? = null
     private val mutex = Mutex()
 
     init {
+        launch { getParameters() }
         start()
     }
 
@@ -1463,7 +1470,7 @@ class ProductDetailViewModel @Inject constructor(
     private fun updateCards(productAggregate: ProductAggregate) {
         launch(dispatchers.io) {
             mutex.withLock {
-                val cards = cardBuilder.buildPropertyCards(
+                val cards = getCardBuilder().buildPropertyCards(
                     productAggregate = productAggregate,
                     originalSku = storedProductAggregate.value?.product?.sku ?: ""
                 )
@@ -1846,8 +1853,8 @@ class ProductDetailViewModel @Inject constructor(
         // create an updated list without this attribute...
         val updatedAttributes = ArrayList<ProductAttribute>().also {
             it.addAll(
-                draftAttributes.filter { attribute ->
-                    attribute.id != attributeId && attribute.name != attributeName
+                draftAttributes.filterNot { attribute ->
+                    attribute.id == attributeId && attribute.name == attributeName
                 }
             )
         }.also {
@@ -1959,10 +1966,10 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Called from the attribute list when the user enters a new attribute
      */
-    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean) {
+    fun addLocalAttribute(attributeName: String, isVariationCreation: Boolean): Boolean {
         if (containsAttributeName(attributeName)) {
             triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
-            return
+            return false
         }
 
         // get the list of current attributes
@@ -1994,6 +2001,7 @@ class ProductDetailViewModel @Inject constructor(
                 isVariationCreation
             )
         )
+        return true
     }
 
     /**
@@ -2082,22 +2090,34 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * Show the upsell/cross-sell promo if it hasn't already been shown and the product
-     * doesn't already have linked products
+     * doesn't already have linked products and the store has at least
+     * [MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO] published products
      */
     private fun checkLinkedProductPromo() {
-        if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
-            viewState.productDraft?.hasLinkedProducts() == false
+        if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS) ||
+            viewState.productDraft?.hasLinkedProducts() != false
         ) {
-            appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
-            tracker.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
-                )
-            )
-            triggerEvent(ShowLinkedProductPromoBanner)
+            return
         }
+
+        launch {
+            if (hasEnoughProductsForLinkedProductsPromo()) {
+                appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+                tracker.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+                    )
+                )
+                triggerEvent(ShowLinkedProductPromoBanner)
+            }
+        }
+    }
+
+    private suspend fun hasEnoughProductsForLinkedProductsPromo(): Boolean {
+        val publishedProductsCount = productRepository.fetchPublishedProductsCount() ?: return false
+        return publishedProductsCount >= MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO
     }
 
     fun onLinkedProductPromoClicked() {

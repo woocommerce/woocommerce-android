@@ -4,23 +4,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductChildItemBinding
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.getColorCompat
-import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
-import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.ui.products.ProductImageLoader
+import com.woocommerce.android.ui.products.ProductImageViewTarget
 import java.math.BigDecimal
 
 class OrderDetailProductChildItemListAdapter(
     private val productItems: List<OrderProduct.ProductItem>,
-    private val productImageMap: ProductImageMap,
+    private val productImageLoaderFactory: ProductImageLoader.Factory,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener
 ) :
@@ -32,13 +28,12 @@ class OrderDetailProductChildItemListAdapter(
             parent,
             false
         )
-        return OrderDetailProductChildItemViewHolder(viewBinding)
+        return OrderDetailProductChildItemViewHolder(viewBinding, productImageLoaderFactory)
     }
 
     override fun onBindViewHolder(holder: OrderDetailProductChildItemViewHolder, position: Int) {
         holder.bind(
             productItems[position],
-            productImageMap,
             productItemListener,
             formatCurrencyForDisplay
         )
@@ -47,9 +42,12 @@ class OrderDetailProductChildItemListAdapter(
     override fun getItemCount(): Int = productItems.size
 
     class OrderDetailProductChildItemViewHolder(
-        private val binding: OrderDetailProductChildItemBinding
+        private val binding: OrderDetailProductChildItemBinding,
+        productImageLoaderFactory: ProductImageLoader.Factory
     ) :
         RecyclerView.ViewHolder(binding.root) {
+
+        private val imageTarget = ProductImageViewTarget(binding.productInfoIcon, productImageLoaderFactory)
 
         private val context = binding.root.context
 
@@ -58,13 +56,11 @@ class OrderDetailProductChildItemListAdapter(
 
         fun bind(
             productItem: OrderProduct.ProductItem,
-            productImageMap: ProductImageMap,
             productItemListener: OrderProductActionListener,
             formatCurrencyForDisplay: (BigDecimal) -> String
         ) {
             val item = productItem.product
-            val imageSize = itemView.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-            val productImage = productImageMap.get(item.uniqueId)
+            imageTarget.load(item.uniqueId)
 
             binding.productInfoName.text = item.name
             val orderTotal = formatCurrencyForDisplay(item.total)
@@ -76,23 +72,21 @@ class OrderDetailProductChildItemListAdapter(
             }
 
             val productPrice = formatCurrencyForDisplay(item.price)
-            val attributes = item.attributesDescription
-                .takeIf { it.isNotEmpty() }
-                ?.let { "$it \u2981 " }
-                ?: StringUtils.EMPTY
-            binding.productInfoAttributes.text = itemView.resources.getString(
-                R.string.orderdetail_product_lineitem_attributes,
-                attributes, item.quantity.formatToString(), productPrice
+            with(binding.productInfoAttributes) {
+                val attributes = item.displayableAttributes
+                isVisible = attributes.isNotEmpty()
+                text = attributes.joinToString(separator = "\n") {
+                    itemView.resources.getString(
+                        R.string.orderdetail_product_lineitem_attribute,
+                        it.key,
+                        it.value
+                    )
+                }
+            }
+            binding.productInfoQuantityAndPrice.text = itemView.resources.getString(
+                R.string.orderdetail_product_lineitem_quantity_and_price,
+                item.quantity.formatToString(), productPrice
             )
-
-            productImage?.let {
-                val imageCornerRadius = itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-                Glide.with(binding.productInfoIcon)
-                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
-                    .placeholder(R.drawable.ic_product)
-                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-                    .into(binding.productInfoIcon)
-            } ?: binding.productInfoIcon.setImageResource(R.drawable.ic_product)
 
             with(binding.productInfoSKU) {
                 isVisible = item.sku.isNotEmpty()

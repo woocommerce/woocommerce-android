@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.google.gson.Gson
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,7 +29,6 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     private val productsDao: WooPosProductsDao = mock()
     private val variationsDao: WooPosVariationsDao = mock()
     private val filterConfig = WooPosProductsTypesFilterConfig()
-    private val gson = Gson()
     private val logger: WooPosLogWrapper = mock()
 
     private lateinit var site: SiteModel
@@ -42,7 +40,6 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
             productsDao = productsDao,
             variationsDao = variationsDao,
             filterConfig = filterConfig,
-            gson = gson,
             logger = logger
         )
 

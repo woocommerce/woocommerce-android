@@ -51,6 +51,10 @@ class AddProductTagView @JvmOverloads constructor(
         binding.addTagsEditText.setOnEditorActionListener(cb)
     }
 
+    fun setImeActionLabel(label: CharSequence) {
+        binding.addTagsEditText.setImeActionLabel(label)
+    }
+
     fun setOnEditorTextChangedListener(cb: (text: Editable?) -> Unit) {
         binding.addTagsEditText.setOnTextChangedListener(cb)
     }

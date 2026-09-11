@@ -51,6 +51,7 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
+import org.wordpress.android.fluxc.utils.HttpsUrlNormalizer
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils
 import org.wordpress.android.fluxc.wc.utils.TestSiteSqlUtils
 import kotlin.test.assertEquals
@@ -95,7 +96,8 @@ class WooCommerceStoreTest {
             sitePluginDao = wpDatabaseRule.db.sitePluginDao(),
             productSettingsDao = wcDatabaseRule.db.productSettingsDao,
             settingsDao = wcDatabaseRule.db.settingsDao,
-            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao
+            analyticsScheduledImportDao = wcDatabaseRule.db.analyticsScheduledImportDao,
+            httpsUrlNormalizer = HttpsUrlNormalizer(),
         )
     }
     private val error = WooError(INVALID_RESPONSE, NETWORK_ERROR, "Invalid site ID")
@@ -204,6 +206,41 @@ class WooCommerceStoreTest {
                     model.isActive == it.isActive
                 }
             }
+    }
+
+    @Test
+    fun `when fetching plugins and settings, then both come from one request`() = test {
+        val settings = WCSystemPluginResponse.Settings(enabledFeatures = listOf("point_of_sale"))
+        whenever(restClient.fetchInstalledPlugins(any(), any()))
+            .thenReturn(WooPayload(response.copy(settings = settings)))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
+        assertThat(result.model?.enabledFeatures)
+            .isEqualTo(WooCommerceStore.EnabledFeatures.Known(listOf("point_of_sale")))
+        verify(restClient).fetchInstalledPlugins(site, true)
+    }
+
+    @Test
+    fun `given the report omits settings, when fetching plugins and settings, then features are Unknown`() = test {
+        // Unknown must stay distinguishable from an empty list: the field being absent is not the same
+        // as the store having no features enabled.
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.model?.enabledFeatures).isEqualTo(WooCommerceStore.EnabledFeatures.Unknown)
+    }
+
+    @Test
+    fun `when fetching plugins only, then the settings are not requested`() = test {
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        wooCommerceStore.fetchSitePlugins(site)
+
+        verify(restClient).fetchInstalledPlugins(site, false)
     }
 
     @Test
@@ -441,7 +478,7 @@ class WooCommerceStoreTest {
     }
 
     @Test
-    fun `when fetching api version succeeds, then update application passwords authorization URL`() {
+    fun `given HTTP authorization URL, when fetching api version succeeds, then persist HTTPS URL`() {
         runBlocking {
             whenever(siteStore.insertOrUpdateSite(any())).doAnswer {
                 TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
@@ -450,7 +487,7 @@ class WooCommerceStoreTest {
             // Sanity check
             assertThat(site.applicationPasswordsAuthorizeUrl).isNull()
 
-            val authorizationUrl = "https://example.com/authorization-url"
+            val authorizationUrl = "http://example.com/authorization-url"
             TestSiteSqlUtils.siteStorePersistence.insertOrUpdateSite(site)
 
             fetchSupportedWooApiVersion(
@@ -464,7 +501,8 @@ class WooCommerceStoreTest {
             )
 
             val updateSite = SiteSqlUtils().getSitesWithLocalId(site.localId().value).firstOrNull()
-            assertThat(updateSite!!.applicationPasswordsAuthorizeUrl).isEqualTo(authorizationUrl)
+            assertThat(updateSite?.applicationPasswordsAuthorizeUrl)
+                .isEqualTo("https://example.com/authorization-url")
         }
     }
 
@@ -566,9 +604,9 @@ class WooCommerceStoreTest {
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(WooPayload(error))
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(payload)
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSitePlugins(site)
     }

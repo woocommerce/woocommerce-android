@@ -22,7 +22,6 @@ import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
@@ -142,7 +141,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         allOrderIds = arrayOf(ORDER_ID).toLongArray()
     ).toSavedStateHandle()
 
-    private val productImageMap = mock<ProductImageMap>()
     private val orderDetailsTransactionLauncher = mock<OrderDetailsTransactionLauncher>()
     private val orderProductMapper = OrderProductMapper()
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -203,7 +201,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderDetailRepository,
                 addonsRepository,
                 selectedSite,
-                productImageMap,
                 paymentCollectibilityChecker,
                 paymentsFlowTracker,
                 orderDetailTracker,
@@ -262,6 +259,57 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given product and shipping refunds, when loaded, then expose counts and grouped shipping`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single()
+        val refunds = listOf(refund, refund.copy(id = 2))
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(refunds).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        val state = states.last()
+        assertThat(state.refunds).isEqualTo(refunds)
+        assertThat(state.refundedProductsCount).isEqualTo(2)
+        assertThat(state.shippingLines).containsExactly(
+            refund.shippingLines.single().copy(total = BigDecimal("26.0"), totalTax = BigDecimal("6.0"))
+        )
+        assertThat(state.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given shipping only refund, when loaded, then expose visible state without products`() = testBlocking {
+        // GIVEN
+        val refund = testOrderRefunds.single().copy(items = emptyList())
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(listOf(refund)).whenever(orderDetailRepository).getOrderRefunds(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEqualTo(refund.shippingLines)
+        assertThat(states.last().isVisible).isTrue()
+    }
+
+    @Test
+    fun `given no refunds, when loaded, then expose hidden refund state`() = testBlocking {
+        // GIVEN
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+
+        // WHEN
+        val states = viewModel.orderRefunds.runAndCaptureValues { viewModel.start() }
+
+        // THEN
+        assertThat(states.last().refundedProductsCount).isZero()
+        assertThat(states.last().shippingLines).isEmpty()
+        assertThat(states.last().isVisible).isFalse()
+    }
+
+    @Test
     fun `Displays the order detail view correctly`() = testBlocking {
         val nonRefundedOrder = order.copy(refundTotal = BigDecimal.ZERO)
 
@@ -313,7 +361,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         // refunds
         val refunds = ArrayList<Refund>()
         viewModel.orderRefunds.observeForever {
-            it?.let { refunds.addAll(it) }
+            it?.let { refunds.addAll(it.refunds) }
         }
 
         // shipping Labels
@@ -575,7 +623,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             val refunds = ArrayList<Refund>()
             viewModel.orderRefunds.observeForever {
-                it?.let { refunds.addAll(it) }
+                it?.let { refunds.addAll(it.refunds) }
             }
 
             var areProductsVisible: Boolean? = null

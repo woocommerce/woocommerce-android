@@ -56,9 +56,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.Subscription
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
@@ -91,6 +89,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelM
 import com.woocommerce.android.ui.orders.wooshippinglabels.refund.WooShippingLabelRefundFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -129,7 +128,7 @@ class OrderDetailFragment :
     lateinit var uiMessageResolver: UIMessageResolver
 
     @Inject
-    lateinit var productImageMap: ProductImageMap
+    lateinit var productImageLoaderFactory: ProductImageLoader.Factory
 
     @Inject
     lateinit var dateUtils: DateUtils
@@ -428,7 +427,6 @@ class OrderDetailFragment :
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
                 binding.orderRefreshLayout.isRefreshing = it
             }
-            new.refreshedProductId?.takeIfNotEqualTo(old?.refreshedProductId) { refreshProduct(it) }
             new.wcShippingBannerVisible?.takeIfNotEqualTo(old?.wcShippingBannerVisible) {
                 showInstallWcShippingBanner(it, new.isWcShippingBannerEnabled)
             }
@@ -711,32 +709,22 @@ class OrderDetailFragment :
         }
     }
 
-    private fun refreshProduct(remoteProductId: Long) {
-        binding.orderDetailProductList.notifyProductChanged(remoteProductId)
-    }
-
     private fun showOrderNotes(orderNotes: List<OrderNote>) {
         binding.orderDetailNoteList.updateOrderNotesView(orderNotes) {
             viewModel.onAddOrderNoteClicked()
         }
     }
 
-    private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
+    private fun showOrderRefunds(state: OrderDetailViewState.RefundsState, order: Order) {
+        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
-        if (refundsCount > 0) {
-            binding.orderDetailRefundsInfo.show()
-            binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
-                viewModel.onViewRefundedProductsClicked()
-            }
-        } else {
-            binding.orderDetailRefundsInfo.hide()
+        binding.orderDetailRefundsInfo.updateRefunds(state, formatCurrency) {
+            viewModel.onViewRefundedProductsClicked()
         }
 
         // display refunds list in the payment info section, if available
-        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-
-        refunds.whenNotNullNorEmpty {
+        state.refunds.whenNotNullNorEmpty {
             binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {
             binding.orderDetailPaymentInfo.showRefundTotal(
@@ -752,7 +740,7 @@ class OrderDetailFragment :
             with(binding.orderDetailProductList) {
                 updateProductItemsList(
                     orderProductItems = products,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     onProductMenuItemClicked = viewModel::onCreateShippingLabelButtonTapped,
@@ -851,7 +839,7 @@ class OrderDetailFragment :
                 show()
                 updateShippingLabels(
                     shippingLabels = shippingLabels,
-                    productImageMap = productImageMap,
+                    productImageLoaderFactory = productImageLoaderFactory,
                     formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currency),
                     productClickListener = this@OrderDetailFragment,
                     shippingLabelClickListener = object : OnShippingLabelClickListener {

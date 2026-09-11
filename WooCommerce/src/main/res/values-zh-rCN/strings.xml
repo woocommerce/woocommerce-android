@@ -1,11 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-11 11:54:57+0000
+Translation-Revision-Date: 2026-08-27 13:55:35+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_card_reader_bluetooth_unavailable_location_off">开启定位功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_location_permission">允许定位功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_off">开启蓝牙功能以查看读卡器</string>
+    <string name="woopos_card_reader_bluetooth_unavailable_permission">允许蓝牙功能以查看读卡器</string>
+    <string name="woopos_card_reader_local_network_permission_message">需要本地网络权限才能连接用作读卡器的手机。</string>
+    <string name="woopos_card_reader_local_network_permission_title">需要本地网络权限</string>
+    <string name="woopos_refund_error_invalid_amount">退款金额无效</string>
+    <string name="woopos_refund_error_amount_exceeds_item_remaining">退款金额大于此商品的剩余可退款金额</string>
+    <string name="woopos_refund_error_amount_exceeds_order_remaining">退款金额大于此订单的剩余可退款金额</string>
+    <string name="woopos_refund_error_order_not_refundable">此订单无法退款</string>
+    <string name="woopos_refund_error_item_already_refunded">此商品已全额退款</string>
+    <string name="woopos_refund_error_quantity_exceeds_refundable">所选数量大于剩余可退款数量</string>
+    <string name="woopos_scan_to_pay_pay_in_person_show_qr">再次出示该代码</string>
+    <string name="woopos_scan_to_pay_pay_in_person_collect">在收银机上收款</string>
+    <string name="woopos_scan_to_pay_pay_in_person_message">未在线收取任何款项。 请在收银机上收取，或再次出示该代码。</string>
+    <string name="woopos_scan_to_pay_pay_in_person_title">客户选择现场付款</string>
+    <string name="woopos_remote_reader_failed_token_invalid">付款服务错误。 请尝试重新连接。</string>
+    <string name="woopos_remote_reader_failed_nfc_disabled">请在手机上开启 NFC 功能，然后重试。</string>
+    <string name="woopos_remote_reader_failed_phone_not_eligible">此手机不支持“点按付款”功能。 请尝试使用其他设备。</string>
+    <string name="product_selector_bundle_with_subscription_not_supported">此捆绑包包含一款订阅产品，系统不支持为此产品创建订单</string>
+    <string name="product_image_details_name_removal_blocked">该应用程序不支持删除标题。 请使用 wp-admin 将其删除。</string>
+    <string name="product_image_details_alt_text_removal_blocked">该应用程序不支持删除替代文本。 请使用 wp-admin 将其删除。</string>
+    <string name="product_image_details_name_label">标题</string>
+    <string name="product_image_details_alt_text_label">替代文本</string>
+    <string name="product_image_details_title">图片详情</string>
+    <string name="card_reader_mode_local_network_permission_open_settings">打开“设置”</string>
+    <string name="card_reader_mode_local_network_permission_denied_subtitle">本地网络权限被阻止。 请打开“设置”并授予本地网络访问权限，以便在此手机上使用点按付款功能。</string>
+    <string name="card_reader_mode_local_network_permission_continue">继续</string>
+    <string name="card_reader_mode_local_network_permission_subtitle">Android 需要本地网络访问权限，以便您的平板电脑能够找到此手机。 不会有任何数据发送到您的网络之外。</string>
+    <string name="card_reader_mode_local_network_permission_header">需要本地网络权限</string>
+    <string name="card_reader_mode_error_phone_not_eligible">此手机不支持“点按付款”功能。 请尝试使用其他设备。</string>
+    <string name="card_reader_pay_in_person_fetch_failed">我们无法确认“现场付款”功能是否已启用。 请稍后重试。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_button">禁用</string>
+    <string name="card_reader_disable_pay_in_person_dialog_message">此操作将在您商店的结账页面上禁用“货到付款”付款方式，因此客户将无法选择该付款方式。</string>
+    <string name="card_reader_disable_pay_in_person_dialog_title">禁用“现场付款”功能？</string>
+    <string name="card_reader_enable_pay_in_person_dialog_button">启用</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message_rename">此操作将在您商店的结账页面上启用“货到付款”付款方式，并为您的客户将该付款方式的名称从“%1$s”更改为“现场付款”，包括在您网站结账页面上的显示名称。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_message">此操作将在您商店的结账页面上启用“货到付款”付款方式。</string>
+    <string name="card_reader_enable_pay_in_person_dialog_title">启用“现场付款”功能？</string>
+    <string name="order_creation_gift_card_not_applied">无法应用此礼品卡</string>
+    <string name="order_creation_barcode_scanning_unable_to_add_product_with_no_variations">您无法添加没有变体的可变产品</string>
+    <string name="login_site_credentials_use_web_authorization">请尝试使用您的浏览器登录</string>
+    <string name="login_site_credentials_endpoint_persistence_failed">我们无法保存您商店的登录设置。 请重试。</string>
+    <string name="login_site_credentials_admin_url_not_found_error">我们无法通过该地址访问 WordPress 仪表盘。 请检查一下，然后重试。</string>
+    <string name="login_site_credentials_login_url_not_found_error">我们无法在该地址找到 WordPress 登录页面。 请检查一下，然后重试。</string>
+    <string name="login_site_credentials_endpoint_same_site_error">请在同一站点上输入一个地址，而不更改其安全连接或端口。</string>
+    <string name="login_site_credentials_endpoint_invalid_url_error">请输入完整的网址，包括 http:// 或 https://。</string>
+    <string name="login_site_credentials_admin_url_label">WordPress 仪表盘地址</string>
+    <string name="login_site_credentials_admin_url_description">安全插件可能会移动 WordPress 仪表盘的位置。 请输入您用于打开该仪表盘的地址。</string>
+    <string name="login_site_credentials_admin_url_title">您商店的仪表盘位于何处？</string>
+    <string name="login_site_credentials_login_url_label">WordPress 登录地址</string>
+    <string name="login_site_credentials_login_url_description">安全插件可能会使用自定义 WordPress 登录地址。 请输入您用于登录的地址。</string>
+    <string name="login_site_credentials_login_url_title">您在哪里登录您的商店？</string>
     <string name="login_text_otp_another">通过短信重新发送代码</string>
     <string name="login_text_otp">通过短信重新发送代码</string>
     <string name="enter_verification_code_sms_generic">我们发送了一条短信。 请输入短信中的验证码。</string>
@@ -2263,7 +2316,6 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_description">使用您的手机接受银行卡\n付款。 立即试用。</string>
     <string name="loading">正在加载…</string>
     <string name="login_site_credentials_fetching_site_failed">获取您的网站时出错</string>
-    <string name="login_site_credentials_use_web_authorization">请使用“WP 管理”页面重试</string>
     <string name="login_store_address">登录</string>
     <string name="upgrades_plan_ended_name">%s 已结束</string>
     <string name="upgrades_current_plan_ended_caption">您的订阅已结束，并且您对所有功能的访问将受到限制。</string>

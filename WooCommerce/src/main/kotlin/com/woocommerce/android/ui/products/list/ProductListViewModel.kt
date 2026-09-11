@@ -519,12 +519,14 @@ class ProductListViewModel @Inject constructor(
 
     fun onOpenProduct(productId: Long) {
         if (productHasChanges && isWindowClassLargeThanCompact()) {
-            triggerEvent(
-                ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
-                    productId,
-                    getProduct(productId)?.name.orEmpty()
+            launch {
+                triggerEvent(
+                    ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
+                        productId,
+                        productRepository.getProduct(productId)?.name.orEmpty()
+                    )
                 )
-            )
+            }
             return
         }
 
@@ -640,8 +642,6 @@ class ProductListViewModel @Inject constructor(
             false
         }
     }
-
-    fun getProduct(remoteProductId: Long) = productRepository.getProduct(remoteProductId)
 
     fun trashProduct(remoteProductId: Long) {
         if (checkConnection()) {
