@@ -7,10 +7,15 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginRe
 
 data class WCSystemPluginResponse(
     @SerializedName("active_plugins") private val activePlugins: List<SystemPluginModel>?,
-    @SerializedName("inactive_plugins") private val inactivePlugins: List<SystemPluginModel>?
+    @SerializedName("inactive_plugins") private val inactivePlugins: List<SystemPluginModel>?,
+    @SerializedName("settings") val settings: Settings? = null
 ) {
     val plugins: List<SystemPluginModel>
         get() = activePlugins.orEmpty().map { it.copy(isActive = true) } + inactivePlugins.orEmpty()
+
+    data class Settings(
+        @SerializedName("enabled_features") val enabledFeatures: List<String>? = null
+    )
 
     data class SystemPluginModel(
         val plugin: String,
