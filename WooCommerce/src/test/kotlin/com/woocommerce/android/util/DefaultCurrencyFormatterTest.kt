@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -14,7 +15,9 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
@@ -32,11 +35,64 @@ import java.util.Locale
 class DefaultCurrencyFormatterTest : BaseUnitTest() {
     private lateinit var formatter: CurrencyFormatter
     private val localeProvider: LocaleProvider = mock()
+    private val numberExtensionsWrapper: NumberExtensionsWrapper = mock()
     private val wcStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val crashLogging: CrashLogging = mock()
     private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter =
         SiteIndependentCurrencyFormatter(localeProvider, crashLogging)
+
+    @Test
+    fun `when formatting rounded currency then use the current app locale`() = runTest {
+        // GIVEN
+        setupSitesFlow()
+        val site = SiteModel()
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+            .thenAnswer { "₺${it.getArgument<String>(0)}" }
+        val amountsByLocale = mapOf(
+            Locale.forLanguageTag("tr-TR") to "4 B",
+            Locale.US to "4K",
+            Locale.GERMANY to "4.000"
+        )
+
+        amountsByLocale.forEach { (locale, amount) ->
+            whenever(localeProvider.provideLocale()).thenReturn(locale)
+            whenever(numberExtensionsWrapper.compactNumberCompat(4000L, locale)).thenReturn(amount)
+
+            // WHEN
+            val result = formatter.formatCurrencyRounded(4000.4, "TRY")
+
+            // THEN
+            assertThat(result).isEqualTo("₺$amount")
+        }
+    }
+
+    @Test
+    fun `when formatting rounded currency then preserve zero negative and large amounts`() = runTest {
+        // GIVEN
+        setupSitesFlow()
+        val site = SiteModel()
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("USD"), eq(false)))
+            .thenAnswer { it.getArgument<String>(0) }
+        val amounts = listOf(
+            Triple(0.0, 0L, "0"),
+            Triple(249.6, 250L, "250"),
+            Triple(-4000.4, -4000L, "-4K"),
+            Triple(4000000000.0, 4000000000L, "4B")
+        )
+
+        amounts.forEach { (rawAmount, roundedAmount, compactAmount) ->
+            whenever(numberExtensionsWrapper.compactNumberCompat(roundedAmount, Locale.US)).thenReturn(compactAmount)
+
+            // WHEN
+            val result = formatter.formatCurrencyRounded(rawAmount, "USD")
+
+            // THEN
+            assertThat(result).isEqualTo(compactAmount)
+        }
+    }
 
     @Test
     fun `when the selected site changes the default currency code updates`() =
@@ -79,7 +135,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 selectedSite = selectedSite,
                 siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
                 appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
-                dispatchers = coroutinesTestRule.testDispatchers
+                dispatchers = coroutinesTestRule.testDispatchers,
+                numberExtensionsWrapper = numberExtensionsWrapper,
+                localeProvider = localeProvider
             )
 
             advanceTimeBy(5_000)
@@ -151,7 +209,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
                 selectedSite = selectedSite,
                 siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
                 appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
-                dispatchers = coroutinesTestRule.testDispatchers
+                dispatchers = coroutinesTestRule.testDispatchers,
+                numberExtensionsWrapper = numberExtensionsWrapper,
+                localeProvider = localeProvider
             )
 
             advanceTimeBy(100)
@@ -194,7 +254,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             selectedSite = selectedSite,
             siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            numberExtensionsWrapper = numberExtensionsWrapper,
+            localeProvider = localeProvider
         )
     }
 
@@ -224,7 +286,9 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             selectedSite = selectedSite,
             siteIndependentCurrencyFormatter = siteIndependentCurrencyFormatter,
             appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher),
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            numberExtensionsWrapper = numberExtensionsWrapper,
+            localeProvider = localeProvider
         )
     }
 }

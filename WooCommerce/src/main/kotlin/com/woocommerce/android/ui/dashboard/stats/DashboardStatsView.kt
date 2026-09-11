@@ -829,7 +829,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 currencyFormatter.formatCurrencyRounded(
                     value.toDouble(),
                     revenueStatsModel?.currencyCode.orEmpty()
-                ).replace(".0", "")
+                )
             }
         }
     }

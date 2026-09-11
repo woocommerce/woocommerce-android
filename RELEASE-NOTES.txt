@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] Dashboard chart amounts now use abbreviations in the app's language.
 - [*] Order details now shows refunded shipping lines, including refunds that only contain shipping [https://github.com/woocommerce/woocommerce-android/pull/16552]
 - [*] Product thumbnails in orders, refunds, and reviews now load without blocking the screen.
 - [*] Changing the country on an order address now clears the previous region from the form [https://github.com/woocommerce/woocommerce-android/pull/16527]
