@@ -30,7 +30,7 @@ class OrderDetailProductListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = orderItems[position]
         (holder as ProductViewHolder).view.initView(
-            orderItems[position],
+            item,
             productImageLoaderFactory,
             formatCurrencyForDisplay,
             onViewAddonsClick

@@ -172,6 +172,7 @@ class ProductDetailViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
+        private const val MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO = 3
         const val DEFAULT_ADD_NEW_PRODUCT_ID: Long = 0L
     }
 
@@ -2076,22 +2077,34 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * Show the upsell/cross-sell promo if it hasn't already been shown and the product
-     * doesn't already have linked products
+     * doesn't already have linked products and the store has at least
+     * [MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO] published products
      */
     private fun checkLinkedProductPromo() {
-        if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS).not() &&
-            viewState.productDraft?.hasLinkedProducts() == false
+        if (appPrefsWrapper.isPromoBannerShown(PromoBannerType.LINKED_PRODUCTS) ||
+            viewState.productDraft?.hasLinkedProducts() != false
         ) {
-            appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
-            tracker.track(
-                AnalyticsEvent.FEATURE_CARD_SHOWN,
-                mapOf(
-                    AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
-                    AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
-                )
-            )
-            triggerEvent(ShowLinkedProductPromoBanner)
+            return
         }
+
+        launch {
+            if (hasEnoughProductsForLinkedProductsPromo()) {
+                appPrefsWrapper.setPromoBannerShown(PromoBannerType.LINKED_PRODUCTS, true)
+                tracker.track(
+                    AnalyticsEvent.FEATURE_CARD_SHOWN,
+                    mapOf(
+                        AnalyticsTracker.KEY_BANNER_SOURCE to AnalyticsTracker.SOURCE_PRODUCT_DETAIL,
+                        AnalyticsTracker.KEY_BANNER_CAMPAIGN_NAME to AnalyticsTracker.KEY_BANNER_LINKED_PRODUCTS_PROMO
+                    )
+                )
+                triggerEvent(ShowLinkedProductPromoBanner)
+            }
+        }
+    }
+
+    private suspend fun hasEnoughProductsForLinkedProductsPromo(): Boolean {
+        val publishedProductsCount = productRepository.fetchPublishedProductsCount() ?: return false
+        return publishedProductsCount >= MIN_PUBLISHED_PRODUCTS_FOR_LINKED_PRODUCTS_PROMO
     }
 
     fun onLinkedProductPromoClicked() {
