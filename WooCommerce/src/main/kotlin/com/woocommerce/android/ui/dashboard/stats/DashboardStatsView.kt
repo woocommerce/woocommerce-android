@@ -651,10 +651,6 @@ class DashboardStatsView @JvmOverloads constructor(
         val maxRevenue = dataSet.values.maxOf { it.y }
         val duration = context.resources.getInteger(android.R.integer.config_shortAnimTime)
         with(binding.chart) {
-            data = LineData(dataSet)
-            if (wasEmpty) {
-                animateY(duration)
-            }
             with(xAxis) {
                 labelCount = getChartXAxisLabelCount()
                 valueFormatter = StartEndDateAxisFormatter()
@@ -666,6 +662,10 @@ class DashboardStatsView @JvmOverloads constructor(
                 }
                 axisMinimum = minRevenue.roundToTheNextPowerOfTen()
                 axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
+            }
+            data = LineData(dataSet)
+            if (wasEmpty) {
+                animateY(duration)
             }
             val dot = MarkerImage(context, R.drawable.chart_highlight_dot)
             val offset = DisplayUtils.dpToPx(context, LINE_CHART_DOT_OFFSET).toFloat()

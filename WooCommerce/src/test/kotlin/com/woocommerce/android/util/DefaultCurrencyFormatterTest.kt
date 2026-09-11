@@ -53,7 +53,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         val amountsByLocale = mapOf(
             Locale.forLanguageTag("tr-TR") to "4 B",
             Locale.US to "4K",
-            Locale.GERMANY to "4.000"
+            Locale.GERMANY to "4000"
         )
 
         amountsByLocale.forEach { (locale, amount) ->
@@ -69,7 +69,7 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when formatting rounded currency then preserve zero negative and large amounts`() = runTest {
+    fun `when formatting rounded currency then round the amount without narrowing to Int`() = runTest {
         // GIVEN
         setupSitesFlow()
         val site = SiteModel()

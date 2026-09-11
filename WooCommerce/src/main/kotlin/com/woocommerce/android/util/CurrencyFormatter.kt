@@ -104,6 +104,13 @@ class CurrencyFormatter @Inject constructor(
         return formatCurrency(value, currencyCode, applyDecimalFormatting)
     }
 
+    /**
+     * Formats a raw amount for display based on the WooCommerce site settings, rounding the values to the nearest int.
+     *
+     * @param rawValue the value to be formatted
+     * @param currencyCode the ISO 4217 currency code to use for formatting
+     * @return the formatted value for display
+     */
     fun formatCurrencyRounded(rawValue: Double, currencyCode: String = defaultCurrencyCode): String {
         val locale = localeProvider.provideLocale() ?: Locale.getDefault()
         val displayFormatted = numberExtensionsWrapper.compactNumberCompat(rawValue.roundToLong(), locale)
