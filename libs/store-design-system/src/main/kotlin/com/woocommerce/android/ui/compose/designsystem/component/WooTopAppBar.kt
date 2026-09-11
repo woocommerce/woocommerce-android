@@ -80,7 +80,7 @@ fun WooTopAppBar(
     navigationIcon: ImageVector? = null,
     navigationIconContentDescription: String? = null,
     onNavigationClick: (() -> Unit)? = null,
-    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = WindowInsets(0, 0, 0, 0),
     size: WooTopAppBarSize = WooTopAppBarSize.Small,
     titleAlignment: WooTopAppBarTitleAlignment = WooTopAppBarTitleAlignment.Start,
     supportingText: String? = null,
