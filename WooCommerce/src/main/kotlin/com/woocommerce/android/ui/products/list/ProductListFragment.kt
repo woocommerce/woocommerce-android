@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.setDesignSystemContent
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BackPressTracker
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -85,6 +86,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact
+
+    @Inject
+    lateinit var backPressTracker: BackPressTracker
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
     private val productListViewModel: ProductListViewModel by viewModels()
@@ -294,30 +298,24 @@ class ProductListFragment :
         }
 
         if (consumed) {
-            AnalyticsTracker.trackBackPressed(requireActivity())
+            backPressTracker.trackBackPressed(requireActivity())
             updateBackPressedCallbackState()
         } else {
             continueBackNavigationPastProductList()
         }
     }
 
-    private fun handleDetailBackPressed(): Boolean {
-        val detailNavHost = childFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment
-        val detailsFragment = detailNavHost?.childFragmentManager?.fragments?.firstOrNull()
-        if (detailsFragment is MainActivity.Companion.BackPressListener && !detailsFragment.onRequestAllowBackPress()) {
-            return true
-        }
-
-        return when {
-            isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
-            binding.productsComposeContainer.isVisible.not() -> {
-                if (detailNavController?.navigateUp() != true) {
-                    displayListPaneOnly()
-                }
-                true
+    // Detail screens gate their own back press through BaseFragment, which resumes after this host and so
+    // takes dispatcher priority. Asking again here would put the same question to the same screen twice.
+    private fun handleDetailBackPressed(): Boolean = when {
+        isWindowClassLargeThanCompact() -> detailNavController?.popBackStack() == true
+        binding.productsComposeContainer.isVisible.not() -> {
+            if (detailNavController?.navigateUp() != true) {
+                displayListPaneOnly()
             }
-            else -> false
+            true
         }
+        else -> false
     }
 
     private fun continueBackNavigationPastProductList() {
