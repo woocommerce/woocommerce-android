@@ -4,6 +4,7 @@ import com.android.volley.VolleyError
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.jetpack.JetpackConnectionData
+import org.wordpress.android.fluxc.network.rest.wpapi.jetpack.JetpackConnectionStatusResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.jetpack.JetpackWPAPIRestClient
 import org.wordpress.android.fluxc.store.Store.OnChangedError
 import org.wordpress.android.fluxc.tools.CoroutineEngine
@@ -49,6 +50,20 @@ class JetpackStore @Inject constructor(
                         }
                     )
                 }
+            }
+        }
+    }
+
+    suspend fun fetchJetpackConnection(
+        site: SiteModel,
+        useApplicationPasswords: Boolean
+    ): JetpackResult<JetpackConnectionStatusResponse> {
+        if (site.isUsingWpComRestApi) error("This function is not implemented yet for Jetpack tunnel")
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchJetpackConnection") {
+            val result = jetpackWPAPIRestClient.fetchJetpackConnection(site, useApplicationPasswords)
+
+            result.toJetpackResult { result ->
+                JetpackResult(result)
             }
         }
     }

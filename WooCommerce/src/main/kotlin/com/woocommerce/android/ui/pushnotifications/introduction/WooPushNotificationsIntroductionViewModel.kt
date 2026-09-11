@@ -13,6 +13,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.ui.jetpack.IsJetpackInOfflineMode
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class WooPushNotificationsIntroductionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchJetpackStatus: FetchJetpackStatus,
+    private val isJetpackInOfflineMode: IsJetpackInOfflineMode,
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val selectedSite: SelectedSite,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
@@ -39,6 +41,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         private const val STATE_UPDATE_REQUIRED = "update_required"
         private const val STATE_CONNECTED = "connected"
         private const val ERROR_TYPE_NO_PERMISSION = "no_permission"
+        private const val ERROR_TYPE_OFFLINE_MODE = "offline_mode"
         private const val ERROR_TYPE_GENERIC = "generic"
     }
 
@@ -69,13 +72,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                         CheckWooPluginPushNotificationsSupport.Result.Error -> ViewState.GenericError
                     }
                 }
-                .getOrElse { exception ->
-                    if (exception is JetpackForbiddenException) {
-                        ViewState.ForbiddenError
-                    } else {
-                        ViewState.GenericError
-                    }
-                }
+                .getOrElse { exception -> mapErrorToViewState(exception, site) }
 
             _viewState.value = viewState
 
@@ -84,9 +81,18 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                 is ViewState.UpdateRequired -> trackIntroductionView(STATE_UPDATE_REQUIRED)
                 is ViewState.Connected -> trackIntroductionView(STATE_CONNECTED)
                 is ViewState.ForbiddenError -> trackIntroductionError(ERROR_TYPE_NO_PERMISSION)
+                is ViewState.OfflineModeError -> trackIntroductionError(ERROR_TYPE_OFFLINE_MODE)
                 is ViewState.GenericError -> trackIntroductionError(ERROR_TYPE_GENERIC)
                 is ViewState.Loading -> {}
             }
+        }
+    }
+
+    private suspend fun mapErrorToViewState(exception: Throwable, site: SiteModel): ViewState {
+        return when {
+            exception !is JetpackForbiddenException -> ViewState.GenericError
+            isJetpackInOfflineMode(site, useApplicationPasswords = true) -> ViewState.OfflineModeError
+            else -> ViewState.ForbiddenError
         }
     }
 
@@ -174,6 +180,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         data object Connected : ViewState
         data object UpdateRequired : ViewState
         data object ForbiddenError : ViewState
+        data object OfflineModeError : ViewState
         data object GenericError : ViewState
     }
 

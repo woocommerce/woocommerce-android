@@ -1,4 +1,5 @@
 /module/stats/active
+/connection
 /connection/url
 /connection/data
 /connection/register

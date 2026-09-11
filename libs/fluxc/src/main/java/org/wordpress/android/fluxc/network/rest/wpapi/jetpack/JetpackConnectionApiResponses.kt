@@ -30,6 +30,15 @@ data class WpcomUser(
     @SerializedName("avatar") val avatar: String?
 )
 
+data class JetpackConnectionStatusResponse(
+    @SerializedName("isActive") val isActive: Boolean?,
+    @SerializedName("offlineMode") val offlineMode: OfflineMode?
+)
+
+data class OfflineMode(
+    @SerializedName("isActive") val isActive: Boolean?
+)
+
 data class JetpackConnectionRegisterResponse(
     val authorizeUrl: String
 )

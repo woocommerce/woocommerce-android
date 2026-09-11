@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] Push notifications setup now explains when a store's Jetpack is in Offline Mode instead of wrongly telling administrators to "ask your store administrator" [https://github.com/woocommerce/woocommerce-android/pull/16551]
 - [*] Logging out of a store-credentials login no longer restarts the app or leaves account data behind when the selected site is reset mid-logout [https://github.com/woocommerce/woocommerce-android/pull/16483]
 - [*] Logging in with site credentials no longer crashes when the store lists an application password without a UUID [https://github.com/woocommerce/woocommerce-android/pull/16483]
 - [Internal] The age restriction dialog now offers a Contact Support action that opens Help & Support while keeping the restriction enforced [https://github.com/woocommerce/woocommerce-android/pull/16523]
