@@ -41,6 +41,10 @@ val WooIcons.Light.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_arrow_down_arrow_up_24dp)
 
+val WooIcons.Light.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_arrow_left_24dp)
+
 val WooIcons.Light.ArrowRightFromBracket: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_arrow_right_from_bracket_24dp)
@@ -465,6 +469,10 @@ val WooIcons.Regular.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_arrow_down_arrow_up_24dp)
 
+val WooIcons.Regular.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_arrow_left_24dp)
+
 val WooIcons.Regular.ArrowRightFromBracket: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_arrow_right_from_bracket_24dp)
@@ -888,6 +896,10 @@ val WooIcons.Solid.ArrowDown: ImageVector
 val WooIcons.Solid.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_arrow_down_arrow_up_24dp)
+
+val WooIcons.Solid.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_arrow_left_24dp)
 
 val WooIcons.Solid.ArrowRightFromBracket: ImageVector
     @Composable

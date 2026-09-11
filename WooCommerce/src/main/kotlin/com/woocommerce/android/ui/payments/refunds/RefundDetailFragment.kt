@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.CurrencyFormatter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
@@ -72,7 +73,7 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
         binding.toolbar.title = getString(R.string.order_refunds_refund_info_title)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()

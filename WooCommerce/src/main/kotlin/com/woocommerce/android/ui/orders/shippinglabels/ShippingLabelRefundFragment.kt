@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_label_refund), BackPressListener {
@@ -55,7 +56,7 @@ class ShippingLabelRefundFragment : BaseFragment(R.layout.fragment_shipping_labe
         binding.toolbar.title = getString(R.string.orderdetail_shipping_label_request_refund)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             onRequestAllowBackPress()

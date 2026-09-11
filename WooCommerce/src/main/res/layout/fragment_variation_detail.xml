@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/woo_ds_toolbar_height"
-        app:navigationIcon="@drawable/ic_back_24dp"
+        app:navigationIcon="@drawable/woo_ds_ic_regular_arrow_left_24dp"
         tools:title="@string/app_name" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

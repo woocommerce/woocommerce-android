@@ -29,6 +29,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class ShippingCarrierRatesFragment :
@@ -89,7 +90,7 @@ class ShippingCarrierRatesFragment :
         }
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             onRequestAllowBackPress()

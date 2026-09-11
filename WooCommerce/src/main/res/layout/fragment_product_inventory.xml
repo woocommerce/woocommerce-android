@@ -8,7 +8,7 @@
 
     <com.woocommerce.android.ui.compose.designsystem.component.WooDesignSystemToolbar
         android:id="@+id/toolbar"
-        app:navigationIcon="@drawable/ic_back_24dp"
+        app:navigationIcon="@drawable/woo_ds_ic_regular_arrow_left_24dp"
         tools:title="@string/app_name"
         android:layout_width="match_parent"
         android:layout_height="@dimen/woo_ds_toolbar_height"

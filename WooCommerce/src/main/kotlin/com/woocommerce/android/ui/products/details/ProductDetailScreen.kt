@@ -55,7 +55,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalB
 import com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenuItem
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
-import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
+import com.woocommerce.android.ui.compose.designsystem.icons.ArrowLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.Plus
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -305,7 +305,7 @@ private fun ProductDetailTopAppBar(
     showDivider: Boolean,
 ) {
     val navigationIcon = when (state.navigation) {
-        ProductDetailTopAppBarNavigation.BACK -> WooIcons.Regular.AngleLeft
+        ProductDetailTopAppBarNavigation.BACK -> WooIcons.Regular.ArrowLeft
         ProductDetailTopAppBarNavigation.CLOSE -> WooIcons.Regular.Xmark
         null -> null
     }

@@ -53,7 +53,7 @@ private fun ToolbarDemo(
             toolbar.title = "Products"
             toolbar.navigationIcon = AppCompatResources.getDrawable(
                 toolbar.context,
-                R.drawable.woo_ds_ic_regular_angle_left_24dp,
+                R.drawable.woo_ds_ic_regular_arrow_left_24dp,
             )
             toolbar.navigationContentDescription = "Back"
             toolbar.menu.clear()

@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.ui.compose.designsystem.WooTheme
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooColors
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemTheme
-import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
+import com.woocommerce.android.ui.compose.designsystem.icons.ArrowLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.Ellipsis
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -535,7 +535,7 @@ private fun WooTopAppBarSmallPreview() {
     WooDesignSystemTheme {
         WooTopAppBar(
             title = "Store settings",
-            navigationIcon = WooIcons.Regular.AngleLeft,
+            navigationIcon = WooIcons.Regular.ArrowLeft,
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),
@@ -595,7 +595,7 @@ private fun WooTopAppBarRtlPreview() {
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             WooTopAppBar(
                 title = "RTL title",
-                navigationIcon = WooIcons.Regular.AngleLeft,
+                navigationIcon = WooIcons.Regular.ArrowLeft,
                 navigationIconContentDescription = "Back",
                 onNavigationClick = {},
                 windowInsets = WindowInsets(0),

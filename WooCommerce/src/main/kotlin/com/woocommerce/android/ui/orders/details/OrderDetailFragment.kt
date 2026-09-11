@@ -103,6 +103,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @Suppress("LargeClass")
 @AndroidEntryPoint
@@ -301,7 +302,10 @@ class OrderDetailFragment :
         if (requireContext().isTwoPanesShouldBeUsed && !navArgs.ignoreTwoPaneLayoutLogic) {
             binding.toolbar.navigationIcon = null
         } else {
-            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
+            binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+                requireActivity(),
+                DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
+            )
             binding.toolbar.setNavigationOnClickListener {
                 if (!findNavController().popBackStack(R.id.orders, false)) {
                     // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane

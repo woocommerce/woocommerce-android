@@ -69,7 +69,7 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarSize
 import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
-import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
+import com.woocommerce.android.ui.compose.designsystem.icons.ArrowLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -175,7 +175,7 @@ fun WooDesignSystemComponentCatalogScreen(
             topBar = {
                 WooTopAppBar(
                     title = selectedNode.title,
-                    navigationIcon = WooIcons.Regular.AngleLeft,
+                    navigationIcon = WooIcons.Regular.ArrowLeft,
                     navigationIconContentDescription = "Back",
                     onNavigationClick = ::navigateBack,
                     windowInsets = WindowInsets(0),
@@ -440,7 +440,7 @@ private fun ProductionTopAppHeaderCatalogLeaf() {
         )
         WooTopAppBar(
             title = "Store settings",
-            navigationIcon = WooIcons.Regular.AngleLeft,
+            navigationIcon = WooIcons.Regular.ArrowLeft,
             navigationIconContentDescription = "Back",
             onNavigationClick = {},
             windowInsets = WindowInsets(0),

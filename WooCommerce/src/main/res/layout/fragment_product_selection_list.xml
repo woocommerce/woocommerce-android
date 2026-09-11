@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back_24dp"
+        app:navigationIcon="@drawable/woo_ds_ic_regular_arrow_left_24dp"
         tools:title="@string/products" />
 
     <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout

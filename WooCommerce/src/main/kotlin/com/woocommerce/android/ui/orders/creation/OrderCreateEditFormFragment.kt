@@ -109,6 +109,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 private const val ANIMATION_DURATION = 200L
 
@@ -277,9 +278,12 @@ class OrderCreateEditFormFragment :
             mainToolbar.navigationIcon = null
             mainToolbar.title = getString(R.string.order_creation_tablet_mode_fragment_title)
             twoPaneModeToolbar.title = getTitle()
-            twoPaneModeToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
+            twoPaneModeToolbar.setNavigationIcon(DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp)
         } else {
-            mainToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
+            mainToolbar.navigationIcon = ContextCompat.getDrawable(
+                requireContext(),
+                DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
+            )
             mainToolbar.title = getTitle()
         }
         mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
