@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -183,6 +184,7 @@ private fun CategoriesList(
 }
 
 private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
+    val indentLevel = depth.coerceAtMost(ProductCategory.MAX_INDENT_LEVELS)
     item {
         Column(
             modifier = Modifier
@@ -200,7 +202,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100) * depth)
+                        .padding(start = dimensionResource(id = R.dimen.major_100) * indentLevel)
                         .weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -216,7 +218,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 )
             }
 
-            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (depth + 1)))
+            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (indentLevel + 1)))
         }
     }
     item.children.forEach {

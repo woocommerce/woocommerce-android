@@ -13,6 +13,7 @@
 - [*****] Updated the Stripe Terminal SDK to 5.8.0; card readers now use coarse location on Android 12+ so the app no longer requests precise location for in-person payments except on older devices [https://github.com/woocommerce/woocommerce-android/pull/16507]
 - [*] Stores configured with an HTTP address now connect securely over HTTPS, with guidance to update their WordPress address [https://github.com/woocommerce/woocommerce-android/pull/16470]
 - [*] The "not a WordPress site" login error screen now shows a title and a back arrow instead of an empty toolbar [https://github.com/woocommerce/woocommerce-android/pull/16515]
+- [*] Product category lists no longer push deeply nested category names off the right edge of the screen. Indentation now stops after five levels, so the names stay readable [https://github.com/woocommerce/woocommerce-android/pull/16501]
 - [Internal] Card reader connection failures now report the error type and description, so remote Tap to Pay and Bluetooth connect failures can be told apart in Tracks [https://github.com/woocommerce/woocommerce-android/pull/16499]
 - [*] Order creation: editing a shipping line now shows the current amount instead of an empty field [https://github.com/woocommerce/woocommerce-android/pull/16478]
 - [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]

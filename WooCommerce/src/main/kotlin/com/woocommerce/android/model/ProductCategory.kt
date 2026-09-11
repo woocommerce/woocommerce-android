@@ -36,13 +36,17 @@ data class ProductCategory(
         resourceProvider: ResourceProvider,
         hierarchy: Map<Long, Long>
     ): Int {
-        var margin = resourceProvider.getDimensionPixelSize(R.dimen.major_125)
+        var indentLevel = 0
         var parent = this.parentId
-        while (parent != 0L) {
-            margin += resourceProvider.getDimensionPixelSize(R.dimen.major_125)
+        while (parent != 0L && indentLevel < MAX_INDENT_LEVELS) {
+            indentLevel++
             parent = hierarchy[parent] ?: 0L
         }
-        return margin
+        return resourceProvider.getDimensionPixelSize(R.dimen.major_125) * (indentLevel + 1)
+    }
+
+    companion object {
+        const val MAX_INDENT_LEVELS = 5
     }
 }
 
