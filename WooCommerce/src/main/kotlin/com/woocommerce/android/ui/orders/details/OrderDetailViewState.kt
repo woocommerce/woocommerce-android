@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 
@@ -35,6 +36,15 @@ data class OrderDetailViewState(
         val isPaymentCollectableWithCardReader: Boolean = false,
         val receiptButtonStatus: ReceiptButtonStatus = ReceiptButtonStatus.Hidden,
     ) : Parcelable
+
+    data class RefundsState(
+        val refunds: List<Refund>,
+        val refundedProductsCount: Int,
+        val shippingLines: List<Refund.ShippingLine>
+    ) {
+        val isVisible: Boolean
+            get() = refundedProductsCount > 0 || shippingLines.isNotEmpty()
+    }
 
     enum class ReceiptButtonStatus {
         Loading, Hidden, Visible

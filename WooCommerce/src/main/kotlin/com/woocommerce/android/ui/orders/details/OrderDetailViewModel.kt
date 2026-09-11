@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -26,6 +27,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.getRefundedShippingLines
 import com.woocommerce.android.model.toShippingLabelModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -145,7 +147,13 @@ class OrderDetailViewModel @Inject constructor(
     val orderNotes: LiveData<List<OrderNote>> = _orderNotes
 
     private val _orderRefunds = MutableLiveData<List<Refund>>()
-    val orderRefunds: LiveData<List<Refund>> = _orderRefunds
+    val orderRefunds = _orderRefunds.map { refunds ->
+        OrderDetailViewState.RefundsState(
+            refunds = refunds,
+            refundedProductsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } },
+            shippingLines = refunds.getRefundedShippingLines()
+        )
+    }
 
     private val _productList = MutableLiveData<List<OrderProduct>>()
     val productList: LiveData<List<OrderProduct>> = _productList

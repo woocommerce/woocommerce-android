@@ -56,7 +56,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.OrderShipmentTracking
-import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -716,22 +715,16 @@ class OrderDetailFragment :
         }
     }
 
-    private fun showOrderRefunds(refunds: List<Refund>, order: Order) {
+    private fun showOrderRefunds(state: OrderDetailViewState.RefundsState, order: Order) {
+        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
+
         // display the refunds count in the refunds section
-        val refundsCount = refunds.sumOf { refund -> refund.items.sumOf { it.quantity } }
-        if (refundsCount > 0) {
-            binding.orderDetailRefundsInfo.show()
-            binding.orderDetailRefundsInfo.updateRefundCount(refundsCount) {
-                viewModel.onViewRefundedProductsClicked()
-            }
-        } else {
-            binding.orderDetailRefundsInfo.hide()
+        binding.orderDetailRefundsInfo.updateRefunds(state, formatCurrency) {
+            viewModel.onViewRefundedProductsClicked()
         }
 
         // display refunds list in the payment info section, if available
-        val formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
-
-        refunds.whenNotNullNorEmpty {
+        state.refunds.whenNotNullNorEmpty {
             binding.orderDetailPaymentInfo.showRefunds(order, it, formatCurrency)
         }.otherwise {
             binding.orderDetailPaymentInfo.showRefundTotal(
