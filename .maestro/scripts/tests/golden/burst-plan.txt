@@ -1,0 +1,21 @@
+Maestro smoke plan
+  profile: burst
+  store:   shared
+  repeat:  3
+  include: smoke_core,smoke_extended,destructive
+  exclude: flaky_quarantine,pos_tablet,android_system
+  seed:    no
+  flows:   11
+
+Selected flows:
+  - .maestro/flows/login_not_wp_site.yaml
+  - .maestro/flows/login_wrong_credentials.yaml
+  - .maestro/flows/login_help.yaml
+  - .maestro/flows/login_not_woo_store.yaml
+  - .maestro/flows/login_wrong_account.yaml
+  - .maestro/flows/login_no_jetpack.yaml
+  - .maestro/flows/login_google.yaml
+  - .maestro/flows/login_successful.yaml
+  - .maestro/flows/dashboard_stats.yaml
+  - .maestro/flows/orders_list_and_search.yaml
+  - .maestro/flows/products_list_and_sort.yaml

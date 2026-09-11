@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -138,7 +139,9 @@ fun UpdateShippingScreen(
             FieldEditValue(
                 name.orEmpty(),
                 { name -> onNameChanged(name) },
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
+                    .testTag(OrderShippingTestTags.NAME_INPUT)
             )
         }
         Column(
@@ -163,7 +166,9 @@ fun UpdateShippingScreen(
             WCColoredButton(
                 enabled = isSaveChangesEnabled,
                 onClick = { onSaveChanges() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(OrderShippingTestTags.SAVE_BUTTON)
             ) {
                 val buttonResId = if (isEditFlow) {
                     R.string.order_creation_shipping_edit
@@ -174,6 +179,11 @@ fun UpdateShippingScreen(
             }
         }
     }
+}
+
+internal object OrderShippingTestTags {
+    const val NAME_INPUT = "order_shipping_name_input"
+    const val SAVE_BUTTON = "order_shipping_save_button"
 }
 
 @Composable

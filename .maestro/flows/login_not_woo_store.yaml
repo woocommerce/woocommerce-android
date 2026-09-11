@@ -1,0 +1,114 @@
+# Smoke Test: Login - Not a WooCommerce store
+# p2: login.not-woo-store
+# P2 ref: Login > Not a Woo store (notawoostore.wordpress.com)
+#
+# Logs into a WordPress site that does NOT have WooCommerce installed using
+# the configured site-admin credentials through either authentication route.
+#
+# Required env vars:
+#   MAESTRO_WOO_NOT_A_WOO_STORE_URL
+#   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME
+#   MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD
+appId: com.woocommerce.android
+name: "Login - Not a WooCommerce store error"
+tags:
+  - smoke_core
+  - login
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: ../subflows/dismiss_login_carousel.yaml
+
+# Enter store address
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
+
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Wait for either authentication route. A site can route directly to the
+# site-credentials form or expose that path from the WP.com email screen.
+- extendedWaitUntil:
+    visible: "Username|Email address"
+    timeout: 30000
+
+# Prefer site-admin credentials when the app offers that route explicitly.
+- runFlow:
+    when:
+      visible:
+        id: "login_site_creds"
+    commands:
+      - tapOn:
+          id: "login_site_creds"
+          retryTapIfNoChange: true
+      - extendedWaitUntil:
+          visible: "Username"
+          timeout: 15000
+
+# Self-hosted sites show Username and Password on the same screen.
+- runFlow:
+    when:
+      visible: "Username"
+    commands:
+      - tapOn: "Username"
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
+      - tapOn: "Password"
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
+      - tapOn: "Continue"
+
+# Use the same site-admin credentials when the fixture presents the
+# WP.com-style email and password screens.
+- runFlow:
+    when:
+      visible:
+        id: "login_continue_button"
+    commands:
+      - tapOn:
+          id: "input"
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_USERNAME}
+      - hideKeyboard
+      - tapOn:
+          id: "login_continue_button"
+          retryTapIfNoChange: true
+      - runFlow:
+          file: ../subflows/dismiss_google_password_manager.yaml
+      - runFlow:
+          when:
+            visible:
+              id: "login_enter_password"
+          commands:
+            - tapOn:
+                id: "login_enter_password"
+      - runFlow:
+          file: ../subflows/dismiss_google_password_manager.yaml
+      - extendedWaitUntil:
+          visible:
+            id: "input"
+          timeout: 10000
+      - tapOn:
+          id: "input"
+      - inputText: ${MAESTRO_WOO_NOT_A_WOO_STORE_SITE_ADMIN_PASSWORD}
+      - hideKeyboard
+      - tapOn:
+          id: "bottom_button"
+          retryTapIfNoChange: true
+
+# Verify the configured WordPress site is rejected specifically because it
+# does not have WooCommerce. A Jetpack-account error does not prove this P2
+# check and must fail so the fixture can be repaired.
+- extendedWaitUntil:
+    visible: ".*not a WooCommerce site.*"
+    timeout: 30000
+
+- assertVisible:
+    text: ${STRING_LOGIN_OPEN_INSTALLATION_PAGE}
+    label: "Open installation page CTA is visible"
+
+- takeScreenshot: login_not_woo_store

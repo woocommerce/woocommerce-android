@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -37,30 +38,33 @@ import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItem
 fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     viewModel.viewState.observeAsState().value?.let { state ->
-        Scaffold(topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(id = R.string.my_store_edit_screen_widgets)) },
-                navigationIcon = {
-                    IconButton(viewModel::onBackPressed) {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                            contentDescription = stringResource(id = R.string.back)
-                        )
-                    }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-                actions = {
-                    TextButton(
-                        onClick = viewModel::onSaveClicked,
-                        enabled = state.isSaveButtonEnabled
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.save).uppercase()
-                        )
-                    }
-                },
-            )
-        }) { padding ->
+        Scaffold(
+            modifier = Modifier.testTag(state.widgetStateTestTag),
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.my_store_edit_screen_widgets)) },
+                    navigationIcon = {
+                        IconButton(viewModel::onBackPressed) {
+                            Icon(
+                                ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                    actions = {
+                        TextButton(
+                            onClick = viewModel::onSaveClicked,
+                            enabled = state.isSaveButtonEnabled
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.save).uppercase()
+                            )
+                        }
+                    },
+                )
+            }
+        ) { padding ->
             when {
                 state.isLoading -> LoadWidgetsConfiguration()
                 else -> {
@@ -73,6 +77,7 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                             .padding(padding),
                         isItemDraggable = { it.isAvailable }
                     ) { item, dragDropState ->
+                        val itemIndex = state.orderedWidgetList.indexOf(item)
                         when (item.isAvailable) {
                             true -> {
                                 val selectedItems = state.orderedWidgetList.filter { it.isVisible }
@@ -83,12 +88,17 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                                     onSelectionChange = viewModel::onSelectionChange,
                                     itemKey = { it.type },
                                     itemFormatter = { stringResource(id = item.title) },
-                                    isEnabled = !item.isSelected || selectedItems.size > 1
+                                    isEnabled = !item.isSelected || selectedItems.size > 1,
+                                    rowModifier = Modifier.testTag(item.rowTestTag(itemIndex)),
+                                    dragHandleModifier = Modifier.testTag(item.dragHandleTestTag(itemIndex))
                                 )
                             }
 
                             false -> {
-                                UnavailableWidget(item)
+                                UnavailableWidget(
+                                    widget = item,
+                                    modifier = Modifier.testTag(item.rowTestTag(itemIndex))
+                                )
                             }
                         }
                     }
@@ -104,6 +114,27 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
         }
     }
 }
+
+private val DashboardWidgetEditorViewModel.WidgetEditorState.widgetStateTestTag: String
+    get() = widgetList.joinToString(
+        prefix = "dashboard_widget_editor_state__",
+        separator = "__",
+        postfix = "__"
+    ) { widget -> "${widget.type.trackingIdentifier}_${widget.editorStateTag}" }
+
+private fun DashboardWidget.rowTestTag(index: Int) =
+    "dashboard_widget_editor_row_${index}_${type.trackingIdentifier}_$editorStateTag"
+
+private fun DashboardWidget.dragHandleTestTag(index: Int) =
+    "dashboard_widget_editor_drag_handle_${index}_${type.trackingIdentifier}"
+
+private val DashboardWidget.editorStateTag: String
+    get() = when {
+        status is DashboardWidget.Status.Hidden -> "hidden"
+        status is DashboardWidget.Status.Unavailable -> "unavailable"
+        isSelected -> "selected"
+        else -> "unselected"
+    }
 
 @Composable
 private fun UnavailableWidget(

@@ -4,6 +4,10 @@
       "command": "npx",
       "args": ["-y", "@mobilenext/mobile-mcp@latest"]
     },
+    "maestro": {
+      "command": "maestro",
+      "args": ["mcp"]
+    },
     "context-a8c": {
       "command": "npx",
       "args": ["-y", "@automattic/mcp-context-a8c@latest"]

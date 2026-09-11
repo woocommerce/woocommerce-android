@@ -1,0 +1,12 @@
+# Waits for the initial login surface and dismisses the welcome carousel when shown.
+appId: com.woocommerce.android
+---
+- extendedWaitUntil:
+    visible: ".*Skip.*|.*Enter your store address.*|.*Log in.*"
+    timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"

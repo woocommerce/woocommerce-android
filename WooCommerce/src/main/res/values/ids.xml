@@ -5,4 +5,5 @@
     <item type="id" name="product_selector_compose_view" />
     <item type="id" name="product_configuration_view" />
     <item type="id" name="analytics_hub_settings_view" />
+    <item type="id" name="order_shipping_amount_input" />
 </resources>

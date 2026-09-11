@@ -1,0 +1,80 @@
+# Smoke Test: Login - Wrong account for the store
+# p2: login.wrong-account
+# P2 ref: Login > Wrong account for the store
+#
+# Logs into a WooCommerce store using a WP.com account that does NOT have
+# access to it, and verifies the "account not connected to Jetpack" error.
+#
+# Required env vars:
+#   MAESTRO_WOO_WPCOM_EMAIL, MAESTRO_WOO_WPCOM_PASSWORD
+#                                      (selected WP.com account)
+#   MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL  (site the primary account can't access)
+appId: com.woocommerce.android
+name: "Login - Wrong account for the store"
+tags:
+  - smoke_core
+  - login
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    file: ../subflows/dismiss_login_carousel.yaml
+
+- runFlow:
+    file: ../subflows/open_site_address_login.yaml
+
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_WRONG_ACCOUNT_STORE_URL}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+- extendedWaitUntil:
+    visible:
+      id: "login_continue_button"
+    timeout: 15000
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_WPCOM_EMAIL}
+- hideKeyboard
+- tapOn:
+    id: "login_continue_button"
+    retryTapIfNoChange: true
+
+- runFlow:
+    file: ../subflows/dismiss_google_password_manager.yaml
+
+- runFlow:
+    when:
+      visible:
+        id: "login_enter_password"
+    commands:
+      - tapOn:
+          id: "login_enter_password"
+
+- runFlow:
+    file: ../subflows/dismiss_google_password_manager.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "input"
+    timeout: 10000
+- tapOn:
+    id: "input"
+- inputText: ${MAESTRO_WOO_WPCOM_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "bottom_button"
+    retryTapIfNoChange: true
+
+# Verify "account not connected" error
+# String: login_jetpack_not_connected =
+#   "It looks like your account is not connected to %1$s's Jetpack"
+- extendedWaitUntil:
+    visible: ".*not connected.*Jetpack.*|.*account.*not connected.*"
+    timeout: 30000
+
+- takeScreenshot: login_wrong_account
