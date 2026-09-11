@@ -73,8 +73,8 @@ fun CustomerDetailsScreen(
     state: CustomerViewState,
     onRefresh: () -> Unit,
     onEmailTapped: () -> Unit,
-    scrollState: ScrollState = rememberScrollState(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState()
 ) {
     val pullRefreshState = rememberPullRefreshState(state.isRefreshingData, { onRefresh() })
     Box(modifier = modifier.pullRefresh(pullRefreshState)) {

@@ -115,8 +115,8 @@ internal fun WooCellLayout(
     title: String,
     description: String?,
     enabled: Boolean,
-    descriptionColor: Color? = null,
     modifier: Modifier = Modifier,
+    descriptionColor: Color? = null,
     leadingContent: (@Composable () -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null,
 ) {

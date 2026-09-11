@@ -190,12 +190,12 @@ internal fun WooTooltipBoxImpl(
 internal fun WooTooltipSurface(
     title: String,
     supportingText: String?,
-    action: WooTooltipAction? = null,
-    onActionClick: (WooTooltipAction) -> Unit = { it.onClick() },
     arrowEdge: WooTooltipPhysicalEdge,
     arrowCenter: Float,
     cornerRadius: Dp,
     modifier: Modifier = Modifier,
+    action: WooTooltipAction? = null,
+    onActionClick: (WooTooltipAction) -> Unit = { it.onClick() },
 ) {
     Surface(
         modifier = modifier,

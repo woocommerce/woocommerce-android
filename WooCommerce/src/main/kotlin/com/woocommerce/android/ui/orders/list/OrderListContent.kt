@@ -63,7 +63,6 @@ internal fun OrderListContent(
     itemCount: Int,
     itemKey: (index: Int) -> Any,
     itemAt: (index: Int) -> OrderListItemUiModel?,
-    itemContentType: (index: Int) -> Any? = { null },
     onOrderActivated: (orderId: Long) -> Unit,
     onOrderLongPressed: (orderId: Long) -> Unit,
     onOrderSelectionToggled: (orderId: Long) -> Boolean,
@@ -72,6 +71,7 @@ internal fun OrderListContent(
     onShowGuestOrdersClicked: () -> Unit,
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    itemContentType: (index: Int) -> Any? = { null },
     listState: LazyListState = rememberLazyListState(),
 ) {
     when (state) {
