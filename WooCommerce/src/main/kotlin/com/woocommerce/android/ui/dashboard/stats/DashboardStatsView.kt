@@ -660,8 +660,8 @@ class DashboardStatsView @JvmOverloads constructor(
                     setDrawZeroLine(true)
                     zeroLineColor = ContextCompat.getColor(context, R.color.divider_color)
                 }
-                axisMinimum = minRevenue.roundToTheNextPowerOfTen()
-                axisMaximum = maxRevenue.roundToTheNextPowerOfTen()
+                axisMinimum = minRevenue.coerceAtMost(0f).roundToTheNextPowerOfTen()
+                axisMaximum = maxRevenue.coerceAtLeast(0f).roundToTheNextPowerOfTen()
             }
             data = LineData(dataSet)
             if (wasEmpty) {
