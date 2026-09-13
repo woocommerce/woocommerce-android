@@ -147,8 +147,7 @@ object AppPrefs {
         IS_SITE_WPCOM_SUSPENDED,
         JETPACK_APP_PASSWORDS_ENABLED,
         WOO_POS_LOCAL_CATALOG_ENABLED,
-        CLIENT_SIDE_BANNER_HIDDEN,
-        WOO_CORE_PUSH_DEVICE_UUID
+        CLIENT_SIDE_BANNER_HIDDEN
     }
 
     /**
@@ -196,8 +195,6 @@ object AppPrefs {
 
         // card reader welcome dialog was shown
         CARD_READER_WELCOME_SHOWN,
-
-        WC_PREF_NOTIFICATIONS_TOKEN,
 
         // Hide banner in order detail to install WC Shipping plugin
         WC_SHIPPING_BANNER_DISMISSED,
@@ -371,10 +368,6 @@ object AppPrefs {
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
-    var wooCorePushDeviceUUID: String
-        get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
-        set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
-
     var remoteFeatureFlagsDeviceId: String
         get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
         set(value) = setString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, value)
@@ -456,12 +449,6 @@ object AppPrefs {
 
     fun setCancelledAppVersionCode(versionCode: Int) {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
-    }
-
-    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
-
-    fun setFCMToken(token: String) {
-        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {

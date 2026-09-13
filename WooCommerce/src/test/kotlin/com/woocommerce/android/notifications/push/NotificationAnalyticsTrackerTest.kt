@@ -1,17 +1,20 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationSource
 import com.woocommerce.android.tools.ResolveSiteBySiteId
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -19,24 +22,67 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
-class NotificationAnalyticsTrackerTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class NotificationAnalyticsTrackerTest : BaseUnitTest() {
     private val siteId = 12345L
     private val site: SiteModel = mock()
     private val resolveSiteBySiteId: ResolveSiteBySiteId = mock {
         on { invoke(siteId) } doReturn site
     }
     private val selectedSite: SelectedSite = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on { getFCMToken() } doReturn "fcm-token"
+    private val identityStore: WooPushIdentityStore = mock {
+        on { currentTokenOrNull() } doReturn "fcm-token"
     }
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val tracker = NotificationAnalyticsTracker(
         resolveSiteBySiteId = resolveSiteBySiteId,
         selectedSite = selectedSite,
-        appPrefsWrapper = appPrefsWrapper,
+        identityStore = identityStore,
+        appCoroutineScope = CoroutineScope(coroutinesTestRule.testDispatcher),
         analyticsTrackerWrapper = analyticsTrackerWrapper
     )
+
+    @Test
+    fun `given delayed token read, when tracking, then records the token without forcing an upload`() = testBlocking {
+        val token = CompletableDeferred<String?>()
+        whenever(identityStore.currentTokenOrNull()).doSuspendableAnswer { token.await() }
+
+        tracker.trackNotificationAnalytics(
+            AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
+            siteId,
+            "987",
+            "store_order",
+            NotificationSource.WPCOM
+        )
+
+        verify(analyticsTrackerWrapper, never()).flush()
+        verify(analyticsTrackerWrapper, never()).track(any(), any<Map<String, Any>>())
+        token.complete("canonical-token")
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
+        verify(analyticsTrackerWrapper, never()).flush()
+        assertThat(captor.firstValue).containsEntry("push_notification_token", "canonical-token")
+    }
+
+    @Test
+    fun `given token is unavailable, when tracking, then records the event without forcing an upload`() = testBlocking {
+        whenever(identityStore.currentTokenOrNull()).thenReturn(null)
+
+        tracker.trackNotificationAnalytics(
+            AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED,
+            siteId,
+            "987",
+            "store_order",
+            NotificationSource.WPCOM
+        )
+
+        val captor = argumentCaptor<Map<String, Any>>()
+        verify(analyticsTrackerWrapper).track(eq(AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED), captor.capture())
+        assertThat(captor.firstValue).containsEntry("push_notification_token", "")
+        verify(analyticsTrackerWrapper, never()).flush()
+    }
 
     @Test
     fun `given wpcom notification id, when tracking, then include it verbatim`() {
@@ -103,7 +149,6 @@ class NotificationAnalyticsTrackerTest {
     @Test
     fun `given app-password site, when tracking, then resolve via selected site and flag as selected`() {
         val appPasswordSite: SiteModel = mock()
-        whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
         whenever(resolveSiteBySiteId(7777L)).thenReturn(appPasswordSite)
 
         // App-password notifications carry a non-zero payload siteId that doesn't match any

@@ -37,15 +37,6 @@ class AppPrefsTest {
     }
 
     @Test
-    fun whenFCMTokenIsSetThenGetReturnsStoredValue() {
-        val token = "fcm_token"
-
-        AppPrefs.setFCMToken(token)
-
-        assertThat(AppPrefs.getFCMToken()).isEqualTo(token)
-    }
-
-    @Test
     fun whenAiAssistantEarlyAccessNoticeIsDismissedThenSitePreferencesResetClearsDismissal() {
         AppPrefs.isAiAssistantEarlyAccessNoticeDismissed = true
 

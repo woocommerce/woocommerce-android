@@ -9,6 +9,7 @@ import com.woocommerce.android.extensions.logInformation
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
+import com.woocommerce.android.notifications.push.WooPushIdentityStore
 import com.woocommerce.android.tools.connectionTypeOrNull
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.troubleshooting.useCases.NotificationSystemStatusProvider
@@ -59,6 +60,7 @@ class MobileStatusProvider @Inject constructor(
     private val deviceFeatures: DeviceFeatures,
     private val getWooCorePluginCachedVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper,
+    private val identityStore: WooPushIdentityStore,
     private val accountStore: AccountStore,
     private val siteStore: SiteStore,
     private val wooCommerceStore: WooCommerceStore,
@@ -124,7 +126,7 @@ class MobileStatusProvider @Inject constructor(
     private fun connectivitySection() = envDataSource.generateNetworkInformation(context).lines()
 
     // Push registration is not here: it is keyed on a store, so it sits with the store it belongs to.
-    private fun notificationsSection(): List<String> {
+    private suspend fun notificationsSection(): List<String> {
         val disabledChannels = notificationSystemStatusProvider.disabledWooNotificationChannels()
         return listOf(
             entry("Play Services", if (deviceFeatures.isGooglePlayServicesAvailable()) "available" else "unavailable"),
@@ -338,8 +340,8 @@ class MobileStatusProvider @Inject constructor(
         onFailure = { UNKNOWN }
     )
 
-    private fun pushTokenState() = appPrefs.getFCMToken()
-        .takeIf { it.isNotBlank() }
+    private suspend fun pushTokenState() = identityStore.currentTokenOrNull()
+        ?.takeIf { it.isNotBlank() }
         ?.let { "present (…${it.takeLast(REDACTED_TOKEN_LENGTH)})" }
         ?: MISSING
 

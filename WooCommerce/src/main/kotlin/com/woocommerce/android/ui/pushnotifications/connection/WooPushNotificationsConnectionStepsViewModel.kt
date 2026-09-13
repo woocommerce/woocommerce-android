@@ -6,7 +6,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
@@ -40,7 +39,6 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val pushNotificationRepository: PushNotificationRepository,
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
@@ -215,17 +213,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private suspend fun registerPushNotifications() {
-        val token = appPrefsWrapper.getFCMToken()
-        if (token.isEmpty()) {
-            markCurrentStepAsFailed(
-                R.string.woo_push_notifications_connection_steps_generic_error,
-                IllegalStateException(EMPTY_FCM_TOKEN_ERROR_DESCRIPTION)
-            )
-            return
-        }
-
         val site = selectedSite.get()
-        pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
+        pushNotificationRepository.registerPushTokenInWooCoreSystem(site).fold(
             onSuccess = { markCurrentStepAsCompleted() },
             onFailure = { error ->
                 markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error, error)
@@ -394,7 +383,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     companion object {
         private const val ERROR_CODE_FORBIDDEN = 403
-        private const val EMPTY_FCM_TOKEN_ERROR_DESCRIPTION = "FCM token is empty."
 
         private const val STEP_CONNECT_WPCOM = "connect_wpcom"
         private const val STEP_PLUGIN_COMPATIBILITY = "plugin_compatibility"

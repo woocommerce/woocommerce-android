@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -9,23 +8,25 @@ import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RegisterDevice @Inject constructor(
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val identityStore: WooPushIdentityStore,
     private val accountStore: AccountStore,
     private val pushNotificationRepository: PushNotificationRepository,
     private val featureFlagRepository: FeatureFlagRepository,
@@ -57,9 +58,8 @@ class RegisterDevice @Inject constructor(
                 val registrationJob = launch {
                     try {
                         register(trigger)
-                    } catch (cancellationException: CancellationException) {
-                        throw cancellationException
                     } catch (throwable: Throwable) {
+                        currentCoroutineContext().ensureActive()
                         WooLog.e(WooLog.T.NOTIFICATIONS, "Push registration kickoff failed for $trigger", throwable)
                     }
                 }
@@ -77,45 +77,28 @@ class RegisterDevice @Inject constructor(
     }
 
     private suspend fun register(trigger: Trigger) {
-        val token = appPrefsWrapper.getFCMToken()
-        if (token.isEmpty()) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping push registration for $trigger because FCM token is empty")
-            return
-        }
+        val registrationIdentity = identityStore.prepareRegistration()
+        val token = registrationIdentity.token
 
-        val shouldForce = trigger == Trigger.TOKEN_REFRESH
+        val shouldForce = trigger == Trigger.TOKEN_REFRESH || registrationIdentity.needsFullRegistration
+        val isSelfDrivenPushEnabled =
+            featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)
 
-        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
-            val sites = when (trigger) {
-                Trigger.LOGIN_SUCCESS,
-                Trigger.TOKEN_REFRESH -> getWooVisibleSites()
-
-                Trigger.APP_FOREGROUND,
-                Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
-            }
-            supervisorScope {
-                sites.map { site ->
-                    async {
-                        val shouldRegisterSite = shouldForce ||
-                            pushNotificationRepository.shouldRegisterWooPushForSite(token, site.siteId)
-
-                        if (shouldRegisterSite) {
-                            pushNotificationRepository.clearWooPushRegistrationForStaleToken(site.siteId, token)
-                            WooLog.d(
-                                WooLog.T.NOTIFICATIONS,
-                                "Registering Woo push for site ${site.siteId} for $trigger"
-                            )
-                            pushNotificationRepository.registerPushTokenInWooCoreSystem(
-                                token = token,
-                                selectedSite = site,
-                                allowWpComFallback = false
-                            )
-                        }
-                    }
-                }.awaitAll()
+        if (isSelfDrivenPushEnabled) {
+            val registrations = registerWooCorePush(
+                trigger,
+                registrationIdentity.needsFullRegistration,
+                shouldForce
+            )
+            if (
+                registrationIdentity.needsFullRegistration &&
+                registrations.isNotEmpty() &&
+                registrations.all { it.isSuccess }
+            ) {
+                identityStore.markCoreRegistrationComplete(registrationIdentity.uuid, token)
             }
         } else {
-            migrateWooPushRegistrationsToWpCom(trigger, token)
+            migrateWooPushRegistrationsToWpCom(trigger)
         }
 
         // For WPCom, site switching doesn't affect registration
@@ -124,16 +107,55 @@ class RegisterDevice @Inject constructor(
 
         if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
-            pushNotificationRepository.registerPushTokenInWpComSystem(token)
+            val registration = pushNotificationRepository.registerPushTokenInWpComSystem()
+            if (
+                registrationIdentity.needsFullRegistration &&
+                !isSelfDrivenPushEnabled &&
+                !registration.isError
+            ) {
+                identityStore.markCoreRegistrationComplete(registrationIdentity.uuid, token)
+            }
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Skipping WP.com push registration for $trigger")
         }
     }
 
-    private suspend fun migrateWooPushRegistrationsToWpCom(trigger: Trigger, token: String) {
+    private suspend fun registerWooCorePush(
+        trigger: Trigger,
+        needsFullRegistration: Boolean,
+        shouldForce: Boolean
+    ): List<Result<Unit>> {
+        val sites = if (needsFullRegistration) {
+            getWooVisibleSites()
+        } else {
+            when (trigger) {
+                Trigger.LOGIN_SUCCESS,
+                Trigger.TOKEN_REFRESH -> getWooVisibleSites()
+
+                Trigger.APP_FOREGROUND,
+                Trigger.SITE_SWITCH -> listOfNotNull(selectedSite.getIfExists())
+            }
+        }
+        return supervisorScope {
+            sites.map { site ->
+                async {
+                    val shouldRegisterSite = shouldForce ||
+                        pushNotificationRepository.shouldRegisterWooPushForSite(site.siteId)
+                    if (shouldRegisterSite) registerWooCorePushForSite(site) else Result.success(Unit)
+                }
+            }.awaitAll()
+        }
+    }
+
+    private suspend fun registerWooCorePushForSite(site: SiteModel): Result<Unit> = pushNotificationRepository.run {
+        WooLog.d(WooLog.T.NOTIFICATIONS, "Registering Woo push for site ${site.siteId}")
+        registerPushTokenInWooCoreSystem(site, allowWpComFallback = false)
+    }
+
+    private suspend fun migrateWooPushRegistrationsToWpCom(trigger: Trigger) {
         if (trigger == Trigger.SITE_SWITCH) return
 
-        val wooRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
+        val wooRegisteredSiteIds = pushNotificationRepository.getOwnedWooPushRegisteredSiteIds()
         if (wooRegisteredSiteIds.isEmpty()) return
 
         WooLog.d(
@@ -151,7 +173,7 @@ class RegisterDevice @Inject constructor(
         }
 
         val isWpComTakenOver = visibleJetpackSiteIds.isNotEmpty() &&
-            ensureWpComPushRegistered(token) &&
+            ensureWpComPushRegistered() &&
             pushNotificationRepository.enableWpComNotificationsForSites(visibleJetpackSiteIds).isSuccess
 
         // Visible Jetpack sites have a working WP.com fallback, so they are unregistered only after
@@ -165,10 +187,10 @@ class RegisterDevice @Inject constructor(
         pushNotificationRepository.unregisterWooPushRegisteredSites(siteIdsToUnregister)
     }
 
-    private suspend fun ensureWpComPushRegistered(token: String): Boolean {
+    private suspend fun ensureWpComPushRegistered(): Boolean {
         if (pushNotificationRepository.isWpComPushRegistered()) return true
 
-        return !pushNotificationRepository.registerPushTokenInWpComSystem(token).isError
+        return !pushNotificationRepository.registerPushTokenInWpComSystem().isError
     }
 
     enum class Trigger {

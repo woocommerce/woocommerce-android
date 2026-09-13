@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
+import com.woocommerce.android.notifications.push.WooPushIdentityStore
 import com.woocommerce.android.support.zendesk.MobileStatusProvider
 import com.woocommerce.android.support.zendesk.ZendeskEnvironmentDataSource
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
@@ -113,8 +114,11 @@ class MobileStatusProviderTest : BaseUnitTest() {
         on { invoke() } doReturn "10.9.2"
     }
 
+    private val identityStore: WooPushIdentityStore = mock {
+        on { currentTokenOrNull() } doReturn "abcdefghijklmnop"
+    }
+
     private val appPrefs: AppPrefsWrapper = mock {
-        on { getFCMToken() } doReturn "abcdefghijklmnop"
         on { getWCStoreID(any()) } doReturn "store-uuid"
         on { isProductAddonsEnabled } doReturn true
         on { jetpackAppPasswordsEnabled } doReturn false
@@ -201,6 +205,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         deviceFeatures = deviceFeatures,
         getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
         appPrefs = appPrefs,
+        identityStore = identityStore,
         accountStore = accountStore,
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
@@ -309,7 +314,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
 
     @Test
     fun `given no push token, when the report is generated, then it is reported as missing`() = testBlocking {
-        appPrefs.stub { on { getFCMToken() } doReturn "" }
+        identityStore.stub { on { currentTokenOrNull() } doReturn null }
 
         val report = sut(SiteModel().apply { url = "https://example.com" })
 
@@ -535,6 +540,7 @@ class MobileStatusProviderTest : BaseUnitTest() {
         deviceFeatures = deviceFeatures,
         getWooCorePluginCachedVersion = getWooCorePluginCachedVersion,
         appPrefs = appPrefs,
+        identityStore = identityStore,
         accountStore = accountStore,
         siteStore = siteStore,
         wooCommerceStore = wooCommerceStore,
