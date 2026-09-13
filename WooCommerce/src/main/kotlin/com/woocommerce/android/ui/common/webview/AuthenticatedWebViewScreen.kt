@@ -12,7 +12,6 @@ import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
@@ -49,9 +48,9 @@ private fun AuthenticatedWebViewScreen(
                 ),
                 actions = {
                     if (viewState.displayMode == DisplayMode.TASK) {
-                        WCTextButton(
+                        TextAction(
+                            text = stringResource(id = R.string.done),
                             onClick = onClose,
-                            text = stringResource(id = R.string.done)
                         )
                     }
                 }

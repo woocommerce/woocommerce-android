@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
@@ -69,12 +69,14 @@ fun LoginSiteCredentialsScreen(
     onErrorDialogDismissed: () -> Unit,
     onStartWebAuthorizationClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
                 onHelpButtonClick = onHelpButtonClick,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -88,7 +90,7 @@ fun LoginSiteCredentialsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 if (viewState.endpointRecovery != null) {
@@ -294,7 +296,7 @@ private fun LoginSiteCredentialsAdminRecoveryErrorPreview() {
 
 @Composable
 private fun LoginSiteCredentialsScreenPreview(viewState: LoginSiteCredentialsViewModel.ViewState) {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         LoginSiteCredentialsScreen(
             viewState = viewState,
             onUsernameChanged = {},

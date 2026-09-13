@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
 import com.woocommerce.android.ui.payments.banner.Banner
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -30,7 +30,7 @@ class JitmFragment : Fragment() {
         view.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         viewModel.jitmState.observe(viewLifecycleOwner) { state ->
             view.setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     when (state) {
                         is JitmState.Banner -> Banner(state)
                         is JitmState.Modal -> JitmModal(state)

@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="woo_ds_toolbar_height">64dp</dimen>
+    <dimen name="woo_ds_toolbar_medium_height">93dp</dimen>
     <dimen name="woo_ds_toolbar_divider_height">0.5dp</dimen>
     <dimen name="woo_ds_toolbar_edge_padding">24dp</dimen>
+    <dimen name="woo_ds_toolbar_title_control_spacing">8dp</dimen>
+    <dimen name="woo_ds_toolbar_navigation_title_spacing">4dp</dimen>
+    <dimen name="woo_ds_toolbar_control_edge_padding">4dp</dimen>
+    <dimen name="woo_ds_toolbar_medium_control_top_padding">8dp</dimen>
+    <dimen name="woo_ds_toolbar_medium_title_bottom_padding">12dp</dimen>
+    <dimen name="woo_ds_toolbar_medium_supporting_text_bottom_padding">4dp</dimen>
     <dimen name="woo_ds_toolbar_text_action_max_width">136dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_button_size">40dp</dimen>
+    <dimen name="woo_ds_toolbar_text_action_corner_radius">24dp</dimen>
     <dimen name="woo_ds_toolbar_icon_touch_target">48dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_size">18dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_padding">15dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_border_inset">4dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_border_width">0.5dp</dimen>
-    <dimen name="woo_ds_toolbar_icon_corner_radius">12dp</dimen>
+    <dimen name="woo_ds_toolbar_icon_button_corner_radius">24dp</dimen>
+    <dimen name="woo_ds_toolbar_icon_size">24dp</dimen>
+    <dimen name="woo_ds_toolbar_icon_padding">12dp</dimen>
+    <dimen name="woo_ds_bottom_nav_height">64dp</dimen>
+    <dimen name="woo_ds_bottom_nav_item_padding_vertical">6dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_width">56dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_height">32dp</dimen>
+    <dimen name="woo_ds_bottom_nav_indicator_label_padding">8dp</dimen>
 </resources>

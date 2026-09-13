@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,7 +45,7 @@ import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.filters.FilterHistoryViewModel.ViewState
 
 @Composable
@@ -73,6 +75,7 @@ fun FilterHistoryScreen(
     onClearHistoryDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberLazyListState()
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -81,11 +84,12 @@ fun FilterHistoryScreen(
                 navigationIcon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_cross_24dp),
                 navigationIconContentDescription = stringResource(id = R.string.filter_history_cancel),
                 onNavigationButtonClick = onCancelClick,
+                showDivider = !viewState.isEmpty && listState.canScrollBackward,
                 actions = {
-                    WCTextButton(
+                    TextAction(
+                        text = stringResource(id = R.string.filter_history_apply),
                         onClick = onApplyClick,
                         enabled = viewState.isApplyEnabled,
-                        text = stringResource(id = R.string.filter_history_apply)
                     )
                 }
             )
@@ -103,6 +107,7 @@ fun FilterHistoryScreen(
                 onFilterClick = onFilterClick,
                 onDeleteFilter = onDeleteFilter,
                 onClearHistoryClick = onClearHistoryClick,
+                listState = listState,
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
@@ -124,10 +129,11 @@ private fun FilterHistoryList(
     onFilterClick: (SavedFilter) -> Unit,
     onDeleteFilter: (SavedFilter) -> Unit,
     onClearHistoryClick: () -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             item {
                 Text(
                     text = stringResource(id = R.string.filter_history_recent_header).uppercase(),
@@ -295,7 +301,7 @@ private fun ClearHistoryConfirmationDialog(
 @LightDarkThemePreviews
 @Composable
 private fun FilterHistoryScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FilterHistoryScreen(
             viewState = ViewState(
                 filters = listOf(
@@ -319,7 +325,7 @@ private fun FilterHistoryScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun FilterHistoryEmptyPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         FilterHistoryScreen(
             viewState = ViewState(filters = emptyList()),
             onFilterClick = {},

@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.compose.preview.FontScalePreviews
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -154,7 +154,7 @@ private fun AgeVerificationRequiredScreen(
 @FontScalePreviews
 @Composable
 private fun AgeVerificationRequiredScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AgeVerificationRequiredScreen(
             onOpenPlayStore = {},
             onRetry = {}

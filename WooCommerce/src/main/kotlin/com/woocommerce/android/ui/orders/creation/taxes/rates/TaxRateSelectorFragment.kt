@@ -12,7 +12,7 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentDirections.Companion.actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -36,7 +36,7 @@ class TaxRateSelectorFragment : BaseFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 TaxRateSelectorScreen(
                     viewModel.viewState,
                     viewModel::onEditTaxRatesInAdminClicked,

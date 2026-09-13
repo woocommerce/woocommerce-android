@@ -10,17 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,7 +39,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.variations.selector.EmptyVariationList
 import com.woocommerce.android.ui.products.variations.selector.VariationListSkeleton
 
@@ -63,19 +62,20 @@ fun VariationPickerScreen(
     onLoadMore: () -> Unit,
     onCancel: () -> Unit
 ) {
+    val listState = rememberLazyListState()
+    val skeletonListState = rememberLazyListState()
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(stringResource(id = R.string.product_variation_picker_title)) },
-            navigationIcon = {
-                IconButton(onCancel) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.close)
-                    )
-                }
+        Toolbar(
+            title = stringResource(id = R.string.product_variation_picker_title),
+            onNavigationButtonClick = onCancel,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            navigationIconContentDescription = stringResource(id = R.string.close),
+            showDivider = when {
+                state.variations.isNotEmpty() -> listState.canScrollBackward
+                state.loadingState == VariationPickerViewModel.LoadingState.LOADING ->
+                    skeletonListState.canScrollBackward
+                else -> false
             },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
-            elevation = 0.dp,
         )
     }) { padding ->
         when {
@@ -83,10 +83,12 @@ fun VariationPickerScreen(
                 state = state,
                 onVariationClick = onVariationClick,
                 onLoadMore = onLoadMore,
+                listState = listState,
                 modifier = Modifier.padding(padding)
             )
 
-            state.loadingState == VariationPickerViewModel.LoadingState.LOADING -> VariationListSkeleton()
+            state.loadingState == VariationPickerViewModel.LoadingState.LOADING ->
+                VariationListSkeleton(skeletonListState)
             else -> EmptyVariationList()
         }
     }
@@ -97,9 +99,9 @@ private fun VariationList(
     state: VariationPickerViewModel.ViewState,
     onVariationClick: (variation: VariationPickerViewModel.VariationListItem) -> Unit,
     onLoadMore: () -> Unit,
+    listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
-    val listState = rememberLazyListState()
     Column(
         modifier = modifier
             .fillMaxHeight()
@@ -178,7 +180,7 @@ fun VariationItem(
 @Preview
 @Composable
 fun VariationItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         VariationItem(
             title = "This the product title",
             imageUrl = "not valid url",

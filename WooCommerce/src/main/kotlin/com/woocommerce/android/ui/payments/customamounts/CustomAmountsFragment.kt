@@ -23,7 +23,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
@@ -186,7 +186,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
         binding.taxToggleComposeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     val viewState = viewModel.viewStateLiveData.liveData.observeAsState()
                     val taxToggleState = remember { mutableStateOf(false) }
                     TaxToggle(taxStatus = viewState.value?.customAmountUIModel?.taxStatus ?: TaxStatus()) { isChecked ->

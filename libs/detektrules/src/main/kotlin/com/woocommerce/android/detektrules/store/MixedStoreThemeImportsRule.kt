@@ -24,7 +24,9 @@ class MixedStoreThemeImportsRule(config: Config) : Rule(config) {
 
         val imports = file.importDirectives.mapNotNull { it.importPath?.pathStr }
         val importsLegacyTheme = imports.any { it.isWithinPackage(LEGACY_THEME_PACKAGE) }
-        val importsStoreDesignSystem = imports.any { it.isWithinPackage(STORE_DESIGN_SYSTEM_PACKAGE) }
+        val importsStoreDesignSystem = imports.any {
+            it.isWithinPackage(STORE_DESIGN_SYSTEM_PACKAGE) && !it.isWithinPackage(STORE_DESIGN_SYSTEM_R_CLASS)
+        }
 
         if (importsLegacyTheme && importsStoreDesignSystem) {
             report(
@@ -52,5 +54,6 @@ class MixedStoreThemeImportsRule(config: Config) : Rule(config) {
         private const val WOO_POS_PACKAGE = "com.woocommerce.android.ui.woopos"
         private const val LEGACY_THEME_PACKAGE = "com.woocommerce.android.ui.compose.theme"
         private const val STORE_DESIGN_SYSTEM_PACKAGE = "com.woocommerce.android.ui.compose.designsystem"
+        private const val STORE_DESIGN_SYSTEM_R_CLASS = "$STORE_DESIGN_SYSTEM_PACKAGE.R"
     }
 }

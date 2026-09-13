@@ -27,14 +27,4 @@ class ProductPropertiesDiffCallback(
             oldItem == newItem
         }
     }
-
-    override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-        val newItem = newList[newItemPosition]
-        val oldItem = oldList[oldItemPosition]
-        return if (oldItem is Editable && newItem is Editable && newItem.text != oldItem.text) {
-            newItem.shouldFocus = true
-        } else {
-            null
-        }
-    }
 }

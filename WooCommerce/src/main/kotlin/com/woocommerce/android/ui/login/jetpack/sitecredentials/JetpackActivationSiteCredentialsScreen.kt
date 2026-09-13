@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.sitecredentials.JetpackActivationSiteCredentialsViewModel.JetpackActivationSiteCredentialsViewState
 
@@ -63,11 +63,13 @@ fun JetpackActivationSiteCredentialsScreen(
     onResetPasswordClick: () -> Unit = {},
     onCloseClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -81,7 +83,7 @@ fun JetpackActivationSiteCredentialsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 JetpackToWooHeader()
@@ -161,7 +163,7 @@ fun JetpackActivationSiteCredentialsScreen(
 @Preview
 @Composable
 private fun JetpackActivationSiteCredentialsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JetpackActivationSiteCredentialsScreen(
             viewState = JetpackActivationSiteCredentialsViewState(
                 isJetpackInstalled = false,

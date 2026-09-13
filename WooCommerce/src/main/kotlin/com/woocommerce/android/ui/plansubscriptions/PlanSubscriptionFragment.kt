@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.OpenSupportRequestForm
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +29,7 @@ class PlanSubscriptionFragment : BaseFragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                WooThemeWithBackground {
+                LegacyWooThemeWithBackground {
                     PlanSubscriptionScreen(viewModel)
                 }
             }

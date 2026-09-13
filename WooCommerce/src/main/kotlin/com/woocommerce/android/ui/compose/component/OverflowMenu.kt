@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.designsystem.component.WooOverflowMenuItem
 
 @Composable
 fun <T> WCOverflowMenu(
@@ -66,6 +67,29 @@ fun <T> WCOverflowMenu(
             }
         }
     }
+}
+
+/**
+ * Bridge to the design system [WooOverflowMenuItem] for Material themed screens, so they can fill design system
+ * overflow menus without importing the design system alongside the legacy theme.
+ */
+@Composable
+fun WCOverflowMenuItem(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isDestructive: Boolean = false,
+    enabled: Boolean = true,
+    trailingIcon: @Composable (() -> Unit)? = null,
+) {
+    WooOverflowMenuItem(
+        text = text,
+        onClick = onClick,
+        modifier = modifier,
+        isDestructive = isDestructive,
+        enabled = enabled,
+        trailingIcon = trailingIcon,
+    )
 }
 
 @Preview

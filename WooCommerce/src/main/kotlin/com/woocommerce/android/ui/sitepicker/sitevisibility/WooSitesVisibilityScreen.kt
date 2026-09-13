@@ -17,13 +17,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.SelectionCheck
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityViewModel.WooStoreUi
 import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityViewModel.WooStoresUiState
@@ -62,18 +59,13 @@ fun WooSitesVisibilityScreen(
     onSiteTapped: (WooStoreUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(text = stringResource(id = R.string.site_picker_edit_store_list_title)) },
-            navigationIcon = {
-                IconButton(onBack) {
-                    Icon(
-                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(id = R.string.back)
-                    )
-                }
-            },
-            backgroundColor = colorResource(id = R.color.color_toolbar),
+        Toolbar(
+            title = stringResource(id = R.string.site_picker_edit_store_list_title),
+            onNavigationButtonClick = onBack,
+            navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+            showDivider = scrollState.canScrollBackward,
             actions = {
                 if (state.isLoading) {
                     CircularProgressIndicator(
@@ -82,17 +74,13 @@ fun WooSitesVisibilityScreen(
                             .padding(horizontal = 16.dp)
                     )
                 } else {
-                    TextButton(
+                    TextAction(
+                        text = stringResource(id = R.string.save),
                         onClick = onSaveTapped,
-                        enabled = state.isSaveButtonEnabled
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.save).uppercase()
-                        )
-                    }
+                        enabled = state.isSaveButtonEnabled,
+                    )
                 }
             },
-            elevation = 0.dp
         )
     }) { padding ->
         val borderWidth = 1.dp
@@ -102,7 +90,7 @@ fun WooSitesVisibilityScreen(
                 .padding(padding)
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp)
         ) {
             Text(

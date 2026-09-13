@@ -50,11 +50,13 @@ fun JetpackActivationEligibilityErrorScreen(
     onRetryClick: () -> Unit = {},
     onHelpButtonClick: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
                 onHelpButtonClick = onHelpButtonClick,
-                onNavigationButtonClick = onBackButtonClick
+                onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward,
             )
         }
     ) { paddingValues ->
@@ -76,7 +78,7 @@ fun JetpackActivationEligibilityErrorScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             )
 
             Spacer(Modifier.height(dimensionResource(id = R.dimen.major_100)))

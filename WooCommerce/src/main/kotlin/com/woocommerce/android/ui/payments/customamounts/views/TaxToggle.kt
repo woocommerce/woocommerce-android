@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCSwitch
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel
 
 @Composable
@@ -35,7 +35,7 @@ fun TaxToggle(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TaxTogglePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         TaxToggle(
             CustomAmountsViewModel.TaxStatus(isTaxable = true)
         ) {}

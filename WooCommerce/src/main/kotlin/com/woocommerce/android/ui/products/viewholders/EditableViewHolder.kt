@@ -18,7 +18,7 @@ class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
             editableView.setOnTextChangedListener { text -> onTextChanged(text.toString()) }
         }
 
-        editableView.show(hint, item.text, item.shouldFocus, item.isReadOnly)
+        editableView.show(hint, item.text, item.isReadOnly)
 
         if (item.badgeText != null && item.badgeColor != null) {
             editableView.showBadge(item.badgeText, item.badgeColor)

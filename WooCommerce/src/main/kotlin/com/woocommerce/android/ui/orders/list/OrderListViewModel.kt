@@ -17,6 +17,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
@@ -63,10 +64,14 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
@@ -122,6 +127,9 @@ class OrderListViewModel @Inject constructor(
     companion object {
         const val BULK_UPDATE_COUNT_LIMIT = 100
         private const val KEY_GUEST_SEARCH_QUERY = "guest_search_query"
+        private const val KEY_PENDING_BULK_UPDATE_ORDER_IDS = "pending_bulk_update_order_ids"
+        private const val KEY_SELECTED_ORDER_IDS = "selected_order_ids"
+        private const val MIN_SEARCH_QUERY_LENGTH = 3
     }
 
     private val lifecycleRegistry: LifecycleRegistry by lazy {
@@ -148,8 +156,21 @@ class OrderListViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState(filterCount = getSelectedOrderFiltersCount()))
     internal var viewState by viewStateLiveData
 
-    private val _pagedListData = MediatorLiveData<PagedOrdersList>()
-    val pagedListData: LiveData<PagedOrdersList> = _pagedListData
+    private val savedSelectedOrderIds = savedState.getStateFlow(
+        scope = this,
+        initialValue = linkedSetOf<Long>(),
+        key = KEY_SELECTED_ORDER_IDS
+    )
+    val selectedOrderIds: StateFlow<Set<Long>> = savedSelectedOrderIds
+
+    private val pendingBulkUpdateOrderIds = savedState.getStateFlow(
+        scope = this,
+        initialValue = linkedSetOf<Long>(),
+        key = KEY_PENDING_BULK_UPDATE_ORDER_IDS
+    )
+
+    private val _pagedListData = MediatorLiveData<PagedOrdersList?>()
+    val pagedListData: LiveData<PagedOrdersList?> = _pagedListData
 
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
@@ -160,12 +181,13 @@ class OrderListViewModel @Inject constructor(
     private val _orderStatusOptions = MutableLiveData<Map<String, WCOrderStatusModel>>()
     val orderStatusOptions: LiveData<Map<String, WCOrderStatusModel>> = _orderStatusOptions
 
+    private val _orderListContentRevision = MutableStateFlow(0L)
+    val orderListContentRevision: StateFlow<Long> = _orderListContentRevision
+
     private val _isEmpty = MediatorLiveData<Boolean>()
     val isEmpty: LiveData<Boolean> = _isEmpty
 
     val orderId: LiveData<Long> = savedState.getLiveData<Long>("orderId")
-
-    var orderIdAndPositionBackup = mutableMapOf<Long, Int>()
 
     private val _emptyViewType: ThrottleLiveData<EmptyViewType?> by lazy {
         ThrottleLiveData(
@@ -178,20 +200,14 @@ class OrderListViewModel @Inject constructor(
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
     private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
-
-    var isSearching: Boolean
-        get() = viewState.isSearching
-        set(value) {
-            viewState = viewState.copy(isSearching = value)
-        }
+    private var isOrderListPresentationSuppressed = false
 
     private var dismissListErrors = false
-    var searchQuery = ""
+    private var searchJob: Job? = null
 
     /**
-     * The query the guest-orders filter was activated for. After a configuration change the restored
-     * search view re-submits the query as a plain text search, so [submitSearchOrFilter] uses this
-     * to keep the guest filter active as long as the query hasn't changed.
+     * The query the guest-orders filter was activated for. Restored searches use this to keep the
+     * guest filter active as long as the query hasn't changed.
      */
     private var guestSearchQuery: String?
         get() = savedState[KEY_GUEST_SEARCH_QUERY]
@@ -210,7 +226,16 @@ class OrderListViewModel @Inject constructor(
             )
         }.asLiveData()
 
-    fun isSelecting() = viewState.orderListState == ViewState.OrderListState.Selecting
+    fun isSelecting() = selectedOrderIds.value.isNotEmpty()
+
+    internal fun onOrderActivated(orderId: Long): OrderActivation {
+        return if (isSelecting()) {
+            toggleOrderSelection(orderId)
+            OrderActivation.SELECTION_CHANGED
+        } else {
+            OrderActivation.OPEN_DETAIL
+        }
+    }
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -224,7 +249,7 @@ class OrderListViewModel @Inject constructor(
             // value in many different places in the order list view.
             _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
 
-            _emptyViewType.postValue(EmptyViewType.ORDER_LIST_LOADING)
+            _emptyViewType.value = EmptyViewType.ORDER_LIST_LOADING
             if (selectedSite.exists()) {
                 loadOrders()
             } else {
@@ -247,10 +272,21 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
+        if (viewState.isSearching) {
+            cancelPendingSearch()
+            if (viewState.searchQuery.length < MIN_SEARCH_QUERY_LENGTH) {
+                clearOrderListPresentation()
+                return
+            }
+            executeSearch(viewState.searchQuery, shouldTrackSearch = false)
+            return
+        }
+
         val listDescriptor = getWCOrderListDescriptorWithFilters()
         // When filters haven't changed (e.g. returning from order detail), avoid recreating the
         // PagedListWrapper — clearing/re-binding its LiveData sources causes the list to flash.
         if (listDescriptor == activeWCOrderListDescriptor && ordersPagedListWrapper != null) {
+            restoreClearedOrderListPresentation()
             launch {
                 if (shouldUpdateOrdersList(listDescriptor)) {
                     fetchOrdersAndOrderDependencies()
@@ -259,13 +295,14 @@ class OrderListViewModel @Inject constructor(
             return
         }
         activeWCOrderListDescriptor = listDescriptor
-        ordersPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        ordersPagedListWrapper = pagedListWrapper
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
         )
         activatePagedListWrapper(
-            pagedListWrapper = ordersPagedListWrapper!!,
+            pagedListWrapper = pagedListWrapper,
             shouldRetry = true
         )
         val listId = listDescriptor.uniqueIdentifier.value
@@ -282,11 +319,82 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Creates and activates a new list with the search and filter params provided. This should only be used
-     * by the search component portion of the order list view.
-     */
-    fun submitSearchOrFilter(searchQuery: String, searchGuestOrders: Boolean = false) {
+    private fun restoreClearedOrderListPresentation() {
+        isOrderListPresentationSuppressed = false
+        if (_pagedListData.value != null) return
+
+        ordersPagedListWrapper?.let { wrapper ->
+            wrapper.data.value?.let { _pagedListData.value = it }
+            createAndPostEmptyViewType(wrapper)
+        }
+    }
+
+    fun onSearchOpened() {
+        if (viewState.isSearching) return
+
+        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
+        viewState = viewState.copy(isSearching = true)
+        clearOrderListPresentation()
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        if (!viewState.isSearching) return
+
+        if (query.isEmpty()) {
+            onSearchCleared()
+            return
+        }
+
+        viewState = viewState.copy(searchQuery = query)
+        cancelPendingSearch()
+        if (query.length < MIN_SEARCH_QUERY_LENGTH) {
+            clearOrderListPresentation()
+            return
+        }
+
+        searchJob = launch {
+            delay(AppConstants.SEARCH_TYPING_DELAY_MS)
+            if (viewState.isSearching && viewState.searchQuery == query) {
+                executeSearch(query, shouldTrackSearch = true)
+            }
+        }
+    }
+
+    fun onSearchSubmitted(query: String) {
+        if (!viewState.isSearching) return
+
+        cancelPendingSearch()
+        viewState = viewState.copy(searchQuery = query)
+        if (query.isEmpty()) {
+            onSearchCleared()
+        } else {
+            executeSearch(query, shouldTrackSearch = true)
+        }
+    }
+
+    fun onSearchCleared() {
+        cancelPendingSearch()
+        guestSearchQuery = null
+        viewState = viewState.copy(searchQuery = "")
+        loadOrders()
+    }
+
+    fun onSearchClosed() {
+        cancelPendingSearch()
+        guestSearchQuery = null
+        viewState = viewState.copy(
+            isSearching = false,
+            searchQuery = ""
+        )
+        loadOrders()
+    }
+
+    private fun executeSearch(
+        searchQuery: String,
+        searchGuestOrders: Boolean = false,
+        shouldTrackSearch: Boolean
+    ) {
+        clearOrderListPresentation()
         val sanitizedQuery = sanitizeSearchQuery(searchQuery)
         val isGuestSearch = searchGuestOrders || sanitizedQuery == guestSearchQuery
         guestSearchQuery = sanitizedQuery.takeIf { isGuestSearch }
@@ -297,6 +405,23 @@ class OrderListViewModel @Inject constructor(
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+        if (shouldTrackSearch) {
+            analyticsTracker.track(
+                AnalyticsEvent.ORDERS_LIST_SEARCH,
+                mapOf(AnalyticsTracker.KEY_SEARCH to searchQuery)
+            )
+        }
+    }
+
+    private fun cancelPendingSearch() {
+        searchJob?.cancel()
+        searchJob = null
+    }
+
+    private fun clearOrderListPresentation() {
+        isOrderListPresentationSuppressed = true
+        _pagedListData.value = null
+        _emptyViewType.value = null
     }
 
     /**
@@ -305,7 +430,12 @@ class OrderListViewModel @Inject constructor(
      * search as an explicit guest-orders filter instead.
      */
     fun onSearchGuestOrdersClicked() {
-        submitSearchOrFilter(searchQuery = searchQuery, searchGuestOrders = true)
+        cancelPendingSearch()
+        executeSearch(
+            searchQuery = viewState.searchQuery,
+            searchGuestOrders = true,
+            shouldTrackSearch = false
+        )
     }
 
     fun changeTroubleshootingBannerVisibility(show: Boolean) {
@@ -344,6 +474,11 @@ class OrderListViewModel @Inject constructor(
             viewState = viewState.copy(isRefreshPending = true, isErrorFetchingDataBannerVisible = false)
             showOfflineSnack()
         }
+    }
+
+    fun onPullToRefresh() {
+        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_PULLED_TO_REFRESH)
+        fetchOrdersAndOrderDependencies()
     }
 
     /**
@@ -452,6 +587,8 @@ class OrderListViewModel @Inject constructor(
         // This flag is used to ensure that we only retry the first time a timeout happens
         var noTimeoutHappened = true
 
+        isOrderListPresentationSuppressed = false
+
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
         clearLiveDataSources(this.activePagedListWrapper)
@@ -459,6 +596,8 @@ class OrderListViewModel @Inject constructor(
         listenToEmptyViewStateLiveData(pagedListWrapper)
 
         _pagedListData.addSource(pagedListWrapper.data) { pagedList ->
+            if (isOrderListPresentationSuppressed) return@addSource
+
             viewState = viewState.copy(isBulkUpdating = false)
             pagedList?.let {
                 displayOrdersBannerOrJitm()
@@ -558,19 +697,24 @@ class OrderListViewModel @Inject constructor(
         val isError = wrapper.listError.value != null
 
         viewModelScope.launch {
+            if (isOrderListPresentationSuppressed) {
+                _emptyViewType.postValue(null)
+                return@launch
+            }
+
             val newEmptyViewType: EmptyViewType? = if (isListEmpty) {
                 when {
                     isError -> EmptyViewType.NETWORK_ERROR
                     isLoadingData -> {
                         // don't show intermediate screen when loading search results
-                        if (isSearching) {
+                        if (viewState.isSearching) {
                             null
                         } else {
                             EmptyViewType.ORDER_LIST_LOADING
                         }
                     }
 
-                    isSearching && searchQuery.isNotEmpty() -> {
+                    viewState.isSearching && viewState.searchQuery.isNotEmpty() -> {
                         if (isGuestLabelSearch() && activeWCOrderListDescriptor?.customerId == null) {
                             EmptyViewType.SEARCH_RESULTS_GUEST
                         } else {
@@ -592,7 +736,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun isGuestLabelSearch(): Boolean =
-        searchQuery.trim().equals(
+        viewState.searchQuery.trim().equals(
             resourceProvider.getString(R.string.orderdetail_customer_name_default),
             ignoreCase = true
         )
@@ -618,7 +762,7 @@ class OrderListViewModel @Inject constructor(
         if (event.isConnected) {
             // Refresh data now that a connection is active if needed
             if (viewState.isRefreshPending) {
-                if (isSearching) {
+                if (viewState.isSearching) {
                     activePagedListWrapper?.fetchFirstPage()
                 }
                 ordersPagedListWrapper?.fetchFirstPage()
@@ -627,7 +771,7 @@ class OrderListViewModel @Inject constructor(
             // Invalidate the list data so that orders that have not
             // yet been downloaded (the "loading" items) can be removed
             // from the current list view.
-            if (isSearching) {
+            if (viewState.isSearching) {
                 activePagedListWrapper?.invalidateData()
             }
             ordersPagedListWrapper?.invalidateData()
@@ -637,7 +781,7 @@ class OrderListViewModel @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = MAIN)
     fun onNotificationReceived(event: NotificationReceivedEvent) {
-        if (event.channel == NotificationChannelType.NEW_ORDER && isSearching) {
+        if (event.channel == NotificationChannelType.NEW_ORDER && viewState.isSearching) {
             activePagedListWrapper?.fetchFirstPage()
         }
     }
@@ -688,37 +832,35 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(ShowOrderFilters)
     }
 
-    fun onSearchClosed() {
-        guestSearchQuery = null
-        loadOrders()
-    }
-
-    private fun updateOrderDisplayedStatus(position: Int, status: String) {
-        val pagedList = _pagedListData.value ?: return
-        (pagedList[position] as OrderListItemUIType.OrderListItemUI).status = status
-        triggerEvent(OrderListEvent.NotifyOrderChanged(position))
-    }
-
-    fun updateOrderSelectedStatus(orderId: Long, isTablet: Boolean = true) {
-        val pagedList = _pagedListData.value ?: return
-        if (isTablet) {
-            pagedList.map { orderItem ->
-                if (orderItem is OrderListItemUIType.OrderListItemUI) {
-                    orderItem.isSelected = orderItem.orderId == orderId
-                }
-            }
-        } else {
-            pagedList.map { orderItem ->
-                if (orderItem is OrderListItemUIType.OrderListItemUI) {
-                    orderItem.isSelected = false
-                }
-            }
-        }
-        triggerEvent(OrderListEvent.NotifyOrderSelectionChanged)
+    private fun updateOrderDisplayedStatus(orderId: Long, status: String) {
+        val order = _pagedListData.value
+            ?.firstOrNull { item ->
+                item is OrderListItemUIType.OrderListItemUI && item.orderId == orderId
+            } as? OrderListItemUIType.OrderListItemUI
+            ?: return
+        order.status = status
+        _orderListContentRevision.value += 1
     }
 
     fun clearOrderId() {
         savedState["orderId"] = -1L
+    }
+
+    fun onSwipeToComplete(orderId: Long) {
+        if (isSelecting()) return
+
+        val order = _pagedListData.value
+            ?.snapshot()
+            ?.filterIsInstance<OrderListItemUIType.OrderListItemUI>()
+            ?.firstOrNull { it.orderId == orderId }
+            ?: return
+
+        onSwipeStatusUpdate(
+            OrderStatusUpdateSource.SwipeToCompleteGesture(
+                orderId = order.orderId,
+                oldStatus = order.status,
+            )
+        )
     }
 
     fun onSwipeStatusUpdate(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
@@ -752,7 +894,7 @@ class OrderListViewModel @Inject constructor(
             }
         }
 
-        updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.newStatus)
+        updateOrderDisplayedStatus(gestureSource.orderId, gestureSource.newStatus)
         triggerEvent(
             Event.ShowUndoSnackbar(
                 message = resourceProvider.getString(
@@ -766,7 +908,6 @@ class OrderListViewModel @Inject constructor(
     }
 
     private fun swipeStatusUpdateFails(gestureSource: OrderStatusUpdateSource.SwipeToCompleteGesture) {
-        triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
         triggerEvent(
             OrderListEvent.ShowRetryErrorSnack(
                 message = resourceProvider.getString(
@@ -784,10 +925,9 @@ class OrderListViewModel @Inject constructor(
             orderId = gestureSource.orderId,
             status = gestureSource.oldStatus,
             onOptimisticSuccess = {
-                updateOrderDisplayedStatus(gestureSource.orderPosition, gestureSource.oldStatus)
+                updateOrderDisplayedStatus(gestureSource.orderId, gestureSource.oldStatus)
             },
             onFail = {
-                triggerEvent(OrderListEvent.NotifyOrderChanged(gestureSource.orderPosition))
                 triggerEvent(
                     OrderListEvent.ShowRetryErrorSnack(
                         message = resourceProvider.getString(
@@ -903,7 +1043,10 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(
             Event.ShowUndoSnackbar(
                 message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
-                undoAction = { cancelExcludingOrder() },
+                undoAction = {
+                    viewState = viewState.copy(restoredOrderIdPendingReveal = orderId)
+                    cancelExcludingOrder()
+                },
                 dismissAction = object : Snackbar.Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                         if (event != DISMISS_EVENT_ACTION) {
@@ -915,16 +1058,52 @@ class OrderListViewModel @Inject constructor(
         )
     }
 
-    fun onSelectionChanged(count: Int) {
-        when {
-            count == 0 -> exitSelectionMode()
-            count >= BULK_UPDATE_COUNT_LIMIT -> {
-                viewState = viewState.copy(selectionCount = count)
-                showMaximumBulkSelectionNotice()
-            }
+    fun onRestoredOrderRevealHandled(orderId: Long) {
+        if (viewState.restoredOrderIdPendingReveal != orderId) return
 
-            count > 0 && !isSelecting() -> enterSelectionMode(count)
-            count > 0 -> viewState = viewState.copy(selectionCount = count)
+        viewState = viewState.copy(restoredOrderIdPendingReveal = null)
+    }
+
+    fun onOrderLongPressed(orderId: Long): Boolean {
+        if (orderId in selectedOrderIds.value) return true
+
+        return selectOrder(orderId)
+    }
+
+    fun toggleOrderSelection(orderId: Long): Boolean {
+        if (orderId !in selectedOrderIds.value) {
+            return selectOrder(orderId)
+        }
+
+        updateSelectedOrderIds(selectedOrderIds.value - orderId)
+        return true
+    }
+
+    fun clearOrderSelection() {
+        updateSelectedOrderIds(emptySet())
+    }
+
+    private fun selectOrder(orderId: Long): Boolean {
+        if (selectedOrderIds.value.size >= BULK_UPDATE_COUNT_LIMIT) return false
+
+        val updatedOrderIds = LinkedHashSet(selectedOrderIds.value).apply {
+            add(orderId)
+        }
+        updateSelectedOrderIds(updatedOrderIds)
+        if (updatedOrderIds.size == BULK_UPDATE_COUNT_LIMIT) {
+            showMaximumBulkSelectionNotice()
+        }
+        return true
+    }
+
+    private fun updateSelectedOrderIds(orderIds: Collection<Long>) {
+        val updatedOrderIds = LinkedHashSet(orderIds)
+        val wasSelecting = isSelecting()
+        if (updatedOrderIds == selectedOrderIds.value) return
+
+        savedSelectedOrderIds.value = updatedOrderIds
+        if (!wasSelecting && updatedOrderIds.isNotEmpty()) {
+            analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SELECTION_ENABLED)
         }
     }
 
@@ -936,29 +1115,16 @@ class OrderListViewModel @Inject constructor(
         triggerEvent(OrderListEvent.ShowSnackbarString(message))
     }
 
-    private fun enterSelectionMode(count: Int) {
-        analyticsTracker.track(AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SELECTION_ENABLED)
-        viewState = viewState.copy(
-            orderListState = ViewState.OrderListState.Selecting,
-            selectionCount = count,
-            isAddOrderButtonVisible = false
-        )
-    }
-
-    private fun exitSelectionMode() {
-        viewState = viewState.copy(
-            orderListState = ViewState.OrderListState.Browsing,
-            selectionCount = null,
-            isAddOrderButtonVisible = true
-        )
-    }
-
     fun onBulkUpdateStatusClicked() {
+        val orderIds = selectedOrderIds.value
+        if (orderIds.isEmpty()) return
+
+        pendingBulkUpdateOrderIds.value = LinkedHashSet(orderIds)
         analyticsTracker.track(
             AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
                 AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+                AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to orderIds.size
             )
         )
 
@@ -976,7 +1142,9 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun onBulkOrderStatusChanged(orderIds: List<Long>, newStatus: Order.Status) {
+    fun onBulkOrderStatusChanged(newStatus: Order.Status) {
+        val orderIds = pendingBulkUpdateOrderIds.value.toList()
+        pendingBulkUpdateOrderIds.value = linkedSetOf()
         if (networkStatus.isConnected()) {
             if (orderIds.isEmpty()) {
                 val errorMessage = "Trying to bulk update order status but order Ids list is empty"
@@ -991,7 +1159,7 @@ class OrderListViewModel @Inject constructor(
                     AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_CONFIRMED,
                     mapOf(
                         AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                        AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to viewState.selectionCount
+                        AnalyticsTracker.KEY_SELECTED_ORDERS_COUNT to orderIds.size
                     )
                 )
 
@@ -1009,7 +1177,7 @@ class OrderListViewModel @Inject constructor(
             trackBulkOrderUpdateFailure()
             triggerEvent(Event.ShowSnackbar(R.string.offline_error))
         }
-        exitSelectionMode()
+        clearOrderSelection()
     }
 
     private fun handleBulkUpdateResult(result: BulkUpdateOrderResult) {
@@ -1100,10 +1268,6 @@ class OrderListViewModel @Inject constructor(
             val retry: View.OnClickListener
         ) : OrderListEvent()
 
-        data class NotifyOrderChanged(val position: Int) : OrderListEvent()
-
-        object NotifyOrderSelectionChanged : OrderListEvent()
-
         object OpenBarcodeScanningFragment : OrderListEvent()
 
         data class OnBarcodeScanned(
@@ -1144,6 +1308,11 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    internal enum class OrderActivation {
+        OPEN_DETAIL,
+        SELECTION_CHANGED,
+    }
+
     @Parcelize
     data class ViewState(
         val isRefreshPending: Boolean = false,
@@ -1152,18 +1321,12 @@ class OrderListViewModel @Inject constructor(
         val jitmEnabled: Boolean = false,
         val isErrorFetchingDataBannerVisible: Boolean = false,
         val shouldDisplayTroubleshootingBanner: Boolean = false,
-        val orderListState: OrderListState? = null,
         val isSearching: Boolean = false,
+        val searchQuery: String = "",
         val isBulkUpdating: Boolean = false,
-        val selectionCount: Int? = null,
-        val isAddOrderButtonVisible: Boolean = true
+        val restoredOrderIdPendingReveal: Long? = null,
     ) : Parcelable {
         @IgnoredOnParcel
-        val isBottomNavBarVisible = !isSearching && orderListState != OrderListState.Selecting
-
-        @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
-
-        enum class OrderListState { Selecting, Browsing }
     }
 }

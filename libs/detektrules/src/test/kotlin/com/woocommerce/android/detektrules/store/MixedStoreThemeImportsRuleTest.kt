@@ -151,4 +151,32 @@ class MixedStoreThemeImportsRuleTest {
 
         assertThat(findings).isEmpty()
     }
+
+    @Test
+    fun `given a legacy theme file imports the design system R class, when linting, then no violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import com.woocommerce.android.ui.compose.theme.WooTheme
+            import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
+        """.trimIndent()
+
+        val findings = MixedStoreThemeImportsRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).isEmpty()
+    }
+
+    @Test
+    fun `given a lookalike design system R class, when linting, then one violation is reported`() {
+        val code = """
+            package com.woocommerce.android.ui.orders
+
+            import com.woocommerce.android.ui.compose.theme.WooTheme
+            import com.woocommerce.android.ui.compose.designsystem.Rounded
+        """.trimIndent()
+
+        val findings = MixedStoreThemeImportsRule(Config.empty).compileAndLint(code)
+
+        assertThat(findings).hasSize(1)
+    }
 }

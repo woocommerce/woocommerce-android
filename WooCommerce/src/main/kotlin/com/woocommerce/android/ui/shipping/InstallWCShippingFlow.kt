@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.InstallationOngoing
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel.ViewState.InstallationState.PreInstallation
@@ -377,7 +377,7 @@ private fun InstallationLoadingIndicator(showLoadingIndicator: Boolean, modifier
 @Composable
 @Suppress("UnusedContentLambdaTargetStateParameter")
 private fun PreInstallationPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AnimatedContent(targetState = Unit, label = "") {
             InstallWCShippingFlow(
                 viewState = PreInstallation(
@@ -397,7 +397,7 @@ private fun PreInstallationPreview() {
 @Composable
 @Suppress("UnusedContentLambdaTargetStateParameter")
 private fun InstallationOngoingPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AnimatedContent(targetState = Unit, label = "") {
             InstallationContent(
                 viewState = InstallationOngoing(

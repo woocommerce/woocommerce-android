@@ -74,16 +74,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <!--
-        Bottom Bar Style
-    -->
-    <style name="Widget.Woo.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="android:background">?attr/colorSurface</item>
-        <item name="itemIconTint">@color/button_toggle_fg_selector</item>
-        <item name="itemTextColor">@color/button_toggle_fg_selector</item>
-        <item name="android:elevation">@dimen/plane_08</item>
-    </style>
-
-    <!--
         TabLayout Styles
     -->
     <style name="Woo.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">

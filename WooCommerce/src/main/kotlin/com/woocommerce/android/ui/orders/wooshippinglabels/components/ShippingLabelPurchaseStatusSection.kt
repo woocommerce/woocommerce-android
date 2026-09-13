@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.LabelPurchaseStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.WooShippingLabelPaperSize
@@ -362,7 +362,7 @@ private fun ReprintWarning(
 @LightDarkThemePreviews
 @Composable
 private fun PurchaseInProgressPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
         ShippingLabelPurchaseStatusSection(
             labelPurchaseStatus = LabelPurchaseStatus.PurchaseInProgress,
@@ -382,7 +382,7 @@ private fun PurchaseInProgressPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun PurchasedPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.A4) }
         ShippingLabelPurchaseStatusSection(
             labelPurchaseStatus = LabelPurchaseStatus.Purchased(
@@ -406,7 +406,7 @@ private fun PurchasedPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun FailurePreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ShippingLabelPurchaseStatusSection(
             labelPurchaseStatus = LabelPurchaseStatus.Failed("An error occurred while purchasing the label."),
             selectedLabelPaperSizeOption = WooShippingLabelPaperSize.A4,

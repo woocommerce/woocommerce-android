@@ -33,7 +33,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory
 
 @Composable
@@ -192,7 +192,7 @@ fun HazmatCategoryEditingSection(
 @Preview("Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingLabelHazmatFormScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = false,
             selectedHazmatCategory = null,
@@ -210,7 +210,7 @@ fun WooShippingLabelHazmatFormScreenPreview() {
 @Preview("Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun WooShippingLabelHazmatFormScreenWithSelectionPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WooShippingLabelHazmatFormScreen(
             containsHazmatChecked = true,
             selectedHazmatCategory = ShippingLabelHazmatCategory.CLASS_1,

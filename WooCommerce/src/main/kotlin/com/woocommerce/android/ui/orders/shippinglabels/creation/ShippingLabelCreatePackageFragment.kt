@@ -20,6 +20,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.woocommerce.android.ui.compose.designsystem.R as DesignSystemR
 
 @AndroidEntryPoint
 class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shipping_label_create_package) {
@@ -49,7 +50,7 @@ class ShippingLabelCreatePackageFragment : BaseFragment(R.layout.fragment_shippi
         binding.toolbar.title = getString(R.string.shipping_label_create_package_title)
         binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
             requireActivity(),
-            R.drawable.ic_back_24dp
+            DesignSystemR.drawable.woo_ds_ic_regular_arrow_left_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()

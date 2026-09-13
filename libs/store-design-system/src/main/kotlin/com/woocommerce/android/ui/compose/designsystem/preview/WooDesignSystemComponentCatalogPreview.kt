@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -46,17 +46,17 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooFilledTonalButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconButtonDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooIconContainerDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooModalBottomSheet
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBanner
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooNoticeBannerTone
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
 import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedIconButtonDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeader
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderDemo
-import com.woocommerce.android.ui.compose.designsystem.component.WooPageHeaderInteractiveDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooProgressIndicatorDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchField
 import com.woocommerce.android.ui.compose.designsystem.component.WooSearchFieldDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControl
+import com.woocommerce.android.ui.compose.designsystem.component.WooSegmentControlDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooSettingsRowDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchDemo
@@ -64,9 +64,12 @@ import com.woocommerce.android.ui.compose.designsystem.component.WooSwitchSettin
 import com.woocommerce.android.ui.compose.designsystem.component.WooTab
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabRow
 import com.woocommerce.android.ui.compose.designsystem.component.WooTabsDemo
+import com.woocommerce.android.ui.compose.designsystem.component.WooTooltipDemo
 import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBar
+import com.woocommerce.android.ui.compose.designsystem.component.WooTopAppBarSize
+import com.woocommerce.android.ui.compose.designsystem.component.rememberWooModalBottomSheetState
 import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
-import com.woocommerce.android.ui.compose.designsystem.icons.AngleLeft
+import com.woocommerce.android.ui.compose.designsystem.icons.ArrowLeft
 import com.woocommerce.android.ui.compose.designsystem.icons.ArrowUpRight
 import com.woocommerce.android.ui.compose.designsystem.icons.CircleInfo
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
@@ -125,12 +128,12 @@ private fun WooDesignSystemComponentCatalogRtlPreview() {
     }
 }
 
-@Preview(name = "Page header interactive", showBackground = true)
+@Preview(name = "Top app header", showBackground = true)
 @Composable
-private fun WooPageHeaderCatalogPreview() {
+private fun WooTopAppBarCatalogPreview() {
     WooDesignSystemPreviewTheme {
         WooDesignSystemComponentCatalogScreen(
-            initialPath = PRODUCTION_PAGE_HEADER_PATH,
+            initialPath = PRODUCTION_TOP_APP_HEADER_PATH,
             onBackClick = {},
             registerBackHandler = false,
         )
@@ -138,6 +141,7 @@ private fun WooPageHeaderCatalogPreview() {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun WooDesignSystemComponentCatalogScreen(
     initialPath: String,
     onBackClick: () -> Unit,
@@ -171,7 +175,7 @@ fun WooDesignSystemComponentCatalogScreen(
             topBar = {
                 WooTopAppBar(
                     title = selectedNode.title,
-                    navigationIcon = WooIcons.Regular.AngleLeft,
+                    navigationIcon = WooIcons.Regular.ArrowLeft,
                     navigationIconContentDescription = "Back",
                     onNavigationClick = ::navigateBack,
                     windowInsets = WindowInsets(0),
@@ -282,7 +286,7 @@ private val CatalogRoot = CatalogNode.Group(
                 CatalogNode.Leaf(
                     path = "production/badges",
                     title = "Badges",
-                    description = "Status tones and icon-leading variants.",
+                    description = "Semantic tones, custom colors, and icon-leading variants.",
                     content = { ProductionBadgesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
@@ -292,10 +296,10 @@ private val CatalogRoot = CatalogNode.Group(
                     content = { ProductionChoicesCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
-                    path = PRODUCTION_PAGE_HEADER_PATH,
-                    title = "Page header",
-                    description = "Fixed and interactive collapsible treatments.",
-                    content = { ProductionPageHeaderCatalogLeaf() },
+                    path = PRODUCTION_TOP_APP_HEADER_PATH,
+                    title = "Top app header",
+                    description = "Small and medium app-bar treatments.",
+                    content = { ProductionTopAppHeaderCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
                     path = "production/rows-cells",
@@ -308,6 +312,12 @@ private val CatalogRoot = CatalogNode.Group(
                     title = "Notices",
                     description = "Success, warning, and neutral outlined banners.",
                     content = { ProductionNoticesCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = "production/tooltips",
+                    title = "Tooltips",
+                    description = "Contextual labels with directional arrow placements.",
+                    content = { ProductionTooltipsCatalogLeaf() },
                 ),
                 CatalogNode.Leaf(
                     path = "production/search-tabs",
@@ -333,6 +343,18 @@ private val CatalogRoot = CatalogNode.Group(
                     description = "View toolbar bridge for XML-hosted screens.",
                     content = { ProductionXmlToolbarCatalogLeaf() },
                 ),
+                CatalogNode.Leaf(
+                    path = PRODUCTION_SEGMENT_CONTROL_PATH,
+                    title = "Segment control",
+                    description = "Controlled label-only selection for two to five options.",
+                    content = { ProductionSegmentControlCatalogLeaf() },
+                ),
+                CatalogNode.Leaf(
+                    path = "production/modal-bottom-sheet",
+                    title = "Modal bottom sheet",
+                    description = "Woo styling over Material-owned modal behavior.",
+                    content = { ProductionModalBottomSheetCatalogLeaf() },
+                ),
             ),
         ),
         CatalogNode.Group(
@@ -340,18 +362,6 @@ private val CatalogRoot = CatalogNode.Group(
             title = "Preview-only components",
             description = "Exploratory components that are not runtime-ready primitives.",
             children = listOf(
-                CatalogNode.Leaf(
-                    path = PREVIEW_SEGMENT_CONTROL_PATH,
-                    title = "Segment control",
-                    description = "Source in progress.",
-                    content = { PreviewOnlySegmentControlCatalogLeaf() },
-                ),
-                CatalogNode.Leaf(
-                    path = "preview/sheets",
-                    title = "Sheets",
-                    description = "Modal and navigation ownership.",
-                    content = { PreviewOnlySheetsCatalogLeaf() },
-                ),
                 CatalogNode.Leaf(
                     path = "preview/bottom-tab-bar",
                     title = "Bottom tab bar",
@@ -422,22 +432,36 @@ private fun ProductionChoicesCatalogLeaf() {
 }
 
 @Composable
-private fun ProductionPageHeaderCatalogLeaf() {
-    CatalogSection("Page header") {
+private fun ProductionTopAppHeaderCatalogLeaf() {
+    CatalogSection("Top app header") {
         CatalogBodyText(
-            text = "Fixed",
+            text = "Small",
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
         )
-        WooPageHeaderDemo()
+        WooTopAppBar(
+            title = "Store settings",
+            navigationIcon = WooIcons.Regular.ArrowLeft,
+            navigationIconContentDescription = "Back",
+            onNavigationClick = {},
+            windowInsets = WindowInsets(0),
+            actions = {
+                IconAction(
+                    imageVector = WooIcons.Regular.ArrowUpRight,
+                    contentDescription = "Open",
+                    onClick = {},
+                )
+            },
+        )
         CatalogBodyText(
-            text = "Collapsible — scroll inside the sample to collapse the header, then scroll back to expand it. " +
-                "Call scrollBehavior.expand() for programmatic expansion.",
+            text = "Medium — provide WooTopAppBarDefaults.exitUntilCollapsedScrollBehavior() " +
+                "to collapse it with the scrolling content.",
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
         )
-        WooPageHeaderInteractiveDemo(
-            modifier = Modifier
-                .padding(horizontal = WooTheme.padding.padding5)
-                .height(PAGE_HEADER_DEMO_HEIGHT),
+        WooTopAppBar(
+            title = "Products",
+            supportingText = "12 products",
+            size = WooTopAppBarSize.Medium,
+            windowInsets = WindowInsets(0),
         )
     }
 }
@@ -457,6 +481,15 @@ private fun ProductionRowsCellsCatalogLeaf() {
 private fun ProductionNoticesCatalogLeaf() {
     CatalogSection("Notice banners") {
         WooNoticeBannerDemo(
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5)
+        )
+    }
+}
+
+@Composable
+private fun ProductionTooltipsCatalogLeaf() {
+    CatalogSection("Tooltips") {
+        WooTooltipDemo(
             modifier = Modifier.padding(horizontal = WooTheme.padding.padding5)
         )
     }
@@ -496,16 +529,52 @@ private fun ProductionXmlToolbarCatalogLeaf() {
 }
 
 @Composable
-private fun PreviewOnlySegmentControlCatalogLeaf() {
+private fun ProductionSegmentControlCatalogLeaf() {
     CatalogSection("Segment control") {
-        PreviewOnlySegmentControlSample(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+        WooSegmentControlDemo(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+        WooSegmentControl(
+            options = listOf("Net sales", "Orders", "Visitors"),
+            selectedIndex = 1,
+            onSelectedIndexChange = {},
+            enabled = false,
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
     }
 }
 
 @Composable
-private fun PreviewOnlySheetsCatalogLeaf() {
-    CatalogSection("Sheets") {
-        PreviewOnlySheetSample(modifier = Modifier.padding(horizontal = WooTheme.padding.padding5))
+private fun ProductionModalBottomSheetCatalogLeaf() {
+    var showSheet by rememberSaveable { mutableStateOf(false) }
+    val sheetState = rememberWooModalBottomSheetState()
+
+    CatalogSection("Modal bottom sheet") {
+        WooFilledButton(
+            text = "Show sheet",
+            onClick = { showSheet = true },
+            modifier = Modifier.padding(horizontal = WooTheme.padding.padding5),
+        )
+    }
+    if (showSheet) {
+        WooModalBottomSheet(
+            state = sheetState,
+            onDismissRequest = { showSheet = false },
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooTheme.padding.padding7, vertical = WooTheme.padding.padding5),
+                verticalArrangement = Arrangement.spacedBy(WooTheme.spacing.space3),
+            ) {
+                Text(
+                    text = "Production sheet",
+                    style = WooTheme.text.titleLarge.strong,
+                )
+                Text(
+                    text = "The caller owns visibility, state, dismissal, and content.",
+                    style = WooTheme.text.bodyLarge.regular,
+                )
+            }
+        }
     }
 }
 
@@ -526,7 +595,7 @@ private fun PreviewOnlyTableCatalogLeaf() {
 @Composable
 private fun SensitiveComponentPreviewContent() {
     PrivacyIntro(title = "Large font page title")
-    WooPageHeader(title = "Products")
+    WooTopAppBar(title = "Products")
     WooFilledButton(
         text = "Filled action",
         onClick = {},
@@ -738,9 +807,8 @@ private fun CatalogLinkText(text: String) {
 
 private const val ROOT_PATH = ""
 private const val PRODUCTION_BUTTONS_PATH = "production/buttons"
-private const val PRODUCTION_PAGE_HEADER_PATH = "production/page-header"
-private const val PREVIEW_SEGMENT_CONTROL_PATH = "preview/segment-control"
+private const val PRODUCTION_TOP_APP_HEADER_PATH = "production/top-app-header"
+private const val PRODUCTION_SEGMENT_CONTROL_PATH = "production/segment-control"
 private const val STRESS_LARGE_FONT_PATH = "stress/large-font"
 private const val STRESS_LONG_TEXT_PATH = "stress/long-text"
 private const val STRESS_RTL_PATH = "stress/rtl"
-private val PAGE_HEADER_DEMO_HEIGHT = 360.dp

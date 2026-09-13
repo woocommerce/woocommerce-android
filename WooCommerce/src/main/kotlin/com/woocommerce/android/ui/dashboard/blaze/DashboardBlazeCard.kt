@@ -10,9 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -20,11 +19,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -40,13 +38,13 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -193,14 +191,13 @@ fun DashboardBlazeView(
                         onCampaignClicked = state.onCampaignClicked,
                     )
 
-                    WCOutlinedButton(
+                    WooOutlinedButton(
+                        text = stringResource(string.blaze_campaign_create_campaign_button),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = dimensionResource(id = R.dimen.minor_100)),
                         onClick = state.onCreateCampaignClicked,
-                    ) {
-                        Text(stringResource(string.blaze_campaign_create_campaign_button))
-                    }
+                    )
                 }
 
                 is DashboardBlazeCampaignState.NoCampaign -> {
@@ -209,7 +206,8 @@ fun DashboardBlazeView(
                             end = dimensionResource(id = R.dimen.major_300)
                         ),
                         text = stringResource(id = string.blaze_campaign_subtitle),
-                        style = MaterialTheme.typography.body1,
+                        style = WooTheme.text.bodyLarge.regular,
+                        color = WooTheme.colors.surface.onDefault,
                     )
                     BlazeProductItem(
                         product = state.product,
@@ -217,7 +215,8 @@ fun DashboardBlazeView(
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
-                    WCOutlinedButton(
+                    WooOutlinedButton(
+                        text = stringResource(string.blaze_campaign_create_campaign_button),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
@@ -225,9 +224,7 @@ fun DashboardBlazeView(
                                 bottom = dimensionResource(id = R.dimen.major_100)
                             ),
                         onClick = state.onCreateCampaignClicked,
-                    ) {
-                        Text(stringResource(string.blaze_campaign_create_campaign_button))
-                    }
+                    )
                 }
 
                 else -> error("Invalid state")
@@ -245,13 +242,13 @@ fun BlazeProductItem(
     Box(
         modifier = modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
-                color = colorResource(R.color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                width = WooTheme.stroke.regular,
+                color = WooTheme.colors.outlineVariant,
+                shape = RoundedCornerShape(WooTheme.radius.medium),
             )
-            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .clip(shape = RoundedCornerShape(WooTheme.radius.medium))
             .clickable { onProductSelected() }
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .padding(WooTheme.padding.padding5)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProductThumbnail(imageUrl = product.imgUrl)
@@ -264,18 +261,19 @@ fun BlazeProductItem(
                     modifier = Modifier
                         .padding(bottom = dimensionResource(id = R.dimen.minor_50)),
                     text = stringResource(id = R.string.blaze_campaign_suggested_product_caption),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(R.color.color_on_surface_medium)
+                    style = WooTheme.text.bodySmall.regular,
+                    color = WooTheme.colors.surface.onDefault,
                 )
                 Text(
                     text = product.name,
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold
+                    style = WooTheme.text.titleMedium.strong,
+                    color = WooTheme.colors.surface.onDefault,
                 )
             }
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_right),
-                contentDescription = null
+                contentDescription = null,
+                tint = WooTheme.colors.surface.onVariant,
             )
         }
     }
@@ -288,25 +286,25 @@ private fun BlazeCampaignLoading(
     Box(
         modifier = modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
-                color = colorResource(R.color.divider_color),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+                width = WooTheme.stroke.regular,
+                color = WooTheme.colors.outlineVariant,
+                shape = RoundedCornerShape(WooTheme.radius.medium),
             )
-            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-            .padding(dimensionResource(id = R.dimen.major_100))
+            .clip(shape = RoundedCornerShape(WooTheme.radius.medium))
+            .padding(WooTheme.padding.padding5)
     ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                SkeletonView(
+                DashboardSkeleton(
                     width = dimensionResource(id = R.dimen.major_275),
                     height = dimensionResource(id = R.dimen.major_275)
                 )
 
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
 
-                SkeletonView(
+                DashboardSkeleton(
                     width = dimensionResource(id = R.dimen.skeleton_text_large_width),
                     height = dimensionResource(id = R.dimen.skeleton_text_height_100),
                 )
@@ -317,13 +315,13 @@ private fun BlazeCampaignLoading(
             ) {
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_275)))
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-                SkeletonView(
+                DashboardSkeleton(
                     width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
                     height = dimensionResource(id = R.dimen.skeleton_text_height_100),
                 )
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
 
-                SkeletonView(
+                DashboardSkeleton(
                     width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
                     height = dimensionResource(id = R.dimen.skeleton_text_height_100),
                 )
@@ -332,9 +330,13 @@ private fun BlazeCampaignLoading(
     }
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
-fun MyStoreBlazeViewCampaignPreview() {
+fun MyStoreBlazeViewCampaignPreview() =
+    WooDesignSystemThemeWithBackground { MyStoreBlazeViewCampaignPreviewContent() }
+
+@Composable
+private fun MyStoreBlazeViewCampaignPreviewContent() {
     val product = BlazeProductUi(
         name = "Product name",
         imgUrl = "",
@@ -369,9 +371,13 @@ fun MyStoreBlazeViewCampaignPreview() {
     )
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
-fun MyStoreBlazeViewNoCampaignPreview() {
+fun MyStoreBlazeViewNoCampaignPreview() =
+    WooDesignSystemThemeWithBackground { MyStoreBlazeViewNoCampaignPreviewContent() }
+
+@Composable
+private fun MyStoreBlazeViewNoCampaignPreviewContent() {
     DashboardBlazeView(
         state = DashboardBlazeCampaignState.NoCampaign(
             product = BlazeProductUi(
@@ -393,10 +399,10 @@ fun MyStoreBlazeViewNoCampaignPreview() {
     )
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
 fun DashboardBlazeLoadingPreview() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         DashboardBlazeView(
             state = DashboardBlazeCampaignState.Loading,
             onContactSupportClicked = {},

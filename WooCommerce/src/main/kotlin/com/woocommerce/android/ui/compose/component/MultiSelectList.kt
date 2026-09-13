@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -28,7 +30,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun <T> MultiSelectList(
@@ -40,6 +42,7 @@ fun <T> MultiSelectList(
     itemFormatter: T.() -> String = { toString() },
     itemKey: ((T) -> Any)? = null,
     allItemsButton: MultiSelectAllItemsButton? = null,
+    listState: LazyListState = rememberLazyListState(),
 ) {
     Column(modifier = modifier) {
         allItemsButton?.let {
@@ -52,7 +55,7 @@ fun <T> MultiSelectList(
             Divider()
         }
 
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             items(items, key = itemKey) { item ->
                 MultiSelectItem(
                     item = itemFormatter(item),
@@ -123,7 +126,7 @@ data class MultiSelectAllItemsButton(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun MultiSelectListPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         val items by remember { mutableStateOf(List(20) { "Item $it" }) }
         var selectedItems by remember { mutableStateOf(emptyList<String>()) }
         val allItemsButton = rememberMultiSelectAllItemsButton(

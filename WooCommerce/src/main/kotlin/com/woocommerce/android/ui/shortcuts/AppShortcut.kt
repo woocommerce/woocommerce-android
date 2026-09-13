@@ -20,6 +20,6 @@ enum class AppShortcut(
         id = "create_order_dynamic",
         action = "com.woocommerce.android.ordercreation",
         label = R.string.orderlist_create_order_button_description,
-        icon = R.drawable.ic_menu_orders_list
+        icon = R.drawable.ic_shortcut_create_order
     )
 }

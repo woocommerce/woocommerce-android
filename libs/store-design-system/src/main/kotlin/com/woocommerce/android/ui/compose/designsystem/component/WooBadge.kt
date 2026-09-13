@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +34,21 @@ fun WooBadge(
     tone: WooBadgeTone = WooBadgeTone.Neutral,
     leadingIcon: (@Composable () -> Unit)? = null,
 ) {
-    val colors = tone.toBadgeColors()
+    WooBadge(
+        text = text,
+        colors = WooBadgeDefaults.colors(tone),
+        modifier = modifier,
+        leadingIcon = leadingIcon,
+    )
+}
 
+@Composable
+fun WooBadge(
+    text: String,
+    colors: WooBadgeColors,
+    modifier: Modifier = Modifier,
+    leadingIcon: (@Composable () -> Unit)? = null,
+) {
     Surface(
         modifier = modifier.heightIn(min = BADGE_MIN_HEIGHT),
         color = colors.containerColor,
@@ -91,6 +105,7 @@ internal fun WooBadgeDemo(
     ) {
         WooBadgeToneRows(leadingIcon = { BadgeLeadingIcon() })
         WooBadgeToneRows(leadingIcon = null)
+        WooBadgeCustomColorsRow()
     }
 }
 
@@ -116,6 +131,31 @@ private fun WooBadgeToneRows(
 }
 
 @Composable
+private fun WooBadgeCustomColorsRow() {
+    Row(horizontalArrangement = Arrangement.spacedBy(WooTheme.spacing.space2)) {
+        WooBadge(
+            text = "Custom fill",
+            colors = WooBadgeDefaults.colors(
+                containerColor = WooTheme.colors.primary,
+                contentColor = WooTheme.colors.onPrimary,
+            ),
+            leadingIcon = { BadgeLeadingIcon() },
+        )
+        WooBadge(
+            text = "Custom outlined",
+            colors = WooBadgeDefaults.colors(
+                containerColor = WooTheme.colors.background.section,
+                contentColor = WooTheme.colors.primary,
+                border = BorderStroke(
+                    width = WooTheme.stroke.medium,
+                    color = WooTheme.colors.primary,
+                ),
+            ),
+        )
+    }
+}
+
+@Composable
 private fun BadgeLeadingIcon() {
     Icon(
         imageVector = WooIcons.Regular.Star,
@@ -123,31 +163,48 @@ private fun BadgeLeadingIcon() {
     )
 }
 
-@Composable
-private fun WooBadgeTone.toBadgeColors(): WooBadgeColors {
-    val colors = WooTheme.colors
-    return when (this) {
-        WooBadgeTone.Neutral -> WooBadgeColors(colors.status.neutralContainer, colors.status.onNeutralContainer)
-        WooBadgeTone.NeutralOutlined -> WooBadgeColors(
-            containerColor = Color.Transparent,
-            contentColor = colors.surface.onDefault,
-            border = BorderStroke(
-                width = WooTheme.stroke.medium,
-                color = colors.stateLayers.onSurface.opacity10,
-            ),
-        )
-        WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)
-        WooBadgeTone.Success -> WooBadgeColors(colors.status.successContainer, colors.status.onSuccessContainer)
-        WooBadgeTone.Warning -> WooBadgeColors(colors.status.warningContainer, colors.status.onWarningContainer)
-        WooBadgeTone.Caution -> WooBadgeColors(colors.status.cautionContainer, colors.status.onCautionContainer)
-        WooBadgeTone.Error -> WooBadgeColors(colors.status.errorContainer, colors.status.onErrorContainer)
-    }
-}
-
-private data class WooBadgeColors(
+@Immutable
+@ConsistentCopyVisibility
+data class WooBadgeColors internal constructor(
     val containerColor: Color,
     val contentColor: Color,
     val border: BorderStroke? = null,
 )
+
+object WooBadgeDefaults {
+    @Composable
+    fun colors(tone: WooBadgeTone): WooBadgeColors {
+        val colors = WooTheme.colors
+        return when (tone) {
+            WooBadgeTone.Neutral -> WooBadgeColors(
+                colors.status.neutralContainer,
+                colors.status.onNeutralContainer,
+            )
+            WooBadgeTone.NeutralOutlined -> WooBadgeColors(
+                containerColor = Color.Transparent,
+                contentColor = colors.surface.onDefault,
+                border = BorderStroke(
+                    width = WooTheme.stroke.medium,
+                    color = colors.stateLayers.onSurface.opacity10,
+                ),
+            )
+            WooBadgeTone.Info -> WooBadgeColors(colors.status.infoContainer, colors.status.onInfoContainer)
+            WooBadgeTone.Success -> WooBadgeColors(colors.status.successContainer, colors.status.onSuccessContainer)
+            WooBadgeTone.Warning -> WooBadgeColors(colors.status.warningContainer, colors.status.onWarningContainer)
+            WooBadgeTone.Caution -> WooBadgeColors(colors.status.cautionContainer, colors.status.onCautionContainer)
+            WooBadgeTone.Error -> WooBadgeColors(colors.status.errorContainer, colors.status.onErrorContainer)
+        }
+    }
+
+    fun colors(
+        containerColor: Color,
+        contentColor: Color,
+        border: BorderStroke? = null,
+    ): WooBadgeColors = WooBadgeColors(
+        containerColor = containerColor,
+        contentColor = contentColor,
+        border = border,
+    )
+}
 
 private val BADGE_MIN_HEIGHT = 24.dp

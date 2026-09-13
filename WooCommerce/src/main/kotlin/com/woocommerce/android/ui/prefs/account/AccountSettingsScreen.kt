@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun AccountSettingsScreen(
@@ -88,7 +88,7 @@ private fun AccountSettingsItem(
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun AccountSettingsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         AccountSettingsScreen(onCloseAccountClick = {})
     }
 }

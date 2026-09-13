@@ -13,6 +13,10 @@ object WooIcons {
     object Solid
 }
 
+val WooIcons.Light.AlignLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_align_left_24dp)
+
 val WooIcons.Light.AngleDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_angle_down_24dp)
@@ -36,6 +40,10 @@ val WooIcons.Light.ArrowDown: ImageVector
 val WooIcons.Light.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_arrow_down_arrow_up_24dp)
+
+val WooIcons.Light.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_arrow_left_24dp)
 
 val WooIcons.Light.ArrowRightFromBracket: ImageVector
     @Composable
@@ -125,6 +133,10 @@ val WooIcons.Light.CalendarDays: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_calendar_days_24dp)
 
+val WooIcons.Light.CalendarXmark: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_calendar_xmark_24dp)
+
 val WooIcons.Light.CaretDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_caret_down_24dp)
@@ -189,6 +201,10 @@ val WooIcons.Light.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_ellipsis_24dp)
 
+val WooIcons.Light.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_envelope_24dp)
+
 val WooIcons.Light.File: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_file_24dp)
@@ -196,6 +212,10 @@ val WooIcons.Light.File: ImageVector
 val WooIcons.Light.Flask: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_flask_24dp)
+
+val WooIcons.Light.Folder: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_folder_24dp)
 
 val WooIcons.Light.Gauge: ImageVector
     @Composable
@@ -233,6 +253,10 @@ val WooIcons.Light.Hexagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_hexagon_24dp)
 
+val WooIcons.Light.Hourglass: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_hourglass_24dp)
+
 val WooIcons.Light.House: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_house_24dp)
@@ -252,6 +276,10 @@ val WooIcons.Light.LifeRing: ImageVector
 val WooIcons.Light.List: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_list_24dp)
+
+val WooIcons.Light.ListCheck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_list_check_24dp)
 
 val WooIcons.Light.MagnifyingGlass: ImageVector
     @Composable
@@ -325,6 +353,10 @@ val WooIcons.Light.Septagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_septagon_24dp)
 
+val WooIcons.Light.Shapes: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_shapes_24dp)
+
 val WooIcons.Light.Share: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_share_24dp)
@@ -381,6 +413,14 @@ val WooIcons.Light.Triangle: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_triangle_24dp)
 
+val WooIcons.Light.Truck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_truck_24dp)
+
+val WooIcons.Light.UpRightFromSquare: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_up_right_from_square_24dp)
+
 val WooIcons.Light.User: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_user_24dp)
@@ -400,6 +440,10 @@ val WooIcons.Light.Wallet: ImageVector
 val WooIcons.Light.Xmark: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_light_xmark_24dp)
+
+val WooIcons.Regular.AlignLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_align_left_24dp)
 
 val WooIcons.Regular.AngleDown: ImageVector
     @Composable
@@ -424,6 +468,10 @@ val WooIcons.Regular.ArrowDown: ImageVector
 val WooIcons.Regular.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_arrow_down_arrow_up_24dp)
+
+val WooIcons.Regular.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_arrow_left_24dp)
 
 val WooIcons.Regular.ArrowRightFromBracket: ImageVector
     @Composable
@@ -513,6 +561,10 @@ val WooIcons.Regular.CalendarDays: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_calendar_days_24dp)
 
+val WooIcons.Regular.CalendarXmark: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_calendar_xmark_24dp)
+
 val WooIcons.Regular.CaretDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_caret_down_24dp)
@@ -577,6 +629,10 @@ val WooIcons.Regular.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_ellipsis_24dp)
 
+val WooIcons.Regular.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_envelope_24dp)
+
 val WooIcons.Regular.File: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_file_24dp)
@@ -584,6 +640,10 @@ val WooIcons.Regular.File: ImageVector
 val WooIcons.Regular.Flask: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_flask_24dp)
+
+val WooIcons.Regular.Folder: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_folder_24dp)
 
 val WooIcons.Regular.Gauge: ImageVector
     @Composable
@@ -621,6 +681,10 @@ val WooIcons.Regular.Hexagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_hexagon_24dp)
 
+val WooIcons.Regular.Hourglass: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_hourglass_24dp)
+
 val WooIcons.Regular.House: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_house_24dp)
@@ -640,6 +704,10 @@ val WooIcons.Regular.LifeRing: ImageVector
 val WooIcons.Regular.List: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_list_24dp)
+
+val WooIcons.Regular.ListCheck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_list_check_24dp)
 
 val WooIcons.Regular.MagnifyingGlass: ImageVector
     @Composable
@@ -713,6 +781,10 @@ val WooIcons.Regular.Septagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_septagon_24dp)
 
+val WooIcons.Regular.Shapes: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_shapes_24dp)
+
 val WooIcons.Regular.Share: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_share_24dp)
@@ -769,6 +841,14 @@ val WooIcons.Regular.Triangle: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_triangle_24dp)
 
+val WooIcons.Regular.Truck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_truck_24dp)
+
+val WooIcons.Regular.UpRightFromSquare: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_up_right_from_square_24dp)
+
 val WooIcons.Regular.User: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_user_24dp)
@@ -788,6 +868,10 @@ val WooIcons.Regular.Wallet: ImageVector
 val WooIcons.Regular.Xmark: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_regular_xmark_24dp)
+
+val WooIcons.Solid.AlignLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_align_left_24dp)
 
 val WooIcons.Solid.AngleDown: ImageVector
     @Composable
@@ -812,6 +896,10 @@ val WooIcons.Solid.ArrowDown: ImageVector
 val WooIcons.Solid.ArrowDownArrowUp: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_arrow_down_arrow_up_24dp)
+
+val WooIcons.Solid.ArrowLeft: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_arrow_left_24dp)
 
 val WooIcons.Solid.ArrowRightFromBracket: ImageVector
     @Composable
@@ -901,6 +989,10 @@ val WooIcons.Solid.CalendarDays: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_calendar_days_24dp)
 
+val WooIcons.Solid.CalendarXmark: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_calendar_xmark_24dp)
+
 val WooIcons.Solid.CaretDown: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_caret_down_24dp)
@@ -965,6 +1057,10 @@ val WooIcons.Solid.Ellipsis: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_ellipsis_24dp)
 
+val WooIcons.Solid.Envelope: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_envelope_24dp)
+
 val WooIcons.Solid.File: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_file_24dp)
@@ -972,6 +1068,10 @@ val WooIcons.Solid.File: ImageVector
 val WooIcons.Solid.Flask: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_flask_24dp)
+
+val WooIcons.Solid.Folder: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_folder_24dp)
 
 val WooIcons.Solid.Gauge: ImageVector
     @Composable
@@ -1009,6 +1109,10 @@ val WooIcons.Solid.Hexagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_hexagon_24dp)
 
+val WooIcons.Solid.Hourglass: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_hourglass_24dp)
+
 val WooIcons.Solid.House: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_house_24dp)
@@ -1028,6 +1132,10 @@ val WooIcons.Solid.LifeRing: ImageVector
 val WooIcons.Solid.List: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_list_24dp)
+
+val WooIcons.Solid.ListCheck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_list_check_24dp)
 
 val WooIcons.Solid.MagnifyingGlass: ImageVector
     @Composable
@@ -1101,6 +1209,10 @@ val WooIcons.Solid.Septagon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_septagon_24dp)
 
+val WooIcons.Solid.Shapes: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_shapes_24dp)
+
 val WooIcons.Solid.Share: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_share_24dp)
@@ -1156,6 +1268,14 @@ val WooIcons.Solid.TicketPerforated: ImageVector
 val WooIcons.Solid.Triangle: ImageVector
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_triangle_24dp)
+
+val WooIcons.Solid.Truck: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_truck_24dp)
+
+val WooIcons.Solid.UpRightFromSquare: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.woo_ds_ic_solid_up_right_from_square_24dp)
 
 val WooIcons.Solid.User: ImageVector
     @Composable

@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
@@ -96,20 +96,22 @@ private fun BlazeCampaignCreationEditAdScreen(
         )
     }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_preview_edit_ad),
                 onNavigationButtonClick = onBackButtonTapped,
                 onActionButtonClick = onSaveTapped,
-                actionButtonText = stringResource(id = R.string.save).uppercase()
+                actionButtonText = stringResource(id = R.string.save).uppercase(),
+                showDivider = scrollState.canScrollBackward,
             )
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
@@ -419,7 +421,7 @@ private fun SuggestionButton(
 @LightDarkThemePreviews
 @Composable
 fun PreviewCampaignEditAdContent() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
                 adImage = BlazeCampaignImage.RemoteImage("https://rb.gy/gmjuwb", "image/jpeg"),

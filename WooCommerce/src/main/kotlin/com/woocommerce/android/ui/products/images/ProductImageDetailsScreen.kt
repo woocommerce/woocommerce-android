@@ -24,7 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 
 @Composable
 fun ProductImageDetailsScreen(viewModel: ProductImageDetailsViewModel) {
@@ -46,11 +46,13 @@ private fun ProductImageDetailsScreen(
 ) {
     BackHandler { onBackButtonClick() }
 
+    val scrollState = rememberScrollState()
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.product_image_details_title),
-                onNavigationButtonClick = onBackButtonClick
+                onNavigationButtonClick = onBackButtonClick,
+                showDivider = scrollState.canScrollBackward
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -58,7 +60,7 @@ private fun ProductImageDetailsScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(dimensionResource(R.dimen.major_100))
         ) {
             AsyncImage(
@@ -108,7 +110,7 @@ private fun ProductImageDetailsScreen(
 @LightDarkThemePreviews
 @Composable
 private fun ProductImageDetailsScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductImageDetailsScreen(
             state = ProductImageDetailsViewModel.UiState(
                 imageUrl = "https://example.com/image.jpg",
@@ -125,7 +127,7 @@ private fun ProductImageDetailsScreenPreview() {
 @LightDarkThemePreviews
 @Composable
 private fun ProductImageDetailsScreenClearedAltTextPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductImageDetailsScreen(
             state = ProductImageDetailsViewModel.UiState(
                 imageUrl = "https://example.com/image.jpg",

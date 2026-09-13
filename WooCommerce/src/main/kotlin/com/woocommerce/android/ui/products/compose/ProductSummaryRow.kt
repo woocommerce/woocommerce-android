@@ -10,22 +10,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
-import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooDivider
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 
 @Composable
 fun ProductSummaryRow(
@@ -43,7 +42,7 @@ fun ProductSummaryRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = WooTheme.padding.padding5),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         ProductThumbnail(
@@ -53,30 +52,30 @@ fun ProductSummaryRow(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp),
+                .padding(start = WooTheme.padding.padding3),
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(WooTheme.spacing.space4))
             Row(
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier.padding(bottom = WooTheme.padding.padding2),
                 verticalAlignment = Alignment.Top,
             ) {
                 Text(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = if (trailingContent == null) 0.dp else 8.dp),
+                        .padding(end = if (trailingContent == null) 0.dp else WooTheme.padding.padding3),
                     text = title,
-                    color = MaterialTheme.colors.onSurface,
+                    color = WooTheme.colors.surface.onDefault,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.subtitle1,
+                    style = WooTheme.text.titleMedium.regular,
                 )
                 trailingContent?.invoke(this)
             }
             supportingContent()
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(WooTheme.spacing.space4))
             if (displayDivider) {
-                Divider()
+                WooDivider()
             }
         }
     }
@@ -86,10 +85,10 @@ fun ProductSummaryRow(
 fun ProductSummaryRowInfo(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = colorResource(id = R.color.color_on_surface_medium),
+    color: Color = WooTheme.colors.surface.onDefault,
     maxLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Ellipsis,
-    style: TextStyle = MaterialTheme.typography.caption,
+    style: TextStyle = WooTheme.text.bodyMedium.regular,
 ) {
     Text(
         modifier = modifier,
@@ -101,10 +100,10 @@ fun ProductSummaryRowInfo(
     )
 }
 
-@LightDarkThemePreviews
+@PreviewLightDark
 @Composable
 private fun ProductSummaryRowPreview() {
-    WooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         ProductSummaryRow(
             title = "Woo socks",
             imageUrl = "https://example.com/socks.png",
