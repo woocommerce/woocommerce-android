@@ -22,7 +22,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.withOldValue
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -33,6 +32,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.Products
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ShippingRefundSection
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.widgets.WooClickableSpan
@@ -48,7 +48,7 @@ class IssueRefundFragment :
     lateinit var currencyFormatter: CurrencyFormatter
 
     @Inject
-    lateinit var imageMap: ProductImageMap
+    lateinit var imageLoaderFactory: ProductImageLoader.Factory
 
     @Inject
     lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
@@ -147,7 +147,7 @@ class IssueRefundFragment :
             new.currency.takeIfNotEqualTo(old?.currency) {
                 productsBinding.issueRefundProducts.adapter = RefundProductListAdapter(
                     currencyFormatter.buildBigDecimalFormatter(new.currency),
-                    imageMap,
+                    imageLoaderFactory,
                     false,
                     { uniqueId -> viewModel.onRefundQuantityTapped(uniqueId) }
                 )

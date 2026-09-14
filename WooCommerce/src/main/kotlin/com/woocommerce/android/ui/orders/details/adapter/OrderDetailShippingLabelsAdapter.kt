@@ -16,18 +16,18 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.formatToLocalizedMediumWithTime
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderShipmentTrackingHelper
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelModel
+import com.woocommerce.android.ui.products.ProductImageLoader
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import java.math.BigDecimal
 
 class OrderDetailShippingLabelsAdapter(
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
-    private val productImageMap: ProductImageMap,
+    private val productImageLoaderFactory: ProductImageLoader.Factory,
     private val listener: OnShippingLabelClickListener,
     private val productClickListener: OrderProductActionListener
 ) : RecyclerView.Adapter<ShippingLabelsViewHolder>() {
@@ -63,7 +63,7 @@ class OrderDetailShippingLabelsAdapter(
         return ShippingLabelsViewHolder(
             viewBinding,
             viewPool,
-            productImageMap,
+            productImageLoaderFactory,
             formatCurrencyForDisplay,
             listener,
             productClickListener
@@ -80,7 +80,7 @@ class OrderDetailShippingLabelsAdapter(
     class ShippingLabelsViewHolder(
         private var viewBinding: OrderDetailShippingLabelListItemBinding,
         private val viewPool: RecyclerView.RecycledViewPool,
-        private val productImageMap: ProductImageMap,
+        private val productImageLoaderFactory: ProductImageLoader.Factory,
         private val formatCurrencyForDisplay: (BigDecimal) -> String,
         private val listener: OnShippingLabelClickListener,
         private val productClickListener: OrderProductActionListener
@@ -143,7 +143,7 @@ class OrderDetailShippingLabelsAdapter(
                     layoutManager = LinearLayoutManager(context)
                     adapter = OrderDetailProductListAdapter(
                         shippingLabel.products,
-                        productImageMap,
+                        productImageLoaderFactory,
                         formatCurrencyForDisplay,
                         productClickListener
                     )

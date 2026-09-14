@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.refunds
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout.GONE
@@ -11,26 +10,23 @@ import androidx.constraintlayout.widget.ConstraintLayout.VISIBLE
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isEqualTo
-import com.woocommerce.android.extensions.loadPhotonUrlWithFallback
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.payments.refunds.RefundProductListAdapter.RefundViewHolder
+import com.woocommerce.android.ui.products.ProductImageLoader
+import com.woocommerce.android.ui.products.ProductImageViewTarget
 import java.math.BigDecimal
 
 typealias ViewAddonClickListener = (Order.Item) -> Unit
 
 class RefundProductListAdapter(
     private val formatCurrency: (BigDecimal) -> String,
-    private val imageMap: ProductImageMap,
+    private val imageLoaderFactory: ProductImageLoader.Factory,
     private val isProductDetailList: Boolean,
     private val onItemClicked: (Long) -> Unit = { },
     private val onViewAddonsClick: ViewAddonClickListener? = null
@@ -39,9 +35,9 @@ class RefundProductListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, itemType: Int): RefundViewHolder {
         return if (isProductDetailList) {
-            RefundDetailViewHolder(parent, formatCurrency, imageMap, onViewAddonsClick)
+            RefundDetailViewHolder(parent, formatCurrency, imageLoaderFactory, onViewAddonsClick)
         } else {
-            IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageMap)
+            IssueRefundViewHolder(parent, formatCurrency, onItemClicked, imageLoaderFactory)
         }
     }
 
@@ -57,23 +53,31 @@ class RefundProductListAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    abstract class RefundViewHolder(parent: ViewGroup, @LayoutRes layout: Int) : RecyclerView.ViewHolder(
+    abstract class RefundViewHolder(
+        parent: ViewGroup,
+        @LayoutRes layout: Int,
+        imageLoaderFactory: ProductImageLoader.Factory
+    ) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(layout, parent, false)
     ) {
+        protected val imageTarget = ProductImageViewTarget(
+            itemView.findViewById(R.id.refundItem_icon),
+            imageLoaderFactory
+        )
+
         abstract fun bind(item: ProductRefundListItem)
     }
 
     class RefundDetailViewHolder(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
-        private val imageMap: ProductImageMap,
+        imageLoaderFactory: ProductImageLoader.Factory,
         private val onViewAddonsClick: ViewAddonClickListener?
-    ) : RefundViewHolder(parent, R.layout.refunds_detail_product_list_item) {
+    ) : RefundViewHolder(parent, R.layout.refunds_detail_product_list_item, imageLoaderFactory) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
         private val skuTextView: TextView = itemView.findViewById(R.id.refundItem_sku)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
-        private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
         private val productAddonsView: TextView = itemView.findViewById(R.id.refundItem_addons)
 
         @SuppressLint("SetTextI18n")
@@ -112,15 +116,7 @@ class RefundProductListAdapter(
                 onViewAddonsClick?.invoke(item.orderItem)
             }
 
-            imageMap.get(item.orderItem.productId)?.let {
-                val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-                Glide.with(itemView.context)
-                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
-                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-                    .placeholder(R.drawable.ic_product)
-                    .into(productImageView)
-            } ?: productImageView.setImageResource(R.drawable.ic_product)
+            imageTarget.load(item.orderItem.productId)
         }
     }
 
@@ -128,12 +124,11 @@ class RefundProductListAdapter(
         parent: ViewGroup,
         private val formatCurrency: (BigDecimal) -> String,
         private val onItemClicked: (Long) -> Unit,
-        private val imageMap: ProductImageMap
-    ) : RefundViewHolder(parent, R.layout.refunds_product_list_item) {
+        imageLoaderFactory: ProductImageLoader.Factory
+    ) : RefundViewHolder(parent, R.layout.refunds_product_list_item, imageLoaderFactory) {
         private val nameTextView: TextView = itemView.findViewById(R.id.refundItem_productName)
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
-        private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
         private val subtotalTextView: TextView = itemView.findViewById(R.id.refundItemSubtotal)
         private val taxesTextView: TextView = itemView.findViewById(R.id.refundItemTaxes)
 
@@ -152,15 +147,7 @@ class RefundProductListAdapter(
                 onItemClicked(item.orderItem.itemId)
             }
 
-            imageMap.get(item.orderItem.productId)?.let {
-                val imageCornerRadius = itemView.context.resources.getDimensionPixelSize(R.dimen.corner_radius_image)
-                val imageSize = itemView.context.resources.getDimensionPixelSize(R.dimen.image_minor_100)
-                Glide.with(itemView.context)
-                    .loadPhotonUrlWithFallback(it, imageSize, imageSize)
-                    .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-                    .placeholder(R.drawable.ic_product)
-                    .into(productImageView)
-            } ?: productImageView.setImageResource(R.drawable.ic_product)
+            imageTarget.load(item.orderItem.productId)
 
             subtotalTextView.text = formatCurrency(item.subtotal)
             taxesTextView.text = formatCurrency(item.taxesTotal)

@@ -6,6 +6,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy
+import com.woocommerce.android.ui.woopos.tab.WooPosSupportedCountries
+import com.woocommerce.android.ui.woopos.util.WooPosGetStoreCountryCode
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -39,6 +42,8 @@ class WooPosEligibilityViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
+    private val getStoreCountryCode: WooPosGetStoreCountryCode,
+    private val getStoreCountryDisplayName: WooPosGetStoreCountryDisplayName,
 ) : ViewModel() {
 
     private val _retryState = MutableStateFlow<WooPosEligibilityRetryState?>(null)
@@ -73,7 +78,7 @@ class WooPosEligibilityViewModel @Inject constructor(
             selectedSite.getOrNull()?.let { site ->
                 wooCommerceStore.fetchWooCommerceSite(site).model?.let { selectedSite.set(it) }
             }
-            val result = canBeLaunchedInTab(forceRefresh = true)
+            val result = canBeLaunchedInTab(WooPosLaunchabilityRefreshPolicy.ForceRefresh)
 
             when (result) {
                 is WooPosLaunchability.Launchable -> {
@@ -89,7 +94,7 @@ class WooPosEligibilityViewModel @Inject constructor(
         }
     }
 
-    private fun buildIneligibleState(
+    private suspend fun buildIneligibleState(
         reason: WooPosLaunchability.NonLaunchabilityReason
     ): WooPosEligibilityRetryState.Ineligible {
         return WooPosEligibilityRetryState.RetryableIneligible(
@@ -98,18 +103,53 @@ class WooPosEligibilityViewModel @Inject constructor(
         )
     }
 
-    private fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
+    private suspend fun getSuggestionText(reason: WooPosLaunchability.NonLaunchabilityReason): String {
         return when (reason) {
             WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion ->
                 resourceProvider.getString(
                     R.string.woopos_eligibility_reason_unsupported_woocommerce_version,
                     WooPosCanBeLaunchedInTab.MINIMUM_SUPPORTED_WC_VERSION
                 )
-            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable ->
-                resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
+            WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound ->
+                resourceProvider.getString(R.string.woopos_eligibility_reason_woocommerce_plugin_not_found)
+            WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled ->
+                resourceProvider.getString(R.string.woopos_eligibility_reason_feature_switch_disabled)
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry ->
+                getUnsupportedCountryText()
+            WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency ->
+                getUnsupportedCurrencyText()
+            WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
             WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
             WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache ->
                 resourceProvider.getString(R.string.woopos_eligibility_reason_check_connection)
+        }
+    }
+
+    private suspend fun getUnsupportedCountryText(): String {
+        val countryName = getStoreCountryCode()?.let { getStoreCountryDisplayName(it) }
+
+        return if (countryName != null) {
+            resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_country, countryName)
+        } else {
+            resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_country_generic)
+        }
+    }
+
+    private suspend fun getUnsupportedCurrencyText(): String {
+        val countryCode = getStoreCountryCode()
+        val supportedCurrencies = countryCode
+            ?.let { WooPosSupportedCountries.currenciesFor(it) }
+            .orEmpty()
+        val countryName = countryCode?.let { getStoreCountryDisplayName(it) }
+
+        return if (countryName != null && supportedCurrencies.isNotEmpty()) {
+            resourceProvider.getString(
+                R.string.woopos_eligibility_reason_unsupported_currency_country_pair,
+                countryName,
+                supportedCurrencies.joinToString(separator = ", ")
+            )
+        } else {
+            resourceProvider.getString(R.string.woopos_eligibility_reason_unsupported_currency_generic)
         }
     }
 

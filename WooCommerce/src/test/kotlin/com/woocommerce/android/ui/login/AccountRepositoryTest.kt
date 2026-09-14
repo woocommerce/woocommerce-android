@@ -19,10 +19,14 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.yield
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.AccountAction
@@ -111,7 +115,7 @@ class AccountRepositoryTest : BaseUnitTest() {
             given(accountStore.hasAccessToken()).willReturn(false)
             given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
             val selectedSiteModel = SiteModel()
-            given(selectedSite.get()).willReturn(selectedSiteModel)
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
             given(siteStore.deleteApplicationPassword(selectedSiteModel))
                 .willReturn(OnApplicationPasswordDeleted(selectedSiteModel))
 
@@ -130,7 +134,7 @@ class AccountRepositoryTest : BaseUnitTest() {
             given(accountStore.hasAccessToken()).willReturn(false)
             given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
             val selectedSiteModel = SiteModel()
-            given(selectedSite.get()).willReturn(selectedSiteModel)
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
             given(siteStore.deleteApplicationPassword(selectedSiteModel))
                 .willReturn(OnApplicationPasswordDeleted(selectedSiteModel))
             val cleanupGate = CompletableDeferred<Unit>()
@@ -149,5 +153,56 @@ class AccountRepositoryTest : BaseUnitTest() {
             result.await()
             advanceUntilIdle()
             assertThat(result.isCompleted).isTrue()
+        }
+
+    @Test
+    fun `given app password login, when the site is reset during push cleanup, then the captured site password is deleted`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            val selectedSiteModel = SiteModel()
+            given(selectedSite.getOrNull()).willReturn(selectedSiteModel)
+            given(siteStore.deleteApplicationPassword(selectedSiteModel))
+                .willReturn(OnApplicationPasswordDeleted(selectedSiteModel))
+            val cleanupGate = CompletableDeferred<Unit>()
+            whenever(pushNotificationRepository.unregisterDeviceFromPushNotifications()).doSuspendableAnswer {
+                cleanupGate.await()
+            }
+
+            // WHEN
+            val result = async { repository.logout() }
+            runCurrent()
+            assertThat(result.isCompleted).isFalse()
+            // A concurrent flow resets the selected site while the push cleanup is still in flight.
+            // Stubbed leniently: the fix must not touch the selected site again after resuming.
+            lenient().doReturn(null).whenever(selectedSite).getOrNull()
+            lenient().doThrow(SelectedSite.SelectedSiteResetException()).whenever(selectedSite).get()
+            cleanupGate.complete(Unit)
+
+            // THEN
+            assertThat(result.await()).isTrue()
+            advanceUntilIdle()
+            verify(siteStore).deleteApplicationPassword(selectedSiteModel)
+            verify(selectedSite, never()).get()
+            verify(selectedSite).reset()
+        }
+
+    @Test
+    fun `given app password login and no selected site, when logout is called, then no password is deleted`() =
+        testBlocking {
+            // GIVEN
+            given(accountStore.hasAccessToken()).willReturn(false)
+            given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+            given(selectedSite.getOrNull()).willReturn(null)
+
+            // WHEN
+            val result = repository.logout()
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(result).isTrue()
+            verify(selectedSite).reset()
+            verify(siteStore, never()).deleteApplicationPassword(any())
         }
 }

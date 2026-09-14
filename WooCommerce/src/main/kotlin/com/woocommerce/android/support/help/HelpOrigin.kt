@@ -36,7 +36,8 @@ enum class HelpOrigin(private val stringValue: String) {
     AI_TROUBLESHOOTING("origin:ai-troubleshooting"),
     APPLICATION_PASSWORD_TUTORIAL("origin:application-password-tutorial"),
     CONNECTION_ERROR("origin:connection-error"),
-    POS("origin:point-of-sale");
+    POS("origin:point-of-sale"),
+    AGE_RESTRICTION("origin:age-restriction");
 
     override fun toString(): String {
         return stringValue
