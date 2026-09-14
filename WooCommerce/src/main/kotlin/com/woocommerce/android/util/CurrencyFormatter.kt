@@ -1,7 +1,9 @@
 package com.woocommerce.android.util
 
+import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
@@ -14,6 +16,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.Currency
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -24,12 +27,12 @@ class CurrencyFormatter @Inject constructor(
     private val wcStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
     private val siteIndependentCurrencyFormatter: SiteIndependentCurrencyFormatter,
+    private val localeProvider: LocaleProvider,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers
 ) {
     companion object {
         private const val ONE_THOUSAND = 1000
-        private const val ONE_MILLION = 1000000
 
         private const val BACKOFF_DELAY = 1_000L
         private const val BACKOFF_INTENTS = 3
@@ -38,21 +41,21 @@ class CurrencyFormatter @Inject constructor(
         private val currencyFormatter: DecimalFormat by lazy {
             DecimalFormat("0.00")
         }
+    }
 
-        // Formats the value to one decimal place
-        private val currencyFormatterRounded: DecimalFormat by lazy {
-            DecimalFormat("0.0")
-        }
-
-        private fun currencyStringRounded(rawValue: Double): String {
-            val roundedValue = rawValue.roundToInt().toDouble()
-            return if (roundedValue.absoluteValue >= ONE_MILLION) {
-                currencyFormatterRounded.format(roundedValue / ONE_MILLION) + "m"
-            } else if (roundedValue.absoluteValue >= ONE_THOUSAND) {
-                currencyFormatterRounded.format(roundedValue / ONE_THOUSAND) + "k"
-            } else {
-                currencyFormatter.format(roundedValue).toString().removeSuffix(".00")
-            }
+    private fun currencyStringRounded(rawValue: Double): String {
+        val roundedValue = rawValue.roundToInt().toDouble()
+        return if (roundedValue.absoluteValue >= ONE_THOUSAND) {
+            val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+            CompactDecimalFormat
+                .getInstance(locale, CompactDecimalFormat.CompactStyle.SHORT)
+                .apply {
+                    minimumFractionDigits = 1
+                    maximumFractionDigits = 1
+                }
+                .format(roundedValue)
+        } else {
+            currencyFormatter.format(roundedValue).toString().removeSuffix(".00")
         }
     }
 
