@@ -22,6 +22,7 @@
 - [*****] Updated constraintlayout-compose to 1.1.2 and fixed the order-creation product and bundle cards and the read-only shipping-label address, which the update collapsed [https://github.com/woocommerce/woocommerce-android/pull/16521]
 - [Internal] Order details no longer checks each product for add-ons on the main thread [https://github.com/woocommerce/woocommerce-android/pull/16489]
 - [Internal] Added a type-resolution detekt guard (on PRs and in the release pipeline) that flags stringifying a lambda-bearing object, which triggers a reflective toString() that crashes under R8 full mode [https://github.com/woocommerce/woocommerce-android/pull/16518]
+- [*] The Top performers card on My Store no longer stays on "Unable to load data" after a retry or pull to refresh succeeds [https://github.com/woocommerce/woocommerce-android/pull/16542]
 
 25.6
 -----
