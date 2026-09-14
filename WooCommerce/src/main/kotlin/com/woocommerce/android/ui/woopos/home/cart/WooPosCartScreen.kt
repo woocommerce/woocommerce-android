@@ -485,6 +485,7 @@ private fun ClearCartButton(
 
     Box(modifier = modifier) {
         WooPosIconButton(
+            modifier = Modifier.testTag(WooPosTestTags.CLEAR_CART_BUTTON),
             icon = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
             enabled = !dropdownExpanded,
             onClick = { dropdownExpanded = true },
@@ -638,6 +639,7 @@ private fun CouponItem(
     WooPosCard(
         modifier = modifier
             .wrapContentHeight()
+            .testTag(WooPosTestTags.CART_COUPON_ITEM)
             .semantics { contentDescription = itemContentDescription },
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
