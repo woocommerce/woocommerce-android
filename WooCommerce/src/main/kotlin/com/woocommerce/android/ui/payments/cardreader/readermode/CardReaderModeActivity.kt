@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.readermode
 
-import android.Manifest
 import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.activity.compose.setContent
@@ -25,7 +24,7 @@ class CardReaderModeActivity : AppCompatActivity() {
     ) { granted ->
         when {
             granted -> checkPermissionsAndStartSession()
-            WooPermissionUtils.shouldShowFineLocationPermissionRationale(this) ->
+            WooPermissionUtils.shouldShowCardReaderLocationPermissionRationale(this) ->
                 viewModel.onLocationPermissionMissing()
             else -> viewModel.onLocationPermissionDenied()
         }
@@ -58,7 +57,7 @@ class CardReaderModeActivity : AppCompatActivity() {
                     when (event) {
                         CardReaderModeEvent.Exit -> finish()
                         CardReaderModeEvent.RequestLocationPermission ->
-                            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                            WooPermissionUtils.requestCardReaderLocationPermission(locationPermissionLauncher)
                         CardReaderModeEvent.RequestLocalNetworkPermission ->
                             WooPermissionUtils.requestLocalNetworkPermission(localNetworkPermissionLauncher)
                         CardReaderModeEvent.OpenAppSettings ->
@@ -76,7 +75,7 @@ class CardReaderModeActivity : AppCompatActivity() {
 
     private fun checkPermissionsAndStartSession() {
         when {
-            !WooPermissionUtils.hasFineLocationPermission(this) -> viewModel.onLocationPermissionMissing()
+            !WooPermissionUtils.hasCardReaderLocationPermission(this) -> viewModel.onLocationPermissionMissing()
             !WooPermissionUtils.hasLocalNetworkPermission(this) -> viewModel.onLocalNetworkPermissionMissing()
             else -> viewModel.onPermissionsGranted()
         }

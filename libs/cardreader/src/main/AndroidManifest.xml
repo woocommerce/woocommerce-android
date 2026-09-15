@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!--
+    Bluetooth and location permissions are provided by the Stripe Terminal SDK's own manifest
+    (stripeterminal-core): BLUETOOTH_SCAN carries neverForLocation, ACCESS_FINE_LOCATION is capped at
+    maxSdkVersion="30", and ACCESS_COARSE_LOCATION is declared for location reporting. Relying on the SDK
+    keeps the merged manifest free of unconstrained fine location (Google's Android 12+ location policy).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" />
 
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
-</manifest>

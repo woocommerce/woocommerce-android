@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.updatePadding
@@ -307,7 +308,8 @@ class HelpActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val ORIGIN_KEY = "ORIGIN_KEY"
+        @VisibleForTesting
+        internal const val ORIGIN_KEY = "ORIGIN_KEY"
         private const val EXTRA_TAGS_KEY = "EXTRA_TAGS_KEY"
         private const val LOGIN_FLOW_KEY = "LOGIN_FLOW_KEY"
         private const val LOGIN_STEP_KEY = "LOGIN_STEP_KEY"

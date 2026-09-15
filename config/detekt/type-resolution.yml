@@ -1,0 +1,6 @@
+# Minimal detekt config for the type-resolution pass. Only the custom rules that require type resolution
+# run here (default rulesets are disabled on the task), so the shared detekt.yml's formatting/default
+# sections are intentionally absent and CI cost stays bounded.
+CommonRules:
+  StringifyLambdaBearingObjectRule:
+    active: true

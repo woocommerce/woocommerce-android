@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchabilityRefreshPolicy.UseCacheAndRefresh
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -45,7 +46,7 @@ class WooPosSplashViewModelTest {
 
     @Before
     fun setup() = runTest {
-        whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
+        whenever(posCanBeLaunchedInTab(UseCacheAndRefresh)).thenReturn(WooPosLaunchability.Launchable)
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
@@ -61,7 +62,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given eligible site and sync in progress, when vm created, then state is Syncing`() = runTest {
         // GIVEN
-        whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
+        whenever(posCanBeLaunchedInTab(UseCacheAndRefresh)).thenReturn(WooPosLaunchability.Launchable)
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Syncing)
         )
@@ -76,7 +77,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given site not eligible, when vm created, then state is NotEligible`() = runTest {
         // GIVEN
-        whenever(posCanBeLaunchedInTab()).thenReturn(
+        whenever(posCanBeLaunchedInTab(UseCacheAndRefresh)).thenReturn(
             WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
         )
         whenever(productsDataSource.prepopulateCache()).thenReturn(

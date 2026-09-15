@@ -209,6 +209,41 @@ class WooCommerceStoreTest {
     }
 
     @Test
+    fun `when fetching plugins and settings, then both come from one request`() = test {
+        val settings = WCSystemPluginResponse.Settings(enabledFeatures = listOf("point_of_sale"))
+        whenever(restClient.fetchInstalledPlugins(any(), any()))
+            .thenReturn(WooPayload(response.copy(settings = settings)))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.isError).isFalse
+        assertThat(result.model?.plugins).hasSameSizeAs(response.plugins)
+        assertThat(result.model?.enabledFeatures)
+            .isEqualTo(WooCommerceStore.EnabledFeatures.Known(listOf("point_of_sale")))
+        verify(restClient).fetchInstalledPlugins(site, true)
+    }
+
+    @Test
+    fun `given the report omits settings, when fetching plugins and settings, then features are Unknown`() = test {
+        // Unknown must stay distinguishable from an empty list: the field being absent is not the same
+        // as the store having no features enabled.
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        val result = wooCommerceStore.fetchSitePluginsAndSettings(site)
+
+        assertThat(result.model?.enabledFeatures).isEqualTo(WooCommerceStore.EnabledFeatures.Unknown)
+    }
+
+    @Test
+    fun `when fetching plugins only, then the settings are not requested`() = test {
+        whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(response))
+
+        wooCommerceStore.fetchSitePlugins(site)
+
+        verify(restClient).fetchInstalledPlugins(site, false)
+    }
+
+    @Test
     fun `when fetching ssr fails, then error returned`() = test {
         val result = fetchSSR(isError = true)
 
@@ -569,9 +604,9 @@ class WooCommerceStoreTest {
     private suspend fun getPlugin(isError: Boolean = false): WooResult<List<SitePluginModel>> {
         val payload = WooPayload(response)
         if (isError) {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(WooPayload(error))
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(WooPayload(error))
         } else {
-            whenever(restClient.fetchInstalledPlugins(any())).thenReturn(payload)
+            whenever(restClient.fetchInstalledPlugins(any(), any())).thenReturn(payload)
         }
         return wooCommerceStore.fetchSitePlugins(site)
     }
