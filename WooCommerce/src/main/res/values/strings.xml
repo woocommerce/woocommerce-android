@@ -1425,6 +1425,7 @@
     <string name="order_refunds_refund_info_description_one">%d item</string>
     <string name="order_refunds_refund_info_description_many">%d items</string>
     <string name="order_refunds_refund_info_title">Refunded products</string>
+    <string name="order_refunds_refunded_items">Refunded items</string>
     <string name="order_refunds_shipping_refund_variable_notice">You can refund %1$s</string>
     <string name="order_refunds_store_admin_link_text">in your store admin</string>
     <!--
@@ -2899,6 +2900,7 @@
     <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
     <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
     <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_error_offline_mode_body">Push notifications can\'t be set up because your store is in Offline Mode. If you still need help, please contact support.</string>
     <string name="woo_push_notifications_introduction_connected_title">Get push notifications for your store</string>
     <string name="woo_push_notifications_introduction_connected_body">You\'re one step away from getting notifications for new orders, reviews and more.</string>
     <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
