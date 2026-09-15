@@ -93,7 +93,13 @@ class RegisterDevice @Inject constructor(
         if (shouldEvaluateWpCom && accountStore.hasAccessToken()) {
             WooLog.d(WooLog.T.NOTIFICATIONS, "Registering WP.com push for $trigger")
             try {
-                pushNotificationRepository.registerPushTokenInWpComSystem(token)
+                val payload = pushNotificationRepository.registerPushTokenInWpComSystem(token)
+                if (payload.isError) {
+                    WooLog.e(
+                        WooLog.T.NOTIFICATIONS,
+                        "WP.com push registration failed for $trigger: ${payload.error.message}"
+                    )
+                }
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
             } catch (throwable: Throwable) {

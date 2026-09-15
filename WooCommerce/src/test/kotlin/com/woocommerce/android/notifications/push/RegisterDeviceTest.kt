@@ -170,6 +170,27 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
+    fun `given login success trigger, when WPCom registration returns an error, then still registers Woo sites`() =
+        testBlocking {
+            // GIVEN
+            runBlocking {
+                whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false)
+                whenever(pushNotificationRepository.registerPushTokenInWpComSystem(any())).thenReturn(
+                    WpComPushNotificationStore.RegisterDeviceResponsePayload(
+                        WpComPushNotificationStore.DeviceRegistrationError(message = "registration failed")
+                    )
+                )
+            }
+
+            // WHEN
+            sut(LOGIN_SUCCESS)
+
+            // THEN
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+        }
+
+    @Test
     fun `given app foreground trigger, when WPCom is already registered, then skips WPCom registration`() = testBlocking {
         // GIVEN
         runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(true) }
