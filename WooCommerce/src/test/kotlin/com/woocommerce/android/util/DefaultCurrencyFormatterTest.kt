@@ -30,6 +30,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.wc.settings.WCSettingsTestUtils.generateSettings
 import java.util.Locale
+import kotlin.math.absoluteValue
 
 @ExperimentalCoroutinesApi
 class DefaultCurrencyFormatterTest : BaseUnitTest() {
@@ -84,7 +85,8 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
         )
 
         amounts.forEach { (rawAmount, roundedAmount, compactAmount) ->
-            whenever(numberExtensionsWrapper.compactNumberCompat(roundedAmount, Locale.US)).thenReturn(compactAmount)
+            whenever(numberExtensionsWrapper.compactNumberCompat(roundedAmount.absoluteValue, Locale.US))
+                .thenReturn(compactAmount.removePrefix("-"))
 
             // WHEN
             val result = formatter.formatCurrencyRounded(rawAmount, "USD")
@@ -92,6 +94,30 @@ class DefaultCurrencyFormatterTest : BaseUnitTest() {
             // THEN
             assertThat(result).isEqualTo(compactAmount)
         }
+    }
+
+    @Test
+    fun `given an RTL locale, when formatting negative currency, then pass a leading minus to the store`() = runTest {
+        // GIVEN
+        setupSitesFlow()
+        val site = SiteModel()
+        val locale = Locale.forLanguageTag("he-IL")
+        whenever(selectedSite.get()).thenReturn(site)
+        whenever(localeProvider.provideLocale()).thenReturn(locale)
+        whenever(numberExtensionsWrapper.compactNumberCompat(any(), eq(locale))).thenAnswer {
+            when (it.getArgument<Long>(0) < 0) {
+                true -> "\u200e-4K"
+                false -> "4K"
+            }
+        }
+        whenever(wcStore.formatCurrencyForDisplay(any<String>(), eq(site), eq("TRY"), eq(false)))
+            .thenAnswer { it.getArgument<String>(0) }
+
+        // WHEN
+        val result = formatter.formatCurrencyRounded(-4000.4, "TRY")
+
+        // THEN
+        assertThat(result).isEqualTo("-4K")
     }
 
     @Test

@@ -18,6 +18,7 @@ import java.util.Currency
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
 
 @Singleton
@@ -113,7 +114,12 @@ class CurrencyFormatter @Inject constructor(
      */
     fun formatCurrencyRounded(rawValue: Double, currencyCode: String = defaultCurrencyCode): String {
         val locale = localeProvider.provideLocale() ?: Locale.getDefault()
-        val displayFormatted = numberExtensionsWrapper.compactNumberCompat(rawValue.roundToLong(), locale)
+        val roundedValue = rawValue.roundToLong()
+        val compactValue = numberExtensionsWrapper.compactNumberCompat(roundedValue.absoluteValue, locale)
+        val displayFormatted = when (roundedValue < 0) {
+            true -> "-$compactValue"
+            false -> compactValue
+        }
         return wcStore.formatCurrencyForDisplay(displayFormatted, selectedSite.get(), currencyCode, false)
     }
 
