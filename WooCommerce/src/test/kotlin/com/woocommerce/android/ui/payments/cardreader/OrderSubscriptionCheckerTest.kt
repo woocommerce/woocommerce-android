@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.cardreader
 
 import com.woocommerce.android.model.Subscription
+import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -27,6 +28,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS
 import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
+import java.math.BigDecimal
+import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderSubscriptionCheckerTest : BaseUnitTest() {
@@ -80,7 +83,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     @Test
     fun `given endpoint returns a subscription, when checking, then is not free`() = testBlocking {
         whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
-            .thenReturn(WooResult(listOf(mock<Subscription>())))
+            .thenReturn(WooResult(listOf(subscription())))
 
         val result = checker.isOrderFreeOfSubscriptions(order)
 
@@ -118,4 +121,15 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
 
         verify(subscriptionRepository, times(2)).fetchSubscriptionsByOrderId(eq(order.id), any())
     }
+
+    private fun subscription() = Subscription(
+        id = 1L,
+        status = Subscription.Status.Active,
+        billingPeriod = SubscriptionPeriod.Month,
+        billingInterval = 1,
+        total = BigDecimal.TEN,
+        startDate = LocalDate.of(2026, 1, 1),
+        endDate = null,
+        currency = "USD",
+    )
 }
