@@ -94,6 +94,15 @@ import kotlin.reflect.KMutableProperty0
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val SCOPE_CANCELLATION_FAILURE_MESSAGE = "Failed to cancel the card reader payment scope"
 
+// Store-management collection flows that can involve an existing order which might contain a
+// subscription, so eligibility must be confirmed via the network lookup. WOO_POS and ORDER_CREATION
+// orders are created in-app where subscriptions aren't supported, so they rely on the local check.
+private val STORE_MANAGER_PAYMENT_TYPES = setOf(
+    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE,
+    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER,
+    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY,
+)
+
 @Suppress("LongParameterList", "LargeClass")
 class CardReaderPaymentController(
     private val cardReaderManager: CardReaderManager,
@@ -228,7 +237,15 @@ class CardReaderPaymentController(
             fetchOrder()?.let { order ->
                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
 
-                if (!paymentCollectibilityChecker.isCollectable(order, allowCancelledStatus)) {
+                val checkSubscriptionViaEndpoint =
+                    (paymentOrRefund as? CardReaderFlowParam.PaymentOrRefund.Payment)?.paymentType in
+                        STORE_MANAGER_PAYMENT_TYPES
+                if (!paymentCollectibilityChecker.isCollectable(
+                        order,
+                        allowCancelledStatus,
+                        checkSubscriptionViaEndpoint,
+                    )
+                ) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
