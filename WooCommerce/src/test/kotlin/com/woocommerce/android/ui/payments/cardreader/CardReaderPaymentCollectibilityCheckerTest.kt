@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCurrencySupportedChecker
+import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -22,9 +23,11 @@ import java.util.Date
 class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
     private val repository: OrderDetailRepository = mock()
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker = mock()
+    private val orderSubscriptionChecker: OrderSubscriptionChecker = mock()
     private val checker: CardReaderPaymentCollectibilityChecker = CardReaderPaymentCollectibilityChecker(
         orderDetailRepository = repository,
-        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker
+        cardReaderPaymentCurrencySupportedChecker = cardReaderPaymentCurrencySupportedChecker,
+        orderSubscriptionChecker = orderSubscriptionChecker,
     )
 
     private val generatedOrder = OrderTestUtils.generateTestOrder()
@@ -165,6 +168,28 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
             doReturn(true).whenever(repository).hasSubscriptionProducts(any())
 
             val isCollectable = checker.isCollectable(order)
+
+            assertThat(isCollectable).isFalse()
+        }
+
+    @Test
+    fun `given endpoint check, when order is free of subscriptions, then is collectable`() =
+        testBlocking {
+            val order = getOrder()
+            doReturn(true).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
+
+            val isCollectable = checker.isCollectable(order, checkSubscriptionViaEndpoint = true)
+
+            assertThat(isCollectable).isTrue()
+        }
+
+    @Test
+    fun `given endpoint check, when order contains a subscription, then hide collect button`() =
+        testBlocking {
+            val order = getOrder()
+            doReturn(false).whenever(orderSubscriptionChecker).isOrderFreeOfSubscriptions(order)
+
+            val isCollectable = checker.isCollectable(order, checkSubscriptionViaEndpoint = true)
 
             assertThat(isCollectable).isFalse()
         }
