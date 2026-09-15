@@ -168,7 +168,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         whenever(mockedOrder.id).thenReturn(ORDER_ID)
         whenever(mockedOrder.status).thenReturn(Order.Status.Pending)
 
-        whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(true)
+        whenever(paymentCollectibilityChecker.isCollectable(any(), any(), any())).thenReturn(true)
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(appPrefs.getCardReaderStatementDescriptor(anyOrNull(), anyOrNull(), anyOrNull()))
@@ -446,7 +446,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     @Test
     fun `when payment not collectable, then error event emitted and flow terminated`() =
         testBlocking {
-            whenever(paymentCollectibilityChecker.isCollectable(any(), any())).thenReturn(false)
+            whenever(paymentCollectibilityChecker.isCollectable(any(), any(), any())).thenReturn(false)
             val events = mutableListOf<CardReaderPaymentEvent>()
             val job = launch {
                 controller.event.collect {

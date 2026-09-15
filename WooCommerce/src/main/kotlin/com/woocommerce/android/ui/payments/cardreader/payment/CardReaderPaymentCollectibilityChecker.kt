@@ -16,9 +16,14 @@ import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
-    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
+    private val orderSubscriptionChecker: OrderSubscriptionChecker,
 ) {
-    suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
+    suspend fun isCollectable(
+        order: Order,
+        allowCancelledStatus: Boolean = false,
+        checkSubscriptionViaEndpoint: Boolean = false,
+    ): Boolean {
         return with(order) {
             cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
                 isStatusCollectable(allowCancelledStatus) &&
@@ -26,9 +31,16 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 isPaymentMethodCollectable() &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+                isOrderFreeOfSubscriptions(order, checkSubscriptionViaEndpoint)
         }
     }
+
+    private suspend fun isOrderFreeOfSubscriptions(order: Order, checkSubscriptionViaEndpoint: Boolean) =
+        if (checkSubscriptionViaEndpoint) {
+            orderSubscriptionChecker.isOrderFreeOfSubscriptions(order)
+        } else {
+            !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+        }
 
     private fun Order.isPaymentMethodCollectable() =
         paymentMethod in arrayOf(
