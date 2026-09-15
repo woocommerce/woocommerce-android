@@ -170,6 +170,24 @@ class RegisterDeviceTest : BaseUnitTest(StandardTestDispatcher()) {
     }
 
     @Test
+    fun `given login success trigger, when registration runs, then registers WPCom before the Woo sites`() =
+        testBlocking {
+            // GIVEN
+            runBlocking { whenever(pushNotificationRepository.isWpComPushRegistered()).thenReturn(false) }
+
+            // WHEN
+            sut(LOGIN_SUCCESS)
+
+            // THEN
+            val siteOneOrder = inOrder(pushNotificationRepository)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            siteOneOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteOne, false)
+            val siteTwoOrder = inOrder(pushNotificationRepository)
+            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+            siteTwoOrder.verify(pushNotificationRepository).registerPushTokenInWooCoreSystem(TEST_TOKEN, siteTwo, false)
+        }
+
+    @Test
     fun `given login success trigger, when WPCom registration returns an error, then still registers Woo sites`() =
         testBlocking {
             // GIVEN
