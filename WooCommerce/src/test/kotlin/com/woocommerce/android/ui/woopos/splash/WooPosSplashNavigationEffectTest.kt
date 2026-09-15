@@ -23,7 +23,7 @@ import org.junit.Test
 import org.mockito.Mockito.mockStatic
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosSplashNavigationTest {
+class WooPosSplashNavigationEffectTest {
     @Rule
     @JvmField
     val coroutineTestRule = WooPosCoroutineTestRule(StandardTestDispatcher())
@@ -42,7 +42,7 @@ class WooPosSplashNavigationTest {
                 val callback = mutableStateOf<(WooPosNavigationEvent) -> Unit>({ events.add(it) })
                 var compositions = 0
                 fixture.composition.setContent {
-                    WooPosSplashNavigation(state, callback.value)
+                    WooPosSplashNavigationEffect(state, callback.value)
                     SideEffect { compositions++ }
                 }
                 fixture.advance()
@@ -68,7 +68,7 @@ class WooPosSplashNavigationTest {
         val events = mutableListOf<WooPosNavigationEvent>()
         CompositionFixture(this).use { fixture ->
             fixture.composition.setContent {
-                WooPosSplashNavigation(state.value) { events.add(it) }
+                WooPosSplashNavigationEffect(state.value) { events.add(it) }
             }
             fixture.advance()
 

@@ -80,13 +80,13 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         }
         is WooPosSplashState.Loaded,
         is WooPosSplashState.NotEligible -> {
-            WooPosSplashNavigation(currentState, onNavigationEvent)
+            WooPosSplashNavigationEffect(currentState, onNavigationEvent)
         }
     }
 }
 
 @Composable
-internal fun WooPosSplashNavigation(
+internal fun WooPosSplashNavigationEffect(
     state: WooPosSplashState,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
