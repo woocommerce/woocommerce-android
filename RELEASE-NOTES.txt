@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
 - [*] Push notifications setup now explains when a store's Jetpack is in Offline Mode instead of wrongly telling administrators to "ask your store administrator" [https://github.com/woocommerce/woocommerce-android/pull/16551]
 - [*] Order details now shows refunded shipping lines, including refunds that only contain shipping [https://github.com/woocommerce/woocommerce-android/pull/16552]
 - [*] Product thumbnails in orders, refunds, and reviews now load without blocking the screen.
