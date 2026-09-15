@@ -4,96 +4,238 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Determines if POS can be launched *from within the POS tab* based on launch conditions
- * (WooCommerce version, plan eligibility). POS is available worldwide — the country gate
- * and the WC POS feature switch have been removed in favour of per-country card-payment
- * gating inside the POS UI.
- */
 @Singleton
 class WooPosCanBeLaunchedInTab @Inject constructor(
     private val appPrefs: AppPrefs,
     private val selectedSite: SelectedSite,
-    private val getWooCoreCachedVersion: GetWooCorePluginCachedVersion,
-    private val fetchWooCoreVersion: FetchActiveWCPluginVersion,
+    private val wooCommerceStore: WooCommerceStore,
+    private val getWooCorePluginStatus: WooPosGetWooCorePluginStatus,
+    private val isFeatureSwitchEnabled: WooPosIsFeatureSwitchEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val wooPosLog: WooPosLogWrapper,
 ) {
 
-    suspend operator fun invoke(forceRefresh: Boolean = false): WooPosLaunchability = withContext(Dispatchers.IO) {
-        return@withContext checkLaunchability(forceRefresh).also {
+    suspend operator fun invoke(
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy
+    ): WooPosLaunchability = withContext(Dispatchers.IO) {
+        return@withContext checkLaunchability(refreshPolicy).also {
             if (it is WooPosLaunchability.NotLaunchable) {
                 wooPosLog.i("POS cannot be launched: $it")
             }
         }
     }
 
-    @Suppress("ReturnCount")
-    private suspend fun checkLaunchability(forceRefresh: Boolean = false): WooPosLaunchability {
+    private suspend fun checkLaunchability(
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy
+    ): WooPosLaunchability {
         val site = selectedSite.getOrNull()
             ?: return WooPosLaunchability.NotLaunchable(
                 reason = WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected
             )
 
-        val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
-
-        getNonLaunchabilityReasonFromVersion(forceRefresh, cachedPositive)?.let {
-            return prepareNotLaunchableStateWithCacheUpdate(site.id, it)
-        }
+        findBlockingReason(site, refreshPolicy)?.let { return it }
 
         appPrefs.setPOSLaunchableForSite(site.id)
         return WooPosLaunchability.Launchable
     }
 
-    private fun prepareNotLaunchableStateWithCacheUpdate(
+    private suspend fun findBlockingReason(
+        site: SiteModel,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy
+    ): WooPosLaunchability.NotLaunchable? {
+        val cachedPositive = appPrefs.isPOSLaunchableForSite(site.id)
+        val resolvedSettings = resolveSiteSettings(site, refreshPolicy)
+
+        if (resolvedSettings != null) {
+            checkSiteSettings(site, resolvedSettings, cachedPositive)?.let { return it }
+        }
+
+        checkPlugin(site, refreshPolicy, cachedPositive)?.let { return it }
+
+        // A deactivated plugin takes the wc/v3 routes with it, so settings we could not read are
+        // only reported as indeterminate once the plugin check has had its say.
+        return if (resolvedSettings == null) couldNotDetermine(site.id, cachedPositive) else null
+    }
+
+    @Suppress("ReturnCount")
+    private fun checkSiteSettings(
+        site: SiteModel,
+        resolved: ResolvedSettings,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NotLaunchable? {
+        val siteSettings = resolved.settings
+
+        if (siteSettings.countryCode.isBlank()) return couldNotDetermine(site.id, cachedPositive)
+
+        val supportedCurrencies = WooPosSupportedCountries.currenciesFor(siteSettings.countryCode)
+
+        if (supportedCurrencies.isEmpty()) {
+            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_ALL_COUNTRIES)) return null
+
+            // Stored settings can be stale, so only a country confirmed by a fetch drops the cached positive.
+            return notLaunchable(
+                siteId = site.id,
+                reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry,
+                isDefinite = resolved.isFresh
+            )
+        }
+
+        if (siteSettings.currencyCode.isBlank()) return couldNotDetermine(site.id, cachedPositive)
+
+        if (siteSettings.currencyCode.uppercase() in supportedCurrencies) return null
+
+        // Stored settings can be stale, so only a mismatch confirmed by a fetch drops the cached positive.
+        return notLaunchable(
+            siteId = site.id,
+            reason = WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
+            isDefinite = resolved.isFresh
+        )
+    }
+
+    private suspend fun checkPlugin(
+        site: SiteModel,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NotLaunchable? =
+        when (val status = getWooCorePluginStatus(refreshPolicy)) {
+            is WooPosWooCorePluginStatus.NotInstalledOrInactive ->
+                notLaunchable(site.id, WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound)
+
+            is WooPosWooCorePluginStatus.CouldNotDetermine ->
+                couldNotDetermine(site.id, cachedPositive)
+
+            is WooPosWooCorePluginStatus.Active ->
+                checkWooCoreVersion(site.id, status.version)
+                    ?: checkFeatureSwitch(
+                        site = site,
+                        wooCoreVersion = status.version,
+                        report = status.report,
+                        refreshPolicy = refreshPolicy,
+                        cachedPositive = cachedPositive,
+                    )
+        }
+
+    private fun checkWooCoreVersion(
         siteId: Int,
-        reason: WooPosLaunchability.NonLaunchabilityReason
+        wooCoreVersion: String
+    ): WooPosLaunchability.NotLaunchable? =
+        if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
+            notLaunchable(siteId, WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion)
+        } else {
+            null
+        }
+
+    private suspend fun checkFeatureSwitch(
+        site: SiteModel,
+        wooCoreVersion: String,
+        report: WooPosSystemStatusReport?,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NotLaunchable? {
+        if (!isFeatureSwitchSupported(wooCoreVersion)) return null
+
+        return when (isFeatureSwitchEnabled(refreshPolicy, report).getOrNull()) {
+            true -> null
+            false -> notLaunchable(site.id, WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled)
+            null -> couldNotDetermine(site.id, cachedPositive)
+        }
+    }
+
+    /**
+     * The check could not tell the store's state. A store that has launched POS before keeps launching it.
+     */
+    private fun couldNotDetermine(
+        siteId: Int,
+        cachedPositive: Boolean
+    ): WooPosLaunchability.NotLaunchable? =
+        if (cachedPositive) {
+            null
+        } else {
+            notLaunchable(siteId, WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache)
+        }
+
+    private fun notLaunchable(
+        siteId: Int,
+        reason: WooPosLaunchability.NonLaunchabilityReason,
+        isDefinite: Boolean = reason.isDefiniteIneligibility
     ): WooPosLaunchability.NotLaunchable {
-        if (reason != WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache) {
+        if (isDefinite) {
             appPrefs.clearPOSLaunchableForSite(siteId)
         }
 
         return WooPosLaunchability.NotLaunchable(reason)
     }
 
-    private suspend fun getNonLaunchabilityReasonFromVersion(
-        forceRefresh: Boolean,
-        cachedPositive: Boolean
-    ): WooPosLaunchability.NonLaunchabilityReason? {
-        val wooCoreVersion = getWooCoreVersion(forceRefresh)
-            ?: return if (cachedPositive) null else WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache
-
-        return if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion)) {
-            WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion
-        } else {
-            null
+    private suspend fun resolveSiteSettings(
+        site: SiteModel,
+        refreshPolicy: WooPosLaunchabilityRefreshPolicy
+    ): ResolvedSettings? {
+        if (refreshPolicy != WooPosLaunchabilityRefreshPolicy.ForceRefresh) {
+            wooCommerceStore.getSiteSettings(site)?.let {
+                return ResolvedSettings(settings = it, isFresh = false)
+            }
         }
-    }
 
-    private suspend fun getWooCoreVersion(forceRefresh: Boolean): String? =
-        if (forceRefresh) fetchWooCoreVersion() else getWooCoreCachedVersion()
+        if (refreshPolicy == WooPosLaunchabilityRefreshPolicy.UseCache) return null
+
+        val fetched = wooCommerceStore.fetchSiteGeneralSettings(site).model ?: return null
+        return ResolvedSettings(settings = fetched, isFresh = true)
+    }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(wooCoreVersion: String): Boolean {
         return wooCoreVersion.semverCompareTo(MINIMUM_SUPPORTED_WC_VERSION) >= 0
     }
 
+    private fun isFeatureSwitchSupported(wooCoreVersion: String): Boolean {
+        return wooCoreVersion.semverCompareTo(WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH) >= 0
+    }
+
+    private data class ResolvedSettings(
+        val settings: Settings,
+        val isFresh: Boolean,
+    )
+
     companion object {
         const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
+
+        private const val WC_VERSION_SUPPORTS_POS_FEATURE_SWITCH = "10.0.0"
     }
 }
 
+private val WooPosLaunchability.NonLaunchabilityReason.isDefiniteIneligibility: Boolean
+    get() = when (this) {
+        WooPosLaunchability.NonLaunchabilityReason.WooCommercePluginNotFound,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedWooCommerceVersion,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCountry,
+        WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency,
+        WooPosLaunchability.NonLaunchabilityReason.FeatureSwitchDisabled -> true
+
+        WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
+        WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected,
+        WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache -> false
+    }
+
 sealed class WooPosLaunchability {
     object Launchable : WooPosLaunchability()
+
     data class NotLaunchable(val reason: NonLaunchabilityReason) : WooPosLaunchability()
 
     enum class NonLaunchabilityReason {
+        WooCommercePluginNotFound,
         UnsupportedWooCommerceVersion,
+        UnsupportedCountry,
+        UnsupportedCurrency,
+        FeatureSwitchDisabled,
         SiteSettingsUnavailable,
         NoSiteSelected,
         UnknownNoPositiveCache,

@@ -8,16 +8,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.OrderDetailProductGroupItemBinding
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.orders.OrderDetailProductItemView
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.ViewAddonClickListener
 import com.woocommerce.android.ui.orders.details.OrderProduct
+import com.woocommerce.android.ui.products.ProductImageLoader
 import java.math.BigDecimal
 
 class OrderDetailProductItemListAdapter(
     private val productItems: List<OrderProduct>,
-    private val productImageMap: ProductImageMap,
+    private val productImageLoaderFactory: ProductImageLoader.Factory,
     private val formatCurrencyForDisplay: (BigDecimal) -> String,
     private val productItemListener: OrderProductActionListener,
     private val onViewAddonsClick: ViewAddonClickListener? = null
@@ -25,14 +25,12 @@ class OrderDetailProductItemListAdapter(
     private inner class ProductItemViewHolder(val view: OrderDetailProductItemView) : RecyclerView.ViewHolder(view) {
         fun onBind(
             productItem: OrderProduct.ProductItem,
-            productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = productItem.product
-            val productImage = productImageMap.get(item.uniqueId)
-            view.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            view.initView(item, productImageLoaderFactory, formatCurrencyForDisplay, onViewAddonsClick)
             itemView.setOnClickListener {
                 if (item.isVariation) {
                     productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
@@ -48,15 +46,18 @@ class OrderDetailProductItemListAdapter(
         @Suppress("MagicNumber")
         fun onBind(
             groupedItem: OrderProduct.GroupedProductItem,
-            productImageMap: ProductImageMap,
             formatCurrencyForDisplay: (BigDecimal) -> String,
             productItemListener: OrderProductActionListener,
             onViewAddonsClick: ViewAddonClickListener? = null
         ) {
             val item = groupedItem.product
-            val productImage = productImageMap.get(item.uniqueId)
 
-            binding.productInfoGroupedProduct.initView(item, productImage, formatCurrencyForDisplay, onViewAddonsClick)
+            binding.productInfoGroupedProduct.initView(
+                item,
+                productImageLoaderFactory,
+                formatCurrencyForDisplay,
+                onViewAddonsClick
+            )
             binding.productInfoGroupedProduct.setOnClickListener {
                 if (item.isVariation) {
                     productItemListener.openOrderProductVariationDetail(item.productId, item.variationId)
@@ -88,7 +89,7 @@ class OrderDetailProductItemListAdapter(
 
             val childrenAdapter = OrderDetailProductChildItemListAdapter(
                 groupedItem.children,
-                productImageMap,
+                productImageLoaderFactory,
                 formatCurrencyForDisplay,
                 productItemListener
             )
@@ -146,7 +147,6 @@ class OrderDetailProductItemListAdapter(
             GROUPED_PRODUCT_ITEM_VIEW -> {
                 (holder as GroupedItemViewHolder).onBind(
                     productItems[position] as OrderProduct.GroupedProductItem,
-                    productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
                     onViewAddonsClick
@@ -156,7 +156,6 @@ class OrderDetailProductItemListAdapter(
             PRODUCT_ITEM_VIEW -> {
                 (holder as ProductItemViewHolder).onBind(
                     productItems[position] as OrderProduct.ProductItem,
-                    productImageMap,
                     formatCurrencyForDisplay,
                     productItemListener,
                     onViewAddonsClick
