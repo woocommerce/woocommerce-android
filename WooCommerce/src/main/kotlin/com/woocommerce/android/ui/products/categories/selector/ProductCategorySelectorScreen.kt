@@ -184,7 +184,7 @@ private fun CategoriesList(
 }
 
 private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
-    val indentLevel = depth.coerceAtMost(ProductCategory.MAX_INDENT_LEVELS)
+    val indentMultiplier = ProductCategory.computeIndentationMultiplier(depth)
     item {
         Column(
             modifier = Modifier
@@ -202,7 +202,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                     text = item.title,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier
-                        .padding(start = dimensionResource(id = R.dimen.major_100) * indentLevel)
+                        .padding(start = dimensionResource(id = R.dimen.major_100) * indentMultiplier)
                         .weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -218,7 +218,9 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 )
             }
 
-            Divider(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (indentLevel + 1)))
+            Divider(
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100) * (indentMultiplier + 1))
+            )
         }
     }
     item.children.forEach {

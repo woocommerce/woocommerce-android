@@ -9,7 +9,7 @@ import org.mockito.kotlin.whenever
 
 class ProductCategoryTest {
     private val resourceProvider: ResourceProvider = mock<ResourceProvider>().apply {
-        whenever(getDimensionPixelSize(R.dimen.major_125)).thenReturn(STEP)
+        whenever(getDimensionPixelSize(R.dimen.major_100)).thenReturn(STEP)
     }
 
     @Test
@@ -37,20 +37,23 @@ class ProductCategoryTest {
     }
 
     @Test
-    fun `given a category nested far beyond the cap, when computing the margin, then it stops at the cap`() {
+    fun `given nested categories, when computing margins, then steps shrink after eight levels and stop after sixteen`() {
         // GIVEN
-        val category = ProductCategory(remoteCategoryId = 16L, name = "Level 15", parentId = 15L)
+        val depths = listOf(7, 8, 9, 15, 16, 20)
 
         // WHEN
-        val margin = category.computeCascadingMargin(resourceProvider, chainOf(depth = 15))
+        val margins = depths.map { depth ->
+            ProductCategory(remoteCategoryId = depth + 1L, name = "Level $depth", parentId = depth.toLong())
+                .computeCascadingMargin(resourceProvider, chainOf(depth))
+        }
 
         // THEN
-        assertThat(margin).isEqualTo(STEP * (ProductCategory.MAX_INDENT_LEVELS + 1))
+        assertThat(margins).containsExactly(256, 288, 304, 400, 416, 416)
     }
 
     private fun chainOf(depth: Int) = (1..depth).associate { it.toLong() + 1 to it.toLong() }
 
     private companion object {
-        const val STEP = 20
+        const val STEP = 32
     }
 }
