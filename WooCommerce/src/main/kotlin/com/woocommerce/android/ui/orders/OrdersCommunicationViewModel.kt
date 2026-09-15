@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 /**
@@ -27,6 +28,11 @@ class OrdersCommunicationViewModel @Inject constructor(
      */
     val createdOrderIdPendingScrollToTop: Long?
         get() = savedStateHandle[KEY_CREATED_ORDER_ID_PENDING_SCROLL]
+
+    val createdOrderIdPendingScrollToTopFlow: StateFlow<Long?> = savedStateHandle.getStateFlow(
+        key = KEY_CREATED_ORDER_ID_PENDING_SCROLL,
+        initialValue = null,
+    )
 
     fun trashOrder(orderId: Long) {
         triggerEvent(CommunicationEvent.OrderTrashed(orderId))

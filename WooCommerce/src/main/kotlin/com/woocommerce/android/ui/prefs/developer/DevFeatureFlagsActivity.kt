@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,7 +14,7 @@ class DevFeatureFlagsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WooThemeWithBackground {
+            LegacyWooThemeWithBackground {
                 DevFeatureFlagsScreen(
                     onBackClick = { onBackPressedDispatcher.onBackPressed() },
                     onRestartClick = { restartApp() }

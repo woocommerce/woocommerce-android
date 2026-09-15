@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.compose.DragDropState
 import com.woocommerce.android.ui.compose.DraggableItem
 import com.woocommerce.android.ui.compose.dragContainerForDragHandle
 import com.woocommerce.android.ui.compose.rememberDragDropState
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 
@@ -46,9 +46,9 @@ fun <T> DragAndDropItemsList(
     itemKey: ((index: Int, item: T) -> Any),
     modifier: Modifier = Modifier,
     isItemDraggable: (T) -> Boolean = { true },
+    listState: LazyListState = rememberLazyListState(),
     itemContent: @Composable (item: T, dragDropState: DragDropState) -> Unit
 ) {
-    val listState = rememberLazyListState()
     // This is needed to make sure that we access the updated list in the captured value in isDraggable lambda
     val itemsState by rememberUpdatedState(newValue = items)
     val dragDropState = rememberDragDropState(
@@ -140,7 +140,7 @@ fun <T> DragAndDropSelectableItem(
 @Preview
 @Composable
 fun DragAndDropSelectableItemPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         DragAndDropSelectableItem(
             item = Unit,
             isSelected = false,

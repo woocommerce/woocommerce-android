@@ -6,13 +6,20 @@ Fragment: `OrderListFragment` -- Tap `orders` bottom tab.
 
 ## Screen Identifiers
 
-**Orders List**
+**Orders List** -- Compose. Test tags are declared in `OrderListTestTags.kt` and surface in the accessibility tree as `resource-id` **verbatim**, with no `com.woocommerce.android.dev:id/` prefix.
 
 | Key Element | Identifier | Notes |
 |-------------|-----------|-------|
-| **Primary** | `order_list_view` | Order list RecyclerView |
-| Filters card | `order_filters_card` | Status filter chips |
-| Create order FAB | `createOrderButton` | contentDescription: "Create order" |
+| **Primary** | `order_list_screen` | Compose root of the orders list |
+| Order list | `order_list` | LazyColumn holding the order rows |
+| Order row | `order_list_order_<orderId>` | One per order; `<orderId>` is the remote order ID |
+| Filters chip | `order_list_filters` | Opens order filters; `stateDescription` reports the active filter count |
+| Search icon | `order_list_search_action` | contentDescription: "Search orders" |
+| Search field | `order_list_search_field` | Only present after tapping the search icon |
+| Barcode icon | `order_list_barcode_action` | contentDescription: "Scan Barcode" |
+| Create order FAB | `order_list_create_order_fab` | contentDescription: "Create order" |
+| Empty view | `order_list_empty` | Shown when no orders match; its action button is `order_list_empty_action` |
+| Selection header | `order_list_selection_header` | Replaces the top app bar in multi-select mode |
 
 **Order Detail** -- Fragment: `OrderDetailFragment` -- tap any order row
 
@@ -35,10 +42,10 @@ Fragment: `OrderListFragment` -- Tap `orders` bottom tab.
 | Step | Action | Element |
 |------|--------|---------|
 | 1 | Tap "Orders" tab | id: `orders` |
-| 2 | Tap an order | order row in `order_list_view` |
-| 3 | Filter by status | tap chips in `order_filters_card` |
-| 4 | Search orders | tap search icon in toolbar |
-| 5 | Create new order | FAB: `createOrderButton` |
+| 2 | Tap an order | order row in `order_list` -- `order_list_order_<orderId>` |
+| 3 | Filter by status | tap `order_list_filters`, then pick a status |
+| 4 | Search orders | tap `order_list_search_action`, then type into `order_list_search_field` |
+| 5 | Create new order | FAB: `order_list_create_order_fab` |
 
 **Tablet create order:** On tablets, the product selector and order summary are side-by-side. After selecting products, tap **"Recalculate"** in the totals section — totals show $0.00 until recalculated, and "Collect Payment" only appears after recalculation. On phones, the product selector is a separate screen.
 
@@ -132,10 +139,12 @@ Payment method selection screen offers multiple options depending on store setup
 
 | Step | Action | Element |
 |------|--------|---------|
-| 1 | Long-press to enter selection mode | order rows |
-| 2 | Select orders | order checkboxes |
-| 3 | Tap bulk update | update button |
-| 4 | Confirm status change | confirmation dialog |
+| 1 | Long-press to enter selection mode | order row -- `order_list_order_<orderId>` |
+| 2 | Select more orders | tap further rows; per-row indicator `order_list_selection_indicator_<orderId>` |
+| 3 | Open the selection menu | `order_list_selection_overflow` -- contentDescription: "More options" |
+| 4 | Tap "Update status" | `order_list_selection_update_status` inside `order_list_selection_menu` |
+| 5 | Confirm status change | status list dialog |
+| -- | Exit selection mode | `order_list_selection_close` |
 
 ### Trash Order
 

@@ -71,7 +71,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
@@ -83,7 +83,7 @@ fun PaymentsHubPayoutSummaryView(
     viewModel: PaymentsHubPayoutSummaryViewModel = viewModel()
 ) {
     viewModel.viewState.observeAsState().let {
-        WooThemeWithBackground {
+        LegacyWooThemeWithBackground {
             when (val value = it.value) {
                 is PaymentsHubPayoutSummaryState.Success -> PaymentsHubPayoutSummaryView(
                     value.overview,
@@ -673,7 +673,7 @@ private val previewState = sortedMapOf(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentsHubPayoutSummaryViewUsdPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsHubPayoutSummaryView(
             PaymentsHubPayoutSummaryState.Overview(
                 defaultCurrency = "USD",
@@ -693,7 +693,7 @@ fun PaymentsHubPayoutSummaryViewUsdPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentsHubPayoutSummaryViewEurPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsHubPayoutSummaryView(
             PaymentsHubPayoutSummaryState.Overview(
                 defaultCurrency = "USD",
@@ -713,7 +713,7 @@ fun PaymentsHubPayoutSummaryViewEurPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentsHubPayoutSummaryViewRubPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsHubPayoutSummaryView(
             PaymentsHubPayoutSummaryState.Overview(
                 defaultCurrency = "USD",
@@ -733,7 +733,7 @@ fun PaymentsHubPayoutSummaryViewRubPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentsHubPayoutSummaryViewGbpPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsHubPayoutSummaryView(
             PaymentsHubPayoutSummaryState.Overview(
                 defaultCurrency = "USD",
@@ -753,7 +753,7 @@ fun PaymentsHubPayoutSummaryViewGbpPreview() {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PaymentsHubPayoutSummaryViewNoPayoutsPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         PaymentsHubPayoutSummaryView(
             PaymentsHubPayoutSummaryState.Overview(
                 defaultCurrency = "USD",

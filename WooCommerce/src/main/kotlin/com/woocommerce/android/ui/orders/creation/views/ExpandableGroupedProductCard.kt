@@ -53,7 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
@@ -448,7 +448,7 @@ fun ExpandableChildrenProductCardPreview() {
             hasDiscount = true
         )
     )
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ExpandableChildrenProductCard(product, { _, _ -> })
     }
 }

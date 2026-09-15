@@ -13,20 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.LiveData
@@ -36,9 +35,11 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.ui.compose.rememberNavController
+import com.woocommerce.android.ui.dashboard.DashboardSkeleton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -151,22 +152,21 @@ fun DashboardGoogleAdsView(
 private fun GoogleAdsLoading(
     modifier: Modifier = Modifier
 ) {
-    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+    val roundedShape = RoundedCornerShape(WooTheme.radius.medium)
     Column(modifier = modifier.padding(vertical = 8.dp)) {
         Row(
             verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.divider_color),
-                    shape = roundedShape
+                    width = WooTheme.stroke.regular,
+                    color = WooTheme.colors.outlineVariant,
+                    shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
-                .background(MaterialTheme.colors.surface)
                 .fillMaxWidth()
         ) {
             Image(
@@ -176,12 +176,12 @@ private fun GoogleAdsLoading(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f)
             ) {
-                SkeletonView(width = 200.dp, height = 24.dp)
+                DashboardSkeleton(width = 200.dp, height = 24.dp)
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.minor_100)))
-                SkeletonView(width = 250.dp, height = 16.dp)
+                DashboardSkeleton(width = 250.dp, height = 16.dp)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -191,19 +191,19 @@ private fun GoogleAdsLoading(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .border(
-                width = dimensionResource(id = R.dimen.minor_10),
-                color = colorResource(id = R.color.divider_color),
-                shape = roundedShape
+                width = WooTheme.stroke.regular,
+                color = WooTheme.colors.outlineVariant,
+                shape = roundedShape,
             )
             .clip(roundedShape)
             .padding(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
+                horizontal = WooTheme.padding.padding5,
+                vertical = WooTheme.padding.padding5
             )
-            .background(MaterialTheme.colors.surface)
+            .background(WooTheme.colors.surface.default)
             .fillMaxWidth()
     ) {
-        SkeletonView(width = 200.dp, height = 24.dp)
+        DashboardSkeleton(width = 200.dp, height = 24.dp)
     }
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -214,22 +214,22 @@ private fun GoogleAdsNoCampaigns(
     onCreateCampaignClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+    val roundedShape = RoundedCornerShape(WooTheme.radius.medium)
     Column {
         Row(
             verticalAlignment = Alignment.Top,
             modifier = modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.divider_color),
-                    shape = roundedShape
+                    width = WooTheme.stroke.regular,
+                    color = WooTheme.colors.outlineVariant,
+                    shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
-                .background(MaterialTheme.colors.surface)
+                .background(WooTheme.colors.surface.default)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.google_logo),
@@ -238,17 +238,19 @@ private fun GoogleAdsNoCampaigns(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f),
             ) {
                 Text(
                     text = stringResource(R.string.dashboard_google_ads_card_no_campaign_heading),
-                    style = MaterialTheme.typography.h6
+                    style = WooTheme.text.titleLarge.strong,
+                    color = WooTheme.colors.surface.onDefault,
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.minor_100)))
                 Text(
                     text = stringResource(R.string.dashboard_google_ads_card_no_campaign_description),
-                    style = MaterialTheme.typography.body1
+                    style = WooTheme.text.bodyLarge.regular,
+                    color = WooTheme.colors.surface.onDefault,
                 )
             }
         }
@@ -266,22 +268,22 @@ private fun GoogleAdsHasCampaigns(
     onPerformanceAreaClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+    val roundedShape = RoundedCornerShape(WooTheme.radius.medium)
     Column {
         Row(
             verticalAlignment = Alignment.Top,
             modifier = modifier
                 .border(
-                    width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.divider_color),
-                    shape = roundedShape
+                    width = WooTheme.stroke.regular,
+                    color = WooTheme.colors.outlineVariant,
+                    shape = roundedShape,
                 )
                 .clip(roundedShape)
                 .padding(
-                    horizontal = dimensionResource(id = R.dimen.major_100),
-                    vertical = dimensionResource(id = R.dimen.major_100)
+                    horizontal = WooTheme.padding.padding5,
+                    vertical = WooTheme.padding.padding5
                 )
-                .background(MaterialTheme.colors.surface)
+                .background(WooTheme.colors.surface.default)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.google_logo),
@@ -290,7 +292,7 @@ private fun GoogleAdsHasCampaigns(
             )
             Column(
                 modifier = Modifier
-                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .padding(start = WooTheme.padding.padding5)
                     .weight(1f),
             ) {
                 Row(
@@ -301,14 +303,15 @@ private fun GoogleAdsHasCampaigns(
                 ) {
                     Text(
                         text = stringResource(R.string.dashboard_google_ads_card_has_campaign_heading),
-                        style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.SemiBold,
+                        style = WooTheme.text.bodyLarge.emphasized,
+                        color = WooTheme.colors.surface.onDefault,
                         modifier = Modifier.weight(1f)
                     )
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = WooTheme.colors.surface.onVariant,
                     )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.major_100)))
@@ -317,13 +320,14 @@ private fun GoogleAdsHasCampaigns(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = stringResource(R.string.dashboard_google_ads_card_has_campaign_impressions),
-                            style = MaterialTheme.typography.body2
+                            style = WooTheme.text.bodyMedium.regular,
+                            color = WooTheme.colors.surface.onDefault,
                         )
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
                             text = impressions,
-                            style = MaterialTheme.typography.h5,
-                            fontWeight = FontWeight.SemiBold
+                            style = WooTheme.text.headlineSmall.emphasized,
+                            color = WooTheme.colors.surface.onDefault,
                         )
                     }
 
@@ -332,13 +336,14 @@ private fun GoogleAdsHasCampaigns(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = stringResource(R.string.dashboard_google_ads_card_has_campaign_clicks),
-                            style = MaterialTheme.typography.body2
+                            style = WooTheme.text.bodyMedium.regular,
+                            color = WooTheme.colors.surface.onDefault,
                         )
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
                             text = clicks,
-                            style = MaterialTheme.typography.h5,
-                            fontWeight = FontWeight.SemiBold
+                            style = WooTheme.text.headlineSmall.emphasized,
+                            color = WooTheme.colors.surface.onDefault,
                         )
                     }
                 }
@@ -352,15 +357,32 @@ private fun GoogleAdsHasCampaigns(
 
 @Composable
 private fun CreateCampaignButton(onClick: () -> Unit) {
-    WCOutlinedButton(
+    WooOutlinedButton(
+        text = stringResource(R.string.dashboard_google_ads_card_create_campaign_button),
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 top = dimensionResource(id = R.dimen.minor_100),
                 bottom = dimensionResource(id = R.dimen.major_100)
             ),
-        onClick = onClick
-    ) {
-        Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
+        onClick = onClick,
+    )
+}
+
+@PreviewLightDark
+@Preview(name = "Large font", fontScale = 2f)
+@Preview(name = "RTL", locale = "ar")
+@Composable
+private fun DashboardGoogleAdsNoCampaignsPreview() {
+    WooDesignSystemThemeWithBackground {
+        DashboardGoogleAdsView(
+            viewState = DashboardGoogleAdsState.NoCampaigns(
+                onCreateCampaignClicked = {},
+                menu = DashboardViewModel.DashboardWidgetMenu(emptyList()),
+            ),
+            onContactSupportClicked = {},
+            onRetryOnErrorButtonClicked = {},
+            modifier = Modifier,
+        )
     }
 }

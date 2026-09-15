@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
 import org.wordpress.android.login.MagicLinkFallbackButton
@@ -215,7 +215,7 @@ private fun MagicLinkSentContent(
 @Preview
 @Composable
 private fun JetpackModeRequestPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
                 isJetpackInstalled = false,
@@ -231,7 +231,7 @@ private fun JetpackModeRequestPreview() {
 @Preview
 @Composable
 private fun MagicLinkSentPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
                 isJetpackInstalled = false,

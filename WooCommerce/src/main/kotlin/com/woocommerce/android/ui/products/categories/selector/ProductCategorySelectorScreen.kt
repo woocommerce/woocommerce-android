@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.CategoryUiModel
 import com.woocommerce.android.ui.products.categories.selector.ProductCategorySelectorViewModel.LoadingState
 import com.woocommerce.android.util.StringUtils
@@ -321,7 +321,7 @@ private fun PreviewProductCategorySelector() {
             generateCategory(it, childrenDepth = it.coerceAtMost(4).toInt())
         }
     }
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         ProductCategorySelectorScreen(
             viewState = ProductCategorySelectorViewModel.ViewState(
                 categories = categories,

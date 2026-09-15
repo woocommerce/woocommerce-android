@@ -37,7 +37,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import java.util.concurrent.TimeUnit
 import androidx.camera.core.Preview as CameraPreview
 
@@ -168,7 +168,7 @@ internal fun DefaultScannerOverlay(@StringRes overlayLabel: Int) {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun BarcodeScannerScreenPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         BarcodeScanner(
             onNewFrame = {},
             onBindingException = {}

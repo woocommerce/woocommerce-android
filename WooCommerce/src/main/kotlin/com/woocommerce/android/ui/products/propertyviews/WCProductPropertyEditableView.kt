@@ -23,7 +23,7 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     // Flag to check if [EditText] already has a [EditText.doAfterTextChanged] defined to avoid multiple callbacks
     private var isTextChangeListenerActive: Boolean = false
 
-    fun show(hint: String, detail: String?, isFocused: Boolean, isReadOnly: Boolean) {
+    fun show(hint: String, detail: String?, isReadOnly: Boolean) {
         editableText.hint = hint
 
         if (!detail.isNullOrEmpty() && detail != editableText.text.toString()) {
@@ -32,10 +32,6 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
         }
 
         editableText.isEnabled = !isReadOnly
-
-        if (isFocused) {
-            editableText.requestFocus()
-        }
     }
 
     fun showBadge(badgeTextRes: Int, badgeColorRes: Int) {

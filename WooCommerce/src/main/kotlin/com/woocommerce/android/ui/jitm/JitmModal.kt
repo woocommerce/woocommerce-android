@@ -33,7 +33,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
 import com.woocommerce.android.util.UiHelpers
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -128,7 +128,7 @@ fun JitmModal(state: JitmState.Modal) {
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun JitmDialogPreview() {
-    WooThemeWithBackground {
+    LegacyWooThemeWithBackground {
         JitmModal(
             JitmState.Modal(
                 onPrimaryActionClicked = {},
