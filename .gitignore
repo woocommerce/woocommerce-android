@@ -25,8 +25,6 @@ developer.properties
 
 # Crash Logging Configuration
 fabric.properties
-# Sentry
-sentry.properties
 
 # Local configuration file (sdk path, etc)
 local.properties
