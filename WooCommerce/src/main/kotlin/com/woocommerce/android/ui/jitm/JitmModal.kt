@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.jitm
 
-import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,18 +10,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -31,16 +28,18 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
-import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.theme.LegacyWooThemeWithBackground
+import com.woocommerce.android.ui.compose.designsystem.WooTheme
+import com.woocommerce.android.ui.compose.designsystem.component.WooButtonSize
+import com.woocommerce.android.ui.compose.designsystem.component.WooFilledButton
+import com.woocommerce.android.ui.compose.designsystem.component.WooOutlinedButton
+import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSystemThemeWithBackground
 import com.woocommerce.android.util.UiHelpers
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JitmModal(state: JitmState.Modal) {
     Dialog(
-        onDismissRequest = { state.onDismissClicked },
+        onDismissRequest = state.onDismissClicked,
         properties = DialogProperties(
             usePlatformDefaultWidth = true,
             dismissOnBackPress = false,
@@ -51,7 +50,11 @@ fun JitmModal(state: JitmState.Modal) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                shape = RoundedCornerShape(size = 8.dp)
+                shape = RoundedCornerShape(WooTheme.radius.extraLarge),
+                color = WooTheme.colors.surface.bright,
+                contentColor = WooTheme.colors.surface.onDefault,
+                shadowElevation = WooTheme.spacing.space0,
+                tonalElevation = WooTheme.spacing.space0,
             ) {
                 Column(
                     modifier = Modifier
@@ -73,62 +76,71 @@ fun JitmModal(state: JitmState.Modal) {
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .height(194.dp)
+                            .padding(
+                                start = WooTheme.padding.padding5,
+                                top = WooTheme.padding.padding5,
+                                end = WooTheme.padding.padding5,
+                            )
+                            .fillMaxWidth()
+                            .height(JITM_MODAL_HERO_HEIGHT)
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                    Spacer(modifier = Modifier.height(WooTheme.spacing.space5))
 
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, state.title),
-                        style = MaterialTheme.typography.h5,
+                        color = WooTheme.colors.surface.onDefault,
+                        style = WooTheme.text.titleLarge.strong,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                            .padding(horizontal = WooTheme.padding.padding5),
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                    Spacer(modifier = Modifier.height(WooTheme.spacing.space3))
 
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, state.description),
-                        style = MaterialTheme.typography.body2,
+                        color = WooTheme.colors.surface.onVariant,
+                        style = WooTheme.text.bodyMedium.regular,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                            .padding(horizontal = WooTheme.padding.padding5),
                     )
 
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_125)))
+                    Spacer(modifier = Modifier.height(WooTheme.spacing.space6))
 
-                    WCColoredButton(
-                        onClick = { state.onPrimaryActionClicked.invoke() },
+                    WooFilledButton(
+                        text = UiHelpers.getTextOfUiString(LocalContext.current, state.primaryActionLabel),
+                        onClick = state.onPrimaryActionClicked,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    ) {
-                        Text(text = UiHelpers.getTextOfUiString(LocalContext.current, state.primaryActionLabel))
-                    }
+                            .padding(horizontal = WooTheme.padding.padding5),
+                        size = WooButtonSize.Medium,
+                    )
 
-                    WCTextButton(
-                        onClick = { state.onDismissClicked.invoke() },
+                    Spacer(modifier = Modifier.height(WooTheme.spacing.space3))
+
+                    WooOutlinedButton(
+                        text = stringResource(id = R.string.skip),
+                        onClick = state.onDismissClicked,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    ) {
-                        Text(text = stringResource(id = R.string.skip))
-                    }
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                            .padding(horizontal = WooTheme.padding.padding5),
+                        size = WooButtonSize.Medium,
+                    )
+                    Spacer(modifier = Modifier.height(WooTheme.spacing.space5))
                 }
             }
         }
     )
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 fun JitmDialogPreview() {
-    LegacyWooThemeWithBackground {
+    WooDesignSystemThemeWithBackground {
         JitmModal(
             JitmState.Modal(
                 onPrimaryActionClicked = {},
@@ -142,3 +154,5 @@ fun JitmDialogPreview() {
         )
     }
 }
+
+private val JITM_MODAL_HERO_HEIGHT = 194.dp

@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,6 +43,10 @@ import com.woocommerce.android.ui.compose.designsystem.foundation.WooDesignSyste
 import com.woocommerce.android.ui.compose.designsystem.icons.Share
 import com.woocommerce.android.ui.compose.designsystem.icons.WooIcons
 import com.woocommerce.android.ui.compose.designsystem.icons.Xmark
+import com.woocommerce.android.ui.jitm.JitmBanner
+import com.woocommerce.android.ui.jitm.JitmModal
+import com.woocommerce.android.ui.jitm.JitmState
+import com.woocommerce.android.ui.jitm.JitmViewModel
 import com.woocommerce.android.ui.main.MainActivityViewModel
 import kotlinx.coroutines.flow.Flow
 
@@ -53,16 +55,17 @@ internal fun DashboardScreen(
     viewModel: DashboardViewModel,
     mainActivityViewModel: MainActivityViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    jitmViewModel: JitmViewModel,
     scrollToTopTrigger: Flow<Unit>,
     onJetpackBenefitsBannerShown: () -> Unit,
     onJetpackBenefitsBannerClicked: () -> Unit,
-    jitmContent: @Composable (Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val storeName by viewModel.storeName.observeAsState("")
     val appbarState by viewModel.appbarState.observeAsState()
     val jetpackBenefitsBanner by viewModel.jetpackBenefitsBannerState.observeAsState()
     val showJetpackBenefitsBanner = jetpackBenefitsBanner?.show == true
+    val jitmState by jitmViewModel.jitmState.observeAsState()
     var wasJetpackBenefitsBannerVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(showJetpackBenefitsBanner) {
@@ -90,9 +93,17 @@ internal fun DashboardScreen(
                 modifier = modifier,
             )
         },
-        jitmContent = jitmContent,
+        jitmContent = when (val state = jitmState) {
+            is JitmState.Banner -> {
+                { jitmModifier -> JitmBanner(state, jitmModifier) }
+            }
+
+            is JitmState.Modal, JitmState.Hidden, null -> null
+        },
         modifier = modifier,
     )
+
+    (jitmState as? JitmState.Modal)?.let { JitmModal(it) }
 }
 
 @Composable
@@ -104,7 +115,7 @@ private fun DashboardScreen(
     onJetpackBenefitsBannerClicked: () -> Unit,
     onJetpackBenefitsBannerDismissed: () -> Unit,
     dashboardContent: @Composable (Modifier, WooTopAppBarScrollBehavior, @Composable () -> Unit) -> Unit,
-    jitmContent: @Composable (Modifier) -> Unit,
+    jitmContent: (@Composable (Modifier) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = WooTopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -123,8 +134,16 @@ private fun DashboardScreen(
         )
         Box(modifier = Modifier.weight(1f)) {
             dashboardContent(Modifier.fillMaxSize(), scrollBehavior) {
-                Box(modifier = Modifier.padding(vertical = WooTheme.padding.padding2)) {
-                    jitmContent(Modifier.fillMaxWidth())
+                jitmContent?.let { content ->
+                    Box(
+                        modifier = Modifier.padding(
+                            start = WooTheme.padding.padding7,
+                            top = WooTheme.padding.padding7,
+                            end = WooTheme.padding.padding7,
+                        ),
+                    ) {
+                        content(Modifier.fillMaxWidth())
+                    }
                 }
             }
         }
@@ -259,9 +278,7 @@ private fun DashboardScreenEmptyBodyPreview() {
             showJetpackBenefitsBanner = true,
             onJetpackBenefitsBannerClicked = {},
             onJetpackBenefitsBannerDismissed = {},
-            jitmContent = { jitmModifier ->
-                Spacer(modifier = jitmModifier.height(0.dp))
-            },
+            jitmContent = null,
             dashboardContent = { bodyModifier, _, leadingContent ->
                 Box(modifier = bodyModifier) {
                     leadingContent()

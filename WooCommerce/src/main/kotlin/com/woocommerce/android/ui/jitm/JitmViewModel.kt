@@ -132,10 +132,10 @@ class JitmViewModel @Inject constructor(
             )
         } ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
-    private fun Assets.getBadgeIcon(): JitmState.Banner.LabelOrRemoteIcon? {
+    private fun Assets.getBadgeIcon(): JitmState.Banner.RemoteIcon? {
         val badgeUrl = this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)
         return when {
-            badgeUrl.isNullOrEmpty().not() -> JitmState.Banner.LabelOrRemoteIcon.Remote(
+            badgeUrl.isNullOrEmpty().not() -> JitmState.Banner.RemoteIcon(
                 urlLightMode = badgeUrl,
                 urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: badgeUrl
             )

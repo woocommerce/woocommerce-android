@@ -26,6 +26,10 @@
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
         android:label="fragment_dashboard">
+        <argument
+            android:name="jitm_message_path_key"
+            android:defaultValue="woomobile:my_store:admin_notices"
+            app:argType="string" />
         <action
             android:id="@+id/action_dashboard_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
