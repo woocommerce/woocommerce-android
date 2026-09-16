@@ -145,24 +145,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun showPaymentState() {
-        // The order-creation flow just created the order in-app, where subscriptions aren't
-        // supported, so it can rely on the fast local check instead of the network lookup.
-        val checkSubscriptionViaEndpoint = cardReaderPaymentFlowParam.paymentType != ORDER_CREATION
         val isPaymentCollectableWithTapToPay = isTapToPayAvailable()
 
-        if (checkSubscriptionViaEndpoint) {
-            // Show the card reader / Tap to Pay rows disabled while we confirm eligibility over the
-            // network. Cash stays enabled throughout.
-            emitPaymentState(
-                isPaymentCollectableWithCardReader = true,
-                isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
-                areCardReaderRowsLoading = true,
-            )
-        }
-        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(
-            order = order.first(),
-            checkSubscriptionViaEndpoint = checkSubscriptionViaEndpoint,
+        // Show the card reader / Tap to Pay rows disabled while we confirm eligibility over the
+        // network. Cash stays enabled throughout.
+        emitPaymentState(
+            isPaymentCollectableWithCardReader = true,
+            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
+            areCardReaderRowsLoading = true,
         )
+        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
         emitPaymentState(
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
             isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
