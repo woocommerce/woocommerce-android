@@ -249,15 +249,6 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
-        return if (remoteProductIds.isNotEmpty()) {
-            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
-                .any { it.type == PRODUCT_SUBSCRIPTION_TYPE }
-        } else {
-            false
-        }
-    }
-
     suspend fun getOrderRefunds(orderId: Long) = refundStore
         .getAllRefunds(selectedSite.get(), orderId)
         .map { it.toAppModel() }
@@ -368,8 +359,4 @@ class OrderDetailRepository @Inject constructor(
     suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
         orderStore.getOrderMetadata(orderId, selectedSite.get())
     )
-
-    companion object {
-        const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"
-    }
 }
