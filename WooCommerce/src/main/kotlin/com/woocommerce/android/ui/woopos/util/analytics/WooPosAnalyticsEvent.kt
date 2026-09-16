@@ -23,10 +23,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     override val siteless: Boolean = false
     override val isPosEvent: Boolean = true
 
-    private val _properties: MutableMap<String, String> = mutableMapOf()
-    val properties: Map<String, String> get() = _properties.toMap()
+    private val _properties: MutableMap<String, Any> = mutableMapOf()
+    val properties: Map<String, Any> get() = _properties.toMap()
 
-    fun addProperties(additionalProperties: Map<String, String>) {
+    fun addProperties(additionalProperties: Map<String, Any>) {
         _properties.putAll(additionalProperties)
     }
 
@@ -53,8 +53,13 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "back_to_checkout_from_cash"
         }
 
-        data object CashCollectPaymentSuccess : Event() {
+        data class CashCollectPaymentSuccess(val paymentProperties: Map<String, Any>) : Event() {
             override val name: String = "cash_collect_payment_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(mapOf("payment_method_type" to "cash", "plugin_slug" to "cod"))
+            }
         }
 
         data object CheckoutCashPaymentTapped : Event() {
@@ -81,8 +86,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "scan_to_pay_payment_detected_via_polling"
         }
 
-        data object ScanToPayCollectPaymentSuccess : Event() {
+        data class ScanToPayCollectPaymentSuccess(
+            val paymentProperties: Map<String, Any>,
+            val gateway: String,
+        ) : Event() {
             override val name: String = "scan_to_pay_collect_payment_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(
+                    mapOf(
+                        "payment_method_type" to "scan_to_pay",
+                        "plugin_slug" to when (gateway) {
+                            "stripe" -> "woocommerce-stripe"
+                            "woocommerce_payments" -> "woocommerce-payments"
+                            "" -> "unknown"
+                            else -> gateway
+                        }
+                    )
+                )
+            }
         }
 
         data object ScanToPayPaymentFailed : Event() {
@@ -1200,7 +1223,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "card_present_collect_payment_failed"
         }
 
-        data object CardPresentCollectPaymentSuccess : PaymentFlowTrackerEvent() {
+        class CardPresentCollectPaymentSuccess : PaymentFlowTrackerEvent() {
             override val name: String = "card_present_collect_payment_success"
         }
 
@@ -1426,7 +1449,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     }
 }
 
-internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, String>) {
+internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, Any>) {
     when (this) {
         is WooPosAnalyticsEvent -> addProperties(additionalProperties)
         else -> error("Cannot add properties to non-WooPosAnalytics event")

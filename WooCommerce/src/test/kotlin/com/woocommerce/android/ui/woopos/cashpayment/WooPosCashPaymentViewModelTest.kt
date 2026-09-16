@@ -4,7 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
@@ -12,6 +14,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,12 +25,16 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCashPaymentViewModelTest {
@@ -39,6 +46,9 @@ class WooPosCashPaymentViewModelTest {
     @JvmField
     val rule = InstantTaskExecutorRule()
 
+    private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(SiteModel()) }
+    private val wooStore: WooCommerceStore = mock { on { getStoreCountryCode(any()) }.thenReturn("US") }
+    private val paymentSuccessProperties = WooPosPaymentSuccessProperties(PaymentUtils(mock()), selectedSite, wooStore)
     private val repository: WooPosCashPaymentRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -50,9 +60,11 @@ class WooPosCashPaymentViewModelTest {
     @Before
     fun setUp() = runTest {
         val orderId = 123L
-        val mockOrder = mock<Order> {
-            on { total }.thenReturn(BigDecimal("100.00"))
-        }
+        val mockOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            total = BigDecimal("100.00"),
+            currency = "EUR",
+        )
 
         whenever(repository.getOrderById(orderId)).thenReturn(mockOrder)
         whenever(repository.getCurrencySymbol()).thenReturn("$")
@@ -73,6 +85,7 @@ class WooPosCashPaymentViewModelTest {
         viewModel = WooPosCashPaymentViewModel(
             repository = repository,
             priceFormat = priceFormat,
+            paymentSuccessProperties = paymentSuccessProperties,
             resourceProvider = resourceProvider,
             analyticsTracker = tracker,
             analyticsData = trackerData,
@@ -226,17 +239,28 @@ class WooPosCashPaymentViewModelTest {
     }
 
     @Test
-    fun `when state is Complete, then should track event`() = runTest {
+    fun `given excess cash tendered, when state is Complete, then tracks gross order total`() = runTest {
         // GIVEN
         whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
 
         // WHEN
+        whenever(priceFormat(BigDecimal("20.00"))).thenReturn("20.00")
+        viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(BigDecimal("120.00")))
         viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
         val state = viewModel.state.first()
 
         // THEN
         assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
-        verify(tracker).track(CashCollectPaymentSuccess)
+        verify(tracker).track(
+            check { event ->
+                assertThat(event).isInstanceOf(CashCollectPaymentSuccess::class.java)
+                val properties: Map<String, *> = (event as CashCollectPaymentSuccess).properties
+                assertThat(properties["amount_normalized"]).isEqualTo(10000L)
+                assertThat(properties["country"]).isEqualTo("US")
+                assertThat(properties["currency"]).isEqualTo("EUR")
+                assertThat(properties["order_id"]).isEqualTo(123L)
+            }
+        )
     }
 
     @Test

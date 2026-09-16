@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingDataKeeper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -30,6 +31,7 @@ class WooPosCashPaymentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
+    private val paymentSuccessProperties: WooPosPaymentSuccessProperties,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
@@ -149,7 +151,8 @@ class WooPosCashPaymentViewModel @Inject constructor(
             val timeElapsed = System.currentTimeMillis() - it
             props["milliseconds_since_customer_interaction_started"] = "$timeElapsed"
         }
-        val event = CashCollectPaymentSuccess.apply { addProperties(props) }
+        val order = checkNotNull(repository.getOrderById(orderId))
+        val event = CashCollectPaymentSuccess(paymentSuccessProperties(order)).apply { addProperties(props) }
         analyticsTracker.track(event)
     }
 
