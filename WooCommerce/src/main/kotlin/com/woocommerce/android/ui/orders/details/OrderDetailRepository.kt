@@ -22,6 +22,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.notifications.push.NewOrderNotificationSuppressionCache
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.RefreshProductsSignal
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
@@ -246,6 +247,15 @@ class OrderDetailRepository @Inject constructor(
             products.map { product -> product.type }.toSet().joinToString()
         } else {
             ""
+        }
+    }
+
+    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+        return if (remoteProductIds.isNotEmpty()) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
+                .any { ProductType.fromString(it.type).isSubscriptionProduct() }
+        } else {
+            false
         }
     }
 
