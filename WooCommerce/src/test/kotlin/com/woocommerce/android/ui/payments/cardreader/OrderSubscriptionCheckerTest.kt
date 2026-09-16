@@ -5,6 +5,7 @@ import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,6 +39,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val subscriptionRepository: SubscriptionRepository = mock()
+    private val orderDetailRepository: OrderDetailRepository = mock()
 
     private val order = OrderTestUtils.generateTestOrder()
 
@@ -47,7 +49,15 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     fun setUp() {
         lenient().doReturn(createTestSitePlugin())
             .whenever(wooCommerceStore).getActiveSitePlugin(any(), eq(WOO_SUBSCRIPTIONS))
-        checker = OrderSubscriptionChecker(selectedSite, wooCommerceStore, subscriptionRepository)
+        testBlocking {
+            lenient().doReturn(false).whenever(orderDetailRepository).hasSubscriptionProducts(any())
+        }
+        checker = OrderSubscriptionChecker(
+            selectedSite,
+            wooCommerceStore,
+            subscriptionRepository,
+            orderDetailRepository,
+        )
     }
 
     @Test
@@ -69,6 +79,17 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
         assertThat(result).isTrue()
         verify(subscriptionRepository, never()).fetchSubscriptionsByOrderId(any(), any())
     }
+
+    @Test
+    fun `given order has a legacy subscription product, when checking, then is not free without hitting endpoint`() =
+        testBlocking {
+            whenever(orderDetailRepository.hasSubscriptionProducts(order.getProductIds())).thenReturn(true)
+
+            val result = checker.isOrderFreeOfSubscriptions(order)
+
+            assertThat(result).isFalse()
+            verify(subscriptionRepository, never()).fetchSubscriptionsByOrderId(any(), any())
+        }
 
     @Test
     fun `given endpoint returns no subscriptions, when checking, then is free`() = testBlocking {
