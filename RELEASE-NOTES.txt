@@ -31,6 +31,7 @@
 
 25.6
 -----
+- [Internal] Fixed an Android 13 crash when returning to a screen (e.g. Product details) after the app was backgrounded, caused by R8 full mode tripping the API 33 typed Bundle.getParcelable bug; reflective reads now go through AndroidX compat [https://github.com/woocommerce/woocommerce-android/pull/16562]
 - [Internal] Fixed an IllegalAccessError crash when opening the Aztec editor (e.g. a product's description) in release builds, caused by R8 full mode inlining TagSoup's HTML parser across a package boundary [https://github.com/woocommerce/woocommerce-android/pull/16530]
 - [*] The toolbar search icon on the Products and Orders lists is purple again, like the other toolbar icons, instead of black [https://github.com/woocommerce/woocommerce-android/pull/16508]
 - [*****] [Internal] Migrated Google Play Age Signals to SDK 0.0.4 with recoverable verification and privacy-bounded monitoring [https://github.com/woocommerce/woocommerce-android/pull/16377]
