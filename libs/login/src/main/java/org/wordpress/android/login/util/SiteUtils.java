@@ -2,6 +2,7 @@ package org.wordpress.android.login.util;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.store.SiteStore;
@@ -29,20 +30,31 @@ public class SiteUtils {
     }
 
     @Nullable
+    @VisibleForTesting
     public static SiteModel getSiteByMatchingUrl(List<SiteModel> siteModelList, String url) {
-        if (siteModelList != null && !siteModelList.isEmpty()) {
-            String incomingSiteUrl = toComparableHost(url);
-            for (SiteModel siteModel : siteModelList) {
-                if (toComparableHost(siteModel.getUrl()).equalsIgnoreCase(incomingSiteUrl)) {
-                    return siteModel;
-                }
+        if (siteModelList == null || siteModelList.isEmpty()) {
+            return null;
+        }
+        String incomingHost = toHost(url);
+        for (SiteModel siteModel : siteModelList) {
+            if (toHost(siteModel.getUrl()).equalsIgnoreCase(incomingHost)) {
+                return siteModel;
+            }
+        }
+        String incomingHostWithoutWww = stripWww(incomingHost);
+        for (SiteModel siteModel : siteModelList) {
+            if (stripWww(toHost(siteModel.getUrl())).equalsIgnoreCase(incomingHostWithoutWww)) {
+                return siteModel;
             }
         }
         return null;
     }
 
-    private static String toComparableHost(String url) {
-        String host = UrlUtils.removeScheme(url).replace("/", "");
+    private static String toHost(String url) {
+        return UrlUtils.removeScheme(url).replace("/", "");
+    }
+
+    private static String stripWww(String host) {
         return host.regionMatches(true, 0, "www.", 0, 4) ? host.substring(4) : host;
     }
 
