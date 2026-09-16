@@ -250,7 +250,13 @@ class OrderDetailRepository @Inject constructor(
         }
     }
 
-    suspend fun hasSubscriptionProducts(remoteProductIds: List<Long>): Boolean {
+    /**
+     * Only detects the legacy subscription product types (subscription / variable-subscription). It
+     * does NOT catch plan-based subscriptions (a subscription plan on any product type), so it isn't
+     * sufficient on its own to decide whether an order is a subscription — use
+     * [com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker] for that.
+     */
+    suspend fun hasLegacySubscriptionProducts(remoteProductIds: List<Long>): Boolean {
         return if (remoteProductIds.isNotEmpty()) {
             productStore.getProductsByRemoteIds(selectedSite.get(), remoteProductIds)
                 .any { ProductType.fromString(it.type).isSubscriptionProduct() }
