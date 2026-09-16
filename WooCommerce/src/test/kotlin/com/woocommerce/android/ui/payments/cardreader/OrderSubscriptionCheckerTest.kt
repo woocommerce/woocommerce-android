@@ -50,7 +50,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
         lenient().doReturn(createTestSitePlugin())
             .whenever(wooCommerceStore).getActiveSitePlugin(any(), eq(WOO_SUBSCRIPTIONS))
         testBlocking {
-            lenient().doReturn(false).whenever(orderDetailRepository).hasSubscriptionProducts(any())
+            lenient().doReturn(false).whenever(orderDetailRepository).hasLegacySubscriptionProducts(any())
         }
         checker = OrderSubscriptionChecker(
             selectedSite,
@@ -83,7 +83,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     @Test
     fun `given order has a legacy subscription product, when checking, then is not free without hitting endpoint`() =
         testBlocking {
-            whenever(orderDetailRepository.hasSubscriptionProducts(order.getProductIds())).thenReturn(true)
+            whenever(orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())).thenReturn(true)
 
             val result = checker.isOrderFreeOfSubscriptions(order)
 
