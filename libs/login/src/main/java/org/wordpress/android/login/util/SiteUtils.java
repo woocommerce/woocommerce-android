@@ -29,17 +29,21 @@ public class SiteUtils {
     }
 
     @Nullable
-    private static SiteModel getSiteByMatchingUrl(List<SiteModel> siteModelList, String url) {
+    public static SiteModel getSiteByMatchingUrl(List<SiteModel> siteModelList, String url) {
         if (siteModelList != null && !siteModelList.isEmpty()) {
+            String incomingSiteUrl = toComparableHost(url);
             for (SiteModel siteModel : siteModelList) {
-                String storedSiteUrl = UrlUtils.removeScheme(siteModel.getUrl()).replace("/", "");
-                String incomingSiteUrl = UrlUtils.removeScheme(url).replace("/", "");
-                if (storedSiteUrl.equalsIgnoreCase(incomingSiteUrl)) {
+                if (toComparableHost(siteModel.getUrl()).equalsIgnoreCase(incomingSiteUrl)) {
                     return siteModel;
                 }
             }
         }
         return null;
+    }
+
+    private static String toComparableHost(String url) {
+        String host = UrlUtils.removeScheme(url).replace("/", "");
+        return host.regionMatches(true, 0, "www.", 0, 4) ? host.substring(4) : host;
     }
 
     @NonNull
