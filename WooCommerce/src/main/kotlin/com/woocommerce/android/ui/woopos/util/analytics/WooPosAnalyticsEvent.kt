@@ -124,8 +124,13 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "mark_as_paid_confirmed"
         }
 
-        data object MarkAsPaidSuccess : Event() {
+        data class MarkAsPaidSuccess(val paymentProperties: Map<String, Any>) : Event() {
             override val name: String = "mark_as_paid_success"
+
+            init {
+                addProperties(paymentProperties)
+                addProperties(mapOf("payment_method_type" to "mark_as_paid", "plugin_slug" to "unknown"))
+            }
         }
 
         data object MarkAsPaidFailed : Event() {
