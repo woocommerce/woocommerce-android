@@ -533,11 +533,16 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    val itemContentDescription = stringResource(
+    val baseContentDescription = stringResource(
         id = R.string.woopos_cart_item_product_content_description,
         item.name,
         item.price
     )
+    val itemContentDescription = if (item.discounted) {
+        "$baseContentDescription, ${stringResource(R.string.woopos_cart_item_discount_applied)}"
+    } else {
+        baseContentDescription
+    }
 
     WooPosCard(
         modifier = modifier
@@ -610,6 +615,18 @@ private fun ProductItem(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
+
+                if (item.discounted) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_item_discount_applied),
+                        style = WooPosTypography.BodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = WooPosTheme.colors.success,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
                 }

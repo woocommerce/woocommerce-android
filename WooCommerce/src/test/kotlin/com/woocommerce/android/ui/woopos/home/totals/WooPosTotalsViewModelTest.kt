@@ -86,6 +86,7 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
@@ -710,6 +711,56 @@ class WooPosTotalsViewModelTest {
             )
         )
     }
+
+    @Test
+    fun `given order with discounted line item, when order created, then discounted flags are sent to cart`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"), total = BigDecimal("1.00")),
+                Order.Item.EMPTY.copy(productId = 2L, subtotal = BigDecimal("1.00"), total = BigDecimal("0.50")),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            assertThat(orderCreated.data.updatedProducts.map { it.discounted }).containsExactly(false, true)
+        }
+
+    @Test
+    fun `given line item with rounding delta only, when order created, then discounted flag is false`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(productId = 1L, subtotal = BigDecimal("1.00"), total = BigDecimal("0.999")),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            assertThat(orderCreated.data.updatedProducts.map { it.discounted }).containsExactly(false)
+        }
 
     @Test
     fun `given reader not connected, when checkout clicked, then should show error`() = runTest {
