@@ -170,6 +170,35 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         }
 
     @Test
+    fun `given order missing after marking paid, when confirm clicked, then success is tracked and checkout completes`() =
+        runTest {
+            // GIVEN
+            whenever(repository.markOrderAsComplete(orderId, null)).thenReturn(MarkOrderAsCompleteOutcome.Success)
+            val viewModel = createViewModel()
+            whenever(repository.getOrderById(orderId)).thenReturn(null)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+            }
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)
+            )
+            verify(tracker).track(
+                check { event ->
+                    assertThat(event).isInstanceOf(MarkAsPaidSuccess::class.java)
+                    val properties: Map<String, *> = (event as MarkAsPaidSuccess).properties
+                    assertThat(properties["payment_method_type"]).isEqualTo("mark_as_paid")
+                    assertThat(properties["plugin_slug"]).isEqualTo("other")
+                    assertThat(properties).doesNotContainKeys("amount_normalized", "currency", "order_id")
+                }
+            )
+        }
+
+    @Test
     fun `given repo succeeds with note, when confirm clicked, then note forwarded to repository`() = runTest {
         // GIVEN
         whenever(repository.markOrderAsComplete(eq(orderId), eq("Bank transfer")))
