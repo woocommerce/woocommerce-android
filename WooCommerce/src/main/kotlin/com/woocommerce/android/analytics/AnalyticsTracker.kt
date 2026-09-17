@@ -118,8 +118,8 @@ class AnalyticsTracker private constructor(
 
         if (!siteLess && selectedSiteModel != null) {
             finalProperties.putIfAbsent(KEY_BLOG_ID, selectedSiteModel.siteId)
-            finalProperties[KEY_IS_WPCOM_STORE] = selectedSiteModel.isWpComStore
-            finalProperties[KEY_PLAN_PRODUCT_SLUG] = selectedSiteModel.planProductSlug
+            finalProperties.putIfAbsent(KEY_IS_WPCOM_STORE, selectedSiteModel.isWpComStore)
+            finalProperties.putIfAbsent(KEY_PLAN_PRODUCT_SLUG, selectedSiteModel.planProductSlug)
             appPrefs.getWCStoreID(selectedSiteModel.siteId)?.let { finalProperties[KEY_STORE_ID] = it }
             finalProperties.putIfAbsent(IS_JETPACK_INSTALLED, selectedSiteModel.isJetpackInstalled)
             finalProperties.putIfAbsent(IS_JETPACK_CONNECTED, selectedSiteModel.isJetpackConnected)
