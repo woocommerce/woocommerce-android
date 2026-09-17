@@ -129,7 +129,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
             init {
                 addProperties(paymentProperties)
-                addProperties(mapOf("payment_method_type" to "mark_as_paid", "plugin_slug" to "unknown"))
+                addProperties(mapOf("payment_method_type" to "mark_as_paid", "plugin_slug" to "other"))
             }
         }
 

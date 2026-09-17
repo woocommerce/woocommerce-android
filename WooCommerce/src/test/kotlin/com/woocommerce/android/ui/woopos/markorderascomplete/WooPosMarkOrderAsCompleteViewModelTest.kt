@@ -161,7 +161,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
                     assertThat(properties["order_id"]).isEqualTo(orderId)
                     assertThat(properties["country"]).isEqualTo("US")
                     assertThat(properties["payment_method_type"]).isEqualTo("mark_as_paid")
-                    assertThat(properties["plugin_slug"]).isEqualTo("unknown")
+                    assertThat(properties["plugin_slug"]).isEqualTo("other")
                 }
             )
             verify(childrenToParentEventSender).sendToParent(
