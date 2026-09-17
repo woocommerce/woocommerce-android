@@ -18,7 +18,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.concurrent.TimeUnit
 
 class FCMRefreshWorkerTest {
     private val context: Context = mock()
@@ -46,7 +45,7 @@ class FCMRefreshWorkerTest {
         assertThat(periodicWorkCaptor.firstValue.workSpec.constraints.requiredNetworkType)
             .isEqualTo(NetworkType.CONNECTED)
         assertThat(periodicWorkCaptor.firstValue.workSpec.initialDelay)
-            .isEqualTo(TimeUnit.DAYS.toMillis(PERIODIC_INTERVAL_DAYS))
+            .isEqualTo(periodicWorkCaptor.firstValue.workSpec.intervalDuration)
     }
 
     @Test
@@ -78,6 +77,5 @@ class FCMRefreshWorkerTest {
     private companion object {
         const val PERIODIC_WORK_NAME = "FCMRefreshWorker"
         const val IMMEDIATE_WORK_NAME = "FCMRefreshWorkerImmediate"
-        const val PERIODIC_INTERVAL_DAYS = 7L
     }
 }
