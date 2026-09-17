@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import javax.inject.Inject
@@ -25,9 +26,12 @@ internal class ApplicationPasswordsManager @Inject constructor(
     private val jetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient,
     private val wpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient,
     private val configuration: ApplicationPasswordsConfiguration,
+    private val currentTimeProvider: CurrentTimeProvider,
     private val appLogWrapper: AppLogWrapper
 ) {
     private val mutexLock = Mutex()
+    private val validationMutex = Mutex()
+    private var lastValidation: CachedValidation? = null
 
     private val applicationName
         get() = configuration.applicationName
@@ -72,6 +76,66 @@ internal class ApplicationPasswordsManager @Inject constructor(
                 }
             }
         }
+    }
+
+    /**
+     * Decides whether a 401 received from an API endpoint means the saved application password has to be
+     * replaced. A 401 is not proof of that on its own: plugins reuse the status code for their own
+     * authorization failures, so the credentials are verified against the site before being deleted.
+     *
+     * When the check can't be completed we fall back to [supportsApplicationPasswordsGeneration], so that a
+     * credential we wouldn't be able to replace is never destroyed on an inconclusive signal.
+     */
+    suspend fun shouldRegenerateApplicationPassword(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): Boolean = when (checkValidity(site, credentials)) {
+        ApplicationPasswordValidity.VALID -> {
+            appLogWrapper.d(MAIN, "The application password is still valid, the 401 came from the endpoint")
+            false
+        }
+
+        ApplicationPasswordValidity.INVALID -> {
+            appLogWrapper.w(MAIN, "The application password was rejected by the site, it needs to be replaced")
+            true
+        }
+
+        ApplicationPasswordValidity.UNKNOWN -> {
+            appLogWrapper.w(MAIN, "Couldn't verify the application password")
+            site.supportsApplicationPasswordsGeneration
+        }
+    }
+
+    /**
+     * A screen usually fans out several requests at once, so a single failing endpoint answers each of them
+     * with its own 401. Serialize the check and reuse a fresh result so the site is asked once per burst
+     * instead of once per response. The key includes the credentials, so a replaced password is never
+     * matched against the previous verdict.
+     */
+    private suspend fun checkValidity(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): ApplicationPasswordValidity = validationMutex.withLock {
+        val now = currentTimeProvider.currentDate().time
+        lastValidation
+            ?.takeIf { it.matches(site, credentials) && now - it.timestamp < VALIDATION_RESULT_TTL_MS }
+            ?.let {
+                appLogWrapper.d(MAIN, "Reusing the application password validity checked moments ago")
+                return@withLock it.validity
+            }
+
+        wpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, credentials)
+            .also { lastValidation = CachedValidation(site.id, credentials, it, now) }
+    }
+
+    private data class CachedValidation(
+        val localSiteId: Int,
+        val credentials: ApplicationPasswordCredentials,
+        val validity: ApplicationPasswordValidity,
+        val timestamp: Long
+    ) {
+        fun matches(site: SiteModel, credentials: ApplicationPasswordCredentials) =
+            localSiteId == site.id && this.credentials == credentials
     }
 
     private suspend fun getOrFetchUsername(site: SiteModel): UsernameFetchPayload {
@@ -275,6 +339,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
 
     companion object {
+        private const val VALIDATION_RESULT_TTL_MS = 10_000L
         const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
         const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
     }

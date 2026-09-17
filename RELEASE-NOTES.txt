@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] The app no longer signs you out when a single store endpoint returns an authorization error [https://github.com/woocommerce/woocommerce-android/pull/16571]
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
 - [Internal] POS no longer repeats initial ineligibility events when the same screen is recomposed or initialized again [https://github.com/woocommerce/woocommerce-android/pull/16553]
 - [*] Push notifications setup now explains when a store's Jetpack is in Offline Mode instead of wrongly telling administrators to "ask your store administrator" [https://github.com/woocommerce/woocommerce-android/pull/16551]
