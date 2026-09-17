@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.delay
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -44,8 +46,8 @@ class WooPosRemoteReaderPaymentFlow @Inject constructor(
     suspend fun collect(order: Order, onCaptureStarting: suspend () -> Unit = {}): Result {
         trackingInfoKeeper.setCurrency(order.currency)
         trackingInfoKeeper.setPaymentMethodType(PaymentMethodType.UNKNOWN.stringRepresentation)
-        trackingInfoKeeper.setCardReaderModel("TAP_TO_PAY_DEVICE")
-        trackingInfoKeeper.setTransport("wifi_lan")
+        trackingInfoKeeper.setCardReaderModel(TAP_TO_PAY_READER_MODEL)
+        trackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
         val result = collectInternal(order, onCaptureStarting)
         when (result) {
             Result.Completed -> paymentsFlowTracker.trackPaymentSucceeded(order)

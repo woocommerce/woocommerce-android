@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -85,8 +87,8 @@ class WooPosBuiltInReaderConnector @Inject constructor(
         trackingInfoKeeper.setCardReaderModel(reader.type)
         trackingInfoKeeper.setTransport(
             when (reader.type) {
-                "TAP_TO_PAY_DEVICE" -> "built_in"
-                else -> "bluetooth"
+                TAP_TO_PAY_READER_MODEL -> CardReaderTransport.BUILT_IN.value
+                else -> CardReaderTransport.BLUETOOTH.value
             }
         )
         trackingInfoKeeper.setCardReaderBatteryLevel(reader.currentBatteryLevel)
