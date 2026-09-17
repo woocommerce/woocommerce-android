@@ -31,10 +31,7 @@ public class SiteUtils {
 
     @Nullable
     @VisibleForTesting
-    public static SiteModel getSiteByMatchingUrl(List<SiteModel> siteModelList, String url) {
-        if (siteModelList == null || siteModelList.isEmpty()) {
-            return null;
-        }
+    public static SiteModel getSiteByMatchingUrl(@NonNull List<SiteModel> siteModelList, @NonNull String url) {
         String incomingHost = toHost(url);
         for (SiteModel siteModel : siteModelList) {
             if (toHost(siteModel.getUrl()).equalsIgnoreCase(incomingHost)) {
@@ -50,11 +47,13 @@ public class SiteUtils {
         return null;
     }
 
-    private static String toHost(String url) {
+    @NonNull
+    private static String toHost(@NonNull String url) {
         return UrlUtils.removeScheme(url).replace("/", "");
     }
 
-    private static String stripWww(String host) {
+    @NonNull
+    private static String stripWww(@NonNull String host) {
         return host.regionMatches(true, 0, "www.", 0, 4) ? host.substring(4) : host;
     }
 
