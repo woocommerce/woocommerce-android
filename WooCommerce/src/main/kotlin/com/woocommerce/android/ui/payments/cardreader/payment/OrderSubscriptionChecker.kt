@@ -27,7 +27,8 @@ class OrderSubscriptionChecker @Inject constructor(
     private val subscriptionRepository: SubscriptionRepository,
     private val orderDetailRepository: OrderDetailRepository,
 ) {
-    private val cache = ConcurrentHashMap<Long, Boolean>()
+    // Keyed by site + order because order IDs are not unique across sites.
+    private val cache = ConcurrentHashMap<CacheKey, Boolean>()
 
     /**
      * Returns true only when the order is confirmed to be free of subscriptions.
@@ -35,19 +36,23 @@ class OrderSubscriptionChecker @Inject constructor(
     suspend fun isOrderFreeOfSubscriptions(order: Order): Boolean {
         val productIds = order.getProductIds()
         if (productIds.isEmpty()) return true
+        val site = selectedSite.get()
         // Plugin inactive → the order can't be a subscription.
-        if (wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WOO_SUBSCRIPTIONS) == null) return true
+        if (wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) return true
         // Legacy subscription product types are known subscriptions without a network call.
         if (orderDetailRepository.hasLegacySubscriptionProducts(productIds)) return false
 
-        return cache[order.id] ?: run {
-            val result = subscriptionRepository.fetchSubscriptionsByOrderId(order.id, selectedSite.get())
+        val key = CacheKey(site.id, order.id)
+        return cache[key] ?: run {
+            val result = subscriptionRepository.fetchSubscriptionsByOrderId(order.id, site)
             if (result.isError) {
                 // Fail closed and don't cache, so a transient failure can recover on the next attempt.
                 false
             } else {
-                (result.model?.isEmpty() ?: false).also { cache[order.id] = it }
+                (result.model?.isEmpty() ?: false).also { cache[key] = it }
             }
         }
     }
+
+    private data class CacheKey(val siteId: Int, val orderId: Long)
 }
