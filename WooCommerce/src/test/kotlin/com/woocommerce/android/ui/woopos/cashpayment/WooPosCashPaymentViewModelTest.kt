@@ -198,6 +198,32 @@ class WooPosCashPaymentViewModelTest {
     }
 
     @Test
+    fun `given order missing after successful completion, when complete clicked, then success is tracked and home opens`() =
+        runTest {
+            // GIVEN
+            whenever(repository.completeOrder(123L, "null")).thenReturn(Result.success(Unit))
+            whenever(repository.getOrderById(123L)).thenReturn(null)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+                assertThat(viewModel.state.value).isEqualTo(WooPosCashPaymentState.Complete)
+            }
+            verify(tracker).track(
+                check { event ->
+                    assertThat(event).isInstanceOf(CashCollectPaymentSuccess::class.java)
+                    val properties: Map<String, *> = (event as CashCollectPaymentSuccess).properties
+                    assertThat(properties["payment_method_type"]).isEqualTo("cash")
+                    assertThat(properties["plugin_slug"]).isEqualTo("cod")
+                    assertThat(properties).doesNotContainKeys("amount_normalized", "currency", "order_id")
+                }
+            )
+        }
+
+    @Test
     fun `given repository fails to complete order, when onUIEvent CompleteOrderClicked, then error message is set and button is enabled`() = runTest {
         // GIVEN
         val errorMessage = givenRepoFailsToCompleteOrder()
