@@ -21,12 +21,11 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
     val shippingPluginSupport: ShippingLabelSupport by lazy { getShippingLabelSupport() }
 
-    suspend fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
+    suspend fun shouldShowWcShippingBanner(order: Order): Boolean =
         !shippingPluginSupport.isSupported() &&
             orderDetailRepository.getStoreCountryCode() == SUPPORTED_WCS_COUNTRY &&
             order.currency == SUPPORTED_WCS_CURRENCY &&
             !order.isCashPayment &&
-            !eligibleForIpp &&
             !hasVirtualProductsOnly(order) &&
             !appSharedPrefs.getWcShippingBannerDismissed(selectedSite.getSelectedSiteId())
 
