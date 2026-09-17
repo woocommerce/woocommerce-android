@@ -61,7 +61,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order without products, when checking, then is free without hitting endpoint`() = testBlocking {
+    fun `given order without products, when checking, then order has no subscription`() = testBlocking {
         val orderWithoutProducts = order.copy(items = emptyList())
 
         val result = checker.isOrderFreeOfSubscriptions(orderWithoutProducts)
@@ -71,7 +71,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given subscriptions plugin inactive, when checking, then is free without hitting endpoint`() = testBlocking {
+    fun `given subscriptions plugin inactive, when checking, then order has no subscription`() = testBlocking {
         whenever(wooCommerceStore.getActiveSitePlugin(any(), eq(WOO_SUBSCRIPTIONS))).thenReturn(null)
 
         val result = checker.isOrderFreeOfSubscriptions(order)
@@ -81,18 +81,17 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order has a legacy subscription product, when checking, then is not free without hitting endpoint`() =
-        testBlocking {
-            whenever(orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())).thenReturn(true)
+    fun `given order has a legacy subscription product, when checking, then order has a subscription`() = testBlocking {
+        whenever(orderDetailRepository.hasLegacySubscriptionProducts(order.getProductIds())).thenReturn(true)
 
-            val result = checker.isOrderFreeOfSubscriptions(order)
+        val result = checker.isOrderFreeOfSubscriptions(order)
 
-            assertThat(result).isFalse()
-            verify(subscriptionRepository, never()).fetchSubscriptionsByOrderId(any(), any())
-        }
+        assertThat(result).isFalse()
+        verify(subscriptionRepository, never()).fetchSubscriptionsByOrderId(any(), any())
+    }
 
     @Test
-    fun `given endpoint returns no subscriptions, when checking, then is free`() = testBlocking {
+    fun `given endpoint returns no subscriptions, when checking, then order has no subscription`() = testBlocking {
         whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
             .thenReturn(WooResult(emptyList()))
 
@@ -102,7 +101,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint returns a subscription, when checking, then is not free`() = testBlocking {
+    fun `given endpoint returns a subscription, when checking, then order has a subscription`() = testBlocking {
         whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
             .thenReturn(WooResult(listOf(subscription())))
 
@@ -112,7 +111,7 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given endpoint errors, when checking, then fails closed`() = testBlocking {
+    fun `given endpoint errors, when checking, then order is treated as a subscription`() = testBlocking {
         whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
             .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)))
 
