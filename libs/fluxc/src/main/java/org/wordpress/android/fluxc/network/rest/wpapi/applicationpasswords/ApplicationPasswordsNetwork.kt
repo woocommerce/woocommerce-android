@@ -128,20 +128,37 @@ class ApplicationPasswordsNetwork @Inject constructor(
             }
         }
 
-        return if (credentialsResult is ApplicationPasswordCreationResult.Existing &&
-            response is WPAPIResponse.Error &&
-            response.error.volleyError?.networkResponse?.statusCode == UNAUTHORIZED
-        ) {
+        return if (shouldRetryWithNewPassword(site, credentialsResult, credentials, response)) {
             AppLog.w(
                 AppLog.T.MAIN,
-                "Authentication failure using application password, maybe revoked?" +
-                    " Delete the saved one then retry"
+                "The application password was revoked, delete the saved one then retry"
             )
             mApplicationPasswordsManager.deleteLocalApplicationPassword(site, credentials)
             executeGsonRequest(site, method, path, clazz, params, body, isRegeneratingApplicationPassword = true)
         } else {
             response
         }
+    }
+
+    private suspend fun <T> shouldRetryWithNewPassword(
+        site: SiteModel,
+        credentialsResult: ApplicationPasswordCreationResult,
+        credentials: ApplicationPasswordCredentials,
+        response: WPAPIResponse<T>
+    ): Boolean {
+        if (credentialsResult !is ApplicationPasswordCreationResult.Existing) return false
+        if (response !is WPAPIResponse.Error) return false
+        if (response.error.volleyError?.networkResponse?.statusCode != UNAUTHORIZED) return false
+
+        AppLog.w(AppLog.T.MAIN, "Authentication failure using application password, maybe revoked? Verifying")
+        val shouldRegenerate = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, credentials)
+        if (!shouldRegenerate) {
+            AppLog.w(
+                AppLog.T.MAIN,
+                "Keeping the saved application password, returning the original error"
+            )
+        }
+        return shouldRegenerate
     }
 
     override suspend fun <T : Any> executeGetGsonRequest(

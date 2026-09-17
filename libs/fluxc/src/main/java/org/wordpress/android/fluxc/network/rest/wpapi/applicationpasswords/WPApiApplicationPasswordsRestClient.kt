@@ -24,6 +24,8 @@ import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.coroutines.resume
 
+private const val UNAUTHORIZED = 401
+
 @Singleton
 internal class WPApiApplicationPasswordsRestClient @Inject constructor(
     private val wpApiGsonRequestBuilder: WPAPIGsonRequestBuilder,
@@ -121,6 +123,39 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
         }
 
         return response.toPayload()
+    }
+
+    /**
+     * Asks the site whether [credentials] are still accepted. The introspection endpoint is used because a
+     * 401 from it can only mean the credentials themselves were rejected: WordPress answers every permission
+     * failure here with `rest_authorization_required_code()`, which is 403 when a user is authenticated and
+     * 401 when none is. A 403 therefore means we did authenticate, so it maps to
+     * [ApplicationPasswordValidity.UNKNOWN] rather than counting as a rejection.
+     */
+    suspend fun checkApplicationPasswordValidity(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): ApplicationPasswordValidity {
+        AppLog.d(T.MAIN, "Check the application password validity using the /introspect endpoint")
+
+        val response = invokeRequestUsingBasicAuth<ApplicationPasswordsFetchResponse>(
+            site = site,
+            credentials = credentials,
+            path = WPAPI.users.me.application_passwords.introspect.urlV2,
+            method = Request.Method.GET
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> ApplicationPasswordValidity.VALID
+            is WPAPIResponse.Error -> {
+                val statusCode = response.error.volleyError?.networkResponse?.statusCode
+                if (statusCode == UNAUTHORIZED) {
+                    ApplicationPasswordValidity.INVALID
+                } else {
+                    ApplicationPasswordValidity.UNKNOWN
+                }
+            }
+        }
     }
 
     suspend fun deleteApplicationPassword(
@@ -221,6 +256,10 @@ internal class WPApiApplicationPasswordsRestClient @Inject constructor(
             request.setUserAgent(userAgent.apiUserAgent)
 
             noCookieRequestQueue.add(request)
+
+            continuation.invokeOnCancellation {
+                request.cancel()
+            }
         }
     }
 

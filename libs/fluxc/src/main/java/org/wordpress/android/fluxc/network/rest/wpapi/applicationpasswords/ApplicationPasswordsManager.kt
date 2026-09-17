@@ -74,6 +74,34 @@ internal class ApplicationPasswordsManager @Inject constructor(
         }
     }
 
+    /**
+     * Decides whether a 401 received from an API endpoint means the saved application password has to be
+     * replaced. A 401 is not proof of that on its own: plugins reuse the status code for their own
+     * authorization failures, so the credentials are verified against the site before being deleted.
+     *
+     * When the check can't be completed we fall back to [supportsApplicationPasswordsGeneration], so that a
+     * credential we wouldn't be able to replace is never destroyed on an inconclusive signal.
+     */
+    suspend fun shouldRegenerateApplicationPassword(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): Boolean = when (wpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, credentials)) {
+        ApplicationPasswordValidity.VALID -> {
+            appLogWrapper.d(MAIN, "The application password is still valid, the 401 came from the endpoint")
+            false
+        }
+
+        ApplicationPasswordValidity.INVALID -> {
+            appLogWrapper.w(MAIN, "The application password was rejected by the site, it needs to be replaced")
+            true
+        }
+
+        ApplicationPasswordValidity.UNKNOWN -> {
+            appLogWrapper.w(MAIN, "Couldn't verify the application password")
+            site.supportsApplicationPasswordsGeneration
+        }
+    }
+
     private suspend fun getOrFetchUsername(site: SiteModel): UsernameFetchPayload {
         return if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
             jetpackApplicationPasswordsRestClient.fetchWPAdminUsername(site)

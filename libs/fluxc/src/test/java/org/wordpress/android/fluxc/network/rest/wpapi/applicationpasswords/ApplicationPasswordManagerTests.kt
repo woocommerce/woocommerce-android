@@ -15,6 +15,9 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class ApplicationPasswordManagerTests {
@@ -274,4 +277,89 @@ class ApplicationPasswordManagerTests {
             assertEquals(ApplicationPasswordDeletionResult.Success, result)
             verify(mWpApiApplicationPasswordsRestClient).deleteApplicationPassword(site, testCredentials)
         }
+
+    @Test
+    fun `given the password is still accepted by the site, when deciding whether to regenerate, then don't`() =
+        runTest {
+            val site = webFlowSite()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .thenReturn(ApplicationPasswordValidity.VALID)
+
+            val result = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+            assertFalse(result)
+            verify(mWpApiApplicationPasswordsRestClient).checkApplicationPasswordValidity(site, testCredentials)
+        }
+
+    @Test
+    fun `given the password is rejected by the site, when deciding whether to regenerate, then do`() = runTest {
+        val site = webFlowSite()
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.INVALID)
+
+        val result = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given the check is inconclusive for a web flow site, when deciding whether to regenerate, then don't`() =
+        runTest {
+            val site = webFlowSite()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .thenReturn(ApplicationPasswordValidity.UNKNOWN)
+
+            val result = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+            assertFalse(result)
+        }
+
+    @Test
+    fun `given the check is inconclusive for a site with credentials, when deciding whether to regenerate, then do`() =
+        runTest {
+            val site = nativeCredentialsSite()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .thenReturn(ApplicationPasswordValidity.UNKNOWN)
+
+            val result = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+            assertTrue(result)
+        }
+
+    @Test
+    fun `given the check is inconclusive for a jetpack site, when deciding whether to regenerate, then do`() = runTest {
+        val site = SiteModel().apply {
+            origin = SiteModel.ORIGIN_WPCOM_REST
+            url = "http://test-site.com"
+        }
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.UNKNOWN)
+
+        val result = mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `given a web flow site without a local password, when we ask for a password, then fail with 401`() =
+        runTest {
+            val site = webFlowSite()
+            whenever(applicationPasswordsStore.getCredentials(site)).thenReturn(null)
+
+            val result = mApplicationPasswordsManager.getApplicationCredentials(site)
+
+            val failure = assertIs<ApplicationPasswordCreationResult.Failure>(result)
+            assertEquals(GenericErrorType.NOT_AUTHENTICATED, failure.error.type)
+            assertEquals(401, failure.error.volleyError?.networkResponse?.statusCode)
+        }
+
+    private fun webFlowSite() = SiteModel().apply {
+        origin = SiteModel.ORIGIN_WPAPI
+        url = "http://test-site.com"
+        username = testCredentials.userName
+    }
+
+    private fun nativeCredentialsSite() = webFlowSite().apply {
+        password = "site-password"
+    }
 }
