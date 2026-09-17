@@ -143,6 +143,26 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
         verify(subscriptionRepository, times(2)).fetchSubscriptionsByOrderId(eq(order.id), any())
     }
 
+    @Test
+    fun `given same order id on different sites, when checking, then the cached result is not shared`() =
+        testBlocking {
+            val siteA = SiteModel().apply { id = 1 }
+            val siteB = SiteModel().apply { id = 2 }
+
+            whenever(selectedSite.get()).thenReturn(siteA)
+            whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), eq(siteA)))
+                .thenReturn(WooResult(emptyList()))
+            val siteAResult = checker.isOrderFreeOfSubscriptions(order)
+
+            whenever(selectedSite.get()).thenReturn(siteB)
+            whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), eq(siteB)))
+                .thenReturn(WooResult(listOf(subscription())))
+            val siteBResult = checker.isOrderFreeOfSubscriptions(order)
+
+            assertThat(siteAResult).isTrue()
+            assertThat(siteBResult).isFalse()
+        }
+
     private fun subscription() = Subscription(
         id = 1L,
         status = Subscription.Status.Active,
