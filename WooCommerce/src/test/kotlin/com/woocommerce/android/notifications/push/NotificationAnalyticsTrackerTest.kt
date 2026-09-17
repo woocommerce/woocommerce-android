@@ -20,8 +20,18 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 class NotificationAnalyticsTrackerTest {
-    private val site = createWpComSite(SITE_ID, SITE_URL)
-    private val selectedSiteModel = createWpComSite(SELECTED_SITE_ID, SELECTED_SITE_URL)
+    private val site = createWpComSite(
+        SITE_ID,
+        SITE_URL,
+        isWpComStore = true,
+        planProductSlug = PLAN_PRODUCT_SLUG
+    )
+    private val selectedSiteModel = createWpComSite(
+        SELECTED_SITE_ID,
+        SELECTED_SITE_URL,
+        isWpComStore = false,
+        planProductSlug = SELECTED_PLAN_PRODUCT_SLUG
+    )
     private val resolveSiteBySiteId: ResolveSiteBySiteId = mock {
         on { invoke(SITE_ID) } doReturn site
     }
@@ -161,6 +171,8 @@ class NotificationAnalyticsTrackerTest {
     private fun assertOriginProperties(properties: Map<String, Any>) {
         assertThat(properties).containsEntry(AnalyticsTracker.KEY_BLOG_ID, SITE_ID)
         assertThat(properties).containsEntry(AnalyticsTracker.KEY_SITE_URL, SITE_URL)
+        assertThat(properties).containsEntry(AnalyticsTracker.KEY_IS_WPCOM_STORE, true)
+        assertThat(properties).containsEntry(AnalyticsTracker.KEY_PLAN_PRODUCT_SLUG, PLAN_PRODUCT_SLUG)
         assertThat(properties).containsEntry(AnalyticsTracker.IS_JETPACK_INSTALLED, true)
         assertThat(properties).containsEntry(AnalyticsTracker.IS_JETPACK_CONNECTED, true)
         assertThat(properties).containsEntry(AnalyticsTracker.IS_JETPACK_CP_CONNECTED, false)
@@ -171,12 +183,21 @@ class NotificationAnalyticsTrackerTest {
         const val SITE_URL = "https://origin.example.com"
         const val SELECTED_SITE_ID = 54321L
         const val SELECTED_SITE_URL = "https://selected.example.com"
+        const val PLAN_PRODUCT_SLUG = "origin-plan"
+        const val SELECTED_PLAN_PRODUCT_SLUG = "selected-plan"
         const val PAYLOAD_SITE_ID = 7777L
         const val APP_PASSWORD_SITE_URL = "https://app-password.example.com"
 
-        fun createWpComSite(siteId: Long, url: String) = SiteModel().apply {
+        fun createWpComSite(
+            siteId: Long,
+            url: String,
+            isWpComStore: Boolean,
+            planProductSlug: String
+        ) = SiteModel().apply {
             this.siteId = siteId
             this.url = url
+            setIsWpComStore(isWpComStore)
+            this.planProductSlug = planProductSlug
             origin = SiteModel.ORIGIN_WPCOM_REST
             setIsJetpackInstalled(true)
             setIsJetpackConnected(true)
