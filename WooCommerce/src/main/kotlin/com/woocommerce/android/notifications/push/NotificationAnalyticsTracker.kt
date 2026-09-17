@@ -73,6 +73,8 @@ class NotificationAnalyticsTracker @Inject constructor(
         }
 
     private fun MutableMap<String, Any>.addCommonSiteProperties(site: SiteModel) = apply {
+        this[AnalyticsTracker.KEY_BLOG_ID] = site.siteId
+        putIfNotNull(AnalyticsTracker.KEY_SITE_URL to site.url)
         this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled
         this[AnalyticsTracker.IS_JETPACK_CONNECTED] = site.isJetpackConnected
         this[AnalyticsTracker.IS_JETPACK_CP_CONNECTED] = site.isJetpackCPConnected
