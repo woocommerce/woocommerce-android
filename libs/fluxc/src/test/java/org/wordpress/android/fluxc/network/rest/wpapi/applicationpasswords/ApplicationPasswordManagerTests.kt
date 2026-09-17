@@ -2,18 +2,27 @@ package org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
 
 import com.android.volley.NetworkResponse
 import com.android.volley.VolleyError
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
+import java.util.Date
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -41,6 +50,11 @@ class ApplicationPasswordManagerTests {
         override suspend fun isEnabledForJetpackAccess() = true
     }
 
+    private var now = 0L
+    private val currentTimeProvider: CurrentTimeProvider = mock {
+        on { currentDate() } doAnswer { Date(now) }
+    }
+
     private lateinit var mApplicationPasswordsManager: ApplicationPasswordsManager
 
     @Before
@@ -50,6 +64,7 @@ class ApplicationPasswordManagerTests {
             jetpackApplicationPasswordsRestClient = mJetpackApplicationPasswordsRestClient,
             wpApiApplicationPasswordsRestClient = mWpApiApplicationPasswordsRestClient,
             configuration = applicationPasswordsConfiguration,
+            currentTimeProvider = currentTimeProvider,
             appLogWrapper = mock()
         )
     }
@@ -353,6 +368,125 @@ class ApplicationPasswordManagerTests {
             assertEquals(401, failure.error.volleyError?.networkResponse?.statusCode)
         }
 
+    @Test
+    fun `given parallel checks for the same password, when deciding whether to regenerate, then probe once`() =
+        runTest {
+            val site = webFlowSite()
+            val probeStarted = CompletableDeferred<Unit>()
+            val probeCanFinish = CompletableDeferred<Unit>()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .doSuspendableAnswer {
+                    probeStarted.complete(Unit)
+                    probeCanFinish.await()
+                    ApplicationPasswordValidity.VALID
+                }
+
+            val first =
+                async { mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials) }
+            probeStarted.await()
+            val second =
+                async { mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials) }
+            runCurrent()
+
+            // The second caller is parked on the mutex, not served from a memo that isn't populated yet
+            assertTrue(second.isActive)
+            verify(mWpApiApplicationPasswordsRestClient, times(1))
+                .checkApplicationPasswordValidity(site, testCredentials)
+
+            probeCanFinish.complete(Unit)
+
+            assertFalse(first.await())
+            assertFalse(second.await())
+            verify(mWpApiApplicationPasswordsRestClient, times(1))
+                .checkApplicationPasswordValidity(site, testCredentials)
+        }
+
+    @Test
+    fun `given the password was replaced, when deciding whether to regenerate, then probe again`() = runTest {
+        val site = webFlowSite()
+        val replacement = testCredentials.copy(password = "a-new-password")
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(any(), any()))
+            .thenReturn(ApplicationPasswordValidity.VALID)
+
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, replacement)
+
+        verify(mWpApiApplicationPasswordsRestClient).checkApplicationPasswordValidity(site, testCredentials)
+        verify(mWpApiApplicationPasswordsRestClient).checkApplicationPasswordValidity(site, replacement)
+    }
+
+    @Test
+    fun `given the cached result expired, when deciding whether to regenerate, then probe again`() = runTest {
+        val site = webFlowSite()
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.VALID)
+
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+        now += 11_000L
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+        verify(mWpApiApplicationPasswordsRestClient, times(2))
+            .checkApplicationPasswordValidity(site, testCredentials)
+    }
+
+    @Test
+    fun `given a fresh verdict, when another 401 arrives within the window, then reuse it`() = runTest {
+        val site = webFlowSite()
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.VALID)
+
+        assertFalse(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials))
+        now += VALIDATION_TTL_MS - 1
+        assertFalse(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials))
+
+        verify(mWpApiApplicationPasswordsRestClient, times(1))
+            .checkApplicationPasswordValidity(site, testCredentials)
+    }
+
+    @Test
+    fun `given a rejected password, when another 401 arrives within the window, then reuse that verdict too`() =
+        runTest {
+            val site = webFlowSite()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .thenReturn(ApplicationPasswordValidity.INVALID)
+
+            assertTrue(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials))
+            assertTrue(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials))
+
+            verify(mWpApiApplicationPasswordsRestClient, times(1))
+                .checkApplicationPasswordValidity(site, testCredentials)
+        }
+
+    @Test
+    fun `given another site hit 401, when deciding whether to regenerate, then probe that site as well`() = runTest {
+        val siteA = webFlowSite().apply { id = 1 }
+        val siteB = webFlowSite().apply { id = 2 }
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(siteA, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.VALID)
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(siteB, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.INVALID)
+
+        assertFalse(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(siteA, testCredentials))
+        assertTrue(mApplicationPasswordsManager.shouldRegenerateApplicationPassword(siteB, testCredentials))
+
+        verify(mWpApiApplicationPasswordsRestClient).checkApplicationPasswordValidity(siteA, testCredentials)
+        verify(mWpApiApplicationPasswordsRestClient).checkApplicationPasswordValidity(siteB, testCredentials)
+    }
+
+    @Test
+    fun `given the clock stepped backwards, when deciding whether to regenerate, then probe again`() = runTest {
+        val site = webFlowSite()
+        whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+            .thenReturn(ApplicationPasswordValidity.VALID)
+
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+        now -= 60_000L
+        mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+        verify(mWpApiApplicationPasswordsRestClient, times(2))
+            .checkApplicationPasswordValidity(site, testCredentials)
+    }
+
     private fun webFlowSite() = SiteModel().apply {
         origin = SiteModel.ORIGIN_WPAPI
         url = "http://test-site.com"
@@ -361,5 +495,9 @@ class ApplicationPasswordManagerTests {
 
     private fun nativeCredentialsSite() = webFlowSite().apply {
         password = "site-password"
+    }
+
+    companion object {
+        private const val VALIDATION_TTL_MS = 10_000L
     }
 }

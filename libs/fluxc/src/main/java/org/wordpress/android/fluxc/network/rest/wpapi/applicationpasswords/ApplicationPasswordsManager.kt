@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest.WPComGsonNetworkError
 import org.wordpress.android.fluxc.utils.AppLogWrapper
+import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import javax.inject.Inject
@@ -25,9 +26,12 @@ internal class ApplicationPasswordsManager @Inject constructor(
     private val jetpackApplicationPasswordsRestClient: JetpackApplicationPasswordsRestClient,
     private val wpApiApplicationPasswordsRestClient: WPApiApplicationPasswordsRestClient,
     private val configuration: ApplicationPasswordsConfiguration,
+    private val currentTimeProvider: CurrentTimeProvider,
     private val appLogWrapper: AppLogWrapper
 ) {
     private val mutexLock = Mutex()
+    private val validationMutex = Mutex()
+    private var lastValidation: CachedValidation? = null
 
     private val applicationName
         get() = configuration.applicationName
@@ -85,7 +89,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
     suspend fun shouldRegenerateApplicationPassword(
         site: SiteModel,
         credentials: ApplicationPasswordCredentials
-    ): Boolean = when (wpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, credentials)) {
+    ): Boolean = when (checkValidity(site, credentials)) {
         ApplicationPasswordValidity.VALID -> {
             appLogWrapper.d(MAIN, "The application password is still valid, the 401 came from the endpoint")
             false
@@ -100,6 +104,39 @@ internal class ApplicationPasswordsManager @Inject constructor(
             appLogWrapper.w(MAIN, "Couldn't verify the application password")
             site.supportsApplicationPasswordsGeneration
         }
+    }
+
+    /**
+     * A screen usually fans out several requests at once, so a single failing endpoint answers each of them
+     * with its own 401. Serialize the check and reuse a fresh result so the site is asked once per burst
+     * instead of once per response. The key includes the credentials, so a replaced password is never
+     * matched against the previous verdict.
+     *
+     * The age is checked as a range because [currentTimeProvider] follows the wall clock: a backwards step
+     * would otherwise leave the entry permanently "fresh".
+     */
+    private suspend fun checkValidity(
+        site: SiteModel,
+        credentials: ApplicationPasswordCredentials
+    ): ApplicationPasswordValidity = validationMutex.withLock {
+        val now = currentTimeProvider.currentDate().time
+        lastValidation
+            ?.takeIf { it.matches(site, credentials) && now - it.timestamp in 0 until VALIDATION_RESULT_TTL_MS }
+            ?.let {
+                appLogWrapper.d(MAIN, "Reusing the application password validity checked moments ago")
+                return@withLock it.validity
+            }
+
+        wpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, credentials)
+            .also { lastValidation = CachedValidation(site.id, credentials, it, now) }
+    }
+
+    /**
+     * Drops the memoized verdict once a password is revoked on purpose, so neither it nor the credentials it
+     * holds outlive the password itself.
+     */
+    private suspend fun forgetCachedValidity() = validationMutex.withLock {
+        lastValidation = null
     }
 
     private suspend fun getOrFetchUsername(site: SiteModel): UsernameFetchPayload {
@@ -226,6 +263,7 @@ internal class ApplicationPasswordsManager @Inject constructor(
                 is ApplicationPasswordDeletionResult.Success -> {
                     appLogWrapper.d(AppLog.T.MAIN, "Application password deleted")
                     applicationPasswordsStore.deleteCredentials(site)
+                    forgetCachedValidity()
                 }
 
                 is ApplicationPasswordDeletionResult.Failure -> {
@@ -302,7 +340,18 @@ internal class ApplicationPasswordsManager @Inject constructor(
             )
         }
 
+    private data class CachedValidation(
+        val localSiteId: Int,
+        val credentials: ApplicationPasswordCredentials,
+        val validity: ApplicationPasswordValidity,
+        val timestamp: Long
+    ) {
+        fun matches(site: SiteModel, credentials: ApplicationPasswordCredentials) =
+            localSiteId == site.id && this.credentials == credentials
+    }
+
     companion object {
+        private const val VALIDATION_RESULT_TTL_MS = 10_000L
         const val APPLICATION_PASSWORDS_DISABLED_ERROR_CODE = "application_passwords_disabled"
         const val APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE = "application_passwords_disabled_for_user"
     }
