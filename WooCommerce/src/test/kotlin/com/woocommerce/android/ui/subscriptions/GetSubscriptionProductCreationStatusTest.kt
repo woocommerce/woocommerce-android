@@ -12,10 +12,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.settings.SubscriptionProductCreationSettingsEntity
-import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -58,36 +54,15 @@ class GetSubscriptionProductCreationStatusTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no cached settings, when invoked, then settings are fetched and used`() = testBlocking {
+    fun `given no cached settings, when invoked, then both types are not creatable`() = testBlocking {
         whenever(isEligibleForSubscriptions()).thenReturn(true)
         whenever(wooCommerceStore.getSubscriptionProductCreationSettings(siteModel)).thenReturn(null)
-        whenever(wooCommerceStore.fetchSubscriptionProductCreationSettings(siteModel)).thenReturn(
-            WooResult(
-                SubscriptionProductCreationSettingsEntity(
-                    localSiteId = siteModel.localId(),
-                    isSimpleSubscriptionCreationEnabled = false,
-                    isVariableSubscriptionCreationEnabled = true
-                )
-            )
-        )
 
         val result = sut()
 
         assertThat(result.isSimpleSubscriptionCreatable).isFalse()
-        assertThat(result.isVariableSubscriptionCreatable).isTrue()
-    }
-
-    @Test
-    fun `given no cached settings and fetch fails, when invoked, then both types stay creatable`() = testBlocking {
-        whenever(isEligibleForSubscriptions()).thenReturn(true)
-        whenever(wooCommerceStore.getSubscriptionProductCreationSettings(siteModel)).thenReturn(null)
-        whenever(wooCommerceStore.fetchSubscriptionProductCreationSettings(siteModel))
-            .thenReturn(WooResult(WooError(GENERIC_ERROR, UNKNOWN)))
-
-        val result = sut()
-
-        assertThat(result.isSimpleSubscriptionCreatable).isTrue()
-        assertThat(result.isVariableSubscriptionCreatable).isTrue()
+        assertThat(result.isVariableSubscriptionCreatable).isFalse()
+        verify(wooCommerceStore, never()).fetchSubscriptionProductCreationSettings(siteModel)
     }
 
     @Test

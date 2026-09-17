@@ -14,20 +14,17 @@ class GetSubscriptionProductCreationStatus @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
     suspend operator fun invoke(): SubscriptionProductCreationStatus {
-        if (!isEligibleForSubscriptions()) {
+        val settings = wooCommerceStore.getSubscriptionProductCreationSettings(selectedSite.get())
+        if (!isEligibleForSubscriptions() || settings == null) {
             return SubscriptionProductCreationStatus(
                 isSimpleSubscriptionCreatable = false,
                 isVariableSubscriptionCreatable = false
             )
         }
 
-        val settings = wooCommerceStore.getSubscriptionProductCreationSettings(selectedSite.get())
-            ?: wooCommerceStore.fetchSubscriptionProductCreationSettings(selectedSite.get())
-                .takeUnless { it.isError }
-                ?.model
         return SubscriptionProductCreationStatus(
-            isSimpleSubscriptionCreatable = settings?.isSimpleSubscriptionCreationEnabled ?: true,
-            isVariableSubscriptionCreatable = settings?.isVariableSubscriptionCreationEnabled ?: true
+            isSimpleSubscriptionCreatable = settings.isSimpleSubscriptionCreationEnabled ?: true,
+            isVariableSubscriptionCreatable = settings.isVariableSubscriptionCreationEnabled ?: true
         )
     }
 
