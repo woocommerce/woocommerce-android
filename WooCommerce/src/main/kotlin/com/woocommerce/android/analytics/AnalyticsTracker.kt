@@ -127,7 +127,7 @@ class AnalyticsTracker private constructor(
         }
 
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
+        selectedSiteModel?.url?.let { finalProperties.putIfAbsent(KEY_SITE_URL, it) }
         getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
 
         return finalProperties
