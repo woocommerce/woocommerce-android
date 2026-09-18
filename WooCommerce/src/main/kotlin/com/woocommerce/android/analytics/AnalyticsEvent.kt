@@ -566,6 +566,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     REMOTE_TTP_PHONE_SESSION_STARTED,
     REMOTE_TTP_PHONE_SESSION_ENDED,
     REMOTE_TTP_PHONE_SESSION_ERROR,
+    REMOTE_TTP_PHONE_PAYMENT_FAILED,
 
     // -- POS Local Catalog Beta Toggle
     POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,

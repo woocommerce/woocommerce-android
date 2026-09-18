@@ -110,6 +110,9 @@ class CardReaderModeViewModel @Inject constructor(
                 _viewState.value = mapToViewState(sessionState)
             }
         }
+        viewModelScope.launch {
+            session.paymentRejections.collect(::trackPaymentRejection)
+        }
         session.start(
             parentScope = viewModelScope,
             siteHash = siteHash,
@@ -141,6 +144,16 @@ class CardReaderModeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun trackPaymentRejection(rejection: CardReaderRemoteSession.PaymentRejection) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED,
+            mapOf(
+                "error_code" to rejection.error.code,
+                "error_description" to rejection.description,
+            ),
+        )
     }
 
     private fun trackSessionStartedOnce() {

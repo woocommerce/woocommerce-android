@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -43,8 +44,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class CardReaderModeViewModelTest : BaseUnitTest() {
     private val sessionState = MutableStateFlow<CardReaderRemoteSessionState>(CardReaderRemoteSessionState.Idle)
+    private val paymentRejections = MutableSharedFlow<CardReaderRemoteSession.PaymentRejection>()
     private val session: CardReaderRemoteSession = mock {
         on { state }.thenReturn(sessionState)
+        on { paymentRejections }.thenReturn(paymentRejections)
         on { certificateKeyType }.thenReturn(CardReaderRemoteCertificateKeyType.ECDSA_256)
     }
     private val cardReaderManager: CardReaderManager = mock {
@@ -302,6 +305,34 @@ class CardReaderModeViewModelTest : BaseUnitTest() {
             verify(analyticsTrackerWrapper).track(
                 eq(AnalyticsEvent.REMOTE_TTP_PHONE_SESSION_STARTED),
                 eq(mapOf("is_simulated" to false, "certificate_key_type" to "rsa_2048")),
+            )
+        }
+
+    @Test
+    fun `given session started, when phone rejects a payment, then payment failed is tracked with code and cause`() =
+        testBlocking {
+            // GIVEN
+            viewModel.onPermissionsGranted()
+            advanceUntilIdle()
+
+            // WHEN
+            paymentRejections.emit(
+                CardReaderRemoteSession.PaymentRejection(
+                    error = CardReaderRemoteError.CollectFailed,
+                    description = "java.lang.IllegalStateException: card declined",
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.REMOTE_TTP_PHONE_PAYMENT_FAILED),
+                eq(
+                    mapOf(
+                        "error_code" to "collect_failed",
+                        "error_description" to "java.lang.IllegalStateException: card declined",
+                    )
+                ),
             )
         }
 
