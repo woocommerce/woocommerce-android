@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 17:54:23+0000
+Translation-Revision-Date: 2026-09-08 15:58:25+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Apri Google Play</string>
+    <string name="age_verification_required_message">Google Play richiede la verifica della tua età prima che WooCommerce possa verificare se puoi utilizzare l\'app. Completa la verifica su Google Play, poi torna qui e riprova.</string>
+    <string name="age_verification_required_title">Verifica la tua età per continuare</string>
+    <string name="woopos_refund_review_remaining_items_button">Rivedi gli elementi rimanenti</string>
+    <string name="woopos_refund_error_store_not_updated">L\'importo è stato rimborsato sulla carta, ma il tuo negozio non è stato aggiornato. Registra questo rimborso nella tua pagina di amministrazione del negozio.</string>
+    <string name="woopos_refund_error_item_already_refunded">Uno degli elementi selezionati è già stato completamente rimborsato.</string>
+    <string name="filter_history_delete">Elimina</string>
+    <string name="filter_history_clear_confirmation">Desideri cancellare tutta la cronologia dei filtri?</string>
+    <string name="filter_history_clear">Cancella la cronologia</string>
+    <string name="filter_history_empty">Nessun filtro precedente trovato</string>
+    <string name="filter_history_cancel">Annulla</string>
+    <string name="filter_history_apply">Applica</string>
+    <string name="filter_history_recent_header">Recente</string>
+    <string name="filter_history_title">Filtra Cronologia</string>
+    <string name="add_action">Aggiungi</string>
+    <string name="product_attribute_no_options_warning">Questo attributo non ha opzioni e verrà rimosso. Desideri continuare?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Attiva la posizione per visualizzare i lettori di carte</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Consenti l\'accesso alla posizione per visualizzare i lettori di carte</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Attiva il Bluetooth per visualizzare i lettori di carte</string>
@@ -16,7 +32,6 @@ Language: it
     <string name="woopos_refund_error_invalid_amount">L\'importo del rimborso non è valido</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">L\'importo del rimborso è superiore a quello che rimane da rimborsare per questo ordine</string>
     <string name="woopos_refund_error_order_not_refundable">Impossibile rimborsare l\'ordine</string>
-    <string name="woopos_refund_error_item_already_refunded">Questo elemento è già stato completamente rimborsato</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">La quantità selezionata è superiore a quella rimanente da rimborsare</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Mostra di nuovo il codice</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Raccogli sul registro</string>
@@ -649,13 +664,10 @@ Language: it
     <string name="woopos_refund_error_subtitle">Riprova</string>
     <string name="woopos_refund_creating_error_title">Impossibile creare il rimborso</string>
     <string name="woopos_orders_via_payment_method">Via %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Ignora l\'avviso di aggiornamento di WooCommerce</string>
     <string name="woopos_orders_refund_success_message">Hai rimborsato %1$s tramite %2$s.</string>
     <string name="woopos_refund_loading_error_title">Impossibile caricare gli articoli del rimborso</string>
-    <string name="woopos_wc_version_sunset_banner_message">A partire dal 1 agosto 2026, Point of Sale richiederà WooCommerce 10.5.0 o versione successiva. Aggiorna WooCommerce sul tuo negozio o chiedi all\'amministratore del negozio.</string>
     <string name="restart">Riavvia</string>
     <string name="dev_feature_flags">Flag funzionalità</string>
-    <string name="woopos_wc_version_sunset_banner_title">Aggiorna presto WooCommerce</string>
     <string name="settings_enable_push_notifications">Attiva notifiche push</string>
     <string name="my_store_widget_push_notifications_menu_title">Attiva notifiche push</string>
     <string name="my_store_widget_push_notifications_title">Non perderti mai un nuovo ordine</string>
@@ -1542,7 +1554,6 @@ Language: it
     <string name="my_store_widget_stats_title">Prestazioni</string>
     <string name="dashboard_stats_edit_granularity_content_description">Pulsante Cambia intervalli di date</string>
     <string name="images_unavailable_notice">Le immagini non sono disponibili perché il tuo sito è contrassegnato come Privato. Puoi modificarlo passando alla modalità Presto disponibile.\n</string>
-    <string name="card_selection_control">Selezione carta analisi</string>
     <string name="login_app_password_exit_dialog_cancel">Annulla</string>
     <string name="login_app_password_exit_dialog_confirmation">Esci comunque</string>
     <string name="login_app_password_exit_dialog_message">Sembra che tu non abbia ancora approvato la connessione dell\'app. Desideri uscire?</string>
@@ -3491,7 +3502,7 @@ Language: it
     <string name="upsells_desc">Prodotti promossi al posto del prodotto attualmente visualizzato (ossia i prodotti più redditizi)</string>
     <string name="upsells_label">Up-sell</string>
     <string name="product_detail_linked_products">Prodotti collegati</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Ottieni un link di accesso tramite e-mail</string>
     <string name="email_not_registered_wpcom">Hmm, non riusciamo a trovare un account di WordPress.com collegato a questo indirizzo e-mail.</string>
     <string name="settings_preferences">Preferenze</string>
@@ -3649,6 +3660,7 @@ Language: it
     <string name="product_sale_date_to">Fino al giorno %1$s</string>
     <string name="product_wip_title">Nuove opzioni di modifica disponibili</string>
     <string name="orderdetail_product_multiple">Prodotti</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Esterno</string>
     <string name="product_type_simple">Semplice</string>
     <string name="product_status_privately_published">Pubblicato privatamente</string>

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 09:54:11+0000
+Translation-Revision-Date: 2026-09-08 09:56:42+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Buka Google Play</string>
+    <string name="age_verification_required_message">Google Play meminta Anda memverifikasi usia sebelum WooCommerce dapat memeriksa apakah Anda dapat menggunakan aplikasi. Selesaikan verifikasi di Google Play, lalu kembali ke sini dan coba lagi.</string>
+    <string name="age_verification_required_title">Verifikasi email Anda untuk melanjutkan</string>
+    <string name="woopos_refund_review_remaining_items_button">Tinjau item yang tersisa</string>
+    <string name="woopos_refund_error_store_not_updated">Kartu dikembalikan dananya, tetapi toko Anda tidak diperbarui. Catat pengembalian dana ini di admin toko Anda.</string>
+    <string name="woopos_refund_error_item_already_refunded">Salah satu item yang dipilih telah dikembalikan dananya sepenuhnya.</string>
+    <string name="filter_history_delete">Hapus</string>
+    <string name="filter_history_clear_confirmation">Anda yakin ingin menghapus semua riwayat filter?</string>
+    <string name="filter_history_clear">Hapus Riwayat</string>
+    <string name="filter_history_empty">Tidak ada filter sebelumnya</string>
+    <string name="filter_history_cancel">Batalkan</string>
+    <string name="filter_history_apply">Terapkan</string>
+    <string name="filter_history_recent_header">Terbaru</string>
+    <string name="filter_history_title">Riwayat Filter</string>
+    <string name="add_action">Tambah</string>
+    <string name="product_attribute_no_options_warning">Atribut ini tidak memiliki pilihan dan akan dihapus. Apakah Anda ingin melanjutkan?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Aktifkan lokasi untuk melihat pembaca kartu</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Izinkan lokasi untuk melihat pembaca kartu</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Aktifkan Bluetooth untuk melihat pembaca kartu</string>
@@ -16,7 +32,6 @@ Language: id
     <string name="woopos_refund_error_amount_exceeds_item_remaining">Jumlah pengembalian dana lebih dari yang tersisa untuk pengembalian dana item ini</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">Jumlah pengembalian dana lebih dari yang tersisa untuk pengembalian dana pesanan ini</string>
     <string name="woopos_refund_error_order_not_refundable">Dana pesanan ini tidak dapat dikembalikan</string>
-    <string name="woopos_refund_error_item_already_refunded">Dana untuk item ini sudah dikembalikan seluruhnya</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">Jumlah yang dipilih lebih dari yang tersisa untuk dikembalikan</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Tampilkan kode lagi</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Terima di kasir</string>
@@ -649,14 +664,11 @@ Language: id
     <string name="woopos_refund_error_subtitle">Coba lagi</string>
     <string name="woopos_refund_creating_error_title">Gagal membuat pengembalian dana</string>
     <string name="woopos_orders_via_payment_method">Via %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Tutup peringatan pembaruan WooCommerce</string>
-    <string name="woopos_wc_version_sunset_banner_message">Mulai 1 Agustus 2026, Point of Sale memerlukan WooCommerce 10.5.0 atau yang lebih baru. Perbarui WooCommerce di toko Anda atau hubungi administrator toko Anda.</string>
     <string name="woopos_orders_refund_success_message">Anda mengembalikan dana %1$s melalui %2$s.</string>
     <string name="woopos_refund_loading_error_title">Gagal memuat item pengembalian dana</string>
     <string name="restart">Mulai ulang</string>
     <string name="dev_feature_flags">Bendera Fitur</string>
     <string name="my_store_widget_push_notifications_title">Jangan lewatkan pesanan baru</string>
-    <string name="woopos_wc_version_sunset_banner_title">Segera perbarui WooCommerce</string>
     <string name="settings_enable_push_notifications">Aktifkan Pemberitahuan Push</string>
     <string name="my_store_widget_push_notifications_menu_title">Aktifkan pemberitahuan push</string>
     <string name="woo_pos_promo_title">Point of Sale dari WooCommerce</string>
@@ -1542,7 +1554,6 @@ Language: id
     <string name="my_store_widget_stats_title">Performa</string>
     <string name="dashboard_stats_edit_granularity_content_description">Ubah tombol rentang tanggal</string>
     <string name="images_unavailable_notice">Gambar tidak tersedia karena situs Anda ditandai Privat. Anda dapat mengubah ini dengan beralih ke mode Segera Hadir.\n</string>
-    <string name="card_selection_control">Pilihan kartu analitik</string>
     <string name="login_app_password_exit_dialog_cancel">Batalkan</string>
     <string name="login_app_password_exit_dialog_confirmation">Keluar</string>
     <string name="login_app_password_exit_dialog_message">Anda sepertinya belum menyetujui koneksi aplikasi. Anda yakin ingin keluar?</string>
@@ -3491,7 +3502,7 @@ Language: id
     <string name="upsells_desc">Produk akan dipromosikan dari produk yang sedang dilihat (yaitu: produk yang lebih menguntungkan)</string>
     <string name="upsells_label">Upsell</string>
     <string name="product_detail_linked_products">Produk ditautkan</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Dapatkan tautan masuk lewat email</string>
     <string name="email_not_registered_wpcom">Hmm, kami tidak dapat menemukan akun WordPress.com yang terhubung dengan alamat email ini.</string>
     <string name="settings_preferences">Preferensi</string>
@@ -3649,6 +3660,7 @@ Language: id
     <string name="product_sale_date_to">Sampai %1$s</string>
     <string name="product_wip_title">Tersedia pilihan penyuntingan baru</string>
     <string name="orderdetail_product_multiple">Produk</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Eksternal</string>
     <string name="product_type_simple">Sederhana</string>
     <string name="product_status_privately_published">Diterbitkan secara privat</string>
