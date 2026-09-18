@@ -4,7 +4,7 @@
 
 25.8
 -----
-- [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet
+- [Internal] Card Reader Mode on the phone now tracks when it rejects a Remote Tap to Pay payment from the tablet [https://github.com/woocommerce/woocommerce-android/pull/16584]
 
 
 25.7
