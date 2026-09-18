@@ -1,2 +1,0 @@
-25.6:
-Bu sürüm uygulamayı gittikçe küçültür ve daha hızlı hale getirir. Ürün düzenleme daha güvenli: Bir nitelik seçeneğini veya yazdığınız bir etiketi kaybetmeden önce uyarılırsınız ve düzenleme seçenekleri artık diğer nitelikleri silmez. Sipariş ayrıntıları ürün eklentilerini net bir şekilde gösterir, görseller daha fazla mağazaya güvenilir şekilde yüklenir ve okunmamış yorum rozeti artık takılı kalmaz. Ayrıca çökme düzeltmeleri.
