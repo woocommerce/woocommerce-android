@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
