@@ -88,8 +88,11 @@ Duplicated on purpose — the report has to stand on its own when a merchant rea
 | `Play Services` | Whether Google Play Services is usable. Without it push notifications cannot arrive at all. | `available`, `unavailable` |
 | `Permission granted` | The runtime `POST_NOTIFICATIONS` permission (Android 13+). | `true`, `false` |
 | `App notifications enabled` | The system-level toggle for the whole app. | `true`, `false` |
-| `Disabled channels` | Woo notification channels the merchant has turned off individually. | Channel names, e.g. `NEW_ORDER, REVIEW`; `none` |
-| `New order sound` | Whether the new-order channel still has the sound the app installs. | `default`, `disabled`, `changed from the default` |
+| `Channels` | The importance of every Woo notification channel, in a fixed order. A channel set to `silent` still posts, but with no sound and no heads-up - to the merchant that is indistinguishable from nothing arriving. | `NAME=value` pairs, e.g. `NEW_ORDER=default, REVIEW=silent, STOCK=off, OTHER=default`. Values: `default` (what the app installs), `high` (raised by the merchant), `silent`, `off`, `not created`, `unknown` |
+| `Channels bypassing DND` | Woo channels the merchant has exempted from Do Not Disturb. Read together with `Do Not Disturb`. | Channel names, e.g. `NEW_ORDER`; `none` |
+| `Do Not Disturb` | The device-wide interruption filter at the moment the report was generated. | `off`, `priority only`, `alarms only`, `total silence`, `unknown` |
+| `Notifications paused` | Whether the platform is temporarily hiding this app's notifications, because the package was suspended or marked distracting. **Not** Do Not Disturb. Both are system-only calls, so the cause is something with privileged control of the device - a device or profile owner, parental controls, or a digital wellbeing app timer. | `true`, `false`, `unknown (requires Android 10 or newer)` |
+| `New order sound` | Whether the new-order channel still has the sound the app installs. Also reads `disabled` whenever the channel's importance is below `default`, so `Channels` is the authoritative importance signal. | `default`, `disabled`, `changed from the default` |
 | `Push token` | Whether a push token exists. Redacted to its last six characters — enough to compare against server logs, not enough to address the device. | `present (…abc123)`, `missing` |
 | `Background restricted` | The system has restricted the app's background work. | `true`, `false` |
 | `Power save mode` | Battery saver is on device-wide. | `true`, `false` |
@@ -97,6 +100,32 @@ Duplicated on purpose — the report has to stand on its own when a merchant rea
 
 Push registration is **not** here — it is keyed on a single store, so it is reported under Store Notifications
 along with that store's alert settings.
+
+### Reading the Do Not Disturb fields
+
+`Do Not Disturb`, `Channels bypassing DND` and `Notifications paused` are a **snapshot taken when the merchant
+generated the report**, not a record of the moment a notification was missed. A scheduled Do Not Disturb, or a
+time- or location-triggered Mode, may well be inactive by the time the report is produced.
+
+The field reports the *effective interruption filter*, which is what both Do Not Disturb and an Android 16
+**Mode** produce. A Mode that filters notifications therefore shows up here as a value other than `off`. A Mode
+whose rule uses `INTERRUPTION_FILTER_ALL` is active without filtering anything, and shows as `off` - so `off`
+means "nothing is currently filtering", not "no Mode is active". For this report those are the same thing, since
+a Mode that filters nothing cannot be why a notification was missed.
+
+Which Mode is active cannot be reported at all. `NotificationManager.getAutomaticZenRules()` throws without
+`ACCESS_NOTIFICATION_POLICY`, which the app does not request - and even with it, the API returns only rules
+*owned by the caller*, so a Mode the merchant or the system created would still be invisible to us.
+
+A filter of `priority only` silences a Woo channel unless that channel appears in `Channels bypassing DND`.
+`alarms only` and `total silence` silence everything.
+
+### The channel dump in `application_log.txt`
+
+`NotificationChannelsHandler` logs the whole `NotificationChannel{… mImportance=N …}` object, but only when it
+finds the channel already exists during channel creation — which runs once per **process start**. A log window
+that contains no cold start therefore has no channel dump in it. That is expected, not missing data; use the
+`Channels` field above instead.
 
 ## Account & Stores
 

@@ -276,6 +276,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         // Schedule worker to refresh FCM token periodically
         FCMRefreshWorker.schedule(application)
+        if (prefs.getFCMToken().isEmpty()) {
+            FCMRefreshWorker.run(application)
+        }
 
         posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
         observeSiteChangesForCatalogSync()

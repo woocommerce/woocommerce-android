@@ -5,9 +5,12 @@
 25.7
 -----
 - [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
+- [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
+- [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
 - [Internal] POS no longer repeats initial ineligibility events when the same screen is recomposed or initialized again [https://github.com/woocommerce/woocommerce-android/pull/16553]
 - [*] Push notifications setup now explains when a store's Jetpack is in Offline Mode instead of wrongly telling administrators to "ask your store administrator" [https://github.com/woocommerce/woocommerce-android/pull/16551]
+- [**] Fixed push notifications that could stop after restoring or transferring the app to a new device [https://github.com/woocommerce/woocommerce-android/pull/16547]
 - [*] Order details now shows refunded shipping lines, including refunds that only contain shipping [https://github.com/woocommerce/woocommerce-android/pull/16552]
 - [*] Product thumbnails in orders, refunds, and reviews now load without blocking the screen.
 - [*] Changing the country on an order address now clears the previous region from the form [https://github.com/woocommerce/woocommerce-android/pull/16527]
@@ -29,6 +32,7 @@
 - [Internal] Added a type-resolution detekt guard (on PRs and in the release pipeline) that flags stringifying a lambda-bearing object, which triggers a reflective toString() that crashes under R8 full mode [https://github.com/woocommerce/woocommerce-android/pull/16518]
 - [*] The Top performers card on My Store no longer stays on "Unable to load data" after a retry or pull to refresh succeeds [https://github.com/woocommerce/woocommerce-android/pull/16542]
 - [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
+- [*] Subscription product types now follow the Woo Subscriptions store settings [https://github.com/woocommerce/woocommerce-android/pull/16503]
 
 25.6
 -----
