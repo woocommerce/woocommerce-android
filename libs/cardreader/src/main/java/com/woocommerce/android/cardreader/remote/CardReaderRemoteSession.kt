@@ -287,6 +287,7 @@ class CardReaderRemoteSession internal constructor(
                             requestId = request.requestId,
                             paymentIntentId = collectResult.paymentIntentId,
                             status = collectResult.status,
+                            paymentMethodType = collectResult.paymentMethodType,
                         )
                     )
                     is RetrieveAndCollectResult.Failed -> {

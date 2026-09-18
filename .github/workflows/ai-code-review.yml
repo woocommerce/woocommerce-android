@@ -12,6 +12,8 @@ concurrency:
 jobs:
   review:
     uses: woocommerce/.github/.github/workflows/ai-code-review.yml@trunk
+    with:
+      model: claude-fable-5-1
     secrets:
       AI_CODE_REVIEW_ANTHROPIC_API_KEY: ${{ secrets.AI_CODE_REVIEW_ANTHROPIC_API_KEY }}
       AI_REVIEW_TELEMETRY_TOKEN: ${{ secrets.AI_REVIEW_TELEMETRY_TOKEN }}

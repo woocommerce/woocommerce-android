@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.Calendar
 import java.util.Date
+import java.util.UUID
 
 // Guaranteed to hold a reference to the application context, which is safe
 @SuppressLint("StaticFieldLeak")
@@ -100,6 +101,7 @@ object AppPrefs {
         IS_USER_ELIGIBLE,
         USER_EMAIL,
         RECEIPT_PREFIX,
+        POS_FEATURE_SWITCH_ENABLED,
         CARD_READER_ONBOARDING_COMPLETED_STATUS_V2,
         CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED,
         CARD_READER_PREFERRED_PLUGIN,
@@ -250,7 +252,24 @@ object AppPrefs {
 
     fun init(context: Context) {
         AppPrefs.context = context.applicationContext
+        clearLegacyPushPreferences()
+        if (wooCorePushDeviceUUID.isEmpty()) {
+            wooCorePushDeviceUUID = UUID.randomUUID().toString()
+        }
         if (relativeInstallationDate == null) relativeInstallationDate = Calendar.getInstance().time
+    }
+
+    private fun clearLegacyPushPreferences() {
+        val preferences = getPreferences()
+        val uuidKey = DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID.name
+        val tokenKey = UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN.name
+        if (!preferences.contains(uuidKey) && !preferences.contains(tokenKey)) return
+
+        // Backed-up push identity values must be discarded instead of copied to the excluded preferences file.
+        preferences.edit {
+            remove(uuidKey)
+            remove(tokenKey)
+        }
     }
 
     /**
@@ -371,8 +390,8 @@ object AppPrefs {
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
     var wooCorePushDeviceUUID: String
-        get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
-        set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
+        get() = getDeletableString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID)
+        set(value) = setDeletableString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
 
     var remoteFeatureFlagsDeviceId: String
         get() = getString(UndeletablePrefKey.REMOTE_FEATURE_FLAGS_DEVICE_ID, "")
@@ -457,10 +476,10 @@ object AppPrefs {
         setDeletableInt(UndeletablePrefKey.CANCELLED_APP_VERSION_CODE, versionCode)
     }
 
-    fun getFCMToken() = getString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
+    fun getFCMToken() = getDeletableString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN)
 
     fun setFCMToken(token: String) {
-        setString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
+        setDeletableString(UndeletablePrefKey.WC_PREF_NOTIFICATIONS_TOKEN, token)
     }
 
     fun setSupportEmail(email: String?) {
@@ -1420,6 +1439,32 @@ object AppPrefs {
         remove(PrefKeyString("${UndeletablePrefKey.POS_LAUNCHABLE}:$siteId"))
     }
 
+    fun setPOSFeatureSwitchEnabledForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long,
+        enabled: Boolean
+    ) {
+        setBoolean(
+            key = posFeatureSwitchKey(localSiteId, remoteSiteId, selfHostedSiteId),
+            value = enabled
+        )
+    }
+
+    fun getPOSFeatureSwitchEnabledForSite(
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ): Boolean? {
+        val key = posFeatureSwitchKey(localSiteId, remoteSiteId, selfHostedSiteId)
+        return if (exists(key)) getBoolean(key, false) else null
+    }
+
+    private fun posFeatureSwitchKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long) =
+        PrefKeyString("$POS_FEATURE_SWITCH_ENABLED_PREFIX$localSiteId:$remoteSiteId:$selfHostedSiteId")
+
+    private val POS_FEATURE_SWITCH_ENABLED_PREFIX = "${DeletablePrefKey.POS_FEATURE_SWITCH_ENABLED}:"
+
     /**
      * Remove all user and site-related preferences.
      */
@@ -1429,6 +1474,10 @@ object AppPrefs {
         editor.remove(SelectedSite.SELECTED_SITE_LOCAL_ID)
         removePreferencesWithDynamicKey(editor)
         editor.apply()
+
+        getDeleteablePreferences().edit {
+            remove(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID.name)
+        }
 
         resetSitePreferences()
     }
@@ -1444,6 +1493,7 @@ object AppPrefs {
             .all
             .filter {
                 it.key.contains(RECEIPT_PREFIX.toString(), ignoreCase = true) ||
+                    it.key.contains(POS_FEATURE_SWITCH_ENABLED_PREFIX, ignoreCase = true) ||
                     it.key.startsWith(HTTPS_CONFIGURATION_WARNING_DISMISSAL_PREFIX)
             }
             .forEach {
@@ -1528,7 +1578,7 @@ object AppPrefs {
 
     /**
      * Methods used to store values in SharedPreferences that are not backed up
-     * when app is installed/uninstalled. Currently, only used for storing appVersionCode.
+     * when app is installed/uninstalled. Currently used for storing appVersionCode, push UUID and FCM token.
      * We might want to migrate this to it's own class if we are to use this for other
      * attributes as well.
      */
@@ -1537,6 +1587,12 @@ object AppPrefs {
 
     private fun setDeletableInt(key: PrefKey, value: Int) =
         PreferenceUtils.setInt(getDeleteablePreferences(), key.toString(), value)
+
+    private fun getDeletableString(key: PrefKey, defaultValue: String = "") =
+        PreferenceUtils.getString(getDeleteablePreferences(), key.toString(), defaultValue) ?: defaultValue
+
+    private fun setDeletableString(key: PrefKey, value: String) =
+        PreferenceUtils.setString(getDeleteablePreferences(), key.toString(), value)
 
     private fun getDeleteablePreferences(): SharedPreferences {
         return context.getSharedPreferences(

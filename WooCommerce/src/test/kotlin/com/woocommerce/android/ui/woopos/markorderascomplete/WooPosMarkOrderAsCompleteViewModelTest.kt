@@ -4,7 +4,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -15,6 +17,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.MarkAsPaidSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosPaymentSuccessProperties
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,11 +26,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.check
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -42,6 +49,13 @@ class WooPosMarkOrderAsCompleteViewModelTest {
     @JvmField
     val instantTaskRule = InstantTaskExecutorRule()
 
+    private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(SiteModel()) }
+    private val wooStore: WooCommerceStore = mock { on { getStoreCountryCode(any()) }.thenReturn("US") }
+    private val paymentSuccessProperties = WooPosPaymentSuccessProperties(
+        PaymentUtils(mock()),
+        selectedSite,
+        wooStore,
+    )
     private val repository: WooPosMarkOrderAsCompleteRepository = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val tracker: WooPosAnalyticsTracker = mock()
@@ -52,7 +66,11 @@ class WooPosMarkOrderAsCompleteViewModelTest {
 
     @Before
     fun setUp() = runTest {
-        val testOrder = Order.getEmptyOrder(Date(), Date()).copy(id = orderId, total = BigDecimal("42.00"))
+        val testOrder = Order.getEmptyOrder(Date(), Date()).copy(
+            id = orderId,
+            total = BigDecimal("42.00"),
+            currency = "USD",
+        )
         whenever(repository.getOrderById(orderId)).thenReturn(testOrder)
         whenever(priceFormat(BigDecimal("42.00"))).thenReturn("$42.00")
         whenever(resourceProvider.getString(R.string.woopos_mark_order_as_paid_message, "$42.00"))
@@ -69,6 +87,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
         analyticsTracker = tracker,
         resourceProvider = resourceProvider,
         priceFormat = priceFormat,
+        paymentSuccessProperties = paymentSuccessProperties,
         savedState = SavedStateHandle(mapOf(MARK_ORDER_AS_COMPLETE_ROUTE_ORDER_ID_KEY to orderId)),
     )
 
@@ -133,9 +152,49 @@ class WooPosMarkOrderAsCompleteViewModelTest {
                 assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
             }
             verify(tracker).track(MarkAsPaidConfirmed)
-            verify(tracker).track(MarkAsPaidSuccess)
+            verify(tracker).track(
+                check { event ->
+                    assertThat(event).isInstanceOf(MarkAsPaidSuccess::class.java)
+                    val properties: Map<String, *> = (event as MarkAsPaidSuccess).properties
+                    assertThat(properties["amount_normalized"]).isEqualTo(4200L)
+                    assertThat(properties["currency"]).isEqualTo("USD")
+                    assertThat(properties["order_id"]).isEqualTo(orderId)
+                    assertThat(properties["country"]).isEqualTo("US")
+                    assertThat(properties["payment_method_type"]).isEqualTo("mark_as_paid")
+                    assertThat(properties["plugin_slug"]).isEqualTo("other")
+                }
+            )
             verify(childrenToParentEventSender).sendToParent(
                 eq(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)),
+            )
+        }
+
+    @Test
+    fun `given order missing after marking paid, when confirm clicked, then success is tracked and checkout completes`() =
+        runTest {
+            // GIVEN
+            whenever(repository.markOrderAsComplete(orderId, null)).thenReturn(MarkOrderAsCompleteOutcome.Success)
+            val viewModel = createViewModel()
+            whenever(repository.getOrderById(orderId)).thenReturn(null)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
+
+                // THEN
+                assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
+            }
+            verify(childrenToParentEventSender).sendToParent(
+                ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)
+            )
+            verify(tracker).track(
+                check { event ->
+                    assertThat(event).isInstanceOf(MarkAsPaidSuccess::class.java)
+                    val properties: Map<String, *> = (event as MarkAsPaidSuccess).properties
+                    assertThat(properties["payment_method_type"]).isEqualTo("mark_as_paid")
+                    assertThat(properties["plugin_slug"]).isEqualTo("other")
+                    assertThat(properties).doesNotContainKeys("amount_normalized", "currency", "order_id")
+                }
             )
         }
 
@@ -197,7 +256,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             viewModel.onUIEvent(WooPosMarkOrderAsCompleteUIEvent.ConfirmClicked)
             assertThat(awaitItem()).isEqualTo(WooPosNavigationEvent.GoBack)
         }
-        verify(tracker).track(MarkAsPaidSuccess)
+        verify(tracker).track(any<MarkAsPaidSuccess>())
         verify(childrenToParentEventSender).sendToParent(
             eq(ChildToParentEvent.OrderSuccessfullyPaid(PaymentMethod.EXTERNAL)),
         )
@@ -228,6 +287,7 @@ class WooPosMarkOrderAsCompleteViewModelTest {
             analyticsTracker = tracker,
             resourceProvider = resourceProvider,
             priceFormat = priceFormat,
+            paymentSuccessProperties = paymentSuccessProperties,
             savedState = savedState,
         )
 
