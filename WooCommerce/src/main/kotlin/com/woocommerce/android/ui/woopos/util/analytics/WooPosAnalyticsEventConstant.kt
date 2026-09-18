@@ -11,6 +11,17 @@ object WooPosAnalyticsEventConstant {
         override fun toString(): String = value
     }
 
+    enum class RemoteTapToPayExplainerSource(val value: String) {
+        CONNECT_DIALOG("connect_dialog"),
+        CASH_SUCCESS("cash_success");
+
+        override fun toString(): String = value
+
+        companion object {
+            const val SOURCE = "source"
+        }
+    }
+
     enum class RefundFlow(val value: String) {
         LOCAL("local"),
         SERVER_COMPUTED("server_computed");

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
+
 sealed class WooPosTotalsUIEvent {
     data object OnNewTransactionClicked : WooPosTotalsUIEvent()
     data object RetryFailedTransactionClicked : WooPosTotalsUIEvent()
@@ -17,5 +19,6 @@ sealed class WooPosTotalsUIEvent {
     data class OnFineLocationPermissionResult(val granted: Boolean) : WooPosTotalsUIEvent()
     data class OnAllPaymentMethodsVisibilityChanged(val isVisible: Boolean) : WooPosTotalsUIEvent()
     data object ConnectReaderClicked : WooPosTotalsUIEvent()
+    data class RemoteReaderHintClicked(val source: RemoteTapToPayExplainerSource) : WooPosTotalsUIEvent()
     data object OnBackClicked : WooPosTotalsUIEvent()
 }

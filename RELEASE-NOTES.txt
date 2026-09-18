@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] [Woo POS] After a cash payment, POS shows a link that explains how to use an Android phone as a card reader, if no reader was connected before
 - [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.

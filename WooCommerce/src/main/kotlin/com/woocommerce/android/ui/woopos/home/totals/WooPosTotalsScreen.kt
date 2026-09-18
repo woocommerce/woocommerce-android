@@ -79,6 +79,7 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import com.woocommerce.android.util.WooPermissionUtils
 
 @Composable
@@ -136,6 +137,11 @@ private fun WooPosTotalsScreen(
                     state,
                     onReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnStartReceiptFlowClicked) },
                     onNewTransactionClicked = { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) },
+                    onRemoteReaderHintClicked = {
+                        onUIEvent(
+                            WooPosTotalsUIEvent.RemoteReaderHintClicked(RemoteTapToPayExplainerSource.CASH_SUCCESS)
+                        )
+                    },
                     onBackPressed = { onUIEvent(WooPosTotalsUIEvent.OnBackClicked) },
                 )
             }
