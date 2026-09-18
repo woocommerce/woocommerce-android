@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
