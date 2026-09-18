@@ -1693,6 +1693,14 @@
     <string name="card_reader_mode_local_network_permission_continue">Continue</string>
     <string name="card_reader_mode_local_network_permission_denied_subtitle">Local network permission is blocked. Open Settings and grant local network access to use tap-to-pay on this phone.</string>
     <string name="card_reader_mode_local_network_permission_open_settings">Open Settings</string>
+    <string name="card_reader_mode_intro_header">This phone as a card reader</string>
+    <string name="card_reader_mode_intro_subtitle">This phone shows up as a card reader in Woo POS on your tablet. At checkout the tablet sends the amount here and the customer taps their card on this phone.</string>
+    <string name="card_reader_mode_intro_requirements_heading">Before you start</string>
+    <string name="card_reader_mode_intro_requirement_pos">Open Woo POS on an Android tablet signed in to the same store</string>
+    <string name="card_reader_mode_intro_requirement_wifi">Connect both devices to the same Wi-Fi</string>
+    <string name="card_reader_mode_intro_requirement_nfc">Turn on NFC on this phone</string>
+    <string name="card_reader_mode_intro_start">Start</string>
+    <string name="card_reader_mode_intro_not_now">Not now</string>
 
     <string name="card_reader_payment_failed_nfc_disabled">The app could not enable the card reader, because the NFC chip is disabled</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Enable NFC</string>
