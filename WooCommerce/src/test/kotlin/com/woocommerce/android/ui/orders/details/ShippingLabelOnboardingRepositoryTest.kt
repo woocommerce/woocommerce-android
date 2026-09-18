@@ -59,7 +59,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertTrue(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
+        assertTrue(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
     @Test
@@ -67,7 +67,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = true, active = true)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
     @Test
@@ -75,7 +75,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode("ES")
 
-        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
     @Test
@@ -83,7 +83,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
-        assertFalse(sut.shouldShowWcShippingBanner(ORDER_PAYED_IN_EUROS, eligibleForIpp = false))
+        assertFalse(sut.shouldShowWcShippingBanner(ORDER_PAYED_IN_EUROS))
     }
 
     @Test
@@ -92,15 +92,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenOrderHasVirtualProductsOnly()
 
-        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
-    }
-
-    @Test
-    fun `Given WC shipping not ready, when order is eligible for SL and IPP, then show shipping banner is false`() = testBlocking {
-        givenWCLegacyShippingPlugin(installed = false, active = false)
-        givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
-
-        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = true))
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
     @Test
@@ -109,7 +101,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
 
-        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS, eligibleForIpp = false))
+        assertFalse(sut.shouldShowWcShippingBanner(ELIGIBLE_ORDER_FOR_WCS_LABELS))
     }
 
     @Test
