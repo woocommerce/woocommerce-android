@@ -1,0 +1,2 @@
+25.6:
+Deze release maakt de app kleiner en sneller. Productbewerking is veiliger: je wordt gewaarschuwd voordat een eigenschapoptie of tag die je hebt ingevoerd verloren gaat, en het bewerken van opties wist niet langer andere attributen. Bestelgegevens tonen product-add-ons nu duidelijker, afbeeldingen worden in meer winkels betrouwbaarder geladen en de badge voor ongelezen reviews blijft niet langer hangen. En crashproblemen opgelost.

@@ -7,4 +7,5 @@
    -->
   <exclude domain="sharedpref" path="com.woocommerce.android_deletable_preferences.xml"/>
   <exclude domain="sharedpref" path="com.woocommerce.android_fluxc-preferences.xml"/>
+  <exclude domain="file" path="datastore/push_notifications.preferences_pb"/>
 </full-backup-content>

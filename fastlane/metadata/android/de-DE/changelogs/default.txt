@@ -1,0 +1,2 @@
+25.6:
+Mit dieser Version wird die App kleiner und schneller. Produktbearbeitung ist sicherer: Du wirst gewarnt, bevor du eine eingegebene Attributoption oder ein eingegebenes Schlagwort verlierst, und Attribute werden nicht mehr durch Bearbeitungsoptionen gelöscht. In den Bestelldetails werden Produkt-Add-ons klar angezeigt, Bilder werden zuverlässig in mehr Shops geladen und das Badge für ungelesene Bewertungen bleibt nicht mehr hängen. Zudem haben wir Abstürze behoben.
