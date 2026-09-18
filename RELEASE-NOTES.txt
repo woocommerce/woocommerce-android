@@ -4,7 +4,7 @@
 
 25.8
 -----
-- [*] Card Reader Mode on the phone now explains what it is for before it starts
+- [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
 
 25.7
 -----
