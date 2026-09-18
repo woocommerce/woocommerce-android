@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscover
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LocationUtils
@@ -101,7 +102,9 @@ class WooPosCardReaderConnectionController(
             onDismissClicked = ::hideRemoteTapToPayExplainer,
         )
         scope.launch {
-            wooPosAnalyticsTracker.track(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown)
+            wooPosAnalyticsTracker.track(
+                WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown(RemoteTapToPayExplainerSource.CONNECT_DIALOG)
+            )
         }
     }
 

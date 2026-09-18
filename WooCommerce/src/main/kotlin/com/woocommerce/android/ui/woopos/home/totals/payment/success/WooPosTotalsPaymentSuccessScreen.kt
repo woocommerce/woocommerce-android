@@ -6,8 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosRemoteReaderHintStrip
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -41,6 +44,7 @@ fun WooPosPaymentSuccessScreen(
     state: WooPosTotalsViewState.PaymentSuccess,
     onReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
+    onRemoteReaderHintClicked: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     BackHandler(onBack = onBackPressed)
@@ -52,11 +56,16 @@ fun WooPosPaymentSuccessScreen(
             .background(MaterialTheme.colorScheme.surfaceBright),
         contentAlignment = Alignment.Center
     ) {
-        val hugeSpacing = WooPosSpacing.Huge.value
+        val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
+        val showRemoteReaderHint = state.showRemoteReaderHint && !isPhone
+        val expandedMarginAboveButtons = when (showRemoteReaderHint) {
+            true -> WooPosSpacing.Large.value
+            false -> WooPosSpacing.Huge.value
+        }
         val mediumSpacing = WooPosSpacing.Medium.value
         val marginBetweenButtonAndText by animateDpAsState(
             targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
-                hugeSpacing
+                expandedMarginAboveButtons
             } else {
                 mediumSpacing
             },
@@ -66,7 +75,7 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
+            val (icon, title, message, buttonNewOrder, buttonEmailReceipts, remoteReaderHint) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -101,9 +110,25 @@ fun WooPosPaymentSuccessScreen(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    when (showRemoteReaderHint) {
+                        true -> bottom.linkTo(remoteReaderHint.top, margin = textsMargin)
+                        false -> bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    }
                 }
             )
+
+            if (showRemoteReaderHint) {
+                WooPosRemoteReaderHintStrip(
+                    onClick = onRemoteReaderHintClicked,
+                    modifier = Modifier
+                        .constrainAs(remoteReaderHint) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                        }
+                        .width(IntrinsicSize.Max),
+                )
+            }
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(
@@ -120,7 +145,6 @@ fun WooPosPaymentSuccessScreen(
                 text = stringResource(R.string.woopos_new_order_button)
             )
 
-            val isPhone = currentWooPosBreakpoint() == WooPosBreakpoint.Phone
             WooPosOutlinedButton(
                 modifier = Modifier
                     .constrainAs(buttonEmailReceipts) {
@@ -145,9 +169,28 @@ fun WooPosPaymentSuccessScreenPreview() {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = "A payment of 13.18 was successfully made",
+                showRemoteReaderHint = false,
             ),
             onReceiptClicked = {},
             onNewTransactionClicked = {},
+            onRemoteReaderHintClicked = {},
+            onBackPressed = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPaymentSuccessScreenWithRemoteReaderHintPreview() {
+    WooPosTheme {
+        WooPosPaymentSuccessScreen(
+            state = WooPosTotalsViewState.PaymentSuccess(
+                orderTotalText = "A cash payment of 13.18 was successfully made",
+                showRemoteReaderHint = true,
+            ),
+            onReceiptClicked = {},
+            onNewTransactionClicked = {},
+            onRemoteReaderHintClicked = {},
             onBackPressed = {},
         )
     }

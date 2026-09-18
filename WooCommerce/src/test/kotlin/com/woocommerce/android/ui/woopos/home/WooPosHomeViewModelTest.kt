@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -68,6 +70,22 @@ class WooPosHomeViewModelTest {
                 }
             )
         }
+
+    @Test
+    fun `when remote tap to pay explainer requested, then explainer dialog shown and tracked with source`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ShowRemoteTapToPayExplainer(RemoteTapToPayExplainerSource.CASH_SUCCESS))
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.state.value.dialogState)
+            .isEqualTo(WooPosHomeState.DialogState.RemoteTapToPayExplainerDialog)
+        verify(analyticsTracker).track(RemoteTapToPayExplainerShown(RemoteTapToPayExplainerSource.CASH_SUCCESS))
+    }
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =

@@ -4,6 +4,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -56,6 +57,7 @@ sealed class ChildToParentEvent {
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()
     data object ShowCardReaderConnectionDialog : ChildToParentEvent()
+    data class ShowRemoteTapToPayExplainer(val source: RemoteTapToPayExplainerSource) : ChildToParentEvent()
 
     data class CustomAmountDialogRequested(
         val editing: WooPosCartItemViewState.CustomAmount? = null,

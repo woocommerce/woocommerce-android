@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscover
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.RemoteTapToPayExplainerSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.LocationUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -80,7 +81,9 @@ class WooPosCardReaderConnectionControllerTest {
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosAnalyticsTracker).track(eq(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown))
+        verify(wooPosAnalyticsTracker).track(
+            eq(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown(RemoteTapToPayExplainerSource.CONNECT_DIALOG))
+        )
     }
 
     @Test

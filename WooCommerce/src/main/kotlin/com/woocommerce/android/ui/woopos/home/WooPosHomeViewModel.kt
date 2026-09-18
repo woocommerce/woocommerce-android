@@ -98,6 +98,12 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
+            WooPosHomeUIEvent.DismissRemoteTapToPayExplainerDialog -> {
+                _state.value = _state.value.copy(
+                    dialogState = DialogState.Hidden
+                )
+            }
+
             WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
                 PaymentMethod.CASH
             )
@@ -280,6 +286,13 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             dialogState = DialogState.CardReaderConnectionDialog
                         )
+                    }
+
+                    is ChildToParentEvent.ShowRemoteTapToPayExplainer -> {
+                        _state.value = _state.value.copy(
+                            dialogState = DialogState.RemoteTapToPayExplainerDialog
+                        )
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.RemoteTapToPayExplainerShown(event.source))
                     }
 
                     is ChildToParentEvent.CustomAmountDialogRequested -> {

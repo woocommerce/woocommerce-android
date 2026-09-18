@@ -2,6 +2,11 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+25.8
+-----
+- [*] [Woo POS] After a cash payment, POS shows a link that explains how to use an Android phone as a card reader, if no reader was connected before [https://github.com/woocommerce/woocommerce-android/pull/16585]
+
+
 25.7
 -----
 - [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
