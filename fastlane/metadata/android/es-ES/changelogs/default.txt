@@ -1,0 +1,2 @@
+25.6:
+Esta versión hace que la aplicación sea más pequeña y rápida. La edición de productos es más segura: se te avisa antes de perder una opción o etiqueta de atributo que hayas escrito, y las opciones de edición ya no borran otros atributos. Los detalles del pedido muestran claramente los complementos de los productos, las imágenes se cargan de forma fiable en más tiendas y la insignia de reseñas no leídas ya no se atasca. Además, se han corregido errores.

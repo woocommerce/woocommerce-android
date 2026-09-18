@@ -64,6 +64,19 @@ class WCSettingsMapper
         )
     }
 
+    fun mapSubscriptionProductCreationSettings(
+        response: List<SiteSettingsResponse>,
+        site: SiteModel
+    ) = SubscriptionProductCreationSettingsEntity(
+        localSiteId = site.localId(),
+        isSimpleSubscriptionCreationEnabled =
+            getValueForSettingsField(response, "woocommerce_subscriptions_enable_simple_subscription")
+                ?.let { it == "yes" },
+        isVariableSubscriptionCreationEnabled =
+            getValueForSettingsField(response, "woocommerce_subscriptions_enable_variable_subscription")
+                ?.let { it == "yes" }
+    )
+
     fun mapTaxBasedOnSettings(
         response: SiteSettingOptionResponse,
         localSiteId: LocalId

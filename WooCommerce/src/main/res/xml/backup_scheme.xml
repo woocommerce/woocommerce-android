@@ -12,6 +12,9 @@
         <exclude
             domain="sharedpref"
             path="com.woocommerce.android_fluxc-preferences.xml" />
+        <exclude
+            domain="file"
+            path="datastore/push_notifications.preferences_pb" />
     </cloud-backup>
     <device-transfer>
         <exclude
@@ -20,5 +23,8 @@
         <exclude
             domain="sharedpref"
             path="com.woocommerce.android_fluxc-preferences.xml" />
+        <exclude
+            domain="file"
+            path="datastore/push_notifications.preferences_pb" />
     </device-transfer>
 </data-extraction-rules>
