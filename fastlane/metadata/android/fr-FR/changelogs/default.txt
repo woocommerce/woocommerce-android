@@ -1,2 +1,0 @@
-25.6 :
-Cette version rend l’application moins volumineuse et plus rapide. La modification de produit est plus sûre : vous êtes averti avant de perdre une option d’attribut ou une étiquette que vous avez saisie, et les options d’édition n’effacent plus les autres attributs. Les détails de la commande affichent clairement les modules produits, les images se chargent de manière fiable sur plus de boutiques et le badge des avis non lus ne reste plus bloqué. Plus des correctifs d’incident.
