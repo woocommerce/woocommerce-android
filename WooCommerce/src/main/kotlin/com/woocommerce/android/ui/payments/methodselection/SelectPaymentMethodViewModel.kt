@@ -145,31 +145,53 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private suspend fun showPaymentState() {
-        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
-        val isPaymentCollectableWithTapToPay = isTapToPayAvailable()
-        val isTapToPayTestingState = cardReaderPaymentFlowParam.paymentType == TRY_TAP_TO_PAY &&
-            isPaymentCollectableWithCardReader &&
-            isPaymentCollectableWithTapToPay
+        val isTapToPayAvailableOnDevice = isTapToPayAvailable()
 
+        // Show the card reader / Tap to Pay rows disabled while we confirm eligibility over the
+        // network. Cash stays enabled throughout.
+        emitPaymentState(
+            isPaymentCollectableWithCardReader = true,
+            isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
+            areCardReaderRowsLoading = true,
+        )
+        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
+        emitPaymentState(
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
+            areCardReaderRowsLoading = false,
+        )
+    }
+
+    private suspend fun emitPaymentState(
+        isPaymentCollectableWithCardReader: Boolean,
+        isTapToPayAvailableOnDevice: Boolean,
+        areCardReaderRowsLoading: Boolean,
+    ) {
+        val isTapToPayTestingInProgress = cardReaderPaymentFlowParam.paymentType == TRY_TAP_TO_PAY &&
+            isPaymentCollectableWithCardReader &&
+            isTapToPayAvailableOnDevice
         _viewState.value = buildSuccessState(
             order = order.first(),
             isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
-            isPaymentCollectableWithTapToPay = isPaymentCollectableWithTapToPay,
-            isTapToPayTestingInProgress = isTapToPayTestingState,
+            isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
+            isTapToPayTestingInProgress = isTapToPayTestingInProgress,
+            areCardReaderRowsLoading = areCardReaderRowsLoading,
         )
     }
 
     private suspend fun buildSuccessState(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
-        isPaymentCollectableWithTapToPay: Boolean,
+        isTapToPayAvailableOnDevice: Boolean,
         isTapToPayTestingInProgress: Boolean,
+        areCardReaderRowsLoading: Boolean,
     ): Success {
         val rows = buildRows(
             order,
             isPaymentCollectableWithCardReader,
-            isPaymentCollectableWithTapToPay,
-            isTapToPayTestingInProgress
+            isTapToPayAvailableOnDevice,
+            isTapToPayTestingInProgress,
+            areCardReaderRowsLoading,
         )
         return Success(
             orderTotal = formatOrderTotal(order.total),
@@ -187,8 +209,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun buildRows(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
-        isPaymentCollectableWithTapToPay: Boolean,
+        isTapToPayAvailableOnDevice: Boolean,
         isTapToPayTestingInProgress: Boolean,
+        areCardReaderRowsLoading: Boolean,
     ): MutableList<Success.Row> {
         val rows = mutableListOf<Success.Row>().apply {
             add(
@@ -200,13 +223,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 )
             )
             if (isPaymentCollectableWithCardReader) {
-                if (isPaymentCollectableWithTapToPay) {
+                if (isTapToPayAvailableOnDevice) {
                     add(
                         Success.Row.Double(
                             label = R.string.card_reader_type_selection_tap_to_pay,
                             description = R.string.card_reader_type_selection_tap_to_pay_description,
                             icon = R.drawable.ic_baseline_contactless,
-                            isEnabled = true,
+                            isEnabled = !areCardReaderRowsLoading,
                             onClick = ::onTapToPayClicked
                         )
                     )
@@ -216,7 +239,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                         label = R.string.card_reader_type_selection_bluetooth_reader,
                         description = R.string.card_reader_type_selection_bluetooth_reader_description,
                         icon = R.drawable.ic_gridicons_credit_card,
-                        isEnabled = !isTapToPayTestingInProgress,
+                        isEnabled = !isTapToPayTestingInProgress && !areCardReaderRowsLoading,
                         onClick = ::onBtReaderClicked
                     )
                 )

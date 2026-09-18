@@ -4,13 +4,12 @@ import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
 import com.woocommerce.android.extensions.WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class CardReaderInteracRefundableChecker @Inject constructor(
-    private val orderDetailRepository: OrderDetailRepository,
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
+    private val orderSubscriptionChecker: OrderSubscriptionChecker,
 ) {
     suspend fun isRefundable(order: Order): Boolean {
         return with(order) {
@@ -26,7 +25,7 @@ class CardReaderInteracRefundableChecker @Inject constructor(
                         paymentMethod == WOOCOMMERCE_PAYMENTS_PAYMENT_TYPE ||
                         paymentMethod == WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE
                     ) &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+                orderSubscriptionChecker.isOrderFreeOfSubscriptions(order)
         }
     }
 }

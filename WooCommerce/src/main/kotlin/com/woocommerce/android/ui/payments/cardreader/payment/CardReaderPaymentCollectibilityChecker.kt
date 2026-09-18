@@ -10,13 +10,12 @@ import com.woocommerce.android.model.Order.Status.Failed
 import com.woocommerce.android.model.Order.Status.OnHold
 import com.woocommerce.android.model.Order.Status.Pending
 import com.woocommerce.android.model.Order.Status.Processing
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import java.math.BigDecimal
 import javax.inject.Inject
 
 class CardReaderPaymentCollectibilityChecker @Inject constructor(
-    private val orderDetailRepository: OrderDetailRepository,
-    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker
+    private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
+    private val orderSubscriptionChecker: OrderSubscriptionChecker,
 ) {
     suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
         return with(order) {
@@ -26,7 +25,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 isPaymentMethodCollectable() &&
-                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+                orderSubscriptionChecker.isOrderFreeOfSubscriptions(order)
         }
     }
 

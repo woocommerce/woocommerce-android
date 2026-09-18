@@ -210,7 +210,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and payment collectable and ttp, when view model init, then success emitted with ttp row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(true)
             whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
@@ -229,7 +230,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and payment collectable, when view model init, then success emitted with card reader row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(true)
 
             // WHEN
             val orderId = 1L
@@ -247,7 +249,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and order with payment link, when view model init, then success emitted with stp and share link rows`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(true)
             whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
@@ -270,7 +273,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and ipp not collectable and ttp collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(false)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(false)
             whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
@@ -291,7 +295,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(true)
             whenever(tapToPayAvailabilityStatus()).thenReturn(
                 TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
             )
@@ -314,7 +319,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given try tap to pay, when view model init, then all disabled except ttp row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order)).thenReturn(true)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(true)
             whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
 
@@ -332,6 +338,22 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             assertThat((enabledRows[0] as Success.Row.Double).label).isEqualTo(
                 R.string.card_reader_type_selection_tap_to_pay
             )
+        }
+
+    @Test
+    fun `given order contains a subscription, when view model init, then cash shown but card reader hidden`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+                .thenReturn(false)
+
+            // WHEN
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // THEN
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(rows.any { it is Success.Row.Single && it.label == R.string.cash }).isTrue()
+            assertThat(rows.none { it is Success.Row.Double }).isTrue()
         }
 
     @Test

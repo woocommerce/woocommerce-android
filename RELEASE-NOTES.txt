@@ -4,6 +4,7 @@
 
 25.7
 -----
+- [*] In-person payment collection and Interac refunds are now hidden for orders sold as a subscription, including plan-based and variable subscriptions the previous check missed [https://github.com/woocommerce/woocommerce-android/pull/16563]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
