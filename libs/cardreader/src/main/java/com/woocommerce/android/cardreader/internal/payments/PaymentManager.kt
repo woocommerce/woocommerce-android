@@ -97,7 +97,11 @@ internal class PaymentManager(
                     IllegalStateException("processPaymentIntent returned null id or status"),
                 )
             } else {
-                RetrieveAndCollectResult.Success(paymentIntentId = id, status = status)
+                RetrieveAndCollectResult.Success(
+                    paymentIntentId = id,
+                    status = status,
+                    paymentMethodType = determinePaymentMethodType(processed),
+                )
             }
         } catch (cancel: CancellationException) {
             throw cancel

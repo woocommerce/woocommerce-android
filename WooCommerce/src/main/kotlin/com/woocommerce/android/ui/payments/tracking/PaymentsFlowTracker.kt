@@ -17,6 +17,7 @@ import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.payments.cardreader.cardReaderBatteryLevelPercent
@@ -47,9 +48,6 @@ class PaymentsFlowTracker @Inject constructor(
         errorType: String? = null,
         errorDescription: String? = null,
     ) {
-        if (stat is WooPosAnalyticsEvent) {
-            properties.putAll(stat.properties)
-        }
         addPreferredPluginSlugProperty(properties)
         addStoreCountryCodeProperty(properties)
         addCurrencyProperty(properties)
@@ -57,6 +55,9 @@ class PaymentsFlowTracker @Inject constructor(
         addCardReaderModelProperty(properties)
         addCardReaderBatteryLevelProperty(properties)
         addTransportProperty(properties)
+        if (stat is WooPosAnalyticsEvent) {
+            properties.putAll(stat.properties)
+        }
 
         val isError = !errorType.isNullOrBlank() || !errorDescription.isNullOrEmpty()
         if (isError) {
@@ -373,6 +374,10 @@ class PaymentsFlowTracker @Inject constructor(
 
     fun trackPaymentSucceeded() {
         track(eventProvider.CARD_PRESENT_COLLECT_PAYMENT_SUCCESS, getAndResetFlowsDuration())
+    }
+
+    fun trackPaymentSucceeded(order: Order) {
+        track(eventProvider.paymentSuccessEvent(order), getAndResetFlowsDuration())
     }
 
     fun trackInteracPaymentSucceeded() {
