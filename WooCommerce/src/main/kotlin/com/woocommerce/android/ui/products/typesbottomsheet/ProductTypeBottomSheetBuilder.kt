@@ -3,15 +3,15 @@ package com.woocommerce.android.ui.products.typesbottomsheet
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
-import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
+import com.woocommerce.android.ui.subscriptions.GetSubscriptionProductCreationStatus
 import javax.inject.Inject
 
 class ProductTypeBottomSheetBuilder @Inject constructor(
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
+    private val getSubscriptionProductCreationStatus: GetSubscriptionProductCreationStatus
 ) {
     @Suppress("LongMethod")
     suspend fun buildBottomSheetList(): List<ProductTypesBottomSheetUiItem> {
-        val isEligibleForSubscriptions = isEligibleForSubscriptions()
+        val subscriptionCreationStatus = getSubscriptionProductCreationStatus()
 
         return listOf(
             ProductTypesBottomSheetUiItem(
@@ -32,7 +32,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 titleResource = R.string.product_type_simple_subscription_title,
                 descResource = R.string.product_type_simple_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = isEligibleForSubscriptions
+                isVisible = subscriptionCreationStatus.isSimpleSubscriptionCreatable
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.VARIABLE,
@@ -46,7 +46,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 titleResource = R.string.product_type_variable_subscription_title,
                 descResource = R.string.product_type_variable_subscription_desc,
                 iconResource = R.drawable.ic_event_repeat,
-                isVisible = isEligibleForSubscriptions
+                isVisible = subscriptionCreationStatus.isVariableSubscriptionCreatable
             ),
             ProductTypesBottomSheetUiItem(
                 type = ProductType.GROUPED,

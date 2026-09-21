@@ -5,9 +5,13 @@
 25.8
 -----
 - [*] Card Reader Mode on the phone now explains what it is for before it starts [https://github.com/woocommerce/woocommerce-android/pull/16579]
+- [*] The variations list now shows an error with a retry option when a page of variations fails to load, instead of silently skipping it [https://github.com/woocommerce/woocommerce-android/pull/16580]
+- [*] POS no longer flips between portrait and landscape on tablets whose screen is just above the tablet size threshold [https://github.com/woocommerce/woocommerce-android/pull/16574]
+- [*] Logging in with the www form of a store address no longer shows "not connected to this account" for a store the account owns [https://github.com/woocommerce/woocommerce-android/pull/16567]
 
 25.7
 -----
+- [*] Customers list no longer reshuffles its rows once the fresh results arrive from the server [https://github.com/woocommerce/woocommerce-android/pull/16573]
 - [*] Updated the create shipping label button visibility on the order details screen [https://github.com/woocommerce/woocommerce-android/pull/16572]
 - [Internal] Defer push notification handler initialization until a message is received on the Firebase worker thread.
 - [*] Rounded currency amounts on charts, Blaze campaigns, payment screens, and widgets now follow the app's language [https://github.com/woocommerce/woocommerce-android/pull/16556]
@@ -35,6 +39,7 @@
 - [Internal] Added a type-resolution detekt guard (on PRs and in the release pipeline) that flags stringifying a lambda-bearing object, which triggers a reflective toString() that crashes under R8 full mode [https://github.com/woocommerce/woocommerce-android/pull/16518]
 - [*] The Top performers card on My Store no longer stays on "Unable to load data" after a retry or pull to refresh succeeds [https://github.com/woocommerce/woocommerce-android/pull/16542]
 - [Internal] Fixed the WPCom order notifications not being disabled for stores registered for Woo push [https://github.com/woocommerce/woocommerce-android/pull/16504]
+- [*] Subscription product types now follow the Woo Subscriptions store settings [https://github.com/woocommerce/woocommerce-android/pull/16503]
 
 25.6
 -----

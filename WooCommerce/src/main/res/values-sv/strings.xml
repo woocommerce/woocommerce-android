@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2026-08-27 09:55:12+0000
+Translation-Revision-Date: 2026-09-07 16:55:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="age_verification_open_google_play">Google Play</string>
+    <string name="age_verification_required_message">Google Play kräver att du verifierar din ålder innan WooCommerce kan kontrollera om du kan använda appen. Slutför verifiering i Google Play, gå sedan tillbaka hit och försök igen.</string>
+    <string name="age_verification_required_title">Verifiera din ålder för att fortsätta</string>
+    <string name="woopos_refund_review_remaining_items_button">Granska återstående objekt</string>
+    <string name="woopos_refund_error_store_not_updated">Kortet har återbetalats, men din butik uppdaterades inte. Registrera denna återbetalning i din butiks admin.</string>
+    <string name="woopos_refund_error_item_already_refunded">En av de valda artiklarna har redan återbetalats helt.</string>
+    <string name="filter_history_delete">Ta bort</string>
+    <string name="filter_history_clear_confirmation">Är du säker på att du vill rensa all filterhistorik?</string>
+    <string name="filter_history_clear">Rensa historik</string>
+    <string name="filter_history_empty">Inga tidigare filter hittades</string>
+    <string name="filter_history_cancel">Avbryt</string>
+    <string name="filter_history_apply">Tillämpa</string>
+    <string name="filter_history_recent_header">Senaste</string>
+    <string name="filter_history_title">Filtrera historik</string>
+    <string name="add_action">Lägg till</string>
+    <string name="product_attribute_no_options_warning">Detta attribut har inga alternativ och kommer att tas bort. Vill du fortsätta?</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_off">Aktivera plats för att se kortläsare</string>
     <string name="woopos_card_reader_bluetooth_unavailable_location_permission">Tillåt plats att se kortläsare</string>
     <string name="woopos_card_reader_bluetooth_unavailable_off">Aktivera Bluetooth för att se kortläsare</string>
@@ -16,7 +32,6 @@ Language: sv_SE
     <string name="woopos_refund_error_amount_exceeds_item_remaining">Återbetalningsbeloppet är högre än vad som återstår att återbetala för den här artikeln</string>
     <string name="woopos_refund_error_amount_exceeds_order_remaining">Återbetalningsbeloppet är högre än vad som återstår att återbetala på den här beställningen</string>
     <string name="woopos_refund_error_order_not_refundable">Beställningen kan inte återbetalas</string>
-    <string name="woopos_refund_error_item_already_refunded">Artikeln har redan återbetalats i sin helhet</string>
     <string name="woopos_refund_error_quantity_exceeds_refundable">Det valda antalet är fler än vad som återstår att återbetala</string>
     <string name="woopos_scan_to_pay_pay_in_person_show_qr">Visa koden igen</string>
     <string name="woopos_scan_to_pay_pay_in_person_collect">Samla i registret</string>
@@ -652,9 +667,6 @@ Language: sv_SE
     <string name="woopos_refund_creating_error_title">Misslyckades att skapa återbetalning</string>
     <string name="woopos_refund_loading_error_title">Det gick inte att hämta objekt för återbetalning</string>
     <string name="woopos_orders_via_payment_method">Via %1$s</string>
-    <string name="woopos_wc_version_sunset_banner_dismiss">Avfärda uppdateringsvarning för WooCommerce</string>
-    <string name="woopos_wc_version_sunset_banner_message">Från och med 1 augusti 2026 kommer Försäljningsplats att kräva WooCommerce 10.5.0 eller senare. Uppdatera WooCommerce i din butik eller fråga din butiksadministratör.</string>
-    <string name="woopos_wc_version_sunset_banner_title">Uppdatera WooCommerce snart</string>
     <string name="restart">Starta om</string>
     <string name="dev_feature_flags">Funktionsflaggor</string>
     <string name="settings_enable_push_notifications">Aktivera pushnotiser</string>
@@ -1543,7 +1555,6 @@ Language: sv_SE
     <string name="my_store_widget_stats_title">Prestanda</string>
     <string name="dashboard_stats_edit_granularity_content_description">Ändra datumintervall-knapp</string>
     <string name="images_unavailable_notice">Bilderna är inte tillgängliga, eftersom din webbplats är satt som Privat. Du kan ändra detta genom att växla till läget Kommer snart.\n</string>
-    <string name="card_selection_control">Kortval för analys</string>
     <string name="login_app_password_exit_dialog_cancel">Avbryt</string>
     <string name="login_app_password_exit_dialog_confirmation">Avsluta ändå</string>
     <string name="login_app_password_exit_dialog_message">Det verkar som att du inte har godkänt appanslutningen än. Är du säker på att du vill lämna sidan?</string>
@@ -3492,7 +3503,7 @@ Language: sv_SE
     <string name="upsells_desc">Produkter som marknadsförs istället för den för närvarande visade produkten (dvs. mer lönsamma produkter)</string>
     <string name="upsells_label">Merförsäljning</string>
     <string name="product_detail_linked_products">Länkade produkter</string>
-    <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
+    <string name="orderdetail_product_lineitem_attribute">%1$s: %2$s</string>
     <string name="login_get_link_by_email">Skaffa en länk för inloggning via e-post</string>
     <string name="email_not_registered_wpcom">Hmm. Vi hittar inget konto hos WordPress.com som är kopplat till denna e-postadress.</string>
     <string name="settings_enable_product_addons_teaser_message">Testa att visa Beställningstillägg medan vi gör oss redo för lanseringen</string>
@@ -3650,6 +3661,7 @@ Language: sv_SE
     <string name="product_sale_date_to">Fram till %1$s</string>
     <string name="product_wip_title">Nya redigeringsalternativ tillgängliga</string>
     <string name="orderdetail_product_multiple">Produkter</string>
+    <string name="orderdetail_product_lineitem_quantity_and_price">%1$s x %2$s</string>
     <string name="product_type_external">Extern</string>
     <string name="product_type_simple">Enkel</string>
     <string name="product_status_privately_published">Publicerat privat</string>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "woocommerce_subscriptions_multiple_purchase",
+    "label": "Mixed Checkout",
+    "description": "Allow multiple subscriptions and products to be purchased simultaneously.",
+    "type": "checkbox",
+    "default": "no",
+    "value": "no"
+  },
+  {
+    "id": "woocommerce_subscriptions_enable_simple_subscription",
+    "label": "Enable subscription product types",
+    "description": "Simple subscription",
+    "type": "checkbox",
+    "default": "no",
+    "value": "yes"
+  },
+  {
+    "id": "woocommerce_subscriptions_enable_variable_subscription",
+    "label": "",
+    "description": "Variable subscription",
+    "type": "checkbox",
+    "default": "no",
+    "value": "no"
+  }
+]
