@@ -11,7 +11,7 @@ sealed interface JitmState {
         val description: UiString,
         val primaryActionLabel: UiString,
         val backgroundImage: LocalOrRemoteImage,
-        val badgeIcon: LabelOrRemoteIcon?,
+        val badgeIcon: RemoteIcon?,
     ) : JitmState {
         sealed class LocalOrRemoteImage {
             data class Local(@DrawableRes val drawableId: Int) : LocalOrRemoteImage()
@@ -21,13 +21,10 @@ sealed interface JitmState {
             ) : LocalOrRemoteImage()
         }
 
-        sealed class LabelOrRemoteIcon {
-            data class Label(val label: UiString) : LabelOrRemoteIcon()
-            data class Remote(
-                val urlLightMode: String,
-                val urlDarkMode: String,
-            ) : LabelOrRemoteIcon()
-        }
+        data class RemoteIcon(
+            val urlLightMode: String,
+            val urlDarkMode: String,
+        )
     }
 
     data class Modal(
