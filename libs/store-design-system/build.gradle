@@ -51,3 +51,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed; otherwise, Robolectric tests fail on SDK 37 with espresso-core 3.5.0.
+            exclude(libs.androidx.test.espresso.core.get().module.toString())
+        }
+    }
+}
