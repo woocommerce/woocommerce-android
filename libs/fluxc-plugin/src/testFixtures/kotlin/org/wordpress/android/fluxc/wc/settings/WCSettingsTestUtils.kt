@@ -48,6 +48,11 @@ object WCSettingsTestUtils {
             .jsonFileAs(Array<SiteSettingsResponse>::class.java)
             ?.toList()
 
+    fun getSubscriptionsSettingsResponse() =
+        "wc/subscriptions-settings-response.json"
+            .jsonFileAs(Array<SiteSettingsResponse>::class.java)
+            ?.toList()
+
     fun getTaxBasedOnSettingsResponse() =
         "wc/tax-based-on-settings-response.json"
             .jsonFileAs(SiteSettingOptionResponse::class.java)

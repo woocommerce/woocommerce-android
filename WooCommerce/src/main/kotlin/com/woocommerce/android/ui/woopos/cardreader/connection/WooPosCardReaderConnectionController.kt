@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscover
 import com.woocommerce.android.ui.woopos.cardreader.remote.WooPosUnifiedDiscoveryStream
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LocationUtils
@@ -612,13 +613,13 @@ class WooPosCardReaderConnectionController(
     // Must run before any phone event is tracked, or a model and battery level left over from a
     // previous Bluetooth connection get reported against this wifi_lan session.
     private fun markPhoneReaderSelected() {
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.WifiLan.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.WIFI_LAN.value)
         cardReaderTrackingInfoKeeper.setCardReaderModel(null)
         cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
 
     private fun markBluetoothReaderSelected(readerModel: String) {
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.BLUETOOTH.value)
         cardReaderTrackingInfoKeeper.setCardReaderModel(readerModel)
         cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(null)
     }
@@ -629,11 +630,6 @@ class WooPosCardReaderConnectionController(
             logger.d("Retrying phone connection with a re-advertised address")
         }
         onPhoneConnectClicked(refreshed)
-    }
-
-    private fun WooPosDiscoveryTransport.toAnalyticsValue(): String = when (this) {
-        WooPosDiscoveryTransport.Bluetooth -> "bluetooth"
-        WooPosDiscoveryTransport.WifiLan -> "wifi_lan"
     }
 
     private fun handleRemoteConnectionResult(
@@ -668,7 +664,7 @@ class WooPosCardReaderConnectionController(
 
     private fun connectToReader(reader: CardReader) {
         cardReaderTrackingInfoKeeper.setCardReaderModel(reader.type)
-        cardReaderTrackingInfoKeeper.setTransport(WooPosDiscoveryTransport.Bluetooth.toAnalyticsValue())
+        cardReaderTrackingInfoKeeper.setTransport(CardReaderTransport.BLUETOOTH.value)
         selectedReader = reader
         _state.value = WooPosCardReaderConnectionState.Connecting
 

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -129,25 +130,34 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given registration succeeds, when registering push token in woo core, then saves token id token and locale`() =
+    fun `given legacy registration, when registration succeeds, then saves current identity and stops retrying`() =
         testBlocking {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(WooResult(RETURNED_TOKEN))
 
-            val mutablePreferences: MutablePreferences = mock()
-            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
-            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+            var savedPreferences: Preferences = mutablePreferencesOf(
+                stringPreferencesKey("push_token_$SITE_ID") to "legacy-token-id",
+                stringPreferencesKey("push_token_value_$SITE_ID") to "token",
+                stringPreferencesKey("push_locale_$SITE_ID") to "en_US"
+            )
+            whenever(pushNotificationsDataStore.data).thenAnswer { flowOf(savedPreferences) }
+            whenever(pushNotificationsDataStore.updateData(any())).doSuspendableAnswer { invocation ->
                 val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
-                testBlocking { transform(preferences) }
-                preferences
+                savedPreferences = transform(savedPreferences)
+                savedPreferences
             }
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            assertThat(sut.shouldRegisterWooPushForSite("token", SITE_ID)).isTrue()
 
-            verify(mutablePreferences)[stringPreferencesKey("push_token_$SITE_ID")] = RETURNED_TOKEN
-            verify(mutablePreferences)[stringPreferencesKey("push_token_value_$SITE_ID")] = "token"
-            verify(mutablePreferences)[stringPreferencesKey("push_locale_$SITE_ID")] = "en_US"
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
+
+            assertThat(result.isSuccess).isTrue()
+            assertThat(savedPreferences[stringPreferencesKey("push_token_$SITE_ID")]).isEqualTo(RETURNED_TOKEN)
+            assertThat(savedPreferences[stringPreferencesKey("push_token_value_$SITE_ID")]).isEqualTo("token")
+            assertThat(savedPreferences[stringPreferencesKey("push_locale_$SITE_ID")]).isEqualTo("en_US")
+            assertThat(savedPreferences[stringPreferencesKey("push_device_uuid_$SITE_ID")]).isEqualTo("stored-uuid")
+            assertThat(sut.shouldRegisterWooPushForSite("token", SITE_ID)).isFalse()
         }
 
     @Test
@@ -598,15 +608,40 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given woo token locale and id match, when checking whether woo push should register, then returns false`() =
+    fun `given woo token locale uuid and id match, when checking whether woo push should register, then returns false`() =
         testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(RETURNED_TOKEN)
             whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
             whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(preferences[stringPreferencesKey("push_device_uuid_$SITE_ID")]).thenReturn("stored-uuid")
 
             val result = sut.shouldRegisterWooPushForSite(currentToken = "token", siteId = SITE_ID)
 
             assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given missing or different registered uuid, when registration fails, then preserve record and allow retry`() =
+        testBlocking {
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("current-uuid")
+            whenever(preferences[stringPreferencesKey("push_token_$SITE_ID")]).thenReturn(RETURNED_TOKEN)
+            whenever(preferences[stringPreferencesKey("push_token_value_$SITE_ID")]).thenReturn("token")
+            whenever(preferences[stringPreferencesKey("push_locale_$SITE_ID")]).thenReturn("en_US")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
+                .thenReturn(PN_REGISTRATION_ERROR)
+
+            listOf(null, "old-uuid").forEach { registeredUuid ->
+                whenever(preferences[stringPreferencesKey("push_device_uuid_$SITE_ID")]).thenReturn(registeredUuid)
+                assertThat(sut.shouldRegisterWooPushForSite("token", SITE_ID)).isTrue()
+
+                val result = sut.registerPushTokenInWooCoreSystem("token", siteModel, allowWpComFallback = false)
+
+                assertThat(result.isFailure).isTrue()
+                assertThat(sut.shouldRegisterWooPushForSite("token", SITE_ID)).isTrue()
+                assertThat(sut.isWooPushTokenRegisteredForSite(SITE_ID)).isTrue()
+            }
+            verify(pushNotificationsDataStore, never()).updateData(any())
         }
 
     @Test
@@ -627,6 +662,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_token_value_$SITE_ID"))
             verify(mutablePreferences).remove(stringPreferencesKey("push_locale_$SITE_ID"))
+            verify(mutablePreferences).remove(stringPreferencesKey("push_device_uuid_$SITE_ID"))
         }
 
     @Test

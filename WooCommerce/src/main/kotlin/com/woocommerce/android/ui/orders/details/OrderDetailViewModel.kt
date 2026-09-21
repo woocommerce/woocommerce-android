@@ -62,7 +62,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelM
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.fillProducts
 import com.woocommerce.android.ui.orders.wooshippinglabels.networking.WooShippingLabelRepository
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -106,7 +105,6 @@ class OrderDetailViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val addonsRepository: AddonRepository,
     private val selectedSite: SelectedSite,
-    private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tracker: OrderDetailTracker,
     private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository,
@@ -776,7 +774,6 @@ class OrderDetailViewModel @Inject constructor(
             orderInfo = OrderDetailViewState.OrderInfo(
                 order = order,
                 isVirtualOrder = isVirtualOrder,
-                isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader(order),
                 receiptButtonStatus = if (paymentReceiptHelper.isReceiptAvailable(order.id) && order.isOrderPaid) {
                     OrderDetailViewState.ReceiptButtonStatus.Visible
                 } else {
@@ -789,9 +786,6 @@ class OrderDetailViewModel @Inject constructor(
             ),
         )
     }
-
-    private suspend fun isPaymentCollectableWithCardReader(order: Order) =
-        cardPaymentCollectibilityChecker.isCollectable(order)
 
     private fun loadOrderNotes() {
         launch {
@@ -962,9 +956,7 @@ class OrderDetailViewModel @Inject constructor(
 
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
-        val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
-
-        val isOrderEligibleForLegacySLCreation = isOrderEligibleForLegacySLCreation(orderEligibleForInPersonPayments)
+        val isOrderEligibleForLegacySLCreation = isOrderEligibleForLegacySLCreation()
 
         if (isOrderEligibleForLegacySLCreation &&
             viewState.isCreateShippingLabelButtonVisible != true &&
@@ -981,18 +973,16 @@ class OrderDetailViewModel @Inject constructor(
             isShipmentTrackingAvailable = shipmentTracking.isVisible,
             isProductListVisible = orderProducts.isVisible,
             wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
-                awaitOrder(),
-                orderEligibleForInPersonPayments
+                awaitOrder()
             ),
             isAIThankYouNoteButtonShown = shouldShowThankYouNoteButton()
         )
     }
 
-    private suspend fun isOrderEligibleForLegacySLCreation(orderEligibleForInPersonPayments: Boolean) =
+    private suspend fun isOrderEligibleForLegacySLCreation() =
         !isRevampWooShippingEnabled &&
             shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
-            orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id) &&
-            !orderEligibleForInPersonPayments
+            orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id)
 
     private suspend fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&
@@ -1014,12 +1004,9 @@ class OrderDetailViewModel @Inject constructor(
                         orderInfo = viewState.orderInfo?.copy(
                             order = it,
                             isVirtualOrder = isVirtualOrder,
-                            isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
-                                ?: false
                         ) ?: OrderDetailViewState.OrderInfo(
                             it,
                             isVirtualOrder = isVirtualOrder,
-                            isPaymentCollectableWithCardReader = false
                         )
                     )
                 }
