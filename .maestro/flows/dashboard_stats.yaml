@@ -1,0 +1,119 @@
+# Smoke Test: Dashboard / Stats
+# p2: dashboard.stats
+# P2 ref: Dashboard/Stats > Charts/graphs all respond
+#
+# Verifies:
+#   - Dashboard loads with stats cards
+#   - The Orders, Visitors and Conversion stat tiles are visible
+#   - Switching the date range to This Week
+#   - Top performers card is visible
+appId: com.woocommerce.android
+name: "Dashboard - Stats and analytics"
+tags:
+  - smoke_core
+  - dashboard
+---
+# Reuse the logged-in session — login flows run first and leave the
+# app authenticated. See subflows/ensure_logged_in.yaml.
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Verify dashboard container loads
+- assertVisible:
+    id: "dashboard_container"
+    label: "Dashboard container is visible"
+
+# Verify stats card via Compose testTag (DashboardStatsTestTags.DASHBOARD_STATS_CARD)
+- scrollUntilVisible:
+    element:
+      id: "dashboard_stats_card"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to stats card"
+
+- assertVisible:
+    id: "dashboard_stats_card"
+    label: "Stats card is visible"
+
+# Verify the stat tiles are rendered on the card.
+#
+# The card's inner layout is a legacy AndroidView (DashboardStatsView).
+# Its tile labels come from:
+#   - dashboard_stats_placed_orders / dashboard_stats_paid_orders
+#     "Placed orders" or "Paid orders", the tile has a mode picker
+#   - dashboard_stats_visitors     "Visitors"
+#   - dashboard_stats_conversion   "Conversion"
+#
+# Labels render as soon as the card inflates. Only the tile values show
+# the skeleton dash while the Analytics request is in flight, so these
+# do not need to wait.
+#
+# Assert each tile separately. A single alternation over several labels
+# passes when only one of them is on screen, which hides a missing tile.
+- assertVisible:
+    text: ".*Placed orders.*|.*Paid orders.*"
+    label: "Orders stats tile is visible"
+
+- assertVisible:
+    text: "Visitors"
+    label: "Visitors stats tile is visible"
+
+- assertVisible:
+    text: "Conversion"
+    label: "Conversion stats tile is visible"
+
+- takeScreenshot: dashboard_stats_overview
+
+# Test date range switching via Compose testTag (DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON)
+- tapOn:
+    id: "stats_range_dropdown_button"
+    label: "Tap date range dropdown"
+
+# The DropdownMenu is a Compose Popup, so assert its stable item text rather
+# than relying on its test tag surfacing in Maestro's hierarchy. This is
+# mandatory: otherwise the flow could pass without changing the chart range.
+- extendedWaitUntil:
+    visible: "This Week"
+    timeout: 10000
+    label: "Wait for dashboard date range menu"
+
+- tapOn:
+    text: "This Week"
+    retryTapIfNoChange: true
+    label: "Select This Week range"
+
+- extendedWaitUntil:
+    visible:
+      id: "dashboard_stats_card"
+    timeout: 10000
+    label: "Wait for weekly dashboard stats"
+
+- assertNotVisible:
+    text: "Custom"
+    label: "Date range menu closes after selection"
+
+- takeScreenshot: dashboard_stats_week
+
+# Scroll down to top performers via Compose testTag (DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
+- scrollUntilVisible:
+    element:
+      id: "dashboard_top_performers_card"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to top performers card"
+
+- assertVisible:
+    id: "dashboard_top_performers_card"
+    label: "Top performers card is visible"
+
+- takeScreenshot: dashboard_top_performers
+
+# Scroll back up to the top of the dashboard.
+# `swipe: direction: DOWN` swipes the finger downward, which scrolls
+# the list content upward.
+- swipe:
+    direction: DOWN
+    duration: 500
+- swipe:
+    direction: DOWN
+    duration: 500

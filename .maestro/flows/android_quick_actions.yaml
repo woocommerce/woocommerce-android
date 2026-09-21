@@ -1,0 +1,124 @@
+# Smoke Test: Android system - App shortcuts
+# p2: other.quick-actions
+# P2 ref: Other > Quick Actions (long press on app icon)
+#
+# Verifies on the real launcher surface:
+#   - Long-pressing the production Woo app exposes Create order and Payments
+#   - Create order opens a fresh order draft
+#   - Payments opens the Payments hub
+#
+# Run only through the android-system profile on an English Pixel Launcher AVD.
+appId: com.woocommerce.android
+name: "Android system - App shortcuts"
+tags:
+  - android_system
+  - flaky_quarantine
+---
+- runFlow:
+    file: ../subflows/ensure_logged_in.yaml
+
+# Dynamic shortcuts are registered after a site is selected. Stop the app and
+# exercise them from Pixel Launcher's app drawer rather than launching an
+# equivalent intent directly.
+- stopApp
+- pressKey: HOME
+
+# Open the app drawer with a deliberate bottom-to-top swipe. A short generic
+# UP swipe does not always trigger the Pixel Launcher drawer gesture, so use
+# an explicit long swipe from near the bottom and retry once if it did not open.
+- swipe:
+    start: 50%, 92%
+    end: 50%, 12%
+    duration: 600
+
+- runFlow:
+    when:
+      notVisible: "All apps"
+    commands:
+      - swipe:
+          start: 50%, 95%
+          end: 50%, 8%
+          duration: 800
+
+# This Pixel Launcher build shows a Google search bar with no "Search apps"
+# placeholder, so confirm the drawer opened via the "All apps" header and
+# locate the app by scrolling the grid instead of typing to filter.
+- extendedWaitUntil:
+    visible: "All apps"
+    timeout: 10000
+    label: "Open Pixel Launcher app drawer"
+
+- scrollUntilVisible:
+    element:
+      text: "^Woo$"
+    direction: DOWN
+    timeout: 15000
+    label: "Find the production Woo app icon"
+
+- longPressOn:
+    text: "^Woo$"
+    label: "Open Woo app shortcuts"
+
+- assertVisible:
+    text: "Create order"
+    label: "Create order shortcut is present"
+- assertVisible:
+    text: "Payments"
+    label: "Payments shortcut is present"
+
+- takeScreenshot: android_quick_actions
+
+- tapOn:
+    text: "Create order"
+    label: "Launch Create order shortcut"
+
+- extendedWaitUntil:
+    visible: "New order"
+    timeout: 30000
+    label: "Create order shortcut opens an order draft"
+- assertVisible: "Add products"
+- takeScreenshot: android_quick_action_create_order
+
+- back
+- runFlow:
+    when:
+      visible: "Discard"
+    commands:
+      - tapOn:
+          text: "Discard"
+          label: "Discard shortcut-created order draft"
+
+# Reopen the launcher shortcuts and verify the Payments destination too.
+- stopApp
+- pressKey: HOME
+- swipe:
+    start: 50%, 92%
+    end: 50%, 12%
+    duration: 600
+- runFlow:
+    when:
+      notVisible: "All apps"
+    commands:
+      - swipe:
+          start: 50%, 95%
+          end: 50%, 8%
+          duration: 800
+
+- extendedWaitUntil:
+    visible: "All apps"
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      text: "^Woo$"
+    direction: DOWN
+    timeout: 15000
+- longPressOn: "^Woo$"
+- tapOn:
+    text: "Payments"
+    label: "Launch Payments shortcut"
+
+- extendedWaitUntil:
+    visible: "Pay In Person"
+    timeout: 30000
+    label: "Payments shortcut opens the Payments hub"
+- takeScreenshot: android_quick_action_payments

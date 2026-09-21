@@ -43,7 +43,7 @@ pr_size_checker.check_diff_size(
   }
 )
 
-android_unit_test_checker.check_missing_tests
+android_unit_test_checker.check_missing_tests(path_exceptions: ['.maestro/scripts/tests/*.py'])
 
 # skip remaining checks if the PR is still a Draft
 if github.pr_draft?
