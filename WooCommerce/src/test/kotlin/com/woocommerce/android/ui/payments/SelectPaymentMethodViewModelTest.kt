@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.ui.payments.methodselection.NavigateBackToHub
 import com.woocommerce.android.ui.payments.methodselection.NavigateBackToOrderList
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderHubFlow
@@ -117,7 +118,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         on { toAppModel(orderEntity) }.thenReturn(order)
     }
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock {
-        on { isCollectable(order) }.thenReturn(false)
+        on { isCollectable(order, checkSubscription = false) }.thenReturn(false)
+    }
+    private val orderSubscriptionChecker: OrderSubscriptionChecker = mock {
+        on { getSubscriptionStatus(any()) }.thenReturn(OrderSubscriptionChecker.SubscriptionStatus.NONE)
     }
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
@@ -210,7 +214,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and payment collectable and ttp, when view model init, then success emitted with ttp row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(true)
             whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
@@ -230,7 +234,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and payment collectable, when view model init, then success emitted with card reader row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(true)
 
             // WHEN
@@ -249,7 +253,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and order with payment link, when view model init, then success emitted with stp and share link rows`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(true)
             whenever(tapToPayAvailabilityStatus.invoke()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
@@ -273,7 +277,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and ipp not collectable and ttp collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(false)
             whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
@@ -295,7 +299,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given payment flow and ipp collectable and ttp not collectable, when view model init, then success emitted without ttp`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(true)
             whenever(tapToPayAvailabilityStatus()).thenReturn(
                 TapToPayAvailabilityStatus.Result.NotAvailable.NfcNotAvailable
@@ -319,7 +323,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given try tap to pay, when view model init, then all disabled except ttp row`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
                 .thenReturn(true)
             whenever(tapToPayAvailabilityStatus()).thenReturn(TapToPayAvailabilityStatus.Result.Available)
             val orderId = 1L
@@ -344,8 +348,10 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     fun `given order contains a subscription, when view model init, then cash shown but card reader hidden`() =
         testBlocking {
             // GIVEN
-            whenever(cardPaymentCollectibilityChecker.isCollectable(order))
-                .thenReturn(false)
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
+                .thenReturn(true)
+            whenever(orderSubscriptionChecker.getSubscriptionStatus(order))
+                .thenReturn(OrderSubscriptionChecker.SubscriptionStatus.PRESENT)
 
             // WHEN
             val viewModel = initViewModel(Payment(1L, ORDER))
@@ -354,6 +360,26 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val rows = (viewModel.viewStateData.value as Success).rows
             assertThat(rows.any { it is Success.Row.Single && it.label == R.string.cash }).isTrue()
             assertThat(rows.none { it is Success.Row.Double }).isTrue()
+        }
+
+    @Test
+    fun `given subscription lookup fails, when view model init, then card reader hidden and error shown`() =
+        testBlocking {
+            // GIVEN
+            whenever(cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false))
+                .thenReturn(true)
+            whenever(orderSubscriptionChecker.getSubscriptionStatus(order))
+                .thenReturn(OrderSubscriptionChecker.SubscriptionStatus.UNKNOWN)
+
+            // WHEN
+            val viewModel = initViewModel(Payment(1L, ORDER))
+
+            // THEN
+            val rows = (viewModel.viewStateData.value as Success).rows
+            assertThat(rows.none { it is Success.Row.Double }).isTrue()
+            assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_subscription_check_failed)
+            )
         }
 
     @Test
@@ -1299,6 +1325,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             wooCommerceStore = wooCommerceStore,
             orderMapper = orderMapper,
             cardPaymentCollectibilityChecker = cardPaymentCollectibilityChecker,
+            orderSubscriptionChecker = orderSubscriptionChecker,
             learnMoreUrlProvider = learnMoreUrlProvider,
             paymentsFlowTracker = paymentsFlowTracker,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,

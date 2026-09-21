@@ -162,6 +162,36 @@ class OrderSubscriptionCheckerTest : BaseUnitTest() {
             assertThat(siteBResult).isFalse()
         }
 
+    @Test
+    fun `given endpoint returns no subscriptions, when getting status, then status is none`() = testBlocking {
+        whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
+            .thenReturn(WooResult(emptyList()))
+
+        val result = checker.getSubscriptionStatus(order)
+
+        assertThat(result).isEqualTo(OrderSubscriptionChecker.SubscriptionStatus.NONE)
+    }
+
+    @Test
+    fun `given endpoint returns a subscription, when getting status, then status is present`() = testBlocking {
+        whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
+            .thenReturn(WooResult(listOf(subscription())))
+
+        val result = checker.getSubscriptionStatus(order)
+
+        assertThat(result).isEqualTo(OrderSubscriptionChecker.SubscriptionStatus.PRESENT)
+    }
+
+    @Test
+    fun `given endpoint errors, when getting status, then status is unknown`() = testBlocking {
+        whenever(subscriptionRepository.fetchSubscriptionsByOrderId(eq(order.id), any()))
+            .thenReturn(WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)))
+
+        val result = checker.getSubscriptionStatus(order)
+
+        assertThat(result).isEqualTo(OrderSubscriptionChecker.SubscriptionStatus.UNKNOWN)
+    }
+
     private fun subscription() = Subscription(
         id = 1L,
         status = Subscription.Status.Active,
