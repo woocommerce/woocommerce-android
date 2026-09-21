@@ -21,7 +21,7 @@ data class WooPosOrderCreatedData(
             override val finalPrice: BigDecimal,
             override val basePrice: BigDecimal,
             override val quantity: Float,
-            override val discounted: Boolean = false,
+            override val discounted: Boolean,
         ) : ProductInfo(id, name, finalPrice, basePrice, quantity, discounted)
 
         data class Variation(
@@ -31,7 +31,7 @@ data class WooPosOrderCreatedData(
             override val basePrice: BigDecimal,
             override val quantity: Float,
             val variationId: Long,
-            override val discounted: Boolean = false,
+            override val discounted: Boolean,
         ) : ProductInfo(id, name, finalPrice, basePrice, quantity, discounted)
     }
 

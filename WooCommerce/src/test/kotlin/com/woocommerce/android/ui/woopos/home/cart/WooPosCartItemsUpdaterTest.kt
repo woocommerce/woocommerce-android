@@ -78,7 +78,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -119,7 +120,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Variation",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -190,7 +192,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Product 1",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -235,7 +238,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Product",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)
@@ -282,7 +286,8 @@ class WooPosCartItemsUpdaterTest {
                 name = "Product",
                 finalPrice = BigDecimal("10.0"),
                 basePrice = BigDecimal("10.0"),
-                quantity = 1f
+                quantity = 1f,
+                discounted = false
             )
 
             // WHEN
@@ -387,7 +392,8 @@ class WooPosCartItemsUpdaterTest {
             name = "Updated Name",
             finalPrice = BigDecimal("10.0"),
             basePrice = BigDecimal("10.0"),
-            quantity = 1f
+            quantity = 1f,
+            discounted = false
         )
         val cachedProduct = generateWooPosProduct()
         whenever(productsCache.getProductById(1L)).thenReturn(cachedProduct)

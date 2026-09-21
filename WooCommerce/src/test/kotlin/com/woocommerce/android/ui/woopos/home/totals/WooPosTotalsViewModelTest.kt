@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ReturnedFromCar
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosOrderCreatedData
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
@@ -736,6 +737,45 @@ class WooPosTotalsViewModelTest {
             verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
             val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
             assertThat(orderCreated.data.updatedProducts.map { it.discounted }).containsExactly(false, true)
+        }
+
+    @Test
+    fun `given order with discounted variation line item, when order created, then discounted flags are sent to cart`() =
+        runTest {
+            // GIVEN
+            val orderItems = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 100L,
+                    variationId = 101L,
+                    subtotal = BigDecimal("1.00"),
+                    total = BigDecimal("1.00")
+                ),
+                Order.Item.EMPTY.copy(
+                    productId = 100L,
+                    variationId = 102L,
+                    subtotal = BigDecimal("1.00"),
+                    total = BigDecimal("0.50")
+                ),
+            )
+
+            // WHEN
+            createViewModelAndSetupForSuccessfulOrderCreation(
+                itemClickedData = listOf(
+                    WooPosItemsViewModel.ItemClickedData.Product.Variation(productId = 100L, id = 101L),
+                    WooPosItemsViewModel.ItemClickedData.Product.Variation(productId = 100L, id = 102L),
+                ),
+                orderItems = orderItems,
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val captor = argumentCaptor<ChildToParentEvent>()
+            verify(childrenToParentEventSender, atLeastOnce()).sendToParent(captor.capture())
+            val orderCreated = captor.allValues.filterIsInstance<ChildToParentEvent.OrderCreated>().single()
+            val updatedVariations = orderCreated.data.updatedProducts
+                .filterIsInstance<WooPosOrderCreatedData.ProductInfo.Variation>()
+            assertThat(updatedVariations.map { it.variationId to it.discounted })
+                .containsExactly(101L to false, 102L to true)
         }
 
     @Test
