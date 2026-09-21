@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
+import com.woocommerce.android.ui.payments.cardreader.payment.OrderSubscriptionChecker
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -76,6 +77,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val orderMapper: OrderMapper,
     private val cardPaymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
+    private val orderSubscriptionChecker: OrderSubscriptionChecker,
     private val learnMoreUrlProvider: LearnMoreUrlProvider,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
@@ -154,12 +156,27 @@ class SelectPaymentMethodViewModel @Inject constructor(
             isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
             areCardReaderRowsLoading = true,
         )
-        val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
         emitPaymentState(
-            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader,
+            isPaymentCollectableWithCardReader = isPaymentCollectableWithCardReader(),
             isTapToPayAvailableOnDevice = isTapToPayAvailableOnDevice,
             areCardReaderRowsLoading = false,
         )
+    }
+
+    private suspend fun isPaymentCollectableWithCardReader(): Boolean {
+        val order = order.first()
+        // The subscription lookup is a separate step so we can tell a genuine subscription order
+        // (silently hide the card reader rows) apart from a lookup failure (hide them and surface an
+        // error so the merchant knows the check couldn't complete).
+        if (!cardPaymentCollectibilityChecker.isCollectable(order, checkSubscription = false)) return false
+        return when (orderSubscriptionChecker.getSubscriptionStatus(order)) {
+            OrderSubscriptionChecker.SubscriptionStatus.NONE -> true
+            OrderSubscriptionChecker.SubscriptionStatus.PRESENT -> false
+            OrderSubscriptionChecker.SubscriptionStatus.UNKNOWN -> {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.card_reader_payment_subscription_check_failed))
+                false
+            }
+        }
     }
 
     private suspend fun emitPaymentState(

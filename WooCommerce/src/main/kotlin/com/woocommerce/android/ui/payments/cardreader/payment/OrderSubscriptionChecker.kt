@@ -31,28 +31,42 @@ class OrderSubscriptionChecker @Inject constructor(
     private val cache = ConcurrentHashMap<CacheKey, Boolean>()
 
     /**
-     * Returns true only when the order is confirmed to be free of subscriptions.
+     * Returns true only when the order is confirmed to be free of subscriptions. Both "contains a
+     * subscription" and "couldn't be determined" collapse to false (fail closed).
      */
-    suspend fun isOrderFreeOfSubscriptions(order: Order): Boolean {
+    suspend fun isOrderFreeOfSubscriptions(order: Order): Boolean =
+        getSubscriptionStatus(order) == SubscriptionStatus.NONE
+
+    /**
+     * Distinguishes "no subscription", "has a subscription", and "couldn't be determined" so callers
+     * that can surface an error/retry (e.g. the payment method selection screen) don't confuse a
+     * transient lookup failure with a genuine subscription order.
+     */
+    suspend fun getSubscriptionStatus(order: Order): SubscriptionStatus {
         val productIds = order.getProductIds()
-        if (productIds.isEmpty()) return true
         val site = selectedSite.get()
-        // Plugin inactive → the order can't be a subscription.
-        if (wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) return true
+        // No products, or the plugin is inactive → the order can't be a subscription.
+        if (productIds.isEmpty() || wooCommerceStore.getActiveSitePlugin(site, WOO_SUBSCRIPTIONS) == null) {
+            return SubscriptionStatus.NONE
+        }
         // Legacy subscription product types are known subscriptions without a network call.
-        if (orderDetailRepository.hasLegacySubscriptionProducts(productIds)) return false
+        if (orderDetailRepository.hasLegacySubscriptionProducts(productIds)) return SubscriptionStatus.PRESENT
 
         val key = CacheKey(site.id, order.id)
-        return cache[key] ?: run {
-            val result = subscriptionRepository.fetchSubscriptionsByOrderId(order.id, site)
-            if (result.isError) {
-                // Fail closed and don't cache, so a transient failure can recover on the next attempt.
-                false
-            } else {
-                (result.model?.isEmpty() ?: false).also { cache[key] = it }
-            }
+        cache[key]?.let { return it.toStatus() }
+
+        val result = subscriptionRepository.fetchSubscriptionsByOrderId(order.id, site)
+        return if (result.isError) {
+            // Don't cache, so a transient failure can recover on the next attempt.
+            SubscriptionStatus.UNKNOWN
+        } else {
+            (result.model?.isEmpty() ?: false).also { cache[key] = it }.toStatus()
         }
     }
+
+    private fun Boolean.toStatus() = if (this) SubscriptionStatus.NONE else SubscriptionStatus.PRESENT
+
+    enum class SubscriptionStatus { NONE, PRESENT, UNKNOWN }
 
     private data class CacheKey(val siteId: Int, val orderId: Long)
 }
