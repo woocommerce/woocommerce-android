@@ -2114,6 +2114,126 @@ class WooPosCartViewModelTest {
             assertThat(states.last().isCustomAmountDiscountNotAppliedNoteVisible).isFalse()
         }
 
+    @Test
+    fun `given checkout, when order created with discounted line item, then discounted flag is stored`() =
+        runTest {
+            // GIVEN
+            val product = generateWooPosProduct(productId = 23L, productName = "title", amount = "10.0")
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.ItemClickedInItemsList(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
+                    eventForTracking = mockedEventForTracking
+                )
+            )
+            advanceUntilIdle()
+            val itemInCart = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            whenever(cartItemsUpdater(any(), any(), any())).thenReturn(
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = listOf(itemInCart.copy(discounted = true)),
+                    productsChanged = false,
+                    couponsChanged = false,
+                    discountsChanged = true,
+                )
+            )
+
+            // WHEN
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+            advanceUntilIdle()
+
+            // THEN
+            val storedItem = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            assertThat(storedItem.discounted).isTrue()
+        }
+
+    @Test
+    fun `given order response arriving after back to cart, when stored, then discounted flag is cleared`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_cart_changes_in_the_cart)).thenReturn("changed")
+            val product = generateWooPosProduct(productId = 23L, productName = "title", amount = "10.0")
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.ItemClickedInItemsList(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
+                    eventForTracking = mockedEventForTracking
+                )
+            )
+            advanceUntilIdle()
+            val itemInCart = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            sut.onUIEvent(WooPosCartUIEvent.BackClicked)
+            advanceUntilIdle()
+            whenever(cartItemsUpdater(any(), any(), any())).thenReturn(
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = listOf(itemInCart.copy(name = "new name", discounted = true)),
+                    productsChanged = true,
+                    couponsChanged = false,
+                    discountsChanged = true,
+                )
+            )
+
+            // WHEN
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+            advanceUntilIdle()
+
+            // THEN
+            val storedItem = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            assertThat(storedItem.name).isEqualTo("new name")
+            assertThat(storedItem.discounted).isFalse()
+        }
+
+    @Test
+    fun `given discounted item stored at checkout, when back from checkout to cart, then discounted flag is cleared`() =
+        runTest {
+            // GIVEN
+            val product = generateWooPosProduct(productId = 23L, productName = "title", amount = "10.0")
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val sut = createSut()
+            val states = sut.state.captureValues()
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.ItemClickedInItemsList(
+                    WooPosItemsViewModel.ItemClickedData.Product.Simple(id = product.remoteId),
+                    eventForTracking = mockedEventForTracking
+                )
+            )
+            advanceUntilIdle()
+            val itemInCart = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            advanceUntilIdle()
+            whenever(cartItemsUpdater(any(), any(), any())).thenReturn(
+                WooPosCartItemsUpdater.CartItemsUpdaterResult(
+                    updatedItems = listOf(itemInCart.copy(discounted = true)),
+                    productsChanged = false,
+                    couponsChanged = false,
+                    discountsChanged = true,
+                )
+            )
+            simulateOrderCreated(wholeCartCouponDiscountApplied = false)
+            advanceUntilIdle()
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+            advanceUntilIdle()
+
+            // THEN
+            val storedItem = (states.last().body as WooPosCartState.Body.WithItems)
+                .itemsInCart.first() as WooPosCartItemViewState.Product.Simple
+            assertThat(storedItem.discounted).isFalse()
+        }
+
     private suspend fun simulateCustomAmountSubmitted() {
         parentToChildrenMutableSharedFlow.emit(
             ParentToChildrenEvent.CustomAmountSubmitted(

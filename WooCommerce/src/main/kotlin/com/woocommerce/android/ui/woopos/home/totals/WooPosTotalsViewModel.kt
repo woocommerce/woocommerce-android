@@ -102,6 +102,7 @@ class WooPosTotalsViewModel @Inject constructor(
         private const val KEY_IS_TAP_TO_PAY_PAYMENT = "woo_pos_is_tap_to_pay_payment"
         private const val TAP_TO_PAY_SOURCE = "woo_pos_checkout"
         private val InitialState = WooPosTotalsViewState.Loading
+        private val DISCOUNTED_LINE_TOLERANCE = BigDecimal("0.005")
     }
 
     private val uiState: MutableStateFlow<WooPosTotalsViewState> =
@@ -1080,6 +1081,10 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             it.subtotal
         }
+        // `discount` is the ex-tax `subtotal - total` delta from the order response, so it
+        // reflects any discount source (coupon or plugin). The half-cent tolerance absorbs
+        // server-side rounding.
+        val discounted = it.discount > DISCOUNTED_LINE_TOLERANCE
         when {
             it.variationId == 0L -> {
                 WooPosOrderCreatedData.ProductInfo.Simple(
@@ -1087,7 +1092,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     name = it.name,
                     finalPrice = it.price,
                     basePrice = basePrice,
-                    quantity = it.quantity
+                    quantity = it.quantity,
+                    discounted = discounted
                 )
             }
 
@@ -1098,7 +1104,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     finalPrice = it.price,
                     quantity = it.quantity,
                     basePrice = basePrice,
-                    variationId = it.variationId
+                    variationId = it.variationId,
+                    discounted = discounted
                 )
             }
         }
