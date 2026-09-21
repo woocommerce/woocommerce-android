@@ -458,6 +458,23 @@ class ApplicationPasswordManagerTests {
         }
 
     @Test
+    fun `given the check took the whole window, when another 401 arrives, then still reuse the verdict`() =
+        runTest {
+            val site = webFlowSite()
+            whenever(mWpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, testCredentials))
+                .doSuspendableAnswer {
+                    now += VALIDATION_TTL_MS
+                    ApplicationPasswordValidity.VALID
+                }
+
+            mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+            mApplicationPasswordsManager.shouldRegenerateApplicationPassword(site, testCredentials)
+
+            verify(mWpApiApplicationPasswordsRestClient, times(1))
+                .checkApplicationPasswordValidity(site, testCredentials)
+        }
+
+    @Test
     fun `given another site hit 401, when deciding whether to regenerate, then probe that site as well`() = runTest {
         val siteA = webFlowSite().apply { id = 1 }
         val siteB = webFlowSite().apply { id = 2 }

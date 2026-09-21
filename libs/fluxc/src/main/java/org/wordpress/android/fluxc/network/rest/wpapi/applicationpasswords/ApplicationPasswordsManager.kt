@@ -119,17 +119,19 @@ internal class ApplicationPasswordsManager @Inject constructor(
         site: SiteModel,
         credentials: ApplicationPasswordCredentials
     ): ApplicationPasswordValidity = validationMutex.withLock {
-        val now = currentTimeProvider.currentDate().time
+        val now = nowMillis()
         lastValidation
-            ?.takeIf { it.matches(site, credentials) && now - it.timestamp in 0 until VALIDATION_RESULT_TTL_MS }
+            ?.takeIf { it.matches(site, credentials) && now - it.checkedAt in 0 until VALIDATION_RESULT_TTL_MS }
             ?.let {
                 appLogWrapper.d(MAIN, "Reusing the application password validity checked moments ago")
                 return@withLock it.validity
             }
 
         wpApiApplicationPasswordsRestClient.checkApplicationPasswordValidity(site, credentials)
-            .also { lastValidation = CachedValidation(site.id, credentials, it, now) }
+            .also { lastValidation = CachedValidation(site.id, credentials, it, checkedAt = nowMillis()) }
     }
+
+    private fun nowMillis() = currentTimeProvider.currentDate().time
 
     /**
      * Drops the memoized verdict once a password is revoked on purpose, so neither it nor the credentials it
@@ -344,7 +346,8 @@ internal class ApplicationPasswordsManager @Inject constructor(
         val localSiteId: Int,
         val credentials: ApplicationPasswordCredentials,
         val validity: ApplicationPasswordValidity,
-        val timestamp: Long
+        /** When the check came back, not when it started — a slow check must not shorten the window. */
+        val checkedAt: Long
     ) {
         fun matches(site: SiteModel, credentials: ApplicationPasswordCredentials) =
             localSiteId == site.id && this.credentials == credentials
