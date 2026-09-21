@@ -3,6 +3,7 @@ package com.woocommerce.android
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
+import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.GetAppVersionName
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.wear.WearableConnectionRepository
@@ -34,6 +35,9 @@ class SiteObserverTest : BaseUnitTest() {
     private val appPrefs: AppPrefsWrapper = mock()
     private val dispatcher: FakeDispatcher = FakeDispatcher()
     private val appVersionName: GetAppVersionName = mock()
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock {
+        on { invoke() } doReturn false
+    }
 
     private val siteObserver = SiteObserver(
         selectedSite = selectedSite,
@@ -45,7 +49,8 @@ class SiteObserverTest : BaseUnitTest() {
         appPrefs = appPrefs,
         analyticsTracker = mock(),
         dispatcher = dispatcher,
-        appVersionName = appVersionName
+        appVersionName = appVersionName,
+        isEligibleForSubscriptions = isEligibleForSubscriptions
     )
 
     @Test
@@ -119,6 +124,56 @@ class SiteObserverTest : BaseUnitTest() {
             verify(appPrefs, never()).isSiteWPComSuspended
 
             // Cancel the observer job
+            job.cancel()
+        }
+
+    @Test
+    fun `given subscriptions plugin is active, when observing site data, then creation settings are fetched`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPAPI
+            }
+            whenever(selectedSite.observe()).thenReturn(flowOf(site))
+            whenever(siteStore.fetchConnectSiteInfoSync(site.url))
+                .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
+            whenever(isEligibleForSubscriptions()).thenReturn(true)
+
+            // WHEN
+            val job = launch {
+                siteObserver.observeAndUpdateSelectedSiteData()
+            }
+            advanceUntilIdle()
+
+            // THEN
+            verify(wooCommerceStore).fetchSubscriptionProductCreationSettings(site)
+
+            job.cancel()
+        }
+
+    @Test
+    fun `given subscriptions plugin is not active, when observing site data, then creation settings are not fetched`() =
+        testBlocking {
+            // GIVEN
+            val site = SiteModel().apply {
+                url = "https://example.com"
+                origin = SiteModel.ORIGIN_WPAPI
+            }
+            whenever(selectedSite.observe()).thenReturn(flowOf(site))
+            whenever(siteStore.fetchConnectSiteInfoSync(site.url))
+                .thenReturn(SiteStore.ConnectSiteInfoPayload(url = site.url))
+            whenever(isEligibleForSubscriptions()).thenReturn(false)
+
+            // WHEN
+            val job = launch {
+                siteObserver.observeAndUpdateSelectedSiteData()
+            }
+            advanceUntilIdle()
+
+            // THEN
+            verify(wooCommerceStore, never()).fetchSubscriptionProductCreationSettings(site)
+
             job.cancel()
         }
 

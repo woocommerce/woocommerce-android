@@ -12,8 +12,11 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocation
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderLocationRepository.LocationIdFetchingResult
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CardReaderTransport
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.TAP_TO_PAY_READER_MODEL
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -28,10 +31,13 @@ class WooPosBuiltInReaderConnector @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val fineLocationPermissionCheck: WooPosFineLocationPermissionCheck,
     private val logger: WooPosLogWrapper,
+    private val trackingInfoKeeper: CardReaderTrackingInfoKeeper,
 ) {
     @Suppress("ReturnCount")
     suspend fun connect(): Result<Unit> {
-        if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
+        val connectedReader = cardReaderManager.readerStatus.value as? CardReaderStatus.Connected
+        if (connectedReader != null) {
+            updateReaderTrackingInfo(connectedReader.cardReader)
             return Result.success(Unit)
         }
 
@@ -69,11 +75,23 @@ class WooPosBuiltInReaderConnector @Inject constructor(
             it is CardReaderStatus.Connected || it is CardReaderStatus.NotConnected
         }
         return if (terminalStatus is CardReaderStatus.Connected) {
+            updateReaderTrackingInfo(terminalStatus.cardReader)
             Result.success(Unit)
         } else {
             logger.e("Built-in reader connection ended in $terminalStatus")
             Result.failure(IllegalStateException("Built-in reader failed to connect"))
         }
+    }
+
+    private fun updateReaderTrackingInfo(reader: CardReader) {
+        trackingInfoKeeper.setCardReaderModel(reader.type)
+        trackingInfoKeeper.setTransport(
+            when (reader.type) {
+                TAP_TO_PAY_READER_MODEL -> CardReaderTransport.BUILT_IN.value
+                else -> CardReaderTransport.BLUETOOTH.value
+            }
+        )
+        trackingInfoKeeper.setCardReaderBatteryLevel(reader.currentBatteryLevel)
     }
 
     private sealed interface BuiltInDiscoveryResult {

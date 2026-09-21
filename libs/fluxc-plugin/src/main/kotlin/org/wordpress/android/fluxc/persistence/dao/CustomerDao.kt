@@ -22,6 +22,7 @@ internal abstract class CustomerDao {
         """
         SELECT * FROM CustomerEntity
         WHERE localSiteId = :siteId
+        ORDER BY rowid
         """
     )
     abstract suspend fun getCustomersForSite(siteId: LocalId): List<WCCustomerModel>

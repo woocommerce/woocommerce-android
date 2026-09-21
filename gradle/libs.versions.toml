@@ -1,9 +1,9 @@
 [versions]
-agp = '9.4.0'
+agp = '9.4.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.4'
 androidx-activity = '1.13.0'
-androidx-appcompat = '1.7.1'
+androidx-appcompat = '1.8.0'
 androidx-arch-core = '2.2.0'
 androidx-annotation = '1.10.0'
 androidx-browser = '1.10.0'
@@ -97,7 +97,7 @@ mockito-kotlin = '6.3.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16.1"
-sentry = '6.18.0'
+sentry = '6.19.0'
 screenshot = '0.0.1-alpha15'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
