@@ -3008,6 +3008,22 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
     // region - Interac refund
     @Test
+    fun `given order not refundable, when refund starts, then not-available message shown and flow exits`() =
+        testBlocking {
+            setupControllerForInteracRefund()
+            whenever(interacRefundableChecker.isRefundable(any())).thenReturn(false)
+            val events = mutableListOf<CardReaderPaymentEvent>()
+            val job = launch { controller.event.collect { events.add(it) } }
+
+            controller.start()
+
+            assertThat((events[0] as ShowErrorMessage).message)
+                .isEqualTo(R.string.card_reader_interac_refund_not_available)
+            assertThat(events[1]).isInstanceOf(CardReaderPaymentEvent.Exit::class.java)
+            job.cancel()
+        }
+
+    @Test
     fun `given interac refund shown, when RETRY message received, then refund payment hint updated`() =
         testBlocking {
             setupControllerForInteracRefund()
