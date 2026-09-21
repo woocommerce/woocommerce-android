@@ -17,7 +17,18 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
     private val orderSubscriptionChecker: OrderSubscriptionChecker,
 ) {
-    suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
+    /**
+     * [checkSubscription] runs the (possibly networked) order-subscription check. It's on by default
+     * for the payment method selection screen, where a loading/error state can be shown. The
+     * controller's final gate and POS pass `false`: POS orders can't be subscriptions, and the
+     * selection screen already blocks subscription orders before the controller is reached — so
+     * re-running it there only adds latency and risks failing closed on a flaky network.
+     */
+    suspend fun isCollectable(
+        order: Order,
+        allowCancelledStatus: Boolean = false,
+        checkSubscription: Boolean = true,
+    ): Boolean {
         return with(order) {
             cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
                 isStatusCollectable(allowCancelledStatus) &&
@@ -25,7 +36,7 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
                 order.total.compareTo(BigDecimal.ZERO) == 1 &&
                 BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
                 isPaymentMethodCollectable() &&
-                orderSubscriptionChecker.isOrderFreeOfSubscriptions(order)
+                (!checkSubscription || orderSubscriptionChecker.isOrderFreeOfSubscriptions(order))
         }
     }
 

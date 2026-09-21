@@ -228,7 +228,12 @@ class CardReaderPaymentController(
             fetchOrder()?.let { order ->
                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
 
-                if (!paymentCollectibilityChecker.isCollectable(order, allowCancelledStatus)) {
+                val collectable = paymentCollectibilityChecker.isCollectable(
+                    order,
+                    allowCancelledStatus,
+                    checkSubscription = false,
+                )
+                if (!collectable) {
                     exitWithSnackbar(R.string.card_reader_payment_order_paid_payment_cancelled)
                     return@launch
                 }
